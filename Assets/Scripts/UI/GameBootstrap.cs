@@ -874,7 +874,7 @@ namespace FingerDiceDuel.UI
                            choices,
                            showSkipButton: ShowSkipButton(),
                            skipButtonInteractable: _controller.CanSkipTurn,
-                           turnCount: _controller.TurnCount,
+                           turnCount: _controller.DisplayTurn,
                            turnLimit: _controller.TurnLimit,
                            extraHighlights: null);
 

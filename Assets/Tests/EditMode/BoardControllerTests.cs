@@ -54,6 +54,53 @@ namespace FingerDiceDuel.Tests
             Assert.True(_board.Hint.Length > 0, "应给出提示文字。");
         }
 
+        // ============================================================
+        // 回合数显示（玩家要求：操作的第一个回合就是「第 1 回合」）
+        // ============================================================
+
+        [Test]
+        public void The_first_turn_the_player_acts_is_displayed_as_turn_one()
+        {
+            _board.BeginTurn();
+
+            Assert.AreEqual(0, _board.TurnCount,
+                "TurnCount 的语义是「已完成回合数」，开局为 0。");
+            Assert.AreEqual(1, _board.DisplayTurn,
+                "玩家操作的第一个回合应显示为「第 1 回合」。");
+        }
+
+        [Test]
+        public void DisplayTurn_advances_by_one_after_each_resolved_turn()
+        {
+            _board.BeginTurn();
+            Assert.AreEqual(1, _board.DisplayTurn);
+
+            // 完整走完一个回合：点自己的手 -> 点对方的手 -> 确认目标
+            _board.ClickHand(_a.LeftHand);
+            _board.ClickHand(_b.LeftHand);
+            _board.ConfirmTargetPlayer();
+
+            Assert.True(_board.LastTurn != null, "应已结算一个回合。");
+            Assert.AreEqual(1, _board.TurnCount, "已打完 1 个回合。");
+            Assert.AreEqual(2, _board.DisplayTurn, "下一个回合应显示为第 2 回合。");
+        }
+
+        [Test]
+        public void DisplayTurn_is_clamped_to_the_turn_limit()
+        {
+            // 平局瞬间 TurnCount 会等于 TurnLimit，若不收敛就会显示 "51 / 50"。
+            //
+            // 这里**不模拟整局** —— 那需要一个有界的对局驱动（属于 MatchRunner 的职责），
+            // 在单元测试里自己写循环既慢又容易挂住（我第一版就写过无界循环）。
+            // 只验证显示值与上限的关系。
+            _board.BeginTurn();
+
+            Assert.AreEqual(1, _board.DisplayTurn, "起始应显示第 1 回合。");
+            Assert.True(_board.DisplayTurn <= _board.TurnLimit,
+                $"显示回合不应超过上限（display={_board.DisplayTurn}, limit={_board.TurnLimit}）。");
+            Assert.AreEqual(GameManager.TurnLimit, _board.TurnLimit, "上限应取自 GameManager。");
+        }
+
         [Test]
         public void Clicking_own_hand_then_opponent_hand_resolves_the_turn()
         {

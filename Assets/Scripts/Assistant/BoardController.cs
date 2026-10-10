@@ -1158,8 +1158,26 @@ namespace FingerDiceDuel.Assistant
 
         public bool IsChoiceCandidate(Hand hand) => ContainsHand(_pendingChoiceCandidates, hand);
 
-        /// <summary>回合数 / 上限（UI 显示 "14/50" 用）。</summary>
+        /// <summary>
+        /// 本局**已完成**的回合数（`GameManager.TurnCount` 的原义）。
+        /// 内部/测试用；UI 显示请用 <see cref="DisplayTurn"/>。
+        /// </summary>
         public int TurnCount => _game.TurnCount;
+
+        /// <summary>
+        /// UI 显示的"当前是第几回合"（**从 1 开始**）。
+        ///
+        /// 玩家操作的第一个回合就是**第 1 回合**，而 `TurnCount` 记的是
+        /// "已完成的回合数"（开局为 0），所以显示值要 +1。
+        ///
+        /// 为什么不在 `GameManager` 里把 `TurnCount` 改成 1 起：
+        /// 它的语义（已完成数）被胜负判定与多份测试依赖，
+        /// 改语义的收益很小、连带风险很大。**只在显示层换算。**
+        ///
+        /// 上限处收敛到 `TurnLimit`，避免平局瞬间显示 "51 / 50"。
+        /// </summary>
+        public int DisplayTurn => Math.Min(TurnCount + 1, TurnLimit);
+
         public int TurnLimit => GameManager.TurnLimit;
 
         /// <summary>

@@ -140,6 +140,7 @@ namespace FingerDiceDuel.UI
             BuildLogPanel();
             BuildGameOverPanel();
             BuildTopRightButtons();
+            BuildTopLeftTurnLabel();
             BuildFloatLayer();
 
             HideGameOver();
@@ -443,7 +444,7 @@ namespace FingerDiceDuel.UI
         /// <summary>让手牌所在的容器不可点（例如点 B 区域时 B 自己不该响应）。</summary>
         private void BuildTopRightButtons()
         {
-            // 右上角：回合数 + 返回标题。
+            // 右上角：返回标题。
             // 按钮文案与行为必须一致 —— 原来写"退出游戏"，实际只是回标题，
             // 玩家会以为点了会结束进程（实测反馈："按退出游戏直接关闭游戏了"）。
             _exitButton = CreateButton(_canvasRoot, "ExitButton",
@@ -451,11 +452,20 @@ namespace FingerDiceDuel.UI
                                        anchorTopRight: true);
             _exitButton.GetComponent<Image>().color = new Color(0.55f, 0.28f, 0.28f);
             _exitButton.onClick.AddListener(() => { ExitClicked?.Invoke(); });
+        }
 
-            // 回合数放在"退出游戏"左侧
+        /// <summary>
+        /// 左上角：回合数。
+        ///
+        /// 玩家要求放在左上角；显示的回合号**从 1 开始**
+        /// （玩家操作的第一个回合就是第 1 回合，见 `BoardController.DisplayTurn`）。
+        /// </summary>
+        private void BuildTopLeftTurnLabel()
+        {
             _turnText = CreateText(_canvasRoot, "TurnCount",
-                                   new Vector2(-280f, -40f), new Vector2(260f, 52f),
-                                   26, TextAnchor.MiddleRight, TextColor);
+                                   new Vector2(110f, -40f), new Vector2(200f, 52f),
+                                   26, TextAnchor.MiddleLeft, TextColor,
+                                   anchorTopLeft: true);
             UiFont.ApplyBold(_turnText);
             _turnText.text = "";
         }
@@ -866,16 +876,28 @@ namespace FingerDiceDuel.UI
         }
 
         private Text CreateText(RectTransform parent, string name, Vector2 position, Vector2 size,
-                                int fontSize, TextAnchor alignment, Color color)
+                                int fontSize, TextAnchor alignment, Color color,
+                                bool anchorTopLeft = false)
         {
             var go = new GameObject(name, typeof(Text));
             go.transform.SetParent(parent, false);
 
             var rect = go.GetComponent<RectTransform>();
-            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.pivot = new Vector2(0.5f, 0.5f);
+            if (anchorTopLeft)
+            {
+                // 左上角锚点；position 是"距左上角的内边距"（x 向右、y 向下）
+                rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+                rect.pivot = new Vector2(0f, 1f);
+                rect.anchoredPosition = new Vector2(position.x, -Mathf.Abs(position.y));
+            }
+            else
+            {
+                rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.pivot = new Vector2(0.5f, 0.5f);
+                rect.anchoredPosition = position;
+            }
+
             rect.sizeDelta = size;
-            rect.anchoredPosition = position;
 
             var text = go.GetComponent<Text>();
             text.font = _font;

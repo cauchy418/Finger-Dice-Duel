@@ -442,6 +442,10 @@ UI  →  Assistant  →  Core
 - 所有"长什么样"的判断集中在 `UI/HandVisual.cs`（颜色、文字），
   字体加载集中在 `UI/UiFont.cs`。
 - 屏幕纵向分区（自上而下）：**B 区（对手）→ 提示 → A 区（自己）→ 战斗文字**。
+- **回合数显示在左上角**，形如 `回合 1 / 50`，**从 1 开始**
+  （玩家操作的第一个回合就是第 1 回合；`TurnCount` 内部仍是"已完成回合数"，
+  显示值 = `min(TurnCount + 1, TurnLimit)`，见 `BoardController.DisplayTurn`）。
+- 右上角是**返回标题**按钮（不是"退出游戏"——文案与行为必须一致）。
 - 角色抉择按钮统一放在**屏幕右侧、上下两个**。
 - AI 出手前等待 `GameBootstrap.AiThinkSeconds`（默认 2 秒），让玩家看清结果。
 - `LastTurn` 的语义是"**最近一次已结算**的回合"，保留到下一次结算为止。
