@@ -274,10 +274,14 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// AI 自动分配：稍等片刻后随机挑一个**合法**拆分。
+        /// AI 自动分配：稍等片刻后按**价值表**挑一个合法拆分。
         ///
-        /// 这一步只是先把流程跑通 ——
-        /// 真正的 AI 应当按"自己技能看重哪些数 / 对手需要哪些数"来挑（后续再做）。
+        /// 选点策略见 <see cref="DiceSplitAdvisor"/> 与 <see cref="HandValueProfiles"/>：
+        ///   · 优先最大化 AI 自己角色的价值
+        ///   · 两个拆分对它相近时，挑一个"给玩家价值更低"的
+        ///   · 若 AI 是后手（看得到玩家已选），再考虑克制那一对
+        ///
+        /// ⚠️ 候选仍然**只来自 controller.Candidates** —— 界面绝不自己拼拆分。
         /// </summary>
         private void StartAutoAssign()
         {
@@ -302,12 +306,41 @@ namespace FingerDiceDuel.UI
             IReadOnlyList<HandSplit> cands = _controller.Candidates;
             if (cands == null || cands.Count == 0) yield break;
 
-            HandSplit pick = cands[UnityEngine.Random.Range(0, cands.Count)];
+            HandSplit pick = PickAiSplit(cands);
             if (!_controller.Submit(pick)) yield break;
 
             if (_controller.IsComplete) { Finish(); yield break; }
 
             ShowAssignment();     // 若又轮到 AI，会再次自动分配
+        }
+
+        /// <summary>
+        /// 让 AI 选一个拆分。
+        ///
+        /// **决策者是 AI 时，"被分配者"可能是玩家**（大失败时由对手指定），
+        /// 所以角色取值要用 <c>Assignee</c> —— 那才是"这对手值属于谁"。
+        /// 而"要克制谁"看的是另一方。
+        /// </summary>
+        private HandSplit PickAiSplit(IReadOnlyList<HandSplit> cands)
+        {
+            var assignee = _controller.Assignee;
+            var decider = _controller.Decider;
+
+            // assignee = 这对手值最终属于谁（大失败时正好是玩家）
+            var myDef = assignee?.Definition;
+
+            // 另一方 = 决策者自己（他自己分配自己时，对手是另一位玩家）
+            var other = ReferenceEquals(assignee, _controller.PlayerA)
+                ? _controller.PlayerB
+                : _controller.PlayerA;
+
+            // 后手的信息优势：先手方已经选好了，AI 可以用来克制
+            HandSplit? opponentsPick = _controller.HasInfoAdvantage
+                ? _controller.PreviousSplit
+                : null;
+
+            var advisor = new DiceSplitAdvisor();
+            return advisor.Choose(myDef, other?.Definition, cands, opponentsPick);
         }
 
         /// <summary>

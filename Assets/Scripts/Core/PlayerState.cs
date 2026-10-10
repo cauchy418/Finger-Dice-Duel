@@ -34,6 +34,16 @@ namespace FingerDiceDuel.Core
         // ============ 角色绑定 ============
         public ICharacterBehavior Character { get; private set; }
 
+        /// <summary>
+        /// 该玩家所用的**角色数据**（数值 + 显示名 + <see cref="CharacterDefinition.Id"/>）。
+        ///
+        /// 为什么要有它：<see cref="Character"/> 是**行为**，只暴露能力接口
+        /// （`IDodgeCapability` 之类），拿不到 Id —— 而开局选点策略需要按
+        /// Id 查价值表（见 Assistant.HandValueProfiles）。
+        /// 由 <see cref="CharacterFactory"/> 创建/配置玩家时一并写入。
+        /// </summary>
+        public CharacterDefinition Definition { get; private set; }
+
         // ============ 便捷查询 ============
         public bool HasAnyShield =>
             LeftHand.State == ShieldState.Formed || RightHand.State == ShieldState.Formed;
@@ -55,6 +65,9 @@ namespace FingerDiceDuel.Core
 
         // ============ 角色管理 ============
         public void BindCharacter(ICharacterBehavior character) => Character = character;
+
+        /// <summary>绑定角色数据（由 <see cref="CharacterFactory"/> 调用）。</summary>
+        public void BindDefinition(CharacterDefinition definition) => Definition = definition;
 
         /// <summary>设置显示名（角色选择界面确认后使用）。</summary>
         public void Rename(string name)

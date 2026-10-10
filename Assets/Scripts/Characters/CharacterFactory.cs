@@ -85,6 +85,7 @@ namespace FingerDiceDuel.Core
             int maxHealth = definition.MaxHealth + HealthBonusOf(behavior);
 
             var player = new PlayerState(name, behavior, maxHealth);
+            player.BindDefinition(definition);
             return player;
         }
 
@@ -121,6 +122,7 @@ namespace FingerDiceDuel.Core
 
             var behavior = CreateBehavior(definition);
             player.BindCharacter(behavior);
+            player.BindDefinition(definition);
             player.SetMaxHealth(definition.MaxHealth + HealthBonusOf(behavior));
         }
 
