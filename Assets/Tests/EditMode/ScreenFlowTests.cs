@@ -119,6 +119,35 @@ namespace FingerDiceDuel.Tests
                 "界面不得自行构造 HandSplit —— 那会把不合法的手值给到玩家。");
         }
 
+        /// <summary>
+        /// 掷骰界面的**提示文案**必须取自控制器，不得自己拼。
+        ///
+        /// ⚠️ 真实 bug 的回归：界面曾经自己拼"顺序提示"与"本次抉择说明"，
+        /// 把 decider 的名字/点数两边都用上，于是实机出现
+        /// 「战士投出 19（大失败）」这种**点数与身份都不对**的提示
+        /// （那次实际是 A 投 17、B 投 19，19 还是小成功不是大失败）。
+        ///
+        /// 控制器侧已有测试钉住 `OrderText` / `DecisionText` 的内容，
+        /// 这条守卫保证界面**用的是它们**而不是自己编。
+        /// </summary>
+        [Test]
+        public void Dice_roll_screen_uses_controller_provided_text()
+        {
+            string path = FindSource("DiceRollScreen.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(source.Contains("_controller.OrderText"),
+                "顺序提示必须取自 controller.OrderText。");
+            Assert.True(source.Contains("_controller.DecisionText") || source.Contains("_controller.Hint"),
+                "本次抉择说明必须取自控制器。");
+
+            Assert.False(source.Contains("DiceRollText.OrderNote("),
+                "界面不得自己调 OrderNote —— 它拿不到正确的名字（真实 bug 的来源）。");
+            Assert.False(source.Contains("DiceRollText.AssignHint("),
+                "界面不得自己调 AssignHint —— 以上同理。");
+        }
+
         /// <summary>对局中的按钮不许调用结束进程。</summary>
         [Test]
         public void In_match_exit_does_not_quit_the_process()

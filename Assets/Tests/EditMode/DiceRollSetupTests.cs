@@ -392,6 +392,106 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(10000, (int)(plan.ScaleAt(plan.Duration + 5f) * 10000), "之后保持 1。");
         }
 
+        [Test]
+        public void Order_text_names_the_lower_roller_as_going_first()
+        {
+            // ⚠️ 真实 bug 的回归：界面曾经自己拼这行文字、
+            // 把 decider 的名字两边都用上，于是"点数小的先分配"指向了错的人。
+            // 现在文案由控制器提供，这里直接钉住内容。
+            var a17b19 = Arrange(17, 19);
+            Assert.AreEqual(DecisionOrder.ALower, a17b19.Order);
+            Assert.True(a17b19.OrderText.Contains(a17b19.PlayerA.Name),
+                $"点数小的是 A，应先提到 A。实际：{a17b19.OrderText}");
+            Assert.True(a17b19.OrderText.Contains(a17b19.PlayerB.Name),
+                $"也应提到 B。实际：{a17b19.OrderText}");
+
+            var bLower = Arrange(15, 7);
+            Assert.AreEqual(DecisionOrder.BLower, bLower.Order);
+            Assert.True(bLower.OrderText.Contains(bLower.PlayerB.Name), "点数小的是 B。");
+
+            var tie = Arrange(12, 12);
+            Assert.AreEqual(DecisionOrder.Simultaneous, tie.Order);
+            Assert.True(tie.OrderText.Contains("同时"), $"平手应说明同时分配。实际：{tie.OrderText}");
+        }
+
+        [Test]
+        public void Only_a_roll_of_one_is_a_critical_failure()
+        {
+            // ⚠️ 真实 bug 的回归：19 被误当成大失败。
+            Assert.True(DiceRollSetup.IsCriticalFailure(1));
+            for (int roll = 2; roll <= 20; roll++)
+                Assert.False(DiceRollSetup.IsCriticalFailure(roll),
+                    $"{roll} 不是大失败。");
+
+            // 19 是小成功、20 是大成功
+            Assert.True(DiceRollSetup.IsMinorSuccess(19));
+            Assert.True(DiceRollSetup.IsMajorSuccess(20));
+            Assert.False(DiceRollSetup.IsMinorSuccess(20));
+            Assert.False(DiceRollSetup.IsMajorSuccess(19));
+        }
+
+        [Test]
+        public void Decision_text_only_mentions_critical_failure_on_a_roll_of_one()
+        {
+            // 19 点的一方应看到"小成功"，绝不能看到"大失败"。
+            // A 投 19、B 投 5 -> 5 < 19，所以**先决定的是 B**。
+            // 要检查"投 19 那位"的说明，得先让 B 分配完，再轮到 A。
+            var s19 = Arrange(19, 5);
+            Assert.AreEqual(DecisionOrder.BLower, s19.Order, "点数小的是 B，B 先分配。");
+            Assert.True(s19.Submit(new HandSplit(1, 4)), "B 投 5 -> 1+4 合法。");
+
+            // 现在轮到 A（投 19）
+            Assert.False(s19.IsNamingOpponent, "19 不是大失败，不该由对手指定。");
+            Assert.False(s19.DecisionText.Contains("大失败"),
+                "19 的说明不该出现大失败。实际：" + s19.DecisionText);
+            Assert.True(s19.DecisionText.Contains("小成功"),
+                "19 应说明是小成功。实际：" + s19.DecisionText);
+            Assert.True(s19.IsCandidate(new HandSplit(9, 1)),
+                "19 时 9+1 应合法（另一只手随意）。");
+
+            // 真正的大失败：投出 1 的人由对手指定
+            var c1 = Arrange(1, 15);
+            Assert.True(c1.IsNamingOpponent, "投出 1 应由对手指定。");
+            Assert.True(c1.DecisionText.Contains("大失败"),
+                "投出 1 应说明是大失败。实际：" + c1.DecisionText);
+
+            // 普通点数既不是大失败也不是成功
+            var plain = Arrange(8, 12);
+            Assert.False(plain.DecisionText.Contains("大失败"));
+            Assert.False(plain.DecisionText.Contains("小成功"));
+            Assert.False(plain.DecisionText.Contains("大成功"));
+        }
+
+        [Test]
+        public void Only_the_critical_failure_makes_the_opponent_decide()
+        {
+            // 大失败以外，一律由**自己**分配。
+            // （玩家实测反馈的 bug："现在不管投出什么都是点数大的给点数小的决定数字"）
+            for (int a = 1; a <= 20; a++)
+            {
+                for (int b = 1; b <= 20; b++)
+                {
+                    var s = Arrange(a, b);
+
+                    int assigneeRoll = ReferenceEquals(s.Assignee, s.PlayerA) ? a : b;
+
+                    if (DiceRollSetup.IsCriticalFailure(assigneeRoll))
+                    {
+                        Assert.True(s.IsNamingOpponent,
+                            $"A={a} B={b}：投出 1 的那位应由对手指定。");
+                    }
+                    else
+                    {
+                        Assert.False(s.IsNamingOpponent,
+                            $"A={a} B={b}：非大失败应由自己分配。");
+                    }
+
+                    Assert.True(ReferenceEquals(s.Decider, s.Assignee) == !s.IsNamingOpponent,
+                        $"A={a} B={b}：非大失败时决策者就是承受者。");
+                }
+            }
+        }
+
         // ============================================================
         // 工具
         // ============================================================

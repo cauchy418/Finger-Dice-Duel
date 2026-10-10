@@ -158,11 +158,10 @@ namespace FingerDiceDuel.UI
             _rollButton.gameObject.SetActive(false);
             _controller.Roll();
 
-            // 先把顺序提示显示出来（点数已经定了），数字部分留给动画
-            _orderText.text = DiceRollText.OrderNote(_controller.Order,
-                                                     _controller.Decider != null
-                                                        ? _controller.Decider.Name : "A",
-                                                     "对手");
+            // ⚠️ 顺序提示**必须**取自控制器。
+            // 曾经界面自己拼名字（把 decider 的名字两边都用上），
+            // 于是"点数小的先分配"指向了错误的人 —— 实测被玩家一眼看出。
+            _orderText.text = _controller.OrderText;
 
             _animCoroutine = StartCoroutine(PlayRollAnimation());
         }
@@ -196,25 +195,18 @@ namespace FingerDiceDuel.UI
                 yield return null;
             }
 
-            // 定格：写死真实点数
-            _rollText.text = DiceRollText.RollLine("玩家 A", _controller.RollA,
-                                                   "玩家 B", _controller.RollB);
+            // 定格：写死真实点数（名字也取自控制器，别自己编）
+            _rollText.text = DiceRollText.RollLine(_controller.NameA, _controller.RollA,
+                                                   _controller.NameB, _controller.RollB);
             _rollText.rectTransform.localScale = Vector3.one;
 
-            // 顺序提示用真实名字重写一次
-            _orderText.text = DiceRollText.OrderNote(_controller.Order,
-                                                     NameOf(true), NameOf(false));
+            // 顺序提示：同样取自控制器
+            _orderText.text = _controller.OrderText;
 
             _animating = false;
             _animCoroutine = null;
 
             ShowAssignment();
-        }
-
-        private string NameOf(bool isA)
-        {
-            var p = isA ? _controller?.Decider : null;
-            return p != null ? p.Name : (isA ? "玩家 A" : "玩家 B");
         }
 
         // ============================================================
@@ -227,12 +219,14 @@ namespace FingerDiceDuel.UI
 
             if (_controller.IsComplete) { Finish(); return; }
 
-            _hintText.text = DiceRollText.AssignHint(
-                _controller.Decider?.Name ?? "?",
-                _controller.Assignee?.Name ?? "?",
-                _controller.RollA, false);
-            // 用 controller 自己的提示更准（它知道是不是"替对手指定"）
-            _hintText.text = _controller.Hint;
+            // ⚠️ 提示文案**完全取自控制器**。
+            //
+            // 界面曾经自己拼（先调 AssignHint 再用 Hint 覆盖），
+            // 那份被覆盖的调用是死代码，而且它把两个名字/点数用错 ——
+            // 实机出现过「战士投出 19（大失败）」（实际 A 投 17、19 还是小成功）。
+            // 现在只认控制器给的文字，并有源码守卫钉住（见 ScreenFlowTests）。
+            _hintText.text = _controller.DecisionText;
+            if (string.IsNullOrEmpty(_hintText.text)) _hintText.text = _controller.Hint;
 
             BuildOptions();
 

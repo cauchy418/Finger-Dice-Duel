@@ -112,8 +112,11 @@ namespace FingerDiceDuel.Assistant
             }
         }
 
-        private PlayerState PlayerA => _game.PlayerA;
-        private PlayerState PlayerB => _game.PlayerB;
+        /// <summary>A 方（UI 用；让它不必自己猜谁是谁）。</summary>
+        public PlayerState PlayerA => _game.PlayerA;
+
+        /// <summary>B 方。</summary>
+        public PlayerState PlayerB => _game.PlayerB;
 
         /// <summary>
         /// 进入"由 <paramref name="decider"/> 决定"的一步。
@@ -135,6 +138,53 @@ namespace FingerDiceDuel.Assistant
 
         private int RollOf(PlayerState p) => ReferenceEquals(p, PlayerA) ? RollA : RollB;
 
+        /// <summary>
+        /// **顺序说明**（UI 直接显示）。
+        ///
+        /// ⚠️ 必须由控制器提供：界面自己拼名字时很容易把 decider 的名字
+        /// 两边都用上，于是"点数小的先分配"会指向错误的人（真实 bug）。
+        /// </summary>
+        public string OrderText
+        {
+            get
+            {
+                if (PlayerA == null || PlayerB == null) return "";
+                return DiceRollText.OrderNote(Order, PlayerA.Name, PlayerB.Name);
+            }
+        }
+
+        /// <summary>
+        /// **本次抉择的说明**（UI 直接显示）。
+        ///
+        /// 同样必须由控制器提供 —— 它才知道"是不是替对手指定"、点数是多少、
+        /// 以及该点数有什么特殊规则（19 小成功 / 20 大成功）。
+        /// </summary>
+        public string DecisionText
+        {
+            get
+            {
+                if (Assignee == null || Decider == null) return "";
+
+                int roll = RollOf(Assignee);
+                string note = DiceRollText.SpecialNote(roll);
+
+                if (IsNamingOpponent)
+                    return $"{Decider.Name} 投出 {roll}（大失败）：由你来替 " +
+                           $"{Assignee.Name} 指定初始手值。";
+
+                string head = $"{Decider.Name} 投出 {roll}";
+                if (!string.IsNullOrEmpty(note)) head += $"（{note}）";
+                return head + "：请选择两只手的初始点数。";
+            }
+        }
+
+        /// <summary>点数行的名字（供 UI 显示 `A 17 vs B 19`）。</summary>
+        public string NameA => PlayerA?.Name ?? "玩家 A";
+        public string NameB => PlayerB?.Name ?? "玩家 B";
+
+        private PlayerState Other(PlayerState p)
+            => ReferenceEquals(p, PlayerA) ? PlayerB : PlayerA;
+
         private string BuildHint(int roll)
         {
             string who = Assignee?.Name ?? "?";
@@ -142,13 +192,9 @@ namespace FingerDiceDuel.Assistant
 
             if (IsNamingOpponent)
             {
+                // decider 就是那个"投出 1 的人"（大失败者），这里要写清楚
                 sb.Append($"{Decider.Name} 投出 **{roll}**（大失败）：由你来替 ")
                   .Append($"{who} 指定初始手值。");
-            }
-            else if (AssignableRoll.WouldBeNamed(roll))
-            {
-                sb.Append($"{Decider.Name} 投出 **{roll}**（大失败）：")
-                  .Append($"{Other(Decider).Name} 会替你指定初始手值。");
             }
             else
             {
@@ -161,9 +207,6 @@ namespace FingerDiceDuel.Assistant
             sb.Append($"　可选：{_candidates.Count} 种。");
             return sb.ToString();
         }
-
-        private static PlayerState Other(PlayerState p)
-            => ReferenceEquals(p, null) ? null : p;
 
         // ============================================================
         // ② 提交一次分配
@@ -292,9 +335,4 @@ namespace FingerDiceDuel.Assistant
         Ready = 2,
     }
 
-    /// <summary>把"大失败"这件事说得更直白的小工具（避免散落的魔法判断）。</summary>
-    internal static class AssignableRoll
-    {
-        public static bool WouldBeNamed(int roll) => DiceRollSetup.IsCriticalFailure(roll);
-    }
 }
