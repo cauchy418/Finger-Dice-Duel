@@ -1,0 +1,55 @@
+# ============================================================
+# Finger Dice Duel — Unity / Tuanjie 工程忽略规则
+# 说明：本文件是仓库首次添加忽略规则时建立的，覆盖 Unity/Tuanjie 的标准产物。
+# ============================================================
+
+# ---------- Unity / Tuanjie 生成目录（可安全删除，引擎会重建） ----------
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# 引擎生成的项目文件
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# ---------- 无头测试 / 编译检查工具的构建产物 ----------
+# 注意：Tools/HeadlessTests/bin/csc 里是复制出来的 Roslyn 编译器（约 10MB），
+# 由 run-tests.ps1 在首次运行时自动重新复制，不需要入库。
+/Tools/HeadlessTests/bin/
+/Tools/UiCompileCheck/bin/
+
+# ---------- Codely / 编辑器插件缓存 ----------
+/.codely-cli/
+/.codely.packages/
+/.vs/
+
+# ---------- 字体解压目录（仅用于挑字体，实际用的两份已放进 Assets/Resources/Fonts） ----------
+/NotoSansCJKsc/
+
+# ---------- 常见系统垃圾 ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- IDE ----------
+/.idea/
+/.vscode/
+*.swp

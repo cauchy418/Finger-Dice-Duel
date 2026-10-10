@@ -1,0 +1,14 @@
+{
+    "name": "FingerDiceDuel.Runtime",
+    "rootNamespace": "FingerDiceDuel",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
