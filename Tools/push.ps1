@@ -46,8 +46,21 @@ function Hide([string]$text) {
 if ($Message) {
     & git add -A 2>&1 | Out-Null
 
-    $commitOut = Hide ((& git commit -m $Message 2>&1) | Out-String)
-    if ($LASTEXITCODE -ne 0) {
+    # ⚠️ 用 `git commit -F <文件>` 而不是 `-m <字符串>`。
+    #
+    # `-m $Message` 在 PowerShell 里会被**再解析一次**：消息里带双引号时，
+    # 引号会改变参数边界，把后续内容吞进消息（实测发生过：
+    # 一次带引号的提交信息污染了后面的 $url，导致 push 报
+    # "url contains a newline in its host component"）。
+    # 写成文件就没有这个问题，且支持多行与任意引号。
+    $msgFile = Join-Path ([System.IO.Path]::GetTempPath()) "fdd-commit-msg.txt"
+    [System.IO.File]::WriteAllText($msgFile, $Message, (New-Object System.Text.UTF8Encoding($true)))
+
+    $commitOut = Hide ((& git commit -F $msgFile 2>&1) | Out-String)
+    $commitCode = $LASTEXITCODE
+    Remove-Item $msgFile -ErrorAction SilentlyContinue
+
+    if ($commitCode -ne 0) {
         if ($commitOut -match 'nothing to commit') {
             Write-Host "没有需要提交的改动，继续推送。" -ForegroundColor Yellow
         } else {
