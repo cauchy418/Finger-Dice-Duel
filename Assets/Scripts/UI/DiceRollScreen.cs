@@ -158,11 +158,6 @@ namespace FingerDiceDuel.UI
             _rollButton.gameObject.SetActive(false);
             _controller.Roll();
 
-            Debug.Log($"[FDD掷骰] 掷骰完成 A={_controller.RollA} B={_controller.RollB} " +
-                      $"order={_controller.Order} decider={_controller.Decider?.Name} " +
-                      $"assignee={_controller.Assignee?.Name} " +
-                      $"替对手指定={_controller.IsNamingOpponent}");
-
             // ⚠️ 顺序提示**必须**取自控制器。
             // 曾经界面自己拼名字（把 decider 的名字两边都用上），
             // 于是"点数小的先分配"指向了错误的人 —— 实测被玩家一眼看出。
@@ -237,14 +232,6 @@ namespace FingerDiceDuel.UI
 
             // 轮到 AI 就自动分配（否则会停在界面上等人点，而玩家根本不该替 AI 选）
             if (IsAiTurn) StartAutoAssign();
-
-            // 诊断：把"这一步该谁决定、是不是 AI、有几个选项"打出来。
-            // 排查"没时间选就自动往下走"时，这一行能直接看出是谁在决定。
-            Debug.Log($"[FDD掷骰] 阶段={_controller.Phase} " +
-                      $"A={_controller.RollA} B={_controller.RollB} order={_controller.Order} " +
-                      $"decider={_controller.Decider?.Name} assignee={_controller.Assignee?.Name} " +
-                      $"替对手指定={_controller.IsNamingOpponent} isAiTurn={IsAiTurn} " +
-                      $"候选={_controller.Candidates.Count} 个");
         }
 
         /// <summary>当前是否轮到 AI（B 由电脑操作，或这次是 B 替 A 指定）。</summary>
@@ -291,8 +278,6 @@ namespace FingerDiceDuel.UI
 
             HandSplit pick = cands[UnityEngine.Random.Range(0, cands.Count)];
             if (!_controller.Submit(pick)) yield break;
-
-            Debug.Log($"[FDD掷骰] AI 自动分配了 {pick}（decider={_controller.Decider?.Name}）");
 
             if (_controller.IsComplete) { Finish(); yield break; }
 

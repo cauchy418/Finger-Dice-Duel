@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Assistant
         // ① 掷骰
         // ============================================================
 
-        /// <summary>掷骰并进入分配阶段。返回 A / B 的点数。</summary>
+        /// <summary>掷骰并进入分配阶段。</summary>
         public void Roll()
         {
             RollA = DiceRollSetup.Roll(_rng);
@@ -101,16 +101,23 @@ namespace FingerDiceDuel.Assistant
             _done.Clear();
             Phase = MatchStartPhase.Assigning;
 
-            // 点数小的先决定
-            if (Order == DecisionOrder.ALower) BeginDecision(PlayerA, PlayerB);
-            else if (Order == DecisionOrder.BLower) BeginDecision(PlayerB, PlayerA);
-            else
-            {
-                // 同时：先让 A 决定（UI 会依次呈现，但**双方都不基于对方的选择**，
-                // 因为同时决定意味着信息对称 —— 这里按 A→B 的顺序收集，语义等价）
-                BeginDecision(PlayerA, PlayerB);
-            }
+            // ⚠️ 点数小的先分配，而且**分配的是他自己的手值**。
+            //
+            // `BeginDecision(decider, assignee)` 的第二个参数是**被分配者**。
+            // 这里曾经写成 `BeginDecision(PlayerA, PlayerB)`（传成对手），
+            // 于是 `IsNamingOpponent` 变成 true，界面显示成
+            // "你来替对手指定初始手值"、候选按**对手的点数**算 ——
+            // 那是**大失败**才该有的行为，普通点数不该出现。
+            BeginDecision(LowerRoller(), LowerRoller());
+
+            // 若先手方投出 1（大失败），则由对手替他指定
+            if (DiceRollSetup.IsCriticalFailure(RollOf(Assignee)))
+                BeginDecision(DeciderFor(Assignee), Assignee);
         }
+
+        /// <summary>点数小的那位（相同则 A）。</summary>
+        private PlayerState LowerRoller()
+            => Order == DecisionOrder.BLower ? PlayerB : PlayerA;
 
         /// <summary>A 方（UI 用；让它不必自己猜谁是谁）。</summary>
         public PlayerState PlayerA => _game.PlayerA;
@@ -285,7 +292,21 @@ namespace FingerDiceDuel.Assistant
             return null;
         }
 
-        /// <summary>该由谁来替 <paramref name="assignee"/> 决定（大失败时是对手）。</summary>
+        /// <summary>
+        /// **诊断用**：把"这一步的判定与实际会显示的文字"打成一行。
+        ///
+        /// 排查实机出现的"点数与身份对不上"时，这一行能同时给出
+        /// 点数、谁决定、谁承受、是否替对手指定、以及两段文字。
+        /// </summary>
+        public string DebugState()
+            => $"phase={Phase} A={RollA} B={RollB} order={Order} " +
+               $"decider={Decider?.Name ?? "null"} assignee={Assignee?.Name ?? "null"} " +
+               $"naming={IsNamingOpponent} 候选和={(Candidates.Count > 0 ? Candidates[0].Total : -1)} " +
+               $"orderText={OrderText} decisionText={DecisionText}";
+
+        /// <summary>
+        /// 该由谁来替 <paramref name="assignee"/> 决定（大失败时是对手）。
+        /// </summary>
         private PlayerState DeciderFor(PlayerState assignee)
         {
             int roll = RollOf(assignee);

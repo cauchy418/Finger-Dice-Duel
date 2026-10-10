@@ -186,6 +186,83 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Real_roll_path_never_names_the_opponent_unless_a_one_was_rolled()
+        {
+            // ⚠️ 真实 bug 的回归（玩家实机报告）：
+            // 「战士 7 vs 战士 11」却显示「战士 投出 11（大失败）：由你来替 战士 指定初始手值」
+            // ——11 不是大失败，而且**不该由玩家替对手指定**。
+            //
+            // 根因：Roll() 把 BeginDecision 的第二个参数（被分配者）写成了对手，
+            // 于是 IsNamingOpponent 恒为 true、候选按对手的点数算。
+            // RollWith() 是对的，所以只测 RollWith 的用例全都漏掉了它 ——
+            // 所以这条测试**必须走真实的 Roll() 路径**（真随机，扫多个种子）。
+            for (int seed = 0; seed < 300; seed++)
+            {
+                var a = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+                var b = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+                var game = new GameManager(a, b, new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider());
+                var start = new MatchStartController(game, new System.Random(seed));
+
+                start.Roll();
+
+                int steps = 0;
+                while (!start.IsComplete && steps++ < 5)
+                {
+                    string st = start.DebugState();
+                    int assigneeRoll = ReferenceEquals(start.Assignee, a) ? start.RollA : start.RollB;
+
+                    if (start.IsNamingOpponent)
+                    {
+                        // 只有"承受者投出 1"才允许替对手指定
+                        Assert.True(DiceRollSetup.IsCriticalFailure(assigneeRoll),
+                            $"seed={seed}：承受者投出 {assigneeRoll} 却出现'替对手指定'。状态：{st}");
+                        Assert.True(start.DecisionText.Contains("大失败"),
+                            $"seed={seed}：替对手指定时应说明是大失败。状态：{st}");
+                    }
+                    else
+                    {
+                        Assert.False(start.DecisionText.Contains("大失败"),
+                            $"seed={seed}：非大失败不该出现'大失败'字样。状态：{st}");
+                        // 决策者就是承受者
+                        Assert.True(ReferenceEquals(start.Decider, start.Assignee),
+                            $"seed={seed}：非大失败时决策者应是被分配者本人。状态：{st}");
+                    }
+
+                    // 普通点数的候选之和必须等于**被分配者**的点数
+                    if (start.Candidates.Count > 0
+                        && !DiceRollSetup.IgnoresTotal(assigneeRoll)
+                        && !DiceRollSetup.IsCriticalFailure(assigneeRoll))
+                    {
+                        Assert.AreEqual(assigneeRoll, start.Candidates[0].Total,
+                            $"seed={seed}：候选之和应等于承受者的点数。状态：{st}");
+                    }
+
+                    if (!start.Submit(start.Candidates[0])) break;
+                }
+
+                Assert.True(start.IsComplete, $"seed={seed}：流程应能走完。");
+            }
+        }
+
+        [Test]
+        public void Reported_case_seven_vs_eleven_lets_the_lower_roller_choose_himself()
+        {
+            // 玩家实机报告的具体一局：战士 7 vs 战士 11。
+            // 7 更小 -> 7 的那位**自己**选；11 不该被当成大失败。
+            var s = Arrange(7, 11);
+
+            Assert.AreEqual(DecisionOrder.ALower, s.Order, "7 < 11，A 先分配。");
+            Assert.AreSame(s.PlayerA, s.Decider, "应由 A 自己决定。");
+            Assert.AreSame(s.PlayerA, s.Assignee, "被分配者是 A 本人。");
+            Assert.False(s.IsNamingOpponent, "没人投出 1 -> 不该替对手指定。");
+            Assert.False(s.DecisionText.Contains("大失败"),
+                "11 不参与这里的判定；7 也不是大失败。实际：" + s.DecisionText);
+            Assert.True(s.DecisionText.Contains("7"), "说明里应是 7。实际：" + s.DecisionText);
+            Assert.AreEqual(7, s.Candidates[0].Total, "候选之和应为 7。");
+        }
+
+        [Test]
         public void The_lower_roller_is_asked_first_and_then_the_higher_one()
         {
             var start = Arrange(7, 15);
