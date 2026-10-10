@@ -40,6 +40,7 @@ namespace FingerDiceDuel.UI
         private Text _titleText;
         private Text _rollText;
         private Text _orderText;
+        private Text _prevText;
         private Text _hintText;
         private Button _rollButton;
         private RectTransform _optionsRoot;
@@ -99,15 +100,20 @@ namespace FingerDiceDuel.UI
                                  64, TextAnchor.MiddleCenter, Color.white);
             _rollText.text = "—";
 
-            _orderText = MakeText(panelRect, "Order", new Vector2(0f, 180f), new Vector2(1400f, 44f),
+            _orderText = MakeText(panelRect, "Order", new Vector2(0f, 196f), new Vector2(1400f, 44f),
                                   28, TextAnchor.MiddleCenter, new Color(0.75f, 0.80f, 0.90f));
             _orderText.text = "";
 
-            _hintText = MakeText(panelRect, "Hint", new Vector2(0f, 130f), new Vector2(1400f, 56f),
+            // 先手方已经选好的手值（信息优势：后决定的人看得到）
+            _prevText = MakeText(panelRect, "Previous", new Vector2(0f, 150f), new Vector2(1400f, 46f),
+                                 30, TextAnchor.MiddleCenter, new Color(0.55f, 0.90f, 0.70f));
+            _prevText.text = "";
+
+            _hintText = MakeText(panelRect, "Hint", new Vector2(0f, 106f), new Vector2(1400f, 56f),
                                  28, TextAnchor.MiddleCenter, new Color(0.85f, 0.88f, 0.95f));
             _hintText.text = "";
 
-            _rollButton = MakeButton(panelRect, "RollButton", new Vector2(0f, 40f),
+            _rollButton = MakeButton(panelRect, "RollButton", new Vector2(0f, 30f),
                                      new Vector2(320f, 70f), "掷骰");
             _rollButton.onClick.AddListener(OnRollClicked);
 
@@ -141,6 +147,7 @@ namespace FingerDiceDuel.UI
             // 复位显示
             _rollText.text = "—";
             _orderText.text = "";
+            _prevText.text = "";
             _hintText.text = "双方各投 1d20：点数就是两只手初始点数之和。";
             _rollButton.gameObject.SetActive(true);
             _rollButton.GetComponentInChildren<Text>().text = "掷骰";
@@ -227,6 +234,25 @@ namespace FingerDiceDuel.UI
             // 现在只认控制器给的文字，并有源码守卫钉住（见 ScreenFlowTests）。
             _hintText.text = _controller.DecisionText;
             if (string.IsNullOrEmpty(_hintText.text)) _hintText.text = _controller.Hint;
+
+            // 信息优势：后决定的一方**看得到**先手方已经选好的手值。
+            //
+            // 点数小的人先决定、看不到对方的分配；点数大的人后决定、看得到，
+            // 于是能针对性应对 —— 这就是"后决定算更成功"的体现。
+            //
+            // 双大失败时不给（那时两人都在替对手指定，看到就变成互相追逐）。
+            _prevText.text = "";
+
+            if (_controller.HasInfoAdvantage)
+            {
+                var prevSplit = _controller.PreviousSplit;
+                if (prevSplit.HasValue)
+                {
+                    _prevText.text =
+                        $"对手已选：{DiceRollText.SplitLabel(prevSplit.Value)}　" +
+                        $"（{_controller.PreviouslyAssigned?.Name}）";
+                }
+            }
 
             BuildOptions();
 

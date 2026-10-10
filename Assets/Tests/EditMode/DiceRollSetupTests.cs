@@ -570,6 +570,101 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
+        // 信息优势：后决定的一方看得到先手方的选择
+        // ============================================================
+
+        [Test]
+        public void The_first_decider_sees_nothing()
+        {
+            // 先手方（点数小）先决定，此时还没有人分配过 -> 看不到任何东西
+            var s = Arrange(7, 15);          // 7 小 -> A 先
+
+            Assert.True(s.HasInfoAdvantage, "正常分配应享有信息优势。");
+            Assert.True(ReferenceEquals(s.PreviouslyAssigned, null),
+                "还没人分配过 -> 不该有'已分配'的人。");
+            Assert.False(s.PreviousSplit.HasValue,
+                "先手方不该看到任何已选的拆分。");
+        }
+
+        [Test]
+        public void The_second_decider_sees_the_first_choice()
+        {
+            // 这就是新规则：点数大的后决定，但能看到点数小的选了什么
+            var s = Arrange(7, 15);          // A 投 7 先决定
+
+            Assert.True(s.Submit(new HandSplit(3, 4)), "7 -> 3+4 合法。");
+
+            // 现在轮到 B（投 15，后决定）
+            Assert.True(ReferenceEquals(s.Assignee, s.PlayerB), "应轮到 B 分配。");
+            Assert.True(s.HasInfoAdvantage, "后决定者享有信息优势。");
+            Assert.True(ReferenceEquals(s.PreviouslyAssigned, s.PlayerA),
+                "已分配的人应是 A。");
+
+            Assert.True(s.PreviousSplit.HasValue, "B 应能看到 A 的选择。");
+            Assert.AreEqual(3, s.PreviousSplit.Value.Left, "A 选了 3+4。");
+            Assert.AreEqual(4, s.PreviousSplit.Value.Right, "A 选了 3+4。");
+        }
+
+        [Test]
+        public void The_second_decider_sees_the_first_choice_regardless_of_who_rolled_lower()
+        {
+            var s = Arrange(15, 7);          // B 投 7 先决定
+            Assert.True(s.Submit(new HandSplit(1, 6)), "7 -> 1+6 合法。");
+
+            Assert.True(ReferenceEquals(s.Assignee, s.PlayerA), "应轮到 A 分配。");
+            Assert.True(ReferenceEquals(s.PreviouslyAssigned, s.PlayerB));
+            Assert.AreEqual(1, s.PreviousSplit.Value.Left);
+            Assert.AreEqual(6, s.PreviousSplit.Value.Right);
+        }
+
+        [Test]
+        public void Two_critical_failures_do_not_grant_the_info_advantage()
+        {
+            // ⚠️ 双大失败时两人都在"替对手指定"。
+            // 若这时还能看到对方的选择，就变成互相追逐的串行博弈，
+            // 与规则里"同时替对手指定"矛盾 —— 所以不给优势。
+            var s = Arrange(1, 1);
+
+            Assert.AreEqual(DecisionOrder.Simultaneous, s.Order);
+            Assert.True(s.IsNamingOpponent, "双方都大失败 -> 互相指定。");
+            Assert.False(s.HasInfoAdvantage, "双大失败不该给信息优势。");
+
+            Assert.True(s.Submit(new HandSplit(1, 1)));
+            Assert.True(s.IsNamingOpponent, "第二个人同样是替对手指定。");
+            Assert.False(s.HasInfoAdvantage, "第二次指定同样不该给优势。");
+            Assert.False(s.PreviousSplit.HasValue,
+                "第二次指定时不该看到第一个人的选择。");
+        }
+
+        [Test]
+        public void An_unassigned_player_is_not_reported_as_a_previous_choice()
+        {
+            // 手牌还停在初始 1/1 时，不能把它当成"对方选了 1/1"
+            var s = Arrange(7, 15);
+            Assert.False(s.PreviousSplit.HasValue);
+
+            s.Submit(new HandSplit(1, 6));   // A 真的选了 1/6
+            Assert.True(s.PreviousSplit.HasValue);
+            Assert.AreEqual(1, s.PreviousSplit.Value.Left);
+            Assert.AreEqual(6, s.PreviousSplit.Value.Right);
+        }
+
+        [Test]
+        public void A_simultaneous_decision_still_shows_the_first_choice()
+        {
+            // 点数相同（同时分配）时也按 A -> B 的顺序收集，
+            // 所以 B 看得到 A 的选择（信息对称的语义仍成立）
+            var s = Arrange(12, 12);
+            Assert.AreEqual(DecisionOrder.Simultaneous, s.Order);
+
+            Assert.True(s.Submit(new HandSplit(5, 7)));
+            Assert.True(s.HasInfoAdvantage, "同时分配的第二位也享有优势。");
+            Assert.True(s.PreviousSplit.HasValue);
+            Assert.AreEqual(5, s.PreviousSplit.Value.Left);
+            Assert.AreEqual(7, s.PreviousSplit.Value.Right);
+        }
+
+        // ============================================================
         // 工具
         // ============================================================
 

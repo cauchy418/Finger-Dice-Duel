@@ -81,6 +81,73 @@ namespace FingerDiceDuel.Assistant
         /// <summary>本次决定的合法候选（UI 用来校验点击）。</summary>
         public IReadOnlyList<HandSplit> Candidates => _candidates;
 
+        /// <summary>
+        /// 本次决定是否享有**信息优势** —— 即"能看到先决定那一方的选择"。
+        ///
+        /// ## 为什么后决定算优势
+        ///
+        /// 点数小的人先决定，但他**看不到**对方怎么分配；
+        /// 点数大的人后决定，**能看到**先手方的选择，于是可以针对性应对
+        /// （例如对方凑了双 9 的高攻手值，就多留防御）。
+        ///
+        /// ## 什么时候**不**给这个优势
+        ///
+        /// **双方都是大失败**时不给。那时两个人都在"替对手指定"，
+        /// 若还能看到对方给自己选了什么，就变成互相追逐的串行博弈，
+        /// 与规则里"同时替对手指定"矛盾。
+        ///
+        /// 也就是说：**只有正常分配**（决策者 = 被分配者本人）才享有信息优势。
+        /// </summary>
+        public bool HasInfoAdvantage => !IsNamingOpponent;
+
+        /// <summary>
+        /// 本次决定之前，**已经分配完**的那位玩家（先手方），没有则 null。
+        ///
+        /// UI 用它把"对方已经选了 4 / 8"显示出来 —— 这正是信息优势的体现。
+        /// </summary>
+        public PlayerState PreviouslyAssigned
+        {
+            get
+            {
+                if (Assignee == null || _done.Count == 0) return null;
+
+                // _done 里那位就是先决定的（后决定者还没分配）
+                if (_done.Contains(PlayerA) && !ReferenceEquals(Assignee, PlayerA)) return PlayerA;
+                if (_done.Contains(PlayerB) && !ReferenceEquals(Assignee, PlayerB)) return PlayerB;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 先手方已选的拆分；没有则返回 null。
+        ///
+        /// ⚠️ **自带信息优势的守卫**：双大失败（双方都在替对手指定）时返回 null。
+        /// 不把这件事只交给调用方判断 —— 那样任何一处忘了检查就会泄露信息。
+        /// </summary>
+        public HandSplit? PreviousSplit
+        {
+            get
+            {
+                if (!HasInfoAdvantage) return null;      // 双大失败 -> 互不知情
+
+                PlayerState prev = PreviouslyAssigned;
+                if (prev == null) return null;
+
+                int left = prev.LeftHand.Value;
+                int right = prev.RightHand.Value;
+
+                // 还没分配过时手值仍是初始的 1/1，避免把它当成"对方选了 1/1"
+                if (left == DiceRollSetup.MinHandValue && right == DiceRollSetup.MinHandValue
+                    && !_everAssigned.Contains(prev))
+                    return null;
+
+                return new HandSplit(left, right);
+            }
+        }
+
+        /// <summary>已经被真正分配过的玩家（区别于"手牌还停在初始 1/1"）。</summary>
+        private readonly HashSet<PlayerState> _everAssigned = new HashSet<PlayerState>();
+
         /// <summary>已经分配完毕的玩家（用于 UI 显示进度）。</summary>
         private readonly HashSet<PlayerState> _done = new HashSet<PlayerState>();
 
@@ -99,6 +166,7 @@ namespace FingerDiceDuel.Assistant
             Order = DiceRollSetup.DecideOrder(RollA, RollB);
 
             _done.Clear();
+            _everAssigned.Clear();
             Phase = MatchStartPhase.Assigning;
 
             // ⚠️ 点数小的先分配，而且**分配的是他自己的手值**。
@@ -232,6 +300,7 @@ namespace FingerDiceDuel.Assistant
 
             Assign(Assignee, split);
             _done.Add(Assignee);
+            _everAssigned.Add(Assignee);
 
             Advance();
             return true;
@@ -333,6 +402,7 @@ namespace FingerDiceDuel.Assistant
             Order = DiceRollSetup.DecideOrder(rollA, rollB);
 
             _done.Clear();
+            _everAssigned.Clear();
             Phase = MatchStartPhase.Assigning;
 
             if (Order == DecisionOrder.BLower) BeginDecision(PlayerB, PlayerB);
