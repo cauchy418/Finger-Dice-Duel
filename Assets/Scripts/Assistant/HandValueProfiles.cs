@@ -227,5 +227,43 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public static HandValueProfile ValueToOpponent(CharacterDefinition opponent)
             => For(opponent);
+
+        // ============================================================
+        // 给"回合内走子评分"用的紧凑权重
+        // ============================================================
+
+        /// <summary>
+        /// 权重缩放倍数。
+        ///
+        /// 开局选点只做**相对比较**，所以用大数字（50/60/85）更好读；
+        /// 而回合内走子要把"手值价值"与"效果档位"（4/6/8 攻击 = 44~88）相加，
+        /// 所以缩到同量级 —— 否则手值项会完全盖过效果项。
+        /// </summary>
+        public const int MoveScoreScale = 10;
+
+        private static readonly Dictionary<string, int[]> MoveScoreCache =
+            new Dictionary<string, int[]>();
+
+        /// <summary>
+        /// 该角色在**回合内走子评分**里用的权重数组（下标 1..9，已按
+        /// <see cref="MoveScoreScale"/> 缩放）。
+        ///
+        /// 只反映"角色自己"的偏好（不含对手修正）—— 走子时面对的是
+        /// 已经摆在桌上的手值，不再有"给对手分配"这层语义。
+        /// </summary>
+        public static int[] MoveScoreWeights(CharacterDefinition definition)
+        {
+            string id = definition?.Id ?? "";
+
+            if (MoveScoreCache.TryGetValue(id, out int[] cached)) return cached;
+
+            HandValueProfile profile = For(definition);
+            var scaled = new int[HandValueProfile.MaxValue + 1];
+            for (int v = HandValueProfile.MinValue; v <= HandValueProfile.MaxValue; v++)
+                scaled[v] = profile.Weights[v] / MoveScoreScale;
+
+            MoveScoreCache[id] = scaled;
+            return scaled;
+        }
     }
 }

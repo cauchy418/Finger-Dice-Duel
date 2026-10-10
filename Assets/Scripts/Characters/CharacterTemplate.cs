@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色数值（攻防修正 + 可选最大生命）。
@@ -29,7 +29,8 @@ namespace FingerDiceDuel.Core
     /// 默认所有钩子为空实现，子类按需重写。
     /// </summary>
     public abstract class CharacterTemplate : ICharacterBehavior, IPreTurnChoiceProvider,
-                                              IResultTargetProvider, ITargetHandChoiceProvider
+                                              IResultTargetProvider, ITargetHandChoiceProvider,
+                                              IAiMoveAdvisor
     {
         // ============================================================
         // ITargetHandChoiceProvider 的默认实现
@@ -196,6 +197,34 @@ namespace FingerDiceDuel.Core
 
             _attackBonus = _baseAttackBonus;
             _defenseBonus = _baseDefenseBonus;
+        }
+
+        // ============================================================
+        // IAiMoveAdvisor 的默认实现：用价值表评估"运算后留下的手值"
+        // ============================================================
+
+        /// <summary>
+        /// "这一手**此刻**触发了什么"的额外分值。
+        ///
+        /// 默认 0 —— 大多数角色的即时收益已经由 AI 的效果档位分数覆盖了
+        /// （4/6/8 = 攻击、5 = 合盾、9 = 回复）。
+        /// 狼人（凑 7）与剑客（双持）会重写它。
+        /// </summary>
+        public virtual int ScoreMoveBonus(MoveValueContext context) => 0;
+
+        /// <summary>
+        /// 本角色对应的**数据定义**（由 <see cref="CharacterFactory"/> 注入）。
+        /// 价值表按 <see cref="CharacterDefinition.Id"/> 查，所以需要它。
+        /// </summary>
+        public CharacterDefinition Definition { get; private set; }
+
+        /// <summary>注入角色数据（同时应用攻防修正）。</summary>
+        public void ApplyDefinition(CharacterDefinition definition)
+        {
+            if (definition == null) return;
+
+            Definition = definition;
+            ApplyStats(definition.AttackBonus, definition.DefenseBonus);
         }
     }
 }

@@ -66,7 +66,23 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 一手棋的评分：基础档位 + 角色特性加分 + 一些带条件的次分。
+        /// "留下的手值"在评分里占多大比重。
+        ///
+        /// 效果档位是 44/50/66/88 这个量级，而手值权重已按
+        /// <see cref="HandValueProfiles.MoveScoreScale"/> 缩到 1.5~9.5（同量级）。
+        /// 取 12 时：游侠把 (1,3) 变成 (2,3) 会掉约
+        /// (8.5+4.5 - 2.0-4.5) × 12 ≈ 78 分 —— 高于"多打 2 点伤害"（22 分），
+        /// 也就是它会为了保住 1 而放弃一点输出。
+        ///
+        /// 调大 -> AI 更保守（更愿意屯手值）；调小 -> 更激进。
+        /// </summary>
+        public int HandValueWeight { get; set; } = 12;
+
+        /// <summary>
+        /// 一手棋的评分：基础档位 + 角色特性加分 + **留下的手值** + 一些条件次分。
+        ///
+        /// `HandValueLookup` 是**实例属性**而不是静态注入 ——
+        /// 静态注入会在测试之间互相污染（一个测试改了表，另一个测试跟着变）。
         /// </summary>
         private int ScoreMove(LegalMove move, PlayerState actor)
         {
@@ -104,12 +120,59 @@ namespace FingerDiceDuel.Assistant
                     move.ActedHand, result, move.TargetHand, other.Value));
             }
 
+            // ---- 留下的手值将来能干什么 ----
+            //
+            // ⚠️ 这一条是**游侠必须有的**：只看"这次运算产出了什么效果"的话，
+            // 游侠会拿唯一的 1 去打输出，下回合就闪不了 ——
+            // 实测现象："游侠不会主动运算出 1"。
+            //
+            // 运算后：被操作的手变成**结果值**，另一只手不变。
+            score += HandValueScore(actor, result, other.Value);
+
             // ---- 带条件的次分 ----
             // 打掉对手已成型的盾，比让它继续挡着划算
             if (move.TargetHand.State == ShieldState.Formed) score += 8;
 
             // 把对手的手打成 2，会让它下一手容易凑出 3（偏弱），略加分
             if (target == 2) score += 5;
+
+            return score;
+        }
+
+        /// <summary>
+        /// "运算后留下的两只手值"值多少。
+        ///
+        /// 两部分，**缩放的待遇不同**：
+        ///
+        ///   ① **手值权重**（游侠的 1、刺客的 7 之类）：
+        ///      这是"屯资源的偏好"，属于次要动机，所以缩到与效果分同量级。
+        ///
+        ///   ② **组合规则**（狼人凑 7、剑客双持）：
+        ///      这是**角色签名能力的触发条件**，不是偏好 ——
+        ///      应该像原先硬编码的 +200 那样有决定性。所以**不缩放**。
+        ///
+        /// ⚠️ 两个踩过的坑：
+        ///   · 一开始把两者一起缩放，狼人为了多打 2 点伤害放弃了凑 7。
+        ///   · 组合匹配曾用**对手的手值**去算 —— 但狼人的机制是
+        ///     `运算后的手 + 另一只手 == 7`（见 WerewolfLogic.ScoreMoveBonus
+        ///     的原始写法），对手的手值与此无关，导致凑 7 永远匹配不上。
+        ///     正确的两个操作数是"运算后的手"与"自己的另一只手"。
+        /// </summary>
+        private int HandValueScore(PlayerState actor, int actedAfter, int otherHandValue)
+        {
+            HandValueProfile profile = HandValueProfiles.For(actor.Definition);
+            if (profile == null) return 0;
+
+            // ① 屯手值的偏好（次要，缩放）
+            int preference = profile.WeightOf(actedAfter) + profile.WeightOf(otherHandValue);
+            int score = preference / HandValueProfiles.MoveScoreScale * HandValueWeight;
+
+            // ② 签名能力的触发（决定性，不缩放）
+            for (int i = 0; i < profile.Combos.Count; i++)
+            {
+                if (profile.Combos[i].Matches(actedAfter, otherHandValue))
+                    score += profile.Combos[i].Bonus;
+            }
 
             return score;
         }

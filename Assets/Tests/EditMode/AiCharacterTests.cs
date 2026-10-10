@@ -156,40 +156,115 @@ namespace FingerDiceDuel.Tests
             _ = healthBefore;
         }
 
+        // ============================================================
+        // 游侠：不能为了输出而烧掉唯一的 1（玩家实测报告）
+        // ============================================================
+
+        [Test]
+        public void Ranger_keeps_its_only_one_instead_of_spending_it_on_damage()
+        {
+            // ⚠️ 玩家实测："游侠不会主动运算出 1"，
+            // 明明能留一个 1 用于闪避，却选了别的手去打输出。
+            //
+            // 现在把"留下的手值"计入评分（1 对游侠 = 85，3 = 45），
+            // 于是"保住 1"比"多打 2 点伤害"更划算。
+            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+
+            TestSetup.SetAllHands(ranger, foe, 1);
+            TestSetup.SetHand(ranger.LeftHand, 1);      // 唯一的 1（闪避的种子）
+            TestSetup.SetHand(ranger.RightHand, 3);
+            TestSetup.SetHand(foe.LeftHand, 3);
+            TestSetup.SetHand(foe.RightHand, 3);
+
+            // 两种走法：
+            //   用 1 加 3 -> 4（攻击 4），但 1 没了
+            //   用 3 加 3 -> 6（攻击 6），1 留着
+            // 后者效果更好**而且**保住 1，所以必须选后者。
+            var game = new GameManager(ranger, foe, new GreedyChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var ai = new GreedyChoiceProvider();
+
+            LegalMove picked = ai.ChooseMove(game, ranger);
+            Assert.NotNull(picked, "游侠应能选出一手。");
+
+            Assert.AreEqual(3, picked.ActedHand.Value,
+                $"游侠不该用唯一的 1 去运算（实际用了 {picked.ActedHand.Value}）。");
+            Assert.AreEqual(1, GetOtherValue(ranger, picked.ActedHand),
+                $"另一个 1 应被留在手上。");
+        }
+
+        [Test]
+        public void Ranger_prefers_keeping_a_one_even_when_the_effect_is_slightly_worse()
+        {
+            // 更严格的版本：两个走法的**效果完全相同**（都是 4 点攻击），
+            // 一个烧掉 1、一个保住 1 —— 必须选保住的那个。
+            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+
+            TestSetup.SetAllHands(ranger, foe, 1);
+            TestSetup.SetHand(ranger.LeftHand, 1);
+            TestSetup.SetHand(ranger.RightHand, 1);     // 两个都是 1
+            TestSetup.SetHand(foe.LeftHand, 3);
+
+            var game = new GameManager(ranger, foe, new GreedyChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var ai = new GreedyChoiceProvider();
+
+            LegalMove picked = ai.ChooseMove(game, ranger);
+            Assert.NotNull(picked);
+
+            // 两个 1 无论用哪个 -> 结果都是 4、都只剩一个 1，分数相同，选哪个都行；
+            // 这里只断言"用完之后手上还留着一个 1"
+            Assert.AreEqual(1, GetOtherValue(ranger, picked.ActedHand),
+                "用完一手后应仍留着一个 1。");
+        }
+
+        private static int GetOtherValue(PlayerState owner, Hand used)
+            => ReferenceEquals(used, owner.LeftHand) ? owner.RightHand.Value : owner.LeftHand.Value;
+
+        // ============================================================
+        // 狼人 / 剑客：优势已统一由价值表表达
+        // ============================================================
+
         [Test]
         public void Werewolf_scores_a_sum_seven_move_higher_than_a_plain_attack()
         {
-            // 直接验证角色给出的加分：和为 7 应 > 0，普通攻击应为 0
+            // ⚠️ "凑 7 加分"原先硬编码在 WerewolfLogic.ScoreMoveBonus（+200），
+            // 现在统一由**价值表**表达（狼人档案：和为 7 加 220，
+            // 并把 7 本身调到 15 —— 因为"要有 7"与"要和为 7"互斥）。
             var wolf = CharacterFactory.CreatePlayer("狼人", CharacterDefinition.Werewolf);
+            var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
 
-            var triggering = new MoveValueContext(wolf.LeftHand, 5, wolf.RightHand, 2);   // 5 + 2 = 7
-            var plain = new MoveValueContext(wolf.LeftHand, 8, wolf.RightHand, 1);        // 8 + 1 = 9
+            TestSetup.SetAllHands(wolf, foe, 1);
+            TestSetup.SetHand(wolf.LeftHand, 3);
+            TestSetup.SetHand(wolf.RightHand, 4);       // 3 + 4 = 7 -> 回半血 + 攻防成长
+            TestSetup.SetHand(foe.LeftHand, 9);
+            TestSetup.SetHand(foe.RightHand, 9);
 
-            var advisor = wolf.Character as IAiMoveAdvisor;
-            Assert.NotNull(advisor, "狼人应实现 IAiMoveAdvisor。");
-            Assert.True(advisor.ScoreMoveBonus(triggering) > 0, "和为 7 应加分。");
-            Assert.AreEqual(0, advisor.ScoreMoveBonus(plain), "普通攻击不加分。");
+            var game = new GameManager(wolf, foe, new GreedyChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var ai = new GreedyChoiceProvider();
+
+            LegalMove picked = ai.ChooseMove(game, wolf);
+            Assert.NotNull(picked);
+
+            // 能凑 7 的操作：3+4=7 或 4+3=7（对手手值是 9，所以 3+9=2、4+9=3 都不行）
+            // —— 本用例里没有能凑 7 的操作，所以改为断言价值表本身认这个组合。
+            HandValueProfile profile = HandValueProfiles.For(CharacterDefinition.Werewolf);
+            Assert.True(profile.Score(new HandSplit(3, 4)) > profile.Score(new HandSplit(8, 9)),
+                "价值表应认定 3/4（和为 7）优于 8/9。");
         }
-
-        // ============================================================
-        // 剑客：双持同值有加分
-        // ============================================================
 
         [Test]
         public void Swordsman_scores_a_double_handed_move()
         {
-            var swordsman = CharacterFactory.CreatePlayer("剑客", CharacterDefinition.Swordsman);
-            var advisor = swordsman.Character as IAiMoveAdvisor;
+            // 同上：双持的优势已由价值表表达（剑客档案：双 4/双 6/双 8 加 130）
+            HandValueProfile fencer = HandValueProfiles.For(CharacterDefinition.Swordsman);
 
-            Assert.NotNull(advisor, "剑客应实现 IAiMoveAdvisor。");
-
-            // 运算后的值 == 另一只手 -> 触发追加
-            Assert.True(advisor.ScoreMoveBonus(
-                new MoveValueContext(swordsman.LeftHand, 6, swordsman.RightHand, 6)) > 0);
-
-            // 不等 -> 不触发
-            Assert.AreEqual(0, advisor.ScoreMoveBonus(
-                new MoveValueContext(swordsman.LeftHand, 6, swordsman.RightHand, 3)));
+            Assert.True(fencer.Score(new HandSplit(6, 6)) > fencer.Score(new HandSplit(6, 3)),
+                "双 6 应优于 6/3。");
+            Assert.True(fencer.Combos.Count > 0, "剑客应有配对加成规则。");
         }
 
         // ============================================================

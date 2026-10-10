@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Core
 
             ICharacterBehavior behavior = CreateBehavior(definition.Logic);
             if (behavior is CharacterTemplate template)
-                template.ApplyStats(definition.AttackBonus, definition.DefenseBonus);
+                template.ApplyDefinition(definition);
 
             return behavior;
         }

@@ -56,14 +56,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             GrowStats(GrowthPerTrigger, GrowthPerTrigger);
         }
 
-        /// <summary>
-        /// 告诉 AI：这一手若能让双手和变成 7，就非常值钱。
-        ///
-        /// 运算后被操作的手变成结果值、另一只手不变，
-        /// 所以判断用的是 (运算后的值 + 另一只手)。
-        /// </summary>
-        public int ScoreMoveBonus(MoveValueContext context)
-            => context.ActedValueAfter + context.OtherHandValue == TriggerSum ? 200 : 0;
+        // 「凑 7 特别值钱」原本在这里硬编码（+200）。
+        // 现在统一由价值表表达（见 Assistant.HandValueProfiles 的狼人档案：
+        // 和为 7 加 220，且把 7 本身调到 15 —— 因为"要有 7"与"要和为 7"互斥）。
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {

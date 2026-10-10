@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -41,14 +41,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             return other != null && context.ResultValue == other.Value;
         }
 
-        /// <summary>
-        /// 告诉 AI：运算后两手同值 -> 主攻击翻倍并追加一次固定伤害，很值钱。
-        ///
-        /// ⚠️ 比较的是**运算后的值**（<see cref="MoveValueContext.ActedValueAfter"/>）
-        /// 与另一只手，不是运算前的值 —— 与 <see cref="ShouldFollowUp"/> 同一口径。
-        /// </summary>
-        public int ScoreMoveBonus(MoveValueContext context)
-            => context.ActedValueAfter == context.OtherHandValue ? 40 : 0;
+        // 「双持同值特别值钱」原本在这里硬编码（+40）。
+        // 现在统一由价值表表达（见 Assistant.HandValueProfiles 的剑客档案：
+        // 双 4/双 6/双 8 加 130）。
 
         /// <summary>供上层查询"这次运算会不会追加一次攻击"。</summary>
         public bool WillExtraAttack(PreTurnChoiceContext context) => ShouldFollowUp(context);
