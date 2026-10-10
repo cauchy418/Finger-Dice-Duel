@@ -71,31 +71,28 @@ $gitArgs = @(
     'push', $url, 'main:main'
 )
 
-# 网络偶发 TLS 中断（unexpected eof），重试若干次即可
+# 网络偶发 TLS 中断（`unexpected eof while reading`），必须重试。
+# 实测这台机器的代理抖动**相当频繁**（连续 5 次失败出现过），
+# 所以重试次数给足，并做递增退避。
 #
-# ⚠️ 必须在子作用域里临时把 ErrorActionPreference 设为 Continue：
-#    git 会把「进度信息」写到 stderr（例如 "To https://..."），
-#    PowerShell 会把它当成 NativeCommandError 显示成红色 ——
-#    那**不是**失败（退出码仍是 0），但会让人误判。
-$lastOut = ""
-for ($i = 1; $i -le 5; $i++) {
-    $raw = & {
-        $ErrorActionPreference = 'Continue'
-        (& git @gitArgs 2>&1) | Out-String
-    }
-    $code = $LASTEXITCODE
-    $lastOut = Hide $raw
+# ⚠️ 不要用 `(& git ... 2>&1) | Out-String` 抓输出：
+#    git 把进度写到 stderr，PowerShell 会包成 NativeCommandError 并标红 ——
+#    那**不是**失败（退出码仍是 0），只会让人误判。
+#    这里让 git 直接输出到控制台（进度本来就有用）。
+$ok = $false
+for ($i = 1; $i -le 10; $i++) {
+    & git @gitArgs
+    if ($LASTEXITCODE -eq 0) { $ok = $true; break }
 
-    if ($code -eq 0) {
-        Write-Host $lastOut.Trim()
-        Write-Host "推送成功。" -ForegroundColor Green
-        exit 0
-    }
-
-    $brief = ($lastOut -split "`r?`n" | Where-Object { $_ -match 'fatal|error|denied' } | Select-Object -First 1)
-    Write-Host "第 $i 次失败：$brief" -ForegroundColor Yellow
-    Start-Sleep -Seconds 3
+    $wait = [Math]::Min(2 * $i, 12)      # 2,4,6,8,10,12,12,...
+    Write-Host "第 $i 次失败（代理偶发 TLS 中断），${wait}s 后重试……" -ForegroundColor Yellow
+    Start-Sleep -Seconds $wait
 }
 
-Write-Host "推送失败（已重试 5 次）：`n$lastOut" -ForegroundColor Red
+if ($ok) {
+    Write-Host "推送成功。" -ForegroundColor Green
+    exit 0
+}
+
+Write-Host "推送失败（已重试 10 次）。若持续失败，请检查代理是否在运行。" -ForegroundColor Red
 exit 1
