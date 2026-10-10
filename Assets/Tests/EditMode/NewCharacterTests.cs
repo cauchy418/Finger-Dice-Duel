@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
@@ -394,12 +394,12 @@ namespace FingerDiceDuel.Tests
         {
             PlayerState a = CharacterFactory.CreatePlayer("A", CharacterDefinition.Assassin);
 
-            Assert.False(AssassinLogic.IsStealthed(a), "开局两只手都是 1，不在潜行。");
+            Assert.False(AssassinLogic.HasDoubleSeven(a), "开局两只手都是 1，不是双 7。");
 
             TestSetup.SetHand(a.LeftHand, 7);
             TestSetup.SetHand(a.RightHand, 7);
 
-            Assert.True(AssassinLogic.IsStealthed(a), "双手都是 7 -> 潜行。");
+            Assert.True(AssassinLogic.HasDoubleSeven(a), "双手都是 7。");
         }
 
         [Test]
@@ -411,8 +411,16 @@ namespace FingerDiceDuel.Tests
 
             TestSetup.SetHand(def.LeftHand, 7);
             TestSetup.SetHand(def.RightHand, 7);
-            int before = def.Health;
+            // 双 7 本身不算潜行 —— 必须"经由运算达成"过
+            (def.Character as AssassinLogic).EnterStealthForTest();
 
+            // ⚠️ 光是双手为 7 **不算**潜行 —— 必须是"本局经由运算达成过"。
+            // 开局掷骰也可能直接摆出双 7，那种不算（见 AssassinLogic 的说明）。
+            (def.Character as AssassinLogic).EnterStealthForTest();
+            Assert.True((def.Character as AssassinLogic).IsStealthActive(def),
+                "前置：应已进入潜行。");
+
+            int before = def.Health;
             var ctx = new AttackContext(atk, def, atk.LeftHand, 8);
             ctx.Resolve(sink, null);
 
@@ -430,6 +438,7 @@ namespace FingerDiceDuel.Tests
 
             TestSetup.SetHand(atk.LeftHand, 7);
             TestSetup.SetHand(atk.RightHand, 7);
+            (atk.Character as AssassinLogic).EnterStealthForTest();
 
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4);
             ctx.Resolve(sink, null);
@@ -447,6 +456,7 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(assassin.LeftHand, 7);
             TestSetup.SetHand(assassin.RightHand, 7);
 
+            (assassin.Character as AssassinLogic).EnterStealthForTest();
             Assert.True(GameManager.CanSkipTurn(assassin), "潜行中第一次可跳。");
             game.SkipTurn();
             Assert.False(GameManager.CanSkipTurn(assassin),
@@ -461,7 +471,7 @@ namespace FingerDiceDuel.Tests
             var game = Match(CharacterDefinition.Assassin, CharacterDefinition.Blank);
             PlayerState assassin = game.PlayerA;
 
-            Assert.False(AssassinLogic.IsStealthed(assassin));
+            Assert.False((assassin.Character as AssassinLogic).IsStealthActive(assassin));
             Assert.False(GameManager.CanSkipTurn(assassin), "非潜行不能跳过。");
         }
 
@@ -476,13 +486,14 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetAllHands(assassin, blank, 1);
             TestSetup.SetHand(assassin.LeftHand, 7);
             TestSetup.SetHand(assassin.RightHand, 7);
-            Assert.True(AssassinLogic.IsStealthed(assassin), "前置：应在潜行中。");
+            (assassin.Character as AssassinLogic).EnterStealthForTest();
+            Assert.True((assassin.Character as AssassinLogic).IsStealthActive(assassin), "前置：应在潜行中。");
 
             // 7 + 1 = 8 -> 运算源变成 8，不再是双 7
             game.ExecuteTurn(assassin, assassin.LeftHand, blank.RightHand);
 
             Assert.AreEqual(8, assassin.LeftHand.Value, "7 + 1 = 8。");
-            Assert.False(AssassinLogic.IsStealthed(assassin), "出手后应脱离潜行。");
+            Assert.False((assassin.Character as AssassinLogic).IsStealthActive(assassin), "出手后应脱离潜行。");
         }
         [Test]
         public void Swordsman_extra_hit_value_matches_his_own_hand_value()
@@ -534,6 +545,8 @@ namespace FingerDiceDuel.Tests
 
             TestSetup.SetHand(def.LeftHand, 7);
             TestSetup.SetHand(def.RightHand, 7);
+            // 双 7 本身不算潜行 —— 必须"经由运算达成"过
+            (def.Character as AssassinLogic).EnterStealthForTest();
 
             var ctx = new AttackContext(atk, def, atk.LeftHand, 8);
             ctx.Resolve(sink, null);

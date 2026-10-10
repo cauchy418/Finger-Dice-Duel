@@ -31,14 +31,33 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>本次潜行是否已经用掉了"跳过一回合"的机会。</summary>
         private bool _skipUsedThisStealth;
 
+        /// <summary>
+        /// **本局是否真的"进入过"潜行**（由运算达成双 7 时才置位）。
+        ///
+        /// ⚠️ 为什么不能只看手值：**初始手值由开局掷骰决定**，
+        /// 一个刺客完全可能开局就是 7 / 7 —— 但那**不该**算潜行。
+        /// 玩家明确要求："刺客初始出双 7 也不会进潜行"。
+        ///
+        /// 所以潜行 = `双方都是 7` **且** `本局已通过运算达成过`。
+        /// </summary>
+        private bool _stealthEntered;
 
-        /// <summary>该玩家当前是否处于潜行（双手都为 7）。</summary>
-        public static bool IsStealthed(PlayerState owner)
+        /// <summary>双手是否都是 7（**只看数值**，不代表已进入潜行）。</summary>
+        public static bool HasDoubleSeven(PlayerState owner)
             => owner != null
                && owner.LeftHand.Value == StealthValue
                && owner.RightHand.Value == StealthValue;
 
-        public bool IsOwnerStealthed(PlayerState owner) => IsStealthed(owner);
+        /// <summary>
+        /// 该玩家当前是否**处于潜行**。
+        ///
+        /// ⚠️ 与 <see cref="HasDoubleSeven"/> 的区别：本判定还要求
+        /// "本局已通过运算进入过潜行"。开局掷骰直接摆出的双 7 **不算**。
+        /// </summary>
+        public bool IsStealthActive(PlayerState owner)
+            => _stealthEntered && HasDoubleSeven(owner);
+
+        public bool IsOwnerStealthed(PlayerState owner) => IsStealthActive(owner);
 
         /// <summary>
         /// 潜行中不能被选为攻击目标（<see cref="IAttackTargetRule"/>）。
@@ -46,7 +65,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// 由 Assistant 层的 BoardController 查询 —— 它不认识刺客这个具体角色，
         /// 只问"你能不能被打"。
         /// </summary>
-        public bool IsImmuneToAttack(PlayerState owner) => IsStealthed(owner);
+        public bool IsImmuneToAttack(PlayerState owner) => IsStealthActive(owner);
 
         // ============================================================
         // 潜行：完全免伤
@@ -64,7 +83,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             PlayerState self = context.Defender;
             if (self?.Character != this) return;
-            if (!IsStealthed(self)) return;
+            if (!IsStealthActive(self)) return;
 
             context.Dodged = true;
             // 战报要说清是"打不到"而不是"被闪避"（复用了同一条免伤通道）
@@ -87,7 +106,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (owner == null) return false;
 
-            bool stealthed = IsStealthed(owner);
+            bool stealthed = IsStealthActive(owner);
 
             // 只要观察到"不在潜行"，就认为这次潜行已经结束 ——
             // 无论这个观察发生在 sync 里还是查询里。
@@ -100,7 +119,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public void SyncSkipState(PlayerState owner)
         {
-            if (owner != null && !IsStealthed(owner)) _skipUsedThisStealth = false;
+            if (owner != null && !IsStealthActive(owner)) _skipUsedThisStealth = false;
         }
 
         public void OnTurnSkipped(PlayerState owner, GameManager manager)
@@ -116,15 +135,29 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context.Attacker?.Character != this) return;
 
             // 出手时若仍在潜行，则这一击 +7（并随即破除潜行）
-            if (!IsStealthed(context.Attacker)) return;
+            if (!IsStealthActive(context.Attacker)) return;
 
             context.FinalDamage += StealthBonusDamage;
         }
 
         /// <summary>
+        /// **仅供测试 / 回放**：直接把角色标成"已进入潜行"。
+        ///
+        /// 正常对局里潜行由 <see cref="OnOperationResolved"/> 在运算达成双 7 时置位；
+        /// 而测试往往想直接摆好局面，不该被迫去凑一次恰好等于 7 的加法
+        /// （那会把测试绑死在算术上）。所以提供一个语义明确的入口。
+        ///
+        /// ⚠️ 生产代码不要调用它。
+        /// </summary>
+        public void EnterStealthForTest() => _stealthEntered = true;
+
+        /// <summary>
         /// 每次运算后重新判定潜行状态：
-        ///   · 新进入双 7 -> 重置"跳过已用"标记；
+        ///   · 新达成双 7 -> **进入潜行**（置位 `_stealthEntered`）并重置"跳过已用"；
         ///   · 脱离双 7 -> 结束潜行。
+        ///
+        /// ⚠️ 只有**经由运算**达成双 7 才算进入潜行 ——
+        /// 开局掷骰直接摆出的双 7 走不到这里，所以不算（玩家明确要求）。
         /// </summary>
         public override void OnOperationResolved(PlayerState owner, Hand actedHand, int actedHandValueBefore,
                                                  int targetValue, HandEffectType effect, GameManager manager,
@@ -132,14 +165,26 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (owner == null) return;
 
-            if (!IsStealthed(owner))
+            if (!HasDoubleSeven(owner))
             {
-                // 手值不再是双 7 -> 潜行结束，标记复位（下次进入潜行可再跳一次）
+                // 手值不再是双 7 -> 潜行结束
+                _stealthEntered = false;
+                _skipUsedThisStealth = false;   // 下次进入潜行可再跳一次
+                return;
+            }
+
+            // 运算达成了双 7 -> 正式进入潜行
+            if (!_stealthEntered)
+            {
+                _stealthEntered = true;
                 _skipUsedThisStealth = false;
             }
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
-            => _skipUsedThisStealth = false;
+        {
+            _skipUsedThisStealth = false;
+            _stealthEntered = false;    // 重开一局必须清空，否则带着上一局的潜行
+        }
     }
 }

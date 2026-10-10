@@ -1,6 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Characters.SpecialLogics;
 
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
@@ -287,6 +288,9 @@ namespace FingerDiceDuel.Tests
             // 潜行 = 双手都为 7
             TestSetup.SetHand(assassin.LeftHand, 7);
             TestSetup.SetHand(assassin.RightHand, 7);
+
+            // ⚠️ 光有双 7 不算潜行 —— 必须"经由运算达成"过（开局掷骰也可能直接摆出双 7）
+            (assassin.Character as AssassinLogic).EnterStealthForTest();
 
             _a = attacker;      // 复用字段，供断言使用
             _b = assassin;
