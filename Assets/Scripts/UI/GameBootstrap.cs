@@ -82,7 +82,12 @@ namespace FingerDiceDuel.UI
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
         private ScreenGroup _screenCharacter;
+        private DiceRollScreen _diceRoll;
         private ModalPanel _modal;
+
+        /// <summary>掷骰完成后要用的角色（等掷骰结束才真正开始对局）。</summary>
+        private CharacterDefinition _pendingDefA;
+        private CharacterDefinition _pendingDefB;
 
         /// <summary>当前所在界面。</summary>
         private GameScreen _screen = GameScreen.MainMenu;
@@ -259,6 +264,11 @@ namespace FingerDiceDuel.UI
             _modal = new ModalPanel();
             _modal.Build(_selectRoot, UiFont.Regular, UiFont.Bold,
                          size: new Vector2(1080f, 720f));
+
+            // 开局掷骰界面（自带协程动画，所以是独立组件）
+            _diceRoll = gameObject.AddComponent<DiceRollScreen>();
+            _diceRoll.Build(_selectRoot, UiFont.Regular, UiFont.Bold);
+            _diceRoll.Finished += OnDiceRollFinished;
         }
 
         /// <summary>右上角的问号按钮：打开完整规则说明。</summary>
@@ -437,9 +447,10 @@ namespace FingerDiceDuel.UI
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
+            _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
-                || screen == GameScreen.CharacterSelect)
+                || screen == GameScreen.CharacterSelect || screen == GameScreen.DiceRoll)
             {
                 // 让弹窗保持在最上层
                 if (_modal?.Root != null) _modal.Root.transform.SetAsLastSibling();
@@ -662,10 +673,22 @@ namespace FingerDiceDuel.UI
             CharacterDefinition defA = _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)];
             CharacterDefinition defB = _roster[Mathf.Clamp(_indexB, 0, _roster.Count - 1)];
 
-            StartMatch(defA, defB);
+            // 先进"掷骰分配初始手值"，分配完才真正开始对局。
+            _pendingDefA = defA;
+            _pendingDefB = defB;
+            PrepareMatch(defA, defB);
+            _diceRoll.Begin(_game);
+            ShowScreen(GameScreen.DiceRoll);
         }
 
-        public void StartMatch(CharacterDefinition defA, CharacterDefinition defB)
+        /// <summary>
+        /// 建立对局对象与控制器（**不调用 BeginTurn**）。
+        ///
+        /// 拆出来是因为开局要先掷骰分配初始手值：
+        /// 分配阶段只改手的数值、不触发任何效果，所以可以安全地
+        /// 在 <see cref="BoardController.BeginTurn"/> 之前完成。
+        /// </summary>
+        private void PrepareMatch(CharacterDefinition defA, CharacterDefinition defB)
         {
             _choiceA = new SimpleChoiceProvider();
             _choiceB = new SimpleChoiceProvider();
@@ -684,6 +707,32 @@ namespace FingerDiceDuel.UI
 
             // AI 的"回合内抉择"（选盾 / 锁手）由 UI 注入解析器代做
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+        }
+
+        /// <summary>掷骰分配完成后真正进入对局。</summary>
+        private void OnDiceRollFinished()
+        {
+            if (_game == null || _controller == null) return;
+            if (_pendingDefA == null || _pendingDefB == null) return;
+
+            ShowScreen(GameScreen.InMatch);
+
+            _board.BindPlayers(_game.PlayerA, _game.PlayerB);
+            _board.SetTitle($"{_pendingDefA.DisplayName}  vs  {_pendingDefB.DisplayName}");
+            _board.HideGameOver();
+            _board.SetExitButtonVisible(true);
+            _board.SetVisible(true);
+
+            _controller.BeginTurn();
+            RefreshView();
+        }
+
+        public void StartMatch(CharacterDefinition defA, CharacterDefinition defB)
+        {
+            // 兼容旧入口（测试/直连）：跳过掷骰，直接用默认初始手值开局。
+            _pendingDefA = defA;
+            _pendingDefB = defB;
+            PrepareMatch(defA, defB);
 
             ShowScreen(GameScreen.InMatch);
 

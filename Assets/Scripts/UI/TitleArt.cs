@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using FingerDiceDuel.Assistant;
 
@@ -15,6 +15,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>角色选择。</summary>
         CharacterSelect = 2,
+
+        /// <summary>开局掷骰分配初始手值（1d20）。</summary>
+        DiceRoll = 4,
 
         /// <summary>对局中。</summary>
         InMatch = 3,

@@ -80,6 +80,45 @@ namespace FingerDiceDuel.Tests
                 "开始对局时应切到对局界面。");
         }
 
+        /// <summary>
+        /// 开局掷骰界面必须：
+        ///   · 在 ShowScreen 里被纳入"分组显隐"（否则它要么永不显示、要么永不隐藏）；
+        ///   · 被排进"弹窗置顶"的那组（否则规则弹窗会被它盖住）。
+        /// </summary>
+        [Test]
+        public void Dice_roll_screen_is_wired_into_the_screen_switch()
+        {
+            string path = FindSource("GameBootstrap.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(source.Contains("ShowScreen(GameScreen.DiceRoll)"),
+                "点开始后应先进入掷骰界面。");
+            Assert.True(source.Contains("_diceRoll?.SetVisible(screen == GameScreen.DiceRoll)"),
+                "ShowScreen 必须显隐掷骰分组 —— 漏掉它会永不显示或永不隐藏。");
+            Assert.True(source.Contains("screen == GameScreen.DiceRoll"),
+                "掷骰界面也应参与'弹窗置顶'。");
+        }
+
+        /// <summary>
+        /// 掷骰界面**只能**用 controller 给的候选生成按钮。
+        ///
+        /// 玩家明确要求过"不要让不合法的选项给到玩家"；
+        /// 界面自己拼算拆分是最容易违反这条的写法，所以用源码守卫钉住。
+        /// </summary>
+        [Test]
+        public void Dice_roll_screen_only_uses_controller_candidates()
+        {
+            string path = FindSource("DiceRollScreen.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(source.Contains("_controller.Candidates"),
+                "候选必须来自 MatchStartController.Candidates。");
+            Assert.False(source.Contains("new HandSplit("),
+                "界面不得自行构造 HandSplit —— 那会把不合法的手值给到玩家。");
+        }
+
         /// <summary>对局中的按钮不许调用结束进程。</summary>
         [Test]
         public void In_match_exit_does_not_quit_the_process()
