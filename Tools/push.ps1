@@ -72,13 +72,22 @@ $gitArgs = @(
 )
 
 # 网络偶发 TLS 中断（unexpected eof），重试若干次即可
+#
+# ⚠️ 必须在子作用域里临时把 ErrorActionPreference 设为 Continue：
+#    git 会把「进度信息」写到 stderr（例如 "To https://..."），
+#    PowerShell 会把它当成 NativeCommandError 显示成红色 ——
+#    那**不是**失败（退出码仍是 0），但会让人误判。
 $lastOut = ""
 for ($i = 1; $i -le 5; $i++) {
-    $lastOut = Hide ((& git @gitArgs 2>&1) | Out-String)
+    $raw = & {
+        $ErrorActionPreference = 'Continue'
+        (& git @gitArgs 2>&1) | Out-String
+    }
     $code = $LASTEXITCODE
+    $lastOut = Hide $raw
 
     if ($code -eq 0) {
-        Write-Host $lastOut.Trim() -ForegroundColor Green
+        Write-Host $lastOut.Trim()
         Write-Host "推送成功。" -ForegroundColor Green
         exit 0
     }
