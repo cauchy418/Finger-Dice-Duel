@@ -628,13 +628,15 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前是否处在**真正的回合边界**（可以清空"仅本回合有效"的抉择记录）。
         ///
-        /// ⚠️ 判据是"**行动方变了**"，不是"运算源为空" ——
-        /// 回合中途（选完运算源、正在选目标手 / 收集抉择）也会走到
-        /// <see cref="SetupFirstStep"/>，那不是新的回合，**不能清**。
+        /// 判据是"**行动方变了**"，而不是"运算源为空"。
         ///
-        /// 曾经用 <c>_pendingActedHand == null</c> 判定，结果"选目标手"那一步
-        /// （`_pendingActedHand` 还是 null）把同一回合刚答的抉择清掉了 ——
-        /// 表现为"牧师选了回复却按攻击结算"。
+        /// 为什么不用 `_pendingActedHand == null`：那是一个**脆弱的间接判据** ——
+        /// 它是否成立取决于调用顺序（`CommitMove` 恰好在 `BeginCharacterChoices`
+        /// 之前给 `_pendingActedHand` 赋值）。一旦顺序变化，"回合中途"就会被
+        /// 误判成"新回合"，把同回合刚答的抉择清掉，表现为
+        /// "牧师选了回复却按攻击结算"。
+        ///
+        /// 用"行动方是否变化"表达**意图本身**：与调用顺序无关，永远正确。
         /// </summary>
         private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlayer);
 

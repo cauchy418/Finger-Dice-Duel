@@ -26,7 +26,7 @@
 | **对局驱动** (`Assets/Scripts/Assistant`) | `MatchRunner` 整局驱动、随机/贪心 AI、脚本化测试替身、`BoardController` 交互状态机 |
 | **表现层** (`Assets/Scripts/UI`) | `GameBootstrap` 入口（`[RuntimeInitializeOnLoadMethod]` **自动启动** + 自动建 `EventSystem`）、`GameBoardUI` 棋盘界面、`HandVisual` 显示规则、`UiFont` 字体加载。**全部 UI 运行时用代码构建，无预制体** |
 | **字体** | `Assets/Resources/Fonts/NotoSansSC-Regular.ttf`（Noto Sans SC，**SIL OFL 1.1** 可自由分发；同目录有许可说明） |
-| **测试** (`Assets/Tests/EditMode`) | 370 项 EditMode 测试，22 个夹具 |
+| **测试** (`Assets/Tests/EditMode`) | 375 项 EditMode 测试，22 个夹具 |
 | **工具** (`Tools/`) | 无头测试（秒级回归）、表现层编译检查 |
 | **程序集划分** | `FingerDiceDuel.Runtime.asmdef` + `FingerDiceDuel.Tests.EditMode.asmdef` |
 
@@ -651,7 +651,54 @@ UI 只做一层薄包装。原因：**测试工程在无头环境编译，用不
 所以要**断言门本身**（`Assert.True(board.IsHumanChooser)`），
 而不只是断言门后面的行为。
 
-### 43. "确认目标"只在结果**指向别人**时才问
+### 43. 抉择可以分两段，但"跨阶段传答案"必须显式设计
+
+**玩家要求的交互**：牧师的 4/6/8 要**先弹「攻击 / 回复」**，
+选完**再**点手牌选目标。也就是同一次运算里有**两段抉择**，
+中间隔着"选目标手 + 确认目标玩家"一整段流程。
+
+**难点**：所有抉择都要在运算前收集（`ExecuteTurn` 一次跑完），
+而第二段的问题**依赖第一段的答案**（选了回复才需要问"回复给谁"）。
+更麻烦的是，两段之间会跑一次 `SetupFirstStep()` ——
+它要清空"仅本回合有效"的抉择记录（否则上回合的旧答案会串进本回合）。
+
+**我在这上面失败了约 90 轮**，前后踩了三个坑：
+
+| # | 坑 | 表现 |
+|---|---|---|
+| 1 | 把答案**合并进一次抉择**（点哪只手 = 回给谁）绕开问题 | 玩家要的两段交互做不到 |
+| 2 | 用会被中途清掉的容器存答案 | "选了回复却按攻击结算" |
+| 3 | 用 `GetChoice` 读回答案 | 它套用回退值 -> "选了攻击"被误判成"选了回复" |
+
+**最终成立的设计**（三件事缺一不可）：
+
+1. **`IPreTurnChoiceSink.GetExplicitChoice`**
+   只读**显式记录**的答案，**绝不套用回退值**。
+   于是"选了攻击"（记录为 null）与"选了回复、默认目标是自己"（记录为一只手）
+   能区分开。用 `GetChoice` 就区分不了。
+
+2. **`GameManager.AnsweredLookup`**（由 `BoardController` 注入）
+   让**结算侧**读同一份答案，而不是只靠 sink 回读。
+
+3. **回合边界的清空只在"行动方真正变化"时发生**
+   ```csharp
+   // 表达意图本身，与调用顺序无关
+   private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlayer);
+   ```
+   ⚠️ 曾用 `_pendingActedHand == null` —— 那是**脆弱的间接判据**：
+   它是否成立取决于调用顺序（`CommitMove` 恰好在 `BeginCharacterChoices`
+   之前赋值）。顺序一变，"回合中途"就被误判成"新回合"。
+
+**还有一个重要的自我纠正**：我一度以为坑 3 是根因，
+并写了一条"改回旧判据就该失败"的测试 —— 结果**旧判据也通过**。
+说明那条诊断是错的。我没有硬说"测试验证了修复"，
+而是核实了真实生效的 5 处改动，并按**意图**重写了判据。
+
+**教训**：**不要用间接判据表达规则**。
+"运算源为空"不是"这是新回合"的定义；
+"行动方变了"才是。间接判据会在调用顺序变化时静默失效。
+
+### 44. "确认目标"只在结果**指向别人**时才问
 
 玩家实测反馈：战士 1 + 1 = 2（**无效果**）也被要求选目标，
 "会出现很多无意义询问"。
@@ -677,7 +724,7 @@ UI 只做一层薄包装。原因：**测试工程在无头环境编译，用不
 但**不能把回复也算进去**。我第一版兜底写成了 `return false`，
 结果**攻击被静默跳过确认步骤** —— 是失败的测试把它逼出来的。
 
-### 44. 「放弃攻击」不能撤销运算结果
+### 45. 「放弃攻击」不能撤销运算结果
 
 **玩家实测 bug**："点击放弃攻击会导致运算失效，如 1+3 运算出 4
 点击放弃攻击会导致手回退至 1，这是不对的，应保留为 4。"
@@ -719,7 +766,7 @@ if (SuppressAttackDamage) { result.DamageDealt = 0; break; }
 不要写成**当前唯一的原因**（"对手是不是刺客"）——
 后者在加入新原因时必然要重写。
 
-### 45. AI 的抉择器不能和"记录玩家点击的 sink"混为一谈
+### 46. AI 的抉择器不能和"记录玩家点击的 sink"混为一谈
 
 **玩家实测 bug**：AI 使用新角色时**从不发动任何技能**
 （AI 游侠有 1 不闪避、有 2 不强化、剑客不追加……）。
@@ -744,7 +791,7 @@ AI作答 RangerDodge(v0) provider=SimpleChoiceProvider pick=null/非法 cands=1
 从 sink 反查 provider 只在"人类玩家"成立；一旦某方是 AI，
 决策者就是另一个对象 —— 不能混用。
 
-### 46. 诊断信息不能放进"会被业务逻辑清空"的容器
+### 47. 诊断信息不能放进"会被业务逻辑清空"的容器
 
 排查这个 bug 时我犯过两次**同类**错误，都导致误判：
 
@@ -758,7 +805,7 @@ AI作答 RangerDodge(v0) provider=SimpleChoiceProvider pick=null/非法 cands=1
 - 诊断数据放在**不受业务清理**的地方，或直接输出（Console）；
 - **每次用脚本改完代码，立刻用 grep 确认改动生效**，不要凭"命令没报错"就相信。
 
-### 47. PowerShell 脚本必须 UTF-8 with BOM
+### 48. PowerShell 脚本必须 UTF-8 with BOM
 
 Windows PowerShell 5.1 在没有 BOM 时会按 GBK 解码，中文注释被读成乱码并抛出
 "Missing closing '}'" 之类的**假语法错误**。用编辑器改过 `Tools/**/*.ps1` 后请确认 BOM：

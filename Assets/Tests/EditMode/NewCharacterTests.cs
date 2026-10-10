@@ -1233,8 +1233,11 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHealth(blank, 10);
             int priestBefore = priest.Health;
 
-            // 目标与"攻击还是回复"合并在同一次抉择里：点谁的手 = 回给谁
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, blank.LeftHand);
+            // 目标与"攻击还是回复"分两段：
+            //   ① 选目标手之前 -> PriestAttackOrHeal（选回复）
+            //   ② 选目标手之后 -> PriestHealTarget（回给谁）
+            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.PriestHealTarget, blank.LeftHand);   // 回给对手
 
             game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
 
@@ -1243,9 +1246,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Priest_gets_exactly_one_pre_target_choice_for_four_six_eight()
+        public void Priest_gets_one_choice_per_stage_for_four_six_eight()
         {
-            // 玩家要求的顺序：运算出 4 -> **先**弹出「攻击 / 回复」-> 选完再点目标手。
+            // 玩家要求的顺序：运算出 4 -> **先**弹出「攻击 / 回复」-> 选完再问目标。
             //
             // 所以"攻击还是回复"属于【选目标手之前】的抉择，
             // 而"回复给谁"属于【选目标手之后】的抉择，两者分开。
@@ -1260,26 +1263,38 @@ namespace FingerDiceDuel.Tests
                                                    priest.LeftHand, blank.RightHand);
             Assert.AreEqual(HandEffectType.Attack4, context.Effect, "3 + 1 = 4");
 
-            // ① 4/6/8 只有**一次**抉择（攻击还是回复 + 回复目标合并表达）
+            // ① 选目标手**之前**：只有一个"攻击还是回复"
             var pre = new List<ChoiceRequest>();
             (priest.Character as ITargetHandChoiceProvider)
                 ?.CollectPreTargetChoices(context, pre);
 
-            Assert.AreEqual(0, pre.Count,
-                "4/6/8 不在'选目标手之前'提问（那会跨回合边界丢答案）。");
+            Assert.AreEqual(1, pre.Count,
+                $"4/6/8 在选目标前应只有**一个**抉择。实际：{pre.Count}");
+            Assert.AreEqual(HandEffect.PriestAttackOrHeal, pre[0].Effect,
+                "那一个抉择应是「攻击还是回复」。");
+            Assert.True(pre[0].DeclineResult == null,
+                "放弃应是'不回复'（当攻击打）。");
+
+            // ② 选目标手**之后**：注入"选了回复"的答案 -> 应问一次"回复给谁"
+            context.AnsweredLookup = (e, v) =>
+                e == HandEffect.PriestAttackOrHeal ? priest.LeftHand : null;
 
             var post = new List<ChoiceRequest>();
             (priest.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
 
-            Assert.AreEqual(1, post.Count,
-                $"4/6/8 应只有**一次**抉择。实际：{post.Count}");
-            Assert.AreEqual(HandEffect.PriestAttackOrHeal, post[0].Effect,
-                "那一次抉择应是「攻击还是回复」。");
-            Assert.AreEqual(4, post[0].Candidates.Count,
-                "候选应是双方各两只手（这样点谁就回给谁）。");
-            Assert.True(post[0].DeclineResult == null,
-                "放弃应是'不回复'（当攻击打）。");
+            Assert.AreEqual(1, post.Count, "选了回复 -> 应问一次「回复给谁」。");
+            Assert.AreEqual(HandEffect.PriestHealTarget, post[0].Effect);
+
+            // ③ 反向：答了攻击 -> 不该问回复目标
+            context.AnsweredLookup = (e, v) => null;
+
+            var post2 = new List<ChoiceRequest>();
+            (priest.Character as IPreTurnChoiceProvider)
+                ?.CollectPreTurnChoices(context, post2);
+
+            Assert.AreEqual(0, post2.Count,
+                "选了攻击 -> 4/6/8 之后**不该**再问回复目标。");
         }
 
         [Test]
@@ -1312,10 +1327,10 @@ namespace FingerDiceDuel.Tests
                 var context = new PreTurnChoiceContext(priest, blank,
                                                        priest.LeftHand, blank.RightHand);
 
-                // 4/6/8 的「攻击还是回复」是**选目标手之后**的那一次抉择
+                // 4/6/8 的「攻击还是回复」是**选目标手之前**的那一次抉择
                 var requests = new List<ChoiceRequest>();
-                (priest.Character as IPreTurnChoiceProvider)
-                    ?.CollectPreTurnChoices(context, requests);
+                (priest.Character as ITargetHandChoiceProvider)
+                    ?.CollectPreTargetChoices(context, requests);
 
                 bool hasChoice = false;
                 for (int i = 0; i < requests.Count; i++)

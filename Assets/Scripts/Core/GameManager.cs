@@ -381,13 +381,17 @@ namespace FingerDiceDuel.Core
             // 返回 null 表示"玩家选的是攻击" -> 走正常攻击路径；
             // 返回某位玩家表示"选的是回复，目标是这位"。
             //
-            // 「攻击还是回复」与「回复给谁」是**同一次抉择**（点哪只手 = 回给谁），
-            // 所以一次就能解析出目标：选了攻击 -> null；选了回复 -> 那只手的主人。
+            // 两步走（与交互顺序一致）：
+            //   ① 前置抉择（**选目标手之前**）里玩家选的是"攻击"还是"回复"
+            //   ② 若选了回复，再解析"回复给谁"（**选目标手之后**才问）
             PlayerState priestHealTarget = null;
             if (actor.Character is PriestLogic && isAttackEffect(effect))
             {
                 var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
-                priestHealTarget = PriestLogic.ResolveHealChoiceTarget(actor, this, sink);
+
+                if (PriestLogic.ChoseToHeal(actor, this, sink, AnsweredLookup))
+                    priestHealTarget = PriestLogic.ResolveTarget(actor, this, sink,
+                                                                 HandEffect.PriestHealTarget);
             }
 
             switch (effect)

@@ -101,18 +101,40 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         // ============================================================
 
         /// <summary>
-        /// **不再**在"选目标手之前"提问。
+        /// 运算出 4/6/8 时，在**选目标手之前**先问"当攻击打还是当回复用"。
         ///
-        /// 曾经尝试过把 4/6/8 的「攻击还是回复」拆到这一步（玩家要求的顺序），
-        /// 但两段抉择之间会走一次回合边界的 sink 清空，
-        /// 前置答案传不到结算 —— 表现为"选了回复却按攻击结算"。
+        /// 玩家要求的顺序：
+        /// ```
+        /// 运算出 4 -> 右侧弹出「攻击 / 回复」
+        ///           -> 选攻击：再点手牌选攻击目标
+        ///           -> 选回复：再点手牌选回复目标
+        /// ```
+        /// 候选用牧师**自己的一只手**当"发动"的载体（点它 = 选回复）。
         ///
-        /// 在把"答案跨阶段传递"做扎实之前，**保持一次抉择**（见
-        /// <see cref="CollectPreTurnChoices"/>）。这里留空是刻意为之。
+        /// ⚠️ 这一步的答案要跨越"选目标手"才能到达结算，而那段流程会调用
+        /// <see cref="Assistant.BoardController"/> 的回合边界清理。
+        /// 之前的实现被清掉了答案（表现为"选了回复却按攻击结算"）；
+        /// 现在控制器只在**行动方真正变化**时清理，本答案得以保留。
         /// </summary>
         public override void CollectPreTargetChoices(PreTurnChoiceContext context,
                                                      IList<ChoiceRequest> requests)
-        { }
+        {
+            if (context == null || requests == null) return;
+            if (!context.IsAttack) return;      // 只有 4/6/8 有这一步（9 直接问回复目标）
+
+            int heal = HealAmountFor(context.Effect);
+            if (heal <= 0) return;
+
+            requests.Add(new ChoiceRequest(
+                HandEffect.PriestAttackOrHeal,
+                $"牧师运算出 {heal}：当**攻击**打（{heal} 点基础伤害，再算攻防），" +
+                $"还是当**回复**用（回复 {heal} 点，不受攻防影响）？",
+                new List<Hand>(1) { context.Actor.LeftHand },
+                allowDecline: true,                 // 放弃 = 当攻击打（默认）
+                declineResult: null,
+                decider: context.Actor,
+                acceptLabel: $"回复 {heal}"));
+        }
 
         /// <summary>
         /// 玩家是否把这次 4/6/8 **当回复用**了。
@@ -195,26 +217,19 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 return;
             }
 
-            // ③ 4/6/8：「攻击还是回复」+「回复给谁」合并成**一次**抉择
-            //    （点哪只手 = 回给谁；放弃 = 当攻击打）。
+            // ③ 4/6/8：**前置抉择里选了回复**才需要问"回复给谁"。
+            //
+            // 「攻击还是回复」发生在**选目标手之前**，而本方法在选定目标手
+            // **之后**才调用，所以这里能直接读到答案。
+            //
+            // 选了回复却没被问目标 -> 由 BuildTargetRequest 的
+            // declineResult 兜底（回给自己）。
             if (context.IsAttack)
             {
-                int heal = HealAmountFor(context.Effect);
+                if (!context.ChoseToHeal()) return;      // 选了攻击 -> 不问
 
-                var candidates = new List<Hand>(4);
-                AddOwnerHands(candidates, context.Actor);
-                AddOwnerHands(candidates, context.Defender);
-
-                requests.Add(new ChoiceRequest(
-                    HandEffect.PriestAttackOrHeal,
-                    $"牧师运算出 {heal}：当**攻击**打（{heal} 点基础伤害，再算攻防），" +
-                    $"还是当**回复**用（回复 {heal} 点，不受攻防影响）？" +
-                    $"选回复时点任意一只手代表那位玩家。",
-                    candidates,
-                    allowDecline: true,                 // 放弃 = 当攻击打（默认）
-                    declineResult: null,
-                    decider: context.Actor,
-                    acceptLabel: $"回复 {heal}（给自己）"));
+                requests.Add(BuildTargetRequest(context, HandEffect.PriestHealTarget,
+                    $"牧师这次回复 {HealAmountFor(context.Effect)} 点给谁？"));
             }
         }
 
