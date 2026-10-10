@@ -35,11 +35,6 @@ namespace FingerDiceDuel.Tests
             // 玩家给过的例子（"8 时是 1/7、2/6、3/5、4/4"）只列到 4/4，
             // 那是"左手 ≤ 右手"的一半；镜像同样合法。
             var s8 = DiceRollSetup.LegalSplits(8);
-            {
-                var sb = new System.Text.StringBuilder("[D8] count=" + s8.Count + " -> ");
-                for (int i = 0; i < s8.Count; i++) sb.Append(s8[i].ToString()).Append(' ');
-                System.Console.Error.WriteLine(sb.ToString());
-            }
             Assert.AreEqual(7, s8.Count, "8 应有 7 种拆分（1..7 配 7..1）。");
             AssertSplit(s8, 0, 1, 7);
             AssertSplit(s8, 3, 4, 4);
