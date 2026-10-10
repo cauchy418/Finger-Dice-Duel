@@ -1,4 +1,4 @@
-# CODELY.md
+﻿# CODELY.md
 
 > 工程结构与开发约定。**规则权威文档是 [`RULES.md`](RULES.md)** ——
 > 代码、测试、UI 都必须与它一致，改动规则先改那里。
@@ -105,6 +105,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 9 | **抉择器必须在创建 `GameManager` 时就传进去** | 否则结算时找不到 provider |
 | 10 | **`PreTurnChoiceReader.Read` 必须带"回退询问"** | 直连 `ExecuteTurn`（无收集步骤）时仍要能问出答案 |
 | 11 | **询问顺序必须与结算顺序一致** | 闪避在结算里优先于护盾，问也必须先问闪避 |
+| ★11b | **结算钩子里不能向玩家索要输入** | `ExecuteTurn` 一次跑完、无法暂停；在钩子里问 provider 的话**人类永远看不到弹窗**（AI 能当场答，所以表现为"有时生效"）。战士连锁破盾曾因此形同失效 —— 必须改成"运算前收集 + 结算回读" |
 | 12 | **只有一个候选的抉择要给"发动"按钮** | 让玩家去点手牌很别扭 |
 | ★13 | **分两段的抉择要显式设计"跨阶段传答案"** | 见下方详解 |
 | ★14 | **新增交互阶段必须同步 4 张"按阶段分派"的表** | `Chooser` / `CanClick` / `ClickHand` / UI 按钮可见性。漏掉 `Chooser` → 返回 null → `IsHumanChooser=false` → **UI 丢弃点击 → 游戏卡死** |

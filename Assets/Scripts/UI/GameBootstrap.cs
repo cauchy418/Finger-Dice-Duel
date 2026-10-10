@@ -1049,6 +1049,7 @@ namespace FingerDiceDuel.UI
                 case HandEffect.RangerDodge: return "不闪避";
                 case HandEffect.RangerPowerShot: return "不强化";
                 case HandEffect.BarbarianLockTarget: return "不锁手";
+                case HandEffect.WarriorChainBreak: return "不发动";
                 case HandEffect.SwordsmanFollowUp: return "不追加";
                 case HandEffect.PriestHealTarget: return "回给自己";
                 case HandEffect.PriestExtraHealTarget: return "回给自己";

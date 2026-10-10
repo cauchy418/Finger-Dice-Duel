@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 
@@ -303,14 +304,11 @@ namespace FingerDiceDuel.Tests
 
             // 回合 4（A）：战士用自己那面盾发起运算（5+5=10 -> 1）
             //   -> 运算前先破自己的盾 -> 触发连锁破盾 -> 击碎 B 的盾
-            _choiceA.ChainBreakWhere(t => t.Owner == blank);
+            //
+            // 注意：连锁破盾的答案现在是**运算前收集**的（与野蛮人锁手同一模式），
+            // 所以要在 ExecuteTurn 之前写进 sink。
+            _choiceA.SetChoice(HandEffect.WarriorChainBreak, blank.LeftHand);
             TurnResult r = game.ExecuteTurn(warrior, warrior.LeftHand, blank.LeftHand);
-
-            Assert.True(r.ShieldBrokenBeforeOp, "作为运算源的盾应先碎。");
-            Assert.AreEqual(1, r.ResultValue, "5 + 5 = 10 -> 1");
-            Assert.AreEqual(ShieldState.None, warrior.LeftHand.State,
-                "5+5=10 -> 1：结果不是 5，作为运算源碎掉的盾不保留标记。");
-            Assert.AreEqual(ShieldState.Broken, blank.LeftHand.State, "连锁破盾应击碎选中的目标盾。");
 
             Assert.True(r.ShieldBrokenBeforeOp, "作为运算源的盾应先碎。");
             Assert.AreEqual(1, r.ResultValue, "5 + 5 = 10 -> 1");
@@ -337,6 +335,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Formed, blank.LeftHand.State);
 
             _choiceA.DeclineChainBreak();
+            // 连锁破盾的答案在运算前收集：DeclineChainBreak 已登记"放弃"
+            _choiceA.SetChoice(HandEffect.WarriorChainBreak, null);
             game.ExecuteTurn(warrior, warrior.LeftHand, blank.LeftHand);
 
             Assert.AreEqual(ShieldState.None, warrior.LeftHand.State,
@@ -362,7 +362,10 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Formed, blank.RightHand.State);
 
             // A 攻击打碎 B 的盾 -> 触发 B 的连锁破盾 -> 反手击碎 A 的盾
-            _choiceB.ChainBreakWhere(t => t.Owner == blank);
+            //
+            // 战士 B 是**防守方**，但连锁破盾由他自己决定 ——
+            // 抉择在运算前收集（收集阶段会问双方），答案写进 B 的 sink。
+            _choiceB.SetChoice(HandEffect.WarriorChainBreak, blank.RightHand);
             TestSetup.SetHand(blank.LeftHand, 3);                                // 3+5 = 8
             TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, warrior.LeftHand);
 
@@ -390,8 +393,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Formed, b.LeftHand.State);
 
             // 两个抉择器都选择"破对手的盾"，每层都会继续连锁
-            _choiceA.ChainBreakWhere(t => t.Owner == b);
-            _choiceB.ChainBreakWhere(t => t.Owner == a);
+            _choiceA.SetChoice(HandEffect.WarriorChainBreak, b.LeftHand);
+            _choiceB.SetChoice(HandEffect.WarriorChainBreak, a.LeftHand);
 
             // 只要不抛栈溢出/死循环，本测试即通过
             game.ExecuteTurn(a, a.LeftHand, b.LeftHand);
@@ -407,6 +410,53 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Broken, b.LeftHand.State,
                 $"实际 bL={b.LeftHand.Value}/{b.LeftHand.State}");
             Assert.AreEqual(5, b.LeftHand.Value, "碎盾的手值应仍是 5（与'碎盾'标签一致）。");
+        }
+
+        [Test]
+        public void Warrior_chain_break_prompts_only_when_other_shields_exist()
+        {
+            // 玩家要求："破碎后先检查场上是否有其他盾牌，若没有则不需要弹出选择"。
+            //
+            // 直接观察**是否真的生成了抉择**（而不是只看结算结果）。
+            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+            var sinkW = new ScriptedChoiceProvider();
+            var sinkB = new ScriptedChoiceProvider();
+            var game = new GameManager(warrior, blank, sinkW, sinkB);
+
+            TestSetup.SetAllHands(warrior, blank, 1);
+            TestSetup.SetHand(warrior.LeftHand, 4);
+
+            // 让战士合出左手盾（4+1=5）
+            game.ExecuteTurn(warrior, warrior.LeftHand, blank.RightHand);
+            Assert.AreEqual(ShieldState.Formed, warrior.LeftHand.State);
+
+            // ① 场上除了这面盾之外**没有**其他成型盾 -> 不该生成抉择
+            var context = new PreTurnChoiceContext(warrior, blank,
+                                                   warrior.LeftHand, blank.LeftHand);
+            var requests = new List<ChoiceRequest>();
+            (warrior.Character as IPreTurnChoiceProvider)
+                ?.CollectPreTurnChoices(context, requests);
+
+            Assert.AreEqual(0, requests.Count,
+                $"没有其他完好盾时不该弹选择。实际生成了 {requests.Count} 个。");
+
+            // ② 让对手也合一面盾 -> 这时才该弹
+            TestSetup.SetHand(blank.LeftHand, 4);
+            game.ExecuteTurn(blank, blank.LeftHand, warrior.RightHand);
+            Assert.AreEqual(ShieldState.Formed, blank.LeftHand.State, "对手左手应成盾。");
+
+            var context2 = new PreTurnChoiceContext(warrior, blank,
+                                                    warrior.LeftHand, blank.LeftHand);
+            var requests2 = new List<ChoiceRequest>();
+            (warrior.Character as IPreTurnChoiceProvider)
+                ?.CollectPreTurnChoices(context2, requests2);
+
+            Assert.AreEqual(1, requests2.Count,
+                $"场上有其他完好盾时**应**弹选择。实际 {requests2.Count} 个。");
+            Assert.AreEqual(HandEffect.WarriorChainBreak, requests2[0].Effect);
+            Assert.True(requests2[0].Candidates.Count > 0, "候选应包含那面完好的盾。");
+            Assert.True(requests2[0].AllowDecline, "应允许放弃发动。");
         }
 
         [Test]

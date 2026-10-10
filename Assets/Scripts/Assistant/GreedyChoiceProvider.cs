@@ -196,6 +196,18 @@ namespace FingerDiceDuel.Assistant
                         return damage >= SwordsmanFollowUpMinDamage ? c[0] : null;
                     }
 
+                case HandEffect.WarriorChainBreak:
+                    {
+                        if (!UseChainBreak || c.Count == 0) return null;   // 默认放弃
+
+                        // 优先破**对手**的盾：候选里自己的手在前、对手的在后，
+                        // 所以挑第一个不属于自己的。
+                        for (int i = 0; i < c.Count; i++)
+                            if (decider == null || !decider.Owns(c[i])) return c[i];
+
+                        return null;    // 只有自己的盾可破 -> 没必要（自伤）
+                    }
+
                 default:
                     return request.DeclineResult;
             }
