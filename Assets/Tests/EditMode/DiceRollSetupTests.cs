@@ -312,6 +312,87 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
+        // 掷骰动画时间轴（纯数据，可无头验证）
+        // ============================================================
+
+        [Test]
+        public void Dice_animation_ends_on_the_real_roll()
+        {
+            for (int roll = 1; roll <= 20; roll++)
+            {
+                var plan = new DiceRollAnimationPlan(roll, new System.Random(roll));
+                Assert.AreEqual(roll, plan.FinalValue);
+                Assert.AreEqual(roll, plan.FaceAt(plan.Duration), $"{roll}: 定格应为真实点数。");
+                Assert.AreEqual(roll, plan.FaceAt(plan.Duration + 10f), "超过时长后应一直是真实点数。");
+                Assert.True(plan.IsFinished(plan.Duration));
+                Assert.False(plan.IsFinished(0f));
+            }
+        }
+
+        [Test]
+        public void Dice_animation_face_is_deterministic_for_the_same_time()
+        {
+            // ⚠️ 关键：UI 每帧会多次询问"现在显示几"，
+            // 若那里现抽随机数，同一帧的不同绘制点会看到不同值（闪错）。
+            var plan = new DiceRollAnimationPlan(14, new System.Random(7));
+
+            for (float t = 0f; t < plan.Duration; t += 0.037f)
+            {
+                int a = plan.FaceAt(t);
+                int b = plan.FaceAt(t);
+                Assert.AreEqual(a, b, $"t={t} 时两次询问应得到同一个数。");
+                Assert.True(a >= 1 && a <= 20, $"滚动期间的点数应在 1..20，实际 {a}。");
+            }
+        }
+
+        [Test]
+        public void Dice_animation_frame_index_is_monotonic()
+        {
+            var plan = new DiceRollAnimationPlan(9, new System.Random(3));
+
+            int last = -1;
+            for (float t = 0f; t < plan.Duration + 0.5f; t += 0.02f)
+            {
+                int idx = plan.IndexAt(t);
+                Assert.True(idx >= last, $"帧号不该回退（t={t} 时 {idx} < {last}）。");
+                last = idx;
+            }
+
+            Assert.AreEqual(plan.FrameCount - 1, plan.IndexAt(plan.Duration),
+                "结束后应停在最后一帧（定格帧）。");
+        }
+
+        [Test]
+        public void Dice_animation_slows_down_over_time()
+        {
+            // 换号间隔必须**递增**（开头快、结尾慢），这是"减速定格"观感的核心
+            var plan = new DiceRollAnimationPlan(12, new System.Random(1));
+
+            float first = plan.IntervalAt(0f);
+            float mid = plan.IntervalAt(0.5f);
+            float last = plan.IntervalAt(1f);
+
+            Assert.True(first < mid, $"起步间隔应小于中段（{first} vs {mid}）。");
+            Assert.True(mid < last, $"中段间隔应小于收尾（{mid} vs {last}）。");
+
+            // 端点应等于配置值（用缩放成整数来比，shim 没有 delta 重载）
+            Assert.AreEqual((int)(plan.FastInterval * 10000), (int)(first * 10000),
+                "起步间隔应等于 FastInterval。");
+            Assert.AreEqual((int)(plan.SlowInterval * 10000), (int)(last * 10000),
+                "收尾间隔应等于 SlowInterval。");
+        }
+
+        [Test]
+        public void Dice_animation_scale_settles_at_one()
+        {
+            var plan = new DiceRollAnimationPlan(5, new System.Random(2));
+
+            Assert.True(plan.ScaleAt(0f) > 1f, "开头应略微放大。");
+            Assert.AreEqual(10000, (int)(plan.ScaleAt(plan.Duration) * 10000), "结尾应回落到 1。");
+            Assert.AreEqual(10000, (int)(plan.ScaleAt(plan.Duration + 5f) * 10000), "之后保持 1。");
+        }
+
+        // ============================================================
         // 工具
         // ============================================================
 
