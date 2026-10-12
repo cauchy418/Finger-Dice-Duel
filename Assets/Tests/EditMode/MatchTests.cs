@@ -293,7 +293,7 @@ namespace FingerDiceDuel.Tests
         public void Full_character_matrix_can_all_be_played_to_completion()
         {
             // 4 个内置角色两两对局（含内斗），确认没有任何组合会崩溃或卡死。
-            // 注意：回合数有上限（GameManager.TurnLimit），打满上限会**按平局**结束，
+            // 注意：回合数有上限（GameManager.DefaultTurnLimit），打满上限会**按平局**结束，
             // 所以这里只断言"对局一定在有限回合内结束"，不再要求必须有胜者。
             foreach (CharacterDefinition a in CharacterDefinition.BuiltIn)
             {
@@ -309,8 +309,8 @@ namespace FingerDiceDuel.Tests
 
                     Assert.True(game.IsGameOver,
                         $"{a.Id} vs {b.Id} 应在回合上限内结束。");
-                    Assert.True(result.Turns <= GameManager.TurnLimit,
-                        $"{a.Id} vs {b.Id} 回合数 {result.Turns} 不应超过上限 {GameManager.TurnLimit}。");
+                    Assert.True(result.Turns <= GameManager.DefaultTurnLimit,
+                        $"{a.Id} vs {b.Id} 回合数 {result.Turns} 不应超过上限 {GameManager.DefaultTurnLimit}。");
                 }
             }
         }
@@ -327,7 +327,7 @@ namespace FingerDiceDuel.Tests
             MatchResult result = runner.Run(game, selector, selector);
 
             Assert.True(game.IsGameOver, "打满上限后对局应结束。");
-            Assert.AreEqual(GameManager.TurnLimit, result.Turns, "应恰好打满上限。");
+            Assert.AreEqual(GameManager.DefaultTurnLimit, result.Turns, "应恰好打满上限。");
             Assert.Null(result.Winner, "打满上限应按平局记录（无胜者）。");
             Assert.Null(game.Winner);
             Assert.False(result.HitTurnLimit,

@@ -183,6 +183,15 @@ namespace FingerDiceDuel.UI
             /// <summary>该位置与主视角的关系（我 / 队友 / 对手）。</summary>
             public RingRelation Relation;
 
+            /// <summary>
+            /// 该位置的**真实座位号**（1..4），由 <see cref="RingLayout.Build"/> 给出。
+            ///
+            /// ⚠️ 必须用这个，不能拿"玩家在列表里的下标 +1"当座位号 ——
+            ///    我一度那样推算，结果与环形布局的推导不一致
+            ///    （实机截图暴露：二三号位标反）。
+            /// </summary>
+            public int Seat;
+
             public RectTransform Root;
             public Text NameText;
             public Text SeatText;
@@ -540,6 +549,7 @@ namespace FingerDiceDuel.UI
 
                 panel.Owner = owner;
                 panel.Relation = slot.Relation;
+                panel.Seat = slot.Seat;
                 panel.Root.gameObject.SetActive(true);
 
                 // 这个位置的**两只手**绑到自己的牌上 ——
@@ -617,11 +627,8 @@ namespace FingerDiceDuel.UI
                 UpdateHealthBar(panel.HpFill, panel.Owner);
                 panel.StatusText.text = HandVisual.ShieldSummary(panel.Owner);
 
-                // 座位号（玩家要求：每个人整体下方显示位次）
-                int seat = SeatIndexOf(playersBySeat, panel.Owner);
-                panel.SeatText.text = seat > 0
-                    ? SeatLabel(seat, panel.Owner, playersBySeat)
-                    : "";
+                // 座位号直接用 RingLayout 给的真实座位，**不再二次推算**
+                panel.SeatText.text = SeatLabel(panel);
 
                 RefreshSide(panel.Cards, panel.Owner, selectedHand,
                             highlightAsChoices, null);
@@ -633,18 +640,15 @@ namespace FingerDiceDuel.UI
         ///
         /// 只写"一号位"不够用 —— 2v2 里玩家最需要一眼看出谁是自己人。
         /// </summary>
-        private string SeatLabel(int seat, PlayerState owner, IReadOnlyList<PlayerState> bySeat)
+        private static string SeatLabel(RingPanel panel)
         {
-            if (owner == null) return "";
+            if (panel == null || panel.Owner == null) return "";
 
-            RingPanel panel = FindPanelOf(owner);
-            string relation = panel == null
-                ? ""
-                : panel.Relation == RingRelation.Self ? "（我）"
+            string relation = panel.Relation == RingRelation.Self ? "（我）"
                 : panel.Relation == RingRelation.Teammate ? "（队友）"
                 : "（对手）";
 
-            return $"{SeatName(seat)}位{relation}";
+            return $"{SeatName(panel.Seat)}位{relation}";
         }
 
         /// <summary>座位号 -> 中文位次（一号位..八号位）。</summary>
@@ -654,16 +658,6 @@ namespace FingerDiceDuel.UI
             if (seat < 1 || seat >= names.Length) return seat.ToString();
 
             return names[seat];
-        }
-
-        private static int SeatIndexOf(IReadOnlyList<PlayerState> bySeat, PlayerState owner)
-        {
-            if (bySeat == null || owner == null) return -1;
-
-            for (int i = 0; i < bySeat.Count; i++)
-                if (ReferenceEquals(bySeat[i], owner)) return i + 1;
-
-            return -1;
         }
 
         /// <summary>

@@ -99,7 +99,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, _board.DisplayTurn, "起始应显示第 1 回合。");
             Assert.True(_board.DisplayTurn <= _board.TurnLimit,
                 $"显示回合不应超过上限（display={_board.DisplayTurn}, limit={_board.TurnLimit}）。");
-            Assert.AreEqual(GameManager.TurnLimit, _board.TurnLimit, "上限应取自 GameManager。");
+            Assert.AreEqual(GameManager.DefaultTurnLimit, _board.TurnLimit, "上限应取自 GameManager。");
         }
 
         [Test]

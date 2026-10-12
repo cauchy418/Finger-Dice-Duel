@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Assistant
             sb.AppendLine("负的防御表示易伤：受到的伤害增加。");
             sb.AppendLine();
             sb.AppendLine("【胜负】");
-            sb.AppendLine($"生命先归零者败。超过 {GameManager.TurnLimit} 回合仍未分出胜负则判和局。");
+            sb.AppendLine($"生命先归零者败。超过 {GameManager.DefaultTurnLimit} 回合仍未分出胜负则判和局。");
 
             return sb.ToString();
         }

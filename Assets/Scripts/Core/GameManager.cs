@@ -145,10 +145,23 @@ namespace FingerDiceDuel.Core
         public bool ResolvingExtraAttack;
 
         /// <summary>
-        /// 回合数上限。达到上限时按**平局**结束（见 RULES.md §7）。
+        /// **默认**回合数上限（1v1）。达到上限时按**平局**结束（见 RULES.md §7）。
+        ///
         /// 这保证了对局一定会在有限步内结束，不会出现"双方都只顾回复"的死循环。
         /// </summary>
-        public const int TurnLimit = 50;
+        public const int DefaultTurnLimit = 50;
+
+        /// <summary>
+        /// 本局的回合数上限。
+        ///
+        /// ⚠️ 从 `const` 改成**实例属性**的原因：多人局的回合数需要更长 ——
+        ///    2v2 每"回合"只有一个人行动，同样的 50 回合只够 1v1 的四分之一，
+        ///    所以玩家要求 2v2 用 **100**。
+        ///
+        /// 默认仍是 <see cref="DefaultTurnLimit"/>，所以 1v1 与既有测试不受影响；
+        /// 平局判定与显示都读这个属性（不是常量）。
+        /// </summary>
+        public int TurnLimit { get; set; } = DefaultTurnLimit;
 
         private readonly List<LegalMove> _legalMoves = new List<LegalMove>(4);
 

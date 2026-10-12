@@ -141,8 +141,18 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private List<PlayerState> _twoOnTwoSeated;
 
-        /// <summary>2v2 里"我"坐在几号位（1..4）。</summary>
+        /// <summary>
+        /// 2v2 里"我"坐在几号位（1..4）。
+        ///
+        /// ⚠️ 这个值**只作展示兜底**。真正的座位由 <see cref="RingLayout"/> 给出 ——
+        ///    我一度用它去推算每格的座位文案，结果与环形布局的推导不一致
+        ///    （实机截图暴露：二三号位标反）。
+        ///    现在标签直接用 `RingSlot.Seat`，不再二次推算。
+        /// </summary>
         private int _twoOnTwoMySeat = 1;
+
+        /// <summary>2v2 的回合上限（玩家要求 100；1v1 仍是 50）。</summary>
+        private const int TwoOnTwoTurnLimit = 100;
 
         /// <summary>2v2 的第三 / 第四位抉择器（C / D 槽位）。</summary>
         private IChoiceProvider _choiceC;
@@ -841,7 +851,8 @@ namespace FingerDiceDuel.UI
             _choiceC = seatedProviders[2];
             _choiceD = seatedProviders[3];
 
-            BuildTwoOnTwoMatch(seated, seatedProviders, myIndex);
+            BuildTwoOnTwoMatch(seated, seatedProviders, myIndex,
+                               firstToAct: seated[0]);
 
             StartPreparedMatch();
         }
@@ -958,9 +969,14 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void BuildTwoOnTwoMatch(List<PlayerState> seated,
                                         List<SimpleChoiceProvider> providers,
-                                        int meIndex)
+                                        int meIndex,
+                                        PlayerState firstToAct = null)
         {
             _game = GameManager.Create2v2(seated, providers.ConvertAll(x => (IChoiceProvider)x));
+
+            // 2v2 的回合上限是 **100**（玩家要求）——
+            // 2v2 每"回合"只有一个人行动，同样的回合数只够 1v1 的四分之一。
+            _game.TurnLimit = TwoOnTwoTurnLimit;
 
             // 前两人的 AI 走构造参数（与 1v1 同一路径）；
             // 其余玩家用 BindPlayer 登记 —— 只有"我"是人类（ai 传 null）。
@@ -978,8 +994,13 @@ namespace FingerDiceDuel.UI
 
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
 
-            // 第一回合从**我**开始（单机主视角先手，便于立即操作）
-            _controller.SetFirstPlayer(seated[meIndex]);
+            // 谁先行动：
+            //   · 经典：**1 号位**先动（先攻决定了座位，座位 1 就是全场最高点）
+            //   · 入门：**我**先动（单机主视角先手，便于立即操作）
+            //
+            // ⚠️ 曾经无条件设成"我" —— 于是经典里我坐 4 号位却先动，
+            //    1/2/3 号位的行动等于被跳过（玩家实测报告）。
+            _controller.SetFirstPlayer(firstToAct ?? seated[meIndex]);
 
             _twoOnTwoSeated = seated;
             _twoOnTwoMeIndex = meIndex;

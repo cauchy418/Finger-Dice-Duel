@@ -1528,7 +1528,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public int DisplayTurn => Math.Min(TurnCount + 1, TurnLimit);
 
-        public int TurnLimit => GameManager.TurnLimit;
+        public int TurnLimit => _game?.TurnLimit ?? GameManager.DefaultTurnLimit;
 
         /// <summary>
         /// 诊断用：把"当前停在哪个阶段、该谁决定、候选是什么"打出来。
