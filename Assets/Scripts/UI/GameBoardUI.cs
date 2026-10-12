@@ -140,7 +140,7 @@ namespace FingerDiceDuel.UI
             BuildLogPanel();
             BuildGameOverPanel();
             BuildTopRightButtons();
-            BuildTopLeftTurnLabel();
+            BuildTurnLabel();
             BuildFloatLayer();
             BuildRingPanels();
 
@@ -722,17 +722,22 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// 左上角：回合数。
+        /// **右上角**：回合数（玩家要求从左上角移过来）。
         ///
-        /// 玩家要求放在左上角；显示的回合号**从 1 开始**
+        /// 位置放在"返回标题"按钮**下方偏左**，避免与它重叠 ——
+        /// 用右对齐，这样数字变长（回合 100 / 100）时不会挤到按钮。
+        ///
+        /// 显示的回合号**从 1 开始**
         /// （玩家操作的第一个回合就是第 1 回合，见 `BoardController.DisplayTurn`）。
         /// </summary>
-        private void BuildTopLeftTurnLabel()
+        private void BuildTurnLabel()
         {
+            // 放在"返回标题"按钮**下方**（按钮在距右上 100/-40），
+            // 否则两者会叠在一起。
             _turnText = CreateText(_canvasRoot, "TurnCount",
-                                   new Vector2(110f, -40f), new Vector2(200f, 52f),
-                                   26, TextAnchor.MiddleLeft, TextColor,
-                                   anchorTopLeft: true);
+                                   new Vector2(60f, 104f), new Vector2(260f, 44f),
+                                   26, TextAnchor.MiddleRight, TextColor,
+                                   anchorTopRight: true);
             UiFont.ApplyBold(_turnText);
             _turnText.text = "";
         }
@@ -1150,7 +1155,7 @@ namespace FingerDiceDuel.UI
 
         private Text CreateText(RectTransform parent, string name, Vector2 position, Vector2 size,
                                 int fontSize, TextAnchor alignment, Color color,
-                                bool anchorTopLeft = false)
+                                bool anchorTopLeft = false, bool anchorTopRight = false)
         {
             var go = new GameObject(name, typeof(Text));
             go.transform.SetParent(parent, false);
@@ -1162,6 +1167,13 @@ namespace FingerDiceDuel.UI
                 rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 1f);
                 rect.anchoredPosition = new Vector2(position.x, -Mathf.Abs(position.y));
+            }
+            else if (anchorTopRight)
+            {
+                // 右上角锚点；position 是"距右上角的内边距"（x 向左、y 向下）
+                rect.anchorMin = rect.anchorMax = new Vector2(1f, 1f);
+                rect.pivot = new Vector2(1f, 1f);
+                rect.anchoredPosition = new Vector2(-Mathf.Abs(position.x), -Mathf.Abs(position.y));
             }
             else
             {
