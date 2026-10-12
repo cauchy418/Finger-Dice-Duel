@@ -937,6 +937,22 @@ namespace FingerDiceDuel.Assistant
                     return true;
 
                 case BoardPhase.ChoosingTargetHand:
+                    // ⚠️ **前提守卫：阶段 ② 必须有已选的运算源。**
+                    //
+                    // `SelectedHand` 可能在中间被清掉（CancelSelection、
+                    // SetupFirstStep、上一次结算的收尾），而这条分支后面会
+                    // 走到 `BeginPreTargetChoicesIfAny` -> AdvanceCharacterChoice
+                    // -> 结算；那时运算源已经没了，于是抛"未选择运算源"
+                    // （玩家实测的非法运算日志就是这个）。
+                    //
+                    // 前提不成立就**回到本回合第一步**重选，而不是继续往下走。
+                    if (SelectedHand == null)
+                    {
+                        _preTargetChoiceActive = false;
+                        SetupFirstStep();
+                        return false;
+                    }
+
                     // 再次点击已选中的运算源 = 取消选择
                     if (ReferenceEquals(hand, SelectedHand))
                     {
