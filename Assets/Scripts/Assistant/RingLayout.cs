@@ -88,21 +88,37 @@ namespace FingerDiceDuel.Assistant
                 ? RingPosition.LowerLeft
                 : RingPosition.LowerRight;
 
-            // 两名对手按座位号升序：**第一个放左上、第二个放右上**
-            //（界面左右对称；"哪个对手在左"没有明确规则，用座位号保证稳定）
+            // 两名对手按**座位号升序**取（保证稳定，不引入随机）
             var foes = new List<int>(2);
             for (int seat = 1; seat <= SeatLayout.SeatCount; seat++)
                 if (seat != me && seat != mate) foes.Add(seat);
+
+            // 位置与环形的对应关系（玩家确认的 **A** 方案）：
+            //   **从自己（下中）往左逆时针绕屏一周**，依次是
+            //   自己 → 上家 → 再上家 → 再上家。
+            //
+            // 于是"哪个对手在左上"取决于**队友在哪一侧**：
+            //   · 队友在**左下**（他是上家）-> 逆时针先走左侧：
+            //       左下 = 上家（队友），左上 = 再上家，右上 = 再再上家
+            //     => 座位号**大**的那个对手在左上
+            //   · 队友在**右下**（他是下家）-> 逆时针先走右侧：
+            //       右下 = 下家（队友），右上 = 再下家，左上 = 再再下家
+            //     => 座位号**小**的那个对手在左上
+            //
+            // ⚠️ 我第一版按"座位号升序 = 左上、右上"实现，
+            //    在队友于左下时会把二位/三位画反（实机截图暴露）。
+            int upperLeftSeat = mateIsPrevious ? foes[1] : foes[0];
+            int upperRightSeat = mateIsPrevious ? foes[0] : foes[1];
 
             return new List<RingSlot>(4)
             {
                 new RingSlot { Seat = me, Relation = RingRelation.Self,
                                Position = RingPosition.SelfBottom },
 
-                new RingSlot { Seat = foes[0], Relation = RingRelation.Opponent,
+                new RingSlot { Seat = upperLeftSeat, Relation = RingRelation.Opponent,
                                Position = RingPosition.UpperLeft },
 
-                new RingSlot { Seat = foes[1], Relation = RingRelation.Opponent,
+                new RingSlot { Seat = upperRightSeat, Relation = RingRelation.Opponent,
                                Position = RingPosition.UpperRight },
 
                 new RingSlot { Seat = mate, Relation = RingRelation.Teammate,
@@ -159,6 +175,41 @@ namespace FingerDiceDuel.Assistant
                 case RingPosition.LowerRight: x = 0.66f; y = -0.20f; break;
                 default: x = 0f; y = 0f; break;
             }
+        }
+        /// <summary>
+        /// 每个位置的面板尺寸（界面按它建面板，测试也按它做边界检查）。
+        ///
+        /// 放在这里而不是 UI 里：这样"面板不越界"能被**无头测试**断言，
+        /// 而不是只能靠实机截图发现（队友面板被切掉就是这样发现的）。
+        /// </summary>
+        public static void PanelSize(RingPosition position, out float width, out float height)
+        {
+            // 自己那块要放下名字+座位+血条+状态+两只手牌，所以最宽
+            bool isSelf = position == RingPosition.SelfBottom;
+
+            width = isSelf ? 700f : 560f;
+            height = isSelf ? 250f : 240f;
+        }
+
+        /// <summary>设计分辨率（界面与测试共用，避免两处各写一个数）。</summary>
+        public const float DesignWidth = 1920f;
+        public const float DesignHeight = 1080f;
+
+        /// <summary>
+        /// 这个位置的面板是否**完全在屏幕内**（按归一化坐标与面板尺寸算）。
+        /// </summary>
+        public static bool FitsOnScreen(RingPosition position)
+        {
+            NormalizedOffset(position, out float nx, out float ny);
+            PanelSize(position, out float w, out float h);
+
+            float cx = nx * DesignWidth * 0.5f;
+            float cy = ny * DesignHeight * 0.5f;
+
+            return cx - w * 0.5f >= -DesignWidth * 0.5f
+                   && cx + w * 0.5f <= DesignWidth * 0.5f
+                   && cy - h * 0.5f >= -DesignHeight * 0.5f
+                   && cy + h * 0.5f <= DesignHeight * 0.5f;
         }
     }
 }

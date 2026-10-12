@@ -209,9 +209,9 @@ namespace FingerDiceDuel.UI
                 // 归一化坐标 -> 设计分辨率下的像素偏移
                 var offset = new Vector2(nx * DesignWidth * 0.5f, ny * DesignHeight * 0.5f);
 
-                // 自己那块最宽（放手牌），其余紧凑
-                bool isSelf = position == RingPosition.SelfBottom;
-                var size = isSelf ? new Vector2(700f, 250f) : new Vector2(560f, 240f);
+                // 尺寸取自已测试覆盖的规格（单一真相，避免界面与测试各写一个数）
+                RingLayout.PanelSize(position, out float pw, out float ph);
+                var size = new Vector2(pw, ph);
 
                 RectTransform root = CreatePanel(_canvasRoot, "Ring" + position,
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), size, PanelColor, offset);
