@@ -649,8 +649,22 @@ namespace FingerDiceDuel.Assistant
                     return ActivePlayer.Owns(hand) && !hand.IsLocked;
 
                 case BoardPhase.ChoosingTargetHand:
+                {
                     // 自己已选的手也允许再点一次（表示取消选择）
-                    return Defender.Owns(hand) || ReferenceEquals(hand, SelectedHand);
+                    if (ReferenceEquals(hand, SelectedHand)) return true;
+
+                    // 被加数可以是**任何其他玩家**的手（含队友）——
+                    // 玩家确认："A 可以选择 B/C/D 任何一个数字作为被加数"，
+                    // 别人的数字不会被改动，只有行动方自己的手变成结果值。
+                    //
+                    // ⚠️ 这里曾经写死 `Defender.Owns(hand)`（只认"第一位对手"），
+                    //    2v2 里点 C 或队友的手都会被拒 —— 与引擎的合法判定不一致，
+                    //    表现为"明明合法却点不动"。
+                    //
+                    // 攻击**目标**在下一步（ChoosingTargetPlayer）才选，那时才用
+                    // CanBeAttacked 检查距离与敌我关系。
+                    return !ActivePlayer.Owns(hand) && !hand.IsLocked;
+                }
 
                 case BoardPhase.ChoosingTargetPlayer:
                     // 点目标玩家的手牌即确认；只接受目标玩家自己的手。
@@ -1026,12 +1040,20 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>把一只手翻译成它的主人；认不出来时返回 null。</summary>
+        /// <summary>
+        /// 这张手牌属于谁。
+        ///
+        /// ⚠️ 必须查**全部参战玩家**，不能只认 A/B ——
+        /// 2v2 / 8 人局里 C、D 的手会返回 null，
+        /// 于是被当成"第一位对手"（真实 bug：点 C 的手会打 B）。
+        ///
+        /// 现在的实现交给 <see cref="GameManager.OwnerOfHand"/>（按名单查），
+        /// 避免这里再维护一份"谁是玩家"的清单。
+        /// </summary>
         private PlayerState OwnerOf(Hand hand)
         {
             if (hand == null) return null;
-            if (_game.PlayerA != null && _game.PlayerA.Owns(hand)) return _game.PlayerA;
-            if (_game.PlayerB != null && _game.PlayerB.Owns(hand)) return _game.PlayerB;
-            return null;
+            return _game.OwnerOfHand(hand);
         }
 
         /// <summary>
