@@ -152,6 +152,110 @@ namespace FingerDiceDuel.Core
 
         private readonly List<LegalMove> _legalMoves = new List<LegalMove>(4);
 
+        // ============================================================
+        // 名单与队伍（2v2 用）
+        //
+        // ⚠️ 设计取舍：**保留 PlayerA / PlayerB 属性不动**。
+        //
+        // 它们是"两人对偶"写法，但全项目（含 465 项测试）都依赖它们；
+        // 直接改成"只有名单"会让改动扩散到每一处。所以这里**在它们之上**
+        // 加一层名单 + 队伍：
+        //   · 1v1：名单 = [A, B]，队伍 = {A:0, B:1}
+        //   · 2v2：名单 = [A, B, C, D]，队伍 = {A:0, B:1, C:0, D:1}
+        //     （A/C 一队，B/D 一队 —— 交错排列，便于 UI 左右各两人）
+        //
+        // 于是"对手"从"另一个人"变成"所有不同队伍的人"，其余规则不变。
+        // ============================================================
+
+        /// <summary>参战玩家（按加入顺序）。1v1 时为 2 人，2v2 时为 4 人。</summary>
+        public IReadOnlyList<PlayerState> Players => _players;
+
+        /// <summary>每人的队伍号（0 / 1）。1v1 时 A=0、B=1。</summary>
+        public int TeamOf(PlayerState player)
+        {
+            if (player == null) return -1;
+            return _team.TryGetValue(player, out int team) ? team : -1;
+        }
+
+        /// <summary>这两位是不是队友（同一队伍）。</summary>
+        public bool IsTeammate(PlayerState a, PlayerState b)
+        {
+            int ta = TeamOf(a);
+            return ta >= 0 && ta == TeamOf(b);
+        }
+
+        /// <summary>
+        /// **所有仍在场的对手**（不同队伍且活着）。
+        ///
+        /// 1v1 时恰好一个人；2v2 时最多两个。
+        /// 排除了阵亡者 —— 否则界面会把死人列成可选目标。
+        /// </summary>
+        public IReadOnlyList<PlayerState> OpponentsOf(PlayerState player)
+        {
+            var result = new List<PlayerState>(2);
+            if (player == null) return result;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (ReferenceEquals(p, player)) continue;
+                if (IsTeammate(p, player)) continue;
+                if (!p.IsAlive) continue;
+
+                result.Add(p);
+            }
+
+            return result;
+        }
+
+        /// <summary>某人的队友（不含自己），含阵亡者 —— 用于界面显示。</summary>
+        public IReadOnlyList<PlayerState> TeammatesOf(PlayerState player)
+        {
+            var result = new List<PlayerState>(2);
+            if (player == null) return result;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (ReferenceEquals(p, player)) continue;
+                if (!IsTeammate(p, player)) continue;
+
+                result.Add(p);
+            }
+
+            return result;
+        }
+
+        /// <summary>某队是否已全灭（队伍里所有人都阵亡）。</summary>
+        public bool IsTeamWiped(int team)
+        {
+            bool any = false;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                if (TeamOf(_players[i]) != team) continue;
+
+                any = true;
+                if (_players[i].IsAlive) return false;
+            }
+
+            // 该队一个人都没有时不算"全灭"（避免判定误伤）
+            return any;
+        }
+
+        private readonly List<PlayerState> _players = new List<PlayerState>(4);
+        private readonly Dictionary<PlayerState, int> _team =
+            new Dictionary<PlayerState, int>();
+
+        /// <summary>登记一名参战玩家及其队伍（构造时用；也供 2v2 扩展）。</summary>
+        private void Register(PlayerState player, int team)
+        {
+            if (player == null) return;
+
+            _players.Add(player);
+            _team[player] = team;
+        }
+
         public GameManager(PlayerState a, PlayerState b,
                            IChoiceProvider providerA, IChoiceProvider providerB)
         {
@@ -159,6 +263,10 @@ namespace FingerDiceDuel.Core
             PlayerB = b ?? throw new ArgumentNullException(nameof(b));
             ChoiceProviderA = providerA;
             ChoiceProviderB = providerB;
+
+            Register(PlayerA, 0);
+            Register(PlayerB, 1);
+
             CurrentPlayer = a;
             TurnCount = 0;
 
@@ -166,7 +274,108 @@ namespace FingerDiceDuel.Core
             NotifyMatchReset();
         }
 
-        public PlayerState GetOpponent(PlayerState p) => p == PlayerA ? PlayerB : PlayerA;
+        /// <summary>
+        /// **2v2**：再加两名玩家（C / D）。
+        ///
+        /// 队伍交错排列（A/C 同队、B/D 同队），这样界面上"左边两人 vs 右边两人"
+        /// 与名单顺序一致，不必额外排序。
+        ///
+        /// 必须在**对局开始前**调用（第一回合之后加入会让回合顺序错乱）。
+        /// </summary>
+        public void AddPlayersFor2v2(PlayerState c, IChoiceProvider providerC,
+                                     PlayerState d, IChoiceProvider providerD)
+        {
+            if (c == null || d == null)
+                throw new ArgumentNullException(nameof(c), "2v2 的第三/第四名玩家不能为空。");
+
+            PlayerC = c;
+            PlayerD = d;
+            ChoiceProviderC = providerC;
+            ChoiceProviderD = providerD;
+
+            Register(c, TeamOf(PlayerA));    // C 与 A 同队
+            Register(d, TeamOf(PlayerB));    // D 与 B 同队
+
+            c.Character?.OnMatchReset(c, this);
+            d.Character?.OnMatchReset(d, this);
+        }
+
+        /// <summary>2v2 的第三名玩家（1v1 时为 null）。</summary>
+        public PlayerState PlayerC { get; private set; }
+
+        /// <summary>2v2 的第四名玩家（1v1 时为 null）。</summary>
+        public PlayerState PlayerD { get; private set; }
+
+        public IChoiceProvider ChoiceProviderC { get; set; }
+        public IChoiceProvider ChoiceProviderD { get; set; }
+
+        /// <summary>
+        /// 这张手牌属于谁（在**全部**参战玩家里查）。
+        ///
+        /// 2v2 需要它：运算目标是"某位对手的一只手"，
+        /// 而那位对手不一定是 <see cref="GetOpponent"/> 返回的第一位。
+        /// </summary>
+        public PlayerState OwnerOfHand(Hand hand)
+        {
+            if (hand == null) return null;
+
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i].Owns(hand)) return _players[i];
+
+            return null;
+        }
+
+        /// <summary>
+        /// 下一位该行动的玩家：按名单顺序轮转，**跳过已阵亡者**。
+        ///
+        /// 为什么不能沿用"切换成对手"：那是 1v1 写法 ——
+        /// 4 个人时会让 A↔B 互相打、C/D 永远轮不到。
+        ///
+        /// 名单顺序是刻意排成"队伍交错"的（A 队0、B 队1、C 队0、D 队1），
+        /// 所以轮转天然形成两队的交替出手。
+        /// </summary>
+        private PlayerState NextPlayerAfter(PlayerState current)
+        {
+            int count = _players.Count;
+            if (count == 0) return null;
+
+            int start = _players.IndexOf(current);
+            if (start < 0) start = 0;
+
+            // 至多绕一圈：若所有人都阵亡则不返回任何人
+            for (int step = 1; step <= count; step++)
+            {
+                PlayerState candidate = _players[(start + step) % count];
+                if (candidate.IsAlive) return candidate;
+            }
+
+            return null;
+        }
+
+        /// <summary>兼容旧接口：取"某一个"对手。
+        ///
+        /// ⚠️ 1v1 之外请改用 <see cref="OpponentsOf"/>（可能不止一个）。
+        ///
+        /// ⚠️ 这里**不按存活过滤**：它是"取另一个人"的通用工具，
+        /// 结算流程（含"双方同归于尽"这种边界）需要它总能给出一个结果。
+        /// 按存活过滤会把"双方都阵亡"变成 null -> 结算里 NRE（真实 bug）。
+        /// 需要"可攻击目标"请用 <see cref="OpponentsOf"/>。
+        /// </summary>
+        public PlayerState GetOpponent(PlayerState p)
+        {
+            if (p == null) return null;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState other = _players[i];
+                if (ReferenceEquals(other, p)) continue;
+                if (IsTeammate(other, p)) continue;
+
+                return other;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// 查询"AI 已经替某一方做出的抉择"（由上层 BoardController 注入）。
@@ -205,8 +414,21 @@ namespace FingerDiceDuel.Core
             CurrentPlayer = player;
         }
 
+        /// <summary>
+        /// 取某人的抉择器。
+        ///
+        /// 2v2 有 4 个人，所以按身份逐个匹配 ——
+        /// 不能用"A 就是 providerA、其余都是 providerB"这种二元写法。
+        /// </summary>
         public IChoiceProvider GetChoiceProvider(PlayerState p)
-            => p == PlayerA ? ChoiceProviderA : ChoiceProviderB;
+        {
+            if (ReferenceEquals(p, PlayerA)) return ChoiceProviderA;
+            if (ReferenceEquals(p, PlayerB)) return ChoiceProviderB;
+            if (ReferenceEquals(p, PlayerC)) return ChoiceProviderC;
+            if (ReferenceEquals(p, PlayerD)) return ChoiceProviderD;
+
+            return null;
+        }
 
         // ============================================================
         // 整场复位
@@ -252,13 +474,19 @@ namespace FingerDiceDuel.Core
             _legalMoves.Clear();
             if (actor == null || IsGameOver) return _legalMoves;
 
-            PlayerState opponent = GetOpponent(actor);
+            // ⚠️ 用"所有对手"而不是"某一个对手" ——
+            // 2v2 里 A 可以打 B 或 D，只列第一个会漏掉另一个。
+            IReadOnlyList<PlayerState> foes = OpponentsOf(actor);
+
             foreach (Hand mine in actor.Hands)
             {
                 if (mine.IsLocked) continue;
-                foreach (Hand theirs in opponent.Hands)
-                    _legalMoves.Add(new LegalMove(actor, mine, theirs));
+
+                for (int i = 0; i < foes.Count; i++)
+                    foreach (Hand theirs in foes[i].Hands)
+                        _legalMoves.Add(new LegalMove(actor, mine, theirs));
             }
+
             return _legalMoves;
         }
 
@@ -276,10 +504,20 @@ namespace FingerDiceDuel.Core
 
             if (!actor.Owns(actedHand)) { reason = "运算源必须是行动方自己的手。"; return false; }
 
-            PlayerState opponent = GetOpponent(actor);
-            if (!opponent.Owns(targetHand))
+            // ⚠️ 判据是"**是不是队友**"，不是"是不是那唯一一个对手"。
+            //
+            // 1v1 里两者等价；2v2 里 A 可以打 B 或 D，只认"第一个对手"会把
+            // 打 D 误判成非法（真实 bug：2v2 测试全部撞在这条上）。
+            PlayerState targetOwner = OwnerOfHand(targetHand);
+            if (targetOwner == null)
             {
-                reason = "运算目标必须是对方的手（不能对自己的手运算）。";
+                reason = "运算目标必须属于某位参战玩家。";
+                return false;
+            }
+
+            if (IsTeammate(actor, targetOwner))
+            {
+                reason = "运算目标必须是对手的手（不能对队友或自己的手运算）。";
                 return false;
             }
 
@@ -519,7 +757,14 @@ namespace FingerDiceDuel.Core
             if (!IsGameOver)
             {
                 TurnCount++;
-                CurrentPlayer = opponent;
+
+                // ⚠️ 必须基于**实际出招的 actor** 轮转，不能用 CurrentPlayer。
+                //
+                // `ExecuteTurn(actor, ...)` 允许 actor 与 CurrentPlayer 不一致
+                // （测试会显式指定某一方，UI 也可能这样调用）。
+                // 用 CurrentPlayer 的话，第二次调用会把回合**转回**第一个人 ——
+                // 表现为"双方交替错位一轮"（真实 bug，两条盾牌测试抓到）。
+                CurrentPlayer = NextPlayerAfter(actor);
 
                 // 5b. 回合数上限：打满 <see cref="TurnLimit"/> 回合仍未分出胜负 -> 平局。
                 //     必须在切换回合之后判断（TurnCount 记的是"已完成的回合数"）。
@@ -570,8 +815,7 @@ namespace FingerDiceDuel.Core
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
             TurnCount++;
-            CurrentPlayer = opponent;
-
+            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
             CheckTurnLimit();   // 跳过同样计入回合数上限
         }
 
@@ -592,7 +836,7 @@ namespace FingerDiceDuel.Core
             _brokenThisTurn.Clear();
 
             TurnCount++;
-            CurrentPlayer = opponent;
+            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
 
             CheckTurnLimit();
         }
@@ -662,13 +906,50 @@ namespace FingerDiceDuel.Core
 
         private void CheckGameOver()
         {
-            if (!PlayerA.IsDead && !PlayerB.IsDead) return;
+            // 只要**还有两个以上队伍**活着，对局就继续。
+            //
+            // 这样 1v1（2 人 2 队）与 2v2（4 人 2 队）用同一套判定：
+            //   · 1v1：任一人阵亡 -> 只剩一队 -> 结束
+            //   · 2v2：某队两人都阵亡 -> 只剩一队 -> 结束
+            //
+            // ⚠️ 不能按"某个人阵亡"结束 —— 2v2 里队友还活着时对局必须继续。
+            bool[] alive = { false, false };
+            for (int i = 0; i < _players.Count; i++)
+            {
+                int team = TeamOf(_players[i]);
+                if (team < 0 || team > 1) continue;
+
+                if (_players[i].IsAlive) alive[team] = true;
+            }
+
+            if (alive[0] && alive[1]) return;
 
             IsGameOver = true;
-            if (PlayerA.IsDead && PlayerB.IsDead)
-                Winner = null; // 同归于尽
-            else
-                Winner = PlayerA.IsDead ? PlayerB : PlayerA;
+
+            if (!alive[0] && !alive[1])
+            {
+                Winner = null;      // 同归于尽 / 双方全灭 -> 平局
+                return;
+            }
+
+            // 赢家取"还活着的那一队里第一个还活着的人"（供战报显示）
+            int winningTeam = alive[0] ? 0 : 1;
+            Winner = FirstAliveInTeam(winningTeam);
         }
+
+        /// <summary>某队里第一个还活着的人；都阵亡则返回 null。</summary>
+        private PlayerState FirstAliveInTeam(int team)
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                if (TeamOf(_players[i]) != team) continue;
+                if (_players[i].IsAlive) return _players[i];
+            }
+
+            return null;
+        }
+
+        /// <summary>赢下这一局的是哪一队（无赢家时为 -1）。</summary>
+        public int WinningTeam => Winner == null ? -1 : TeamOf(Winner);
     }
 }

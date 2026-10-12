@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
@@ -48,6 +48,22 @@ namespace FingerDiceDuel.Tests
         {
             SetBothHands(a, value);
             SetBothHands(b, value);
+        }
+
+        /// <summary>
+        /// 2v2：把**四名**玩家的所有手牌设成同一个值。
+        ///
+        /// 与 <see cref="SetAllHands"/> 同一个用途 —— 让数值完全确定，
+        /// 避免断言依赖前面回合留下的数字。
+        /// </summary>
+        public static void SetAllFourHands(GameManager game, int value = 1)
+        {
+            if (game == null) return;
+
+            SetBothHands(game.PlayerA, value);
+            SetBothHands(game.PlayerB, value);
+            if (game.PlayerC != null) SetBothHands(game.PlayerC, value);
+            if (game.PlayerD != null) SetBothHands(game.PlayerD, value);
         }
 
         /// <summary>
