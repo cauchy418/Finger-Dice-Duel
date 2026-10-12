@@ -131,11 +131,18 @@ namespace FingerDiceDuel.UI
         /// <summary>2v2 经典玩法的先攻执行层（掷骰 -> 定座位 -> 依次决定）。</summary>
         private TwoOnTwoStartController _twoOnTwoStart;
 
-        /// <summary>2v2 建局时的玩家列表（按"掷骰前"的顺序）。</summary>
-        private List<PlayerState> _twoOnTwoPlayers;
-
-        /// <summary>我在 <see cref="_twoOnTwoPlayers"/> 里的下标。</summary>
+        /// <summary>我在 <see cref="_twoOnTwoSeated"/> 里的下标（0 = 1 号位）。</summary>
         private int _twoOnTwoMeIndex;
+
+        /// <summary>
+        /// 2v2 落座后的四人，**按座位 1..4 排列**（下标 0 = 1 号位）。
+        ///
+        /// 环形界面直接用它，不必再反查座位。
+        /// </summary>
+        private List<PlayerState> _twoOnTwoSeated;
+
+        /// <summary>2v2 里"我"坐在几号位（1..4）。</summary>
+        private int _twoOnTwoMySeat = 1;
 
         /// <summary>2v2 的第三 / 第四位抉择器（C / D 槽位）。</summary>
         private IChoiceProvider _choiceC;
@@ -804,14 +811,39 @@ namespace FingerDiceDuel.UI
             _twoOnTwoStart = TwoOnTwoStartController.RollAndBegin(
                 players, teams, new System.Random());
 
-            // ⚠️ **必须记下"我是哪一位"** ——
-            //    不能按名字反查：队友/对手可能撞名
-            //    （例如两名对手随机到同一个角色、或都是"白板"），
-            //    那时会认错人（真实风险）。
-            _twoOnTwoMeIndex = 0;             // 建局时我把自己的角色放在 players[0]
-            _twoOnTwoPlayers = players;
+            // AI 代做（人类那一步也由 AI 代做 —— 先攻界面是后续工作，
+            // 现在先用默认策略把整轮走完，让玩家能看到结果并立即开局）。
+            _twoOnTwoStart.AutoResolve(null, TwoOnTwoStartController.DefaultAiSplit);
 
-            ShowTwoOnTwoInitiativeScreen();
+            // 把分配好的初始手值写进四个人的手牌（**只写数值、不触发效果**）。
+            _twoOnTwoStart.ApplyToPlayers();
+
+            // 按**先攻得出的座位**重排四个人：seated[0] = 1 号位。
+            var seated = new List<PlayerState>(4);
+            var seatedProviders = new List<SimpleChoiceProvider>(4);
+            for (int seat = 1; seat <= 4; seat++)
+            {
+                PlayerState p = _twoOnTwoStart.PlayerAtSeat(seat);
+                seated.Add(p);
+
+                seatedProviders.Add(_sinkByPlayer.TryGetValue(p, out SimpleChoiceProvider sp)
+                    ? sp
+                    : new SimpleChoiceProvider());
+            }
+
+            // 我在新的座位顺序里的下标
+            int myIndex = 0;
+            for (int i = 0; i < seated.Count; i++)
+                if (ReferenceEquals(seated[i], players[_twoOnTwoMeIndex])) myIndex = i;
+
+            _choiceA = seatedProviders[0];
+            _choiceB = seatedProviders[1];
+            _choiceC = seatedProviders[2];
+            _choiceD = seatedProviders[3];
+
+            BuildTwoOnTwoMatch(seated, seatedProviders, myIndex);
+
+            StartPreparedMatch();
         }
 
         /// <summary>
@@ -828,30 +860,15 @@ namespace FingerDiceDuel.UI
         {
             if (_twoOnTwoStart == null) return;
 
-            PlayerState me = MeInTwoOnTwo();
-            _twoOnTwoStart.AutoResolve(
-                p => ReferenceEquals(p, me),
-                TwoOnTwoStartController.DefaultAiSplit);
+            // 整轮都交给 AI（先攻界面是后续工作）——
+            // 现在先把结果算完，玩家开局后就能直接看到四人的初始手值。
+            _twoOnTwoStart.AutoResolve(null, TwoOnTwoStartController.DefaultAiSplit);
 
             string text = _twoOnTwoStart.SeatSummary;
             if (!_twoOnTwoStart.IsFinished)
                 text += "\n" + _twoOnTwoStart.Hint;
 
             ShowModalWithScrollReset("先攻结果", text);
-        }
-
-        /// <summary>
-        /// 2v2 里"我"是哪位玩家。
-        ///
-        /// 按**建局时记下的位置**取，而不是按名字（名字可能重复）。
-        /// </summary>
-        private PlayerState MeInTwoOnTwo()
-        {
-            if (_twoOnTwoStart == null) return null;
-            if (_twoOnTwoPlayers == null) return _twoOnTwoStart.PlayerAtSeat(1);
-
-            int index = Mathf.Clamp(_twoOnTwoMeIndex, 0, _twoOnTwoPlayers.Count - 1);
-            return _twoOnTwoPlayers[index];
         }
 
         /// <summary>
@@ -924,6 +941,25 @@ namespace FingerDiceDuel.UI
             _choiceC = providers[2];
             _choiceD = providers[3];
 
+            BuildTwoOnTwoMatch(seated, providers, meSeat - 1);
+
+            _pendingDefA = setup.DefMe;
+            _pendingDefB = setup.DefFoe1;
+        }
+
+        /// <summary>
+        /// 用"已经按座位 1..4 排好的四个人"建局并建控制器。
+        ///
+        /// 入门（座位玩家选）与经典（座位先攻定）**共用这一段** ——
+        /// 两条路只是"怎么得到这个座位顺序"不同。
+        ///
+        /// <paramref name="meIndex"/> 是我在 <paramref name="seated"/> 里的下标，
+        /// **只有他是人类**，其余三人都是 AI。
+        /// </summary>
+        private void BuildTwoOnTwoMatch(List<PlayerState> seated,
+                                        List<SimpleChoiceProvider> providers,
+                                        int meIndex)
+        {
             _game = GameManager.Create2v2(seated, providers.ConvertAll(x => (IChoiceProvider)x));
 
             // 前两人的 AI 走构造参数（与 1v1 同一路径）；
@@ -931,24 +967,23 @@ namespace FingerDiceDuel.UI
             _controller = new BoardController(
                 _game,
                 providers[0] as IPlayerChoiceSink, providers[1] as IPlayerChoiceSink,
-                aiForA: (meSeat == 1) ? null : (IMoveSelector)MakeAI(),
-                aiForB: (meSeat == 2) ? null : (IMoveSelector)MakeAI());
+                aiForA: (meIndex == 0) ? null : (IMoveSelector)MakeAI(),
+                aiForB: (meIndex == 1) ? null : (IMoveSelector)MakeAI());
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 2; i < 4; i++)
             {
-                if (i == 0 || i == 1) continue;      // 前两人已在构造里传过
-
-                IMoveSelector ai = (i == meSeat - 1) ? null : (IMoveSelector)MakeAI();
+                IMoveSelector ai = (i == meIndex) ? null : (IMoveSelector)MakeAI();
                 _controller.BindPlayer(seated[i], ai, providers[i] as IPlayerChoiceSink);
             }
 
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
 
             // 第一回合从**我**开始（单机主视角先手，便于立即操作）
-            _controller.SetFirstPlayer(seated[meSeat - 1]);
+            _controller.SetFirstPlayer(seated[meIndex]);
 
-            _pendingDefA = setup.DefMe;
-            _pendingDefB = setup.DefFoe1;
+            _twoOnTwoSeated = seated;
+            _twoOnTwoMeIndex = meIndex;
+            _twoOnTwoMySeat = meIndex + 1;
         }
 
         // ---- 屏幕切换 ----
@@ -1273,8 +1308,20 @@ namespace FingerDiceDuel.UI
         {
             ShowScreen(GameScreen.InMatch);
 
-            _board.BindPlayers(_game.PlayerA, _game.PlayerB);
-            _board.SetTitle($"{_pendingDefA.DisplayName}  vs  {_pendingDefB.DisplayName}");
+            // 2v2：四个人绑到环形位置，标题用队伍说明。
+            if (_isTwoOnTwo && _twoOnTwoSeated != null)
+            {
+                _board.BindPlayersRing(_twoOnTwoSeated[0], _twoOnTwoSeated, _twoOnTwoMySeat);
+                _board.SetTitle($"2 v 2　我（{_twoOnTwoSeated[0].Name}）" +
+                                $"　队友（{_twoOnTwoSeated[1].Name}）" +
+                                $"　对手（{_twoOnTwoSeated[2].Name} / {_twoOnTwoSeated[3].Name}）");
+            }
+            else
+            {
+                _board.BindPlayers(_game.PlayerA, _game.PlayerB);
+                _board.SetTitle($"{_pendingDefA.DisplayName}  vs  {_pendingDefB.DisplayName}");
+            }
+
             _board.HideGameOver();
             _board.SetExitButtonVisible(true);
             _board.SetVisible(true);
@@ -1480,14 +1527,35 @@ namespace FingerDiceDuel.UI
                     ? (IReadOnlyList<Hand>)_controller.DefenseShieldChoices
                     : _controller.ChoiceCandidates;
 
-            _board.Refresh(_game.PlayerA, _game.PlayerB,
-                           _controller.SelectedHand,
-                           choices,
-                           showSkipButton: ShowSkipButton(),
-                           skipButtonInteractable: _controller.CanSkipTurn,
-                           turnCount: _controller.DisplayTurn,
-                           turnLimit: _controller.TurnLimit,
-                           extraHighlights: null);
+            // 2v2：四个人绑在环形位置上；下方那组手牌永远是"我"的（可点），
+            // 上方那组跟随**当前行动方**（这样能看见 AI 在打哪只手）。
+            if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
+            {
+                PlayerState me = _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, 3)];
+                _board.SetRingActive(_controller.ActivePlayer, me);
+                _board.RefreshRing(_twoOnTwoSeated);
+
+                // 四角面板只显示名字/血条/状态；手牌仍用上下两组，
+                // 所以这里把"我"和"行动方"的牌刷成最新
+                _board.Refresh(_controller.ActivePlayer, _controller.Defender,
+                               _controller.SelectedHand, choices,
+                               showSkipButton: false,
+                               skipButtonInteractable: false,
+                               turnCount: _controller.DisplayTurn,
+                               turnLimit: _controller.TurnLimit,
+                               extraHighlights: null);
+            }
+            else
+            {
+                _board.Refresh(_game.PlayerA, _game.PlayerB,
+                               _controller.SelectedHand,
+                               choices,
+                               showSkipButton: ShowSkipButton(),
+                               skipButtonInteractable: _controller.CanSkipTurn,
+                               turnCount: _controller.DisplayTurn,
+                               turnLimit: _controller.TurnLimit,
+                               extraHighlights: null);
+            }
 
             _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
 
