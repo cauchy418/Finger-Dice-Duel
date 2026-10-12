@@ -605,6 +605,51 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Priest_heal_after_four_six_eight_is_logged_as_heal_not_attack()
+        {
+            // ⚠️ 玩家实测：牧师 4 选回复后，战斗记录写成
+            //   「牧师 右手：8+6=4（攻击，造成0点伤害）」
+            // 应写成"回复"，不该是"攻击"。
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkW = new SimpleChoiceProvider();
+            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var board = new BoardController(game, sinkP, sinkW);
+
+            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetHand(priest.LeftHand, 5);
+            TestSetup.SetHand(priest.RightHand, 5);
+            TestSetup.SetHand(warrior.LeftHand, 8);
+            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(priest, 10);
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);
+            board.ClickHand(warrior.RightHand);
+            Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
+            Assert.True(board.AcceptPendingChoice(), "选回复。");
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "应进入选治疗目标。");
+            Assert.True(board.ClickHand(priest.RightHand), "点自己的手 = 回自己。");
+
+            // 结算必须发生（而不是"非法运算被拒绝"）
+            Assert.NotNull(board.LastTurn, "应完成结算。");
+
+            // 战斗记录里不能出现"非法运算"
+            for (int i = 0; i < board.Log.Count; i++)
+                Assert.False(board.Log[i].Contains("非法运算"),
+                    $"不该出现非法运算。记录[{i}]：{board.Log[i]}");
+
+            // 记录应说明是回复，而不是攻击
+            string all = string.Join(" | ", board.Log);
+            Assert.False(all.Contains("攻击"),
+                $"选回复后不该把这次记为攻击。记录：{all}");
+            Assert.True(all.Contains("回复"), $"记录应说明是回复。记录：{all}");
+        }
+
+        [Test]
         public void Priest_heal_target_is_mandatory()
         {
             // 玩家要求：选择了回复就不能不回复；运算出 9 也必须回复；

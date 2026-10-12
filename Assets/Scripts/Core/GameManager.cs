@@ -69,6 +69,14 @@ namespace FingerDiceDuel.Core
 
         public int Healed;
 
+        /// <summary>
+        /// 本次回复**效果本身的数值**（牧师 9 -> 9、4/6/8 当回复 -> 该数字）。
+        ///
+        /// 与 <see cref="Healed"/> 的区别：`Healed` 是"行动方实际回了多少血"
+        /// （回给别人时是 0），而本字段是**这次回复的量**，供战报显示。
+        /// </summary>
+        public int HealAmount;
+
         /// <summary>本次回复效果实际作用到谁（牧师可以回给对手）。非回复效果时为 null。</summary>
         public PlayerState HealTarget;
 
@@ -412,6 +420,7 @@ namespace FingerDiceDuel.Core
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
+                            result.HealAmount = amount;
                             result.HealTarget = target;
                             break;
                         }
@@ -475,6 +484,7 @@ namespace FingerDiceDuel.Core
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
+                            result.HealAmount = amount;
                             result.HealTarget = target;
                         }
                         else
@@ -482,6 +492,7 @@ namespace FingerDiceDuel.Core
                             int before = actor.Health;
                             actor.Heal(Hand.HealAmount);
                             result.Healed = actor.Health - before;
+                            result.HealAmount = Hand.HealAmount;
                             result.HealTarget = actor;
                         }
                         break;

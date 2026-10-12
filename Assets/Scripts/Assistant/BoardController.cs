@@ -1827,6 +1827,20 @@ namespace FingerDiceDuel.Assistant
                 case HandEffectType.Attack4:
                 case HandEffectType.Attack6:
                 case HandEffectType.Attack8:
+                    // ⚠️ 牧师可以把 4/6/8 **当回复用**。
+                    // 那种情况下 `Effect` 仍然是 Attack4/6/8（运算结果没变），
+                    // 只是 `HealTarget` 被设上了 —— 所以必须**先**判回复，
+                    // 否则战斗记录会永远写成"攻击，造成 0 点伤害"（玩家实测 bug）。
+                    if (t.HealTarget != null)
+                    {
+                        int amount = t.HealAmount;
+
+                        if (ReferenceEquals(t.HealTarget, t.Actor))
+                            return head + $"（**回复**自己 {amount} 点生命）";
+
+                        return head + $"（**回复** {t.HealTarget.Name} {amount} 点生命）";
+                    }
+
                     if (t.WasDodged)
                     {
                         // 闪避与"潜行免伤"共用同一条通道，所以要说清是哪一种
@@ -1853,11 +1867,11 @@ namespace FingerDiceDuel.Assistant
                                        && !ReferenceEquals(t.HealTarget, t.Actor);
 
                         if (toOther)
-                            return head + $"（回复 {t.HealTarget.Name} 9 点生命）";
+                            return head + $"（回复 {t.HealTarget.Name} {t.HealAmount} 点生命）";
 
                         return t.Healed > 0
                             ? head + $"（回复 {t.Healed} 点生命）"
-                            : head + "（回复 9 点，但已满血 —— 本回合被浪费）";
+                            : head + $"（回复 {t.HealAmount} 点，但已满血 —— 本回合被浪费）";
                     }
 
                 default:
