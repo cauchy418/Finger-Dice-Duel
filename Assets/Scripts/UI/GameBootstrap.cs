@@ -135,6 +135,11 @@ namespace FingerDiceDuel.UI
         /// <summary>2v2：我选的座位（1..4）。</summary>
         private int _seat = 1;
 
+        /// <summary>
+        /// 2v2 **经典**玩法：座位由掷骰先攻决定，所以界面上**不提供座位选择**。
+        /// </summary>
+        private bool _classicSeatByInitiative;
+
         /// <summary>2v2：队友角色索引（对手随机，不由玩家选）。</summary>
         private int _indexMate = 2;
 
@@ -149,6 +154,9 @@ namespace FingerDiceDuel.UI
         private Text _seatSummary;
         private Text _foeSummary;
         private Button[] _seatButtons;
+
+        /// <summary>座位选择整块（经典玩法下隐藏）。</summary>
+        private GameObject _seatPickerRoot;
         private ScreenGroup _screenMode;
         private ScreenGroup _screenDifficulty;
         private ScreenGroup _screenCharacter;
@@ -568,7 +576,22 @@ namespace FingerDiceDuel.UI
 
             Button intro = MakeModeButton(_selectRoot, "ModeIntro", new Vector2(0f, 110f),
                 "入门", "不掷骰先攻，双方从 1/1 开始",
-                () => { Mode = PlayMode.Intro; ShowScreen(GameScreen.DifficultyMenu); });
+                () =>
+                {
+                    Mode = PlayMode.Intro;
+
+                    // 玩家要求：**2v2 的入门没有难度选择** ——
+                    // 2v2 涉及队友与四人配合，AI 太"笨"会让整局没法验证，
+                    // 所以一律按困难（不调难度 = 完全确定性），直接进角色选择。
+                    if (_isTwoOnTwo)
+                    {
+                        Difficulty = AiDifficulty.Hard;
+                        GoToCharacterSelect();
+                        return;
+                    }
+
+                    ShowScreen(GameScreen.DifficultyMenu);
+                });
 
             Button classic = MakeModeButton(_selectRoot, "ModeClassic", new Vector2(0f, -60f),
                 "经典", "掷 1d20 决定初始手值与先手",
@@ -643,6 +666,13 @@ namespace FingerDiceDuel.UI
         {
             if (_isTwoOnTwo)
             {
+                // 经典：座位由先攻决定 -> 不选座位
+                if (Mode == PlayMode.Classic)
+                {
+                    ShowClassicTwoOnTwoCharacterScreen();
+                    return;
+                }
+
                 RollOpponents();
                 RefreshTwoOnTwoSummary();
                 ShowScreen(GameScreen.TwoOnTwoCharacter);
@@ -650,6 +680,24 @@ namespace FingerDiceDuel.UI
             }
 
             ShowScreen(GameScreen.CharacterSelect);
+        }
+
+        /// <summary>
+        /// 2v2 经典玩法：**没有座位选择**（玩家要求）。
+        ///
+        /// 座位完全由"四人各投 1d20"的先攻结果决定：
+        ///   · 大数较大的那一队坐 1 号位与 4 号位（大数 = 1 号、小数 = 4 号）
+        ///   · 另一队坐 2 号位（大数）与 3 号位（小数）
+        ///   · 大数相同则比小数；都相同则随机选一队
+        ///
+        /// 玩家在这里只选**自己的角色**（+ 队友角色），座位稍后掷骰得出。
+        /// </summary>
+        private void ShowClassicTwoOnTwoCharacterScreen()
+        {
+            _classicSeatByInitiative = true;
+            RollOpponents();
+            RefreshTwoOnTwoSummary();
+            ShowScreen(GameScreen.TwoOnTwoCharacter);
         }
 
         /// <summary>
@@ -709,6 +757,12 @@ namespace FingerDiceDuel.UI
             ShowComingSoon("2v2 四人棋盘（对局已建好，界面开发中）");
         }
 
+        /// <summary>
+        /// 2v2 人机练习：与 1v1 共用"玩法（入门 / 经典）"流程。
+        ///
+        /// ⚠️ 但 **2v2 的入门没有难度选择**（玩家要求）——
+        /// 进入门时直接按困难并跳到角色选择。
+        /// </summary>
         private void OnTwoOnTwoPracticeClicked()
         {
             _isTwoOnTwo = true;
@@ -1590,7 +1644,24 @@ namespace FingerDiceDuel.UI
             _screenTwoOnTwoCharacter.Add(title.gameObject);
 
             // ---- 座位选择（1..4）----
-            _screenTwoOnTwoCharacter.Add(MakeSectionLabel("我的座位", new Vector2(0f, 418f)));
+            //
+            // ⚠️ **经典玩法下这一整块都不显示**（玩家要求）：
+            //    经典是"四人各投 1d20 定座位"，玩家不该也不能自己挑座位。
+            //    入门玩法没有先攻骰，座位才由玩家选。
+            _seatPickerRoot = new GameObject("SeatPicker", typeof(RectTransform));
+            _seatPickerRoot.transform.SetParent(_selectRoot, false);
+            var seatRect = _seatPickerRoot.GetComponent<RectTransform>();
+            seatRect.anchorMin = seatRect.anchorMax = new Vector2(0.5f, 0.5f);
+            seatRect.pivot = new Vector2(0.5f, 0.5f);
+            seatRect.sizeDelta = new Vector2(1400f, 200f);
+            seatRect.anchoredPosition = new Vector2(0f, 380f);
+            _screenTwoOnTwoCharacter.Add(_seatPickerRoot);
+
+            Text seatLabel = MakeText(seatRect, "SeatLabel", new Vector2(0f, 42f),
+                                      new Vector2(600f, 30f), 24, TextAnchor.MiddleCenter,
+                                      new Color(0.88f, 0.91f, 0.97f));
+            UiFont.ApplyBold(seatLabel);
+            seatLabel.text = "我的座位";
 
             _seatButtons = new Button[SeatLayout.SeatCount];
             for (int i = 0; i < SeatLayout.SeatCount; i++)
@@ -1598,11 +1669,10 @@ namespace FingerDiceDuel.UI
                 int seat = i + 1;
                 float x = -300f + i * 200f;
 
-                Button b = MakeButton(_selectRoot, "Seat" + seat, new Vector2(x, 366f),
+                Button b = MakeButton(seatRect, "Seat" + seat, new Vector2(x, -10f),
                                       new Vector2(170f, 52f), "座位 " + seat);
                 b.onClick.AddListener(() => SelectSeat(seat));
                 _seatButtons[i] = b;
-                _screenTwoOnTwoCharacter.Add(b.gameObject);
             }
 
             // ---- 实时显示：队友与对手分别在哪一侧 ----
@@ -1680,6 +1750,24 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void RefreshTwoOnTwoSummary()
         {
+            // 经典玩法：没有座位可选，座位稍后由先攻骰决定
+            if (_seatPickerRoot != null)
+                _seatPickerRoot.SetActive(!_classicSeatByInitiative);
+
+            if (_classicSeatByInitiative)
+            {
+                if (_seatSummary != null)
+                {
+                    _seatSummary.text =
+                        "经典玩法：开始后四人各投 1d20 决定座位 —— " +
+                        "大数较大的那一队去 1 号位与 4 号位（大数 = 1 号、小数 = 4 号），" +
+                        "另一队去 2 号位与 3 号位。我坐哪个座位由先攻结果决定。";
+                }
+
+                RefreshFoeSummary();
+                return;
+            }
+
             int me = _seat;
             int mate = SeatLayout.TeammateSeat(me);
             bool mateIsPrev = SeatLayout.TeammateIsPrevious(me);
@@ -1703,6 +1791,22 @@ namespace FingerDiceDuel.UI
             }
 
             // 高亮当前座位
+            HighlightSeat(me);
+        }
+
+        /// <summary>经典玩法下的对手摘要（座位未知，所以只说角色）。</summary>
+        private void RefreshFoeSummary()
+        {
+            if (_foeSummary == null || _roster.Count == 0) return;
+
+            CharacterDefinition f1 = _roster[Mathf.Clamp(_indexFoe1, 0, _roster.Count - 1)];
+            CharacterDefinition f2 = _roster[Mathf.Clamp(_indexFoe2, 0, _roster.Count - 1)];
+            _foeSummary.text = $"对手（随机角色）：{f1.DisplayName}　{f2.DisplayName}";
+        }
+
+        /// <summary>高亮当前选中的座位按钮。</summary>
+        private void HighlightSeat(int me)
+        {
             if (_seatButtons != null)
             {
                 for (int i = 0; i < _seatButtons.Length; i++)
