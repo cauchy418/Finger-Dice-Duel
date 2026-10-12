@@ -43,10 +43,14 @@ namespace FingerDiceDuel.Tests
             Assert.True(ReferenceEquals(board.ActivePlayer, ranger), "游侠先手");
 
             // 玩家操作：点自己的 5，再点对面的 1
+            //
+            // ⚠️ 顺序（与玩家确认的交互一致）：
+            //   ① 点自己的手  ② 点对手的手（运算源）-> 结果确定
+            //   ③ 这时才会问角色抉择（游侠的强化射击）
+            // 所以这里**不需要**在两步之间调 ConfirmTargetPlayer ——
+            // 确认目标玩家是"攻击结算前"的一步，而角色抉择在它之前。
             Assert.True(board.ClickHand(ranger.LeftHand), "点击左手应被接受");
-            board.ConfirmTargetPlayer();
             Assert.True(board.ClickHand(foe.RightHand), "点击对面右手应被接受");
-            board.ConfirmTargetPlayer();
 
             string scene =
                 $"PendingActedHand={board.PendingActedHand?.Value} " +

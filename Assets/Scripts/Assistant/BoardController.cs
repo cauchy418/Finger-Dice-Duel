@@ -762,6 +762,21 @@ namespace FingerDiceDuel.Assistant
                     _selectedTarget = hand;
                     TargetPlayer = OwnerOf(hand) ?? Defender;
 
+                    // 立刻记下这次运算的两只手 —— 后面的"角色抉择"阶段
+                    // （游侠强化、牧师攻击/回复/治疗目标）都要用到它们，
+                    // 而这些抉择发生在 ConfirmTargetPlayer（CommitMove）**之前**。
+                    //
+                    // ⚠️ 曾经只在这里设 `_selectedTarget`，`_pendingActedHand` /
+                    // `_pendingTargetHand` / `_pendingIsAttack` 都要等 CommitMove
+                    // 才赋值 —— 于是抉择阶段读到的全是 null/false（测试抓到）。
+                    _pendingActedHand = SelectedHand;
+                    _pendingTargetHand = hand;
+
+                    // 用与"创建抉择"完全同一个判定，避免两处各写一份（会漂移）
+                    _pendingIsAttack = new PreTurnChoiceContext(
+                        ActivePlayer, TargetPlayer ?? Defender,
+                        SelectedHand, hand).IsAttack;
+
                     // 第 ③ 步：运算源已经定了 -> 结果已知 -> 这时才能问得准确。
                     // 牧师运算出 4/6/8 时先问"当攻击还是当回复"。
                     if (BeginPreTargetChoicesIfAny())
@@ -1137,10 +1152,17 @@ namespace FingerDiceDuel.Assistant
             var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
 
-            // 只有"回复"才需要选治疗目标；攻击 / 护盾 / 无效果都不走这里
-            if (context.IsAttack) return false;
-            if (context.Effect != HandEffectType.Heal) return false;
+            // ⚠️ 必须挂上"本回合已答"的查询 —— 牧师的 4/6/8 靠它读
+            // "玩家刚才选了回复还是攻击"（`ChoseToHeal` 的 AnsweredLookup 路径）。
+            // 漏了它，牧师会把"选了回复"读成"没选" -> 不问治疗目标 ->
+            // 阶段退回 ChoosingTargetPlayer（真实 bug）。
+            context.AnsweredLookup = GetAnsweredChoice;
 
+            // ⚠️ 这里**不能**按"结果是不是攻击值（4/6/8）"过滤：
+            // 4/6/8 的回复分支里运算结果本身就是 4/6/8，
+            // 用 `context.IsAttack` 过滤会把它误判成攻击而直接跳过 ——
+            // 表现成"选了回复却还要再点一次对手"（玩家实测 bug）。
+            // 该不该进这一步由**调用点**决定（纯 9 或 4/6/8 选了回复）。
             _pendingRequests.Clear();
             _pendingRequestIndex = 0;
             _pendingChoiceCandidates.Clear();
@@ -1160,6 +1182,22 @@ namespace FingerDiceDuel.Assistant
             // 借用那个标志会让阶段被报成 ChoosingPreTargetChoice（真实 bug）。
             AdvanceCharacterChoice();
             return Phase == BoardPhase.ChoosingPreTurnChoice;
+        }
+
+        /// <summary>
+        /// 玩家在这次"攻击还是回复"抉择里是否选了**回复**。
+        ///
+        /// 读的是本回合记录下来的答案 ——
+        /// 不能用 sink 的 <c>GetChoice</c>（它会套用回退值，
+        /// 把"选了攻击"读成"选了回复"）。
+        /// </summary>
+        private bool ChoseHealInAttackOrHeal()
+        {
+            if (!_answeredThisTurn.TryGetValue(AnswerKey(HandEffect.PriestAttackOrHeal, 0),
+                                               out Hand answer))
+                return false;
+
+            return answer != null;
         }
 
         private void AdvanceCharacterChoice()
@@ -1183,7 +1221,11 @@ namespace FingerDiceDuel.Assistant
                     //
                     //   玩家明确要求：选完回复后**那一次点击就该完成回复**，
                     //   不要先让人点一次对手的手（那只是确认目标玩家、纯属多余）。
-                    if (TryEnterHealTargetChoice()) return;
+                    //
+                    //   ⚠️ 必须先用**记录下来的答案**确认玩家真的选了回复：
+                    //   4/6/8 的运算结果本身就是攻击值，不能靠"结果是不是攻击"
+                    //   来判断 —— 那样会把攻击分支也当成回复（玩家实测 bug）。
+                    if (ChoseHealInAttackOrHeal() && TryEnterHealTargetChoice()) return;
 
                     // ①-b 攻击：仍要确认目标玩家（玩家确认过的交互不变）
                     if (NeedsTargetAfterOperation())

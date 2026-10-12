@@ -529,6 +529,112 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.LastTurn.DamageDealt > 0, "选攻击应造成伤害。");
         }
 
+        [Test]
+        public void Priest_heal_after_four_six_eight_completes_on_the_single_target_click()
+        {
+            // ⚠️ 玩家实测 bug 的回归：
+            //   运算出 6、选了「回复」之后，还要再点一次对手才轮到选治疗目标 ——
+            //   多出来的那一步只是"确认目标玩家"，纯属多余。
+            //
+            // 根因：判断"要不要进选治疗目标"时用了 `context.IsAttack`，
+            // 而 4/6/8 的**运算结果本身就是攻击值**，于是被误判成攻击而跳过。
+            //
+            // 玩家要求的交互：选了回复 -> **点一只手就是选治疗目标** -> 结算。
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkW = new SimpleChoiceProvider();
+            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var board = new BoardController(game, sinkP, sinkW);
+
+            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetHand(priest.LeftHand, 5);
+            TestSetup.SetHand(priest.RightHand, 5);     // 另一只手（避免巧合）
+            TestSetup.SetHand(warrior.LeftHand, 8);
+            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(priest, 10);
+            TestSetup.SetHealth(warrior, 10);
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);           // ① 自己的手
+            board.ClickHand(warrior.RightHand);         // ② 对手的手 -> 5+1=6
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
+            Assert.True(board.AcceptPendingChoice(), "选「回复 6」应被接受。");
+
+            // 关键断言：**直接**进入选治疗目标，不再要求确认目标玩家
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "选了回复后应直接进入选治疗目标，不该先要求确认目标玩家。");
+            Assert.AreEqual(HandEffect.PriestHealTarget, board.PendingRequest.Value.Effect);
+            Assert.False(board.CanDeclinePendingChoice,
+                "回复是必选的（玩家要求：选了回复就不能不回复），不该有「不回复」按钮。");
+
+            // 点自己的手 -> 回自己；一次点击就完成
+            Assert.True(board.ClickHand(priest.RightHand), "点自己的手应表示回自己。");
+            Assert.AreEqual(16, priest.Health, "回复 6 点（10 + 6）。");
+            Assert.AreEqual(10, warrior.Health, "不该治疗对手。");
+        }
+
+        [Test]
+        public void Priest_can_heal_the_opponent_after_four_six_eight()
+        {
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkW = new SimpleChoiceProvider();
+            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var board = new BoardController(game, sinkP, sinkW);
+
+            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetHand(priest.LeftHand, 5);
+            TestSetup.SetHand(priest.RightHand, 5);
+            TestSetup.SetHand(warrior.LeftHand, 8);
+            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(priest, 10);
+            TestSetup.SetHealth(warrior, 10);
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);
+            board.ClickHand(warrior.RightHand);
+            Assert.True(board.AcceptPendingChoice(), "选回复。");
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
+            Assert.True(board.ClickHand(warrior.LeftHand), "点对手的手应表示回给他。");
+            Assert.AreEqual(16, warrior.Health, "回复 6 点给对手（10 + 6）。");
+            Assert.AreEqual(10, priest.Health, "自己不该被治疗。");
+        }
+
+        [Test]
+        public void Priest_heal_target_is_mandatory()
+        {
+            // 玩家要求：选择了回复就不能不回复；运算出 9 也必须回复；
+            // 双 9 的两段回复都必须回复 —— 所以没有「不回复」按钮。
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkB = new SimpleChoiceProvider();
+            var game = new GameManager(priest, blank, sinkP, sinkB);
+            var board = new BoardController(game, sinkP, sinkB);
+
+            TestSetup.SetAllHands(priest, blank, 1);
+            TestSetup.SetHand(priest.LeftHand, 8);      // 8+1 = 9 -> 必须回复
+            TestSetup.SetHealth(priest, 10);
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);
+            board.ClickHand(blank.LeftHand);
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
+            Assert.False(board.CanDeclinePendingChoice,
+                "运算出 9 必须回复，不该提供「不回复」按钮。");
+            Assert.False(board.DeclinePendingChoice(),
+                "直接调放弃也应被拒绝。");
+
+            // 点一只手才完成
+            Assert.True(board.ClickHand(priest.RightHand));
+            Assert.AreEqual(19, priest.Health, "9 点回复（10 + 9）。");
+        }
+
         // ============================================================
         // 牧师 4/6/8：提示不能因为"替身的手值"而漏掉（玩家实测报告）
         // ============================================================
@@ -705,24 +811,25 @@ namespace FingerDiceDuel.Tests
                 if (chooseHeal) Assert.True(board.AcceptPendingChoice(), "选回复应被接受。");
                 else Assert.True(board.DeclinePendingChoice(), "选攻击应被接受。");
 
-                // 运算源已经选过了 -> 直接进入"确认目标玩家"（不再回到选目标手）
-                Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
-                    "选完攻击/回复后应进入「确认目标玩家」。");
-                Assert.True(board.ConfirmTargetPlayer(), "确认后应结算。");
-
                 if (chooseHeal)
                 {
-                    // 回复还有一步：**选回复给谁**（玩家要求的顺序：
-                    // 运算出 4 -> 攻击/回复 -> 选回复目标）
+                    // 回复：**点一只手就是选治疗目标**，一次点击即结算。
+                    // （不再先要求"确认目标玩家" —— 那一击就是回复本身）
                     Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                        "选了回复之后还应问「回复给谁」。");
+                        "选了回复后应直接进入「选治疗目标」。");
                     Assert.AreEqual(HandEffect.PriestHealTarget, board.PendingRequest.Value.Effect);
+                    Assert.False(board.CanDeclinePendingChoice, "回复是必选的，不该有「不回复」。");
 
-                    Assert.True(board.ClickHand(priest.RightHand), "回给自己应被接受。");
+                    Assert.True(board.ClickHand(priest.RightHand), "点自己的手 = 回自己。");
                     Assert.True(priest.Health > 10, $"选回复应回血。实际 HP={priest.Health}。");
                 }
                 else
                 {
+                    // 攻击：仍要确认目标玩家
+                    Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                        "选攻击后应进入「确认目标玩家」。");
+                    Assert.True(board.ConfirmTargetPlayer(), "确认后应结算。");
+
                     Assert.NotNull(board.LastTurn);
                     Assert.AreEqual(6, board.LastTurn.ResultValue, "5 + 1 = 6");
                     Assert.True(board.LastTurn.DamageDealt > 0, "选攻击应造成伤害。");
@@ -764,13 +871,13 @@ namespace FingerDiceDuel.Tests
 
             board.AcceptPendingChoice();                // 选「回复」—— 答案存进 sink
 
-            // 跨过"确认目标玩家"这一段（中途会跑 SetupFirstStep）
-            Assert.True(board.ConfirmTargetPlayer(), "确认目标玩家。");
-
-            // 答案必须还在：所以才会问"回复给谁"
+            // 选完回复 -> **直接**进入选治疗目标（不再先确认目标玩家）。
+            // 这一段之间会跑 SetupFirstStep；若那里按"运算源为空"判定回合边界，
+            // 就会把同回合刚答的答案清掉。
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "前置答案若被清掉，这里就会直接按攻击结算而**不问**回复目标。");
-            Assert.AreEqual(HandEffect.PriestHealTarget, board.PendingRequest.Value.Effect);
+                "选了回复后应直接进入选治疗目标。");
+            Assert.AreEqual(HandEffect.PriestHealTarget, board.PendingRequest.Value.Effect,
+                "前置答案若被清掉，这里就读不到'选了回复'，会退回按攻击结算。");
 
             board.ClickHand(priest.RightHand);          // 回给自己
             Assert.AreEqual(14, priest.Health,
@@ -780,7 +887,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_priest_can_heal_after_choosing_heal()
         {
-            // 选「回复」-> 选目标手 -> 确认目标 -> 再问"回复给谁" -> 结算
+            // 选「回复」-> **点一只手选治疗目标** -> 结算（不再先确认目标玩家）
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
             var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
@@ -801,10 +908,8 @@ namespace FingerDiceDuel.Tests
             // 发动 = 当回复用
             Assert.True(board.AcceptPendingChoice(), "选「回复」应被接受。");
 
-            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
-                "选完回复后应进入「确认目标玩家」。");
-
-            Assert.True(board.ConfirmTargetPlayer(), "确认目标玩家。");
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "选完回复后应直接进入「选治疗目标」。");
 
             // 确认之后才问"回复给谁"
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,

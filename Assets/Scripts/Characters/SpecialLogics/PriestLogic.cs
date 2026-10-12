@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -199,10 +199,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// </summary>
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
-
             if (context == null || requests == null) return;
 
-            // ① 双 9 的额外回复：先问目标
+            // ① 双 9 的额外回复：先问目标（**必选**，玩家要求不能放弃）
             //
             // 用**预测**（运算后是否双 9），因为收集发生在运算之前。
             // 这与剑客"追加攻击"的判定同类：都是运算前可算的。
@@ -210,7 +209,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 requests.Add(BuildTargetRequest(context, HandEffect.PriestExtraHealTarget,
                     $"牧师双手都是 {DoubleNineValue}：**额外**回复 {ExtraHealAmount} 点给谁？"));
 
-            // ② 本次运算出 9 -> 问这次回复给谁
+            // ② 本次运算出 9 -> 问这次回复给谁（**必选**）
             if (context.Effect == HandEffectType.Heal)
             {
                 requests.Add(BuildTargetRequest(context, HandEffect.PriestHealTarget,
@@ -218,16 +217,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 return;
             }
 
-            // ③ 4/6/8：**前置抉择里选了回复**才需要问"回复给谁"。
+            // ③ 4/6/8：**前置抉择里选了回复**才需要问"回复给谁"（**必选**）。
             //
-            // 「攻击还是回复」发生在**选目标手之前**，而本方法在选定目标手
-            // **之后**才调用，所以这里能直接读到答案。
-            //
-            // 选了回复却没被问目标 -> 由 BuildTargetRequest 的
-            // declineResult 兜底（回给自己）。
+            // 「攻击还是回复」发生在选定运算源之后、本方法之前，所以这里读得到答案。
             if (context.IsAttack)
             {
-                if (!context.ChoseToHeal()) return;      // 选了攻击 -> 不问
+                if (!context.ChoseToHeal()) return;      // 选了攻击 -> 直接打，不问目标
 
                 requests.Add(BuildTargetRequest(context, HandEffect.PriestHealTarget,
                     $"牧师这次回复 {HealAmountFor(context.Effect)} 点给谁？"));
@@ -270,7 +265,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             return owner;
         }
 
-        /// <summary>构造一个"回复给谁"的抉择。</summary>
+        /// <summary>
+        /// 构造一个"回复给谁"的抉择。
+        ///
+        /// ⚠️ **不允许放弃**（玩家明确要求）：选了回复就必须回复、
+        /// 运算出 9 必须回复、双 9 的两段回复都必须回复。
+        /// 所以没有"不回复"按钮 —— 点一只手即可，点自己的手就是回自己。
+        /// </summary>
         private static ChoiceRequest BuildTargetRequest(PreTurnChoiceContext context,
                                                         HandEffect effect, string prompt,
                                                         System.Func<bool> skipWhen = null)
@@ -283,8 +284,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 effect,
                 prompt + "（点任意一只手代表那位玩家）",
                 candidates,
-                allowDecline: true,
-                declineResult: context.Actor.LeftHand,   // 放弃 = 回给自己
+                allowDecline: false,
+                declineResult: null,
                 decider: context.Actor,
                 skipWhen: skipWhen);
         }
