@@ -149,6 +149,20 @@ namespace FingerDiceDuel.Assistant
         private Hand _selectedTarget;
         private Hand _chosenDefenseShield;
 
+        // ============================================================
+        // 本回合的"运算源 / 目标手"的**独立副本**
+        //
+        // 为什么需要：`SelectedHand` / `_selectedTarget` 会被多处清理
+        // （CancelSelection、SetupFirstStep、上一次结算的收尾），
+        // 而"选目标手之前的抉择"里 **AI 作答会递归回到
+        // AdvanceCharacterChoice**，那条路径上状态可能已被中间的重建清掉 ——
+        // 于是结算时运算源为空，抛"未选择运算源"（被 catch 吞掉后极难排查）。
+        //
+        // 这两个字段只在**回合真正结束时**清空，用来给结算兜底。
+        // ============================================================
+        private Hand _turnActedHand;
+        private Hand _turnTargetHand;
+
         /// <summary>
         /// 构造棋盘控制器。
         ///
@@ -549,6 +563,10 @@ namespace FingerDiceDuel.Assistant
 
             ActivePlayer = _game.CurrentPlayer;
 
+            // 诊断记录每回合清空 —— 它们是跨回合保留的，
+            // 不清空会把"上一回合/上一局"的现场当成这一次的（我踩过两次）。
+            ResetDiagnostics();
+
             // 注意：这里**不**清空 LastTurn。它的语义是"最近一次已结算的回合"，
             // 要一直保留到下一次结算为止 —— 界面需要在玩家为新回合做选择时，
             // 仍然显示上一回合打出了什么。
@@ -940,6 +958,11 @@ namespace FingerDiceDuel.Assistant
                     _pendingActedHand = SelectedHand;
                     _pendingTargetHand = hand;
 
+                    // 记下"本回合真正要运算的两只手"（副本，供结算兜底）。
+                    // 只在回合结束时清 —— 中间的重建不会动它。
+                    _turnActedHand = SelectedHand;
+                    _turnTargetHand = hand;
+
                     // 用与"创建抉择"完全同一个判定，避免两处各写一份（会漂移）
                     _pendingIsAttack = new PreTurnChoiceContext(
                         ActivePlayer, TargetPlayer ?? Defender,
@@ -1066,6 +1089,21 @@ namespace FingerDiceDuel.Assistant
         /// 而"运算源为空"这类问题必须知道阶段才能定位。
         /// </summary>
         public string LastIllegalOperation { get; private set; }
+
+        /// <summary>
+        /// 清空诊断记录（在**每个回合开始时**调用）。
+        ///
+        /// ⚠️ 这些字段会跨回合/跨局保留，不清空会读到**上一次**的残留值 ——
+        ///    我为此白查过两轮。
+        /// </summary>
+        private void ResetDiagnostics()
+        {
+            LastIllegalOperation = null;
+            _advanceTrace.Clear();
+        }
+
+        /// <summary>诊断用：AdvanceCharacterChoice 的进入轨迹（只保留最后若干条）。</summary>
+        private readonly List<string> _advanceTrace = new List<string>(64);
 
         /// <summary>
         /// 测试用：当前对局还活着几名玩家。
@@ -1453,8 +1491,31 @@ namespace FingerDiceDuel.Assistant
 
         private void AdvanceCharacterChoice()
         {
+            _advanceTrace.Add($"enter idx={_pendingRequestIndex}/{_pendingRequests.Count}" +
+                              $" sel={SelectedHand?.Value.ToString() ?? "N"}" +
+                              $" tgt={_selectedTarget?.Value.ToString() ?? "N"}" +
+                              $" pre={_preTargetChoiceActive}");
+
             if (_pendingRequestIndex >= _pendingRequests.Count)
             {
+                // ⚠️ **守卫：运算源必须还在。**
+                //
+                // 走到这里意味着"抉择都问完了，该结算了"，但结算需要
+                // `SelectedHand` / `_selectedTarget`。它们可能在别处被清掉
+                // （`CancelSelection`、`SetupFirstStep`、上一次结算的收尾），
+                // 那样 `ExecuteTurn` 会抛"未选择运算源" ——
+                // 被防御性 catch 接住后记进战报，表现为对局里莫名多一条错误日志
+                // （玩家实测 + 批量测试都抓到过）。
+                //
+                // 正确做法不是"硬着头皮结算"，而是**回到本回合第一步**，
+                // 让玩家重新选（状态确实已经不完整了）。
+                if (SelectedHand == null || _selectedTarget == null)
+                {
+                    _preTargetChoiceActive = false;
+                    SetupFirstStep();
+                    return;
+                }
+
                 // ① 这次抉择是"选定运算源之后、确认目标玩家之前"问的。
                 //
                 // ⚠️ 此时**运算源（目标手）已经选过了**，所以不能回到
@@ -1476,12 +1537,17 @@ namespace FingerDiceDuel.Assistant
                     //   ⚠️ 必须先用**记录下来的答案**确认玩家真的选了回复：
                     //   4/6/8 的运算结果本身就是攻击值，不能靠"结果是不是攻击"
                     //   来判断 —— 那样会把攻击分支也当成回复（玩家实测 bug）。
-                    if (ChoseHealInAttackOrHeal() && TryEnterHealTargetChoice()) return;
+                    if (ChoseHealInAttackOrHeal() && TryEnterHealTargetChoice())
+                    {
+                        // 治疗目标选定后仍要结算，所以副本继续保留
+                        return;
+                    }
 
                     // ①-b 攻击：仍要确认目标玩家（玩家确认过的交互不变）
                     if (NeedsTargetAfterOperation())
                     {
                         Phase = BoardPhase.ChoosingTargetPlayer;
+                        if (SelectedHand == null) SelectedHand = _turnActedHand;
                         bool hasTarget = BeginTargetPlayerChoice();
                         Hint = !hasTarget
                             ? $"运算出 {LastResultValueForHint()}，但没有可攻击的目标。" +
@@ -1924,6 +1990,22 @@ namespace FingerDiceDuel.Assistant
         {
             if (GetAi(Defender) == null) return;   // 人来做决定
 
+            // ⚠️ 守卫：没有运算源就不该结算。
+            //
+            // 这里是**第 5 个** `ExecuteResolvedTurn()` 调用点，原来只有它没有守卫 ——
+            // 于是 `SelectedHand == null` 时会抛"未选择运算源"，
+            // 被防御性 catch 接住后记进战报（玩家实测 + 批量测试都抓到过）。
+            //
+            // 触发场景：AI 防守时被叫来选盾，但本回合的运算源在别处已被清掉
+            // （CancelSelection / 上一次结算的收尾 / SetupFirstStep）。
+            if (SelectedHand == null || _selectedTarget == null || _shieldChoices.Count == 0)
+            {
+                _chosenDefenseShield = null;
+                _shieldChoices.Clear();
+                SetupFirstStep();
+                return;
+            }
+
             Hand pick = AiResolver?.ChooseShieldToBlock(Defender, _shieldChoices);
 
             ApplyDefenseChoice(ContainsHand(_shieldChoices, pick) ? pick : _shieldChoices[0]);
@@ -1934,14 +2016,67 @@ namespace FingerDiceDuel.Assistant
         /// 真正执行一次运算。要求 <see cref="SelectedHand"/> 与 <c>_selectedTarget</c> 已确定，
         /// 且所有需要玩家决定的抉择都已写入 <see cref="IPlayerChoiceSink"/>。
         /// </summary>
+        /// <summary>
+        /// **最终防线**：状态不完整就不结算。
+        ///
+        /// 已确认的成因（靠执行时抓 StackTrace 定位，调用栈完整）：
+        ///   `MakeAutomaticMove -> ClickHand -> BeginPreTargetChoicesIfAny`
+        ///   `-> AdvanceCharacterChoice -> ResolvePreTurnChoiceIfAi`
+        ///   `-> AdvanceCharacterChoice -> ExecuteResolvedTurn`
+        /// 也就是 **AI 在"选目标手之前的抉择"里作答时，会递归回到
+        /// `AdvanceCharacterChoice`**，而那条路径上 `SelectedHand` /
+        /// `_selectedTarget` 可能已经被中间的重建（SetupFirstStep 等）清掉。
+        ///
+        /// 与其把 null 交给 <see cref="GameManager"/>（它会抛"未选择运算源"，
+        /// 被 catch 吞掉后只在战报里留一句话，极难排查），
+        /// 不如在这里**明确记录并回到本回合第一步**。
+        /// </summary>
         private void ExecuteResolvedTurn()
         {
-            Hand acted = SelectedHand;
-            Hand target = _selectedTarget;
+            // ⚠️ 用**本回合的副本**兜底。
+            //
+            // `SelectedHand` / `_selectedTarget` 可能在"选目标手之前的抉择"
+            // 递归回到 AdvanceCharacterChoice 时被中间的重建清掉
+            // （已确认的调用栈：BeginPreTargetChoicesIfAny ->
+            //   AdvanceCharacterChoice -> ResolvePreTurnChoiceIfAi ->
+            //   AdvanceCharacterChoice -> 这里）。副本只在回合结束时清，
+            // 所以这里一定拿得到本回合真正要运算的两只手。
+            Hand acted = SelectedHand ?? _turnActedHand;
+            Hand target = _selectedTarget ?? _turnTargetHand;
+
+            if (acted == null || target == null)
+            {
+                LastIllegalOperation =
+                    $"BLOCKED-NULL-SOURCE entryPhase={Phase}" +
+                    $" actor={ActivePlayer?.Name}" +
+                    $" pendingIdx={_pendingRequestIndex}/{_pendingRequests.Count}" +
+                    $" preTargetActive={_preTargetChoiceActive}" +
+                    $" trace=[{string.Join(" | ", _advanceTrace)}]";
+
+                _log.Add($"结算被拦截：运算源或目标手缺失（行动方=" +
+                         $"{ActivePlayer?.Name}）。已回到本回合第一步。");
+
+                SelectedHand = null;
+                _selectedTarget = null;
+                _chosenDefenseShield = null;
+                _shieldChoices.Clear();
+                _preTargetChoiceActive = false;
+                SetupFirstStep();
+                return;
+            }
 
             // 入口就把阶段记下来 —— 异常处理里的 `Phase` 可能已被改动，
             // 只看那一刻会得到**陈旧阶段**（我为此白查两轮）。
             string phaseAtEntry = Phase.ToString();
+
+            // 诊断：入口时把"待答抉择"的状态一起记下来 ——
+            // 只有知道 pendingIdx / preTargetActive 才能判断是哪条路径
+            // 走到了"运算源缺失"（战报里没有这些信息，定位不了）。
+            string resolveStateAtEntry =
+                $"pendingIdx={_pendingRequestIndex}/{_pendingRequests.Count}" +
+                $" preTargetActive={_preTargetChoiceActive}" +
+                $" inChoicePhase={IsInChoicePhase}" +
+                $" answered={_answeredThisTurn.Count}";
 
             // "放弃攻击"：运算照常发生（手值改变），但不造成伤害。
             // 用 GameManager 的开关在分派攻击时短路，而不是跳过整个回合 ——
@@ -1981,7 +2116,8 @@ namespace FingerDiceDuel.Assistant
                     $" target={(target == null ? "NULL" : target.Value.ToString())}" +
                     $" selected={SelectedHand?.Value.ToString() ?? "NULL"}" +
                     $" selectedTarget={_selectedTarget?.Value.ToString() ?? "NULL"}" +
-                    $" answer={ex.Message}";
+                    $" answer={ex.Message} state=[{resolveStateAtEntry}]" +
+                    $" trace=[{string.Join(" | ", _advanceTrace)}]";
 
                 // 战报里也带上**阶段**与两只手的来源 ——
                 // 只说"未选择运算源"看不出是哪个阶段出的问题。
@@ -2009,6 +2145,10 @@ namespace FingerDiceDuel.Assistant
 
             LastTurn = result;
             foreach (string line in DescribeTurnLines(result)) _log.Add(line);
+
+            // 回合真正结束 -> 副本可以清了（它只在回合内兜底用）
+            _turnActedHand = null;
+            _turnTargetHand = null;
 
             SelectedHand = null;
             _selectedTarget = null;
