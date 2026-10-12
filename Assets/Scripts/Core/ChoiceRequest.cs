@@ -416,6 +416,25 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<HandEffect, int, Hand> AiDecisionLookup { get; set; }
 
+        /// <summary>
+        /// **场上还活着几名玩家**（由 <see cref="GameManager"/> 在构造上下文时填）。
+        ///
+        /// 用途：有些规则**只在场上仅剩两人时**生效 ——
+        /// 例如野蛮人的"同时只能控制对手一只手"。
+        ///
+        /// 取 <see cref="UnknownAliveCount"/> 表示"没填"（单元测试直连时），
+        /// 这时按**保守**方式处理（当作 1v1，限制生效），
+        /// 以免多人局的放行规则被误用到对局里。
+        /// </summary>
+        public int AlivePlayerCount { get; set; } = UnknownAliveCount;
+
+        /// <summary>"存活人数未知"的哨兵值。</summary>
+        public const int UnknownAliveCount = -1;
+
+        /// <summary>场上是否**只剩两名玩家**（本来就 1v1，或多人局打到只剩两人）。</summary>
+        public bool OnlyTwoPlayersLeft =>
+            AlivePlayerCount == UnknownAliveCount || AlivePlayerCount <= 2;
+
         /// <summary>查询 AI 抉择（便捷封装，未注入时返回 null）。</summary>
         public Hand GetAiDecision(HandEffect effect, int variant = 0)
             => AiDecisionLookup?.Invoke(effect, variant);
@@ -492,6 +511,20 @@ namespace FingerDiceDuel.Core
             ActedHand = actedHand;
             TargetHand = targetHand;
             ResultValue = Hand.ComputeSum(actedHand?.Value ?? 0, targetHand?.Value ?? 0);
+        }
+
+        /// <summary>
+        /// 连带填好"场上存活人数"的构造。
+        ///
+        /// 由 <see cref="GameManager"/> 一侧调用 —— 只有它知道还剩几个人，
+        /// 而"仅剩两人才生效"的规则（野蛮人锁手）需要这个信息。
+        /// </summary>
+        public PreTurnChoiceContext(PlayerState actor, PlayerState defender,
+                                    Hand actedHand, Hand targetHand,
+                                    int alivePlayerCount)
+            : this(actor, defender, actedHand, targetHand)
+        {
+            AlivePlayerCount = alivePlayerCount;
         }
 
         /// <summary>

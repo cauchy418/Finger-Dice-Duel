@@ -5,8 +5,17 @@ namespace FingerDiceDuel.Core
     /// <summary>
     /// 野蛮人：
     /// - 新合成一面盾时，可控制对手一只手（Lock），直到该盾破碎时解除（Unlock）。
-    /// - 同时最多只能控制对手一只手：若己方另一只手已处于"控制中"，本次不能发动。
     /// - 防御 +1。
+    ///
+    /// ## "同时只能控制一只手"的限制**只在场上仅剩两人时**生效
+    ///
+    /// 玩家确认的规则：多人局（2v2 / 8 人局）里，野蛮人已经锁住某人的一只手后，
+    /// **新合成一面盾可以再锁同一个人的另一只手**；
+    /// 只有当**场上仅剩两名玩家**时（本来就 1v1，或多人局打到只剩两人），
+    /// 才不能"两只手两面盾锁同一个人的两只手"。
+    ///
+    /// 原因（我的理解）：1v1 里把对手两只手全锁住等于让他完全无法行动，
+    /// 是压倒性的；多人局里还有队友能解围，所以允许。
     ///
     /// 锁手目标在**运算前**收集（结算开始后无法再问 UI），
     /// 在护盾成型时（<see cref="OnShieldFormed"/>）回读并施加。
@@ -39,9 +48,16 @@ namespace FingerDiceDuel.Core
             //    （真实 bug：批量测试里 2v2 对局直接抛异常中断）。
             if (context.ActedHand == null || !context.Actor.Owns(context.ActedHand)) return;
 
-            // 己方另一只手若已在控制中，本次不能发动
-            Hand otherOwnHand = context.Actor.GetOtherHand(context.ActedHand);
-            if (_lockMap.ContainsKey(otherOwnHand)) return;
+            // 己方另一只手若已在控制中，本次不能发动。
+            //
+            // ⚠️ **这条限制只在场上仅剩两名玩家时生效**（玩家确认）：
+            //    1v1 里把对手双手都锁住等于让他完全无法行动，太强；
+            //    多人局里还有队友能解围，所以允许再锁同一个人的另一只手。
+            if (context.OnlyTwoPlayersLeft)
+            {
+                Hand otherOwnHand = context.Actor.GetOtherHand(context.ActedHand);
+                if (_lockMap.ContainsKey(otherOwnHand)) return;
+            }
 
             // 候选：对手尚未被锁住的手。
             // 注意这里用的是"运算**后**"的锁定状态 —— 运算本身不改变锁手，所以两者等价。
@@ -67,9 +83,16 @@ namespace FingerDiceDuel.Core
         {
             if (manager == null || shieldHand == null) return;
 
-            // 己方另一只手若已在控制中，则不能再发动
-            Hand otherOwnHand = owner.GetOtherHand(shieldHand);
-            if (_lockMap.ContainsKey(otherOwnHand)) return;
+            // 己方另一只手若已在控制中，则不能再发动。
+            //
+            // ⚠️ 与收集阶段同一条限制：**只在场上仅剩两人时生效**。
+            //    必须与 <see cref="CollectPreTurnChoices"/> 的判定一致 ——
+            //    一边放行、另一边拦住会表现为"问了却不生效"（本项目踩过多次）。
+            if (manager.AlivePlayerCount <= 2)
+            {
+                Hand otherOwnHand = owner.GetOtherHand(shieldHand);
+                if (_lockMap.ContainsKey(otherOwnHand)) return;
+            }
 
             PlayerState opponent = manager.GetOpponent(owner);
             if (opponent == null) return;

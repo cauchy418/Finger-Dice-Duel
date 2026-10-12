@@ -226,6 +226,24 @@ namespace FingerDiceDuel.Core
             return result;
         }
 
+        /// <summary>
+        /// **场上还活着几名玩家**（1v1 里可能变成 1，2v2 里可以是 1..4）。
+        ///
+        /// 用途：有些规则**只在仅剩两人时**生效 ——
+        /// 例如野蛮人的"同时只能控制对手一只手"（见 <c>BarbarianLogic</c>）。
+        /// </summary>
+        public int AlivePlayerCount
+        {
+            get
+            {
+                int alive = 0;
+                for (int i = 0; i < _players.Count; i++)
+                    if (_players[i].IsAlive) alive++;
+
+                return alive;
+            }
+        }
+
         /// <summary>某队是否已全灭（队伍里所有人都阵亡）。</summary>
         public bool IsTeamWiped(int team)
         {

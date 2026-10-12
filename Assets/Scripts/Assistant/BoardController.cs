@@ -1043,6 +1043,14 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>把一只手翻译成它的主人；认不出来时返回 null。</summary>
         /// <summary>
+        /// 测试用：当前对局还活着几名玩家。
+        ///
+        /// 存在意义：角色收集抉择时读的是 `PreTurnChoiceContext.AlivePlayerCount`，
+        /// 而**只有控制器能填它** —— 这条测试要能直接断言这个值。
+        /// </summary>
+        public int GameAlivePlayerCountForTest => _game?.AlivePlayerCount ?? 0;
+
+        /// <summary>
         /// 这张手牌属于谁。
         ///
         /// ⚠️ 必须查**全部参战玩家**，不能只认 A/B ——
@@ -1252,6 +1260,11 @@ namespace FingerDiceDuel.Assistant
 
         private void CollectFrom(PlayerState player, PreTurnChoiceContext context)
         {
+            // 填"场上存活人数" —— "仅剩两人才生效"的规则（野蛮人锁手）需要它。
+            // 只有控制器知道完整名单，所以在这里统一填，不依赖各调用点自己记得。
+            if (context != null && _game != null)
+                context.AlivePlayerCount = _game.AlivePlayerCount;
+
             var provider = player?.Character as IPreTurnChoiceProvider;
             _lastCollectInfo += $" || CollectFrom({player?.Name}, " +
                                 $"char={player?.Character?.GetType().Name}, " +
@@ -1337,6 +1350,9 @@ namespace FingerDiceDuel.Assistant
             _pendingRequestIndex = 0;
             _pendingChoiceCandidates.Clear();
             _pendingChoiceDecider = null;
+
+            // 同样要填"存活人数"（"仅剩两人才生效"的规则依赖它）
+            if (_game != null) context.AlivePlayerCount = _game.AlivePlayerCount;
 
             provider.CollectPreTurnChoices(context, _pendingRequests);
 
