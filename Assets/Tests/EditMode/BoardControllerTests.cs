@@ -405,7 +405,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_priest_still_asks_for_a_target_on_a_nine()
         {
-            // 对照组：牧师能把回复给对手（IHealOverride），所以必须问
+            // 对照组：牧师能把回复给对手（IHealOverride），所以必须问。
+            // 玩家要求：**运算出 9 时点一次就决定回复对象**，不再先确认目标玩家。
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
             var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
@@ -415,13 +416,50 @@ namespace FingerDiceDuel.Tests
 
             TestSetup.SetAllHands(priest, blank, 1);
             TestSetup.SetHand(priest.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHealth(priest, 10);
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);           // ① 自己的手（运算源）
+            board.ClickHand(blank.LeftHand);            // ② 对手的手 -> 8+1=9
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "运算出 9 后应直接进入「选回复目标」，而不是先确认目标玩家。");
+            Assert.NotNull(board.PendingRequest);
+            Assert.AreEqual(HandEffect.PriestHealTarget, board.PendingRequest.Value.Effect);
+
+            // 点自己 = 回自己（这就是"删掉回给自己按钮"的原因：点自己本来就是回自己）
+            Assert.True(board.ClickHand(priest.RightHand), "点自己的手应表示回自己。");
+            Assert.AreEqual(19, priest.Health,
+                $"点自己的手应回给自己（10 + 9）。实际 priest={priest.Health} blank={blank.Health}");
+            Assert.AreEqual(PlayerState.DefaultMaxHealth, blank.Health,
+                "对方是满血，不该被治疗。");
+        }
+
+        [Test]
+        public void The_priest_heal_on_a_nine_can_also_target_the_opponent()
+        {
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var choiceP = new SimpleChoiceProvider();
+            var choiceB = new SimpleChoiceProvider();
+            var game = new GameManager(priest, blank, choiceP, choiceB);
+            var board = new BoardController(game, choiceP, choiceB);
+
+            TestSetup.SetAllHands(priest, blank, 1);
+            TestSetup.SetHand(priest.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHealth(blank, 10);
+            TestSetup.SetHealth(priest, 10);
 
             board.BeginTurn();
             board.ClickHand(priest.LeftHand);
             board.ClickHand(blank.LeftHand);
 
-            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
-                "牧师运算出 9 -> 要问这次回复给谁（可以给对手）。");
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
+
+            // 点对手的手 = 回给对手（牧师可以把回复给他人）
+            Assert.True(board.ClickHand(blank.RightHand), "点对手的手应表示回给他。");
+            Assert.AreEqual(19, blank.Health, "回 9 点给对手（10 + 9）。");
+            Assert.AreEqual(10, priest.Health, "自己不该被治疗。");
         }
 
         [Test]

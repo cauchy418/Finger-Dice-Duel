@@ -1100,8 +1100,12 @@ namespace FingerDiceDuel.UI
                 case HandEffect.BarbarianLockTarget: return "不锁手";
                 case HandEffect.WarriorChainBreak: return "不发动";
                 case HandEffect.SwordsmanFollowUp: return "不追加";
-                case HandEffect.PriestHealTarget: return "回给自己";
-                case HandEffect.PriestExtraHealTarget: return "回给自己";
+                // ⚠️ 回复目标的选择**不做"回给自己"这种按钮**：
+                //    点自己的手就是回自己、点对方的手就是回对方，
+                //    "回给自己"作为按钮既多余又让人以为必须点它（玩家实测反馈）。
+                //    这里的放弃语义是"这次不回复"。
+                case HandEffect.PriestHealTarget: return "不回复";
+                case HandEffect.PriestExtraHealTarget: return "不回复";
                 case HandEffect.PriestAttackOrHeal: return "攻击";
                 default: return "不发动";
             }

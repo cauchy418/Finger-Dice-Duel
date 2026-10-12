@@ -767,6 +767,12 @@ namespace FingerDiceDuel.Assistant
                     if (BeginPreTargetChoicesIfAny())
                         return true;
 
+                    // 第 ③' 步：**纯回复**（运算出 9）—— 运算已结束，
+                    // 直接让人点一只手选治疗目标（点谁回谁），
+                    // 不再要求先确认一次目标玩家（玩家实测反馈多余）。
+                    if (TryEnterHealTargetChoice())
+                        return true;
+
                     // 只有**运算结果会产生指向某人的效果**时才需要指定目标。
                     //
                     // 1 + 1 = 2（无效果）、或合出护盾（作用于自己）都不需要 ——
@@ -1103,6 +1109,59 @@ namespace FingerDiceDuel.Assistant
             return Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
         }
 
+        /// <summary>
+        /// 进入"选治疗目标"（牧师）。点一只手 = 治疗那只手的主人。
+        ///
+        /// ## 为什么这一步存在
+        ///
+        /// 玩家明确说明：**选回复的时候运算已经结束了，此时不存在"运算源"这种说法**，
+        /// 选择的就是**治疗目标** —— 点自己的手给自己回血、点对方的手给对方回血。
+        ///
+        /// 所以这里**不再需要"回给自己"这种按钮**（点自己就是回自己），
+        /// 也不需要先点一次对手的手来确认目标玩家（那一击就是回复本身）。
+        ///
+        /// ## 两种情况
+        ///
+        /// ① **纯回复**（运算出 9）：运算源一选定就该问，直接由
+        ///    <see cref="BoardController.ClickHand"/> 的选目标手分支调用。
+        /// ② **4/6/8 选了回复**：在"攻击/回复"答完之后调用。
+        ///
+        /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTurnChoice"/>。
+        /// </summary>
+        private bool TryEnterHealTargetChoice()
+        {
+            var provider = ActivePlayer?.Character as IPreTurnChoiceProvider;
+            if (provider == null) return false;
+            if (SelectedHand == null || _selectedTarget == null) return false;
+
+            var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
+                                                   SelectedHand, _selectedTarget);
+
+            // 只有"回复"才需要选治疗目标；攻击 / 护盾 / 无效果都不走这里
+            if (context.IsAttack) return false;
+            if (context.Effect != HandEffectType.Heal) return false;
+
+            _pendingRequests.Clear();
+            _pendingRequestIndex = 0;
+            _pendingChoiceCandidates.Clear();
+            _pendingChoiceDecider = null;
+
+            provider.CollectPreTurnChoices(context, _pendingRequests);
+
+            // 过滤空候选
+            for (int i = _pendingRequests.Count - 1; i >= 0; i--)
+                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+                    _pendingRequests.RemoveAt(i);
+
+            if (_pendingRequests.Count == 0) return false;
+
+            // ⚠️ 这里**不设** `_preTargetChoiceActive`。
+            // 治疗目标发生在"运算源已定"之后，不属于"选目标手之前"的抉择 ——
+            // 借用那个标志会让阶段被报成 ChoosingPreTargetChoice（真实 bug）。
+            AdvanceCharacterChoice();
+            return Phase == BoardPhase.ChoosingPreTurnChoice;
+        }
+
         private void AdvanceCharacterChoice()
         {
             if (_pendingRequestIndex >= _pendingRequests.Count)
@@ -1118,6 +1177,15 @@ namespace FingerDiceDuel.Assistant
                 {
                     _preTargetChoiceActive = false;
 
+                    // ①-a 牧师 4/6/8 选了「回复」：
+                    //   运算**已经结束**，接下来点一只手就是选**治疗目标**
+                    //   （点自己的手 = 回自己，点对方的手 = 回对方）。
+                    //
+                    //   玩家明确要求：选完回复后**那一次点击就该完成回复**，
+                    //   不要先让人点一次对手的手（那只是确认目标玩家、纯属多余）。
+                    if (TryEnterHealTargetChoice()) return;
+
+                    // ①-b 攻击：仍要确认目标玩家（玩家确认过的交互不变）
                     if (NeedsTargetAfterOperation())
                     {
                         Phase = BoardPhase.ChoosingTargetPlayer;
@@ -1159,6 +1227,13 @@ namespace FingerDiceDuel.Assistant
             // 该由谁回答：优先按角色自己声明的归属判断
             _pendingChoiceDecider = DeciderFor(request);
 
+            // ⚠️ 两种"运算前抉择阶段"必须分清：
+            //   · ChoosingPreTargetChoice —— 在**选目标手之前**问（牧师 4/6/8 攻击还是回复）
+            //   · ChoosingPreTurnChoice    —— 其余所有（含**治疗目标**）
+            //
+            // 治疗目标发生在"运算源已定"之后，**不属于**"选目标手之前"。
+            // 曾经借用了 `_preTargetChoiceActive` 的标志，阶段就被报成
+            // ChoosingPreTargetChoice —— 表现成"点完手却停在选目标手前的阶段"（真实 bug）。
             Phase = _preTargetChoiceActive
                 ? BoardPhase.ChoosingPreTargetChoice
                 : BoardPhase.ChoosingPreTurnChoice;
@@ -1332,7 +1407,6 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool AcceptPendingChoice()
         {
-            if (Phase == BoardPhase.ChoosingPreTargetChoice)
             if (!IsInChoicePhase) return false;
             if (_pendingRequestIndex >= _pendingRequests.Count) return false;
 

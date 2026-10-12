@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -199,6 +199,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// </summary>
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
+
             if (context == null || requests == null) return;
 
             // ① 双 9 的额外回复：先问目标
