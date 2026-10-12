@@ -36,6 +36,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int DefaultDefenseBonus => -1;
 
         /// <summary>
+        /// **攻击距离无限**（玩家确认）：牧师不受座位距离限制。
+        /// </summary>
+        public override int BaseAttackRange => InfiniteAttackRange;
+
+        /// <summary>
         /// **牧师是唯一需要为回复指定目标的角色。**
         ///
         /// 其余角色的 9 都是"自动回自己"（`GameManager` 的默认治疗），

@@ -392,6 +392,35 @@ namespace FingerDiceDuel.Core
             return diff < wrap ? diff : wrap;
         }
 
+        /// <summary>
+        /// <paramref name="actor"/> 能否打到 <paramref name="target"/>（只看距离）。
+        ///
+        /// 规则（玩家确认）：合法攻击目标 = **处于攻击范围内的其他角色**；
+        /// 攻击距离由角色自己声明（<see cref="IAttackRangeProvider"/>），
+        /// 咒术师与牧师无限，其余为 1。
+        ///
+        /// <paramref name="rangeOverride"/> 用于"本次攻击距离无限"的效果
+        /// （战士碎盾、游侠强化）——传 <see cref="CharacterTemplate.InfiniteAttackRange"/>。
+        /// </summary>
+        public bool CanReach(PlayerState actor, PlayerState target, int rangeOverride = -1)
+        {
+            if (actor == null || target == null) return false;
+            if (ReferenceEquals(actor, target)) return false;
+
+            int distance = DistanceBetween(actor, target);
+            if (distance < 0) return false;          // 有人已阵亡 -> 打不到
+
+            int range = rangeOverride >= 0
+                ? rangeOverride
+                : BaseRangeOf(actor);
+
+            return distance <= range;
+        }
+
+        /// <summary>某人的基础攻击距离（没实现接口时按 1 处理）。</summary>
+        public static int BaseRangeOf(PlayerState player)
+            => player?.Character is IAttackRangeProvider p ? p.BaseAttackRange : 1;
+
         /// <summary>这张手牌属于谁（在**全部**参战玩家里查）。
         ///
         /// 2v2 需要它：运算目标是"某位对手的一只手"，
@@ -780,6 +809,29 @@ namespace FingerDiceDuel.Core
                         }
 
                         // ③ 正常攻击
+                        //
+                        // ⚠️ 顺序很重要：**先让角色做"换射程"的副作用**（战士碎盾），
+                        //    再检查距离 —— 否则"碎盾换无限距离"永远来不及生效。
+                        //
+                        // 只有结果是攻击时才需要这一步：非攻击不需要攻击距离。
+                        (actor.Character as IRangeBreakEffect)?.ApplyRangeBreak(actor, actedHand, this);
+                        //
+                        // 攻击距离：只有"本次攻击在范围内"才落实伤害。
+                        //   距离 1 的角色（战士等）在 2v2 里够不到环上对角的对手；
+                        //   咒术师 / 牧师无限；战士碎盾 / 游侠强化可让本次无限。
+                        //
+                        // ⚠️ 距离不足时**保留运算结果**（手值照常改变）但不造成伤害 ——
+                        //    与"放弃攻击"同一处理方式，避免手值回退（踩过的坑）。
+                        bool inRange = CanReach(actor, opponent, RangeOverride);
+
+                        if (!inRange)
+                        {
+                            result.WasBlocked = false;
+                            result.WasDodged = false;
+                            result.DamageDealt = 0;
+                            break;
+                        }
+
                         var ctx = new AttackContext(actor, opponent, actedHand, (int)effect);
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
@@ -1013,6 +1065,15 @@ namespace FingerDiceDuel.Core
         /// 调用方必须在结算后复位。
         /// </summary>
         public PlayerState DamageTargetPlayer { get; set; }
+
+        /// <summary>
+        /// **本次攻击的距离覆盖**（-1 = 用角色自己的基础距离）。
+        ///
+        /// 由上层（BoardController）在收完"换射程"的抉择后设定 ——
+        /// 目前两个来源：战士碎盾换射程、游侠强化射击。
+        /// 调用方必须在结算后复位。
+        /// </summary>
+        public int RangeOverride { get; set; } = -1;
 
         /// <summary>这个效果类型是不是"攻击"。</summary>
         private static bool isAttackEffect(HandEffectType effect)

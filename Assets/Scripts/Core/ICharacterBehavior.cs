@@ -198,6 +198,41 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色声明自己的**攻击距离**。
+    ///
+    /// 规则（玩家确认）：
+    ///   · 合法攻击目标 = 处于攻击范围内的其他角色（自己除外，**队友也算**）
+    ///   · 攻击距离 = 到那位玩家在**座位环**上的最短距离（阵亡者从环上摘掉）
+    ///   · 白板与大多数角色是 **1**；**咒术师、牧师是无限**
+    ///
+    /// 由 <see cref="Assistant.BoardController"/> 查询 —— 它是 Assistant 层，
+    /// **不能引用 Characters 层**（分层铁律），所以通过本接口反向调用。
+    /// </summary>
+    public interface IAttackRangeProvider
+    {
+        /// <summary>
+        /// 基础攻击距离。<see cref="System.Int32.MaxValue"/> 表示**无限**。
+        /// </summary>
+        int BaseAttackRange { get; }
+    }
+
+    /// <summary>
+    /// 角色实现"以代价换取**本次攻击距离无限**"的副作用（战士碎盾换射程）。
+    ///
+    /// 为什么单独一个接口：这个副作用必须发生在**距离检查之前**，
+    /// 而距离检查在攻击分派的开头。让 <see cref="GameManager"/> 直接调一个
+    /// 明确的钩子，比在各个角色里找时机可靠。
+    ///
+    /// ⚠️ 实现必须**只回读已记录的答案**，不能在结算里向玩家索取输入 ——
+    /// 结算一旦开始就一次跑完。
+    /// </summary>
+    public interface IRangeBreakEffect
+    {
+        /// <summary>若玩家选择了"换射程"，在这里落实代价（例如打碎一面盾）。</summary>
+        void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager);
+    }
+
+    /// <summary>
     /// 自己要接管"回复效果"结算的角色实现本接口。
     ///
     /// 牧师的 9 可以回给对手，而 <see cref="GameManager"/> 的默认实现只会回给行动方自己。

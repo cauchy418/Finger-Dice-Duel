@@ -684,17 +684,68 @@ namespace FingerDiceDuel.Assistant
         // 日后的多人模式还有"攻击距离不足"等，都走同一判据。
         // ============================================================
 
-        /// <summary>某位玩家当前是否可以成为攻击目标。</summary>
+        /// <summary>
+        /// 这次攻击目前申请到的**距离覆盖**（-1 = 用角色基础距离）。
+        ///
+        /// 目前两个来源（都是"本次攻击距离无限"）：
+        ///   · 战士碎盾换射程（<see cref="HandEffect.WarriorRangeBreak"/>）
+        ///   · 游侠强化射击（<see cref="HandEffect.RangerPowerShot"/>）
+        ///
+        /// 判定必须**同时看 sink 与控制器记录**：
+        /// 人类玩家的答案在 sink 里，AI 的答案在 <c>_answeredThisTurn</c> 里 ——
+        /// 只看一边会让另一边失效（本项目踩过多次同类坑）。
+        ///
+        /// ⚠️ 只在**运算结果是攻击**时才放宽距离：
+        /// 非攻击（护盾 / 回复 / 无效果）本来就不需要攻击距离。
+        /// </summary>
+        private int CurrentRangeOverride()
+        {
+            if (!_pendingIsAttack) return -1;
+            if (ActivePlayer == null) return -1;
+
+            if (RangeBreakChosen(HandEffect.WarriorRangeBreak)) return int.MaxValue;
+            if (RangeBreakChosen(HandEffect.RangerPowerShot)) return int.MaxValue;
+
+            return -1;
+        }
+
+        /// <summary>某个"换射程"的抉择是否被选择了"发动"。</summary>
+        private bool RangeBreakChosen(HandEffect effect)
+        {
+            // ① 人类玩家：答案在 sink 里（显式记录，没记录 = 放弃）
+            Hand viaSink = PreTurnSinkFor(ActivePlayer)?.GetExplicitChoice(effect);
+            if (viaSink != null) return true;
+
+            // ② AI：答案在控制器自己记的"本回合已答"里
+            if (_answeredThisTurn.TryGetValue(AnswerKey(effect, 0), out Hand viaAi))
+                return viaAi != null;
+
+            return false;
+        }
+
+        /// <summary>某位玩家当前是否可以成为攻击目标。
         public bool CanBeAttacked(PlayerState player)
         {
             if (player == null) return false;
+            if (ActivePlayer == null) return false;
+            if (ReferenceEquals(player, ActivePlayer)) return false;
 
-            // 角色可以令自己免疫（刺客潜行 -> IsImmuneToAttack）。
-            // 控制器不认识任何具体角色：Assistant 层不能引用 Characters 层。
-            if (player.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(player))
+            // ① 只能打**对手**（队友可以当被加数，但不是攻击目标）
+            if (_game.IsTeammate(ActivePlayer, player)) return false;
+
+            // ② 必须在**攻击距离**内（咒术师 / 牧师无限，其余 1）。
+            //    距离按座位环算，阵亡者从环上摘掉 —— 都在 GameManager 里。
+            //
+            //    "本次攻击距离无限"由两个抉择提供（战士碎盾 / 游侠强化），
+            //    这里用**实时计算**而不是缓存字段 —— 因为玩家的答案随时可能到达
+            //    （人类点按钮、AI 被代答），缓存会读到过期值。
+            if (!_game.CanReach(ActivePlayer, player, CurrentRangeOverride()))
                 return false;
 
-            // 日后的"攻击距离不足"等规则加在这里。
+            // ③ 角色可以令自己免疫（刺客潜行 -> IsImmuneToAttack）。
+            //    控制器不认识任何具体角色：Assistant 层不能引用 Characters 层。
+            if (player.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(player))
+                return false;
 
             return true;
         }
@@ -711,8 +762,13 @@ namespace FingerDiceDuel.Assistant
             {
                 if (ActivePlayer == null) return false;
 
-                // 1v1：唯一的对手。多人模式时改为遍历所有其他玩家。
-                return CanBeAttacked(Defender);
+                // 遍历**所有**其他玩家（不再只看唯一对手）——
+                // 2v2 / 8 人局里可能有多位对手，且距离会筛掉一部分。
+                IReadOnlyList<PlayerState> all = _game.Players;
+                for (int i = 0; i < all.Count; i++)
+                    if (CanBeAttacked(all[i])) return true;
+
+                return false;
             }
         }
 
@@ -1673,6 +1729,11 @@ namespace FingerDiceDuel.Assistant
             // 跳过整个回合会让手值回退（玩家实测报的 bug）。
             _game.SuppressAttackDamage = _giveUpAttack;
 
+            // 本次攻击的距离覆盖（战士碎盾换射程 / 游侠强化）。
+            // 必须与 CanBeAttacked 看到的是同一个值，否则会出现
+            // "界面允许选、结算却打不到"的不一致。
+            _game.RangeOverride = CurrentRangeOverride();
+
             TurnResult result;
             try
             {
@@ -1696,6 +1757,7 @@ namespace FingerDiceDuel.Assistant
             {
                 // 必须复位，否则会污染后续所有回合
                 _game.SuppressAttackDamage = false;
+                _game.RangeOverride = -1;
                 _giveUpAttack = false;
             }
 

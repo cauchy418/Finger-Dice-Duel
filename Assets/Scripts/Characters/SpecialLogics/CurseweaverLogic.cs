@@ -41,6 +41,11 @@ namespace FingerDiceDuel.Core
         // OnShieldFormed / OnOwnShieldBroken / OnMatchReset 无需重写，
         // 走 CharacterTemplate 默认空实现即可：咒术师不持有跨回合状态。
 
+        /// <summary>
+        /// **攻击距离无限**（玩家确认）：咒术师不受座位距离限制。
+        /// </summary>
+        public override int BaseAttackRange => InfiniteAttackRange;
+
         /// <summary>默认攻击 -1（可被 CharacterDefinition.AttackBonus 覆盖）。</summary>
         public override int DefaultAttackBonus => -1;
     }

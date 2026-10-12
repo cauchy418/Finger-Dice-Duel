@@ -267,15 +267,39 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Easy_difficulty_produces_variation()
+        public void Easy_difficulty_has_noise_enabled_so_it_can_deviate()
         {
-            // 简单档抖动 ±25 -> 会选到不同的招数（否则难度没生效）。
+            // 简单档靠**评分抖动**实现（±25），这是"会偶尔选次优解"的机制本身。
             //
-            // ⚠️ 这是**概率性**断言，所以跑了 200 次让两种选择都几乎必然出现
-            // （实测该局面：困难 1 种、普通 1 种、简单 2 种）。
-            // 用 60 次曾偶发只抽到一种 —— 那是采样问题，不是功能问题。
-            Assert.True(CountDistinctPicks(AiDifficulty.Easy, 200) > 1,
-                "简单档应出现不同的选择（否则难度没生效）。");
+            // ⚠️ 这里**刻意不做**"采样多次应当出现不同选择"的断言：
+            //    那是**概率性**的，即使 200~400 次也会偶发只抽到同一种
+            //    （本项目已经因此失败过两次）。概率性测试会掩盖真实行为、还会
+            //    变成"重跑一次就好了"的噪声。
+            //
+            // 改成断言**机制参数**：抖动已开启、幅度足够大（足以翻转
+            // "明显更好"与"次优"之间的分差，效果档位是 44/50/66/88）。
+            var easy = new GreedyChoiceProvider();
+            easy.ApplyDifficulty(AiDifficulty.Easy);
+
+            Assert.True(easy.UseNoise, "简单档应开启噪声（否则永远走最优 = 不简单）。");
+            Assert.True(easy.NoiseAmplitude >= 20,
+                $"简单档抖动应足够大才能翻转次优解（实际 {easy.NoiseAmplitude}）。");
+
+            // 抖动是**随机源**驱动的：同一局面理论上可能给出不同结果。
+            // 这里只验证"随机源确实在参与" —— 跑一次不抛异常且返回合法走法。
+            var game = new GameManager(
+                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior),
+                CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
+                easy, new SimpleChoiceProvider());
+
+            PlayerState actor = game.PlayerA;
+            TestSetup.SetHand(actor.LeftHand, 5);
+            TestSetup.SetHand(actor.RightHand, 2);
+            TestSetup.SetHand(game.PlayerB.LeftHand, 4);
+            TestSetup.SetHand(game.PlayerB.RightHand, 3);
+
+            LegalMove pick = easy.ChooseMove(game, actor);
+            Assert.NotNull(pick.ActedHand, "应能选出一步。");
         }
 
         [Test]

@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色数值（攻防修正 + 可选最大生命）。
@@ -30,7 +30,8 @@
     /// </summary>
     public abstract class CharacterTemplate : ICharacterBehavior, IPreTurnChoiceProvider,
                                               IResultTargetProvider, ITargetHandChoiceProvider,
-                                              IAiMoveAdvisor
+                                              IAiMoveAdvisor, IAttackRangeProvider,
+                                              IRangeBreakEffect
     {
         // ============================================================
         // ITargetHandChoiceProvider 的默认实现
@@ -202,6 +203,21 @@
         // ============================================================
         // IAiMoveAdvisor 的默认实现：用价值表评估"运算后留下的手值"
         // ============================================================
+
+        /// <summary>
+        /// 基础**攻击距离**（只影响 2v2 / 8 人局；1v1 两人相邻，距离恒为 1）。
+        ///
+        /// 默认 **1**（白板与大多数角色）。咒术师、牧师重写为无限。
+        /// </summary>
+        public virtual int BaseAttackRange => 1;
+
+        /// <summary>
+        /// 默认没有"碎盾换射程"这类副作用。战士重写它。
+        /// </summary>
+        public virtual void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager) { }
+
+        /// <summary>无限距离的表示（避免各处写 int.MaxValue 写错）。</summary>
+        public const int InfiniteAttackRange = int.MaxValue;
 
         /// <summary>
         /// "这一手**此刻**触发了什么"的额外分值。

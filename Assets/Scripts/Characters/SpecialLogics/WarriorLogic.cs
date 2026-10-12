@@ -43,6 +43,12 @@ namespace FingerDiceDuel.Core
             if (context == null || requests == null) return;
             if (context.Actor?.Character != this) return;   // 只有自己行动时才会"自己的盾碎"
 
+            // ① 新增技能：碎掉另一只手上的**完整盾牌**，换本次攻击距离无限。
+            //
+            // 只在"这次是攻击、且另一只手确实是完整盾"时才问 ——
+            // 否则问了也没意义（非攻击不需要攻击距离）。
+            AddRangeBreakRequest(context, requests);
+
             Hand breaking = OwnShieldThatWillBreak(context);
             if (breaking == null) return;
 
@@ -58,6 +64,87 @@ namespace FingerDiceDuel.Core
                 declineResult: null,                        // 放弃 = 不连锁
                 decider: context.Actor,
                 acceptLabel: "发动连锁破盾"));
+        }
+
+        /// <summary>
+        /// 新增技能结算：若玩家选择了"碎盾换射程"，就把另一只手上的完整盾牌打碎。
+        ///
+        /// 由 <see cref="GameManager"/> 在**攻击距离检查之前**调用
+        /// （见 <see cref="IRangeBreakEffect"/>）——否则来不及生效。
+        ///
+        /// 与连锁破盾同一原则：**只回读已记录的答案**，不在结算里向玩家索取输入。
+        /// </summary>
+        public override void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager)
+        {
+            if (actor == null || actedHand == null || manager == null) return;
+            if (!actor.Owns(actedHand)) return;
+
+            Hand other = actor.GetOtherHand(actedHand);
+            if (other == null || other.State != ShieldState.Formed) return;
+
+            // 没答过这个抉择 -> Read 会返回 null（视为放弃，保留盾）
+            Hand chosen = PreTurnChoiceReader.Read(
+                manager.GetChoiceProvider(actor) as IPreTurnChoiceSink,
+                manager.GetChoiceProvider(actor),
+                BuildRangeBreakRequest(actor, other), actor);
+
+            if (chosen == null) return;
+            if (!ReferenceEquals(chosen, other)) return;
+
+            other.ForceBreakShield();                   // 完整盾 -> 破碎
+        }
+
+        /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
+        private static ChoiceRequest BuildRangeBreakRequest(PlayerState actor, Hand shield)
+            => new ChoiceRequest(
+                HandEffect.WarriorRangeBreak,
+                $"战士：另一只手是完整的盾牌。可以令它破碎，" +
+                $"使本次攻击距离无限（够到环上更远的对手）。要发动吗？",
+                new List<Hand>(1) { shield },
+                allowDecline: true,
+                declineResult: null,             // 放弃 = 保留盾
+                decider: actor,
+                acceptLabel: "碎盾换射程");
+
+        /// <summary>
+        /// 新增技能：**碎盾换无限距离**。
+        ///
+        /// 规则（玩家新增）：发起攻击时，若**另一只手是完整的盾牌**，
+        /// 可以让它破碎，使本次攻击距离无限。
+        ///
+        /// 只在"**这次是攻击**"时才问 —— 非攻击不需要攻击距离，
+        /// 问了只是打扰（与"无效果不追问目标"同一原则）。
+        /// </summary>
+        private static void AddRangeBreakRequest(PreTurnChoiceContext context,
+                                                 IList<ChoiceRequest> requests)
+        {
+            Hand other = ShieldForRangeBreak(context);
+            if (other == null) return;
+
+            requests.Add(BuildRangeBreakRequest(context.Actor, other));
+        }
+
+        /// <summary>
+        /// "碎盾换射程"可用的那面盾；没有则返回 null。
+        ///
+        /// 收集与结算共用同一判定，避免一处认得、另一处认不得（踩过的坑）。
+        /// </summary>
+        private static Hand ShieldForRangeBreak(PreTurnChoiceContext context)
+        {
+            if (context == null || !context.IsAttack) return null;
+
+            // ⚠️ 必须先确认**运算源是自己的手**。
+            // 新规则允许"被加数"是任意人的手，而某些调用点会把那只手也放进
+            // ActedHand（历史命名），于是 GetOtherHand 会抛
+            // "传入的 Hand 不属于该玩家"（真实 bug，AI 对局测试抓到）。
+            if (context.Actor == null) return null;
+            if (context.ActedHand == null || !context.Actor.Owns(context.ActedHand)) return null;
+
+            Hand other = context.Actor.GetOtherHand(context.ActedHand);
+            if (other == null || other.IsLocked) return null;
+            if (other.State != ShieldState.Formed) return null;
+
+            return other;
         }
 
         /// <summary>
