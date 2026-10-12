@@ -50,9 +50,11 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(4, game.Players.Count, "2v2 应有 4 名玩家。");
 
-            // A/C 同队、B/D 同队
-            Assert.AreEqual(game.TeamOf(game.PlayerA), game.TeamOf(game.PlayerC));
-            Assert.AreEqual(game.TeamOf(game.PlayerB), game.TeamOf(game.PlayerD));
+            // 座位是环 1-2-3-4，**首尾同队**：{A, D} 与 {B, C}
+            Assert.AreEqual(game.TeamOf(game.PlayerA), game.TeamOf(game.PlayerD),
+                "A(座位1) 与 D(座位4) 首尾相邻 -> 同队。");
+            Assert.AreEqual(game.TeamOf(game.PlayerB), game.TeamOf(game.PlayerC),
+                "B(座位2) 与 C(座位3) 相邻 -> 同队。");
             Assert.True(game.TeamOf(game.PlayerA) != game.TeamOf(game.PlayerB),
                 "两队必须是不同队伍。");
         }
@@ -77,16 +79,16 @@ namespace FingerDiceDuel.Tests
 
             IReadOnlyList<PlayerState> foesOfA = game.OpponentsOf(game.PlayerA);
 
-            Assert.AreEqual(2, foesOfA.Count, "A 有 2 个对手（B/D）。");
+            Assert.AreEqual(2, foesOfA.Count, "A 有 2 个对手（B/C）—— 首尾同队，队友是 D。");
             for (int i = 0; i < foesOfA.Count; i++)
             {
-                Assert.False(ReferenceEquals(foesOfA[i], game.PlayerC),
-                    "队友 C 不该出现在对手名单里。");
+                Assert.False(ReferenceEquals(foesOfA[i], game.PlayerD),
+                    "队友 D 不该出现在对手名单里。");
                 Assert.False(game.IsTeammate(game.PlayerA, foesOfA[i]),
                     "对手不应该是队友。");
             }
 
-            Assert.True(game.IsTeammate(game.PlayerA, game.PlayerC), "A 与 C 是队友。");
+            Assert.True(game.IsTeammate(game.PlayerA, game.PlayerD), "A 与 D 是队友。");
             Assert.False(game.IsTeammate(game.PlayerA, game.PlayerB), "A 与 B 不是队友。");
         }
 
@@ -97,8 +99,8 @@ namespace FingerDiceDuel.Tests
 
             IReadOnlyList<PlayerState> mates = game.TeammatesOf(game.PlayerA);
 
-            Assert.AreEqual(1, mates.Count, "A 有 1 个队友（C）。");
-            Assert.AreSame(game.PlayerC, mates[0]);
+            Assert.AreEqual(1, mates.Count, "A 有 1 个队友（D）。");
+            Assert.AreSame(game.PlayerD, mates[0]);
         }
 
         // ============================================================
@@ -132,19 +134,124 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
+        // 座位距离（环形最短步数，阵亡者摘掉后环收缩）
+        // ============================================================
+
+        [Test]
+        public void Four_player_ring_distances_match_the_specified_numbers()
+        {
+            // 玩家给的数字：1234 四人，12=1、13=2、14=1
+            GameManager game = Match2v2();
+
+            Assert.AreEqual(1, game.DistanceBetween(game.PlayerA, game.PlayerB), "1↔2 应为 1。");
+            Assert.AreEqual(2, game.DistanceBetween(game.PlayerA, game.PlayerC), "1↔3 应为 2。");
+            Assert.AreEqual(1, game.DistanceBetween(game.PlayerA, game.PlayerD), "1↔4 应为 1。");
+            Assert.AreEqual(0, game.DistanceBetween(game.PlayerA, game.PlayerA), "自己到自己是 0。");
+        }
+
+        [Test]
+        public void Eight_player_ring_distances_match_the_specified_numbers()
+        {
+            // 玩家给的数字（8 人）：14=3、15=4、16=3
+            GameManager game = MatchEight();
+
+            PlayerState p1 = game.Players[0];
+            Assert.AreEqual(3, game.DistanceBetween(p1, game.Players[3]), "1↔4 应为 3。");
+            Assert.AreEqual(4, game.DistanceBetween(p1, game.Players[4]), "1↔5 应为 4。");
+            Assert.AreEqual(3, game.DistanceBetween(p1, game.Players[5]), "1↔6 应为 3。");
+        }
+
+        [Test]
+        public void Distance_is_the_shortest_way_around_the_ring()
+        {
+            GameManager game = MatchEight();
+            PlayerState p1 = game.Players[0];
+
+            // 1↔8：|1-8|=7，但环上另一侧只有 1 步
+            Assert.AreEqual(1, game.DistanceBetween(p1, game.Players[7]),
+                "1↔8 应取环上更短的一侧（1 步），而不是 7。");
+        }
+
+        [Test]
+        public void Dead_players_shrink_the_ring()
+        {
+            // 玩家确认："B 环收缩处理死亡玩家"。
+            // 8 人局：2 号阵亡后，1↔5 的环位序号各减一 -> 距离从 4 变 3。
+            GameManager game = MatchEight();
+            PlayerState p1 = game.Players[0];
+            PlayerState p5 = game.Players[4];
+
+            Assert.AreEqual(4, game.DistanceBetween(p1, p5), "满员时 1↔5 应为 4。");
+
+            game.Players[1].TakeDamage(PlayerState.DefaultMaxHealth);   // 2 号阵亡
+            Assert.True(game.Players[1].IsDead);
+
+            Assert.AreEqual(3, game.DistanceBetween(p1, p5),
+                "2 号阵亡后环收缩，1↔5 应变成 3。");
+        }
+
+        [Test]
+        public void Distance_to_a_dead_player_is_unknown()
+        {
+            GameManager game = Match2v2();
+
+            game.PlayerB.TakeDamage(PlayerState.DefaultMaxHealth);
+            Assert.AreEqual(-1, game.DistanceBetween(game.PlayerA, game.PlayerB),
+                "阵亡者不在环上 -> 距离返回 -1（无意义）。");
+        }
+
+        /// <summary>造一局 8 人（单人一队，仅用于验证距离）。</summary>
+        private static GameManager MatchEight()
+        {
+            var players = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                players.Add(CharacterFactory.CreatePlayer("P" + (i + 1),
+                                                          CharacterDefinition.Blank));
+
+            var game = new GameManager(players[0], players[1],
+                                       new SimpleChoiceProvider(), new SimpleChoiceProvider());
+            game.AddPlayersFor2v2(players[2], new SimpleChoiceProvider(),
+                                  players[3], new SimpleChoiceProvider());
+            game.AddPlayersFor8(players[4], new SimpleChoiceProvider(),
+                                players[5], new SimpleChoiceProvider(),
+                                players[6], new SimpleChoiceProvider(),
+                                players[7], new SimpleChoiceProvider());
+            return game;
+        }
+
+        // ============================================================
         // 目标合法性
         // ============================================================
 
         [Test]
-        public void Cannot_attack_a_teammate()
+        public void A_teammates_hand_can_be_used_as_the_addend()
+        {
+            // 玩家确认的规则："A 可以选择 B/C/D 任何一个数字作为被加数"。
+            // 队友的手**可以**当被加数 —— 别人的数字不会被改动，
+            // 只有行动方自己的手变成结果值。
+            GameManager game = Match2v2();
+            TestSetup.SetAllFourHands(game, 1);
+
+            TurnResult r = game.ExecuteTurn(game.PlayerA, game.PlayerA.LeftHand,
+                                            game.PlayerC.LeftHand);
+
+            Assert.NotNull(r, "应能用队友的手当被加数。");
+            Assert.AreEqual(1, game.PlayerC.LeftHand.Value,
+                "被加数（队友的手）数字**不该**改变。");
+            Assert.AreEqual(2, game.PlayerA.LeftHand.Value,
+                "行动方自己的手变成结果值（1+1=2）。");
+        }
+
+        [Test]
+        public void Cannot_use_own_other_hand_as_the_addend()
         {
             GameManager game = Match2v2();
             TestSetup.SetAllFourHands(game, 1);
 
-            // 用队友 C 的手当运算目标 -> 非法
             Assert.Throws<System.InvalidOperationException>(
-                () => game.ExecuteTurn(game.PlayerA, game.PlayerA.LeftHand, game.PlayerC.LeftHand),
-                "不能拿队友的手做运算目标。");
+                () => game.ExecuteTurn(game.PlayerA, game.PlayerA.LeftHand,
+                                       game.PlayerA.RightHand),
+                "被加数不能是自己的手。");
         }
 
         [Test]
@@ -204,18 +311,18 @@ namespace FingerDiceDuel.Tests
             GameManager game = Match2v2();
             TestSetup.SetAllFourHands(game, 1);
 
-            // A/C 全部阵亡 -> B/D 获胜
+            // {A, D} 全部阵亡 -> {B, C} 获胜
             game.PlayerA.TakeDamage(PlayerState.DefaultMaxHealth);
-            game.PlayerC.TakeDamage(PlayerState.DefaultMaxHealth);
+            game.PlayerD.TakeDamage(PlayerState.DefaultMaxHealth);
 
             // 触发一次结算来跑胜负判定。
-            // ⚠️ 不能拿队友 D 的手当目标（那是非法运算），要用**对手**的手。
+            // 用**对手**的手当被加数（队友的手虽然也能用，但这里要确认胜负判定）。
             game.ExecuteTurn(game.PlayerB, game.PlayerB.LeftHand, game.PlayerA.LeftHand);
 
             Assert.True(game.IsGameOver, "一队全灭后对局应结束。");
             Assert.NotNull(game.Winner, "应产生赢家。");
             Assert.AreEqual(game.TeamOf(game.PlayerB), game.WinningTeam,
-                "赢家应是 B/D 那一队。");
+                "赢家应是 {B, C} 那一队。");
         }
 
         [Test]
@@ -224,13 +331,13 @@ namespace FingerDiceDuel.Tests
             GameManager game = Match2v2();
             TestSetup.SetAllFourHands(game, 1);
 
-            game.PlayerD.TakeDamage(PlayerState.DefaultMaxHealth);
-            Assert.True(game.PlayerD.IsDead);
+            game.PlayerB.TakeDamage(PlayerState.DefaultMaxHealth);
+            Assert.True(game.PlayerB.IsDead);
 
             IReadOnlyList<PlayerState> foesOfA = game.OpponentsOf(game.PlayerA);
 
-            Assert.AreEqual(1, foesOfA.Count, "D 阵亡后 A 只剩 B 一个可打的对手。");
-            Assert.AreSame(game.PlayerB, foesOfA[0]);
+            Assert.AreEqual(1, foesOfA.Count, "B 阵亡后 A 只剩 C 一个可打的对手。");
+            Assert.AreSame(game.PlayerC, foesOfA[0]);
         }
 
         [Test]

@@ -275,10 +275,13 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **2v2**：再加两名玩家（C / D）。
+        /// 2v2：再加两名玩家（C / D）。
         ///
-        /// 队伍交错排列（A/C 同队、B/D 同队），这样界面上"左边两人 vs 右边两人"
-        /// 与名单顺序一致，不必额外排序。
+        /// 队伍按玩家确认的**环形座位**分配：座位 `1-2-3-4`，**首尾同队**
+        /// → `{A, D}` 与 `{B, C}`（A=1、B=2、C=3、D=4）。
+        ///
+        /// 这样每队两人**彼此相邻**（环上距离 1），而两名对手相隔 2 ——
+        /// 于是"攻击距离 1"在 2v2 里是有意义的（详见 RULES.md）。
         ///
         /// 必须在**对局开始前**调用（第一回合之后加入会让回合顺序错乱）。
         /// </summary>
@@ -293,12 +296,55 @@ namespace FingerDiceDuel.Core
             ChoiceProviderC = providerC;
             ChoiceProviderD = providerD;
 
-            Register(c, TeamOf(PlayerA));    // C 与 A 同队
-            Register(d, TeamOf(PlayerB));    // D 与 B 同队
+            Register(c, 1);                  // C（座位 3）与 B（座位 2）同队
+            Register(d, 0);                  // D（座位 4）与 A（座位 1）同队（首尾相邻）
 
             c.Character?.OnMatchReset(c, this);
             d.Character?.OnMatchReset(d, this);
         }
+
+        /// <summary>
+        /// 8 人局：再加六名玩家（E~J 共 6 人，合计 8 人）。
+        ///
+        /// 每人**各自一队**（8 人局是混战），队伍号依次为 2..7。
+        /// 队伍号只需"不同"，胜负判定按"存活队伍数"判断。
+        /// </summary>
+        public void AddPlayersFor8(PlayerState e, IChoiceProvider providerE,
+                                   PlayerState f, IChoiceProvider providerF,
+                                   PlayerState g, IChoiceProvider providerG,
+                                   PlayerState h, IChoiceProvider providerH)
+        {
+            if (e == null || f == null || g == null || h == null)
+                throw new ArgumentNullException(nameof(e), "8 人局的玩家不能为空。");
+
+            PlayerE = e; PlayerF = f; PlayerG = g; PlayerH = h;
+            ChoiceProviderE = providerE;
+            ChoiceProviderF = providerF;
+            ChoiceProviderG = providerG;
+            ChoiceProviderH = providerH;
+
+            Register(e, 2);
+            Register(f, 3);
+            Register(g, 4);
+            Register(h, 5);
+
+            e.Character?.OnMatchReset(e, this);
+            f.Character?.OnMatchReset(f, this);
+            g.Character?.OnMatchReset(g, this);
+            h.Character?.OnMatchReset(h, this);
+        }
+
+        /// <summary>8 人局的第 5~8 名玩家（未加入时为 null）。</summary>
+        public PlayerState PlayerE { get; private set; }
+        public PlayerState PlayerF { get; private set; }
+        public PlayerState PlayerG { get; private set; }
+        public PlayerState PlayerH { get; private set; }
+
+        public IChoiceProvider ChoiceProviderE { get; set; }
+        public IChoiceProvider ChoiceProviderF { get; set; }
+        public IChoiceProvider ChoiceProviderG { get; set; }
+        public IChoiceProvider ChoiceProviderH { get; set; }
+
 
         /// <summary>2v2 的第三名玩家（1v1 时为 null）。</summary>
         public PlayerState PlayerC { get; private set; }
@@ -310,7 +356,43 @@ namespace FingerDiceDuel.Core
         public IChoiceProvider ChoiceProviderD { get; set; }
 
         /// <summary>
-        /// 这张手牌属于谁（在**全部**参战玩家里查）。
+        /// **座位距离**（环形最短步数）。
+        ///
+        /// 玩家确认的规则：
+        ///   · 座位围成一圈（4 人局 `1-2-3-4` 成环，8 人局同理）
+        ///   · 距离 = 环上最短步数 = `min(|i-j|, n-|i-j|)`
+        ///   · **阵亡的玩家从环上摘掉**（环收缩），所以活着的人会彼此靠近
+        ///   · 自己到自己 = 0（不合法目标）
+        ///
+        /// 实测例子（与玩家给的数字一致）：
+        ///   4 人：1↔2=1、1↔3=2、1↔4=1
+        ///   8 人：1↔4=3、1↔5=4、1↔6=3
+        /// </summary>
+        public int DistanceBetween(PlayerState a, PlayerState b)
+        {
+            if (a == null || b == null) return -1;
+            if (ReferenceEquals(a, b)) return 0;
+
+            // 只把**活着的人**排成环（阵亡者不计入距离计算）
+            var ring = new List<PlayerState>(4);
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i].IsAlive) ring.Add(_players[i]);
+
+            int ia = ring.IndexOf(a);
+            int ib = ring.IndexOf(b);
+
+            // 有人不在环上（已阵亡）-> 无法计算
+            if (ia < 0 || ib < 0) return -1;
+
+            int n = ring.Count;
+            if (n < 2) return -1;
+
+            int diff = ia > ib ? ia - ib : ib - ia;
+            int wrap = n - diff;
+            return diff < wrap ? diff : wrap;
+        }
+
+        /// <summary>这张手牌属于谁（在**全部**参战玩家里查）。
         ///
         /// 2v2 需要它：运算目标是"某位对手的一只手"，
         /// 而那位对手不一定是 <see cref="GetOpponent"/> 返回的第一位。
@@ -426,6 +508,10 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(p, PlayerB)) return ChoiceProviderB;
             if (ReferenceEquals(p, PlayerC)) return ChoiceProviderC;
             if (ReferenceEquals(p, PlayerD)) return ChoiceProviderD;
+            if (ReferenceEquals(p, PlayerE)) return ChoiceProviderE;
+            if (ReferenceEquals(p, PlayerF)) return ChoiceProviderF;
+            if (ReferenceEquals(p, PlayerG)) return ChoiceProviderG;
+            if (ReferenceEquals(p, PlayerH)) return ChoiceProviderH;
 
             return null;
         }
@@ -476,15 +562,23 @@ namespace FingerDiceDuel.Core
 
             // ⚠️ 用"所有对手"而不是"某一个对手" ——
             // 2v2 里 A 可以打 B 或 D，只列第一个会漏掉另一个。
-            IReadOnlyList<PlayerState> foes = OpponentsOf(actor);
-
+            //
+            // ⚠️ 另外：**被加数可以是任何其他玩家**（含队友）——
+            // 玩家确认的规则是"A 可以选择 B/C/D 任何一个数字作为被加数"，
+            // 别人的数字不会被改动，只有行动方自己的手变成结果值。
+            // 所以这里枚举"除自己以外的全部玩家"，不过滤队友。
             foreach (Hand mine in actor.Hands)
             {
                 if (mine.IsLocked) continue;
 
-                for (int i = 0; i < foes.Count; i++)
-                    foreach (Hand theirs in foes[i].Hands)
+                for (int i = 0; i < _players.Count; i++)
+                {
+                    PlayerState owner = _players[i];
+                    if (ReferenceEquals(owner, actor)) continue;
+
+                    foreach (Hand theirs in owner.Hands)
                         _legalMoves.Add(new LegalMove(actor, mine, theirs));
+                }
             }
 
             return _legalMoves;
@@ -506,18 +600,21 @@ namespace FingerDiceDuel.Core
 
             // ⚠️ 判据是"**是不是队友**"，不是"是不是那唯一一个对手"。
             //
-            // 1v1 里两者等价；2v2 里 A 可以打 B 或 D，只认"第一个对手"会把
-            // 打 D 误判成非法（真实 bug：2v2 测试全部撞在这条上）。
-            PlayerState targetOwner = OwnerOfHand(targetHand);
-            if (targetOwner == null)
+            // 被加数可以是**任何其他玩家**的手（含队友）。
+            //
+            // 玩家确认的规则："A 可以选择 B/C/D 任何一个数字作为被加数" ——
+            // 别人的数字**不会被改动**，只有 A 自己的手变成结果值。
+            // 所以这里只排除"自己的手"，不排除队友。
+            PlayerState addendOwner = OwnerOfHand(targetHand);
+            if (addendOwner == null)
             {
-                reason = "运算目标必须属于某位参战玩家。";
+                reason = "被加数必须属于某位参战玩家。";
                 return false;
             }
 
-            if (IsTeammate(actor, targetOwner))
+            if (ReferenceEquals(addendOwner, actor))
             {
-                reason = "运算目标必须是对手的手（不能对队友或自己的手运算）。";
+                reason = "被加数不能是自己的手（要用别人的数字来改变自己的手）。";
                 return false;
             }
 
@@ -573,7 +670,13 @@ namespace FingerDiceDuel.Core
             //    只要这只手还是 5，碎盾状态就一直保留，**无论过多少回合**；
             //    一旦它不再是 5（被运算改写），它就成了普通手牌，状态自然回到 None。
             //    这两条由第 3 步的值判断保证，因此不需要按回合清理。
-            PlayerState opponent = GetOpponent(actor);
+            // ⚠️ 被加数的手主**不一定**是挨打的人。
+            //
+            // 玩家确认的规则：第 ③ 步**单独选攻击目标**，可以与被加数的手主不同。
+            // 所以挨打的默认取被加数手主（保持 1v1 与既有测试不变），
+            // 但 <see cref="DamageTargetPlayer"/> 可以覆盖它。
+            PlayerState addendOwner = OwnerOfHand(targetHand);
+            PlayerState opponent = DamageTargetPlayer ?? addendOwner ?? GetOpponent(actor);
             IChoiceProvider oppChoice = GetChoiceProvider(opponent);
 
             result.ActedHand = actedHand;
@@ -898,6 +1001,19 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public bool SuppressAttackDamage { get; set; }
 
+        /// <summary>
+        /// **本次结算的攻击目标玩家**（可覆盖"被加数的手主"）。
+        ///
+        /// 为什么需要：玩家确认的交互是
+        ///   ① 点自己的手（运算源）② 点**任意人**的手（被加数）③ 单独选攻击目标
+        /// 第 ③ 步的目标可以与第 ② 步的手主不同（例如用距离 2 的 C 的数字，
+        /// 但打距离 1 的 B）。
+        ///
+        /// 为 null 时回退到"被加数的手主" —— 保持 1v1 与既有调用不变。
+        /// 调用方必须在结算后复位。
+        /// </summary>
+        public PlayerState DamageTargetPlayer { get; set; }
+
         /// <summary>这个效果类型是不是"攻击"。</summary>
         private static bool isAttackEffect(HandEffectType effect)
             => effect == HandEffectType.Attack4
@@ -908,32 +1024,41 @@ namespace FingerDiceDuel.Core
         {
             // 只要**还有两个以上队伍**活着，对局就继续。
             //
-            // 这样 1v1（2 人 2 队）与 2v2（4 人 2 队）用同一套判定：
-            //   · 1v1：任一人阵亡 -> 只剩一队 -> 结束
-            //   · 2v2：某队两人都阵亡 -> 只剩一队 -> 结束
-            //
-            // ⚠️ 不能按"某个人阵亡"结束 —— 2v2 里队友还活着时对局必须继续。
-            bool[] alive = { false, false };
+            // 用"存活队伍数"而不是"A/B 对偶" —— 这样 1v1（2 队）、
+            // 2v2（2 队）、8 人混战（8 队）用同一套判定。
+            var aliveTeams = new HashSet<int>();
+
             for (int i = 0; i < _players.Count; i++)
             {
                 int team = TeamOf(_players[i]);
-                if (team < 0 || team > 1) continue;
+                if (team < 0) continue;
 
-                if (_players[i].IsAlive) alive[team] = true;
+                if (_players[i].IsAlive) aliveTeams.Add(team);
             }
 
-            if (alive[0] && alive[1]) return;
+            // 队伍数（含已全灭的）—— 只有一支队伍时不必判负
+            var allTeams = new HashSet<int>();
+            for (int i = 0; i < _players.Count; i++)
+            {
+                int team = TeamOf(_players[i]);
+                if (team >= 0) allTeams.Add(team);
+            }
+
+            if (aliveTeams.Count > 1) return;
+            if (allTeams.Count <= 1) return;      // 只有一队时不算"分出胜负"
 
             IsGameOver = true;
 
-            if (!alive[0] && !alive[1])
+            if (aliveTeams.Count == 0)
             {
-                Winner = null;      // 同归于尽 / 双方全灭 -> 平局
+                Winner = null;      // 全灭 -> 平局
                 return;
             }
 
             // 赢家取"还活着的那一队里第一个还活着的人"（供战报显示）
-            int winningTeam = alive[0] ? 0 : 1;
+            int winningTeam = 0;
+            foreach (int t in aliveTeams) { winningTeam = t; break; }
+
             Winner = FirstAliveInTeam(winningTeam);
         }
 
