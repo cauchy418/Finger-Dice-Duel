@@ -73,28 +73,54 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Opponents_follow_counterclockwise_around_the_screen()
         {
-            // 玩家给的例子：坐 1 号位、队友在左下 ->
-            //   左上 = **三位**、右上 = **二位**
-            //（我第一版写反成了"左上 = 二位"，实机截图暴露。）
-            IReadOnlyList<RingSlot> slots = RingLayout.Build(1);
+            // 玩家给的**截图 1**：我是 4 号位、队友 1 号位在**右下**，
+            // 对手 三号位 = 左上、二号位 = 右上。
+            IReadOnlyList<RingSlot> slots = RingLayout.Build(4);
 
+            Assert.AreEqual(1, SeatAt(slots, RingPosition.LowerRight),
+                "截图1：队友（1 号位）应在右下。");
             Assert.AreEqual(3, SeatAt(slots, RingPosition.UpperLeft),
-                "队友在左下时，左上应是三位。");
+                "截图1：三号位应在左上。");
             Assert.AreEqual(2, SeatAt(slots, RingPosition.UpperRight),
-                "队友在左下时，右上应是二位。");
+                "截图1：二号位应在右上。");
+            Assert.AreEqual(-1, SeatAt(slots, RingPosition.LowerLeft),
+                "截图1：左下应空着。");
         }
 
         [Test]
-        public void Opponents_order_flips_when_the_teammate_is_on_the_right()
+        public void Opponents_order_flips_when_the_teammate_is_on_the_left()
         {
-            // 镜像情况（坐 4 号位、队友在右下）：
-            //   左上 = 二位（再下家）、右上 = 三位（再再下家）
-            IReadOnlyList<RingSlot> slots = RingLayout.Build(4);
+            // 玩家给的**截图 2**：我是 3 号位、队友 2 号位在**左下**，
+            // 对手 一号位 = 左上、四号位 = 右上。
+            IReadOnlyList<RingSlot> slots = RingLayout.Build(3);
 
-            Assert.AreEqual(2, SeatAt(slots, RingPosition.UpperLeft),
-                "队友在右下时，左上应是二位。");
-            Assert.AreEqual(3, SeatAt(slots, RingPosition.UpperRight),
-                "队友在右下时，右上应是三位。");
+            Assert.AreEqual(2, SeatAt(slots, RingPosition.LowerLeft),
+                "截图2：队友（2 号位）应在左下。");
+            Assert.AreEqual(1, SeatAt(slots, RingPosition.UpperLeft),
+                "截图2：一号位应在左上。");
+            Assert.AreEqual(4, SeatAt(slots, RingPosition.UpperRight),
+                "截图2：四号位应在右上。");
+            Assert.AreEqual(-1, SeatAt(slots, RingPosition.LowerRight),
+                "截图2：右下应空着。");
+        }
+
+        [Test]
+        public void The_other_two_seats_match_the_walk_rule()
+        {
+            // 完整核验四个座位（由玩家两个例子反推出的规律）：
+            //   屏幕左→右 = 逆时针绕环、跳过队友
+            //   me=1 -> 左上=3 右上=2 左下=队友(4)
+            //   me=2 -> 左上=1 右上=4 右下=队友(3)
+            //   me=3 -> 左上=1 右上=4 左下=队友(2)   <- 玩家截图 2
+            //   me=4 -> 左上=3 右上=2 右下=队友(1)   <- 玩家截图 1
+            Assert.AreEqual(3, SeatAt(RingLayout.Build(1), RingPosition.UpperLeft));
+            Assert.AreEqual(2, SeatAt(RingLayout.Build(1), RingPosition.UpperRight));
+
+            Assert.AreEqual(1, SeatAt(RingLayout.Build(2), RingPosition.UpperLeft));
+            Assert.AreEqual(4, SeatAt(RingLayout.Build(2), RingPosition.UpperRight));
+
+            Assert.AreEqual(3, SeatAt(RingLayout.Build(4), RingPosition.UpperLeft));
+            Assert.AreEqual(2, SeatAt(RingLayout.Build(4), RingPosition.UpperRight));
         }
 
         [Test]

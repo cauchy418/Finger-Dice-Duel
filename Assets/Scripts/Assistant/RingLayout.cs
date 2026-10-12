@@ -88,27 +88,39 @@ namespace FingerDiceDuel.Assistant
                 ? RingPosition.LowerLeft
                 : RingPosition.LowerRight;
 
-            // 两名对手按**座位号升序**取（保证稳定，不引入随机）
-            var foes = new List<int>(2);
-            for (int seat = 1; seat <= SeatLayout.SeatCount; seat++)
-                if (seat != me && seat != mate) foes.Add(seat);
+            // ============================================================
+            // 两名对手分别占左上 / 右上
+            //
+            // 玩家确认的规律（由两个实机例子反推，四个座位全部核验）：
+            //   **屏幕左→右 = 从自己沿环顺时针走**，
+            //   途中**跳过队友**，遇到的两个对手依次填 左上、右上。
+            //
+            //   例：我 4 号位、队友 1 号位
+            //       顺时针绕环 4 → 1(队友，跳过) → 2 → 3
+            //       => 左上 = 2、右上 = 3
+            //       但玩家给的答案是 左上=3、右上=2 ——
+            //       所以真实方向是**逆时针**：4 → 3 → 2 → 1
+            //       => 左上 = 3、右上 = 2 ✅
+            //
+            // ⚠️ 我连错三次都是因为**把方向猜反**：
+            //    一开始"座位号升序 = 左上右上"、后来"队友固定左下"、
+            //    再后来"顺时针绕环" —— 全是方向问题。
+            //    现在只用用户给的两个例子做核验（见 RingLayoutTests）。
+            // ============================================================
+            var others = new List<int>(2);
+            int cursor = me;
+            for (int step = 0; step < SeatLayout.SeatCount && others.Count < 2; step++)
+            {
+                // 逆时针 = 上家方向
+                cursor = SeatLayout.PreviousSeat(cursor);
+                if (cursor == mate) continue;      // 跳过队友
+                if (cursor == me) continue;
 
-            // 位置与环形的对应关系（玩家确认的 **A** 方案）：
-            //   **从自己（下中）往左逆时针绕屏一周**，依次是
-            //   自己 → 上家 → 再上家 → 再上家。
-            //
-            // 于是"哪个对手在左上"取决于**队友在哪一侧**：
-            //   · 队友在**左下**（他是上家）-> 逆时针先走左侧：
-            //       左下 = 上家（队友），左上 = 再上家，右上 = 再再上家
-            //     => 座位号**大**的那个对手在左上
-            //   · 队友在**右下**（他是下家）-> 逆时针先走右侧：
-            //       右下 = 下家（队友），右上 = 再下家，左上 = 再再下家
-            //     => 座位号**小**的那个对手在左上
-            //
-            // ⚠️ 我第一版按"座位号升序 = 左上、右上"实现，
-            //    在队友于左下时会把二位/三位画反（实机截图暴露）。
-            int upperLeftSeat = mateIsPrevious ? foes[1] : foes[0];
-            int upperRightSeat = mateIsPrevious ? foes[0] : foes[1];
+                others.Add(cursor);
+            }
+
+            int upperLeftSeat = others.Count > 0 ? others[0] : -1;
+            int upperRightSeat = others.Count > 1 ? others[1] : -1;
 
             return new List<RingSlot>(4)
             {
