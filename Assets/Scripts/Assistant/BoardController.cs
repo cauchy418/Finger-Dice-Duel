@@ -594,26 +594,47 @@ namespace FingerDiceDuel.Assistant
             var provider = ActivePlayer?.Character as ITargetHandChoiceProvider;
             if (provider == null) return false;
 
-            // 预判结果：目标手还没选，用"自己另一只手"占位，
-            // 因为 Effect 只取决于**两值之和**，换哪只目标手结果一样。
-            Hand placeholder = ReferenceEquals(SelectedHand, ActivePlayer.LeftHand)
-                ? ActivePlayer.RightHand
-                : ActivePlayer.LeftHand;
-
-            var context = new PreTurnChoiceContext(ActivePlayer, Defender,
-                                                   SelectedHand, placeholder);
-
             _pendingRequests.Clear();
             _pendingRequestIndex = 0;
             _pendingChoiceCandidates.Clear();
             _pendingChoiceDecider = null;
 
-            provider.CollectPreTargetChoices(context, _pendingRequests);
+            // ⚠️ 目标手**还没选**，但角色要问的问题取决于"运算结果"。
+            //
+            // 曾经这里用"自己另一只手"当替身，并假设
+            // "Effect 只取决于两值之和，换哪只目标手结果一样" ——
+            // **这个假设是错的**：它只在"自己两只手同值"时成立。
+            //
+            // 实测被玩家抓到的两个方向相反的 bug：
+            //   · 手 5/2、对手 1/3：替身给出 5+2=7（无效果）-> **该提示的 6/8 不提示**
+            //   · 手 2/2、对手 5/5：替身给出 2+2=4 -> **不该提示的却提示了**
+            //
+            // 正确做法：**对所有真实候选目标手各收集一次，取并集**。
+            // 这样"会不会出 4/6/8"与最终实际选哪只手无关，两种情况都对。
+            var seen = new HashSet<HandEffect>();
 
-            // 过滤空候选
-            for (int i = _pendingRequests.Count - 1; i >= 0; i--)
-                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
-                    _pendingRequests.RemoveAt(i);
+            foreach (Hand target in Defender.Hands)
+            {
+                if (target == null) continue;
+
+                var context = new PreTurnChoiceContext(ActivePlayer, Defender,
+                                                       SelectedHand, target);
+
+                var one = new List<ChoiceRequest>();
+                provider.CollectPreTargetChoices(context, one);
+
+                for (int i = 0; i < one.Count; i++)
+                {
+                    ChoiceRequest request = one[i];
+
+                    // 同一个问题对所有目标手都该问 -> 同一个效果只收一次
+                    // （回复量 N 只由 4/6/8 决定，与目标手无关）
+                    if (!seen.Add(request.Effect)) continue;
+
+                    if (request.Candidates == null || request.Candidates.Count == 0) continue;
+                    _pendingRequests.Add(request);
+                }
+            }
 
             if (_pendingRequests.Count == 0) return false;
 

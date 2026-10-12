@@ -482,6 +482,75 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.LastTurn.DamageDealt > 0, "选攻击应造成伤害。");
         }
 
+        // ============================================================
+        // 牧师 4/6/8：提示不能因为"替身的手值"而漏掉（玩家实测报告）
+        // ============================================================
+
+        /// <summary>
+        /// 收集"选目标手之前的抉择"时目标手还没选 —— 控制器用**自己另一只手**
+        /// 当替身来预测结果，并假设"Effect 只取决于两值之和，换哪只目标手都一样"。
+        ///
+        /// ⚠️ 这个假设**只在"自己两只手同值"时成立**。
+        /// 玩家实测：牧师手 2/2、对手 1/3 时点自己的手会跳出**错误的** 4 提示；
+        /// 而另一些手值组合下**该出现的 6 却不出现**。
+        /// </summary>
+        [Test]
+        public void Priest_gets_the_attack_or_heal_prompt_even_when_the_placeholder_would_hide_it()
+        {
+            // 牧师手 5/2、对手手 1/3：
+            //   · 用 5 运算、替身取"另一只手"2 -> 5+2=7（无效果）-> 旧逻辑**不提示**
+            //   · 真实可选的对手手值是 1 或 3 -> 6 或 8（都在 4/6/8）-> **应该提示**
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkB = new SimpleChoiceProvider();
+            var game = new GameManager(priest, blank, sinkP, sinkB);
+            var board = new BoardController(game, sinkP, sinkB);
+
+            TestSetup.SetAllHands(priest, blank, 1);
+            TestSetup.SetHand(priest.LeftHand, 5);
+            TestSetup.SetHand(priest.RightHand, 2);
+            TestSetup.SetHand(blank.LeftHand, 1);
+            TestSetup.SetHand(blank.RightHand, 3);
+
+            board.BeginTurn();
+            Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase);
+
+            Assert.True(board.ClickHand(priest.LeftHand), "点自己的手应被接受。");
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
+                "真实目标可能打出 6 或 8（都在 4/6/8），必须先问攻击还是回复。");
+
+            string label = board.PendingAcceptLabel;
+            Assert.NotNull(label, "应给出「回复 N」的按钮文案。");
+            Assert.True(label.Contains("回复"), "文案应说明是回复。实际：" + label);
+        }
+
+        [Test]
+        public void Priest_does_not_prompt_when_no_real_target_can_make_an_effect()
+        {
+            // 反方向：替身**会**误触发，但真实目标手都打不出 4/6/8 -> 不该提示。
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkB = new SimpleChoiceProvider();
+            var game = new GameManager(priest, blank, sinkP, sinkB);
+            var board = new BoardController(game, sinkP, sinkB);
+
+            TestSetup.SetAllHands(priest, blank, 1);
+            TestSetup.SetHand(priest.LeftHand, 2);
+            TestSetup.SetHand(priest.RightHand, 2);     // 替身 = 2 -> 2+2 = 4（会误触发）
+            TestSetup.SetHand(blank.LeftHand, 5);       // 2+5 = 7 -> 无效果
+            TestSetup.SetHand(blank.RightHand, 5);      // 2+5 = 7 -> 无效果
+
+            board.BeginTurn();
+            board.ClickHand(priest.LeftHand);
+
+            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
+                "真实目标手都打不出 4/6/8 -> 不该弹攻击/回复询问，应直接进入选目标手。");
+        }
+
+
         [Test]
         public void The_priests_pre_target_answer_survives_the_mid_turn_reset()
         {
