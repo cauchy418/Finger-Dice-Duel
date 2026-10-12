@@ -267,8 +267,22 @@ namespace FingerDiceDuel.Assistant
         /// <summary>当前正在选择的目标手（防守方选的盾）。</summary>
         public Hand PendingChoice => _chosenDefenseShield;
 
-        /// <summary>防守方（与 <see cref="ActivePlayer"/> 相对）。</summary>
-        public PlayerState Defender => _game.GetOpponent(ActivePlayer);
+        /// <summary>
+        /// 本次运算要打的那位玩家（挨打的是玩家，不是手）。
+        ///
+        /// ⚠️ 与"被加数的手主"**可能不是同一个人** ——
+        /// 玩家确认的交互是：② 点任意人的手当被加数，③ 单独选攻击目标。
+        ///
+        /// 取值优先级：
+        ///   ① 已经确认的目标玩家（<see cref="TargetPlayer"/>）
+        ///   ② 退回"第一位对手"（回合刚开始、还没做任何选择时）
+        ///
+        /// 2v2 / 8 人局里第一位对手**不一定是**想打的人，
+        /// 所以凡是在"选完目标之后"才用到的场合，都应该先看 <see cref="TargetPlayer"/>。
+        /// 这里直接把它做进返回值，避免二十多处各写一遍 `TargetPlayer ?? Defender`
+        /// （那样迟早会漏一处）。
+        /// </summary>
+        public PlayerState Defender => TargetPlayer ?? _game.GetOpponent(ActivePlayer);
 
         /// <summary>当前行动方是否由人类操作（没有配置 AI 就是人类）。</summary>
         public bool IsHumanTurn => GetAi(ActivePlayer) == null;
@@ -773,10 +787,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 界面是否应把**「放弃攻击」**作为出口 ——
-        /// 即"当前没有合法攻击目标"。
+        /// 界面是否应把**「放弃攻击」**作为出口。
         ///
-        /// 玩家要求："放弃攻击按钮是在没有合法的攻击目标时弹出"。 
+        /// 修正（玩家确认）：判据是"**有没有合法的攻击目标**" ——
+        /// 队友**不算**合法攻击目标（不能打队友），
+        /// 所以面对唯一在范围内的敌人被潜行时，"放弃攻击"才出现。
+        /// 曾经这里只看当前的 <see cref="Defender"/>，2v2 里会因为
+        /// "另一位对手在范围内"而漏判 -> 该放弃时不给按钮。
+        ///
         /// 所以判据是 <see cref="HasAnyLegalTarget"/>，不是"对手是刺客"。
         /// </summary>
         public bool DefenderCannotBeAttacked
@@ -1734,6 +1752,16 @@ namespace FingerDiceDuel.Assistant
             // "界面允许选、结算却打不到"的不一致。
             _game.RangeOverride = CurrentRangeOverride();
 
+            // 挨打的是**选定的目标玩家**，不是"被加数的手主"。
+            //
+            // 玩家确认的交互：② 点任意人的手当被加数，③ 单独选攻击目标。
+            // 两者可以是不同的人（例如用距离 2 的 C 的数字、打距离 1 的 B）。
+            // 不显式传的话结算会回退到"被加数手主"，于是界面显示打 B、
+            // 实际却把伤害算在 C 头上。
+            //
+            // 选目标阶段（还没确认）用被加数手主兜底，与 CanBeAttacked 的视角一致。
+            _game.DamageTargetPlayer = TargetPlayer ?? OwnerOf(_selectedTarget);
+
             TurnResult result;
             try
             {
@@ -1758,6 +1786,7 @@ namespace FingerDiceDuel.Assistant
                 // 必须复位，否则会污染后续所有回合
                 _game.SuppressAttackDamage = false;
                 _game.RangeOverride = -1;
+                _game.DamageTargetPlayer = null;
                 _giveUpAttack = false;
             }
 
