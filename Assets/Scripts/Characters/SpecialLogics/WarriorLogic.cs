@@ -51,7 +51,7 @@ namespace FingerDiceDuel.Core
 
             requests.Add(new ChoiceRequest(
                 HandEffect.WarriorChainBreak,
-                $"战士的盾已碎：要连带打碎场上一面**完好**的盾吗？" +
+                $"战士的盾已碎：要连带打碎场上一面完好的盾吗？" +
                 $"（同意后点那面盾牌；被打碎的可能是自己的，也可能是对手的）",
                 ToHands(candidates),
                 allowDecline: true,

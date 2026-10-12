@@ -127,8 +127,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             requests.Add(new ChoiceRequest(
                 HandEffect.PriestAttackOrHeal,
-                $"牧师运算出 {heal}：当**攻击**打（{heal} 点基础伤害，再算攻防），" +
-                $"还是当**回复**用（回复 {heal} 点，不受攻防影响）？",
+                $"牧师运算出 {heal}：当攻击打（{heal} 点基础伤害，再算攻防），" +
+                $"还是当回复用（回复 {heal} 点，不受攻防影响）？",
                 new List<Hand>(1) { context.Actor.LeftHand },
                 allowDecline: true,                 // 放弃 = 当攻击打（默认）
                 declineResult: null,
@@ -207,7 +207,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             // 这与剑客"追加攻击"的判定同类：都是运算前可算的。
             if (HasDoubleNineAfter(context))
                 requests.Add(BuildTargetRequest(context, HandEffect.PriestExtraHealTarget,
-                    $"牧师双手都是 {DoubleNineValue}：**额外**回复 {ExtraHealAmount} 点给谁？"));
+                    $"牧师双手都是 {DoubleNineValue}：额外回复 {ExtraHealAmount} 点给谁？"));
 
             // ② 本次运算出 9 -> 问这次回复给谁（**必选**）
             if (context.Effect == HandEffectType.Heal)

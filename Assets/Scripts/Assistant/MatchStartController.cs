@@ -268,12 +268,12 @@ namespace FingerDiceDuel.Assistant
             if (IsNamingOpponent)
             {
                 // decider 就是那个"投出 1 的人"（大失败者），这里要写清楚
-                sb.Append($"{Decider.Name} 投出 **{roll}**（大失败）：由你来替 ")
+                sb.Append($"{Decider.Name} 投出 {roll}（大失败）：由你来替 ")
                   .Append($"{who} 指定初始手值。");
             }
             else
             {
-                sb.Append($"{Decider.Name} 投出 **{roll}**");
+                sb.Append($"{Decider.Name} 投出 {roll}");
                 if (DiceRollSetup.IsMinorSuccess(roll)) sb.Append("（小成功：一只手必须是 9）");
                 else if (DiceRollSetup.IsMajorSuccess(roll)) sb.Append("（大成功：两手随意）");
                 sb.Append($"：请选择两只手的初始点数（两手之和 = {roll}）。");

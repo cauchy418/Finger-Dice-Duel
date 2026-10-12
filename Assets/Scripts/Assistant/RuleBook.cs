@@ -64,7 +64,7 @@ namespace FingerDiceDuel.Assistant
             sb.AppendLine();
             sb.AppendLine("【护盾与伤害】");
             sb.AppendLine("护盾只能挡一次攻击，挡下后破碎。若双手都是护盾，");
-            sb.AppendLine("由**防守方**决定用哪一面去挡。");
+            sb.AppendLine("由防守方决定用哪一面去挡。");
             sb.AppendLine();
             sb.AppendLine("【攻防加成】");
             sb.AppendLine("每次攻击的伤害 = 基础点数 ÷ 段数 + 攻方攻击加成 - 守方防御加成。");

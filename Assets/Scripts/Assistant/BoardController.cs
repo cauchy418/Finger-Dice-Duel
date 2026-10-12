@@ -1836,9 +1836,9 @@ namespace FingerDiceDuel.Assistant
                         int amount = t.HealAmount;
 
                         if (ReferenceEquals(t.HealTarget, t.Actor))
-                            return head + $"（**回复**自己 {amount} 点生命）";
+                            return head + $"（回复自己 {amount} 点生命）";
 
-                        return head + $"（**回复** {t.HealTarget.Name} {amount} 点生命）";
+                        return head + $"（回复 {t.HealTarget.Name} {amount} 点生命）";
                     }
 
                     if (t.WasDodged)

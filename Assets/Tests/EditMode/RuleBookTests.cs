@@ -20,6 +20,64 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class RuleBookTests
     {
+        /// <summary>
+        /// **玩家可见的文本里不许出现 Markdown 的 `**`。**
+        ///
+        /// 为什么：游戏用 uGUI 的 <c>Text</c> 渲染，它**不认 Markdown** ——
+        /// 写进去的星号会**原样显示**（玩家实测看到"投出 **12**"这种文字）。
+        /// 注释里的 `**` 无害（那是给读代码的人看的），所以只查非注释行。
+        /// </summary>
+        [Test]
+        public void No_markdown_bold_in_player_visible_strings()
+        {
+            string root = FindScriptsRoot();
+            Assert.NotNull(root, "找不到 Assets/Scripts 目录。");
+
+            var offenders = new List<string>();
+
+            foreach (string path in System.IO.Directory.GetFiles(root, "*.cs",
+                                                                 System.IO.SearchOption.AllDirectories))
+            {
+                string[] lines = System.IO.File.ReadAllLines(path);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    string trimmed = lines[i].TrimStart();
+
+                    // 注释里的 ** 无害（是给读代码的人看的）
+                    if (trimmed.StartsWith("//")) continue;
+
+                    // 只关心"字符串里"的 **：这一行得同时含 ** 与引号
+                    if (lines[i].Contains("**") && lines[i].Contains("\""))
+                        offenders.Add($"{System.IO.Path.GetFileName(path)}:{i + 1}: {trimmed}");
+                }
+            }
+
+            Assert.AreEqual(0, offenders.Count,
+                "玩家可见文本里不能出现 Markdown 的 **（uGUI Text 不会加粗，星号会原样显示）：\n" +
+                string.Join("\n", offenders));
+        }
+
+        /// <summary>从测试文件位置往上找 Assets/Scripts。</summary>
+        private static string FindScriptsRoot()
+        {
+            var dir = new System.IO.DirectoryInfo(System.AppContext.BaseDirectory);
+
+            while (dir != null)
+            {
+                string candidate = System.IO.Path.Combine(dir.FullName, "Assets", "Scripts");
+                if (System.IO.Directory.Exists(candidate)) return candidate;
+
+                // 也可能测试是从 Assets 下面被发现的
+                if (System.IO.Directory.Exists(System.IO.Path.Combine(dir.FullName, "Scripts"))
+                    && System.IO.Directory.Exists(System.IO.Path.Combine(dir.FullName, "Tests")))
+                    return System.IO.Path.Combine(dir.FullName, "Scripts");
+
+                dir = dir.Parent;
+            }
+
+            return null;
+        }
+
         [Test]
         public void Attack_values_in_the_rules_match_the_engine()
         {

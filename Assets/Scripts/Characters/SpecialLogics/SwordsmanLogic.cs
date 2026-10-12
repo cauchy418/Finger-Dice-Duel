@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -72,7 +72,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             requests.Add(new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp,
-                $"剑客双 {value}：可以在主攻击**之前**追加一次" +
+                $"剑客双 {value}：可以在主攻击之前追加一次" +
                 $"固定 {value} 点伤害的攻击（无视双方攻防加成）。要发动吗？",
                 new List<Hand>(1) { GetOtherHand(context.Actor, context.ActedHand) },
                 allowDecline: true,
