@@ -425,9 +425,16 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void The_priest_asks_attack_or_heal_before_choosing_the_target_hand()
+        public void The_priest_asks_attack_or_heal_after_the_target_hand_is_chosen()
         {
-            // 玩家要求的顺序：运算出 4 -> **先**弹出「攻击 / 回复」-> 选完再点目标手。
+            // 玩家确认的顺序：
+            //   ① 点自己的手  ② 点对手的手（作为运算源）
+            //   ③ 运算出 4/6/8 -> 弹「攻击 / 回复」  ④ 再选攻击/回复的目标
+            //
+            // ⚠️ 关键：提示**必须晚于**第 ② 步。
+            // 因为结果 = 自己那只手 + 对手那只手，运算源没定时结果是不确定的。
+            // （曾经在第 ① 步就问，只能用替身猜 —— 实测出现
+            //   "该提示不提示" 与 "提示的数值不对" 两类 bug。）
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
             var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
@@ -439,11 +446,16 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(priest.LeftHand, 3);      // 3 + 1 = 4 -> 攻击或回复
 
             board.BeginTurn();
-            Assert.True(board.ClickHand(priest.LeftHand), "选运算源应被接受。");
 
-            // 关键：**还没选目标手**，就先停下来问"攻击还是回复"
+            // ① 点自己的手：只是选定运算源，此时**还问不出**攻击还是回复
+            Assert.True(board.ClickHand(priest.LeftHand), "选自己的手应被接受。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
+                "第 ① 步之后应还在选目标手，不能提前问（结果还不确定）。");
+
+            // ② 点对手的手 = 选定运算源 -> 结果确定 -> 这时才问
+            Assert.True(board.ClickHand(blank.LeftHand), "选目标手应被接受。");
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
-                "牧师的 4/6/8 应在**选目标手之前**先问攻击还是回复。");
+                "运算源定了（3+1=4）之后才该问攻击还是回复。");
             Assert.NotNull(board.PendingRequest);
             Assert.AreEqual(HandEffect.PriestAttackOrHeal, board.PendingRequest.Value.Effect);
         }
@@ -463,18 +475,15 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(priest.LeftHand, 3);      // 3 + 1 = 4 -> 攻击
 
             board.BeginTurn();
-            board.ClickHand(priest.LeftHand);
+            board.ClickHand(priest.LeftHand);           // ① 自己的手
+            board.ClickHand(blank.LeftHand);            // ② 目标手（运算源）
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
             // 放弃"当回复用" = 当攻击打
             Assert.True(board.DeclinePendingChoice(), "选「攻击」应被接受。");
 
-            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
-                "选完攻击后应进入「选目标手」。");
-
-            board.ClickHand(blank.LeftHand);
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
-                "攻击需要确认目标玩家。");
+                "选完攻击后应进入「确认目标玩家」。");
 
             Assert.True(board.ConfirmTargetPlayer(), "确认后应结算。");
             Assert.NotNull(board.LastTurn);
@@ -487,19 +496,19 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         /// <summary>
-        /// 收集"选目标手之前的抉择"时目标手还没选 —— 控制器用**自己另一只手**
-        /// 当替身来预测结果，并假设"Effect 只取决于两值之和，换哪只目标手都一样"。
+        /// 提示要问得**准确**：结果 = 自己那只手 + 对手那只手，
+        /// 所以必须在"点完对手那只手"之后才问。
         ///
-        /// ⚠️ 这个假设**只在"自己两只手同值"时成立**。
-        /// 玩家实测：牧师手 2/2、对手 1/3 时点自己的手会跳出**错误的** 4 提示；
-        /// 而另一些手值组合下**该出现的 6 却不出现**。
+        /// ⚠️ 曾经在第 ① 步（点自己的手）就问，只能用"自己另一只手"当替身猜，
+        /// 并假设"换哪只目标手结果一样" —— 那个假设只在自己两只手同值时成立。
+        /// 玩家实测因此出现两类错：该提示的不提示、提示的数值不对。
         /// </summary>
         [Test]
-        public void Priest_gets_the_attack_or_heal_prompt_even_when_the_placeholder_would_hide_it()
+        public void Priest_gets_the_attack_or_heal_prompt_after_the_target_hand_is_chosen()
         {
             // 牧师手 5/2、对手手 1/3：
-            //   · 用 5 运算、替身取"另一只手"2 -> 5+2=7（无效果）-> 旧逻辑**不提示**
-            //   · 真实可选的对手手值是 1 或 3 -> 6 或 8（都在 4/6/8）-> **应该提示**
+            //   · 用 5 运算、打对手的 1 -> 6（4/6/8）-> 应提示
+            //   · 打对手的 3 -> 8（4/6/8）-> 也提示
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
@@ -516,20 +525,27 @@ namespace FingerDiceDuel.Tests
             board.BeginTurn();
             Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase);
 
+            // ① 自己的手
             Assert.True(board.ClickHand(priest.LeftHand), "点自己的手应被接受。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
+                "第 ① 步之后还没定运算源，不能提前问。");
 
+            // ② 对手的手（运算源）-> 结果 5+1=6 确定 -> 这时才问
+            Assert.True(board.ClickHand(blank.LeftHand), "点对手的手应被接受。");
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
-                "真实目标可能打出 6 或 8（都在 4/6/8），必须先问攻击还是回复。");
+                "5+1=6 在 4/6/8 之列，选定运算源后应问攻击还是回复。");
 
             string label = board.PendingAcceptLabel;
             Assert.NotNull(label, "应给出「回复 N」的按钮文案。");
             Assert.True(label.Contains("回复"), "文案应说明是回复。实际：" + label);
+            Assert.True(label.Contains("6"),
+                $"回复量应是真实结果 6（而不是替身算出的别的数）。实际：{label}");
         }
 
         [Test]
-        public void Priest_does_not_prompt_when_no_real_target_can_make_an_effect()
+        public void Priest_does_not_prompt_when_the_chosen_target_makes_no_effect()
         {
-            // 反方向：替身**会**误触发，但真实目标手都打不出 4/6/8 -> 不该提示。
+            // 反方向：选定的运算源打不出 4/6/8 -> 不该提示。
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
@@ -539,15 +555,16 @@ namespace FingerDiceDuel.Tests
 
             TestSetup.SetAllHands(priest, blank, 1);
             TestSetup.SetHand(priest.LeftHand, 2);
-            TestSetup.SetHand(priest.RightHand, 2);     // 替身 = 2 -> 2+2 = 4（会误触发）
+            TestSetup.SetHand(priest.RightHand, 2);
             TestSetup.SetHand(blank.LeftHand, 5);       // 2+5 = 7 -> 无效果
-            TestSetup.SetHand(blank.RightHand, 5);      // 2+5 = 7 -> 无效果
+            TestSetup.SetHand(blank.RightHand, 5);
 
             board.BeginTurn();
             board.ClickHand(priest.LeftHand);
+            board.ClickHand(blank.LeftHand);
 
-            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
-                "真实目标手都打不出 4/6/8 -> 不该弹攻击/回复询问，应直接进入选目标手。");
+            Assert.False(board.Phase == BoardPhase.ChoosingPreTargetChoice,
+                "2+5=7 不是 4/6/8 -> 不该弹攻击/回复询问。");
         }
 
         [Test]
@@ -584,6 +601,42 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Priest_prompt_shows_the_real_value_on_the_hand_the_player_reported()
+        {
+            // 玩家实测报告的局面：牧师手 5/8、战士手 6/8。
+            //   牧师点自己的 8，再点战士的 8 -> 8+8=16 -> **6**
+            //   旧逻辑在"点自己的手"时就问了，只能用替身/候选第一个去猜，
+            //   猜出的是 8+6=4 -> 提示写成「回复 4」（错）。
+            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var sinkP = new SimpleChoiceProvider();
+            var sinkW = new SimpleChoiceProvider();
+            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var board = new BoardController(game, sinkP, sinkW);
+
+            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetHand(priest.LeftHand, 5);
+            TestSetup.SetHand(priest.RightHand, 8);     // 运算源
+            TestSetup.SetHand(warrior.LeftHand, 6);     // 8+6 = 4
+            TestSetup.SetHand(warrior.RightHand, 8);    // 8+8 = 6  <- 玩家点的是这个
+
+            board.BeginTurn();
+            board.ClickHand(priest.RightHand);          // ① 自己的 8
+            Assert.False(board.Phase == BoardPhase.ChoosingPreTargetChoice,
+                "第 ① 步之后运算源未定，不能提前问。");
+
+            board.ClickHand(warrior.RightHand);         // ② 战士的 8 -> 8+8=6
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
+                "8+8=6 在 4/6/8 之列，应问攻击还是回复。");
+
+            string label = board.PendingAcceptLabel;
+            Assert.NotNull(label, "应给出「回复 N」。");
+            Assert.True(label.Contains("6"),
+                $"回复量必须是真实结果 6，不能是另一个候选算出的 4。实际：{label}");
+        }
+
+        [Test]
         public void Priest_attack_or_heal_flow_completes_on_the_hand_that_used_to_hide_the_prompt()
         {
             // 端到端：把上面那个"该提示却不提示"的局面**走完**，
@@ -605,20 +658,18 @@ namespace FingerDiceDuel.Tests
                 TestSetup.SetHealth(priest, 10);
 
                 board.BeginTurn();
-                board.ClickHand(priest.LeftHand);
+                board.ClickHand(priest.LeftHand);        // ① 自己的手
+                board.ClickHand(blank.LeftHand);         // ② 目标手（运算源）-> 5+1=6 确定
 
                 Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
-                    "5+1=6 在 4/6/8 之列，应先问攻击还是回复。");
+                    "5+1=6 在 4/6/8 之列，选定运算源后应问攻击还是回复。");
 
                 if (chooseHeal) Assert.True(board.AcceptPendingChoice(), "选回复应被接受。");
                 else Assert.True(board.DeclinePendingChoice(), "选攻击应被接受。");
 
-                Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
-                    "选完攻击/回复后应进入选目标手。");
-                board.ClickHand(blank.LeftHand);         // 目标手 = 对手的 1
-
+                // 运算源已经选过了 -> 直接进入"确认目标玩家"（不再回到选目标手）
                 Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
-                    "攻击或回复都需要确认目标玩家。");
+                    "选完攻击/回复后应进入「确认目标玩家」。");
                 Assert.True(board.ConfirmTargetPlayer(), "确认后应结算。");
 
                 if (chooseHeal)
@@ -647,9 +698,9 @@ namespace FingerDiceDuel.Tests
         {
             // ⚠️ 真实 bug 的回归（这条是本次修复的**核心**）。
             //
-            // 牧师的 4/6/8 有两段抉择，中间隔着"选目标手"：
-            //   ① 选目标手之前：「攻击 / 回复」  ← 答案存进 sink
-            //   ② 选目标手之后：「回复给谁」/ 结算
+            // 牧师的 4/6/8 有两段抉择，中间隔着"确认目标玩家"：
+            //   ① 选定运算源之后：「攻击 / 回复」   ← 答案存进 sink
+            //   ② 确认目标玩家之后：「回复给谁」/ 结算
             //
             // CommitMove -> BeginCharacterChoices -> SetupFirstStep 会在
             // ① 与 ② 之间跑一次。若那里按"运算源为空"判定回合边界，
@@ -669,13 +720,13 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHealth(priest, 10);
 
             board.BeginTurn();
-            board.ClickHand(priest.LeftHand);
+            board.ClickHand(priest.LeftHand);           // ① 自己的手
+            board.ClickHand(blank.LeftHand);            // ② 目标手 -> 结果 4 确定
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
             board.AcceptPendingChoice();                // 选「回复」—— 答案存进 sink
 
-            // 跨过"选目标手 + 确认目标"这一段（中途会跑 SetupFirstStep）
-            board.ClickHand(blank.LeftHand);
+            // 跨过"确认目标玩家"这一段（中途会跑 SetupFirstStep）
             Assert.True(board.ConfirmTargetPlayer(), "确认目标玩家。");
 
             // 答案必须还在：所以才会问"回复给谁"
@@ -705,16 +756,16 @@ namespace FingerDiceDuel.Tests
             int blankBefore = blank.Health;
 
             board.BeginTurn();
-            board.ClickHand(priest.LeftHand);
+            board.ClickHand(priest.LeftHand);           // ① 自己的手
+            board.ClickHand(blank.LeftHand);            // ② 目标手（运算源）-> 结果确定
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
             // 发动 = 当回复用
             Assert.True(board.AcceptPendingChoice(), "选「回复」应被接受。");
 
-            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
-                "选完回复后应进入「选目标手」。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                "选完回复后应进入「确认目标玩家」。");
 
-            board.ClickHand(blank.LeftHand);
             Assert.True(board.ConfirmTargetPlayer(), "确认目标玩家。");
 
             // 确认之后才问"回复给谁"

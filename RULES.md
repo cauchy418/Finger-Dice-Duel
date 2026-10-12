@@ -1,4 +1,4 @@
-# Finger Dice Duel — 规则规格
+﻿# Finger Dice Duel — 规则规格
 
 > 本文件是**唯一权威规则来源**。代码、测试、UI 必须与本文件一致；
 > 若发现不一致，以本文件为准并修正代码。
@@ -203,14 +203,27 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 **抉择的时机与顺序**（玩家明确要求的交互）：
 
 ```
-4/6/8 → ①【选目标手之前】攻击还是回复
-        → 点目标手 → 确认目标玩家
-        → ②【选目标手之后】若选了回复，再问"回复给谁"
+4/6/8 → 点自己的手 → 点对手的手（运算源）→ 结果确定
+        → ①【运算源已定】攻击还是回复
+        → 确认目标玩家
+        → ② 若选了回复，再问"回复给谁"
 
 9     → 点目标手 → 确认目标玩家 → 问"本次回复给谁"
 
 双 9  → 点目标手 → 确认目标玩家 → 先问"额外回复给谁"、再问"本次回复给谁"
 ```
+
+> ⚠️ **提示必须在"点完对手那只手"之后才弹。**
+>
+> 因为结果 = 自己那只手 **+** 对手那只手，运算源没定时**结果是不确定的**。
+> 例如牧师手 `5/8`、战士手 `6/8`：牧师的 `8` 打战士的 `6` 出 **4**、打 `8` 出 **6**。
+>
+> 曾经这个提示在"点自己的手"时就弹，只能拿**替身**（自己另一只手）或候选里的第一个
+> 去猜结果 —— 实测因此出现两类错：**该提示的不提示**、**提示的数值不对**。
+> 现在运算源已定，`PreTurnChoiceContext` 用的是两只真实的（运算前）手值，结果必然准确。
+>
+> 另一处相关约定：这一步问完之后**不再回到"选目标手"**（那只手刚点过），
+> 而是直接进入"确认目标玩家"。
 
 ### 8.2 游侠 Ranger
 
@@ -400,7 +413,7 @@ UI  →  Assistant  →  Core
 | 阶段 | 含义 | 可点击的手 |
 |---|---|---|
 | `ChoosingAttackerHand` | 等行动方选自己的运算源 | 自己的、未被锁定的手 |
-| `ChoosingPreTargetChoice` | **选目标手之前**的角色抉择（牧师 4/6/8） | 该抉择的候选 |
+| `ChoosingPreTargetChoice` | **运算源已定、确认目标玩家之前**的角色抉择（牧师 4/6/8 攻击还是回复） | 该抉择的候选 |
 | `ChoosingTargetHand` | 等行动方选对方的运算目标 | 对方的手；已选中的自己的手（= 取消） |
 | `ChoosingTargetPlayer` | 确认"打谁" | **目标玩家**的手 |
 | `ChoosingPreTurnChoice` | **选目标手之后**的角色抉择（闪避/强化/锁手/回复目标） | 该抉择的候选 |
@@ -434,7 +447,7 @@ UI  →  Assistant  →  Core
 
 | 类型 | 作用 |
 |---|---|
-| `ITargetHandChoiceProvider.CollectPreTargetChoices` | 声明"**选目标手之前**"要问什么 |
+| `ITargetHandChoiceProvider.CollectPreTargetChoices` | 声明"**运算源已定、确认目标之前**"要问什么（结果此时才确定） |
 | `IPreTurnChoiceProvider.CollectPreTurnChoices` | 声明"**选目标手之后**"要问什么 |
 | `ChoiceRequest` | 一个抉择：`Effect` / `Prompt` / `Candidates` / `AllowDecline` / `DeclineResult` / `Decider` / `AcceptLabel` |
 | `IResultTargetProvider.ResultNeedsTarget` | 声明"这次结果是否需要指定目标" |

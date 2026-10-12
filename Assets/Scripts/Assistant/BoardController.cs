@@ -589,52 +589,41 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTargetChoice"/>。
         /// </summary>
+        /// <summary>
+        /// 进入"运算结果确定后、确认目标玩家之前的角色抉择"（若角色有这种问题）。
+        ///
+        /// 目前只有牧师用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
+        ///
+        /// ⚠️ **调用时机**：必须在"运算源（目标手）已经选定"之后。
+        /// 因为结果 = 自己那只手 + 对手那只手，运算源没定时结果是不确定的。
+        /// 玩家要求的顺序就是：点自己的手 -> 点对手的手 -> 弹攻击/回复 -> 选目标。
+        ///
+        /// 曾经在第 ① 步（点自己的手）就问，结果只能用替身猜，
+        /// 出现"该提示不提示"与"提示的数字不对"两类真实 bug。
+        ///
+        /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTargetChoice"/>。
+        /// </summary>
         private bool BeginPreTargetChoicesIfAny()
         {
             var provider = ActivePlayer?.Character as ITargetHandChoiceProvider;
             if (provider == null) return false;
+            if (SelectedHand == null || _selectedTarget == null) return false;
+
+            // 运算源已定 -> 用**真实**的两只手构造上下文，结果准确。
+            var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
+                                                   SelectedHand, _selectedTarget);
 
             _pendingRequests.Clear();
             _pendingRequestIndex = 0;
             _pendingChoiceCandidates.Clear();
             _pendingChoiceDecider = null;
 
-            // ⚠️ 目标手**还没选**，但角色要问的问题取决于"运算结果"。
-            //
-            // 曾经这里用"自己另一只手"当替身，并假设
-            // "Effect 只取决于两值之和，换哪只目标手结果一样" ——
-            // **这个假设是错的**：它只在"自己两只手同值"时成立。
-            //
-            // 实测被玩家抓到的两个方向相反的 bug：
-            //   · 手 5/2、对手 1/3：替身给出 5+2=7（无效果）-> **该提示的 6/8 不提示**
-            //   · 手 2/2、对手 5/5：替身给出 2+2=4 -> **不该提示的却提示了**
-            //
-            // 正确做法：**对所有真实候选目标手各收集一次，取并集**。
-            // 这样"会不会出 4/6/8"与最终实际选哪只手无关，两种情况都对。
-            var seen = new HashSet<HandEffect>();
+            provider.CollectPreTargetChoices(context, _pendingRequests);
 
-            foreach (Hand target in Defender.Hands)
-            {
-                if (target == null) continue;
-
-                var context = new PreTurnChoiceContext(ActivePlayer, Defender,
-                                                       SelectedHand, target);
-
-                var one = new List<ChoiceRequest>();
-                provider.CollectPreTargetChoices(context, one);
-
-                for (int i = 0; i < one.Count; i++)
-                {
-                    ChoiceRequest request = one[i];
-
-                    // 同一个问题对所有目标手都该问 -> 同一个效果只收一次
-                    // （回复量 N 只由 4/6/8 决定，与目标手无关）
-                    if (!seen.Add(request.Effect)) continue;
-
-                    if (request.Candidates == null || request.Candidates.Count == 0) continue;
-                    _pendingRequests.Add(request);
-                }
-            }
+            // 过滤空候选
+            for (int i = _pendingRequests.Count - 1; i >= 0; i--)
+                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+                    _pendingRequests.RemoveAt(i);
 
             if (_pendingRequests.Count == 0) return false;
 
@@ -744,11 +733,18 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingAttackerHand:
                     SelectedHand = hand;
 
-                    // 先问"选目标手**之前**"的问题（牧师的 4/6/8 攻击/回复二选一）。
-                    // 玩家要求的顺序：运算出 4 -> 先弹出攻击/回复 -> 选完再点目标。
-                    if (BeginPreTargetChoicesIfAny())
-                        return true;
-
+                    // ⚠️ **不在这里**问"选目标手之前"的问题。
+                    //
+                    // 玩家要求的顺序是：
+                    //   ① 点自己的手  ② 点对手的手（作为运算源）
+                    //   ③ 运算出 4/6/8 -> 弹「攻击 / 回复」  ④ 再选攻击/回复的目标
+                    //
+                    // 关键：**必须等到第 ② 步之后**才问。因为结果取决于运算源，
+                    // 而"选目标手"就是选运算源 —— 第 ① 步之后还不知道会出 4 还是 6。
+                    //
+                    // 曾经在第 ① 步就问，于是"运算出 N"只能用**替身**或**候选里的第一个**
+                    // 去猜。玩家实测：牧师手 5/8、战士手 6/8 时点自己的 8，
+                    // 打战士的 6 出 4、打 8 出 6 —— 提示却写死成「回复 4」（真实 bug）。
                     Phase = BoardPhase.ChoosingTargetHand;
                     Hint = $"已选择 {SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
                            $"请选择要打 {Defender.Name} 的哪一只手（再点一次已选的手可取消）。";
@@ -765,6 +761,11 @@ namespace FingerDiceDuel.Assistant
                     // 第 ② 步：选定"参与运算的那只手"（加法的一个加数）。
                     _selectedTarget = hand;
                     TargetPlayer = OwnerOf(hand) ?? Defender;
+
+                    // 第 ③ 步：运算源已经定了 -> 结果已知 -> 这时才能问得准确。
+                    // 牧师运算出 4/6/8 时先问"当攻击还是当回复"。
+                    if (BeginPreTargetChoicesIfAny())
+                        return true;
 
                     // 只有**运算结果会产生指向某人的效果**时才需要指定目标。
                     //
@@ -1090,17 +1091,42 @@ namespace FingerDiceDuel.Assistant
         /// 这个顺序必须与 <see cref="AttackContext.Resolve"/> 一致（闪避优先于护盾），
         /// 否则会出现"有盾时问不到闪避"。
         /// </summary>
+        /// <summary>
+        /// 当前这次运算的结果值（仅用于提示文案）。
+        ///
+        /// 运算还没执行，所以用手值直接算 —— 与结算用的是同一个
+        /// <see cref="Hand.ComputeSum"/>，口径一致。
+        /// </summary>
+        private int LastResultValueForHint()
+        {
+            if (SelectedHand == null || _selectedTarget == null) return 0;
+            return Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
+        }
+
         private void AdvanceCharacterChoice()
         {
             if (_pendingRequestIndex >= _pendingRequests.Count)
             {
-                // ① "选目标手之前"的抉择问完了 -> 进入选目标手（还没结算）
+                // ① 这次抉择是"选定运算源之后、确认目标玩家之前"问的。
+                //
+                // ⚠️ 此时**运算源（目标手）已经选过了**，所以不能回到
+                // `ChoosingTargetHand` 让玩家再点一遍同一只手。
+                // 玩家确认的顺序是：
+                //   点自己的手 -> 点对手的手 -> 弹攻击/回复 -> 确认目标玩家
+                // 所以这里直接接"确认目标玩家"（需要时），否则照常结算。
                 if (_preTargetChoiceActive)
                 {
                     _preTargetChoiceActive = false;
-                    Phase = BoardPhase.ChoosingTargetHand;
-                    Hint = $"已选择 {SideLabel(SelectedHand, ActivePlayer)}（{SelectedHand.Value}）。" +
-                           $"请选择要打 {Defender.Name} 的哪一只手（再点一次已选的手可取消）。";
+
+                    if (NeedsTargetAfterOperation())
+                    {
+                        Phase = BoardPhase.ChoosingTargetPlayer;
+                        Hint = $"运算出 {LastResultValueForHint()}。" +
+                               $"请确认这次要指向 {TargetPlayer?.Name ?? Defender.Name}。";
+                        return;
+                    }
+
+                    if (!BeginShieldChoiceIfNeeded()) ExecuteResolvedTurn();
                     return;
                 }
 
