@@ -174,15 +174,23 @@ namespace FingerDiceDuel.UI
         // 1v1 **完全不受影响**：这些面板默认隐藏，只有 2v2 才显示。
         // ============================================================
 
-        /// <summary>一个环形位置的面板（名字 + 血条 + 状态）。</summary>
+        /// <summary>一个环形位置的面板（名字 + 座位 + 血条 + 状态 + 两只手牌）。</summary>
         private sealed class RingPanel
         {
             public RingPosition Position;
             public PlayerState Owner;
+
+            /// <summary>该位置与主视角的关系（我 / 队友 / 对手）。</summary>
+            public RingRelation Relation;
+
             public RectTransform Root;
             public Text NameText;
+            public Text SeatText;
             public Text StatusText;
             public Image HpFill;
+
+            /// <summary>这个位置上的两只手牌（左 / 右）。</summary>
+            public HandCard[] Cards;
         }
 
         private readonly List<RingPanel> _ringPanels = new List<RingPanel>(5);
@@ -201,32 +209,53 @@ namespace FingerDiceDuel.UI
                 // 归一化坐标 -> 设计分辨率下的像素偏移
                 var offset = new Vector2(nx * DesignWidth * 0.5f, ny * DesignHeight * 0.5f);
 
-                // 自己那块最宽（要放手牌），其余是紧凑的信息面板
+                // 自己那块最宽（放手牌），其余紧凑
                 bool isSelf = position == RingPosition.SelfBottom;
-                var size = isSelf ? new Vector2(560f, 150f) : new Vector2(430f, 132f);
+                var size = isSelf ? new Vector2(700f, 250f) : new Vector2(560f, 240f);
 
                 RectTransform root = CreatePanel(_canvasRoot, "Ring" + position,
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), size, PanelColor, offset);
 
-                Text name = CreateText(root, "Name", new Vector2(0f, size.y * 0.5f - 26f),
-                                       new Vector2(size.x - 20f, 34f), 24,
+                // 名字 + 座位（玩家要求：每个人整体下方加位次）
+                Text name = CreateText(root, "Name", new Vector2(0f, size.y * 0.5f - 30f),
+                                       new Vector2(size.x - 20f, 36f), 26,
                                        TextAnchor.MiddleCenter, TextColor);
                 UiFont.ApplyBold(name);
 
-                Image hp = BuildHealthBar(root, new Vector2(0f, 6f));
+                Text seat = CreateText(root, "Seat", new Vector2(0f, size.y * 0.5f - 62f),
+                                       new Vector2(size.x - 20f, 28f), 22,
+                                       TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.45f));
 
-                Text status = CreateText(root, "Status", new Vector2(0f, -size.y * 0.5f + 24f),
-                                         new Vector2(size.x - 20f, 28f), 20,
+                Image hp = BuildHealthBar(root, new Vector2(0f, size.y * 0.5f - 96f));
+
+                Text status = CreateText(root, "Status", new Vector2(0f, size.y * 0.5f - 126f),
+                                         new Vector2(size.x - 20f, 26f), 19,
                                          TextAnchor.MiddleCenter, new Color(0.60f, 0.80f, 1f));
 
-                _ringPanels.Add(new RingPanel
+                // 两只手牌：并排放在面板下方正中。
+                // 260x130 的牌放这儿会超出面板宽度，所以用统一缩放压到 0.62。
+                var cards = new HandCard[2];
+                float cardScale = 0.62f;
+                for (int k = 0; k < 2; k++)
+                {
+                    float cx = (k == 0 ? -1f : 1f) * 86f;
+                    cards[k] = CreateHandCard(root, new Vector2(cx, -size.y * 0.5f + 50f));
+                    cards[k].Button.GetComponent<RectTransform>().localScale =
+                        new Vector3(cardScale, cardScale, 1f);
+                }
+
+                var panel = new RingPanel
                 {
                     Position = position,
                     Root = root,
                     NameText = name,
+                    SeatText = seat,
                     HpFill = hp,
                     StatusText = status,
-                });
+                    Cards = cards,
+                };
+
+                _ringPanels.Add(panel);
 
                 root.gameObject.SetActive(false);   // 1v1 不显示
             }
@@ -495,6 +524,7 @@ namespace FingerDiceDuel.UI
             {
                 RingPanel panel = _ringPanels[i];
                 panel.Owner = null;
+                panel.Relation = RingRelation.Self;
                 panel.Root.gameObject.SetActive(false);
             }
 
@@ -509,14 +539,25 @@ namespace FingerDiceDuel.UI
                 if (panel == null) continue;
 
                 panel.Owner = owner;
+                panel.Relation = slot.Relation;
                 panel.Root.gameObject.SetActive(true);
+
+                // 这个位置的**两只手**绑到自己的牌上 ——
+                // 四个人都能看见手值（这是 2v2 必须的：要判断能出什么）。
+                BindSide(panel.Cards, owner);
+
+                // 受击闪烁也要登记，否则 2v2 里打人不会有反馈
+                RegisterFlashTargets(owner, panel.Cards);
             }
 
-            // 自己在下方可点；上方留给"当前行动方"（由 SetRingActive 设）
-            BindSide(_cardsA, me);
-            _nameTextA.text = me.Name;
-            BindSide(_cardsB, me);
-            _nameTextB.text = me.Name;
+            // 1v1 的两块大面板**整体隐藏**（它们的名字/血条/状态与环形面板重复）。
+            // ⚠️ 但**不能隐藏它们的子物体所在的根** —— 曾经在这里
+            //    SetActive(false) 了整个 area，把 A 的手牌一起藏掉了
+            //    （手牌是 area 的子物体），表现为"四个人的手都不显示"。
+            //    现在手牌只在环形面板上，所以隐藏 area 是安全的；
+            //    为了不再踩这个坑，这里只隐藏而不依赖它的子物体。
+            if (_areaA != null) _areaA.gameObject.SetActive(false);
+            if (_areaB != null) _areaB.gameObject.SetActive(false);
         }
 
         private RingPanel FindPanel(RingPosition position)
@@ -528,8 +569,10 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// **2v2**：指定"当前回合的行动方"，上方那组手牌改绑到他身上
-        /// （这样玩家能看见 AI 在打哪只手）。
+        /// **2v2**：指定"当前回合的行动方"（用于高亮与飘字锚点）。
+        ///
+        /// 手牌现在挂在四个环形面板上，不再依赖上下两组大面板，
+        /// 所以这里只登记表现层的锚点。
         /// </summary>
         public void SetRingActive(PlayerState active, PlayerState me)
         {
@@ -537,23 +580,31 @@ namespace FingerDiceDuel.UI
 
             _ringActive = active;
 
-            BindSide(_cardsB, active);
-            _nameTextB.text = active.Name;
+            if (_presentation == null) return;
 
-            if (_presentation != null && me != null)
-                _presentation.RegisterNameRow(me, _nameTextA);
+            if (me != null) _presentation.RegisterNameRow(me, _nameTextA);
 
-            if (_presentation != null)
-                _presentation.RegisterNameRow(active, _nameTextB);
+            // 用他自己的面板名字行作为飘字锚点
+            RingPanel panel = FindPanelOf(active);
+            if (panel != null) _presentation.RegisterNameRow(active, panel.NameText);
+        }
+
+        private RingPanel FindPanelOf(PlayerState owner)
+        {
+            if (owner == null) return null;
+
+            for (int i = 0; i < _ringPanels.Count; i++)
+                if (ReferenceEquals(_ringPanels[i].Owner, owner)) return _ringPanels[i];
+
+            return null;
         }
 
         /// <summary>
-        /// **2v2**：刷新四个位置的名字、血量、状态。
-        ///
-        /// 与 1v1 的 <see cref="Refresh"/> 分开，避免把两套逻辑缠在一起
-        /// （1v1 已经稳定，不该为了 2v2 去动它）。
+        /// **2v2**：刷新四个位置的名字、座位、血量、状态与两只手牌。
         /// </summary>
-        public void RefreshRing(IReadOnlyList<PlayerState> playersBySeat)
+        public void RefreshRing(IReadOnlyList<PlayerState> playersBySeat,
+                                Hand selectedHand = null,
+                                IReadOnlyList<Hand> highlightAsChoices = null)
         {
             if (playersBySeat == null) return;
 
@@ -565,7 +616,54 @@ namespace FingerDiceDuel.UI
                 panel.NameText.text = DescribeNameLine(panel.Owner);
                 UpdateHealthBar(panel.HpFill, panel.Owner);
                 panel.StatusText.text = HandVisual.ShieldSummary(panel.Owner);
+
+                // 座位号（玩家要求：每个人整体下方显示位次）
+                int seat = SeatIndexOf(playersBySeat, panel.Owner);
+                panel.SeatText.text = seat > 0
+                    ? SeatLabel(seat, panel.Owner, playersBySeat)
+                    : "";
+
+                RefreshSide(panel.Cards, panel.Owner, selectedHand,
+                            highlightAsChoices, null);
             }
+        }
+
+        /// <summary>
+        /// 座位显示文案：**位次 + 关系**（我 / 队友 / 对手）。
+        ///
+        /// 只写"一号位"不够用 —— 2v2 里玩家最需要一眼看出谁是自己人。
+        /// </summary>
+        private string SeatLabel(int seat, PlayerState owner, IReadOnlyList<PlayerState> bySeat)
+        {
+            if (owner == null) return "";
+
+            RingPanel panel = FindPanelOf(owner);
+            string relation = panel == null
+                ? ""
+                : panel.Relation == RingRelation.Self ? "（我）"
+                : panel.Relation == RingRelation.Teammate ? "（队友）"
+                : "（对手）";
+
+            return $"{SeatName(seat)}位{relation}";
+        }
+
+        /// <summary>座位号 -> 中文位次（一号位..八号位）。</summary>
+        private static string SeatName(int seat)
+        {
+            string[] names = { "零", "一", "二", "三", "四", "五", "六", "七", "八" };
+            if (seat < 1 || seat >= names.Length) return seat.ToString();
+
+            return names[seat];
+        }
+
+        private static int SeatIndexOf(IReadOnlyList<PlayerState> bySeat, PlayerState owner)
+        {
+            if (bySeat == null || owner == null) return -1;
+
+            for (int i = 0; i < bySeat.Count; i++)
+                if (ReferenceEquals(bySeat[i], owner)) return i + 1;
+
+            return -1;
         }
 
         /// <summary>
@@ -1000,6 +1098,12 @@ namespace FingerDiceDuel.UI
         {
             SetSideInteractable(_cardsA, predicate);
             SetSideInteractable(_cardsB, predicate);
+
+            // ⚠️ 2v2 的手牌挂在四个环形面板上，**必须一起设置** ——
+            //    漏掉它们的话，四个人的牌全是默认可点状态
+            //    （点了会被 CanAct 拒掉，但描边/手型仍然骗玩家"能点"）。
+            for (int i = 0; i < _ringPanels.Count; i++)
+                SetSideInteractable(_ringPanels[i].Cards, predicate);
         }
 
         private static void SetSideInteractable(HandCard[] cards, Func<PlayerState, Hand, bool> predicate)

@@ -145,13 +145,18 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public static void NormalizedOffset(RingPosition position, out float x, out float y)
         {
+            // 数值经过实机截图校准：早期版本队友用 ±0.92，
+            // 在 1920 宽下会到 ±883px，加上 560px 的面板就**超出屏幕**
+            // （截图里左下角的队友面板被切掉了）。
+            // 现在最大 |x| = 0.72（±691px），面板半宽 350px -> 最远 1041px，
+            // 仍在屏幕内。
             switch (position)
             {
-                case RingPosition.SelfBottom: x = 0f; y = -0.55f; break;
-                case RingPosition.UpperLeft: x = -0.55f; y = 0.52f; break;
-                case RingPosition.UpperRight: x = 0.55f; y = 0.52f; break;
-                case RingPosition.LowerLeft: x = -0.92f; y = -0.22f; break;
-                case RingPosition.LowerRight: x = 0.92f; y = -0.22f; break;
+                case RingPosition.SelfBottom: x = 0f; y = -0.56f; break;
+                case RingPosition.UpperLeft: x = -0.42f; y = 0.62f; break;
+                case RingPosition.UpperRight: x = 0.42f; y = 0.62f; break;
+                case RingPosition.LowerLeft: x = -0.66f; y = -0.20f; break;
+                case RingPosition.LowerRight: x = 0.66f; y = -0.20f; break;
                 default: x = 0f; y = 0f; break;
             }
         }

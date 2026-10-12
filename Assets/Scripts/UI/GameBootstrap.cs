@@ -1533,17 +1533,10 @@ namespace FingerDiceDuel.UI
             {
                 PlayerState me = _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, 3)];
                 _board.SetRingActive(_controller.ActivePlayer, me);
-                _board.RefreshRing(_twoOnTwoSeated);
 
-                // 四角面板只显示名字/血条/状态；手牌仍用上下两组，
-                // 所以这里把"我"和"行动方"的牌刷成最新
-                _board.Refresh(_controller.ActivePlayer, _controller.Defender,
-                               _controller.SelectedHand, choices,
-                               showSkipButton: false,
-                               skipButtonInteractable: false,
-                               turnCount: _controller.DisplayTurn,
-                               turnLimit: _controller.TurnLimit,
-                               extraHighlights: null);
+                // 每个人的手牌都显示在自己的环形面板上，
+                // 并且都参与"当前阶段候选高亮"（玩家要看清点哪里）
+                _board.RefreshRing(_twoOnTwoSeated, _controller.SelectedHand, choices);
             }
             else
             {
