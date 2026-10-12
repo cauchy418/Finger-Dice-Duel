@@ -128,6 +128,15 @@ namespace FingerDiceDuel.UI
 
         private TwoOnTwoSetup _pendingTwoOnTwo;
 
+        /// <summary>2v2 经典玩法的先攻执行层（掷骰 -> 定座位 -> 依次决定）。</summary>
+        private TwoOnTwoStartController _twoOnTwoStart;
+
+        /// <summary>2v2 建局时的玩家列表（按"掷骰前"的顺序）。</summary>
+        private List<PlayerState> _twoOnTwoPlayers;
+
+        /// <summary>我在 <see cref="_twoOnTwoPlayers"/> 里的下标。</summary>
+        private int _twoOnTwoMeIndex;
+
         /// <summary>2v2 的第三 / 第四位抉择器（C / D 槽位）。</summary>
         private IChoiceProvider _choiceC;
         private IChoiceProvider _choiceD;
@@ -744,17 +753,105 @@ namespace FingerDiceDuel.UI
                 DefFoe2 = defFoe2,
             };
 
-            // 建局逻辑本身已经可用（引擎侧完整支持 2v2），
-            // 所以先把对局对象真的建出来 —— 这样"建局是否成功"当场可验证，
-            // 而不是等到棋盘做完才发现参数不对。
-            PrepareTwoOnTwoMatch();
-
-            // ⚠️ 但四人环形棋盘的**表现层尚未完成**（当前棋盘是"左 A / 右 B"两人布局）。
+            // 入门：座位由玩家选，直接建局开局。
             //
-            // 与其把玩家带进一个只显示两个人、其余两人看不见的界面，
-            // 不如在这里明确拦住 —— 那是"看起来能玩、实际坏了"的典型陷阱。
-            // 棋盘做完后，把下面这行换成 StartPreparedMatch() 即可。
-            ShowComingSoon("2v2 四人棋盘（对局已建好，界面开发中）");
+            // 经典：座位由掷骰决定，所以**不能**先按玩家选的座位建局 ——
+            // 那会建出一套用不上的玩家，而且座位与先攻结果不一致。
+            // 两条路各自建局，但都由 ApplyToPlayers 写手值。
+            if (Mode == PlayMode.Classic)
+            {
+                BeginTwoOnTwoInitiative();
+                return;
+            }
+
+            PrepareTwoOnTwoMatch();
+            StartPreparedMatch();
+        }
+
+        /// <summary>
+        /// **2v2 经典**：四人各投 1d20 -> 定座位 -> 依次决定初始手值。
+        ///
+        /// 座位由掷骰决定，所以这里**先建人、再掷骰、最后按结果落座**，
+        /// 而不是先按玩家选的座位建局（那会多建一套用不上的玩家）。
+        ///
+        /// 建好之后用 <see cref="TwoOnTwoStartController.ApplyToPlayers"/>
+        /// 把分配好的初始手值写进四人的手牌，再正常开局。
+        /// </summary>
+        private void BeginTwoOnTwoInitiative()
+        {
+            if (_pendingTwoOnTwo == null) return;
+
+            // 我的座位在选择界面里是未知的（经典不选座位），
+            // 所以队伍按"建局顺序"给：前两位一队、后两位一队。
+            var players = new List<PlayerState>(4);
+            var teams = new List<int>(4);
+
+            for (int i = 0; i < 4; i++) teams.Add(i < 2 ? 0 : 1);
+
+            // 角色安排：我 + 队友（同队）+ 两名对手（同队）
+            CharacterDefinition[] defs =
+            {
+                _pendingTwoOnTwo.DefMe, _pendingTwoOnTwo.DefMate,
+                _pendingTwoOnTwo.DefFoe1, _pendingTwoOnTwo.DefFoe2,
+            };
+
+            for (int i = 0; i < 4; i++)
+            {
+                players.Add(CharacterFactory.CreatePlayer(defs[i].DisplayName, defs[i]));
+                _sinkByPlayer[players[i]] = new SimpleChoiceProvider();
+            }
+
+            _twoOnTwoStart = TwoOnTwoStartController.RollAndBegin(
+                players, teams, new System.Random());
+
+            // ⚠️ **必须记下"我是哪一位"** ——
+            //    不能按名字反查：队友/对手可能撞名
+            //    （例如两名对手随机到同一个角色、或都是"白板"），
+            //    那时会认错人（真实风险）。
+            _twoOnTwoMeIndex = 0;             // 建局时我把自己的角色放在 players[0]
+            _twoOnTwoPlayers = players;
+
+            ShowTwoOnTwoInitiativeScreen();
+        }
+
+        /// <summary>
+        /// 显示先攻结果与"依次决定初始手值"的过程。
+        ///
+        /// 目前用一个简单的模态说明（棋盘级别的掷骰界面是后续工作）：
+        /// · 四个人投出的点数
+        /// · 得出的座位（1 号位 = 全场最高，等等）
+        /// · 决定顺序（大失败最先、大成功最后）
+        ///
+        /// ⚠️ 必须把 AI 的步骤自动代做完，否则界面会停在"等待 AI"。
+        /// </summary>
+        private void ShowTwoOnTwoInitiativeScreen()
+        {
+            if (_twoOnTwoStart == null) return;
+
+            PlayerState me = MeInTwoOnTwo();
+            _twoOnTwoStart.AutoResolve(
+                p => ReferenceEquals(p, me),
+                TwoOnTwoStartController.DefaultAiSplit);
+
+            string text = _twoOnTwoStart.SeatSummary;
+            if (!_twoOnTwoStart.IsFinished)
+                text += "\n" + _twoOnTwoStart.Hint;
+
+            ShowModalWithScrollReset("先攻结果", text);
+        }
+
+        /// <summary>
+        /// 2v2 里"我"是哪位玩家。
+        ///
+        /// 按**建局时记下的位置**取，而不是按名字（名字可能重复）。
+        /// </summary>
+        private PlayerState MeInTwoOnTwo()
+        {
+            if (_twoOnTwoStart == null) return null;
+            if (_twoOnTwoPlayers == null) return _twoOnTwoStart.PlayerAtSeat(1);
+
+            int index = Mathf.Clamp(_twoOnTwoMeIndex, 0, _twoOnTwoPlayers.Count - 1);
+            return _twoOnTwoPlayers[index];
         }
 
         /// <summary>

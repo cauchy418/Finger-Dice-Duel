@@ -340,5 +340,97 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>谁先出招：1 号位（玩家确认的座位顺序就是行动顺序的起点）。</summary>
         public PlayerState FirstToAct => _playersBySeat[1];
+
+        // ============================================================
+        // AI 代做
+        // ============================================================
+
+        /// <summary>
+        /// 让 AI 代做当前这一步（或整轮直到轮到人类为止）。
+        ///
+        /// <paramref name="pickSplit"/> 由调用方提供（通常是 AI 的选招逻辑）；
+        /// 返回 null 表示"没得选"，此时用第一个合法候选兜底，
+        /// 保证流程一定推进（否则界面会卡在等待 AI）。
+        ///
+        /// 返回**实际被代做的步数**。
+        /// </summary>
+        /// <param name="isHuman">
+        /// 判断"这位玩家是不是人类"。返回 false 的都会被 AI 代做。
+        /// 传 null 表示"全部当人类"（即不代做任何步骤）。
+        /// </param>
+        /// <param name="maxSteps">最多代做几步（防御性上限，避免意外死循环）。</param>
+        public int AutoResolve(Func<PlayerState, bool> isHuman,
+                              Func<TwoOnTwoStartController, PlayerState, HandSplit> pickSplit,
+                              int maxSteps = 8)
+        {
+            int done = 0;
+
+            while (!IsFinished && done < maxSteps)
+            {
+                PlayerState decider = Decider;
+                if (decider == null) break;
+
+                // 人类的那一步就停下，交给界面
+                if (isHuman != null && isHuman(decider)) break;
+
+                HandSplit pick = pickSplit != null
+                    ? pickSplit(this, decider)
+                    : default;
+
+                if (!IsCandidate(pick))
+                {
+                    // 兜底：保证推进（AI 返回了非法值也不该让整局卡住）
+                    IReadOnlyList<HandSplit> options = Candidates;
+                    if (options.Count == 0) break;
+                    pick = options[0];
+                }
+
+                if (!Submit(pick)) break;
+                done++;
+            }
+
+            return done;
+        }
+
+        /// <summary>
+        /// 默认的 AI 分配策略：**优先把两只手摊平**（避免出现 9/1 这种极端），
+        /// 并在"替大失败者决定"时避免给对手留下双 9（那太强）。
+        ///
+        /// 保持简单：这一层的目标是"能跑通且不完全随机"，
+        /// 真正的策略等 2v2 平衡性测试时再调。
+        /// </summary>
+        public static HandSplit DefaultAiSplit(TwoOnTwoStartController c, PlayerState decider)
+        {
+            IReadOnlyList<HandSplit> options = c.Candidates;
+            if (options.Count == 0) return default;
+
+            bool decidingForOpponent = c.IsNamingOpponent;
+            HandSplit best = options[0];
+            int bestScore = int.MinValue;
+
+            for (int i = 0; i < options.Count; i++)
+            {
+                HandSplit s = options[i];
+                int lo = s.Left < s.Right ? s.Left : s.Right;
+                int hi = s.Left > s.Right ? s.Left : s.Right;
+
+                // 摊平：两手差距越小越好
+                int score = -(hi - lo);
+
+                // 替对手决定 -> 尽量**不要**给他 9（9 是强力资源）
+                if (decidingForOpponent && hi >= 9) score -= 10;
+
+                // 替自己决定 -> 高值略有加分（9 更好）
+                if (!decidingForOpponent && hi >= 9) score += 2;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = s;
+                }
+            }
+
+            return best;
+        }
     }
 }
