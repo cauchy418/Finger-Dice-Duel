@@ -39,6 +39,15 @@ namespace FingerDiceDuel.Core
         void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager);
 
         /// <summary>
+        /// 自身护盾**被别人打碎**时触发（区别于"自己主动破盾"）。
+        ///
+        /// 由 <see cref="GameManager.BreakShieldAndNotify"/> 调用 ——
+        /// 即"被攻击消耗掉"或"被连锁破盾打碎"。
+        /// 圣武士用它区分两种碎盾（两种都触发冲击，但语义不同）。
+        /// </summary>
+        void OnOtherShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager);
+
+        /// <summary>
         /// 承受攻击时触发，用于"闪避"类机制（游侠）。
         /// 实现若决定闪避，需要自行把 <paramref name="context"/> 记为闪避并消耗对应的手。
         ///
@@ -244,5 +253,43 @@ namespace FingerDiceDuel.Core
         /// 执行本次回复效果，返回**实际被回复的玩家**（<see cref="GameManager"/> 用于记录战报）。
         /// </summary>
         PlayerState ApplyHeal(PlayerState owner, GameManager manager, IPreTurnChoiceSink choiceSink);
+    }
+
+    /// <summary>
+    /// 角色实现"**改写本次运算产生的效果类型**"。
+    ///
+    /// 由 <see cref="GameManager"/> 在运算**之后、效果分派之前**调用
+    /// （此时手值已经变成结果值，但护盾状态还没设）。
+    ///
+    /// 目前的实现者：**圣武士**（4 与 6 不攻击，改为合出护盾）。
+    ///
+    /// ⚠️ 调用方必须保证一致性：改写后的效果决定手牌状态
+    ///    （例如改成 Shield 就要把手设成 Formed 并触发 OnShieldFormed），
+    ///    否则会出现"看起来是盾、实际不是盾"。
+    /// </summary>
+    public interface IHandEffectRewriter
+    {
+        /// <summary>
+        /// 返回改写后的效果类型；不想改写就原样返回。
+        /// </summary>
+        HandEffectType RewriteEffect(PlayerState actor, Hand actedHand,
+                                     int targetValue, GameManager manager);
+    }
+
+    /// <summary>
+    /// 角色实现"我要接管某次攻击"（把目标改成自己）。
+    ///
+    /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——
+    /// "改目标"必须发生在"谁来承受"这件事确定之前。
+    ///
+    /// 目前的实现者：**圣武士**（攻击范围内的角色被攻击时可以把目标改成自己）。
+    /// </summary>
+    public interface IAttackRedirector
+    {
+        /// <summary>
+        /// 返回 true 表示"这次攻击改由我承受"（调用方负责替换挨打的人）。
+        /// </summary>
+        bool TryRedirectToSelf(PlayerState owner, PlayerState attacker,
+                               PlayerState intendedTarget, GameManager manager);
     }
 }

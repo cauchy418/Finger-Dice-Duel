@@ -212,6 +212,15 @@ namespace FingerDiceDuel.Core
         public virtual int BaseAttackRange => 1;
 
         /// <summary>
+        /// 自身护盾**被别人打碎**时触发（区别于 <see cref="OnOwnShieldBroken"/>
+        /// 的"自己主动破盾"）。
+        ///
+        /// 目的是让"被动碎盾也要触发效果"的角色（圣武士的冲击）有地方挂。
+        /// </summary>
+        public virtual void OnOtherShieldBroken(PlayerState owner, Hand brokenHand,
+                                               GameManager manager) { }
+
+        /// <summary>
         /// 默认没有"碎盾换射程"这类副作用。战士重写它。
         /// </summary>
         public virtual void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager) { }

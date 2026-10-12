@@ -36,6 +36,24 @@ namespace FingerDiceDuel.Core
         Ninja = 8,
 
         /// <summary>刺客：双手为 7 时潜行（不可被攻击、可跳过一次回合、出手 +7）。</summary>
-        Assassin = 9
+        Assassin = 9,
+
+        /// <summary>
+        /// 圣武士：4/6 改为合盾；合盾与碎盾时对范围内一人造成 2 点真实伤害；
+        /// 范围内有人被打时可以把目标改成自己。
+        /// </summary>
+        Paladin = 10,
+
+        /// <summary>
+        /// 邪术师：有人发起攻击时，若攻击数字与自己某只手相同，
+        /// 可把那只手 +1 来取消这次攻击（最早结算）。
+        /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
+        /// </summary>
+        Warlock = 11,
+
+        /// <summary>
+        /// 魔射手：4 改为两段各 4；6 伤害 +2；8 无视盾牌。
+        /// </summary>
+        ArcaneArcher = 12
     }
 }

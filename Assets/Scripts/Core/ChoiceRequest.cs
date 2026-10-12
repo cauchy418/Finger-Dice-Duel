@@ -42,6 +42,22 @@ namespace FingerDiceDuel.Core
         /// </summary>
         WarriorRangeBreak,
 
+        // ---------- 圣武士 ----------
+        /// <summary>
+        /// 圣武士：冲击的目标（攻击范围内一名角色，含队友）。
+        ///
+        /// **强制发动**（`allowDecline = false`）—— 玩家只选目标，不能放弃。
+        /// 在运算前收集（合盾 / 碎盾都可能在结算里发生）。
+        /// </summary>
+        PaladinShockTarget,
+
+        /// <summary>
+        /// 圣武士：范围内的角色被攻击时，是否把目标改成自己。
+        ///
+        /// 允许放弃（放弃 = 不改目标）。
+        /// </summary>
+        PaladinRedirect,
+
         // ---------- 牧师 ----------
         /// <summary>牧师：9 的回复要回给谁。</summary>
         PriestHealTarget,

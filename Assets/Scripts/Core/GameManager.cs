@@ -815,6 +815,30 @@ namespace FingerDiceDuel.Core
             // 2. 执行运算：只有行动方的手会改变
             HandEffectType effect = actedHand.PerformOperation(targetValue);
 
+            // 2b. 角色可以**改写效果类型**（圣武士的 4/6 改为合出护盾）。
+            //
+            //     必须在这里做：手值已经变成结果值（盾就是 5），
+            //     但护盾状态还没设 —— 改写后要由我们补上状态，
+            //     否则会出现"看起来是盾、实际不是盾"。
+            if (actor.Character is IHandEffectRewriter rewriter)
+            {
+                HandEffectType rewritten = rewriter.RewriteEffect(
+                    actor, actedHand, targetValue, this);
+
+                if (rewritten != effect)
+                {
+                    effect = rewritten;
+
+                    // 改写结果决定手牌状态（与 Hand.PerformOperation 同一约定）
+                    actedHand.SetShieldState(effect == HandEffectType.Shield
+                        ? ShieldState.Formed
+                        : ShieldState.None);
+
+                    if (effect == HandEffectType.Shield)
+                        actor.Character?.OnShieldFormed(actor, actedHand, this);
+                }
+            }
+
             // 3. 运算前碎掉的盾：只有**结果仍然是 5** 时才保留 Broken 标记。
             //
             //    Broken 的语义是"这面盾碎了，但它仍然是一面（值为 5 的）盾，可以被修复"。
@@ -1122,7 +1146,12 @@ namespace FingerDiceDuel.Core
 
             _brokenThisTurn.Add(shield);
             shield.ForceBreakShield();
+
+            // ⚠️ 这条路径是"**被动被打碎**"（被攻击消耗、或被连锁破盾打碎）。
+            //    它与"自己主动破盾"（`NotifyOwnShieldBroken`）**不是同一件事** ——
+            //    圣武士要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
             NotifyOwnShieldBroken(owner, shield);
+            owner.Character?.OnOtherShieldBroken(owner, shield, this);
         }
 
         /// <summary>

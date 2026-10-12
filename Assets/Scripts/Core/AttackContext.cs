@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -9,7 +9,14 @@ namespace FingerDiceDuel.Core
     public class AttackContext
     {
         public PlayerState Attacker { get; }
-        public PlayerState Defender { get; }
+
+        /// <summary>
+        /// 本次攻击**实际承受伤害的人**。
+        ///
+        /// 默认就是构造时的目标，但可以在 <see cref="Resolve"/> 开头被改写 ——
+        /// 圣武士的"范围内的角色被攻击时把目标改成自己"就是这么做的。
+        /// </summary>
+        public PlayerState Defender { get; private set; }
         public Hand SourceHand { get; }
 
         /// <summary>原始伤害（来自 HandEffectType 的数值，4/6/8）。</summary>
@@ -144,6 +151,14 @@ namespace FingerDiceDuel.Core
 
             FinalDamage = ApplyBonuses(FinalDamage);
 
+            // ⚠️ 顺序要点：
+            //   "把目标改成自己"必须排在**攻击方钩子之后**（伤害已定），
+            //   但排在**闪避与护盾判定之前** —— 因为那两件事都取决于"谁来承受"。
+            //
+            //   本来想放在最前面，但攻击方钩子可能改写 IgnoreShield 之类的标记，
+            //   而代挡者应当承受**最终确定下来**的那一击。
+            TryRedirectDefender(manager);
+
             // 2~4. 逐段结算：每一段都**独立**判定闪避、独立判定护盾、独立扣血、
             //      独立结算攻防加成。
             //
@@ -185,6 +200,43 @@ namespace FingerDiceDuel.Core
                 LandedHits++;
             }
         }
+
+        /// <summary>
+        /// 询问场上是否有角色愿意**代挡**这一击（圣武士：把目标改成自己）。
+        ///
+        /// 遍历全部参战玩家（不能只看 A/B —— 2v2 里有四个人），
+        /// 第一个答应的就成为新的挨打目标。
+        ///
+        /// ⚠️ "代挡者自己不会代挡自己"由
+        ///    <see cref="IAttackRedirector.TryRedirectToSelf"/> 内部判掉。
+        /// </summary>
+        private void TryRedirectDefender(GameManager manager)
+        {
+            if (manager == null) return;
+
+            PlayerState original = Defender;
+            if (original == null) return;
+
+            IReadOnlyList<PlayerState> all = manager.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, original)) continue;
+                if (ReferenceEquals(p, Attacker)) continue;
+
+                if (p.Character is IAttackRedirector redirector
+                    && redirector.TryRedirectToSelf(p, Attacker, original, manager))
+                {
+                    Defender = p;
+                    WasRedirected = true;
+                    return;
+                }
+            }
+        }
+
+        /// <summary>本次攻击是否被"代挡"改过目标。</summary>
+        public bool WasRedirected { get; private set; }
 
         /// <summary>
         /// 询问防守方是否用一次免伤挡下**这一段**攻击。

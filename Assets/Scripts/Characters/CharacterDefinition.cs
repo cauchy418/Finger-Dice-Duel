@@ -58,6 +58,9 @@ namespace FingerDiceDuel.Core
         public const string SwordsmanId = "swordsman";
         public const string NinjaId = "ninja";
         public const string AssassinId = "assassin";
+        public const string PaladinId = "paladin";
+        public const string WarlockId = "warlock";
+        public const string ArcaneArcherId = "arcane_archer";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -119,11 +122,48 @@ namespace FingerDiceDuel.Core
             description: "两只手均为 7 时进入潜行：不能被攻击；每次潜行可以跳过一回合；" +
                          "从潜行发起的攻击伤害 +7。攻防 +2 / -1。");
 
+        /// <summary>
+        /// 圣武士：4/6 不再攻击，改为合盾；合盾与碎盾时对范围内一名角色
+        /// 造成 2 点真实伤害（强制发动、玩家选目标）；
+        /// 范围内有人被攻击时可以把目标改成自己。
+        /// 攻防 0 / +1。
+        /// </summary>
+        public static CharacterDefinition Paladin { get; } = new CharacterDefinition(
+            PaladinId, "圣武士", SpecialLogicType.Paladin,
+            defenseBonus: 1,
+            description: "4 与 6 不再攻击，改为合成盾牌；合出盾、主动碎盾、被打碎盾时，" +
+                         "对攻击范围内一名角色造成 2 点真实伤害（强制发动，目标自选）；" +
+                         "攻击范围内的角色被攻击时，可以把目标改成自己。攻防 0 / +1。");
+
+        /// <summary>
+        /// 邪术师：有人发起攻击时，若攻击数字与自己某只手相同，
+        /// 可把那只手 +1（永久）来取消这次攻击 —— 取消最早结算，能取消咒术师。
+        /// 剑客追加攻击与圣武士冲击的"攻击数字视为 0"，无法被取消。
+        /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
+        /// 攻防 0 / -1，攻击距离无限。
+        /// </summary>
+        public static CharacterDefinition Warlock { get; } = new CharacterDefinition(
+            WarlockId, "邪术师", SpecialLogicType.Warlock,
+            attackBonus: 0, defenseBonus: -1,
+            description: "有人发起攻击时，若该攻击数字与自己某只手相同，可把那只手 +1（永久）" +
+                         "以取消这次攻击（最早结算，可取消咒术师）；追加攻击与冲击不可被取消。" +
+                         "体力不满时可跳过回合，把场上一人的体力改成与自己一致。攻防 0 / -1，攻击距离无限。");
+
+        /// <summary>
+        /// 魔射手：4 改为两段各 4；6 伤害 +2；8 无视盾牌（仍可被闪避 / 取消）。
+        /// 攻防 0 / -1，攻击距离 3。
+        /// </summary>
+        public static CharacterDefinition ArcaneArcher { get; } = new CharacterDefinition(
+            ArcaneArcherId, "魔射手", SpecialLogicType.ArcaneArcher,
+            attackBonus: 0, defenseBonus: -1,
+            description: "4 改为两段各 4 点伤害；6 的伤害 +2；8 无视盾牌（但仍可被闪避或取消）。" +
+                         "攻防 0 / -1，攻击距离 3。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             Blank, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
-            Swordsman, Ninja, Assassin
+            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher
         };
     }
 }
