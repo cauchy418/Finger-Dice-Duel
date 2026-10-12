@@ -113,7 +113,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (chosen == null) return;
 
             // 追加攻击：固定伤害、无视双方攻防加成
-            PlayerState defender = manager.GetOpponent(owner);
+            //
+            // ⚠️ 目标必须是**本次运算真正要打的人**（`DamageTargetPlayer`），
+            //    不能用 `GetOpponent(owner)`（那是"第一位对手"）。
+            //    玩家确认的交互里第 ③ 步会单独选目标玩家，可以不是第一位对手 ——
+            //    用 GetOpponent 会让追加攻击打到**另一个人**身上。
+            PlayerState defender = manager.DamageTargetPlayer ?? manager.GetOpponent(owner);
             if (defender == null) return;
 
             var ctx = new AttackContext(owner, defender, actedHand, (int)effect)

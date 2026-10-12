@@ -706,9 +706,17 @@ namespace FingerDiceDuel.UI
                     return;
                 }
 
+                // 入门：座位由玩家选 —— 必须**先复位标志**，
+                // 否则从经典退回来再进角色选择时，座位选择仍然是隐藏的。
+                _classicSeatByInitiative = false;
                 RollOpponents();
-                RefreshTwoOnTwoSummary();
+
+                // ⚠️ 顺序很重要：**先 ShowScreen 再刷新摘要**。
+                //    反过来的话，ShowScreen 里对分组调用 SetActive(true)
+                //    会把刚被隐藏的"座位选择"整块重新激活
+                //    （实机现象：经典玩法里仍然显示座位选择）。
                 ShowScreen(GameScreen.TwoOnTwoCharacter);
+                RefreshTwoOnTwoSummary();
                 return;
             }
 
@@ -729,8 +737,11 @@ namespace FingerDiceDuel.UI
         {
             _classicSeatByInitiative = true;
             RollOpponents();
-            RefreshTwoOnTwoSummary();
+
+            // 同 GoToCharacterSelect：**先切屏再刷新摘要**，
+            // 否则 ShowScreen 的 SetActive(true) 会重新显示座位选择。
             ShowScreen(GameScreen.TwoOnTwoCharacter);
+            RefreshTwoOnTwoSummary();
         }
 
         /// <summary>
