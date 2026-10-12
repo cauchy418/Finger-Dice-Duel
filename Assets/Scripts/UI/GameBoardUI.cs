@@ -722,22 +722,20 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// **右上角**：回合数（玩家要求从左上角移过来）。
+        /// **左上角**：回合数。
         ///
-        /// 位置放在"返回标题"按钮**下方偏左**，避免与它重叠 ——
-        /// 用右对齐，这样数字变长（回合 100 / 100）时不会挤到按钮。
+        /// 玩家先要求放右上，实机后要求**改回左上（与 1v1 一致）** ——
+        /// 右上角与"返回标题"按钮抢位置，而且 1v1 与 2v2 不一致会让玩家找不到。
         ///
         /// 显示的回合号**从 1 开始**
         /// （玩家操作的第一个回合就是第 1 回合，见 `BoardController.DisplayTurn`）。
         /// </summary>
         private void BuildTurnLabel()
         {
-            // 放在"返回标题"按钮**下方**（按钮在距右上 100/-40），
-            // 否则两者会叠在一起。
             _turnText = CreateText(_canvasRoot, "TurnCount",
-                                   new Vector2(60f, 104f), new Vector2(260f, 44f),
-                                   26, TextAnchor.MiddleRight, TextColor,
-                                   anchorTopRight: true);
+                                   new Vector2(110f, 40f), new Vector2(240f, 48f),
+                                   26, TextAnchor.MiddleLeft, TextColor,
+                                   anchorTopLeft: true);
             UiFont.ApplyBold(_turnText);
             _turnText.text = "";
         }

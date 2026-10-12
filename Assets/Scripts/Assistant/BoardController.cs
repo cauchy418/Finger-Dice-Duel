@@ -1043,6 +1043,14 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>把一只手翻译成它的主人；认不出来时返回 null。</summary>
         /// <summary>
+        /// 最近一次"非法运算被拒绝"的现场（phase / 行动方 / 两只手 / 原因）。
+        ///
+        /// 为什么单独存一份：战报里只有一句话，看不出**当时处在哪个阶段**，
+        /// 而"运算源为空"这类问题必须知道阶段才能定位。
+        /// </summary>
+        public string LastIllegalOperation { get; private set; }
+
+        /// <summary>
         /// 测试用：当前对局还活着几名玩家。
         ///
         /// 存在意义：角色收集抉择时读的是 `PreTurnChoiceContext.AlivePlayerCount`，
@@ -1125,12 +1133,18 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public PlayerState TargetPlayer { get; private set; }
 
-        /// <summary>把一只手翻译成"它的主人"的名字（提示文字用）。</summary>
+        /// <summary>
+        /// 把一只手翻译成"它的主人"的名字（提示文字用）。
+        ///
+        /// ⚠️ 必须查**全部参战玩家** —— 原来只认 PlayerA/PlayerB，
+        /// 2v2 里 C/D 的手会一律显示成 `Defender` 的名字（提示骗人）。
+        /// </summary>
         private string OwnerLabel(Hand hand)
         {
-            if (_game.PlayerA != null && _game.PlayerA.Owns(hand)) return _game.PlayerA.Name;
-            if (_game.PlayerB != null && _game.PlayerB.Owns(hand)) return _game.PlayerB.Name;
-            return Defender.Name;
+            PlayerState owner = OwnerOf(hand);
+            if (owner != null) return owner.Name;
+
+            return Defender?.Name ?? "";
         }
 
         /// <summary>取消目标选择，回到第一步。</summary>
@@ -1870,6 +1884,10 @@ namespace FingerDiceDuel.Assistant
             Hand acted = SelectedHand;
             Hand target = _selectedTarget;
 
+            // 入口就把阶段记下来 —— 异常处理里的 `Phase` 可能已被改动，
+            // 只看那一刻会得到**陈旧阶段**（我为此白查两轮）。
+            string phaseAtEntry = Phase.ToString();
+
             // "放弃攻击"：运算照常发生（手值改变），但不造成伤害。
             // 用 GameManager 的开关在分派攻击时短路，而不是跳过整个回合 ——
             // 跳过整个回合会让手值回退（玩家实测报的 bug）。
@@ -1899,8 +1917,24 @@ namespace FingerDiceDuel.Assistant
             {
                 // 防御性：正常流程走不到这里，但绝不能让界面卡死。
                 // 一定要把原因带出来 —— 静默吞掉会让"点击没反应"变得极难排查。
-                _log.Add($"非法运算被拒绝：{ex.Message}（行动方=" +
-                         $"{ActivePlayer?.Name}，运算源={acted?.Value}，目标={target?.Value}）");
+                //
+                // ⚠️ 现场信息**当场记进字段**（不只是战报），
+                //    这样测试能直接断言"有没有出现过非法运算"并看到现场。
+                LastIllegalOperation =
+                    $"entryPhase={phaseAtEntry} actor={ActivePlayer?.Name}" +
+                    $" acted={(acted == null ? "NULL" : acted.Value.ToString())}" +
+                    $" target={(target == null ? "NULL" : target.Value.ToString())}" +
+                    $" selected={SelectedHand?.Value.ToString() ?? "NULL"}" +
+                    $" selectedTarget={_selectedTarget?.Value.ToString() ?? "NULL"}" +
+                    $" answer={ex.Message}";
+
+                // 战报里也带上**阶段**与两只手的来源 ——
+                // 只说"未选择运算源"看不出是哪个阶段出的问题。
+                _log.Add($"非法运算被拒绝[{Phase}]：{ex.Message}（行动方=" +
+                         $"{ActivePlayer?.Name}，运算源={acted?.Value}，" +
+                         $"目标={target?.Value}，SelectedHand=" +
+                         $"{SelectedHand?.Value.ToString() ?? "NULL"}，" +
+                         $"selectedTarget={_selectedTarget?.Value.ToString() ?? "NULL"}）");
                 System.Diagnostics.Debug.WriteLine($"[FingerDiceDuel] 非法运算：{ex}");
                 SelectedHand = null;
                 _selectedTarget = null;

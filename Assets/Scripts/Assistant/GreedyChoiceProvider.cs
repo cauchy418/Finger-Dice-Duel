@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Assistant
                 // 难度噪声：简单档会随机抖动，于是偶尔选次优解
                 // （否则同一个局面永远走同一步，连打两局完全可预判）。
                 int noise = _noisy ? _rng.Next(-NoiseAmplitude, NoiseAmplitude + 1) : 0;
-                int score = ScoreMove(moves[i], actor) + noise;
+                int score = ScoreMove(moves[i], actor, game) + noise;
 
                 if (score > bestScore)
                 {
@@ -164,7 +164,23 @@ namespace FingerDiceDuel.Assistant
         /// `HandValueLookup` 是**实例属性**而不是静态注入 ——
         /// 静态注入会在测试之间互相污染（一个测试改了表，另一个测试跟着变）。
         /// </summary>
-        private int ScoreMove(LegalMove move, PlayerState actor)
+        /// <summary>
+        /// **攻击自己队友**的惩罚。
+        ///
+        /// 为什么需要：规则的顺序是"打敌人 → 没敌人才打队友 → 连队友都打不到才放弃"，
+        /// 而原来的评分**只看效果与手值**，完全不知道目标是谁 ——
+        /// 于是 AI 会把队友当成"一个可以用掉废手的靶子"。
+        ///
+        /// 实测（批量测试）：60 局 2v2 里出现 **616 次**攻击落在队友身上
+        /// （玩家也实测报告过："二号位咒术师攻击了自己的队友游侠"）。
+        ///
+        /// 取值远大于任何正面评分（效果档位 44/66/88、手值项几十），
+        /// 所以**只要有敌人可打就绝不会打队友**；但它是惩罚而不是硬禁止 ——
+        /// 当队友是唯一合法目标时（规则允许这种情形）仍然打得出去。
+        /// </summary>
+        public int TeammateAttackPenalty { get; set; } = 10000;
+
+        private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)
         {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
@@ -215,6 +231,32 @@ namespace FingerDiceDuel.Assistant
 
             // 把对手的手打成 2，会让它下一手容易凑出 3（偏弱），略加分
             if (target == 2) score += 5;
+
+            // ---- 打队友是坏事 ----
+            //
+            // 规则的顺序是"打敌人 → 没敌人才打队友"，但评分原来只看效果与手值，
+            // 于是 AI 会把队友当靶子（玩家实测 + 批量测试复现：
+            // 60 局 2v2 里 616 次攻击落在队友身上）。
+            //
+            // 只在**确实会造成攻击伤害**时才罚：用队友的手当被加数、
+            // 或对队友合盾 / 治疗，都不是"攻击队友"。
+            //
+            // ⚠️ 判断"目标手的主人是谁"必须查**全部参战玩家**，
+            //    不能用"是不是 PlayerA/PlayerB"那种两人假设。
+            if (game != null && actor != null && move.TargetHand != null)
+            {
+                PlayerState owner = game.OwnerOfHand(move.TargetHand);
+                if (owner != null && game.IsTeammate(actor, owner))
+                {
+                    HandEffectType eff = Hand.GetEffectType(result);
+                    if (eff == HandEffectType.Attack4
+                        || eff == HandEffectType.Attack6
+                        || eff == HandEffectType.Attack8)
+                    {
+                        score -= TeammateAttackPenalty;
+                    }
+                }
+            }
 
             return score;
         }
