@@ -22,7 +22,8 @@ namespace FingerDiceDuel.Assistant
     /// | 18 | 9 | 9+9 |
     ///
     /// **特殊点数**：
-    ///   · **1（大失败）**：不自己分配 —— 由**对手**替你指定。
+    ///   · **1（大失败）**：不自己分配 —— 由**对手**替你指定，
+    ///     而且对手是**完全自由**地指定两手（1..9 各自任选，不受总和约束）。
     ///   · **19（小成功）**：**一只手固定为 9**，另一只手任意（1..9）。
     ///     不受总和约束（9 + x 允许 10..18）。
     ///   · **20（大成功）**：两只手**完全随意**（1..9 各自任选），不受总和约束。
@@ -59,8 +60,19 @@ namespace FingerDiceDuel.Assistant
         public static bool IsMinorSuccess(int roll) => roll == MinorSuccess;
         public static bool IsMajorSuccess(int roll) => roll == MajorSuccess;
 
-        /// <summary>这次投掷是否"不受总和约束"（19 / 20）。</summary>
-        public static bool IgnoresTotal(int roll) => roll >= MinorSuccess;
+        /// <summary>
+        /// 这次投掷是否**不受总和约束**。
+        ///
+        /// 包含三种情况：
+        ///   · **1（大失败）**：由对手**完全自由**地指定两手
+        ///   · **19（小成功）**：一只手必须是 9，另一手任意
+        ///   · **20（大成功）**：两手完全随意
+        ///
+        /// ⚠️ 大失败原本不在其中（当时把它当成"总和 1"）——
+        ///    玩家确认"1v1 大失败也是完全自由的"，所以已并入。
+        /// </summary>
+        public static bool IgnoresTotal(int roll)
+            => roll >= MinorSuccess || IsCriticalFailure(roll);
 
         // ============================================================
         // 合法拆分
@@ -76,9 +88,13 @@ namespace FingerDiceDuel.Assistant
         {
             var list = new List<HandSplit>(9);
 
-            if (IsMajorSuccess(roll))
+            if (IsMajorSuccess(roll) || IsCriticalFailure(roll))
             {
-                // 大成功：两手完全随意
+                // 大成功与大失败：两手**完全随意**（1..9 各自任选），不受总和约束。
+                //
+                // ⚠️ 大失败原本被当成"总和 1"，于是只给出 1/1 一种拆分 ——
+                //    **那是错的**（玩家确认："1v1 大失败也是完全自由的"）。
+                //    语义上大失败是"决定权送给对手"，对手本来就该能自由指定两手。
                 for (int left = MinHandValue; left <= MaxHandValue; left++)
                     for (int right = MinHandValue; right <= MaxHandValue; right++)
                         list.Add(new HandSplit(left, right));
@@ -95,13 +111,6 @@ namespace FingerDiceDuel.Assistant
                         list.Add(new HandSplit(other, MaxHandValue)); // 右 9
                 }
                 return list;
-            }
-
-            if (IsCriticalFailure(roll))
-            {
-                // 大失败仍然要有一个"合法值"供对手指定 ——
-                // 与普通点数同样按总和算（对手在合法拆分里挑）。
-                return SplitsSummingTo(roll);
             }
 
             return SplitsSummingTo(roll);

@@ -264,17 +264,44 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(TwoOnTwoInitiative.OpponentSeatOf(failSeat), c.SeatOf(c.Decider),
                 "由他的对手决定。");
 
-            // ⚠️ 这里**只断言"能提交"**，不断言候选数量 ——
-            //    "大失败是否完全自由"存在规则冲突（见下方注释），需要玩家确认后再定。
             Assert.True(c.Candidates.Count > 0, "大失败也必须有合法候选。");
             Assert.True(c.Submit(c.Candidates[0]), "应能提交。");
         }
 
-        // ⚠️ 未决问题（已向玩家提出）：
-        //    现有 1v1 规则（DiceRollSetup 的文档）把大失败当"总和 1"，
-        //    因此 DistinctSplits(1) 只给出 1/1 一种拆分；
-        //    而玩家在 2v2 里说"对手决定大失败也是完全自由"（那会有 81 种）。
-        //    这两者不一致，**不该由我猜**：
+        [Test]
+        public void A_critical_failure_allows_completely_free_assignment()
+        {
+            // 玩家确认："1v1 大失败也是完全自由的" ——
+            // 所以 2v2 里替大失败的对手决定时，也是**完全自由**：
+            // 两手各自 1..9，不受总和约束。
+            //
+            // ⚠️ 这条曾经是错的：DistinctSplits(1) 把大失败当"总和 1"，
+            //    于是只给出 1/1 一种拆分。
+            var c = Controller(new[] { 10, 11, 1, 12 });
+
+            Assert.True(c.IsNamingOpponent, "当前这一步应是替大失败者决定。");
+            Assert.AreEqual(1, c.RollOf(c.Assignee), "被决定者的点数是 1（大失败）。");
+
+            IReadOnlyList<HandSplit> options = c.Candidates;
+
+            // 去重后 45 种镜像对（81 种拆分里 9 种是双数对 + 36 对镜像）
+            Assert.AreEqual(45, options.Count,
+                $"大失败（完全自由）去重后应有 45 种候选（实际 {options.Count}）。");
+
+            // 必然存在"两值和远大于 1"的候选
+            bool hasBigPair = false;
+            for (int i = 0; i < options.Count; i++)
+                if (options[i].Left + options[i].Right > 1) hasBigPair = true;
+
+            Assert.True(hasBigPair, "完全自由时当然可以选和不等于 1 的拆分。");
+
+            // 9/9 这种"总和 18"的选择也在其中
+            bool hasNineNine = false;
+            for (int i = 0; i < options.Count; i++)
+                if (options[i].Left == 9 && options[i].Right == 9) hasNineNine = true;
+
+            Assert.True(hasNineNine, "9/9 也应可选（完全自由）。");
+        }
 
 
         [Test]
