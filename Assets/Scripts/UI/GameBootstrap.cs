@@ -1557,7 +1557,9 @@ namespace FingerDiceDuel.UI
 
                 // 每个人的手牌都显示在自己的环形面板上，
                 // 并且都参与"当前阶段候选高亮"（玩家要看清点哪里）
-                _board.RefreshRing(_twoOnTwoSeated, _controller.SelectedHand, choices);
+                _board.RefreshRing(_twoOnTwoSeated, _controller.SelectedHand, choices,
+                                   turnCount: _controller.DisplayTurn,
+                                   turnLimit: _controller.TurnLimit);
             }
             else
             {

@@ -669,14 +669,20 @@ namespace FingerDiceDuel.Assistant
                 }
 
                 case BoardPhase.ChoosingTargetPlayer:
-                    // 点目标玩家的手牌即确认；只接受目标玩家自己的手。
+                {
+                    // 第 ③ 步：点**任意可攻击敌人的手**即确认打他。
                     //
-                    // 目标无法被攻击（刺客潜行）时**没有可点的目标** ——
-                    // 这正是"没有合法攻击目标"的表现，界面此时只给「放弃攻击」。
-                    if (TargetPlayer == null || !TargetPlayer.Owns(hand)) return false;
+                    // ⚠️ 不能只接受 `TargetPlayer.Owns(hand)` ——
+                    //    TargetPlayer 可能是"被加数的手主"（例如队友），
+                    //    那样玩家**没有任何手可点**，对局直接卡死
+                    //    （玩家实测："选择和队友运算出攻击数字后，
+                    //      再次选择攻击目标会卡死"）。
+                    PlayerState owner = OwnerOf(hand);
+                    if (owner == null) return false;
+                    if (ReferenceEquals(owner, ActivePlayer)) return false;
 
-                    // 攻击数字才能确认攻击；无效果/护盾本来也不会进这个阶段
-                    return CanBeAttacked(TargetPlayer);
+                    return CanBeAttacked(owner);
+                }
 
                 default:
                     return false;
@@ -967,8 +973,9 @@ namespace FingerDiceDuel.Assistant
                     // 1v1 也只有一个人可打，但仍然要求点这一次，
                     // 免得多人模式上线后流程变形、玩家要重新学。
                     Phase = BoardPhase.ChoosingTargetPlayer;
-                    Hint = DefenderCannotBeAttacked
-                        ? $"{TargetPlayer.Name} 当前无法被攻击（潜行中）。请点右侧「放弃攻击」。"
+                    bool hasTarget = BeginTargetPlayerChoice();
+                    Hint = !hasTarget
+                        ? $"没有可攻击的目标。请点右侧「放弃攻击」。"
                         : $"已选择 {SideLabel(hand, Defender)}（{hand.Value}）参与运算，" +
                           $"结果是 {Hand.ComputeSum(SelectedHand.Value, hand.Value)}。" +
                           $"请再点一次 {TargetPlayer.Name} 的手牌，确认本次的目标是" +
@@ -978,10 +985,20 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingTargetPlayer:
                     // 第 ③ 步：点目标玩家的手牌确认"打他"。
                     // 挨打的是**玩家**；手牌只是指定的载体。
-                    if (!TargetPlayer.Owns(hand)) return false;
+                    //
+                    // ⚠️ 也接受"任意**可攻击敌人**的手" —— 因为 TargetPlayer
+                    //    可能仍是"被加数的手主"（例如用队友的手当被加数），
+                    //    那样只认 TargetPlayer 会让玩家**没有任何手可点** -> 卡死。
+                    {
+                        PlayerState owner = OwnerOf(hand);
+                        if (owner == null) return false;
+                        if (ReferenceEquals(owner, ActivePlayer)) return false;
+                        if (!CanBeAttacked(owner)) return false;
 
-                    ConfirmTargetPlayer();
-                    return true;
+                        TargetPlayer = owner;
+                        ConfirmTargetPlayer();
+                        return true;
+                    }
 
                 default:
                     return false;
@@ -1145,6 +1162,40 @@ namespace FingerDiceDuel.Assistant
             if (owner != null) return owner.Name;
 
             return Defender?.Name ?? "";
+        }
+
+        /// <summary>
+        /// 第 ③ 步该指向谁时用的**默认目标**。
+        ///
+        /// ⚠️ 不能用"被加数的手主" —— 被加数可以是**队友**的手，
+        ///    而队友不可被攻击，于是那个默认目标点不动 -> **卡死**
+        ///    （玩家实测："选择和队友运算出攻击数字后，再次选择攻击目标会卡死"）。
+        ///
+        /// 规则（玩家确认）：合法攻击目标 = **攻击范围内的敌人**。
+        /// 所以默认取第一个可攻击的敌人；一个都没有时（队友是唯一目标）
+        /// 才回落到被加数手主 —— 那时界面给的是「放弃攻击」。
+        /// </summary>
+        private PlayerState DefaultAttackTarget()
+        {
+            IReadOnlyList<PlayerState> foes = _game.OpponentsOf(ActivePlayer);
+            for (int i = 0; i < foes.Count; i++)
+                if (CanBeAttacked(foes[i])) return foes[i];
+
+            return null;
+        }
+
+        /// <summary>
+        /// 进入第 ③ 步（确认攻击目标）时，把 <see cref="TargetPlayer"/> 设成一个
+        /// **点得动的人**。
+        ///
+        /// 返回 false 表示"没有任何可攻击的敌人"——此时界面只该给「放弃攻击」。
+        /// </summary>
+        private bool BeginTargetPlayerChoice()
+        {
+            PlayerState target = DefaultAttackTarget() ?? OwnerOf(_selectedTarget);
+            TargetPlayer = target;
+
+            return target != null && CanBeAttacked(target);
         }
 
         /// <summary>取消目标选择，回到第一步。</summary>
@@ -1431,8 +1482,12 @@ namespace FingerDiceDuel.Assistant
                     if (NeedsTargetAfterOperation())
                     {
                         Phase = BoardPhase.ChoosingTargetPlayer;
-                        Hint = $"运算出 {LastResultValueForHint()}。" +
-                               $"请确认这次要指向 {TargetPlayer?.Name ?? Defender.Name}。";
+                        bool hasTarget = BeginTargetPlayerChoice();
+                        Hint = !hasTarget
+                            ? $"运算出 {LastResultValueForHint()}，但没有可攻击的目标。" +
+                              $"请点右侧「放弃攻击」。"
+                            : $"运算出 {LastResultValueForHint()}。" +
+                              $"请确认这次要指向 {TargetPlayer.Name}。";
                         return;
                     }
 

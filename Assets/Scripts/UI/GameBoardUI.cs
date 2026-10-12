@@ -611,12 +611,20 @@ namespace FingerDiceDuel.UI
 
         /// <summary>
         /// **2v2**：刷新四个位置的名字、座位、血量、状态与两只手牌。
+        ///
+        /// ⚠️ 回合数（<see cref="SetTurn"/>）必须在这里也刷 ——
+        ///    2v2 走的是这条路径，**不经过** <see cref="Refresh"/>，
+        ///    所以只在那里面调 SetTurn 的话 2v2 永远不显示回合数
+        ///    （实机现象："回合依旧没有显示"）。
         /// </summary>
         public void RefreshRing(IReadOnlyList<PlayerState> playersBySeat,
                                 Hand selectedHand = null,
-                                IReadOnlyList<Hand> highlightAsChoices = null)
+                                IReadOnlyList<Hand> highlightAsChoices = null,
+                                int turnCount = 0, int turnLimit = 0)
         {
             if (playersBySeat == null) return;
+
+            if (turnLimit > 0) SetTurn(turnCount, turnLimit);
 
             for (int i = 0; i < _ringPanels.Count; i++)
             {
