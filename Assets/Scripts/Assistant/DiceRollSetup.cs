@@ -285,4 +285,75 @@ namespace FingerDiceDuel.Assistant
         /// <summary>B 点数小，B 先分配。</summary>
         BLower = 2,
     }
+
+    /// <summary>
+    /// 2v2 的**座位关系**：给定"我坐第几号位"，算出队友与对手分别坐哪几号位。
+    ///
+    /// 规则（玩家确认）：
+    ///   · 四人围成环，**座位 1&4 一队、2&3 一队**
+    ///   · 队友在环上**相邻** —— 所以队友一定是我的**上家或下家**
+    ///
+    /// 于是主视角的界面布局可以完全由座位号推出：
+    ///   · 自己 → 下方正中
+    ///   · 上家 → 偏左上（若是队友则改为偏左下）
+    ///   · 下家 → 偏右上（若是队友则改为偏右下）
+    ///   · 另外两位 → 剩下两个位置（都是对手）
+    ///
+    /// 纯函数、不依赖任何状态，所以能在无头测试里穷举验证。
+    /// </summary>
+    public static class SeatLayout
+    {
+        /// <summary>2v2 的座位数。</summary>
+        public const int SeatCount = 4;
+
+        /// <summary>把座位号规范到 1..4（环形回绕）。</summary>
+        public static int Normalize(int seat)
+        {
+            int n = SeatCount;
+            return ((seat - 1) % n + n) % n + 1;
+        }
+
+        /// <summary>我的**上家**座位号（环上前一个）。</summary>
+        public static int PreviousSeat(int seat) => Normalize(seat - 1);
+
+        /// <summary>我的**下家**座位号（环上后一个）。</summary>
+        public static int NextSeat(int seat) => Normalize(seat + 1);
+
+        /// <summary>
+        /// 我的**队友座位号**。
+        ///
+        /// 规则（玩家确认）：**第一个行动的与第四个行动的是一队**、
+        /// 第二个与第三个是一队 -> `1↔4`、`2↔3`。
+        ///
+        /// 即：座位 1 / 3 的队友是 **−1**（上家），座位 2 / 4 的队友是 **+1**（下家）。
+        /// 结果必然是上家或下家之一（这正是"队友相邻"）。
+        ///
+        /// ⚠️ 我一开始写成了 `+2 / -2`，那会得到 `1↔3`、`2↔4` —— **错了**
+        /// （用"第一个和第四个一队"核验即可发现）。
+        /// </summary>
+        public static int TeammateSeat(int seat)
+        {
+            int me = Normalize(seat);
+            return me % 2 == 1 ? PreviousSeat(me) : NextSeat(me);
+        }
+
+        /// <summary>队友是我的**上家**吗（而不是下家）。</summary>
+        public static bool TeammateIsPrevious(int seat)
+            => TeammateSeat(seat) == PreviousSeat(seat);
+
+        /// <summary>
+        /// 两名**对手**的座位号（按座位号从小到大，便于界面稳定排布）。
+        /// </summary>
+        public static int[] OpponentSeats(int seat)
+        {
+            int me = Normalize(seat);
+            int mate = TeammateSeat(me);
+            var result = new List<int>(2);
+
+            for (int s = 1; s <= SeatCount; s++)
+                if (s != me && s != mate) result.Add(s);
+
+            return result.ToArray();
+        }
+    }
 }
