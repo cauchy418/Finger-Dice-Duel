@@ -382,7 +382,43 @@ namespace FingerDiceDuel.Assistant
             return true;
         }
 
-        private IMoveSelector GetAi(PlayerState p) => ReferenceEquals(p, PlayerA) ? _aiForA : _aiForB;
+        // ============================================================
+        // 多名玩家的查表（2v2 / 8 人局）
+        //
+        // 1v1 仍然走下面的 A/B 回退分支，所以既有行为完全不变；
+        // 2v2 由 UI 调 BindPlayers 把四个人的 AI 与抉择器登记进来。
+        //
+        // 为什么用字典而不是"再加四个字段"：玩家上限会变（8 人局），
+        // 按玩家查表不需要每加一个人就改一轮 if。
+        // ============================================================
+
+        private readonly Dictionary<PlayerState, IMoveSelector> _aiByPlayer =
+            new Dictionary<PlayerState, IMoveSelector>();
+        private readonly Dictionary<PlayerState, IPlayerChoiceSink> _sinkByPlayer =
+            new Dictionary<PlayerState, IPlayerChoiceSink>();
+
+        /// <summary>
+        /// 登记一名玩家的 AI 与抉择器（2v2 / 8 人局用）。
+        ///
+        /// <paramref name="ai"/> 传 null 表示这位是**人类**玩家。
+        /// </summary>
+        public void BindPlayer(PlayerState player, IMoveSelector ai, IPlayerChoiceSink sink)
+        {
+            if (player == null) return;
+
+            _aiByPlayer[player] = ai;
+            if (sink != null) _sinkByPlayer[player] = sink;
+        }
+
+        /// <summary>取某玩家对应的 AI；人类玩家返回 null。</summary>
+        private IMoveSelector GetAi(PlayerState p)
+        {
+            if (p == null) return null;
+            if (_aiByPlayer.TryGetValue(p, out IMoveSelector ai)) return ai;
+
+            // 1v1 回退（未登记时仍按 A/B 判定）
+            return ReferenceEquals(p, PlayerA) ? _aiForA : _aiForB;
+        }
 
         /// <summary>
         /// 取某玩家对应的**抉择器**。
@@ -399,21 +435,40 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private IChoiceProvider GetChoice(PlayerState p)
         {
+            if (_aiByPlayer.TryGetValue(p, out IMoveSelector ai) && ai is IChoiceProvider fromAi)
+                return fromAi;
+
             if (ReferenceEquals(p, PlayerA))
                 return (_aiForA as IChoiceProvider) ?? _choiceA;
 
-            return (_aiForB as IChoiceProvider) ?? _choiceB;
+            if (ReferenceEquals(p, PlayerB))
+                return (_aiForB as IChoiceProvider) ?? _choiceB;
+
+            // 2v2 / 8 人局：登记过的玩家用自己的抉择器（AI）或 sink（人类）
+            if (_aiByPlayer.TryGetValue(p, out IMoveSelector anyAi)
+                && anyAi is IChoiceProvider anyProvider)
+                return anyProvider;
+
+            if (_sinkByPlayer.TryGetValue(p, out IPlayerChoiceSink sink))
+                return sink as IChoiceProvider;
+
+            return _game.GetChoiceProvider(p);
         }
 
         /// <summary>取某玩家对应的抉择接收者（写入玩家选择用）。</summary>
         private IPlayerChoiceSink SinkFor(PlayerState p)
-            => ReferenceEquals(p, PlayerA) ? _sinkA : _sinkB;
+        {
+            if (ReferenceEquals(p, PlayerA)) return _sinkA;
+            if (ReferenceEquals(p, PlayerB)) return _sinkB;
+
+            if (_sinkByPlayer.TryGetValue(p, out IPlayerChoiceSink sink)) return sink;
+
+            return GetChoice(p) as IPlayerChoiceSink;
+        }
 
         /// <summary>某玩家对应的抉择接收者（读回"已经问过的答案"用，Core 侧接口）。</summary>
         private IPreTurnChoiceSink PreTurnSinkFor(PlayerState p)
-            => ReferenceEquals(p, PlayerA)
-                ? _sinkA as IPreTurnChoiceSink
-                : _sinkB as IPreTurnChoiceSink;
+            => SinkFor(p) as IPreTurnChoiceSink;
 
         /// <summary>
         /// 读回"本回合先前已经问过的答案"（供分阶段抉择使用）。

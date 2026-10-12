@@ -19,6 +19,12 @@ namespace FingerDiceDuel.UI
         /// <summary>人机对战（入门）的难度选择。</summary>
         DifficultyMenu = 6,
 
+        /// <summary>2v2 子菜单（人机练习 / 真人对决）。</summary>
+        TwoOnTwoMenu = 7,
+
+        /// <summary>2v2 的角色选择（含座位选择与队友选择）。</summary>
+        TwoOnTwoCharacter = 8,
+
         /// <summary>角色选择。</summary>
         CharacterSelect = 2,
 

@@ -106,6 +106,49 @@ namespace FingerDiceDuel.UI
         // ---- 界面流程 ----
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
+
+        /// <summary>2v2 子菜单（人机练习 / 真人对决）。</summary>
+        private ScreenGroup _screenTwoOnTwo;
+
+        /// <summary>本次对局是不是 2v2（决定棋盘与角色选择走哪条路）。</summary>
+        private bool _isTwoOnTwo;
+
+        /// <summary>2v2 角色选择界面。</summary>
+        private ScreenGroup _screenTwoOnTwoCharacter;
+
+        /// <summary>2v2 的建局参数（我 / 队友 / 两名随机对手 + 我的座位）。</summary>
+        private class TwoOnTwoSetup
+        {
+            public int Seat;
+            public CharacterDefinition DefMe;
+            public CharacterDefinition DefMate;
+            public CharacterDefinition DefFoe1;
+            public CharacterDefinition DefFoe2;
+        }
+
+        private TwoOnTwoSetup _pendingTwoOnTwo;
+
+        /// <summary>2v2 的第三 / 第四位抉择器（C / D 槽位）。</summary>
+        private IChoiceProvider _choiceC;
+        private IChoiceProvider _choiceD;
+
+        /// <summary>2v2：我选的座位（1..4）。</summary>
+        private int _seat = 1;
+
+        /// <summary>2v2：队友角色索引（对手随机，不由玩家选）。</summary>
+        private int _indexMate = 2;
+
+        /// <summary>2v2：两名对手的随机角色索引（进入界面时抽一次）。</summary>
+        private int _indexFoe1;
+        private int _indexFoe2;
+
+        private CharacterRosterView _rosterView2Me;
+        private CharacterRosterView _rosterView2Mate;
+        private Text _detail2Me;
+        private Text _detail2Mate;
+        private Text _seatSummary;
+        private Text _foeSummary;
+        private Button[] _seatButtons;
         private ScreenGroup _screenMode;
         private ScreenGroup _screenDifficulty;
         private ScreenGroup _screenCharacter;
@@ -206,8 +249,23 @@ namespace FingerDiceDuel.UI
             }
         }
 
+        /// <summary>
+        /// 取某位玩家的**人类抉择器**（AI 代做抉择时写回答案用）。
+        ///
+        /// ⚠️ 2v2 有 4 个人，不能再用"A 就是 _choiceA、其余都是 _choiceB" ——
+        /// 那会让 C/D 的答案写到 B 的 sink 里。
+        /// </summary>
         private SimpleChoiceProvider ProviderFor(PlayerState p)
-            => ReferenceEquals(p, _game?.PlayerA) ? _choiceA : _choiceB;
+        {
+            if (p != null && _sinkByPlayer.TryGetValue(p, out SimpleChoiceProvider found))
+                return found;
+
+            return ReferenceEquals(p, _game?.PlayerA) ? _choiceA : _choiceB;
+        }
+
+        /// <summary>按玩家登记的"人类抉择器"（2v2 用）。</summary>
+        private readonly Dictionary<PlayerState, SimpleChoiceProvider> _sinkByPlayer =
+            new Dictionary<PlayerState, SimpleChoiceProvider>();
 
         // ============================================================
         // 生命周期
@@ -223,9 +281,11 @@ namespace FingerDiceDuel.UI
             BuildSelectCanvas();
             BuildMainMenuScreen();
             BuildOneOnOneScreen();
+            BuildTwoOnTwoScreen();
             BuildModeScreen();
             BuildDifficultyScreen();
             BuildCharacterScreen();
+            BuildTwoOnTwoCharacterScreen();
 
             _board = gameObject.AddComponent<GameBoardUI>();
             _board.Build();
@@ -369,7 +429,7 @@ namespace FingerDiceDuel.UI
             Button p1 = MakeModeButton(_selectRoot, "Mode1v1", new Vector2(0f, -42f),
                                        "1 v 1", "单挑对决", OnOneOnOneClicked);
             Button p2 = MakeModeButton(_selectRoot, "Mode2v2", new Vector2(0f, -198f),
-                                       "2 v 2", "双人组队", () => ShowComingSoon("2 v 2 组队模式"));
+                                       "2 v 2", "双人组队", OnTwoOnTwoClicked);
             Button p8 = MakeModeButton(_selectRoot, "Mode8p", new Vector2(0f, -354f),
                                        "8 人身份局", "身份阵营对抗",
                                        () => ShowComingSoon("8 人身份局"));
@@ -416,6 +476,45 @@ namespace FingerDiceDuel.UI
         }
 
         private void OnOneOnOneClicked() => ShowScreen(GameScreen.OneOnOneMenu);
+
+        private void OnTwoOnTwoClicked() => ShowScreen(GameScreen.TwoOnTwoMenu);
+
+        // ---- 2v2 子菜单 ----
+        //
+        // 玩家要求：**不改动主菜单结构** —— 仍然从主菜单已有的「2 v 2」进入，
+        // 进来之后再分「人机练习」与「真人对决」。
+        // 真人对决目前是**占位**（联网对战尚未实现），点了给出明确提示。
+
+        private void BuildTwoOnTwoScreen()
+        {
+            _screenTwoOnTwo = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "TwoOnTwoTitle", new Vector2(0f, 300f),
+                                  new Vector2(1000f, 70f), 52, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "2 v 2";
+            _screenTwoOnTwo.Add(title.gameObject);
+
+            Button practice = MakeModeButton(_selectRoot, "TtPractice", new Vector2(0f, 80f),
+                                             "人机练习", "与 AI 队友组队（单机四人同屏）",
+                                             OnTwoOnTwoPracticeClicked);
+            Button pvp = MakeModeButton(_selectRoot, "TtPvp", new Vector2(0f, -70f),
+                                        "真人对决", "联网对战玩家",
+                                        () => ShowComingSoon("真人对决（联网对战）"));
+
+            _screenTwoOnTwo.Add(practice.gameObject);
+            _screenTwoOnTwo.Add(pvp.gameObject);
+
+            Button back = MakeButton(_selectRoot, "TtBack", new Vector2(-420f, -256f),
+                                     new Vector2(220f, 76f), "返回");
+            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            back.onClick.AddListener(() => ShowScreen(GameScreen.MainMenu));
+            _screenTwoOnTwo.Add(back.gameObject);
+
+            Button help = MakeHelpButton(_selectRoot);
+            _screenTwoOnTwo.Add(help.gameObject);
+        }
 
         // ---- 1v1 子菜单 ----
 
@@ -473,14 +572,18 @@ namespace FingerDiceDuel.UI
 
             Button classic = MakeModeButton(_selectRoot, "ModeClassic", new Vector2(0f, -60f),
                 "经典", "掷 1d20 决定初始手值与先手",
-                () => { Mode = PlayMode.Classic; ShowScreen(GameScreen.CharacterSelect); });
+                () => { Mode = PlayMode.Classic; GoToCharacterSelect(); });
 
             _screenMode.Add(intro.gameObject);
             _screenMode.Add(classic.gameObject);
 
             Button back = MakeButton(_selectRoot, "ModeBack", new Vector2(0f, -270f),
                                      new Vector2(240f, 64f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.OneOnOneMenu));
+            // 玩法界面对 1v1 与 2v2 是共用的，所以"返回"要按来源回到对应子菜单
+            // （否则 2v2 的玩家会被丢回 1v1 菜单）。
+            back.onClick.AddListener(() => ShowScreen(_isTwoOnTwo
+                ? GameScreen.TwoOnTwoMenu
+                : GameScreen.OneOnOneMenu));
             _screenMode.Add(back.gameObject);
 
             Button help = MakeHelpButton(_selectRoot);
@@ -505,15 +608,15 @@ namespace FingerDiceDuel.UI
 
             Button easy = MakeModeButton(_selectRoot, "DiffEasy", new Vector2(0f, 140f),
                 "简单", "AI 会偶尔失误",
-                () => { Difficulty = AiDifficulty.Easy; ShowScreen(GameScreen.CharacterSelect); });
+                () => { Difficulty = AiDifficulty.Easy; GoToCharacterSelect(); });
 
             Button normal = MakeModeButton(_selectRoot, "DiffNormal", new Vector2(0f, -10f),
                 "普通", "AI 大方向稳定，细节有变化",
-                () => { Difficulty = AiDifficulty.Normal; ShowScreen(GameScreen.CharacterSelect); });
+                () => { Difficulty = AiDifficulty.Normal; GoToCharacterSelect(); });
 
             Button hard = MakeModeButton(_selectRoot, "DiffHard", new Vector2(0f, -160f),
                 "困难", "AI 始终选择最优解",
-                () => { Difficulty = AiDifficulty.Hard; ShowScreen(GameScreen.CharacterSelect); });
+                () => { Difficulty = AiDifficulty.Hard; GoToCharacterSelect(); });
 
             _screenDifficulty.Add(easy.gameObject);
             _screenDifficulty.Add(normal.gameObject);
@@ -529,6 +632,173 @@ namespace FingerDiceDuel.UI
         }
 
         private void OnStartAiClicked() => ShowScreen(GameScreen.ModeMenu);
+
+        /// <summary>
+        /// 选完玩法与难度后进入角色选择。
+        ///
+        /// 1v1 与 2v2 **共用"玩法 / 难度"这两屏**，所以分流必须发生在这里 ——
+        /// 否则 2v2 会走进 1v1 的角色选择（两个角色位、没有座位选择）。
+        /// </summary>
+        private void GoToCharacterSelect()
+        {
+            if (_isTwoOnTwo)
+            {
+                RollOpponents();
+                RefreshTwoOnTwoSummary();
+                ShowScreen(GameScreen.TwoOnTwoCharacter);
+                return;
+            }
+
+            ShowScreen(GameScreen.CharacterSelect);
+        }
+
+        /// <summary>
+        /// 抽两名对手的随机角色。
+        ///
+        /// 玩家要求："在 2v2 人机中可以为自己和人机队友选择角色，
+        /// **人机对手随机选择角色**"。
+        ///
+        /// 每次进入角色选择时抽一次（而不是每帧抽），
+        /// 这样玩家看到的对手在点"开始对局"之前是稳定的。
+        /// </summary>
+        private void RollOpponents()
+        {
+            if (_roster.Count == 0) return;
+
+            _indexFoe1 = UnityEngine.Random.Range(0, _roster.Count);
+            _indexFoe2 = UnityEngine.Random.Range(0, _roster.Count);
+        }
+
+        /// <summary>
+        /// 2v2 开局：按座位把我 / 队友 / 两名对手放进环里。
+        ///
+        /// 队伍规则（玩家确认）：**座位 1&4 一队、2&3 一队** ——
+        /// 而 <see cref="SeatLayout"/> 保证"队友与我在环上相邻"，
+        /// 所以队友一定是我的上家或下家。
+        /// </summary>
+        private void OnTwoOnTwoStartClicked()
+        {
+            CharacterDefinition defMe =
+                _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)];
+            CharacterDefinition defMate =
+                _roster[Mathf.Clamp(_indexMate, 0, _roster.Count - 1)];
+            CharacterDefinition defFoe1 =
+                _roster[Mathf.Clamp(_indexFoe1, 0, _roster.Count - 1)];
+            CharacterDefinition defFoe2 =
+                _roster[Mathf.Clamp(_indexFoe2, 0, _roster.Count - 1)];
+
+            _pendingTwoOnTwo = new TwoOnTwoSetup
+            {
+                Seat = _seat,
+                DefMe = defMe,
+                DefMate = defMate,
+                DefFoe1 = defFoe1,
+                DefFoe2 = defFoe2,
+            };
+
+            // 建局逻辑本身已经可用（引擎侧完整支持 2v2），
+            // 所以先把对局对象真的建出来 —— 这样"建局是否成功"当场可验证，
+            // 而不是等到棋盘做完才发现参数不对。
+            PrepareTwoOnTwoMatch();
+
+            // ⚠️ 但四人环形棋盘的**表现层尚未完成**（当前棋盘是"左 A / 右 B"两人布局）。
+            //
+            // 与其把玩家带进一个只显示两个人、其余两人看不见的界面，
+            // 不如在这里明确拦住 —— 那是"看起来能玩、实际坏了"的典型陷阱。
+            // 棋盘做完后，把下面这行换成 StartPreparedMatch() 即可。
+            ShowComingSoon("2v2 四人棋盘（对局已建好，界面开发中）");
+        }
+
+        private void OnTwoOnTwoPracticeClicked()
+        {
+            _isTwoOnTwo = true;
+            ShowScreen(GameScreen.ModeMenu);
+        }
+
+        /// <summary>
+        /// 2v2 的建局：按**座位顺序**把四个人放进环里。
+        ///
+        /// 座位规则（玩家确认）：座位 `1&4` 一队、`2&3` 一队。
+        /// 所以先把"我 / 队友 / 对手1 / 对手2"按座位算好站位，再交给
+        /// <see cref="GameManager.Create2v2"/>（它负责映射到底层 A/B/C/D 槽位）。
+        ///
+        /// 我永远是**主视角**（人类），其余三人是 AI —— 与 1v1 的
+        /// "A 是人类、B 可选 AI"同一个约定。
+        /// </summary>
+        private void PrepareTwoOnTwoMatch()
+        {
+            if (_pendingTwoOnTwo == null) return;
+
+            TwoOnTwoSetup setup = _pendingTwoOnTwo;
+            int meSeat = SeatLayout.Normalize(setup.Seat);
+            int mateSeat = SeatLayout.TeammateSeat(meSeat);
+            int[] foeSeats = SeatLayout.OpponentSeats(meSeat);
+
+            // 按座位 1..4 建四个人（空位先放 null，随后按算出的座位填入）
+            var seated = new List<PlayerState>(4);
+            var providers = new List<SimpleChoiceProvider>(4);
+            for (int i = 0; i < 4; i++)
+            {
+                seated.Add(null);
+                providers.Add(null);
+            }
+
+            var defs = new List<CharacterDefinition>(4);
+            var names = new List<string>(4);
+            for (int i = 0; i < 4; i++) { defs.Add(null); names.Add(null); }
+
+            // 我（人类）
+            defs[meSeat - 1] = setup.DefMe;
+            names[meSeat - 1] = "我";
+            // 队友（AI）
+            defs[mateSeat - 1] = setup.DefMate;
+            names[mateSeat - 1] = "队友";
+            // 两名对手（随机，AI）
+            defs[foeSeats[0] - 1] = setup.DefFoe1;
+            names[foeSeats[0] - 1] = "对手1";
+            defs[foeSeats[1] - 1] = setup.DefFoe2;
+            names[foeSeats[1] - 1] = "对手2";
+
+            for (int i = 0; i < 4; i++)
+            {
+                seated[i] = CharacterFactory.CreatePlayer(names[i], defs[i]);
+                providers[i] = new SimpleChoiceProvider();
+
+                // 登记"人类抉择器"，让 AI 代做的答案写回正确的玩家
+                _sinkByPlayer[seated[i]] = providers[i];
+            }
+
+            _choiceA = providers[0];
+            _choiceB = providers[1];
+            _choiceC = providers[2];
+            _choiceD = providers[3];
+
+            _game = GameManager.Create2v2(seated, providers.ConvertAll(x => (IChoiceProvider)x));
+
+            // 前两人的 AI 走构造参数（与 1v1 同一路径）；
+            // 其余玩家用 BindPlayer 登记 —— 只有"我"是人类（ai 传 null）。
+            _controller = new BoardController(
+                _game,
+                providers[0] as IPlayerChoiceSink, providers[1] as IPlayerChoiceSink,
+                aiForA: (meSeat == 1) ? null : (IMoveSelector)MakeAI(),
+                aiForB: (meSeat == 2) ? null : (IMoveSelector)MakeAI());
+
+            for (int i = 0; i < 4; i++)
+            {
+                if (i == 0 || i == 1) continue;      // 前两人已在构造里传过
+
+                IMoveSelector ai = (i == meSeat - 1) ? null : (IMoveSelector)MakeAI();
+                _controller.BindPlayer(seated[i], ai, providers[i] as IPlayerChoiceSink);
+            }
+
+            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+
+            // 第一回合从**我**开始（单机主视角先手，便于立即操作）
+            _controller.SetFirstPlayer(seated[meSeat - 1]);
+
+            _pendingDefA = setup.DefMe;
+            _pendingDefB = setup.DefFoe1;
+        }
 
         // ---- 屏幕切换 ----
 
@@ -554,14 +824,18 @@ namespace FingerDiceDuel.UI
 
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
+            _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
             _screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu);
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
+            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
+                || screen == GameScreen.TwoOnTwoMenu
                 || screen == GameScreen.ModeMenu || screen == GameScreen.DifficultyMenu
-                || screen == GameScreen.CharacterSelect || screen == GameScreen.DiceRoll)
+                || screen == GameScreen.CharacterSelect
+                || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll)
             {
                 // 让弹窗保持在最上层
                 if (_modal?.Root != null) _modal.Root.transform.SetAsLastSibling();
@@ -1290,6 +1564,159 @@ namespace FingerDiceDuel.UI
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
             return text;
+        }
+
+        // ---- 2v2 角色选择 ----
+        //
+        // 玩家要求：
+        //   · 在角色选择界面**选择这次的座位**
+        //   · **可以为自己和人机队友选择角色**
+        //   · **人机对手随机选择角色**
+        //
+        // 座位决定四人位置，推导全部来自 Assistant.SeatLayout（已单测覆盖）：
+        //   奇数座位 -> 队友是**上家**（界面偏左下）
+        //   偶数座位 -> 队友是**下家**（界面偏右下）
+        // 所以界面上要**实时显示**"队友在哪一侧"，让玩家选座位时看得见后果。
+
+        private void BuildTwoOnTwoCharacterScreen()
+        {
+            _screenTwoOnTwoCharacter = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "TtCharTitle", new Vector2(0f, 470f),
+                                  new Vector2(1200f, 66f), 44, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "2 v 2 角色选择";
+            _screenTwoOnTwoCharacter.Add(title.gameObject);
+
+            // ---- 座位选择（1..4）----
+            _screenTwoOnTwoCharacter.Add(MakeSectionLabel("我的座位", new Vector2(0f, 418f)));
+
+            _seatButtons = new Button[SeatLayout.SeatCount];
+            for (int i = 0; i < SeatLayout.SeatCount; i++)
+            {
+                int seat = i + 1;
+                float x = -300f + i * 200f;
+
+                Button b = MakeButton(_selectRoot, "Seat" + seat, new Vector2(x, 366f),
+                                      new Vector2(170f, 52f), "座位 " + seat);
+                b.onClick.AddListener(() => SelectSeat(seat));
+                _seatButtons[i] = b;
+                _screenTwoOnTwoCharacter.Add(b.gameObject);
+            }
+
+            // ---- 实时显示：队友与对手分别在哪一侧 ----
+            _seatSummary = MakeText(_selectRoot, "TtSeatSummary", new Vector2(0f, 316f),
+                                    new Vector2(1300f, 34f), 22, TextAnchor.MiddleCenter,
+                                    new Color(0.90f, 0.93f, 1f, 0.92f));
+            _screenTwoOnTwoCharacter.Add(_seatSummary.gameObject);
+
+            // ---- 我的角色 ----
+            _screenTwoOnTwoCharacter.Add(MakeSectionLabel("我的角色", new Vector2(0f, 272f)));
+            _rosterView2Me = BuildRosterRow("Roster2Me", new Vector2(0f, 208f), initialIndex: _indexA);
+            _rosterView2Me.SelectionChanged += index =>
+            {
+                _indexA = index;
+                _rosterView2Me.ScrollToSelected();
+                RefreshDetail(_detail2Me, _roster[_indexA]);
+            };
+            _screenTwoOnTwoCharacter.Add(_rosterView2Me.Root.gameObject);
+            _detail2Me = MakeDetailPanel("Detail2Me", new Vector2(0f, 134f));
+            _screenTwoOnTwoCharacter.Add(_detail2Me.transform.parent.gameObject);
+
+            // ---- 队友角色 ----
+            _screenTwoOnTwoCharacter.Add(MakeSectionLabel("队友角色（人机）", new Vector2(0f, 82f)));
+            _rosterView2Mate = BuildRosterRow("Roster2Mate", new Vector2(0f, 18f),
+                                              initialIndex: _indexMate);
+            _rosterView2Mate.SelectionChanged += index =>
+            {
+                _indexMate = index;
+                _rosterView2Mate.ScrollToSelected();
+                RefreshDetail(_detail2Mate, _roster[_indexMate]);
+            };
+            _screenTwoOnTwoCharacter.Add(_rosterView2Mate.Root.gameObject);
+            _detail2Mate = MakeDetailPanel("Detail2Mate", new Vector2(0f, -56f));
+            _screenTwoOnTwoCharacter.Add(_detail2Mate.transform.parent.gameObject);
+
+            // ---- 对手（随机，不可选）----
+            _foeSummary = MakeText(_selectRoot, "TtFoes", new Vector2(0f, -116f),
+                                   new Vector2(1300f, 34f), 22, TextAnchor.MiddleCenter,
+                                   new Color(1f, 0.80f, 0.78f, 0.95f));
+            _screenTwoOnTwoCharacter.Add(_foeSummary.gameObject);
+
+            RefreshDetail(_detail2Me, _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)]);
+            RefreshDetail(_detail2Mate, _roster[Mathf.Clamp(_indexMate, 0, _roster.Count - 1)]);
+
+            Button start = MakeButton(_selectRoot, "TtStart", new Vector2(0f, -196f),
+                                      new Vector2(340f, 76f), "开始对局");
+            start.onClick.AddListener(OnTwoOnTwoStartClicked);
+            _screenTwoOnTwoCharacter.Add(start.gameObject);
+
+            Button back = MakeButton(_selectRoot, "TtCharBack", new Vector2(-420f, -196f),
+                                     new Vector2(220f, 76f), "返回");
+            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            back.onClick.AddListener(() => ShowScreen(GameScreen.ModeMenu));
+            _screenTwoOnTwoCharacter.Add(back.gameObject);
+
+            Button help = MakeHelpButton(_selectRoot);
+            _screenTwoOnTwoCharacter.Add(help.gameObject);
+
+            SelectSeat(1);
+        }
+
+        /// <summary>选中座位并刷新"队友 / 对手在哪一侧"的说明与按钮高亮。</summary>
+        private void SelectSeat(int seat)
+        {
+            _seat = SeatLayout.Normalize(seat);
+            RefreshTwoOnTwoSummary();
+        }
+
+        /// <summary>
+        /// 刷新 2v2 角色选择的说明文字：
+        /// · 队友坐几号位、在我的**上家还是下家**（对应界面左下 / 右下）
+        /// · 两名对手坐哪两个座位（对应界面左上 / 右上）
+        ///
+        /// 高亮当前座位按钮，让"选了哪个"一眼可见。
+        /// </summary>
+        private void RefreshTwoOnTwoSummary()
+        {
+            int me = _seat;
+            int mate = SeatLayout.TeammateSeat(me);
+            bool mateIsPrev = SeatLayout.TeammateIsPrevious(me);
+            int[] foes = SeatLayout.OpponentSeats(me);
+
+            if (_seatSummary != null)
+            {
+                _seatSummary.text =
+                    $"我 = 座位 {me}（下方正中）　" +
+                    $"队友 = 座位 {mate}（我的{(mateIsPrev ? "上家" : "下家")}" +
+                    $" → 界面{(mateIsPrev ? "偏左下" : "偏右下")}）　" +
+                    $"对手 = 座位 {foes[0]} 与 {foes[1]}（偏左上 / 偏右上）";
+            }
+
+            if (_foeSummary != null && _roster.Count > 0)
+            {
+                CharacterDefinition f1 = _roster[Mathf.Clamp(_indexFoe1, 0, _roster.Count - 1)];
+                CharacterDefinition f2 = _roster[Mathf.Clamp(_indexFoe2, 0, _roster.Count - 1)];
+                _foeSummary.text = $"对手（随机）：座位 {foes[0]} = {f1.DisplayName}　" +
+                                   $"座位 {foes[1]} = {f2.DisplayName}";
+            }
+
+            // 高亮当前座位
+            if (_seatButtons != null)
+            {
+                for (int i = 0; i < _seatButtons.Length; i++)
+                {
+                    if (_seatButtons[i] == null) continue;
+
+                    Image img = _seatButtons[i].GetComponent<Image>();
+                    if (img == null) continue;
+
+                    img.color = (i + 1 == me)
+                        ? new Color(0.85f, 0.70f, 0.30f)
+                        : new Color(0.30f, 0.33f, 0.40f);
+                }
+            }
         }
 
         private Button MakeButton(RectTransform parent, string name, Vector2 position,
