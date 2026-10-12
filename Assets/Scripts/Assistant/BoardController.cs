@@ -452,6 +452,23 @@ namespace FingerDiceDuel.Assistant
         /// 开始当前玩家（<see cref="GameManager.CurrentPlayer"/>）的回合。
         /// 开局与每次结算完成后都要调用。
         /// </summary>
+        /// <summary>
+        /// 指定**谁先出招**（开局掷骰后由 UI 调用：点数大的先行动）。
+        ///
+        /// 必须在第一次 <see cref="BeginTurn"/> **之前**调用 ——
+        /// <see cref="BeginTurn"/> 会读 <see cref="GameManager.CurrentPlayer"/>，
+        /// 这里就是把对局对象里的先手改成指定的人。
+        ///
+        /// 传 null 或与当前一致时不改动（入门模式没有掷骰，走默认先手）。
+        /// </summary>
+        public void SetFirstPlayer(PlayerState player)
+        {
+            if (player == null || _game == null) return;
+            if (_game.IsGameOver) return;
+
+            _game.ForceActivePlayerForTest(player);
+        }
+
         public void BeginTurn()
         {
             if (_game.IsGameOver)

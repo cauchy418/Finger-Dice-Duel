@@ -13,6 +13,9 @@ namespace FingerDiceDuel.UI
         /// <summary>1v1 子菜单（人机 / 竞技）。</summary>
         OneOnOneMenu = 1,
 
+        /// <summary>1v1 的玩法选择（入门 / 经典）。</summary>
+        ModeMenu = 5,
+
         /// <summary>角色选择。</summary>
         CharacterSelect = 2,
 

@@ -43,7 +43,18 @@ namespace FingerDiceDuel.UI
         private Text _prevText;
         private Text _hintText;
         private Button _rollButton;
+        private Button _flipButton;
         private RectTransform _optionsRoot;
+
+        /// <summary>
+        /// 候选按钮是否按"翻转"后的顺序显示（左手/右手对调）。
+        ///
+        /// 候选本身是**去重**的（只留左手 ≤ 右手，见
+        /// <see cref="DiceRollSetup.DistinctSplits"/>），所以 `5/1` 这种摆法
+        /// 要靠本开关才看得到 —— 它只改显示顺序，不影响任何规则
+        /// （目前左右手作用完全相同）。
+        /// </summary>
+        private bool _flipped;
 
         private Font _font;
         private Font _boldFont;
@@ -61,6 +72,15 @@ namespace FingerDiceDuel.UI
 
         /// <summary>当前是否显示中。</summary>
         public bool IsVisible => _root != null && _root.gameObject.activeSelf;
+
+        /// <summary>
+        /// 开局后**谁先出招** —— 点数**大**的那位（平手则 A）。
+        ///
+        /// ⚠️ 与"谁先决定初始手值"是两件事：
+        /// 点数小的先决定手值（先选但信息少），点数大的先行动（后选但先手）。
+        /// 还没掷骰时为 null，调用方应回退到默认先手。
+        /// </summary>
+        public PlayerState StartingPlayer => _controller?.FirstToAct;
 
         private readonly List<GameObject> _optionButtons = new List<GameObject>();
 
@@ -123,8 +143,14 @@ namespace FingerDiceDuel.UI
             _optionsRoot = options.GetComponent<RectTransform>();
             _optionsRoot.anchorMin = _optionsRoot.anchorMax = new Vector2(0.5f, 0.5f);
             _optionsRoot.pivot = new Vector2(0.5f, 0.5f);
-            _optionsRoot.sizeDelta = new Vector2(1400f, 420f);
-            _optionsRoot.anchoredPosition = new Vector2(0f, -170f);
+            _optionsRoot.sizeDelta = new Vector2(1400f, 640f);
+            _optionsRoot.anchoredPosition = new Vector2(0f, -150f);
+
+            // "翻转"按钮放在候选区**下方**：切换左右手显示顺序。
+            // 候选已去重（只留左手 ≤ 右手），所以镜像摆法靠它看。
+            _flipButton = MakeButton(panelRect, "FlipButton", new Vector2(0f, -375f),
+                                     new Vector2(240f, 52f), "翻转：关", fontSize: 26);
+            _flipButton.onClick.AddListener(OnFlipClicked);
 
             _root.gameObject.SetActive(false);
         }
@@ -152,6 +178,10 @@ namespace FingerDiceDuel.UI
             _rollButton.gameObject.SetActive(true);
             _rollButton.GetComponentInChildren<Text>().text = "掷骰";
             ClearOptions();
+
+            // 每次开局都从"不翻转"开始，避免沿用上一局的显示顺序
+            _flipped = false;
+            if (_flipButton != null) _flipButton.gameObject.SetActive(false);
 
             _animating = false;
             if (_animCoroutine != null) { StopCoroutine(_animCoroutine); _animCoroutine = null; }
@@ -356,7 +386,8 @@ namespace FingerDiceDuel.UI
             IReadOnlyList<HandSplit> cands = _controller.Candidates;
             if (cands == null || cands.Count == 0) return;
 
-            const float btnW = 200f, btnH = 64f, gapX = 24f, gapY = 20f;
+            // 大成功去重后仍有 45 种（8 行），所以按钮要紧凑些才放得下
+            const float btnW = 200f, btnH = 52f, gapX = 24f, gapY = 14f;
             const int perRow = 6;
 
             int rows = (cands.Count + perRow - 1) / perRow;
@@ -375,15 +406,53 @@ namespace FingerDiceDuel.UI
                 float x = startX + col * (btnW + gapX);
                 float y = startY - row * (btnH + gapY);
 
+                // 翻转开关只影响**显示顺序**：候选本身是去重后的（左手 ≤ 右手）。
+                // 所以这里只把标签的两个数字对调显示 ——
+                // **不构造新的 HandSplit**（界面绝不自己造拆分，见源码守卫测试）。
                 HandSplit split = cands[i];
+                string label = _flipped
+                    ? $"{split.Right} / {split.Left}"
+                    : DiceRollText.SplitLabel(split);
+
                 Button b = MakeButton(_optionsRoot, "Split" + i, new Vector2(x, y),
-                                      new Vector2(btnW, btnH), DiceRollText.SplitLabel(split),
-                                      fontSize: 30);
+                                      new Vector2(btnW, btnH), label, fontSize: 30);
                 b.onClick.AddListener(() => OnSplitClicked(split));
                 _optionButtons.Add(b.gameObject);
             }
 
             _optionsRoot.gameObject.SetActive(true);
+            UpdateFlipButton();
+        }
+
+        /// <summary>
+        /// 更新"翻转"按钮的可见性与文案。
+        ///
+        /// 只在**存在镜像对被去掉**时才显示 —— 即候选里至少有一个
+        /// "左右不相等"的拆分（相同时翻转没有意义）。
+        /// </summary>
+        private void UpdateFlipButton()
+        {
+            if (_flipButton == null) return;
+
+            bool anyAsymmetric = false;
+            if (_controller != null)
+            {
+                IReadOnlyList<HandSplit> cands = _controller.Candidates;
+                for (int i = 0; i < cands.Count; i++)
+                {
+                    if (cands[i].Left != cands[i].Right) { anyAsymmetric = true; break; }
+                }
+            }
+
+            _flipButton.gameObject.SetActive(anyAsymmetric);
+            Text label = _flipButton.GetComponentInChildren<Text>();
+            if (label != null) label.text = _flipped ? "翻转：开" : "翻转：关";
+        }
+
+        private void OnFlipClicked()
+        {
+            _flipped = !_flipped;
+            BuildOptions();     // 重画候选（用翻转后的显示顺序）
         }
 
         private void OnSplitClicked(HandSplit split)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -41,6 +41,24 @@ namespace FingerDiceDuel.UI
         [Tooltip("AI 出手前的等待秒数（让玩家看清上一回合的结果）")]
         public float AiThinkSeconds = 2f;
 
+        /// <summary>
+        /// 玩法模式。
+        ///
+        /// **入门**：没有掷骰先攻 —— 双方用默认初始手值（1/1）开局，直接对局。
+        /// **经典**：开局掷 1d20 决定初始手值与先手。
+        /// </summary>
+        public enum PlayMode
+        {
+            /// <summary>入门：不掷骰先攻。</summary>
+            Intro = 0,
+
+            /// <summary>经典：掷 1d20 决定初始手值与先手。</summary>
+            Classic = 1,
+        }
+
+        /// <summary>当前选择的玩法（进入 1v1 后先选）。</summary>
+        public PlayMode Mode = PlayMode.Classic;
+
         [Header("调试")]
         [Tooltip("勾选后打印每回合的结算日志")]
         public bool VerboseLogging;
@@ -81,6 +99,7 @@ namespace FingerDiceDuel.UI
         // ---- 界面流程 ----
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
+        private ScreenGroup _screenMode;
         private ScreenGroup _screenCharacter;
         private DiceRollScreen _diceRoll;
         private ModalPanel _modal;
@@ -196,6 +215,7 @@ namespace FingerDiceDuel.UI
             BuildSelectCanvas();
             BuildMainMenuScreen();
             BuildOneOnOneScreen();
+            BuildModeScreen();
             BuildCharacterScreen();
 
             _board = gameObject.AddComponent<GameBoardUI>();
@@ -402,7 +422,7 @@ namespace FingerDiceDuel.UI
             _screenOneOnOne.Add(title.gameObject);
 
             Button ai = MakeModeButton(_selectRoot, "ModeAi", new Vector2(0f, 80f),
-                                       "人机对战", "与 AI 对战", OnStartAiClicked);
+                                       "人机对战", "与 AI 对战（先选玩法）", OnStartAiClicked);
             Button pvp = MakeModeButton(_selectRoot, "ModePvp", new Vector2(0f, -70f),
                                         "竞技", "联网对战玩家",
                                         () => ShowComingSoon("竞技（联网对战）"));
@@ -420,7 +440,45 @@ namespace FingerDiceDuel.UI
         }
 
 
-        private void OnStartAiClicked() => ShowScreen(GameScreen.CharacterSelect);
+        /// <summary>
+        /// 玩法选择界面：进门后先选「入门 / 经典」，再进角色选择。
+        ///
+        /// 为什么不让它直接进角色选择：两种玩法差别很直观
+        /// （有没有掷骰先攻），玩家应该在选角色**之前**就决定，
+        /// 免得选完角色才发现玩法不对又退回来。
+        /// </summary>
+        private void BuildModeScreen()
+        {
+            _screenMode = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "ModeTitle", new Vector2(0f, 300f),
+                                  new Vector2(1000f, 70f), 52, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "选择玩法";
+            _screenMode.Add(title.gameObject);
+
+            Button intro = MakeModeButton(_selectRoot, "ModeIntro", new Vector2(0f, 110f),
+                "入门", "不掷骰先攻，双方从 1/1 开始",
+                () => { Mode = PlayMode.Intro; ShowScreen(GameScreen.CharacterSelect); });
+
+            Button classic = MakeModeButton(_selectRoot, "ModeClassic", new Vector2(0f, -60f),
+                "经典", "掷 1d20 决定初始手值与先手",
+                () => { Mode = PlayMode.Classic; ShowScreen(GameScreen.CharacterSelect); });
+
+            _screenMode.Add(intro.gameObject);
+            _screenMode.Add(classic.gameObject);
+
+            Button back = MakeButton(_selectRoot, "ModeBack", new Vector2(0f, -270f),
+                                     new Vector2(240f, 64f), "返回");
+            back.onClick.AddListener(() => ShowScreen(GameScreen.OneOnOneMenu));
+            _screenMode.Add(back.gameObject);
+
+            Button help = MakeHelpButton(_selectRoot);
+            _screenMode.Add(help.gameObject);
+        }
+
+        private void OnStartAiClicked() => ShowScreen(GameScreen.ModeMenu);
 
         // ---- 屏幕切换 ----
 
@@ -446,10 +504,12 @@ namespace FingerDiceDuel.UI
 
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
+            _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
+                || screen == GameScreen.ModeMenu
                 || screen == GameScreen.CharacterSelect || screen == GameScreen.DiceRoll)
             {
                 // 让弹窗保持在最上层
@@ -673,10 +733,18 @@ namespace FingerDiceDuel.UI
             CharacterDefinition defA = _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)];
             CharacterDefinition defB = _roster[Mathf.Clamp(_indexB, 0, _roster.Count - 1)];
 
-            // 先进"掷骰分配初始手值"，分配完才真正开始对局。
+            // 经典模式先进"掷骰分配初始手值"，分配完才真正开始对局；
+            // 入门模式不掷骰先攻，双方用默认初始手值直接开局。
             _pendingDefA = defA;
             _pendingDefB = defB;
             PrepareMatch(defA, defB);
+
+            if (Mode == PlayMode.Intro)
+            {
+                StartPreparedMatch();
+                return;
+            }
+
             _diceRoll.Begin(_game);
             ShowScreen(GameScreen.DiceRoll);
         }
@@ -715,6 +783,18 @@ namespace FingerDiceDuel.UI
             if (_game == null || _controller == null) return;
             if (_pendingDefA == null || _pendingDefB == null) return;
 
+            // 先手 = 点数**大**的那位（后选但先动，与"点数小先决定"互补）。
+            // 必须在一局开始前设好，否则第一回合会按默认（A）走。
+            _controller.SetFirstPlayer(_diceRoll.StartingPlayer);
+
+            StartPreparedMatch();
+        }
+
+        /// <summary>
+        /// 把已经 PrepareMatch 好的对局推到界面上并开始第一回合。
+        /// </summary>
+        private void StartPreparedMatch()
+        {
             ShowScreen(GameScreen.InMatch);
 
             _board.BindPlayers(_game.PlayerA, _game.PlayerB);

@@ -126,6 +126,32 @@ namespace FingerDiceDuel.Assistant
             return list;
         }
 
+        /// <summary>
+        /// 列出**去重后**的合法拆分：镜像只保留一个（左手 ≤ 右手）。
+        ///
+        /// 例如 `1/5` 与 `5/1` 只保留 `1/5`。
+        ///
+        /// 为什么可以这么显示：**目前左右手的作用完全相同** ——
+        /// 换哪只手只是把同一对数换个位置，游戏结果没有任何区别。
+        /// 大成功的 81 种里有整整一半是镜像，全列出来界面根本放不下。
+        ///
+        /// 玩家若确实想按 `5/1` 那样摆，界面上有**翻转**按钮 ——
+        /// 那只是显示顺序，不影响任何规则。
+        /// </summary>
+        public static List<HandSplit> DistinctSplits(int roll)
+        {
+            List<HandSplit> all = LegalSplits(roll);
+            var result = new List<HandSplit>(all.Count);
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                // 每对 (a,b) 与 (b,a) 恰好有一个满足"左手 ≤ 右手"
+                if (all[i].Left <= all[i].Right) result.Add(all[i]);
+            }
+
+            return result;
+        }
+
         /// <summary>某个拆分是否对这次投掷合法。</summary>
         public static bool IsLegalSplit(int roll, HandSplit split)
         {
@@ -237,6 +263,14 @@ namespace FingerDiceDuel.Assistant
                     return "双方点数相同 —— 同时分配。";
             }
         }
+
+        /// <summary>
+        /// **谁先行动**的说明（跟在顺序说明后面，避免玩家以为"先分配的也先动"）。
+        ///
+        /// 规则：点数**大**的先出招 —— 与"点数小的先决定手值"互补。
+        /// </summary>
+        public static string FirstToActNote(string firstName) =>
+            $"点数大的 {firstName} 先行动。";
     }
 
     /// <summary>谁先分配初始手值。</summary>

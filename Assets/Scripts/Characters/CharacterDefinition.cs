@@ -79,17 +79,13 @@ namespace FingerDiceDuel.Core
             description: "新合盾时可锁住对手一只手，使其不能作为运算源，直到该盾破碎。防御 +1。");
 
         /// <summary>
-        /// 牧师：9 的回复可指定给任何人（自己或对手）；**4/6/8 可选当攻击或当回复**；
-        /// 双手同时为 9 时额外再回复一次 9（同样可选目标）。攻防 -1 / -1。
+        /// 牧师：攻击可改为回复；回复可以给任何人（自己或对手）；
+        /// 双 9 额外回复。攻防 -1 / -1。
         /// </summary>
         public static CharacterDefinition Priest { get; } = new CharacterDefinition(
             PriestId, "牧师", SpecialLogicType.Priest,
             attackBonus: -1, defenseBonus: -1,
-            description: "回复可以给任何人（自己或对手）：" +
-                         "打出 9 时点一只手决定回复给谁（点自己的手=回自己，点对手的手=回对手）；" +
-                         "打出 4/6/8 时可自行选择当攻击打还是当回复用" +
-                         "（回复量就是该数字，不受攻防加成影响），选了回复后同样点一只手决定给谁；" +
-                         "双手同时为 9 时额外再回复一次 9 点（同样可选目标）。攻防 -1 / -1。");
+            description: "攻击可改为回复；回复可以给任何人（自己或对手）；双 9 额外回复。");
 
         public static CharacterDefinition Ranger { get; } = new CharacterDefinition(
             RangerId, "游侠", SpecialLogicType.Ranger,

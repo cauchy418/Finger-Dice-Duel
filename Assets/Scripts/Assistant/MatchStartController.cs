@@ -206,12 +206,36 @@ namespace FingerDiceDuel.Assistant
 
             int roll = RollOf(assignee);
             _candidates.Clear();
-            _candidates.AddRange(DiceRollSetup.LegalSplits(roll));
+
+            // 用**去重后**的拆分（镜像只留一个，如 1/5 保留、5/1 去掉）：
+            // 左右手作用完全相同，镜像列出来纯属重复；大成功有 81 种，
+            // 不去重界面根本放不下。玩家想按镜像摆可以用界面的翻转按钮。
+            _candidates.AddRange(DiceRollSetup.DistinctSplits(roll));
 
             Hint = BuildHint(roll);
         }
 
         private int RollOf(PlayerState p) => ReferenceEquals(p, PlayerA) ? RollA : RollB;
+
+        /// <summary>
+        /// **谁应该先行动**（先出招）—— 点数**大**的那位。
+        ///
+        /// 与"谁先决定初始手值"**不是**同一件事：
+        ///   · 决定手值：点数**小**的先选（先选但信息少）
+        ///   · 先出招：点数**大**的先动（后选但先手）
+        /// 这样两头平衡 —— 否则点数大的人会同时占先选与先手。
+        ///
+        /// 还没掷骰时为 null（调用方回退到默认先手）。
+        /// </summary>
+        public PlayerState FirstToAct
+        {
+            get
+            {
+                if (RollA == 0 && RollB == 0) return null;
+                if (RollA == RollB) return PlayerA;      // 平手 -> A 先
+                return RollA > RollB ? PlayerA : PlayerB;
+            }
+        }
 
         /// <summary>
         /// **顺序说明**（UI 直接显示）。
@@ -224,7 +248,16 @@ namespace FingerDiceDuel.Assistant
             get
             {
                 if (PlayerA == null || PlayerB == null) return "";
-                return DiceRollText.OrderNote(Order, PlayerA.Name, PlayerB.Name);
+
+                string order = DiceRollText.OrderNote(Order, PlayerA.Name, PlayerB.Name);
+
+                // 补一句"谁先出招" —— 否则玩家容易以为"先分配手值的也先行动"，
+                // 而规则恰好相反（点数小的先决定、点数大的先出招）。
+                PlayerState first = FirstToAct;
+                if (first != null)
+                    order += "　" + DiceRollText.FirstToActNote(first.Name);
+
+                return order;
             }
         }
 

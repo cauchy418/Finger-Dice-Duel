@@ -523,8 +523,12 @@ namespace FingerDiceDuel.Tests
                 "19 的说明不该出现大失败。实际：" + s19.DecisionText);
             Assert.True(s19.DecisionText.Contains("小成功"),
                 "19 应说明是小成功。实际：" + s19.DecisionText);
-            Assert.True(s19.IsCandidate(new HandSplit(9, 1)),
+            // ⚠️ 用 IsLegalSplit（对两个朝向都成立，与游戏语义一致）而不是
+            // IsCandidate —— 后者是**界面候选**，已按镜像去重（19 时只留 1/9）。
+            Assert.True(DiceRollSetup.IsLegalSplit(19, new HandSplit(9, 1)),
                 "19 时 9+1 应合法（另一只手随意）。");
+            Assert.True(DiceRollSetup.IsLegalSplit(19, new HandSplit(1, 9)),
+                "19 时 1+9 也合法（同一对，只是朝向不同）。");
 
             // 真正的大失败：投出 1 的人由对手指定
             var c1 = Arrange(1, 15);
@@ -662,6 +666,105 @@ namespace FingerDiceDuel.Tests
             Assert.True(s.PreviousSplit.HasValue);
             Assert.AreEqual(5, s.PreviousSplit.Value.Left);
             Assert.AreEqual(7, s.PreviousSplit.Value.Right);
+        }
+
+        // ============================================================
+        // 去重（镜像只留一个）与"谁先行动"
+        // ============================================================
+
+        [Test]
+        public void Distinct_splits_keep_only_one_of_each_mirror_pair()
+        {
+            // 玩家要求：1/5 与 5/1 只保留 1/5。
+            // 理由：目前左右手作用完全相同，镜像纯属重复；
+            // 大成功有 81 种，不去重界面放不下。
+            for (int roll = 2; roll <= 20; roll++)
+            {
+                var all = DiceRollSetup.LegalSplits(roll);
+                var distinct = DiceRollSetup.DistinctSplits(roll);
+
+                // 只留"左手 ≤ 右手"
+                for (int i = 0; i < distinct.Count; i++)
+                {
+                    Assert.True(distinct[i].Left <= distinct[i].Right,
+                        $"投 {roll}：去重结果 {distinct[i]} 应满足左手 ≤ 右手。");
+                }
+
+                // 数量 = (全部 + 对角线条数) / 2
+                int diagonal = 0;
+                for (int i = 0; i < all.Count; i++)
+                    if (all[i].Left == all[i].Right) diagonal++;
+
+                Assert.AreEqual((all.Count + diagonal) / 2, distinct.Count,
+                    $"投 {roll}：去重后数量应为 (全部 + 对角线) / 2。");
+
+                // 每个去重结果都合法
+                for (int i = 0; i < distinct.Count; i++)
+                {
+                    Assert.True(DiceRollSetup.IsLegalSplit(roll, distinct[i]),
+                        $"投 {roll}：去重结果 {distinct[i]} 应仍合法。");
+                }
+            }
+        }
+
+        [Test]
+        public void Distinct_splits_halve_the_major_success_list()
+        {
+            // 20（大成功）原本 81 种，去重后应剩 45 种（9 个对角 + 36 对的一半）
+            Assert.AreEqual(81, DiceRollSetup.LegalSplits(20).Count);
+            Assert.AreEqual(45, DiceRollSetup.DistinctSplits(20).Count,
+                "大成功去重后应是 45 种（界面才放得下）。");
+        }
+
+        [Test]
+        public void The_controller_offers_only_distinct_splits()
+        {
+            // 界面只列 controller.Candidates —— 它必须是去重后的。
+            // 注意"点数小的先决定"：要让投 20 的人先决定，就得让**对方**点数更小，
+            // 所以这里是 (5, 20) 而不是 (20, 5)。
+            var s = Arrange(5, 20);
+
+            // A 投 5（点数小）先决定 —— 此刻候选是 A 的（5 有 2 种去重拆分）
+            Assert.AreSame(s.PlayerA, s.Assignee, "点数小的 A 先决定。");
+            Assert.AreEqual(2, s.Candidates.Count, "投 5 去重后有 2 种。");
+
+            // 让 A 决定完，才轮到 B（投 20 = 大成功）
+            Assert.True(s.Submit(s.Candidates[0]));
+            Assert.AreSame(s.PlayerB, s.Assignee, "轮到 B。");
+
+            Assert.AreEqual(45, s.Candidates.Count,
+                "大成功时界面候选应是去重后的 45 种。");
+        }
+
+        [Test]
+        public void The_higher_roller_acts_first_both_ways()
+        {
+            // 玩家要求：点数**大**的先进行回合。
+            // 这与"点数小的先决定初始手值"是两件事（互补，两头平衡）。
+            var aHigher = Arrange(15, 7);
+            Assert.AreSame(aHigher.PlayerA, aHigher.FirstToAct, "A 点数大 -> A 先行动。");
+
+            var bHigher = Arrange(7, 15);
+            Assert.AreSame(bHigher.PlayerB, bHigher.FirstToAct, "B 点数大 -> B 先行动。");
+        }
+
+        [Test]
+        public void Equal_rolls_let_a_act_first()
+        {
+            var tie = Arrange(12, 12);
+            Assert.AreSame(tie.PlayerA, tie.FirstToAct, "平手 -> A 先行动。");
+        }
+
+        [Test]
+        public void First_to_act_is_unknown_before_rolling()
+        {
+            var a = CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank);
+            var b = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
+            var game = new GameManager(a, b, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var start = new MatchStartController(game);
+
+            Assert.Null(start.FirstToAct, "还没掷骰时应为 null（调用方回退默认先手）。");
         }
 
         // ============================================================
