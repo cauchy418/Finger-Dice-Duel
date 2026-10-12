@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -222,6 +222,94 @@ namespace FingerDiceDuel.Tests
 
         private static int GetOtherValue(PlayerState owner, Hand used)
             => ReferenceEquals(used, owner.LeftHand) ? owner.RightHand.Value : owner.LeftHand.Value;
+
+        // ============================================================
+        // 难度：噪声抖动
+        // ============================================================
+
+        /// <summary>
+        /// 同一局面用同一个难度跑多次，返回"选中招"的去重集合大小。
+        /// 每次都用**全新的** GameManager + 全新的 AI，避免上一局状态污染。
+        /// </summary>
+        private static int CountDistinctPicks(AiDifficulty difficulty, int runs)
+        {
+            var picks = new HashSet<string>();
+
+            for (int i = 0; i < runs; i++)
+            {
+                var ai = new GreedyChoiceProvider();
+                ai.ApplyDifficulty(difficulty);
+
+                var game = new GameManager(
+                    CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior),
+                    CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
+                    ai, new SimpleChoiceProvider());
+
+                PlayerState actor = game.PlayerA;
+                TestSetup.SetHand(actor.LeftHand, 5);
+                TestSetup.SetHand(actor.RightHand, 2);
+                TestSetup.SetHand(game.PlayerB.LeftHand, 4);
+                TestSetup.SetHand(game.PlayerB.RightHand, 3);
+
+                LegalMove pick = ai.ChooseMove(game, actor);
+                picks.Add($"{pick.ActedHand.Value}+{pick.TargetHand.Value}");
+            }
+
+            return picks.Count;
+        }
+
+        [Test]
+        public void Hard_difficulty_always_picks_the_same_best_move()
+        {
+            // 困难档不抖动 -> **完全确定**，同一个局面永远走同一步。
+            Assert.AreEqual(1, CountDistinctPicks(AiDifficulty.Hard, 40),
+                "困难档不该有随机性（同一局面永远同一步）。");
+        }
+
+        [Test]
+        public void Easy_difficulty_produces_variation()
+        {
+            // 简单档抖动 ±25 -> 会选到不同的招数（否则难度没生效）。
+            //
+            // ⚠️ 这是**概率性**断言，所以跑了 200 次让两种选择都几乎必然出现
+            // （实测该局面：困难 1 种、普通 1 种、简单 2 种）。
+            // 用 60 次曾偶发只抽到一种 —— 那是采样问题，不是功能问题。
+            Assert.True(CountDistinctPicks(AiDifficulty.Easy, 200) > 1,
+                "简单档应出现不同的选择（否则难度没生效）。");
+        }
+
+        [Test]
+        public void Normal_difficulty_sits_between_easy_and_hard()
+        {
+            var easy = new GreedyChoiceProvider();
+            easy.ApplyDifficulty(AiDifficulty.Easy);
+
+            var normal = new GreedyChoiceProvider();
+            normal.ApplyDifficulty(AiDifficulty.Normal);
+
+            var hard = new GreedyChoiceProvider();
+            hard.ApplyDifficulty(AiDifficulty.Hard);
+
+            Assert.True(easy.NoiseAmplitude > normal.NoiseAmplitude,
+                $"简单档抖动应大于普通档（{easy.NoiseAmplitude} vs {normal.NoiseAmplitude}）。");
+            Assert.True(normal.NoiseAmplitude > hard.NoiseAmplitude,
+                $"普通档抖动应大于困难档（{normal.NoiseAmplitude} vs {hard.NoiseAmplitude}）。");
+            Assert.AreEqual(0, hard.NoiseAmplitude, "困难档不抖动。");
+            Assert.False(hard.UseNoise, "困难档应关闭噪声。");
+            Assert.True(easy.UseNoise && normal.UseNoise, "简单/普通档应开启噪声。");
+        }
+
+        [Test]
+        public void The_default_ai_stays_deterministic()
+        {
+            // 经典玩法不选难度 —— 不能因为"加了难度功能"就顺手带上随机性。
+            var plain = new GreedyChoiceProvider();
+            Assert.False(plain.UseNoise, "默认不应有噪声。");
+            Assert.AreEqual(0, plain.NoiseAmplitude, "默认抖动幅度应为 0。");
+
+            Assert.AreEqual(1, CountDistinctPicks(AiDifficulty.Hard, 30),
+                "默认 AI 应完全确定（经典玩法不受难度影响）。");
+        }
 
         // ============================================================
         // 狼人 / 剑客：优势已统一由价值表表达

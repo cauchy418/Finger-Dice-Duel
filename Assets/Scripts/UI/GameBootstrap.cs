@@ -59,6 +59,13 @@ namespace FingerDiceDuel.UI
         /// <summary>当前选择的玩法（进入 1v1 后先选）。</summary>
         public PlayMode Mode = PlayMode.Classic;
 
+        /// <summary>
+        /// AI 难度（**只在入门玩法的人机对战里可选**）。
+        ///
+        /// 经典玩法保持不变：AI 始终按当前最优评分走。
+        /// </summary>
+        public AiDifficulty Difficulty = AiDifficulty.Normal;
+
         [Header("调试")]
         [Tooltip("勾选后打印每回合的结算日志")]
         public bool VerboseLogging;
@@ -73,7 +80,7 @@ namespace FingerDiceDuel.UI
         /// 默认关闭。排查时改成 true，或勾上 Inspector 的 <c>Verbose Logging</c>。
         /// （曾靠它定位到"接受过一次抉择后 idx 不复位，导致后续提示被静默跳过"。）
         /// </summary>
-        private static readonly bool DiagnoseChoices = true;
+        private static readonly bool DiagnoseChoices = false;
 
         // ---- 运行时对象 ----
         private Font _font;
@@ -100,6 +107,7 @@ namespace FingerDiceDuel.UI
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
         private ScreenGroup _screenMode;
+        private ScreenGroup _screenDifficulty;
         private ScreenGroup _screenCharacter;
         private DiceRollScreen _diceRoll;
         private ModalPanel _modal;
@@ -216,6 +224,7 @@ namespace FingerDiceDuel.UI
             BuildMainMenuScreen();
             BuildOneOnOneScreen();
             BuildModeScreen();
+            BuildDifficultyScreen();
             BuildCharacterScreen();
 
             _board = gameObject.AddComponent<GameBoardUI>();
@@ -460,7 +469,7 @@ namespace FingerDiceDuel.UI
 
             Button intro = MakeModeButton(_selectRoot, "ModeIntro", new Vector2(0f, 110f),
                 "入门", "不掷骰先攻，双方从 1/1 开始",
-                () => { Mode = PlayMode.Intro; ShowScreen(GameScreen.CharacterSelect); });
+                () => { Mode = PlayMode.Intro; ShowScreen(GameScreen.DifficultyMenu); });
 
             Button classic = MakeModeButton(_selectRoot, "ModeClassic", new Vector2(0f, -60f),
                 "经典", "掷 1d20 决定初始手值与先手",
@@ -476,6 +485,47 @@ namespace FingerDiceDuel.UI
 
             Button help = MakeHelpButton(_selectRoot);
             _screenMode.Add(help.gameObject);
+        }
+
+        /// <summary>
+        /// 难度选择界面：**只出现在人机对战的入门玩法里**。
+        ///
+        /// 经典玩法保持不变（没有难度选择）—— 按玩家要求。
+        /// </summary>
+        private void BuildDifficultyScreen()
+        {
+            _screenDifficulty = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "DiffTitle", new Vector2(0f, 300f),
+                                  new Vector2(1000f, 70f), 52, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "选择难度";
+            _screenDifficulty.Add(title.gameObject);
+
+            Button easy = MakeModeButton(_selectRoot, "DiffEasy", new Vector2(0f, 140f),
+                "简单", "AI 会偶尔失误",
+                () => { Difficulty = AiDifficulty.Easy; ShowScreen(GameScreen.CharacterSelect); });
+
+            Button normal = MakeModeButton(_selectRoot, "DiffNormal", new Vector2(0f, -10f),
+                "普通", "AI 大方向稳定，细节有变化",
+                () => { Difficulty = AiDifficulty.Normal; ShowScreen(GameScreen.CharacterSelect); });
+
+            Button hard = MakeModeButton(_selectRoot, "DiffHard", new Vector2(0f, -160f),
+                "困难", "AI 始终选择最优解",
+                () => { Difficulty = AiDifficulty.Hard; ShowScreen(GameScreen.CharacterSelect); });
+
+            _screenDifficulty.Add(easy.gameObject);
+            _screenDifficulty.Add(normal.gameObject);
+            _screenDifficulty.Add(hard.gameObject);
+
+            Button back = MakeButton(_selectRoot, "DiffBack", new Vector2(0f, -300f),
+                                     new Vector2(240f, 64f), "返回");
+            back.onClick.AddListener(() => ShowScreen(GameScreen.ModeMenu));
+            _screenDifficulty.Add(back.gameObject);
+
+            Button help = MakeHelpButton(_selectRoot);
+            _screenDifficulty.Add(help.gameObject);
         }
 
         private void OnStartAiClicked() => ShowScreen(GameScreen.ModeMenu);
@@ -505,11 +555,12 @@ namespace FingerDiceDuel.UI
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
+            _screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu);
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
-                || screen == GameScreen.ModeMenu
+                || screen == GameScreen.ModeMenu || screen == GameScreen.DifficultyMenu
                 || screen == GameScreen.CharacterSelect || screen == GameScreen.DiceRoll)
             {
                 // 让弹窗保持在最上层
@@ -830,10 +881,16 @@ namespace FingerDiceDuel.UI
         {
             if (UseGreedyAI)
             {
-                return new GreedyChoiceProvider
+                var ai = new GreedyChoiceProvider
                 {
                     UseChainBreak = false,   // P1：AI 暂不发动连锁破盾
                 };
+
+                // 难度**只在入门玩法**生效（玩家要求：经典保持不变）。
+                // 经典模式走贪心 AI 的默认行为（不抖动 = 始终最优）。
+                if (Mode == PlayMode.Intro) ai.ApplyDifficulty(Difficulty);
+
+                return ai;
             }
             return new RandomChoiceProvider(12345);
         }

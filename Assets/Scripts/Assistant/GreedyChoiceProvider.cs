@@ -5,6 +5,26 @@ using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
     /// <summary>
+    /// AI 难度档位。
+    ///
+    /// 用**评分抖动**实现：难度越高抖动越小（见
+    /// <see cref="GreedyChoiceProvider.ApplyDifficulty"/>）。
+    /// 为什么不另外写一套"聪明/笨"的策略：抖动这一条就足以
+    /// 让简单档偶尔失误、困难档始终最优，而且不会出现两套逻辑各自漂移。
+    /// </summary>
+    public enum AiDifficulty
+    {
+        /// <summary>简单：抖动 ±25，偶尔选明显次优的解。</summary>
+        Easy = 0,
+
+        /// <summary>普通：抖动 ±8，大方向稳定。</summary>
+        Normal = 1,
+
+        /// <summary>困难：不抖动，始终选最高分。</summary>
+        Hard = 2,
+    }
+
+    /// <summary>
     /// 贪心 AI：用一组启发式评分选招。
     /// 目的不是"很强"，而是"合理且确定"，用于冒烟测试与基准对局。
     ///
@@ -55,7 +75,11 @@ namespace FingerDiceDuel.Assistant
 
             for (int i = 0; i < moves.Count; i++)
             {
-                int score = ScoreMove(moves[i], actor);
+                // 难度噪声：简单档会随机抖动，于是偶尔选次优解
+                // （否则同一个局面永远走同一步，连打两局完全可预判）。
+                int noise = _noisy ? _rng.Next(-NoiseAmplitude, NoiseAmplitude + 1) : 0;
+                int score = ScoreMove(moves[i], actor) + noise;
+
                 if (score > bestScore)
                 {
                     bestScore = score;
@@ -77,6 +101,62 @@ namespace FingerDiceDuel.Assistant
         /// 调大 -> AI 更保守（更愿意屯手值）；调小 -> 更激进。
         /// </summary>
         public int HandValueWeight { get; set; } = 12;
+
+        // ============================================================
+        // 难度
+        // ============================================================
+
+        /// <summary>
+        /// 一手棋评分上叠加的**随机抖动幅度**。
+        ///
+        /// 为什么需要：不加抖动时 AI 是**完全确定性**的 ——
+        /// 同一个局面永远走同一步，连打两局完全可预判，玩起来很机械。
+        ///
+        /// 同时也是**难度旋钮**：抖动越大，越容易选到次优解。
+        /// 效果档位是 44 / 50 / 66 / 88，手值项再叠几十 ——
+        /// 所以 ±25 足以让"明显更好的选择"偶尔被换掉，而 ±8 只影响差不多的选项。
+        /// </summary>
+        public int NoiseAmplitude { get; set; }
+
+        /// <summary>是否启用难度噪声（不启用则评分完全确定）。</summary>
+        public bool UseNoise
+        {
+            get => _noisy;
+            set => _noisy = value;
+        }
+
+        private bool _noisy;
+        private readonly System.Random _rng = new System.Random();
+
+        /// <summary>
+        /// 按难度档位配置这个 AI。
+        ///
+        /// | 档位 | 抖动 | 表现 |
+        /// |---|---|---|
+        /// | 简单 | ±25 | 明显更好的选择也会偶尔被换掉 -> 像新手 |
+        /// | 普通 | ±8 | 大方向稳定，细节有变化 |
+        /// | 困难 | 0 | 当前的最优行为（完全不抖） |
+        /// </summary>
+        public void ApplyDifficulty(AiDifficulty difficulty)
+        {
+            switch (difficulty)
+            {
+                case AiDifficulty.Easy:
+                    NoiseAmplitude = 25;
+                    _noisy = true;
+                    break;
+
+                case AiDifficulty.Hard:
+                    NoiseAmplitude = 0;
+                    _noisy = false;
+                    break;
+
+                default:                    // Normal
+                    NoiseAmplitude = 8;
+                    _noisy = true;
+                    break;
+            }
+        }
 
         /// <summary>
         /// 一手棋的评分：基础档位 + 角色特性加分 + **留下的手值** + 一些条件次分。

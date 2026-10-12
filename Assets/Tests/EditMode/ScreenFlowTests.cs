@@ -101,6 +101,45 @@ namespace FingerDiceDuel.Tests
         }
 
         /// <summary>
+        /// 新增的两个选择界面（玩法 / 难度）也必须接进切屏开关。
+        ///
+        /// 漏掉 `SetVisible` 的后果很直观：界面**永不显示**或**永不隐藏**
+        /// （后者会几张界面叠在一起）。
+        /// </summary>
+        [Test]
+        public void Mode_and_difficulty_screens_are_wired_into_the_screen_switch()
+        {
+            string path = FindSource("GameBootstrap.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(source.Contains("_screenMode?.SetVisible(screen == GameScreen.ModeMenu)"),
+                "玩法选择界面必须参与显隐。");
+            Assert.True(source.Contains("_screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu)"),
+                "难度选择界面必须参与显隐。");
+
+            // 流程：1v1 -> 玩法 -> 难度 -> 角色选择
+            Assert.True(source.Contains("ShowScreen(GameScreen.ModeMenu)"),
+                "人机对战应先进入玩法选择。");
+            Assert.True(source.Contains("ShowScreen(GameScreen.DifficultyMenu)"),
+                "入门玩法应先进入难度选择。");
+        }
+
+        /// <summary>
+        /// 难度**只**在入门玩法生效 —— 玩家要求经典保持不变。
+        /// </summary>
+        [Test]
+        public void Difficulty_only_applies_in_intro_mode()
+        {
+            string path = FindSource("GameBootstrap.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(source.Contains("Mode == PlayMode.Intro") && source.Contains("ApplyDifficulty"),
+                "难度应只在入门玩法里配置 AI。");
+        }
+
+        /// <summary>
         /// 掷骰界面**只能**用 controller 给的候选生成按钮。
         ///
         /// 玩家明确要求过"不要让不合法的选项给到玩家"；

@@ -16,6 +16,9 @@ namespace FingerDiceDuel.UI
         /// <summary>1v1 的玩法选择（入门 / 经典）。</summary>
         ModeMenu = 5,
 
+        /// <summary>人机对战（入门）的难度选择。</summary>
+        DifficultyMenu = 6,
+
         /// <summary>角色选择。</summary>
         CharacterSelect = 2,
 
