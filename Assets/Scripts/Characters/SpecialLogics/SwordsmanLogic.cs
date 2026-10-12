@@ -48,9 +48,19 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>供上层查询"这次运算会不会追加一次攻击"。</summary>
         public bool WillExtraAttack(PreTurnChoiceContext context) => ShouldFollowUp(context);
 
+        /// <summary>
+        /// 取"另一只**自己的**手"。
+        ///
+        /// ⚠️ 必须确认 <paramref name="actedHand"/> 确实是行动方自己的手 ——
+        /// 规则允许**被加数是任何其他人的手**，而 <c>context.ActedHand</c>
+        /// 在某些调用点承载的是"参与运算的那只手"（可能是别人的）。
+        /// 不加这个判断会把**别人的**手误认成自己的，返回一只错的手。
+        /// </summary>
         private static Hand GetOtherHand(PlayerState actor, Hand actedHand)
         {
             if (actor == null || actedHand == null) return null;
+            if (!actor.Owns(actedHand)) return null;
+
             return ReferenceEquals(actedHand, actor.LeftHand) ? actor.RightHand : actor.LeftHand;
         }
 

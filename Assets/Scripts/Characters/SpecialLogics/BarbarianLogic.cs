@@ -32,6 +32,13 @@ namespace FingerDiceDuel.Core
             if (context.Actor?.Character != this) return;          // 只有自己行动时才发动
             if (context.Effect != HandEffectType.Shield) return;   // 只有合出护盾才发动
 
+            // ⚠️ 必须确认**运算源是自己的手**。
+            //    规则允许"被加数是任何其他人的手"，而 context.ActedHand
+            //    在某些调用点承载的是参与运算的那只手（可能是别人的）——
+            //    直接 GetOtherHand 会抛"传入的 Hand 不属于该玩家"
+            //    （真实 bug：批量测试里 2v2 对局直接抛异常中断）。
+            if (context.ActedHand == null || !context.Actor.Owns(context.ActedHand)) return;
+
             // 己方另一只手若已在控制中，本次不能发动
             Hand otherOwnHand = context.Actor.GetOtherHand(context.ActedHand);
             if (_lockMap.ContainsKey(otherOwnHand)) return;

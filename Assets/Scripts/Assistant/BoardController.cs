@@ -657,13 +657,15 @@ namespace FingerDiceDuel.Assistant
                     // 玩家确认："A 可以选择 B/C/D 任何一个数字作为被加数"，
                     // 别人的数字不会被改动，只有行动方自己的手变成结果值。
                     //
-                    // ⚠️ 这里曾经写死 `Defender.Owns(hand)`（只认"第一位对手"），
-                    //    2v2 里点 C 或队友的手都会被拒 —— 与引擎的合法判定不一致，
-                    //    表现为"明明合法却点不动"。
+                    // ⚠️ **不能要求"目标手未被锁定"** ——
+                    //    锁定只禁止那只手**发起**运算（`GetLegalMoves` 里过滤运算源），
+                    //    它**仍然可以作为被加数**。
                     //
-                    // 攻击**目标**在下一步（ChoosingTargetPlayer）才选，那时才用
-                    // CanBeAttacked 检查距离与敌我关系。
-                    return !ActivePlayer.Owns(hand) && !hand.IsLocked;
+                    //    我上一轮在这里多加了 `!hand.IsLocked`，于是
+                    //    AI 选中一只被锁的手时 `ClickHand` 会被拒 ->
+                    //    `MakeAutomaticMove` 返回 false -> **对局卡死**
+                    //    （玩家实测"经典里战士攻击卡住了"，批量测试复现）。
+                    return !ActivePlayer.Owns(hand);
                 }
 
                 case BoardPhase.ChoosingTargetPlayer:
@@ -1729,11 +1731,34 @@ namespace FingerDiceDuel.Assistant
             LegalMove move = ai.ChooseMove(_game, ActivePlayer);
             if (move.Actor == null) return false;
 
-            if (!ClickHand(move.ActedHand)) return false;
+            // 诊断字符串在**每个失败点当场重写** ——
+            // 只在开头写一次会留下上一次成功调用的旧值，
+            // 于是"显示的 phase 与真正失败的位置不一致"（我为此白查过一轮）。
+            if (!ClickHand(move.ActedHand))
+            {
+                _lastAiMoveDiagnostic =
+                    $"第①步失败 phase={Phase} actor={ActivePlayer?.Name}" +
+                    $" acted={move.ActedHand?.Value}" +
+                    $" own={ActivePlayer?.Owns(move.ActedHand)}";
+                return false;
+            }
 
             // 走到这里可能已经停在"选锁手"阶段（合盾且是野蛮人）
             ResolvePendingAiChoices();
             if (Phase != BoardPhase.ChoosingTargetHand) return true;
+
+            // ⚠️ 诊断必须**在失败点当场重新记录** ——
+            //    否则读到的是上一次成功调用留下的旧值（我踩过：
+            //    诊断显示的 phase 与实际失败点不一致，白查一轮）。
+            _lastAiMoveDiagnostic =
+                $"FAIL-STEP2 phase={Phase} actor={ActivePlayer?.Name}" +
+                $" current={_game.CurrentPlayer?.Name}" +
+                $" acted={move.ActedHand?.Value}" +
+                $" target={move.TargetHand?.Value}" +
+                $" sameAsSelected={ReferenceEquals(move.TargetHand, SelectedHand)}" +
+                $" targetLocked={move.TargetHand?.IsLocked}" +
+                $" ownsTarget={ActivePlayer?.Owns(move.TargetHand)}" +
+                $" isGameOver={_game.IsGameOver}";
 
             if (!ClickHand(move.TargetHand)) return false;
 
@@ -1749,6 +1774,16 @@ namespace FingerDiceDuel.Assistant
             ResolvePendingAiChoices();
             return true;
         }
+
+        /// <summary>
+        /// 诊断用：最近一次 <see cref="MakeAutomaticMove"/> 里 AI 选出的那一手。
+        ///
+        /// 排查"AI 出手卡住"时靠它看到底是哪一步失败 ——
+        /// 只看"MakeAutomaticMove 返回 false"是定位不到原因的。
+        /// </summary>
+        public string LastAiMoveDiagnostic => _lastAiMoveDiagnostic;
+
+        private string _lastAiMoveDiagnostic = "";
 
         /// <summary>如果当前停留在需要 AI 抉择的阶段，代它决定并继续。</summary>
         private void ResolvePendingAiChoices()
