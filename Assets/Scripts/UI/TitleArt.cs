@@ -25,6 +25,9 @@ namespace FingerDiceDuel.UI
         /// <summary>2v2 的角色选择（含座位选择与队友选择）。</summary>
         TwoOnTwoCharacter = 8,
 
+        /// <summary>2v2 经典玩法的掷骰先攻（四人依次决定初始手值）。</summary>
+        TwoOnTwoInitiative = 9,
+
         /// <summary>角色选择。</summary>
         CharacterSelect = 2,
 

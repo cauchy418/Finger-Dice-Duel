@@ -127,8 +127,7 @@ namespace FingerDiceDuel.Tests
 
         /// <summary>
         /// 难度**只**在入门玩法生效 —— 玩家要求经典保持不变。
-        /// </summary>
-        [Test]
+        /// </summary>        [Test]
         public void Difficulty_only_applies_in_intro_mode()
         {
             string path = FindSource("GameBootstrap.cs");
@@ -137,6 +136,31 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(source.Contains("Mode == PlayMode.Intro") && source.Contains("ApplyDifficulty"),
                 "难度应只在入门玩法里配置 AI。");
+        }
+
+        /// <summary>
+        /// 2v2 的**先攻界面**也必须接进切屏开关。
+        ///
+        /// 我加界面时反复漏掉这一处（新分组没 SetVisible -> 永远不显示，
+        /// 或者切屏后还留在屏幕上）。这条守卫把它变成编译期之外能自动发现的问题。
+        /// </summary>
+        [Test]
+        public void Two_versus_two_initiative_screen_is_wired_into_the_screen_switch()
+        {
+            string path = FindSource("GameBootstrap.cs");
+            Assert.NotNull(path);
+            string source = File.ReadAllText(path);
+
+            Assert.True(
+                source.Contains("_screenTwoOnTwoInitiative?.SetVisible(screen == GameScreen.TwoOnTwoInitiative)"),
+                "2v2 先攻界面必须参与显隐。");
+
+            Assert.True(source.Contains("ShowScreen(GameScreen.TwoOnTwoInitiative)"),
+                "经典玩法应先进入先攻界面。");
+
+            // 先攻完成后必须真的开局（否则玩家会停在先攻界面）
+            Assert.True(source.Contains("OnTwoOnTwoInitiativeFinished"),
+                "先攻完成后必须接上开局流程。");
         }
 
         /// <summary>

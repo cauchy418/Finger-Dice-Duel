@@ -116,6 +116,12 @@ namespace FingerDiceDuel.UI
         /// <summary>2v2 角色选择界面。</summary>
         private ScreenGroup _screenTwoOnTwoCharacter;
 
+        /// <summary>2v2 经典玩法的掷骰先攻界面。</summary>
+        private TwoOnTwoInitiativeScreen _screenTwoOnTwoInitiative;
+
+        /// <summary>先攻阶段用的四人名单（按"掷骰前"的顺序），用于反查"我在哪"。</summary>
+        private List<PlayerState> _twoOnTwoRoster;
+
         /// <summary>2v2 的建局参数（我 / 队友 / 两名随机对手 + 我的座位）。</summary>
         private class TwoOnTwoSetup
         {
@@ -320,6 +326,7 @@ namespace FingerDiceDuel.UI
             BuildDifficultyScreen();
             BuildCharacterScreen();
             BuildTwoOnTwoCharacterScreen();
+            BuildInitiativeScreen();
 
             _board = gameObject.AddComponent<GameBoardUI>();
             _board.Build();
@@ -821,14 +828,29 @@ namespace FingerDiceDuel.UI
             _twoOnTwoStart = TwoOnTwoStartController.RollAndBegin(
                 players, teams, new System.Random());
 
-            // AI 代做（人类那一步也由 AI 代做 —— 先攻界面是后续工作，
-            // 现在先用默认策略把整轮走完，让玩家能看到结果并立即开局）。
-            _twoOnTwoStart.AutoResolve(null, TwoOnTwoStartController.DefaultAiSplit);
+            // 记下"我是哪一位"（不能按名字反查：对手可能随机到同名角色）
+            _twoOnTwoMeIndex = 0;
+            _twoOnTwoRoster = players;
 
-            // 把分配好的初始手值写进四个人的手牌（**只写数值、不触发效果**）。
-            _twoOnTwoStart.ApplyToPlayers();
+            // 交给**先攻界面**逐步决定（AI 的步骤由界面自动代做，
+            // 人类的那一步停下来等玩家点候选）。
+            _screenTwoOnTwoInitiative.SetHuman(players[_twoOnTwoMeIndex]);
+            ShowScreen(GameScreen.TwoOnTwoInitiative);
+            _screenTwoOnTwoInitiative.Begin(_twoOnTwoStart);
+        }
 
-            // 按**先攻得出的座位**重排四个人：seated[0] = 1 号位。
+        /// <summary>
+        /// 先攻走完后：按**先攻得出的座位**重排四个人并真正开局。
+        ///
+        /// 初始手值已由界面在 <c>Finish</c> 里通过
+        /// <see cref="TwoOnTwoStartController.ApplyToPlayers"/> 写进手牌
+        /// （只写数值、不触发效果）。
+        /// </summary>
+        private void OnTwoOnTwoInitiativeFinished()
+        {
+            if (_twoOnTwoStart == null || _twoOnTwoRoster == null) return;
+
+            // 按座位重排：seated[0] = 1 号位
             var seated = new List<PlayerState>(4);
             var seatedProviders = new List<SimpleChoiceProvider>(4);
             for (int seat = 1; seat <= 4; seat++)
@@ -844,7 +866,7 @@ namespace FingerDiceDuel.UI
             // 我在新的座位顺序里的下标
             int myIndex = 0;
             for (int i = 0; i < seated.Count; i++)
-                if (ReferenceEquals(seated[i], players[_twoOnTwoMeIndex])) myIndex = i;
+                if (ReferenceEquals(seated[i], _twoOnTwoRoster[_twoOnTwoMeIndex])) myIndex = i;
 
             _choiceA = seatedProviders[0];
             _choiceB = seatedProviders[1];
@@ -855,31 +877,6 @@ namespace FingerDiceDuel.UI
                                firstToAct: seated[0]);
 
             StartPreparedMatch();
-        }
-
-        /// <summary>
-        /// 显示先攻结果与"依次决定初始手值"的过程。
-        ///
-        /// 目前用一个简单的模态说明（棋盘级别的掷骰界面是后续工作）：
-        /// · 四个人投出的点数
-        /// · 得出的座位（1 号位 = 全场最高，等等）
-        /// · 决定顺序（大失败最先、大成功最后）
-        ///
-        /// ⚠️ 必须把 AI 的步骤自动代做完，否则界面会停在"等待 AI"。
-        /// </summary>
-        private void ShowTwoOnTwoInitiativeScreen()
-        {
-            if (_twoOnTwoStart == null) return;
-
-            // 整轮都交给 AI（先攻界面是后续工作）——
-            // 现在先把结果算完，玩家开局后就能直接看到四人的初始手值。
-            _twoOnTwoStart.AutoResolve(null, TwoOnTwoStartController.DefaultAiSplit);
-
-            string text = _twoOnTwoStart.SeatSummary;
-            if (!_twoOnTwoStart.IsFinished)
-                text += "\n" + _twoOnTwoStart.Hint;
-
-            ShowModalWithScrollReset("先攻结果", text);
         }
 
         /// <summary>
@@ -1034,15 +1031,16 @@ namespace FingerDiceDuel.UI
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
             _screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu);
-            _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
-            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
+            _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
+            _screenTwoOnTwoInitiative?.SetVisible(screen == GameScreen.TwoOnTwoInitiative);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
                 || screen == GameScreen.TwoOnTwoMenu
                 || screen == GameScreen.ModeMenu || screen == GameScreen.DifficultyMenu
                 || screen == GameScreen.CharacterSelect
-                || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll)
+                || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll
+                || screen == GameScreen.TwoOnTwoInitiative)
             {
                 // 让弹窗保持在最上层
                 if (_modal?.Root != null) _modal.Root.transform.SetAsLastSibling();
@@ -1799,6 +1797,16 @@ namespace FingerDiceDuel.UI
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
             return text;
+        }
+
+        /// <summary>建 2v2 先攻界面并接上"整轮完成"回调。</summary>
+        private void BuildInitiativeScreen()
+        {
+            _screenTwoOnTwoInitiative = new TwoOnTwoInitiativeScreen();
+            _screenTwoOnTwoInitiative.Build(_selectRoot, _font);
+
+            // ⚠️ 必须先 Build 再订阅 —— 事件挂在界面实例上。
+            _screenTwoOnTwoInitiative.Finished += OnTwoOnTwoInitiativeFinished;
         }
 
         // ---- 2v2 角色选择 ----
