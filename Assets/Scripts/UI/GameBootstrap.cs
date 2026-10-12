@@ -68,7 +68,19 @@ namespace FingerDiceDuel.UI
 
         [Header("调试")]
         [Tooltip("勾选后打印每回合的结算日志")]
-        public bool VerboseLogging;
+        /// <summary>
+        /// **详细日志**（默认开启）。
+        ///
+        /// 玩家要求"把 console 的日志强开，日后出现问题可以直接给到" ——
+        /// 这类偶发问题（空运算源、结算被拦截、技能不发动）
+        /// 人工很难复现，所以让日志**一直开着**，出问题时直接复制 Console 即可。
+        ///
+        /// 内容：每回合的结算描述、抉择现场（队列 / 收集 / AI 作答）、
+        /// 以及"结算被拦截"这类异常情况的完整现场。
+        ///
+        /// 想安静时把它关掉即可（Inspector 里取消勾选）。
+        /// </summary>
+        public bool VerboseLogging = true;
 
         /// <summary>
         /// 详细诊断：把每次刷新时"待答抉择 + 按钮显隐判定"打到 Console。
@@ -1587,6 +1599,13 @@ namespace FingerDiceDuel.UI
             _board.SetLog(_controller.Log);
             _board.SetHint(DescribeHint(), DescribeLastTurn());
 
+            // ⚠️ 把"结算被拦截 / 非法运算"这类异常**打到 Console**。
+            //
+            // 只写进战报是不够的：玩家遇到问题时能拿到的是 Console 输出，
+            // 而这类问题（空运算源）人工很难复现，日志是唯一的线索。
+            // 用"内容变了才打"避免每帧刷屏。
+            LogControllerAnomaly();
+
             PlayTurnAnimations();
 
             // 回合切换过渡：点亮当前行动方的名字 + 一个提示音
@@ -1625,6 +1644,28 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
+        /// 把控制器的异常现场打到 Console（内容变化时才打，避免刷屏）。
+        ///
+        /// 目前看两件事：
+        ///   · <c>LastIllegalOperation</c> —— 守门拦截或非法运算的完整现场
+        ///   · 最近一条战报里含"被拦截 / 非法"的内容
+        /// </summary>
+        private string _lastLoggedAnomaly;
+
+        private void LogControllerAnomaly()
+        {
+            if (_controller == null) return;
+
+            string anomaly = _controller.LastIllegalOperation;
+            if (string.IsNullOrEmpty(anomaly)) return;
+            if (anomaly == _lastLoggedAnomaly) return;   // 没变就不重复打
+
+            _lastLoggedAnomaly = anomaly;
+            Debug.LogWarning("[FDD异常] 结算现场：" + anomaly);
+        }
+
+
+        /// <summary>
         /// 打印一次抉择现场。只在开诊断时输出，正常游玩不会刷屏。
         /// </summary>
         private void DiagnoseIfNeeded(bool canDecline, string acceptLabel, bool canAccept)
@@ -1634,8 +1675,25 @@ namespace FingerDiceDuel.UI
             var sb = new System.Text.StringBuilder();
             sb.Append("[FDD诊断] ").Append(_controller.DebugPhaseInfo());
             sb.Append($" | canDecline={canDecline} acceptLabel='{acceptLabel}' canAccept={canAccept}");
-            sb.Append($" | 游侠手 L{_game.PlayerA?.LeftHand.Value} R{_game.PlayerA?.RightHand.Value}");
-            sb.Append($" | 对手手 L{_game.PlayerB?.LeftHand.Value} R{_game.PlayerB?.RightHand.Value}");
+
+            // ⚠️ 手值必须按**当前对局**取：2v2 有四人，写死 A/B 会打出错误信息
+            //    （曾经这里只打 PlayerA/B，2v2 里等于漏掉两个人）。
+            if (_twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
+            {
+                sb.Append(" | 2v2 手值：");
+                for (int i = 0; i < 4; i++)
+                {
+                    PlayerState p = _twoOnTwoSeated[i];
+                    sb.Append($"{i + 1}号位({p?.Name}) ")
+                      .Append($"L{p?.LeftHand.Value} R{p?.RightHand.Value} ")
+                      .Append($"HP{p?.Health} ");
+                }
+            }
+            else
+            {
+                sb.Append($" | 我方手 L{_game.PlayerA?.LeftHand.Value} R{_game.PlayerA?.RightHand.Value}");
+                sb.Append($" | 对手手 L{_game.PlayerB?.LeftHand.Value} R{_game.PlayerB?.RightHand.Value}");
+            }
 
             // ⚠️ 关键：把"抉择创建时那次运算"的两只手打出来。
             // 请求没被创建（提示条无文字）时，问题通常就在这里 ——

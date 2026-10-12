@@ -235,6 +235,28 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         /// <summary>
+        /// 把**所有其他玩家**的手都加进候选。
+        ///
+        /// ⚠️ 不能用 `manager.GetOpponent(owner)` —— 那只给"第一位对手"。
+        ///    玩家确认的规则是"回复可以给任何人"：
+        ///    2v2 里有队友 + 两名对手，只列第一位对手会让玩家**点不到其他人**。
+        /// </summary>
+        private static void AddOtherPlayersHands(List<Hand> candidates,
+                                                 PlayerState owner, GameManager manager)
+        {
+            if (candidates == null || manager == null) return;
+
+            IReadOnlyList<PlayerState> all = manager.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || ReferenceEquals(p, owner)) continue;
+
+                AddOwnerHands(candidates, p);
+            }
+        }
+
+        /// <summary>
         /// 把"牧师在攻击/回复抉择里选的那只手"翻译成回复目标。
         ///
         /// 没选 / 选了攻击 → 返回 null（表示"不回复，正常攻击"）。
@@ -242,9 +264,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static PlayerState ResolveHealChoiceTarget(PlayerState owner, GameManager manager,
                                                           IPreTurnChoiceSink sink)
         {
-            var candidates = new List<Hand>(4);
+            var candidates = new List<Hand>(8);
             AddOwnerHands(candidates, owner);
-            AddOwnerHands(candidates, manager?.GetOpponent(owner));
+            AddOtherPlayersHands(candidates, owner, manager);
 
             var request = new ChoiceRequest(
                 HandEffect.PriestAttackOrHeal,
@@ -396,9 +418,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static PlayerState ResolveTarget(PlayerState owner, GameManager manager,
                                                 IPreTurnChoiceSink sink, HandEffect effect)
         {
-            var candidates = new List<Hand>(4);
+            var candidates = new List<Hand>(8);
             AddOwnerHands(candidates, owner);
-            AddOwnerHands(candidates, manager?.GetOpponent(owner));
+            AddOtherPlayersHands(candidates, owner, manager);
 
             var request = new ChoiceRequest(
                 effect,

@@ -94,7 +94,13 @@ namespace FingerDiceDuel.Core
                 if (_lockMap.ContainsKey(otherOwnHand)) return;
             }
 
-            PlayerState opponent = manager.GetOpponent(owner);
+            // ⚠️ 目标必须是**本次运算真正要打的人**，不能用
+            //    `manager.GetOpponent(owner)`（那是"第一位对手"）——
+            //    2v2 里第 ③ 步可以选第二位对手，用 GetOpponent 会把锁手
+            //    给到另一个人身上。
+            //
+            //    `DamageTargetPlayer` 在结算时由上层设好（与主攻击同一个目标）。
+            PlayerState opponent = manager.DamageTargetPlayer ?? manager.GetOpponent(owner);
             if (opponent == null) return;
 
             // 候选：对手未被锁住的手
