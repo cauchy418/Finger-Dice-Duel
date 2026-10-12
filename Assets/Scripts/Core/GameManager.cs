@@ -463,6 +463,70 @@ namespace FingerDiceDuel.Core
             return null;
         }
 
+        /// <summary>
+        /// **2v2 落座**：按玩家选定的座位把四人放进环里。
+        ///
+        /// 玩家确认的座位规则：
+        ///   · 四人围成环，**座位 1&4 一队、2&3 一队**
+        ///   · 队友在环上**相邻**（所以主视角的队友一定是上家或下家）
+        ///   · 主视角可以在**任意座位**（角色选择界面里选）
+        ///
+        /// <paramref name="seated"/> 必须正好 4 个人、**按座位 1..4 排列**；
+        /// 本方法负责把它们映射到底层 A/B/C/D 槽位
+        /// （A=座位1、B=座位2、C=座位3、D=座位4）。
+        /// </summary>
+        public static GameManager Create2v2(IReadOnlyList<PlayerState> seated,
+                                            IReadOnlyList<IChoiceProvider> providers)
+        {
+            if (seated == null || seated.Count != 4)
+                throw new ArgumentException("2v2 必须正好 4 名玩家（按座位 1..4 排列）。",
+                                            nameof(seated));
+            if (providers == null || providers.Count != 4)
+                throw new ArgumentException("2v2 必须为 4 个座位各提供一个抉择器。",
+                                            nameof(providers));
+
+            var game = new GameManager(seated[0], seated[1], providers[0], providers[1]);
+            game.AddPlayersFor2v2(seated[2], providers[2], seated[3], providers[3]);
+            return game;
+        }
+
+        /// <summary>靠"环形座位"取名次：座位号 1..4（1 起算，便于与玩家沟通）。</summary>
+        public int SeatOf(PlayerState player)
+        {
+            int index = _players.IndexOf(player);
+            return index < 0 ? -1 : index + 1;
+        }
+
+        /// <summary>
+        /// 某位玩家的**下家**（环上下一个座位，跳过阵亡者）。
+        ///
+        /// ⚠️ 与"回合顺序"是同一件事：<see cref="NextPlayerAfter"/> 就是按座位轮转的。
+        /// 界面用它判断"队友是我的上家还是下家"。
+        /// </summary>
+        public PlayerState NextSeatAfter(PlayerState player) => NextPlayerAfter(player);
+
+        /// <summary>
+        /// 某位玩家的**上家**（环上前一个座位，跳过阵亡者）。
+        ///
+        /// 与"下家"对称实现，避免两处各写一套轮转逻辑。
+        /// </summary>
+        public PlayerState PreviousSeatBefore(PlayerState player)
+        {
+            int count = _players.Count;
+            if (count == 0) return null;
+
+            int start = _players.IndexOf(player);
+            if (start < 0) start = 0;
+
+            for (int step = 1; step <= count; step++)
+            {
+                int idx = ((start - step) % count + count) % count;
+                if (_players[idx].IsAlive) return _players[idx];
+            }
+
+            return null;
+        }
+
         /// <summary>兼容旧接口：取"某一个"对手。
         ///
         /// ⚠️ 1v1 之外请改用 <see cref="OpponentsOf"/>（可能不止一个）。
