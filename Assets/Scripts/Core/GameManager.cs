@@ -67,6 +67,15 @@ namespace FingerDiceDuel.Core
         /// <summary>免伤原因（例如"目标在潜行中，无法被攻击"）。供战报显示。</summary>
         public string DodgeReason;
 
+        /// <summary>
+        /// 本次攻击是否被**邪术师取消**（玩家要求写进战报：
+        /// "可以写被邪术师取消，造成 0 点伤害"）。
+        /// </summary>
+        public bool WasCancelled;
+
+        /// <summary>取消者的名字（战报里要写清是谁取消的）。</summary>
+        public string CancelledBy;
+
         public int Healed;
 
         /// <summary>
@@ -968,6 +977,8 @@ namespace FingerDiceDuel.Core
                         result.WasBlocked = ctx.WasBlocked;
                         result.WasDodged = ctx.WasDodged;
                         result.DodgeReason = ctx.DodgeReason;
+                        result.WasCancelled = ctx.WasCancelled;
+                        result.CancelledBy = ctx.CancelledBy;
                         result.HitCount = ctx.HitCount;
                         result.LandedHits = ctx.LandedHits;
                         result.BlockedHits = ctx.BlockedHits;

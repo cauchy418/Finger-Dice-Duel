@@ -420,6 +420,129 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Warlock_never_cancels_its_own_attack()
+        {
+            // 玩家实测抓到：邪术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
+            GameManager game = Match(CharacterDefinition.Warlock, CharacterDefinition.Blank,
+                                     out _, out _);
+            PlayerState warlock = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4，攻击数字也是 4
+
+            var ctx = new AttackContext(warlock, foe, warlock.LeftHand, 4)
+            {
+                SourceHandValueBefore = 1,
+                TargetHandValueBefore = 3,               // 攻击数字 4
+            };
+            ctx.Resolve(new SimpleChoiceProvider(), game);
+
+            Assert.False(ctx.WasCancelled, "不能取消自己发起的攻击。");
+            Assert.AreEqual(4, warlock.LeftHand.Value,
+                "不取消就不该改自己的手值。");
+        }
+
+        [Test]
+        public void Warlock_never_cancels_a_teammates_attack()
+        {
+            // 玩家要求：多人游戏里邪术师不要取消队友发起的攻击
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var mate = Make("友", CharacterDefinition.Blank);
+            var foe1 = Make("敌1", CharacterDefinition.Blank);
+            var foe2 = Make("敌2", CharacterDefinition.Blank);
+
+            var providers = new List<IChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var seated = new List<PlayerState> { warlock, mate, foe1, foe2 };
+            GameManager game = GameManager.Create2v2(seated, providers);
+
+            // 座位 1&4 一队、2&3 一队 -> 邪术师(1) 与 foe2(4) 是队友
+            Assert.True(game.IsTeammate(warlock, foe2),
+                "前置：1 号位与 4 号位应是队友。");
+
+            TestSetup.SetHand(warlock.LeftHand, 4);
+
+            // 队友 foe2 发起攻击数字 4
+            var ctx = new AttackContext(foe2, foe1, foe2.LeftHand, 4)
+            {
+                SourceHandValueBefore = 1,
+                TargetHandValueBefore = 3,
+            };
+            ctx.Resolve(new SimpleChoiceProvider(), game);
+
+            Assert.False(ctx.WasCancelled, "不能取消队友发起的攻击。");
+            Assert.AreEqual(4, warlock.LeftHand.Value,
+                "不取消就不该改手值。");
+        }
+
+        [Test]
+        public void Ai_warlock_does_not_skip_when_the_enemy_has_less_health()
+        {
+            // 玩家要求：敌人血量更少时也不要跳过回合
+            // （否则是"把对方血量改高"= 帮对方回血）
+            var ai = new GreedyChoiceProvider();
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var foe = Make("敌", CharacterDefinition.Blank);
+
+            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var board = new BoardController(game,
+                                           new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider(),
+                                           aiForA: ai);
+            board.BeginTurn();
+
+            // 邪术师受伤到 13，敌人也被打到 5（**比邪术师少**）
+            warlock.TakeDamage(7);
+            foe.SetHealthExact(5);
+
+            // 人可以选（条件只是"有人体力不同"），但 AI **不该**用
+            Assert.True(board.MakeAutomaticMove(), "AI 应该正常行动（而不是跳过）。");
+            Assert.AreEqual(5, foe.Health,
+                "敌人血量更少时，AI 不该把对方血量改高。");
+            Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
+                "AI 不该停在该相位。");
+        }
+
+        [Test]
+        public void Battle_log_says_the_attack_was_cancelled_by_the_warlock()
+        {
+            // 玩家要求："把邪术师取消攻击也写到战报里，
+            //            可以写被邪术师取消，造成 0 点伤害"
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+                                     out _, out _);
+            PlayerState attacker = game.PlayerA;
+            PlayerState warlock = game.PlayerB;
+
+            TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4 -> 能取消
+            TestSetup.SetHand(warlock.RightHand, 1);
+            TestSetup.SetHand(attacker.LeftHand, 3);     // 3 + 1 = 4 -> 攻击数字 4
+
+            // 用真实的回合流程产出 TurnResult（战报由它渲染）
+            TurnResult r = game.ExecuteTurn(attacker, attacker.LeftHand, warlock.RightHand);
+
+            // ⚠️ 必须**无条件**断言取消发生了 ——
+            //    写成"如果被取消才检查文案"会让测试在没取消时静默通过（假绿）。
+            Assert.True(r.WasCancelled, "这次攻击应被邪术师取消（手上有一个 4）。");
+            Assert.AreEqual(0, r.DamageDealt, "被取消的攻击造成 0 点伤害。");
+
+            string line = BoardController.DescribeTurn(r);
+
+            // 战报用**取消者的名字**（这里邪术师叫 "B"），
+            // 所以断言"含取消 + 含 0 点伤害 + 含取消者名字"，
+            // 而不是写死"被邪术师取消"。
+            Assert.True(line.Contains("取消"),
+                $"战报应写明被取消。实际：{line}");
+            Assert.True(line.Contains(warlock.Name),
+                $"战报应写明是谁取消的（{warlock.Name}）。实际：{line}");
+            Assert.True(line.Contains("0 点伤害"),
+                $"战报应写明造成 0 点伤害。实际：{line}");
+        }
+
+        [Test]
         public void Ai_warlock_uses_the_skip_skill_on_its_own()
         {
             // AI 没有"点击"，必须自己在 MakeAutomaticMove 里走完这个技能 ——

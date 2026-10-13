@@ -2063,16 +2063,16 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 返回 true 表示已经用掉了这个回合。
         ///
-        /// 选"体力最高的对手"的理由：把自己的血量（通常较低）套给满血的敌人，
-        /// 收益最大、也最符合"用低血量换对方高血量"的直觉。
-        /// 场上没有可改的人（都同血）时 <see cref="CanSkipTurn"/> 本来就是 false。
+        /// ⚠️ **敌人血量更少时不跳过**（玩家要求）。
+        ///    理由：技能是"把对方的体力改成与自己一致"，如果对方本来就比我少，
+        ///    这一改等于**帮对方回血**（自伤）。只有对方血更多时才是收益。
         /// </summary>
         private bool TryAiWarlockSkip()
         {
             if (!(ActivePlayer?.Character is WarlockLogic)) return false;
             if (!CanSkipTurn) return false;
 
-            // 找一个"体力最高的对手"（排除队友与自己）
+            // 找一个"体力**高于自己**的对手"（排除队友与自己）
             PlayerState best = null;
             IReadOnlyList<PlayerState> all = _game.Players;
             for (int i = 0; i < all.Count; i++)
@@ -2081,14 +2081,15 @@ namespace FingerDiceDuel.Assistant
                 if (p == null || !p.IsAlive) continue;
                 if (ReferenceEquals(p, ActivePlayer)) continue;
                 if (_game.IsTeammate(ActivePlayer, p)) continue;
-                if (p.Health == ActivePlayer.Health) continue;
+
+                // ⚠️ 必须**严格高于**自己 —— 否则是帮对方回血
+                if (p.Health <= ActivePlayer.Health) continue;
 
                 if (best == null || p.Health > best.Health) best = p;
             }
 
-            // 没有对手可改就退而求其次：任何体力不同的人
-            // （规则允许打队友，但 AI 优先不这么干）
-            if (best == null) best = FindHealthSwapTarget();
+            // 没有"血更厚的对手"就**不发动**（宁可正常打）。
+            // 规则虽然允许改队友的血（把人拉低），但 AI 不做这种自伤判断。
             if (best == null) return false;
 
             // 进入相位再发动 —— 复用人类那条路径，避免两套逻辑漂移
@@ -2462,6 +2463,17 @@ namespace FingerDiceDuel.Assistant
                 case HandEffectType.Attack4:
                 case HandEffectType.Attack6:
                 case HandEffectType.Attack8:
+                    // ⚠️ **被邪术师取消**要最先说 —— 玩家要求：
+                    //    "可以写被邪术师取消，造成 0 点伤害"。
+                    //    放在最前面，否则会被"造成 0 点伤害"那类分支抢先描述。
+                    if (t.WasCancelled)
+                    {
+                        string by = string.IsNullOrEmpty(t.CancelledBy)
+                            ? "邪术师"
+                            : t.CancelledBy;
+                        return head + $"（攻击，被{by}取消，造成 0 点伤害）";
+                    }
+
                     // ⚠️ 牧师可以把 4/6/8 **当回复用**。
                     // 那种情况下 `Effect` 仍然是 Attack4/6/8（运算结果没变），
                     // 只是 `HealTarget` 被设上了 —— 所以必须**先**判回复，

@@ -321,6 +321,14 @@ namespace FingerDiceDuel.Core
                 PlayerState p = all[i];
                 if (p == null || !p.IsAlive) continue;
 
+                // ⚠️ **不能取消自己发起的攻击**（玩家实测抓到：
+                //    邪术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
+                if (ReferenceEquals(p, Attacker)) continue;
+
+                // ⚠️ 多人模式里**不能取消队友的攻击**。
+                //    队友在攻击敌人，取消掉等于自伤。
+                if (manager.IsTeammate(p, Attacker)) continue;
+
                 if (p.Character is IAttackCanceller canceller
                     && canceller.TryCancelAttack(p, Attacker, Defender, attackValue, manager))
                 {
