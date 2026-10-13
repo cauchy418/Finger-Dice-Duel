@@ -53,8 +53,8 @@ namespace FingerDiceDuel.Assistant
 
         private static void BuildOwn()
         {
-            // ---- 白板：只用基线 ----
-            Own[CharacterDefinition.BlankId] = new HandValueProfile();
+            // ---- 士兵（攻防各 +1，取代了原来的白板）：只用基线 ----
+            Own[CharacterDefinition.SoldierId] = new HandValueProfile();
 
             // ---- 战士（攻 +1）----
             // 5 = 成盾（挡一次伤害）。盾还能当运算源，主动碎掉触发**连锁破盾**

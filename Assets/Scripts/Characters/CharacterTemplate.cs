@@ -147,8 +147,23 @@ namespace FingerDiceDuel.Core
         public virtual int DefaultAttackBonus => 0;
         public virtual int DefaultDefenseBonus => 0;
 
-        /// <summary>当前攻击修正（含永久成长）。</summary>
-        public int AttackBonus => _statsApplied ? _attackBonus : DefaultAttackBonus;
+        /// <summary>当前攻击修正（含永久成长）。**子类可重写**（见下）。</summary>
+        public virtual int AttackBonus
+            => AdjustAttackBonus(_statsApplied ? _attackBonus : DefaultAttackBonus);
+
+        /// <summary>
+        /// 角色可以**接管**攻击加成的计算（默认不介入）。
+        ///
+        /// 用途：骑士的"攻击加成恒等于攻击距离" —— 那个值随碎盾次数变化，
+        /// 不是一个固定数字，所以要在每次读取时算。
+        ///
+        /// ⚠️ 与 <see cref="DefaultAttackBonus"/> 的区别：
+        ///    那个只在 `ApplyStats` **之前**生效；一旦工厂注入了数据
+        ///    （`_statsApplied = true`），注入值优先。
+        ///    所以"动态加成"必须走这个钩子，否则会被注入值覆盖 ——
+        ///    我第一版就是用 DefaultAttackBonus 做的，测试立刻抓到（恒为 0）。
+        /// </summary>
+        protected virtual int AdjustAttackBonus(int baseBonus) => baseBonus;
 
         /// <summary>当前防御修正（含永久成长）。</summary>
         public int DefenseBonus => _statsApplied ? _defenseBonus : DefaultDefenseBonus;

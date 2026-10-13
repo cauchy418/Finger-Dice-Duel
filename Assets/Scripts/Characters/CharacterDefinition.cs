@@ -61,6 +61,9 @@ namespace FingerDiceDuel.Core
         public const string PaladinId = "paladin";
         public const string WarlockId = "warlock";
         public const string ArcaneArcherId = "arcane_archer";
+        public const string SoldierId = "soldier";
+        public const string GamblerId = "gambler";
+        public const string KnightId = "knight";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -159,11 +162,48 @@ namespace FingerDiceDuel.Core
             description: "4 改为两段各 4 点伤害；6 的伤害 +2；8 无视盾牌（但仍可被闪避或取消）。" +
                          "攻防 0 / -1，攻击距离 3。");
 
+        /// <summary>
+        /// **士兵**：攻 +1 / 防 +1，攻击距离 1，没有特殊能力。
+        ///
+        /// 玩家要求用它**取代白板**进入角色选择 ——
+        /// 白板没有强度，作为可选角色没有意义。
+        /// </summary>
+        public static CharacterDefinition Soldier { get; } = new CharacterDefinition(
+            SoldierId, "士兵", SpecialLogicType.Soldier,
+            attackBonus: 1, defenseBonus: 1,
+            description: "没有特殊能力，但攻防各 +1、攻击距离 1 —— 扎实的基础角色。");
+
+        /// <summary>
+        /// **赌徒**：攻 0 / 防 0，攻击距离 1。
+        ///
+        /// 可以赌博（1d9 的结果直接当作本次行动结果）；
+        /// 上一回合做过正常运算的话，本回合**必须**赌博。
+        /// </summary>
+        public static CharacterDefinition Gambler { get; } = new CharacterDefinition(
+            GamblerId, "赌徒", SpecialLogicType.Gambler,
+            attackBonus: 0, defenseBonus: 0,
+            description: "运算时可以选择赌博：点自己一只手后开赌，1d9 的结果直接作为本次行动结果" +
+                         "（4/6/8 攻击、9 回血、5 合盾）。上一回合做过正常运算的话，本回合必须赌博。" +
+                         "攻防 0 / 0，攻击距离 1。");
+
+        /// <summary>
+        /// **骑士**：攻 0 / 防 −1，攻击距离 1。
+        ///
+        /// 自己的盾碎后距离永久 +1，且**攻击加成恒等于距离**。
+        /// </summary>
+        public static CharacterDefinition Knight { get; } = new CharacterDefinition(
+            KnightId, "骑士", SpecialLogicType.Knight,
+            attackBonus: 0, defenseBonus: -1,
+            description: "自己的盾牌破碎后，攻击距离永久 +1，且攻击加成恒等于攻击距离" +
+                         "（初始都是 1；碎一次后都变 2，以此类推）。攻防 0 / −1。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
-            Blank, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
-            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher
+            // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
+            //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
+            Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
+            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight
         };
     }
 }

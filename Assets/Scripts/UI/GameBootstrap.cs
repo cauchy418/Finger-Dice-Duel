@@ -367,7 +367,8 @@ namespace FingerDiceDuel.UI
                 if (CharacterFactory.IsRegistered(def.Logic)) _roster.Add(def);
             }
 
-            if (_roster.Count == 0) _roster.Add(CharacterDefinition.Blank);
+            // 兜底角色：白板已被士兵取代（玩家要求），所以这里用士兵。
+            if (_roster.Count == 0) _roster.Add(CharacterDefinition.Soldier);
         }
 
         // ============================================================

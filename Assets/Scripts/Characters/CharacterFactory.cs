@@ -47,6 +47,17 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Paladin] = () => new PaladinLogic();
             _registry[SpecialLogicType.Warlock] = () => new WarlockLogic();
             _registry[SpecialLogicType.ArcaneArcher] = () => new ArcaneArcherLogic();
+
+            // 白板已从角色选择里移除，但这个映射要保留 ——
+            // 未登记/拼错的逻辑类型会退化成它（见 CreateBehavior 的兜底注释）。
+            _registry[SpecialLogicType.Soldier] = () => new SoldierLogic();
+            _registry[SpecialLogicType.Knight] = () => new KnightLogic();
+
+            // ⚠️ 赌徒的"赌博"流程尚未实现，暂时登记为白板 ——
+            //    这样"每个枚举值都有实现"的守卫测试先过，
+            //    士兵与骑士可以独立验证，不被赌徒的交互拖住。
+            //    实现后请把这一行换成 GamblerLogic。
+            _registry[SpecialLogicType.Gambler] = () => new DataDrivenCharacter();
         }
 
         /// <summary>
