@@ -48,6 +48,9 @@ namespace FingerDiceDuel.UI
         private GameObject _gameOverPanel;
         private Text _gameOverText;
         private Button _skipButton;
+
+        /// <summary>「开赌」按钮（赌徒专用）。</summary>
+        private Button _gambleButton;
         private Button _exitButton;
         private Button _declineButton;
         private Button _acceptButton;
@@ -58,6 +61,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>点击"跳过回合"。</summary>
         public event Action SkipTurnClicked;
+
+        /// <summary>点了「开赌」（赌徒）。</summary>
+        public event Action GambleClicked;
 
         /// <summary>点击"不发动 / 放弃"（角色抉择允许放弃时显示）。</summary>
         public event Action DeclineClicked;
@@ -981,6 +987,50 @@ namespace FingerDiceDuel.UI
             target.anchorMin = target.anchorMax = new Vector2(0.5f, 0.5f);
             target.pivot = new Vector2(0f, 0.5f);      // 左边缘对齐，向右伸展
             target.anchoredPosition = new Vector2(local.x, local.y);
+        }
+
+        /// <summary>显示/隐藏「开赌」按钮（赌徒专用）。</summary>
+        public void SetGambleButtonVisible(bool visible)
+        {
+            if (!visible)
+            {
+                if (_gambleButton != null) _gambleButton.gameObject.SetActive(false);
+                return;
+            }
+
+            EnsureGambleButton();
+            if (_gambleButton != null) _gambleButton.gameObject.SetActive(true);
+        }
+
+        /// <summary>
+        /// 创建「开赌」按钮，放在**手牌区右侧**（与跳过按钮同一套定位规则）。
+        ///
+        /// 位置由 <see cref="PlaceButtonRightOf"/> 按世界坐标算出，
+        /// 所以 1v1 与 2v2 都不会压住手牌。
+        /// </summary>
+        private void EnsureGambleButton()
+        {
+            if (_gambleButton != null) return;
+
+            HandCard anchor = FindRightmostRingCard() ?? RightmostSideCard();
+            if (anchor == null) return;
+
+            var rect = anchor.Button.GetComponent<RectTransform>();
+            if (rect == null) return;
+
+            _gambleButton = CreateButton(_canvasRoot, "GambleButton",
+                                         Vector2.zero, new Vector2(160f, 56f), "开赌");
+            _gambleButton.GetComponent<Image>().color = new Color(0.62f, 0.42f, 0.16f);
+            _gambleButton.onClick.AddListener(() => { GambleClicked?.Invoke(); });
+
+            PlaceButtonRightOf(rect, _gambleButton, 60f);
+        }
+
+        /// <summary>1v1 布局里的最右手牌（赌徒按钮的兜底锚点）。</summary>
+        private HandCard RightmostSideCard()
+        {
+            if (_cardsA == null || _cardsA.Length == 0) return null;
+            return _cardsA[_cardsA.Length - 1];
         }
 
         /// <summary>显示/隐藏"跳过回合"按钮。</summary>

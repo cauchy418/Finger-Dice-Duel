@@ -57,6 +57,15 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         ChoosingHealthSwapTarget = 7,
 
+        /// <summary>
+        /// 等待**赌徒**点「开赌」。
+        ///
+        /// 玩家确认的流程：先点自己一只手 -> 再点右侧「开赌」掷 1d9。
+        /// 掷出的点数**直接作为本次行动结果**（4/6/8 攻击、9 回血、5 合盾）。
+        /// 赌博**不需要**点他人的手 —— 打谁在结果出来之后再选。
+        /// </summary>
+        ChoosingGamble = 8,
+
         /// <summary>兼容旧名字，与 <see cref="ChoosingPreTurnChoice"/> 等价。</summary>
         ChoosingLockTarget = ChoosingPreTurnChoice,
     }
@@ -156,6 +165,19 @@ namespace FingerDiceDuel.Assistant
 
         private Hand _selectedTarget;
         private Hand _chosenDefenseShield;
+
+        // ---- 赌徒的赌博 ----
+        /// <summary>
+        /// 本回合已经掷出的赌博点数（0 = 还没掷）。
+        ///
+        /// 为什么要**存下来**而不是结算时再掷：
+        ///   掷出 4/6/8 时先要让玩家**选打谁**，选完才结算 ——
+        ///   如果那时才掷，玩家看到的点数与结算用的点数就不是同一次了。
+        /// </summary>
+        private int _pendingGambleRoll;
+
+        /// <summary>赌博用的随机源（可注入，便于测试确定性复现）。</summary>
+        public System.Random GambleRng { get; set; } = new System.Random();
 
         // ============================================================
         // 本回合的"运算源 / 目标手"的**独立副本**
@@ -361,6 +383,10 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingTargetPlayer:
                         return ActivePlayer;
 
+                    // 赌博由行动方自己点「开赌」
+                    case BoardPhase.ChoosingGamble:
+                        return ActivePlayer;
+
                     // 邪术师改体力的目标由**行动方自己**点（他发动技能）
                     case BoardPhase.ChoosingHealthSwapTarget:
                         return ActivePlayer;
@@ -391,6 +417,97 @@ namespace FingerDiceDuel.Assistant
         /// 为 null 时，AI 的选盾/锁手抉择会退化为"默认选择"（见各自的解析方法）。
         /// </summary>
         public IAiChoiceResolver AiResolver { get; set; }
+
+        /// <summary>
+        /// 当前是否停在"等赌徒点开赌"这一步。
+        ///
+        /// UI 用它决定是否显示「开赌」按钮。
+        /// </summary>
+        public bool CanGamble
+            => !_game.IsGameOver
+               && Phase == BoardPhase.ChoosingGamble
+               && ActivePlayer?.Character is GamblerLogic;
+
+        /// <summary>
+        /// **测试钩子**：临时让赌徒绕过"强制赌博"，好让测试能走一次完整流程
+        /// 来验证"正常运算 -> 下一回合强制赌博"这条规则。
+        ///
+        /// 为什么需要它：控制器对赌徒**总是**走赌博分岔（那是他的正常路径），
+        /// 所以从控制器层面根本进不去"正常运算"，也就无法验证它设了强制标志。
+        /// 而直接调引擎（GameManager.ExecuteTurn）会绕过控制器，
+        /// 同样测不到标志 —— 两头都够不着，才开这个口子。
+        ///
+        /// ⚠️ 只该被测试使用。正常游玩时不要调用。
+        /// </summary>
+        public void ForceAllowNormalOperationForTest(bool allow)
+        {
+            _allowNormalOperationForTest = allow;
+        }
+
+        private bool _allowNormalOperationForTest;
+
+        /// <summary>
+        /// 本次行动是否可能触发攻击范围内的目标选择（含赌博掷出攻击时）。
+        /// </summary>
+        public int PendingGambleRoll => _pendingGambleRoll;
+
+        /// <summary>
+        /// **最近一次**赌博掷出的点数（结算后仍然保留）。
+        ///
+        /// 与 <see cref="PendingGambleRoll"/> 的区别：那个是"本回合待结算的点数"，
+        /// 回合边界会清零；这个是"刚刚赌出的结果"，供界面/战报显示。
+        /// </summary>
+        public int LastGambleRoll { get; private set; }
+
+        /// <summary>
+        /// 点「开赌」：掷 1d9，并把点数作为本次行动的结果。
+        ///
+        /// 玩家确认的流程：
+        ///   · 掷出 **4/6/8**（攻击）-> 停在"选打谁"（赌博不点他人的手，
+        ///     打谁在结果出来后选）
+        ///   · 掷出 **5**（合盾）/ **9**（回血）/ 其余（无效果）-> 直接结算
+        /// </summary>
+        public bool Gamble()
+        {
+            if (!CanGamble) return false;
+            if (SelectedHand == null) return false;
+
+            _pendingGambleRoll = GamblerLogic.Roll(GambleRng);
+            LastGambleRoll = _pendingGambleRoll;
+
+            HandEffectType effect = GamblerLogic.EffectOf(_pendingGambleRoll);
+            bool isAttack = effect == HandEffectType.Attack4
+                            || effect == HandEffectType.Attack6
+                            || effect == HandEffectType.Attack8;
+
+            _log.Add($"{ActivePlayer.Name} 开赌：掷出 {_pendingGambleRoll}。");
+
+            if (!isAttack)
+            {
+                // 不是攻击 -> 不需要选目标，直接结算
+                _selectedTarget = SelectedHand;   // 占位：赌博没有"被加数"
+                ExecuteResolvedTurn();
+                return true;
+            }
+
+            // 是攻击 -> 先让玩家选打谁
+            Phase = BoardPhase.ChoosingTargetPlayer;
+            if (!BeginTargetPlayerChoice())
+            {
+                // 没有可打的人 -> 放弃这次赌博（算用掉回合）
+                NoteGambleGaveUp();
+                GiveUpAttack();
+            }
+
+            return true;
+        }
+
+        /// <summary>赌博没有合法攻击目标时的收尾（战报要说清是赌博）。</summary>
+        private void NoteGambleGaveUp()
+        {
+            _log.Add($"{ActivePlayer.Name} 开赌掷出 {_pendingGambleRoll}，" +
+                     $"但没有可攻击的目标 —— 本回合作罢。");
+        }
 
         /// <summary>
         /// 当前行动方是否可以跳过本回合。
@@ -734,6 +851,14 @@ namespace FingerDiceDuel.Assistant
             _shieldChoices.Clear();
             TargetPlayer = null;      // 目标玩家每个回合重新确认
 
+            // ⚠️ 赌博点数属于"本回合的一次行动"，**回合第一步**就要清掉。
+            //
+            //    我第一版放在 BeginCharacterChoices（收集抉择时），
+            //    但那条路只有"点了目标手"才会走 —— 测试立刻抓到
+            //    "新回合开始时点数还是上一回合的 3"。
+            //    放在这里才能保证每个回合开局就干净（诊断字段跨回合残留我踩过多次）。
+            _pendingGambleRoll = 0;
+
             // ⚠️ 必须把**抉择队列也复位**。
             //
             // 曾经这里只清了 _shieldChoices，留下 _pendingRequestIndex 不管。
@@ -818,6 +943,11 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingAttackerHand:
                     return ActivePlayer.Owns(hand) && !hand.IsLocked;
+
+                case BoardPhase.ChoosingGamble:
+                    // 赌博阶段**只等点「开赌」**，手牌本身不再接受点击。
+                    // （运算源已经选好了；再点手牌没有意义，容易误触。）
+                    return false;
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
@@ -1061,6 +1191,21 @@ namespace FingerDiceDuel.Assistant
         /// <summary>玩家点击了一张手牌。返回 true 表示这次点击被接受。</summary>
         public bool ClickHand(Hand hand)
         {
+            // ⚠️ **强制赌博时点他人的手要明确拒绝并说明原因**（玩家要求：
+            //    "弹提示并拒绝"）。
+            //
+            //    不能静默忽略 —— 玩家会以为"点了没反应 = 游戏坏了"。
+            //    也不能允许选中 —— 那等于绕过了强制赌博。
+            if (hand != null
+                && ActivePlayer?.Character is GamblerLogic
+                && ActivePlayer.MustGamble
+                && !ActivePlayer.Owns(hand))
+            {
+                Hint = $"{ActivePlayer.Name}（赌徒）上一回合做了正常运算，" +
+                       $"本回合必须赌博 —— 不能选别人的手，请点自己的一只手后按「开赌」。";
+                _log.Add($"{ActivePlayer.Name} 本回合必须赌博，拒绝了选择他人手牌的点击。");
+                return false;
+            }
 
             if (!CanClick(hand)) return false;
 
@@ -1088,6 +1233,24 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingAttackerHand:
                     SelectedHand = hand;
+
+                    // ⚠️ **赌徒走另一条路**：点自己的手之后不进"选被加数"，
+                    //    而是停在"等点开赌"。
+                    //
+                    //    玩家确认的流程："先点击自己一只手，然后点击右侧按钮开赌"
+                    //    —— 赌博**不需要**点他人的手。
+                    if (ActivePlayer?.Character is GamblerLogic && !_allowNormalOperationForTest)
+                    {
+                        Phase = BoardPhase.ChoosingGamble;
+                        _log.Add($"{ActivePlayer.Name}（赌徒）选定了" +
+                                 $"{SideLabel(hand, ActivePlayer)}（{hand.Value}）。");
+                        Hint = ActivePlayer.MustGamble
+                            ? $"{ActivePlayer.Name}（赌徒）：上一回合做了正常运算，" +
+                              $"本回合必须赌博 —— 点「开赌」掷 1d9。"
+                            : $"{ActivePlayer.Name}（赌徒）：点「开赌」掷 1d9，" +
+                              $"点数直接作为本次行动结果（4/6/8 攻击、9 回血、5 合盾）。";
+                        return true;
+                    }
 
                     // ⚠️ **不在这里**问"选目标手之前"的问题。
                     //
@@ -1517,6 +1680,10 @@ namespace FingerDiceDuel.Assistant
             _pendingChoiceCandidates.Clear();
             _pendingChoiceDecider = null;
             _preTargetChoiceActive = false;
+
+            // ⚠️ 这里**不**清 `_pendingGambleRoll` —— 清零点在 SetupFirstStep。
+            //    我一度两处都放，结果"开赌"掷完点数、进收集阶段时又被清成 0
+            //    （测试抓到：期望 3 实际 0）。
 
             // ⚠️ 每回合清空"问过谁取消攻击" ——
             //    残留会让下一回合变成"问过但没答"，于是玩家的意图被误读
@@ -2434,7 +2601,12 @@ namespace FingerDiceDuel.Assistant
             TurnResult result;
             try
             {
-                result = _game.ExecuteTurn(ActivePlayer, acted, target);
+                // ⚠️ **赌博走另一条入口**：点数已经在"开赌"时掷好并存在
+                //    `_pendingGambleRoll` 里，这里只是结算它。
+                //    不能在这里重新掷 —— 否则玩家看到的点数与结算的点数不同。
+                result = _pendingGambleRoll > 0
+                    ? _game.ExecuteGamble(ActivePlayer, acted, GambleRng, _selectedTarget)
+                    : _game.ExecuteTurn(ActivePlayer, acted, target);
             }
             catch (InvalidOperationException ex)
             {
@@ -2478,6 +2650,18 @@ namespace FingerDiceDuel.Assistant
 
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
+
+            // ⚠️ **赌徒的强制赌博状态**（玩家确认的规则）：
+            //    "若赌徒上一个自己的回合进行了正常的运算（非赌博），
+            //     那么这一回合就必须赌博"；"赌完就解除"。
+            //
+            //    跳过回合**不算**正常运算（不触发强制）——
+            //    所以这里只看"有没有产生 TurnResult 且不是赌博"。
+            //    放在结算收尾处：这是唯一能确定"这一回合到底做了什么"的时点。
+            if (result.Actor?.Character is GamblerLogic)
+            {
+                result.Actor.MustGamble = !result.WasGamble;
+            }
             foreach (string line in DescribeTurnLines(result)) _log.Add(line);
 
             // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——

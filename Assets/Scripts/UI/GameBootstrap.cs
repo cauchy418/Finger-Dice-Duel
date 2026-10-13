@@ -345,6 +345,7 @@ namespace FingerDiceDuel.UI
             _board.HandClicked += OnHandClicked;
             _board.RestartClicked += OnRestartClicked;
             _board.SkipTurnClicked += OnSkipTurnClicked;
+            _board.GambleClicked += OnGambleClicked;
             _board.DeclineClicked += OnDeclineClicked;
             _board.AcceptClicked += OnAcceptClicked;
             _board.ExitClicked += OnExitClicked;
@@ -1476,6 +1477,20 @@ namespace FingerDiceDuel.UI
             if (_controller.SkipTurn()) RefreshView();
         }
 
+        /// <summary>
+        /// 点了「开赌」（赌徒）：掷 1d9，点数直接作为本次行动结果。
+        ///
+        /// 掷出攻击时 <see cref="BoardController.Gamble"/> 会停在"选打谁"，
+        /// 这里只是刷新界面让玩家看到可点的目标。
+        /// </summary>
+        private void OnGambleClicked()
+        {
+            if (_controller == null) return;
+            if (!_controller.IsHumanChooser) return;
+
+            if (_controller.Gamble()) RefreshView();
+        }
+
         /// <summary>发动当前的"角色抉择"（剑客的追加攻击、游侠的强化等）。</summary>
         private void OnAcceptClicked()
         {
@@ -1607,6 +1622,9 @@ namespace FingerDiceDuel.UI
             }
 
             _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
+
+            // 赌徒的「开赌」按钮：只在"等开赌"这一步显示
+            _board.SetGambleButtonVisible(_controller.CanGamble);
 
             _board.SetLog(_controller.Log);
             _board.SetHint(DescribeHint(), DescribeLastTurn());

@@ -158,6 +158,159 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Gamble_flow_goes_through_the_dedicated_phase()
+        {
+            // 玩家确认的流程：点自己一只手 -> 点「开赌」。
+            // 赌博**不需要**点他人的手 —— 所以点完自己的手就停在赌博阶段。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(3);      // 掷 3 = 无效果，不需要选目标
+            board.BeginTurn();
+
+            // ① 点自己的手 -> 进入赌博阶段（而不是"选被加数"）
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand));
+            Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase,
+                "赌徒点完自己的手应停在开赌阶段。");
+
+            Assert.True(board.CanGamble, "此时应能开赌。");
+            Assert.False(board.CanClick(game.PlayerB.LeftHand),
+                "赌博阶段不该能点别人的手。");
+
+            // ② 开赌 -> 直接结算（3 = 无效果，不需要选目标）
+            Assert.True(board.Gamble(), "开赌应成功。");
+
+            // ⚠️ 断言用 **LastGambleRoll**（结算后仍保留）而不是 PendingGambleRoll ——
+            //    后者是"本回合待结算的点数"，回合结束后按设计会被清零
+            //    （我第一版断言它，测试立刻抓到：期望 3 实际 0，
+            //      而 0 其实是**正确**的，错的是我的断言）。
+            Assert.AreEqual(3, board.LastGambleRoll, "应记录掷出的点数。");
+        }
+
+        [Test]
+        public void Forced_gamble_rejects_clicking_someone_elses_hand()
+        {
+            // 玩家要求："强制赌博时点他人的手 -> 弹提示并拒绝"
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(5);
+            board.BeginTurn();
+
+            game.PlayerA.MustGamble = true;
+
+            // 点别人的手 -> 被拒，且给出明确提示（不能静默无反应）
+            Assert.False(board.ClickHand(game.PlayerB.LeftHand),
+                "强制赌博时点他人的手应被拒绝。");
+            Assert.True(board.Hint != null && board.Hint.Contains("必须赌博"),
+                $"应弹提示说明原因，实际提示：{board.Hint}");
+
+            // 点自己的手仍然可以
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand),
+                "强制赌博时点自己的手仍然可以。");
+        }
+
+        [Test]
+        public void Gamble_roll_is_cleared_at_the_start_of_each_turn()
+        {
+            // 点数跨回合残留会让下一回合沿用上一次的点数
+            //（诊断字段跨回合残留我踩过多次，这里提前钉住）
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(3);
+            board.BeginTurn();
+
+            board.ClickHand(game.PlayerA.LeftHand);
+
+            // 掷点之后、结算之前读"待结算点数"
+            board.GambleRng = new FixedRandom(3);
+            Assert.True(board.CanGamble);
+            board.Gamble();
+
+            Assert.AreEqual(3, board.LastGambleRoll, "应记录掷出的点数。");
+
+            board.BeginTurn();
+            Assert.AreEqual(0, board.PendingGambleRoll,
+                "新回合开始时待结算点数应清零。");
+        }
+
+        [Test]
+        public void Normal_operation_makes_the_next_turn_a_forced_gamble()
+        {
+            // 玩家确认的规则："若赌徒上一个自己的回合进行了正常的运算（非赌博），
+            // 那么这一回合就必须赌博"；"赌完就解除"。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.BeginTurn();
+
+            // ⚠️ 赌徒点自己的手**总是**进赌博阶段（那是他的正常路径），
+            //    所以想"做一次正常运算"要临时放行 ——
+            //    这也符合实机：新开一局时 MustGamble 就是 false。
+            board.ForceAllowNormalOperationForTest(true);
+
+            // 一次**正常运算**（不是赌博）：1+2=3 -> 无效果，不需要确认目标玩家
+            TestSetup.SetHand(game.PlayerA.LeftHand, 1);
+            TestSetup.SetHand(game.PlayerB.LeftHand, 2);
+            board.ClickHand(game.PlayerA.LeftHand);
+            board.ClickHand(game.PlayerB.LeftHand);
+
+            Assert.NotNull(board.LastTurn, "应完成一次结算。");
+            Assert.False(board.LastTurn.WasGamble, "这次应是正常运算，不是赌博。");
+            Assert.True(game.PlayerA.MustGamble,
+                "做了正常运算后，赌徒应进入强制赌博状态。");
+
+            // ⚠️ 一次结算后行动方**已经换成对手**了（回合一交替），
+            //    所以要让对手也走一步，回合才会回到赌徒身上。
+            board.ForceAllowNormalOperationForTest(false);
+            board.BeginTurn();
+            Assert.AreEqual(game.PlayerB, board.ActivePlayer,
+                "前置：上一步结算后轮到对手。");
+
+            // 对手随便走一步（用引擎直调，避免依赖对手的交互细节）
+            game.ExecuteTurn(game.PlayerB, game.PlayerB.LeftHand, game.PlayerA.LeftHand);
+
+            // 回合回到赌徒 -> 他必须赌博
+            board.BeginTurn();
+            Assert.AreEqual(game.PlayerA, board.ActivePlayer, "前置：应轮回赌徒。");
+            Assert.True(game.PlayerA.MustGamble, "此时仍应是强制赌博状态。");
+
+            board.GambleRng = new FixedRandom(3);
+            board.ClickHand(game.PlayerA.LeftHand);
+            Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase,
+                "强制赌博状态下点自己的手应进入赌博阶段。");
+            Assert.True(board.Gamble(), "应能开赌。");
+
+            Assert.False(game.PlayerA.MustGamble,
+                "赌完就解除，下一回合可以正常运算。");
+        }
+
+        [Test]
         public void Only_gamblers_can_gamble()
         {
             GameManager game = new GameManager(Make("士", CharacterDefinition.Soldier),
