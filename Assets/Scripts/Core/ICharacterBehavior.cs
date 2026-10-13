@@ -308,7 +308,32 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// 角色实现"我要接管某次攻击"（把目标改成自己）。
+    /// 角色实现"**化解这次攻击**"（武僧的太极）。
+    ///
+    /// 由 <see cref="AttackContext"/> 在伤害已定、逐段结算**之前**询问。
+    ///
+    /// 与其他免伤机制的区别：
+    ///   · **闪避**是"完全免伤"
+    ///   · **护盾**是"用一面盾完全挡下一次"
+    ///   · **太极**是"**减半**，并把剩下的一半**反弹**给攻击方"
+    ///
+    /// 所以它必须能改写成"实际受到的伤害"，并附带一个反弹量。
+    /// </summary>
+    public interface IDamageMitigator
+    {
+        /// <summary>
+        /// 尝试化解这次攻击。返回 true 表示**已经接管**（调用方必须采用
+        /// <paramref name="reducedDamage"/> 与 <paramref name="reflectDamage"/>）。
+        /// </summary>
+        /// <param name="incomingDamage">原本会造成的伤害（已含攻防加成）。</param>
+        /// <param name="reducedDamage">化解后实际承受的伤害。</param>
+        /// <param name="reflectDamage">反弹给攻击方的伤害（0 = 不反弹）。</param>
+        bool TryMitigate(PlayerState owner, AttackContext context, int incomingDamage,
+                         out int reducedDamage, out int reflectDamage);
+    }
+
+    /// <summary>
+    /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——
     /// "改目标"必须发生在"谁来承受"这件事确定之前。

@@ -815,6 +815,14 @@ namespace FingerDiceDuel.Core
             return ResolveTurn(actor, actedHand, otherHandValue, null);
         }
 
+        /// <summary>
+        /// 最近一次"武僧的 0 被触碰变成 1"的说明（供战报显示）；没有则为 null。
+        ///
+        /// 只在一次结算内有效。
+        /// </summary>
+        public string MonkZeroTouchNote { get; private set; }
+
+        /// <summary>已通过校验的实际结算流程。</summary>
         /// <summary>已通过校验的实际结算流程。</summary>
         private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue, Hand targetHand)
             => ResolveTurn(actor, actedHand, targetValue, targetHand, gambleResult: 0);
@@ -886,6 +894,31 @@ namespace FingerDiceDuel.Core
             // 但 <see cref="DamageTargetPlayer"/> 可以覆盖它。
             PlayerState addendOwner = OwnerOfHand(targetHand);
             PlayerState opponent = DamageTargetPlayer ?? addendOwner ?? GetOpponent(actor);
+
+            // ⚠️ **武僧的 0 被他人触碰 -> 立即变 1**（玩家确认的规则）。
+            //
+            //    触发条件：**别人把那只见习武僧的手当作加数用**。
+            //    且"当成 1 参与本次运算" —— 所以必须在这里（结算前）改，
+            //    而不是结算后（那样本次运算的结果就不对了）。
+            //
+            //    注意"别人"：自己用自己的 0 不算触碰。
+            if (addendOwner != null
+                && !ReferenceEquals(addendOwner, actor)
+                && addendOwner.Character is MonkLogic)
+            {
+                int before = targetHand.Value;
+                MonkLogic.OnTouchedAsAddend(targetHand);
+
+                if (targetHand.Value != before)
+                {
+                    // 手值变了 -> 参与运算的数字也要跟着变
+                    targetValue = targetHand.Value;
+                    result.TargetHandValue = targetValue;
+                    MonkZeroTouchNote = $"{addendOwner.Name}（武僧）的手被触碰，" +
+                                        $"{before} 变成 {targetHand.Value}";
+                }
+            }
+
             IChoiceProvider oppChoice = GetChoiceProvider(opponent);
 
             result.ActedHand = actedHand;

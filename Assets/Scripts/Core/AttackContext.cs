@@ -200,12 +200,42 @@ namespace FingerDiceDuel.Core
             int perHitBase = SplitDamage(FinalDamage, hits);
             int perHit = IgnoreStatBonuses ? perHitBase : ApplyStatBonuses(perHitBase);
 
+            // 2°. **太极化解**（武僧）：在逐段结算之前询问。
+            //
+            //     与闪避 / 护盾的区别：那两种是"整段免掉"，
+            //     太极是"**减半**，并把剩下的一半**反弹**给攻击方"。
+            //
+            //     所以它作用在**整次攻击的总伤害**上（而不是逐段），
+            //     并把结果折成每段的伤害。
+            //
+            //     ⚠️ 它排在闪避 / 护盾**之前**：因为太极一旦发动，
+            //        那只手会从 5 变成 0，本次攻击就按"减半 + 反弹"走；
+            //        若排在后面，玩家可能既闪避又太极（规则上只应发生一种）。
+            int reflectTotal = 0;
+            bool taichiUsed = TryMitigateByTaichi(manager, perHit * hits);
+
+            // ⚠️ **只在太极真的发动时**才改写每段伤害。
+            //
+            //    我第一版让 TryMitigateByTaichi 用 out 参数，而 C# 要求
+            //    out 在**提前 return 前也必须赋值**——于是"没发动"时
+            //    返回的是预置的 0，把**所有角色的所有攻击**都打成了 0 伤害
+            //    （55 项测试立刻失败）。
+            //    改成"只在发动时读它写下的属性"，就不可能误伤未发动的路径。
+            if (taichiUsed)
+            {
+                perHit = WasMitigated ? MitigatedPerHit : perHit;
+                reflectTotal = ReflectedDamage;
+            }
+
             IPreTurnChoiceSink sink = defenderChoice as IPreTurnChoiceSink;
 
             for (int i = 0; i < hits; i++)
             {
                 // 2a. 闪避（游侠每次消耗一只"1"；刺客潜行则整次攻击都打不到）
-                if (sink != null && TryDodgeThisHit(sink, manager, i))
+                //
+                // ⚠️ 太极已经接管了这次攻击时**不再判闪避** ——
+                //    否则会出现"减半了还被闪掉"，等于双重免伤。
+                if (!taichiUsed && sink != null && TryDodgeThisHit(sink, manager, i))
                 {
                     WasDodged = true;
                     DodgedHits++;
@@ -213,7 +243,9 @@ namespace FingerDiceDuel.Core
                 }
 
                 // 2b. 护盾：一面盾只能挡下这一段
-                if (TryConsumeShield(defenderChoice, manager))
+                //
+                // 同理：太极接管后不再消耗护盾（太极**不是盾**）。
+                if (!taichiUsed && TryConsumeShield(defenderChoice, manager))
                 {
                     WasBlocked = true;
                     BlockedHits++;
@@ -224,6 +256,110 @@ namespace FingerDiceDuel.Core
                 AppliedDamage += perHit;
                 LandedHits++;
             }
+
+            // 3. **太极反弹**：把化解下来的那部分伤害打回给攻击方。
+            //
+            //    玩家确认的规则：
+            //      · **无视距离**（不走 CanReach）
+            //      · **可以被盾挡下、可以被游侠闪避**
+            //      · **无法被邪术师取消**
+            //
+            //    所以这里发起的是**一次新的攻击**（同一套结算），
+            //    但它是**由挨打方发起、目标是攻击方**，而且用
+            //    <see cref="IsSpecialAttack"/> 关掉"取消"那条路
+            //    （与剑客的追加攻击同类——它们的"攻击数字"不是一次正常运算）。
+            if (WasMitigated && reflectTotal > 0 && Attacker != null && Attacker.IsAlive
+                && manager != null)
+            {
+                var reflectCtx = new AttackContext(Defender, Attacker,
+                                                   Defender.LeftHand ?? Defender.RightHand,
+                                                   reflectTotal)
+                {
+                    // "攻击数字视为 0" -> 邪术师取消不了（玩家明确要求）。
+                    // 用反射产生的攻击，只能取消真正的攻击，不能取消反弹。
+                    IsSpecialAttack = true,
+
+                    // 反弹是"已经算好的固定伤害"，不该再叠一次攻防加成
+                    IgnoreStatBonuses = true,
+
+                    // 玩家允许"可循环"：反弹仍可被对方的太极再弹回来
+                    IsReflected = true,
+                    ReflectDepth = ReflectDepth + 1,
+                };
+
+                reflectCtx.Resolve(manager.GetChoiceProvider(Attacker), manager);
+                ReflectedDealt = reflectCtx.AppliedDamage;
+            }
+        }
+
+        /// <summary>
+        /// 本次攻击是不是**别人反弹过来的**。
+        ///
+        /// 玩家确认："**可以再被反弹（可循环）**" —— 所以反弹被打回时，
+        /// 对方若也有太极，仍可再化解并弹回来。
+        /// </summary>
+        public bool IsReflected { get; set; }
+
+        /// <summary>反弹实际造成的伤害（0 = 被挡下 / 被闪避 / 没反弹）。</summary>
+        public int ReflectedDealt { get; private set; }
+
+        /// <summary>
+        /// 反弹的嵌套层数（最初那次攻击是 0）。
+        ///
+        /// ⚠️ 玩家允许"可循环"，但**没有任何终止条件**的互相反弹会变成
+        ///    无限递归（两个武僧各自 5，挡一下弹回去、再挡一下弹回来…）。
+        ///    所以这里设一个**硬上限**，超过就不再反弹 ——
+        ///    正常对局远远到不了（每次反弹伤害都减半，几层之后就是 0）。
+        /// </summary>
+        public int ReflectDepth { get; set; }
+
+        /// <summary>反弹的最大嵌套层数（防御性上限，防无限递归）。</summary>
+        public const int MaxReflectDepth = 8;
+
+        /// <summary>本次攻击的伤害是否被**太极化解**（武僧）。</summary>
+        public bool WasMitigated { get; private set; }
+
+        /// <summary>被太极**反弹**给攻击方的伤害（0 = 没反弹）。</summary>
+        public int ReflectedDamage { get; private set; }
+
+        /// <summary>太极化解后**每段**的伤害（仅 <see cref="WasMitigated"/> 为 true 时有意义）。</summary>
+        public int MitigatedPerHit { get; private set; }
+
+        /// <summary>
+        /// 询问挨打的人是否用**太极**化解这次攻击（武僧）。
+        ///
+        /// 只有**挨打的人自己**能化解（不像代挡那样遍历全场）——
+        /// 太极是"以柔克刚"的自身姿态。
+        ///
+        /// <paramref name="totalIncoming"/> 是本次攻击的**总伤害**
+        /// （已含攻防加成、已按段数合计）。
+        ///
+        /// ⚠️ **不要用 out 参数**：C# 要求 out 在提前 return 前也赋值，
+        ///    于是"没发动"时会返回 0 并把伤害抹平 —— 我踩过。
+        ///    结果写在 <see cref="MitigatedPerHit"/> / <see cref="ReflectedDamage"/> 上，
+        ///    调用方只在返回 true 时读。
+        /// </summary>
+        private bool TryMitigateByTaichi(GameManager manager, int totalIncoming)
+        {
+            // 反弹达到嵌套上限就不再弹（防无限递归）
+            if (ReflectDepth >= MaxReflectDepth) return false;
+
+            if (Defender?.Character is not IDamageMitigator mitigator) return false;
+
+            if (!mitigator.TryMitigate(Defender, this, totalIncoming,
+                                      out int reduced, out int reflect))
+            {
+                return false;
+            }
+
+            WasMitigated = true;
+            ReflectedDamage = reflect;
+
+            // 折回"每段伤害"：太极作用在总伤害上，逐段循环仍按原段数跑。
+            int hits = HitCount < 1 ? 1 : HitCount;
+            MitigatedPerHit = reduced / hits;
+
+            return true;
         }
 
         /// <summary>

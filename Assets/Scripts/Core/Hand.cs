@@ -21,6 +21,15 @@ namespace FingerDiceDuel.Core
         public bool IsShield => State == ShieldState.Formed;
 
         /// <summary>
+        /// 这只手是否处于**太极形态**（武僧）。
+        ///
+        /// ⚠️ 与 <see cref="IsShield"/> **互斥**：太极不是盾，
+        ///    所以"能不能挡伤害 / 算不算双盾 / 能不能被破"这些判断
+        ///    都必须只认 <see cref="IsShield"/>，不要写成"State != None"。
+        /// </summary>
+        public bool IsTaichi => State == ShieldState.Taichi;
+
+        /// <summary>
         /// 是否被锁定。被锁定的手**不能作为运算源**（RULES.md 5.3），
         /// 但仍可被对手选为运算目标。
         /// </summary>

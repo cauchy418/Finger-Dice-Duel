@@ -64,6 +64,8 @@ namespace FingerDiceDuel.Core
         public const string SoldierId = "soldier";
         public const string GamblerId = "gambler";
         public const string KnightId = "knight";
+        public const string MonkId = "monk";
+        public const string GiantId = "giant";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -197,13 +199,42 @@ namespace FingerDiceDuel.Core
             description: "自己的盾牌破碎后，攻击距离永久 +1，且攻击加成恒等于攻击距离" +
                          "（初始都是 1；碎一次后都变 2，以此类推）。攻防 0 / −1。");
 
+        /// <summary>
+        /// **武僧**：攻 0 / 防 0，攻击距离 1。
+        ///
+        /// 5 不合盾而进入太极形态；被攻击时把 5 变 0、
+        /// 受一半伤害并把剩余反弹给攻击方。
+        /// </summary>
+        public static CharacterDefinition Monk { get; } = new CharacterDefinition(
+            MonkId, "武僧", SpecialLogicType.Monk,
+            attackBonus: 0, defenseBonus: 0,
+            description: "5 不合成盾牌，而是进入太极形态：被攻击时可以把那张 5 变成 0，" +
+                         "只受本次攻击应有伤害的一半，并把剩余的一半反弹给攻击方" +
+                         "（反弹无视距离、可被盾挡下、可被游侠闪避，但无法被邪术师取消）。" +
+                         "对咒术师的攻击无减半也不反弹。自己的 0 被他人当加数触碰后立即变成 1。" +
+                         "攻防 0 / 0，攻击距离 1。");
+
+        /// <summary>
+        /// **巨人**：攻 +2 / 防 +2，攻击距离 1。
+        ///
+        /// 4/6/8 不攻击、5 不合盾；打出 5 发起两段攻击（伤害 = 另一只手点数）；
+        /// 打出 9 进行两段回复。
+        /// </summary>
+        public static CharacterDefinition Giant { get; } = new CharacterDefinition(
+            GiantId, "巨人", SpecialLogicType.Giant,
+            attackBonus: 2, defenseBonus: 2,
+            description: "4/6/8 无法攻击，5 也无法合成盾牌。打出 5 时发起两段攻击，" +
+                         "每段的基础伤害等于另一只手的点数（之后各自再加攻防加成）；" +
+                         "打出 9 时进行两段回复，每段回复量等于另一只手的点数。攻防 +2 / +2。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
-            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight
+            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
+            Monk, Giant
         };
     }
 }

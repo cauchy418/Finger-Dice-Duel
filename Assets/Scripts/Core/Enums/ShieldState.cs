@@ -1,15 +1,28 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 一只手的护盾生命周期状态。
     ///   None    -> 未合盾（普通状态，可参与运算）
     ///   Formed  -> 已合盾（可抵挡一次攻击；运算前若被指定为源手则自动破碎）
     ///   Broken  -> 已破碎（本回合内的瞬时状态，用于避免连锁破盾递归）
+    ///   Taichi  -> **太极形态**（武僧专用：不是盾，被攻击时把 5 变成 0、
+    ///              受一半伤害并把剩余反弹给攻击方）
     /// </summary>
     public enum ShieldState
     {
         None = 0,
         Formed = 1,
-        Broken = 2
+        Broken = 2,
+
+        /// <summary>
+        /// **太极形态**（武僧）：5 不再是护盾，而是"以柔克刚"的姿态。
+        ///
+        /// 与 <see cref="Formed"/> 的区别：太极**不挡伤害**，而是把伤害减半
+        /// 并把剩下的一半**反弹**回去；触发后这只手变成 **0**。
+        ///
+        /// ⚠️ 凡是判断"这是不是一面盾"的地方都必须把 Taichi **排除** ——
+        ///    它不是盾（不能被破盾、不参与"双盾在手"、不能被连锁破盾选中）。
+        /// </summary>
+        Taichi = 3
     }
 }
