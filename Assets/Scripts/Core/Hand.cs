@@ -5,8 +5,19 @@ namespace FingerDiceDuel.Core
     [Serializable]
     public class Hand
     {
-        /// <summary>手值的合法范围：1..9（十进制归一化后不会出现 0）。</summary>
-        public const int MinValue = 1;
+        /// <summary>
+        /// 手值的合法下界 = **0**。
+        ///
+        /// ⚠️ 原本是 1（"十进制归一化后不会出现 0"）——
+        ///    但**武僧的太极**明确要求"把那张 5 变成 **0**"（玩家规则），
+        ///    所以下界必须放开。
+        ///
+        ///    放开之后的注意点：
+        ///      · **开局掷骰的拆分仍然是 1..9**（见 <c>DiceRollSetup</c>）——
+        ///        0 只会由太极产生，不是正常的初始值
+        ///      · 0 + N 的运算照旧取个位，所以不影响加法规则
+        /// </summary>
+        public const int MinValue = 0;
         public const int MaxValue = 9;
 
         /// <summary>运算结果为 9 时的回血量。</summary>

@@ -92,8 +92,7 @@ namespace FingerDiceDuel.Tests
                 crash = ex.StackTrace;
             }
 
-            Assert.True(crash == null, "赌出 5 时抛了空引用：" + crash);
-            Assert.NotNull(r);
+            Assert.True(crash == null, "赌出 5 时抛了空引用：" + crash);            Assert.NotNull(r);
             Assert.AreEqual(5, r.ResultValue);
             Assert.AreEqual(HandEffectType.Shield, r.Effect, "赌出 5 应是护盾。");
             Assert.AreEqual(ShieldState.Formed, gambler.LeftHand.State,

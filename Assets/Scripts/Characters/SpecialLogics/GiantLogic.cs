@@ -18,11 +18,26 @@ namespace FingerDiceDuel.Core
     ///     因为攻击数字就是 5，取消发生在逐段循环之前，所以天然一次抵消两段
     /// </summary>
     public sealed class GiantLogic : CharacterTemplate, IHandEffectRewriter,
-                                      IMultiHitAttack
+                                      IMultiHitAttack, IHealOverride, IHealAmountProvider
     {
         public override string DisplayName => "巨人";
 
         public override int DefaultAttackBonus => 2;
+        /// <summary>
+        /// 本次运算"**另一只手**"的点数（由 <see cref="RewriteEffect"/> 记下）。
+        ///
+        /// ⚠️ 为什么要在那里记：`RewriteEffect` 是**唯一**同时知道
+        ///    "运算源是哪只手"与"结果值"的时点 —— 一旦结算继续，
+        ///    运算源已经变成结果值，就再也分辨不出哪只是运算源了。
+        ///
+        ///    我第一版想用启发式（"等于 5 或 9 的那只是结果"）来事后推断，
+        ///    但那只手完全可能本来就是 5 或 9，会推断错。
+        /// </summary>
+        private int _otherHandValueOfThisOperation;
+
+        /// <summary>本次运算的另一只手点数（供测试与战报读取）。</summary>
+        public int OtherHandValueThisOperation => _otherHandValueOfThisOperation;
+
         public override int DefaultDefenseBonus => 2;
 
         /// <summary>攻击距离 1。</summary>
@@ -47,6 +62,11 @@ namespace FingerDiceDuel.Core
                                             int targetValue, GameManager manager)
         {
             int result = actedHand?.Value ?? 0;
+
+            // 记下"另一只手"的点数 —— 此刻还能分辨哪只是运算源。
+            // 玩家说明："另一只手在本次运算前后都不会变化"，
+            // 所以此刻读到的值与结算时一致。
+            _otherHandValueOfThisOperation = OtherHandOf(actor, actedHand)?.Value ?? 0;
 
             switch (result)
             {
@@ -80,16 +100,55 @@ namespace FingerDiceDuel.Core
             if (context == null) return;
             if (context.Attacker?.Character != this) return;
 
-            // 只有"打出 5"这条路需要改写（4/6/8 已被改成无效果）
-            int result = context.Attacker.LeftHand == context.SourceHand
-                ? context.Attacker.RightHand?.Value ?? 0
-                : context.Attacker.LeftHand?.Value ?? 0;
-
-            // 另一只手的点数即基础伤害（可能是 0 —— 武僧的太极会把 5 变 0）
-            context.FinalDamage = result;
+            // ⚠️ 用 RewriteEffect 记下的"另一只手点数"，**不要在这里重新推断**：
+            //    此时运算源已经变成结果值（5），再想分辨哪只是运算源
+            //    就只能靠猜 —— 而另一只手完全可能本来就是 5。
+            //
+            // ⚠️⚠️ 必须**乘以段数**：AttackContext 的多段语义是
+            //     "把**总伤害**平摊到各段"（忍者就是靠这个：8 -> 4+4）。
+            //     而巨人的规则是"**每段**基础伤害 = 另一只手点数"，
+            //     所以要先把总伤害设成「另一只手点数 × 段数」，
+            //     平摊之后每段才正好是"另一只手点数"。
+            //
+            //     我第一版直接设成"另一只手点数"，于是 3 被平摊成 1+2，
+            //     每段只有 1 点基础伤害（测试当场抓到）。
+            context.FinalDamage = _otherHandValueOfThisOperation * HitCount;
             context.HitCount = HitCount;
         }
 
-        public override void OnMatchReset(PlayerState owner, GameManager manager) { }
+        /// <summary>
+        /// 打出 9 时：**两段回复**，每段回复量 = **另一只手的点数**，都回自己。
+        ///
+        /// 玩家确认："打出 9 时进行两段回复，回复量为另一只手的点数"、
+        /// "都回**自己**"。
+        ///
+        /// 实现上把"两段"折成**总量 = 另一只手点数 × 2** ——
+        /// 因为都回自己，与分两次回同一人是等价的（满血截断也一样：
+        /// 先回一半再回一半的总量，等于一次回总量，都不会超过上限）。
+        /// </summary>
+        public PlayerState ApplyHeal(PlayerState owner, GameManager manager,
+                                     IPreTurnChoiceSink choiceSink)
+        {
+            return owner;      // 都回自己
+        }
+
+        /// <summary>本次回复总量 = 另一只手点数 × 2（两段各一次）。</summary>
+        public int HealAmountOf(PlayerState owner, GameManager manager)
+            => _otherHandValueOfThisOperation * HealCount;
+
+        /// <summary>取"另一只手"（不是本次运算源的那只）；认不出来时返回 null。</summary>
+        private static Hand OtherHandOf(PlayerState owner, Hand actedHand)
+        {
+            if (owner == null || actedHand == null) return null;
+            if (ReferenceEquals(owner.LeftHand, actedHand)) return owner.RightHand;
+            if (ReferenceEquals(owner.RightHand, actedHand)) return owner.LeftHand;
+
+            return null;
+        }
+
+        public override void OnMatchReset(PlayerState owner, GameManager manager)
+        {
+            _otherHandValueOfThisOperation = 0;
+        }
     }
 }

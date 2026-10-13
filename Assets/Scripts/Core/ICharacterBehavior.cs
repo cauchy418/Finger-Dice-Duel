@@ -256,6 +256,21 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**本次回复量由我说了算**"（巨人的 9：回复量 = 另一只手点数 × 2）。
+    ///
+    /// 默认回复量是固定的 9（<see cref="Hand.HealAmount"/>），
+    /// 牧师按效果类型算（<c>PriestLogic.HealAmountFor</c>）。
+    /// 巨人的回复量取决于**另一只手的当前值**，所以必须由角色自己算。
+    ///
+    /// 由 <see cref="GameManager"/> 在回复分支调用（与 <see cref="IHealOverride"/> 配合）。
+    /// </summary>
+    public interface IHealAmountProvider
+    {
+        /// <summary>本次回复的**总量**（已经包含所有段数）。</summary>
+        int HealAmountOf(PlayerState owner, GameManager manager);
+    }
+
+    /// <summary>
     /// 角色实现"**改写本次运算产生的效果类型**"。
     ///
     /// 由 <see cref="GameManager"/> 在运算**之后、效果分派之前**调用

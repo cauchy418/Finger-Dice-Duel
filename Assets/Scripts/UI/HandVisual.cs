@@ -24,6 +24,9 @@ namespace FingerDiceDuel.UI
             {
                 case Core.ShieldState.Formed: return ShieldCard;   // 合拢的手掌 = 盾
                 case Core.ShieldState.Broken: return BrokenCard;   // 展开的碎盾
+                // 太极形态（武僧）：借"回复"的绿色系 —— 它既不是攻击也不是盾，
+                // 而是"以柔克刚"的防守姿态。用与护盾不同的颜色以示区分。
+                case Core.ShieldState.Taichi: return HealCard;
             }
 
             switch (Core.Hand.GetEffectType(hand.Value))
@@ -86,6 +89,8 @@ namespace FingerDiceDuel.UI
             {
                 case Core.ShieldState.Formed: return "护盾 · 合拢";
                 case Core.ShieldState.Broken: return "碎盾 · 展开";
+                // 太极必须说清"这不是盾"——否则玩家会以为它能完全挡下一次攻击。
+                case Core.ShieldState.Taichi: return "太极 · 减半反弹";
             }
 
             switch (Core.Hand.GetEffectType(hand.Value))

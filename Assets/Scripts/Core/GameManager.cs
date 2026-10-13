@@ -902,7 +902,8 @@ namespace FingerDiceDuel.Core
             //    而不是结算后（那样本次运算的结果就不对了）。
             //
             //    注意"别人"：自己用自己的 0 不算触碰。
-            if (addendOwner != null
+            if (targetHand != null
+                && addendOwner != null
                 && !ReferenceEquals(addendOwner, actor)
                 && addendOwner.Character is MonkLogic)
             {
@@ -1145,8 +1146,14 @@ namespace FingerDiceDuel.Core
                             var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                             PlayerState target = healer.ApplyHeal(actor, this, sink);
 
-                            // 回复量取角色自己声明的（牧师：9 回 9；将来若有别的量也走这里）
-                            int amount = PriestLogic.HealAmountFor(effect);
+                            // 回复量：角色可以自己声明（巨人 = 另一只手点数 × 2），
+                            // 否则用牧师那套"按效果类型算"（9 回 9）。
+                            //
+                            // ⚠️ 必须让角色能接管这一处 —— 巨人的 9 是"两段回复"，
+                            //    总量不是固定的 9（玩家规则），写死会让它的回复量永远错。
+                            int amount = actor.Character is IHealAmountProvider amountProvider
+                                ? amountProvider.HealAmountOf(actor, this)
+                                : PriestLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
                             target?.Heal(amount);
 
