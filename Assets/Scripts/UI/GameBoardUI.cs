@@ -628,10 +628,15 @@ namespace FingerDiceDuel.UI
 
             if (turnLimit > 0) SetTurn(turnCount, turnLimit);
 
-            // ⚠️ 2v2 也必须能显示"跳过回合"按钮。
-            //    曾经这里完全不理会这个按钮，于是 2v2 里邪术师
-            //    （以及其他任何能跳过的角色）**永远看不到按钮**
-            //    （玩家实测："2v2 中邪术师没有跳过回合按钮"）。
+            // ⚠️ 2v2 必须先**确保按钮被创建**，否则 SetSkipButtonVisible
+            //    只是对 null 做判断、什么都不发生。
+            //
+            //    根因：按钮原本只在 1v1 的 Refresh 路径里由
+            //    EnsureSkipButton(handCardRect) 创建（锚点是 A 的右手牌），
+            //    而 2v2 走的是本方法 —— 于是 _skipButton 一直是 null，
+            //    表现成"判定为 true（日志里没有'不显示'那行）但界面上没有按钮"。
+            EnsureSkipButtonForRing(playersBySeat);
+
             SetSkipButtonVisible(showSkipButton);
             SetSkipButtonInteractable(skipButtonInteractable);
 
@@ -866,6 +871,46 @@ namespace FingerDiceDuel.UI
         {
             if (_turnText == null) return;
             _turnText.text = $"回合 {turnCount} / {turnLimit}";
+        }
+
+        /// <summary>
+        /// 2v2 专用的"确保跳过按钮存在"。
+        ///
+        /// 锚点取**下方那组手牌**（"我"的位置）—— 与 1v1 的手感一致：
+        /// 按钮出现在自己的手牌右侧。
+        ///
+        /// 找不到时会次选任意一个环形面板的手牌，保证按钮一定有父节点
+        /// （否则按钮创建了也不可见，等于没修）。
+        /// </summary>
+        private void EnsureSkipButtonForRing(IReadOnlyList<PlayerState> playersBySeat)
+        {
+            if (_skipButton != null) return;
+
+            HandCard anchor = FindRingAnchorCard(playersBySeat);
+            if (anchor == null) return;
+
+            EnsureSkipButton(anchor.Button.GetComponent<RectTransform>());
+        }
+
+        /// <summary>找"我"（SelfBottom）那一格的第一张手牌作为锚点。</summary>
+        private HandCard FindRingAnchorCard(IReadOnlyList<PlayerState> playersBySeat)
+        {
+            HandCard fallback = null;
+
+            for (int i = 0; i < _ringPanels.Count; i++)
+            {
+                RingPanel panel = _ringPanels[i];
+                if (panel.Root == null || !panel.Root.gameObject.activeInHierarchy) continue;
+                if (panel.Cards == null || panel.Cards.Length == 0) continue;
+                if (panel.Cards[0] == null) continue;
+
+                // 优先"我"的位置（屏幕下方中间）
+                if (panel.Position == RingPosition.SelfBottom) return panel.Cards[0];
+
+                if (fallback == null) fallback = panel.Cards[0];
+            }
+
+            return fallback;
         }
 
         /// <summary>
