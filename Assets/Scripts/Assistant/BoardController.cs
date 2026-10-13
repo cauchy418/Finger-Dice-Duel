@@ -1551,7 +1551,11 @@ namespace FingerDiceDuel.Assistant
             // 填"场上存活人数" —— "仅剩两人才生效"的规则（野蛮人锁手）需要它。
             // 只有控制器知道完整名单，所以在这里统一填，不依赖各调用点自己记得。
             if (context != null && _game != null)
+            {
                 context.AlivePlayerCount = _game.AlivePlayerCount;
+                // 候选可能要看攻击距离（圣武士的冲击目标）
+                context.Manager = _game;
+            }
 
             var provider = player?.Character as IPreTurnChoiceProvider;
             _lastCollectInfo += $" || CollectFrom({player?.Name}, " +
@@ -1716,6 +1720,10 @@ namespace FingerDiceDuel.Assistant
 
             // 同样要填"存活人数"（"仅剩两人才生效"的规则依赖它）
             if (_game != null) context.AlivePlayerCount = _game.AlivePlayerCount;
+
+            // 也要挂上 GameManager：有些抉择的候选要**按攻击距离过滤**
+            // （圣武士的冲击目标只能在范围内），没有它就算不出距离。
+            if (_game != null) context.Manager = _game;
 
             provider.CollectPreTurnChoices(context, _pendingRequests);
 

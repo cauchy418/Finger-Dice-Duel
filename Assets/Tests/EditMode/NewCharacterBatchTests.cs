@@ -91,51 +91,19 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_shock_cannot_be_blocked_or_dodged_and_is_logged()
+        public void Paladin_shock_is_blocked_by_a_shield()
         {
-            // 玩家报告"冲击可以被盾牌抵挡或者被游侠闪避掉" ——
-            // 规则明确它是**真实伤害**，两样都不该发生。
-            // 这条测试同时钉住"战报里能看到冲击"（否则光看血条分不清
-            // 是被挡住了还是根本没触发）。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Ranger,
-                                     out _, out _);
-            PlayerState paladin = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
-
-            // 干扰项：游侠两手都是 1（能闪避）、且有一面成型盾
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            TestSetup.SetHand(ranger.RightHand, 1);
-            ranger.LeftHand.SetShieldState(ShieldState.Formed);
-
-            int before = ranger.Health;
-
-            // 1 + 3 = 4 -> 圣武士合盾 -> 触发冲击
-            TestSetup.SetHand(paladin.LeftHand, 1);
-            TestSetup.SetHand(ranger.RightHand, 3);
-            game.ExecuteTurn(paladin, paladin.LeftHand, ranger.RightHand);
-
-            Assert.AreEqual(before - PaladinLogic.ShockDamage, ranger.Health,
-                "冲击是真实伤害：既不该被护盾挡住，也不该被闪避。");
-            Assert.AreEqual(ShieldState.Formed, ranger.LeftHand.State,
-                "冲击不该消耗目标的护盾。");
-
-            // 战报里必须能看到冲击
-            var lines = new List<string>(game.ShockLog);
-            Assert.True(lines.Count > 0, "冲击应被记入战报。");
-            Assert.True(lines[0].Contains("真实伤害"),
-                $"战报应写明是真实伤害。实际：{lines[0]}");
-        }
-
-        [Test]
-        public void Paladin_shock_deals_two_true_damage_through_a_shield()
-        {
-            // 玩家确认："造成 2 点真实伤害" —— 真实伤害无视护盾与攻防加成
+            // ⚠️ 规则**已按玩家要求改动**：冲击不再是"真实伤害"，
+            //    而是走正常攻击结算 —— **可以被盾牌挡下 / 被游侠闪避**。
+            //    理由（玩家原话）："不然圣武士冲击强度太高了"。
+            //
+            //    我原来那条"不该被挡住"的测试因此作废，改成断言"会被挡住"。
             GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
                                      out _, out _);
             PlayerState paladin = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            // 干扰项：让对手有一面成型盾，真实伤害应无视它
+            // 目标有一面成型盾 -> 冲击应被它挡下
             foe.RightHand.SetValue(5);
             foe.RightHand.SetShieldState(ShieldState.Formed);
 
@@ -146,10 +114,72 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(foe.LeftHand, 3);
             game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
 
+            Assert.AreEqual(before, foe.Health, "冲击应被护盾挡下（不再无视护盾）。");
+            Assert.AreEqual(ShieldState.Broken, foe.RightHand.State,
+                "挡下冲击会**消耗**那面盾（打碎）。");
+        }
+
+        [Test]
+        public void Paladin_shock_hits_when_the_target_has_no_shield()
+        {
+            // 没有盾时冲击照常造成 2 点伤害
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            int before = foe.Health;
+
+            // 1 + 3 = 4 -> 合盾 -> 触发冲击
+            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 3);
+            game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+
             Assert.AreEqual(before - PaladinLogic.ShockDamage, foe.Health,
-                $"合盾应造成 {PaladinLogic.ShockDamage} 点真实伤害（无视护盾）。");
-            Assert.AreEqual(ShieldState.Formed, foe.RightHand.State,
-                "真实伤害不该消耗对手的护盾。");
+                $"无盾时应造成 {PaladinLogic.ShockDamage} 点伤害。");
+
+            // 战报里必须能看到冲击（否则光看血条分不清是否触发）
+            var lines = new List<string>(game.ShockLog);
+            Assert.True(lines.Count > 0, "冲击应被记入战报。");
+        }
+
+        [Test]
+        public void Paladin_shock_is_dodgeable_by_the_ranger()
+        {
+            // 玩家明确要求"可以被游侠闪避"。
+            //
+            // ⚠️ 局面必须让**只有冲击**造成伤害：圣武士的 4/6 会变成护盾（不攻击）。
+            //    我第一次把游侠右手设成 3（1+3=4），结果 4 也被改写成护盾 ——
+            //    对！所以不该有普通攻击伤害，除非目标手是 4。
+            //    这次把游侠右手设成 5：1+5=6 -> 仍是护盾，且**没有普通攻击**。
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Ranger,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState ranger = game.PlayerB;
+
+            // 游侠两手都是 1 -> 有能力(1 变 2)闪避
+            ranger.LeftHand.SetValue(1);
+            ranger.RightHand.SetValue(1);
+
+            int before = ranger.Health;
+
+            // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击）
+            TestSetup.SetHand(paladin.LeftHand, 1);
+            ranger.RightHand.SetValue(5);
+
+            game.ExecuteTurn(paladin, paladin.LeftHand, ranger.RightHand);
+
+            // ⚠️ 冲击现在走**正常攻击结算**，所以会叠加攻防加成：
+            //    游侠防御 −2 -> 2 + 2 = 4 点。
+            //    这也是"可以被挡/被闪避"的代价（玩家为了平衡主动要求的）。
+            //    这里只断言"闪避与护盾两条路是通的"：伤害必须是
+            //    0（被闪避或挡下）或者"2 + 游侠的负防御加成"。
+            int expected = PaladinLogic.ShockDamage - ranger.Character.DefenseBonus;
+            int dealt = before - ranger.Health;
+
+            Assert.True(dealt == 0 || dealt == expected,
+                $"冲击要么被闪避/挡下(0)，要么造成 {expected} 点（含游侠防 −2），" +
+                $"实际扣了 {dealt}。");
         }
 
         [Test]

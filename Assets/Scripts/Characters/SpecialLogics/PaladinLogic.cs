@@ -112,7 +112,7 @@ namespace FingerDiceDuel.Core
             if (picked == null) picked = candidates[0];   // 强制发动 -> 兜底第一个
 
             int before = picked.Health;
-            ApplyTrueDamage(picked, ShockDamage);
+            ResolveShockDamage(owner, sourceHand, picked, manager);
             int dealt = before - picked.Health;
 
             // 写进战报：这样"冲击到底有没有发生、扣了多少"一眼可见。
@@ -121,18 +121,35 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **真实伤害**：直接扣血，不经护盾、不受攻防加成影响。
+        /// **落实一次冲击**：对范围内一个人造成 2 点伤害。
         ///
-        /// ⚠️ 这是本角色的核心保证 —— 玩家明确说过冲击"不该被盾牌抵挡"。
-        ///    所以这里**不能**走 <see cref="AttackContext"/>（那条路会判闪避与护盾）。
-        ///    任何"改成走攻击结算"的重构都会破坏这条规则。
+        /// ⚠️ 伤害**走 <see cref="AttackContext"/>**，所以：
+        ///   · **可以被盾牌挡下**（消耗一面盾）
+        ///   · **可以被游侠闪避**
+        ///
+        /// 这是玩家明确要求的平衡性改动：
+        /// "我需要让圣武士的攻击可以被盾牌挡下或者被游侠闪避，
+        ///  不然圣武士冲击强度太高了"。
+        ///
+        /// 但仍然标记为 <see cref="AttackContext.IsSpecialAttack"/>：
+        /// 它的"攻击数字视为 0"，所以**邪术师无法取消它**（玩家此前确认过）。
         /// </summary>
-        private static void ApplyTrueDamage(PlayerState target, int amount)
+        private void ResolveShockDamage(PlayerState owner, Hand sourceHand,
+                                        PlayerState target, GameManager manager)
         {
-            if (target == null || amount <= 0) return;
-            if (!target.IsAlive) return;
+            if (owner == null || target == null || !target.IsAlive) return;
 
-            target.TakeDamage(amount);
+            Hand hand = sourceHand ?? owner.LeftHand;
+            if (hand == null) return;
+
+            var ctx = new AttackContext(owner, target, hand, ShockDamage)
+            {
+                // ⚠️ 关键：不要把冲击做成"真实伤害"。
+                //    走正常攻击结算才能被盾挡 / 被闪避（玩家要求的平衡）。
+                IsSpecialAttack = true,
+            };
+
+            ctx.Resolve(manager?.GetChoiceProvider(target), manager);
         }
 
         /// <summary>读回玩家选的冲击目标（收集阶段问过；没答过就返回 null）。</summary>
@@ -215,16 +232,17 @@ namespace FingerDiceDuel.Core
         /// 为什么必须在运算前：结算一旦开始就一次跑完，
         /// 没法中途问人类玩家（本项目反复踩过的坑）。
         ///
-        /// 什么时候需要问：
-        ///   · 自己的运算可能**合出盾或碎盾**（即结果会是 4/6/5，或用成型盾运算）
-        ///   · 自己是**防守方**（可能被打碎盾），或者可能替别人代挡
+        /// 什么时候需要问冲击目标：
+        ///   · **自己行动且这次会合出盾 / 主动碎盾** -> 一定会触发
+        ///   · **对手行动且自己有一面成型盾** -> 可能被打碎（玩家要求
+        ///     "盾牌破碎时跳出提示，点击目标的手发动"）
         /// </summary>
         public override void CollectPreTurnChoices(PreTurnChoiceContext context,
                                                    IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
 
-            // ① 这次运算会合出盾或碎盾吗？（只在自己行动时）
+            // ① 自己行动：这次运算会合出盾或碎盾
             if (ReferenceEquals(context.Actor?.Character, this))
             {
                 bool willFormShield = WillFormShield(context);
@@ -232,12 +250,34 @@ namespace FingerDiceDuel.Core
                                           && context.ActedHand.State == ShieldState.Formed;
 
                 if ((willFormShield || willBreakOwnShield)
-                    && context.ActedHand != null && context.Actor.Owns(context.ActedHand))
+                    && context.ActedHand != null && context.Actor.Owns(context.ActedHand)
+                    && context.Actor.LeftHand != null)
                 {
-                    AddShockRequest(context, requests);
+                    AddShockRequest(context.Actor, context.Defender, requests,
+                                    context.Manager);
                 }
+
+                return;
+            }
+
+            // ② **对手行动**，而我是可能被打碎盾的防守方
+            //
+            //    玩家要求："盾牌破碎时跳出提示，点击目标的手发动"。
+            //    被打碎发生在**对手的回合**，所以必须在这里提前问 ——
+            //    否则结算中途没有机会问玩家。
+            if (ReferenceEquals(context.Defender?.Character, this))
+            {
+                if (HasFormedShield(context.Defender) && context.Defender.LeftHand != null)
+                    AddShockRequest(context.Defender, context.Actor, requests,
+                                    context.Manager);
             }
         }
+
+        /// <summary>该玩家是否有一面**成型的盾**（可能被打碎 -> 触发冲击）。</summary>
+        private static bool HasFormedShield(PlayerState player)
+            => player != null
+               && ((player.LeftHand != null && player.LeftHand.State == ShieldState.Formed)
+                   || (player.RightHand != null && player.RightHand.State == ShieldState.Formed));
 
         /// <summary>这次运算会不会合出盾（4 / 6 -> 护盾）。</summary>
         private static bool WillFormShield(PreTurnChoiceContext context)
@@ -248,35 +288,48 @@ namespace FingerDiceDuel.Core
             return result == 4 || result == 6;
         }
 
-        private void AddShockRequest(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
+        /// <summary>
+        /// 加一条"选冲击目标"的抉择。
+        ///
+        /// <paramref name="owner"/> 是圣武士（抉择的归属者），
+        /// <paramref name="other"/> 是另一位参战者（拿不到完整名单时的兜底候选）。
+        /// </summary>
+        private static void AddShockRequest(PlayerState owner, PlayerState other,
+                                           IList<ChoiceRequest> requests,
+                                           GameManager manager)
         {
-            List<PlayerState> candidates = ShockCandidates(context.Actor, null);
-            // 没有 manager 时无法按距离过滤，退化为"所有其他角色"
-            if (candidates.Count == 0)
+            if (owner == null || requests == null) return;
+
+            // ⚠️ 候选**必须与结算时用同一个规则**（距离过滤），
+            //    否则玩家能选到一个打不到的人，结算时又被迫改成 candidates[0]
+            //    —— 表现成"我选的人没被打"。
+            List<PlayerState> candidates = manager != null
+                ? ShockCandidates(owner, manager)
+                : new List<PlayerState>(1);
+
+            if (other != null && !ReferenceEquals(other, owner) && other.IsAlive
+                && !candidates.Contains(other))
             {
-                candidates = new List<PlayerState>(4);
-                PlayerState owner = context.Actor;
-                if (context.Defender != null && !ReferenceEquals(context.Defender, owner))
-                    candidates.Add(context.Defender);
+                candidates.Add(other);      // 兜底：至少让对面那位可选
             }
 
             var hands = new List<Hand>(candidates.Count * 2);
             for (int i = 0; i < candidates.Count; i++)
             {
-                hands.Add(candidates[i].LeftHand);
-                hands.Add(candidates[i].RightHand);
+                if (candidates[i].LeftHand != null) hands.Add(candidates[i].LeftHand);
+                if (candidates[i].RightHand != null) hands.Add(candidates[i].RightHand);
             }
 
             if (hands.Count == 0) return;
 
             requests.Add(new ChoiceRequest(
                 HandEffect.PaladinShockTarget,
-                $"圣武士：这次运算会合出护盾，随后对攻击范围内一名角色" +
-                $"造成 {ShockDamage} 点真实伤害。请选目标。",
+                $"圣武士：冲击即将触发，请选攻击范围内一名角色（造成 {ShockDamage} 点伤害，" +
+                $"可被护盾挡下或闪避）。",
                 hands,
-                allowDecline: false,             // 强制发动
+                allowDecline: false,             // 强制发动（玩家只选目标）
                 declineResult: null,
-                decider: context.Actor));
+                decider: owner));
         }
     }
 }

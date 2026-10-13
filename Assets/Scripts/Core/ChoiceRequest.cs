@@ -458,6 +458,16 @@ namespace FingerDiceDuel.Core
         /// <summary>"存活人数未知"的哨兵值。</summary>
         public const int UnknownAliveCount = -1;
 
+        /// <summary>
+        /// 当前对局（由 <see cref="Assistant.BoardController"/> 在收集前填入）。
+        ///
+        /// 用途：有些抉择的**候选必须按距离过滤**（圣武士的冲击目标
+        /// 只能在攻击范围内）—— 没有 GameManager 就算不出距离。
+        ///
+        /// 直连单元测试时可能为 null，此时各角色应退化为"不按距离过滤"。
+        /// </summary>
+        public GameManager Manager { get; set; }
+
         /// <summary>场上是否**只剩两名玩家**（本来就 1v1，或多人局打到只剩两人）。</summary>
         public bool OnlyTwoPlayersLeft =>
             AlivePlayerCount == UnknownAliveCount || AlivePlayerCount <= 2;

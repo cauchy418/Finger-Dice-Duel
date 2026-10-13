@@ -1194,19 +1194,25 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 记录一次圣武士的**冲击**（真实伤害），供战报显示。
+        /// 记录一次圣武士的**冲击**，供战报显示。
         ///
         /// 为什么必须写进战报：冲击是"合盾 / 碎盾的副产品"，
         /// 不占一次运算，所以它**不会**出现在 TurnResult 里。
         /// 光看血条无法区分"被盾挡住了"和"根本没触发"（玩家实测报告过疑惑）。
+        ///
+        /// ⚠️ 冲击现在**可以被盾牌挡下 / 被游侠闪避**（玩家要求的平衡性改动），
+        ///    所以文案要反映实际结果，不能一律说"造成 N 点"。
         /// </summary>
         public void NoteShock(PlayerState source, PlayerState target,
                               string reason, int damage)
         {
             if (source == null || target == null) return;
 
-            _shockLog.Add($"{source.Name}（圣武士 {reason}）对 {target.Name} " +
-                          $"造成 {damage} 点真实伤害（无视护盾与闪避）");
+            string result = damage > 0
+                ? $"造成 {damage} 点伤害"
+                : "被挡下（护盾或闪避）";
+
+            _shockLog.Add($"{source.Name}（圣武士 {reason}）冲击 {target.Name}：{result}");
         }
 
         private readonly List<string> _shockLog = new List<string>();
