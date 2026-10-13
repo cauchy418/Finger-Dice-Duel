@@ -106,6 +106,40 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Paladin_asks_for_a_shock_target_when_forming_a_five_shield()
+        {
+            // 玩家实测：1+4=5 合出护盾时**没有提示选目标**，而是自动打了人。
+            // 根因：WillFormShield 只判了 4 和 6，漏了 5 —— 于是没收集抉择，
+            // 结算时读不到答案、兜底打了 candidates[0]。
+            //
+            // 这条测试直接验证"收集阶段确实产出了抉择"，
+            // 这才是"会不会提示"的判据（只测血量下降分不出"问了"和"自动打"）。
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(foe.RightHand, 4);        // 1 + 4 = 5
+
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider());
+            board.BeginTurn();
+
+            Assert.True(board.ClickHand(paladin.LeftHand), "选运算源");
+            Assert.True(board.ClickHand(foe.RightHand), "选被加数");
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "合出 5 的护盾也必须**停下来问**冲击目标，而不是自动打。");
+
+            Assert.True(board.PendingRequests.Count > 0,
+                "收集阶段应产出冲击目标抉择。");
+            Assert.AreEqual(HandEffect.PaladinShockTarget,
+                            board.PendingRequests[0].Effect,
+                "产出的应是冲击目标抉择。");
+        }
+
+        [Test]
         public void Paladin_shock_fires_when_the_formed_shield_value_is_five()
         {
             // 玩家报告："圣武士 5 去合成盾牌…似乎没有正常提示冲击"

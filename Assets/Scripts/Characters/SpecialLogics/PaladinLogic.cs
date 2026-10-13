@@ -318,13 +318,26 @@ namespace FingerDiceDuel.Core
                && ((player.LeftHand != null && player.LeftHand.State == ShieldState.Formed)
                    || (player.RightHand != null && player.RightHand.State == ShieldState.Formed));
 
-        /// <summary>这次运算会不会合出盾（4 / 6 -> 护盾）。</summary>
+        /// <summary>
+        /// 这次运算会不会**合出护盾**。
+        ///
+        /// ⚠️ **结果是 5 也算合盾**（手值 5 本身就是"成型护盾"的数值）——
+        ///    我第一版只判了 4 和 6，于是"1+4=5 合盾"不收集冲击目标，
+        ///    结算时读不到答案、兜底打了 candidates[0]，
+        ///    表现成"生成 5 的盾牌冲击没有提示选择，而是自动造成了伤害"
+        ///    （玩家实测报告）。
+        ///
+        /// 与 <see cref="HandEffectType.Shield"/> 的判定保持一致：
+        /// 4 / 6 是圣武士改写来的，5 本身就是护盾值。
+        /// </summary>
         private static bool WillFormShield(PreTurnChoiceContext context)
         {
             if (context?.ActedHand == null || context.TargetHand == null) return false;
 
             int result = Hand.ComputeSum(context.ActedHand.Value, context.TargetHand.Value);
-            return result == 4 || result == 6;
+
+            // 4 / 6：圣武士的改写规则；5：手值本身就是护盾
+            return result == 4 || result == 5 || result == 6;
         }
 
         /// <summary>
