@@ -144,9 +144,15 @@ namespace FingerDiceDuel.Core
 
             var ctx = new AttackContext(owner, target, hand, ShockDamage)
             {
-                // ⚠️ 关键：不要把冲击做成"真实伤害"。
-                //    走正常攻击结算才能被盾挡 / 被闪避（玩家要求的平衡）。
+                // 冲击**走正常攻击结算**，所以能被盾挡、能被闪避
+                //（玩家要求的平衡性改动）。
                 IsSpecialAttack = true,
+
+                // ⚠️ 但伤害是**固定 2 点**，不叠加攻防加成（玩家确认）。
+                //
+                //    没有这一行的话，打游侠（防 −2）会变成 2 + 2 = 4 点 ——
+                //    测试抓到过这个副作用。剑客的追加攻击用的是同一个开关。
+                IgnoreStatBonuses = true,
             };
 
             ctx.Resolve(manager?.GetChoiceProvider(target), manager);

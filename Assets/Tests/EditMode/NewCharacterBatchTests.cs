@@ -91,6 +91,42 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Paladin_shock_damage_is_a_fixed_two_regardless_of_bonuses()
+        {
+            // 玩家确认："冲击不保留攻防加成，造成固定两点伤害"
+            //
+            // 注意这个组合：**能被盾挡/被闪避**（走攻击结算），
+            // 但**固定 2 点**（IgnoreStatBonuses = true）。
+            // 两者都要成立，缺一不可。
+            foreach (CharacterDefinition foeDef in new[]
+                     {
+                         CharacterDefinition.Ranger,     // 防 −2（易伤）
+                         CharacterDefinition.Barbarian,  // 防 +1（减伤）
+                         CharacterDefinition.Blank,      // 防 0
+                     })
+            {
+                GameManager game = Match(CharacterDefinition.Paladin, foeDef,
+                                         out _, out _);
+                PlayerState paladin = game.PlayerA;
+                PlayerState foe = game.PlayerB;
+
+                int before = foe.Health;
+
+                // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击，
+                // 所以扣血量就是冲击本身的伤害）
+                TestSetup.SetHand(paladin.LeftHand, 1);
+                foe.RightHand.SetValue(5);
+
+                game.ExecuteTurn(paladin, paladin.LeftHand, foe.RightHand);
+
+                int dealt = before - foe.Health;
+                Assert.AreEqual(PaladinLogic.ShockDamage, dealt,
+                    $"对 {foeDef.DisplayName}（防 {foeDef.DefenseBonus}）冲击应固定 " +
+                    $"造成 {PaladinLogic.ShockDamage} 点，实际 {dealt} 点。");
+            }
+        }
+
+        [Test]
         public void Paladin_shock_is_blocked_by_a_shield()
         {
             // ⚠️ 规则**已按玩家要求改动**：冲击不再是"真实伤害"，
@@ -169,17 +205,13 @@ namespace FingerDiceDuel.Tests
 
             game.ExecuteTurn(paladin, paladin.LeftHand, ranger.RightHand);
 
-            // ⚠️ 冲击现在走**正常攻击结算**，所以会叠加攻防加成：
-            //    游侠防御 −2 -> 2 + 2 = 4 点。
-            //    这也是"可以被挡/被闪避"的代价（玩家为了平衡主动要求的）。
-            //    这里只断言"闪避与护盾两条路是通的"：伤害必须是
-            //    0（被闪避或挡下）或者"2 + 游侠的负防御加成"。
-            int expected = PaladinLogic.ShockDamage - ranger.Character.DefenseBonus;
+            // 冲击是**固定 2 点**，不叠加攻防加成（玩家确认）——
+            // 所以对游侠（防 −2）也仍然是 2 点，而不是 4 点。
             int dealt = before - ranger.Health;
 
-            Assert.True(dealt == 0 || dealt == expected,
-                $"冲击要么被闪避/挡下(0)，要么造成 {expected} 点（含游侠防 −2），" +
-                $"实际扣了 {dealt}。");
+            Assert.True(dealt == 0 || dealt == PaladinLogic.ShockDamage,
+                $"冲击要么被闪避/挡下(0)，要么固定造成 {PaladinLogic.ShockDamage} 点" +
+                $"（不叠加攻防加成），实际扣了 {dealt}。");
         }
 
         [Test]
