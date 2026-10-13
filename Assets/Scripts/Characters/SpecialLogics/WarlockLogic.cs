@@ -120,6 +120,10 @@ namespace FingerDiceDuel.Core
         /// 能否跳过回合换体力：
         ///   · 自己**体力不满**
         ///   · 场上**存在体力与自己不同的人**（都相同就没意义）
+        ///
+        /// ⚠️ 我一度把这个限制去掉了（以为那句"若自己的体力不满"
+        ///    是在描述**目标**）—— 玩家确认**限制保留**，
+        ///    是当时的测试局面摆得不对。现已恢复。
         /// </summary>
         public bool CanSkip(PlayerState owner, GameManager manager)
         {

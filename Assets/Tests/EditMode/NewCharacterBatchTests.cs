@@ -470,6 +470,21 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Warlock_cannot_skip_when_everyone_has_the_same_health()
+        {
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+                                     out _, out _);
+            PlayerState warlock = game.PlayerB;
+
+            var logic = warlock.Character as ITurnSkipRule;
+            Assert.NotNull(logic);
+
+            // 双方都满血 = 体力一致 -> 无法发动（改了也没变化）
+            Assert.False(logic.CanSkip(warlock, game),
+                "所有人血量一致时无法发动（改了也不会有变化）。");
+        }
+
+        [Test]
         public void Warlock_can_skip_only_when_hurt_and_health_differs()
         {
             GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
@@ -479,7 +494,7 @@ namespace FingerDiceDuel.Tests
             var logic = warlock.Character as ITurnSkipRule;
             Assert.NotNull(logic, "邪术师应实现跳过回合接口。");
 
-            // 满血 -> 不能发动
+            // 满血 -> 不能发动（限制保留；玩家确认过）
             Assert.False(logic.CanSkip(warlock, game), "满血不能发动。");
 
             // 受伤，且对手体力不同 -> 可以发动
