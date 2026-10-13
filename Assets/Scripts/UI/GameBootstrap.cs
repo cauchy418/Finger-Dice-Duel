@@ -1732,6 +1732,14 @@ namespace FingerDiceDuel.UI
             {
                 sb.Append($" | 我方手 L{_game.PlayerA?.LeftHand.Value} R{_game.PlayerA?.RightHand.Value}");
                 sb.Append($" | 对手手 L{_game.PlayerB?.LeftHand.Value} R{_game.PlayerB?.RightHand.Value}");
+
+                // ⚠️ 玩家报过"赌徒的显示和实际不一样"，两处读的却是同一个对象 ——
+                //    所以把**展示层真正用的**手牌对象也打出来（附对象哈希），
+                //    这样能确认"显示与诊断读的是不是同一份数据"，
+                //    而不是继续在两边各自的读数上打转。
+                int aHash = _game.PlayerA?.LeftHand != null ? _game.PlayerA.LeftHand.GetHashCode() : 0;
+                int bHash = _game.PlayerB?.LeftHand != null ? _game.PlayerB.LeftHand.GetHashCode() : 0;
+                sb.Append($" | [对象] A哈希={aHash} B哈希={bHash}");
             }
 
             // ⚠️ 关键：把"抉择创建时那次运算"的两只手打出来。
@@ -1760,6 +1768,13 @@ namespace FingerDiceDuel.UI
             }
 
             sb.Append(" | 收集：").Append(_controller.LastCollectInfo ?? "(无)");
+
+            // 最近一次结算的关键信息：能区分"这一回合到底结算了什么" ——
+            // 玩家报"开赌掷出 8"却又"掷出 5"时，靠它判断是不是发生了两次。
+            TurnResult lt = _controller.LastTurn;
+            sb.Append($" | 最近结算={(lt == null ? "无" : lt.Actor?.Name)}")
+              .Append(lt == null ? "" : $" 赌博={lt.WasGamble} 点数={lt.GambleRoll} 结果={lt.ResultValue}")
+              .Append($" | 本次赌点={_controller.PendingGambleRoll}/{_controller.LastGambleRoll}");
 
             sb.Append(" | AI作答：");
             if (_controller.AiTrace.Count == 0) sb.Append("（无）");
