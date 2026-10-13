@@ -298,6 +298,154 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(13, foe.Health, "对手体力应被改成与邪术师一致。");
         }
 
+        [Test]
+        public void Warlock_cancels_a_multi_hit_attack_entirely_not_per_hit()
+        {
+            // 玩家要求："忍者和魔射手的二段攻击，邪术师需要可以一次性全部抵消"
+            //
+            // 实现上这件事是**天然成立**的：取消发生在 AttackContext.Resolve
+            // 的最开头，段数（HitCount = 2）此时还没进入循环 ——
+            // 一次取消就让整个循环不跑，所以是"一次性全部抵消"而不是"抵消一段"。
+            // 这条测试把这个性质钉住，防止以后有人把取消挪进循环里。
+            foreach (CharacterDefinition attackerDef in new[]
+                     {
+                         CharacterDefinition.Ninja,          // 4 -> 两段各 2
+                         CharacterDefinition.ArcaneArcher,   // 4 -> 两段各 4
+                     })
+            {
+                GameManager game = Match(attackerDef, CharacterDefinition.Warlock,
+                                         out _, out _);
+                PlayerState attacker = game.PlayerA;
+                PlayerState warlock = game.PlayerB;
+
+                TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4 -> 能取消
+                TestSetup.SetHand(warlock.RightHand, 1);
+
+                int before = warlock.Health;
+
+                var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+                {
+                    SourceHandValueBefore = 1,
+                    TargetHandValueBefore = 3,               // 攻击数字 4
+                };
+                ctx.Resolve(new SimpleChoiceProvider(), game);
+
+                Assert.True(ctx.WasCancelled,
+                    $"{attackerDef.DisplayName} 的两段攻击应被取消。");
+                Assert.AreEqual(0, ctx.HitCount,
+                    $"{attackerDef.DisplayName}：取消后**一段都不该打**。");
+                Assert.AreEqual(0, ctx.LandedHits, "不应有任何一段命中。");
+                Assert.AreEqual(0, ctx.AppliedDamage, "两段合计应为 0 伤害。");
+                Assert.AreEqual(before, warlock.Health,
+                    "被完全取消的攻击不该扣血。");
+
+                // 只能 +1 一次（一只手的数字只匹配一次）
+                Assert.AreEqual(5, warlock.LeftHand.Value,
+                    "取消的代价只付一次（+1），不是每段各付一次。");
+            }
+        }
+
+        // ============================================================
+        // 邪术师的交互（跳过回合 -> 点一个人的手改体力）
+        // ============================================================
+
+        [Test]
+        public void Warlock_skip_enters_target_selection_then_swaps_health()
+        {
+            // 玩家要求的交互："在右侧显示跳过回合，然后点击一个人的手发动技能"
+            var providers = new List<IChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var a = Make("A", CharacterDefinition.Blank);
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+
+            // ⚠️ 邪术师必须是**当前行动方** —— 第一个参数是先手。
+            //    （我第一次写成 (a, warlock)，于是 CanSkipTurn 检查的是 A，
+            //      诊断为 active=A hp=20 才看出来。）
+            var game = new GameManager(warlock, a, providers[0], providers[1]);
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider());
+            board.BeginTurn();
+
+            // 满血 -> 不能跳过（技能要求体力不满）
+            Assert.False(board.CanSkipTurn, "满血时不该出现跳过回合按钮。");
+
+            warlock.TakeDamage(7);
+            Assert.True(board.CanSkipTurn,
+                "体力不满且对手体力不同 -> 应出现跳过回合按钮。");
+
+            // 点"跳过回合" -> 进入选目标相位（**不立刻结束回合**）
+            Assert.True(board.SkipTurn(), "应进入选目标相位。");
+            Assert.AreEqual(BoardPhase.ChoosingHealthSwapTarget, board.Phase,
+                "应停在'选一个人改体力'这一步。");
+
+            int warlockHealth = warlock.Health;
+
+            // 点对手的手 -> 那人体力被改成与邪术师一致，回合结束
+            Assert.True(board.ClickHand(a.LeftHand), "点目标的手应成功发动。");
+
+            Assert.AreEqual(warlockHealth, a.Health,
+                "对手体力应被改成与邪术师一致。");
+            Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
+                "发动后应离开选目标相位。");
+        }
+
+        [Test]
+        public void Warlock_skip_rejects_a_target_whose_health_already_matches()
+        {
+            // 体力本来就一样的人不是合法目标 —— 点头上不该让它浪费回合
+            var providers = new List<IChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var a = Make("A", CharacterDefinition.Blank);
+
+            var game = new GameManager(warlock, a, providers[0], providers[1]);
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider());
+            board.BeginTurn();
+
+            warlock.TakeDamage(7);
+            Assert.True(board.SkipTurn());
+
+            // 强行把对手体力设成与邪术师一致 -> 该目标变非法
+            a.SetHealthExact(warlock.Health);
+
+            Assert.False(board.ClickHand(a.LeftHand),
+                "体力已一致的人不该是合法目标。");
+            Assert.AreEqual(BoardPhase.ChoosingHealthSwapTarget, board.Phase,
+                "非法目标应留在选择相位，等玩家另选。");
+        }
+
+        [Test]
+        public void Ai_warlock_uses_the_skip_skill_on_its_own()
+        {
+            // AI 没有"点击"，必须自己在 MakeAutomaticMove 里走完这个技能 ——
+            // 否则 AI 的邪术师永远不会用它（等于技能在 AI 手里不存在）。
+            var ai = new GreedyChoiceProvider();
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var foe = Make("敌", CharacterDefinition.Blank);
+
+            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var board = new BoardController(game,
+                                           new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider(),
+                                           aiForA: ai);
+            board.BeginTurn();
+
+            warlock.TakeDamage(7);
+            int warlockHealth = warlock.Health;
+
+            Assert.True(board.MakeAutomaticMove(), "AI 应该自己走完这一步。");
+            Assert.AreEqual(warlockHealth, foe.Health,
+                "AI 应把对手体力改成与自己一致。");
+            Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
+                "AI 不该停在需要点击的相位上（否则对局会卡死）。");
+        }
+
         // ============================================================
         // 魔射手
         // ============================================================

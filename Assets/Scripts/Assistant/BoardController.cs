@@ -49,6 +49,14 @@ namespace FingerDiceDuel.Assistant
         /// <summary>对局结束。</summary>
         GameOver = 4,
 
+        /// <summary>
+        /// 等待**邪术师**点一个人的手，把那人的体力改成与自己一致。
+        ///
+        /// 这是邪术师"跳过回合"技能的目标选择步骤：
+        /// 点右侧「跳过回合」进入本相位，再点目标的手发动。
+        /// </summary>
+        ChoosingHealthSwapTarget = 7,
+
         /// <summary>兼容旧名字，与 <see cref="ChoosingPreTurnChoice"/> 等价。</summary>
         ChoosingLockTarget = ChoosingPreTurnChoice,
     }
@@ -335,6 +343,10 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingTargetPlayer:
                         return ActivePlayer;
 
+                    // 邪术师改体力的目标由**行动方自己**点（他发动技能）
+                    case BoardPhase.ChoosingHealthSwapTarget:
+                        return ActivePlayer;
+
                     default:
                         return null;
                 }
@@ -373,24 +385,103 @@ namespace FingerDiceDuel.Assistant
                && ActivePlayer != null
                && Phase != BoardPhase.ChoosingDefenseShield
                && Phase != BoardPhase.ChoosingLockTarget
+               && Phase != BoardPhase.ChoosingHealthSwapTarget
                && Phase != BoardPhase.GameOver
-               && GameManager.CanSkipTurn(ActivePlayer);
+               // ⚠️ 用带 GameManager 的重载：邪术师的跳过条件要查**别人**的体力，
+               //    静态版传 null 会让它永远返回 false（按钮不显示）。
+               && _game.CanSkipTurnFor(ActivePlayer);
 
         /// <summary>
         /// 跳过当前回合（不执行运算，直接把回合交给对方）。
         /// 仅在 <see cref="CanSkipTurn"/> 为 true 时有效。
+        ///
+        /// ⚠️ 两种角色共用这个按钮，但**流程不同**：
+        ///   · 刺客（潜行）/ 双盾在手 -> 直接跳过
+        ///   · **邪术师** -> 先进入"选一个人的手"，把那人**体力改成与自己一致**，
+        ///     选完才真正跳过（玩家要求的交互：
+        ///     "在右侧显示跳过回合，然后点击一个人的手发动技能"）
         /// </summary>
         public bool SkipTurn()
         {
             if (!CanSkipTurn) return false;
 
-            _log.Add($"{ActivePlayer.Name} 选择跳过本回合（双盾在手）。");
+            // 邪术师：先选目标，不立刻结束回合
+            var warlock = ActivePlayer.Character as WarlockLogic;
+            if (warlock != null)
+            {
+                PlayerState victim = FindHealthSwapTarget();
+                if (victim != null)
+                {
+                    Phase = BoardPhase.ChoosingHealthSwapTarget;
+                    Hint = $"{ActivePlayer.Name}（邪术师）：点一个人的手，" +
+                           $"把那个人的体力改成与自己一致（{ActivePlayer.Health}）。";
+                    return true;
+                }
+                // 找不到目标就退回"直接跳过"（正常不会发生：CanSkipTurn 已判过）
+            }
+
+            _log.Add($"{ActivePlayer.Name} 选择跳过本回合。");
             _game.SkipTurn();
 
             SelectedHand = null;
             _selectedTarget = null;
             _chosenDefenseShield = null;
             _shieldChoices.Clear();
+
+            BeginTurn();
+            return true;
+        }
+
+        /// <summary>
+        /// 邪术师改体力的目标：**场上任意一名体力与自己不同的存活角色**。
+        ///
+        /// 返回 null 表示没有可改的人（此时技能无意义）。
+        /// </summary>
+        public PlayerState FindHealthSwapTarget()
+        {
+            if (ActivePlayer == null) return null;
+
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, ActivePlayer)) continue;
+                if (p.Health == ActivePlayer.Health) continue;
+
+                return p;
+            }
+
+            return null;
+        }
+
+        /// <summary>落实"把某人体力改成与自己一致"并结束本回合（邪术师）。</summary>
+        public bool ApplyHealthSwapAndEndTurn(PlayerState target)
+        {
+            if (target == null || ActivePlayer == null) return false;
+            if (Phase != BoardPhase.ChoosingHealthSwapTarget) return false;
+
+            int before = target.Health;
+
+            if (!WarlockLogic.ApplyHealthSwap(ActivePlayer, target))
+            {
+                // 目标体力本来就一样（或已阵亡）-> 退回选择，不浪费回合
+                Hint = "那个人的体力已经与你一致，请另选一个人。";
+                return false;
+            }
+
+            _log.Add($"{ActivePlayer.Name}（邪术师）跳过回合，" +
+                     $"把 {target.Name} 的体力从 {before} 改成 {ActivePlayer.Health}。");
+
+            // ⚠️ 用"已校验"的版本：改完体力后"有人体力与我不同"这个条件
+            //    就不再成立了，再校验一次会抛"非法跳过"（测试抓到）。
+            _game.SkipTurnAlreadyValidated();
+
+            SelectedHand = null;
+            _selectedTarget = null;
+            _chosenDefenseShield = null;
+            _shieldChoices.Clear();
+            _preTargetChoiceActive = false;
 
             BeginTurn();
             return true;
@@ -666,6 +757,17 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingAttackerHand:
                     return ActivePlayer.Owns(hand) && !hand.IsLocked;
 
+                case BoardPhase.ChoosingHealthSwapTarget:
+                {
+                    // 邪术师：可以点**任何其他人**的手（体力与自己不同的才有意义）。
+                    // 自己除外 —— "把场上一人的体力改成与自己一致"，自己不在"场上"。
+                    PlayerState owner = OwnerOf(hand);
+                    if (owner == null) return false;
+                    if (ReferenceEquals(owner, ActivePlayer)) return false;
+
+                    return owner.IsAlive && owner.Health != ActivePlayer.Health;
+                }
+
                 case BoardPhase.ChoosingTargetHand:
                 {
                     // 自己已选的手也允许再点一次（表示取消选择）
@@ -688,8 +790,7 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingTargetPlayer:
                 {
-                    // 第 ③ 步：点**任意可攻击敌人的手**即确认打他。
-                    //
+                    // 第 ③ 步：点**任意可攻击敌人的手**即确认打他。                    //
                     // ⚠️ 不能只接受 `TargetPlayer.Owns(hand)` ——
                     //    TargetPlayer 可能是"被加数的手主"（例如队友），
                     //    那样玩家**没有任何手可点**，对局直接卡死
@@ -915,6 +1016,13 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingPreTargetChoice:
                     ApplyPreTurnChoiceAndContinue(hand);
                     return true;
+
+                case BoardPhase.ChoosingHealthSwapTarget:
+                {
+                    // 邪术师：点谁的手就把谁的体力改成与自己一致，然后结束回合
+                    PlayerState owner = OwnerOf(hand);
+                    return ApplyHealthSwapAndEndTurn(owner);
+                }
 
                 case BoardPhase.ChoosingAttackerHand:
                     SelectedHand = hand;
@@ -1895,6 +2003,14 @@ namespace FingerDiceDuel.Assistant
             if (ai == null) return false;
             if (_game.IsGameOver) return false;
 
+            // ⚠️ AI 的邪术师要用"跳过回合改体力"这个技能。
+            //
+            // 人类玩家是"点跳过回合 -> 点一个人的手"，AI 没有点击，
+            // 所以要在这里自己走完 —— 否则 AI 永远不用这个技能。
+            //
+            // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
+            if (TryAiWarlockSkip()) return true;
+
             LegalMove move = ai.ChooseMove(_game, ActivePlayer);
             if (move.Actor == null) return false;
 
@@ -1940,6 +2056,44 @@ namespace FingerDiceDuel.Assistant
             // 可能停在"选盾"阶段（防守方是 AI）
             ResolvePendingAiChoices();
             return true;
+        }
+
+        /// <summary>
+        /// AI 的邪术师：能跳过就跳过，并把**体力最高的对手**改成与自己一致。
+        ///
+        /// 返回 true 表示已经用掉了这个回合。
+        ///
+        /// 选"体力最高的对手"的理由：把自己的血量（通常较低）套给满血的敌人，
+        /// 收益最大、也最符合"用低血量换对方高血量"的直觉。
+        /// 场上没有可改的人（都同血）时 <see cref="CanSkipTurn"/> 本来就是 false。
+        /// </summary>
+        private bool TryAiWarlockSkip()
+        {
+            if (!(ActivePlayer?.Character is WarlockLogic)) return false;
+            if (!CanSkipTurn) return false;
+
+            // 找一个"体力最高的对手"（排除队友与自己）
+            PlayerState best = null;
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, ActivePlayer)) continue;
+                if (_game.IsTeammate(ActivePlayer, p)) continue;
+                if (p.Health == ActivePlayer.Health) continue;
+
+                if (best == null || p.Health > best.Health) best = p;
+            }
+
+            // 没有对手可改就退而求其次：任何体力不同的人
+            // （规则允许打队友，但 AI 优先不这么干）
+            if (best == null) best = FindHealthSwapTarget();
+            if (best == null) return false;
+
+            // 进入相位再发动 —— 复用人类那条路径，避免两套逻辑漂移
+            if (!SkipTurn()) return false;
+            return ApplyHealthSwapAndEndTurn(best);
         }
 
         /// <summary>

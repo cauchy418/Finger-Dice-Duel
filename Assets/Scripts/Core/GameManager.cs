@@ -1080,7 +1080,10 @@ namespace FingerDiceDuel.Core
             if (IsGameOver)
                 throw new InvalidOperationException("非法跳过：比赛已结束。");
 
-            if (!CanSkipTurn(CurrentPlayer))
+            // ⚠️ 必须用**实例版**：邪术师的跳过条件要看别人的体力，
+            //    静态版传 null 会让它永远判非法（测试抓到：
+            //    "非法跳过：当前不满足跳过回合的条件"）。
+            if (!CanSkipTurnFor(CurrentPlayer))
                 throw new InvalidOperationException(
                     "非法跳过：当前不满足跳过回合的条件。");
 
@@ -1096,7 +1099,26 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **放弃本回合**（不计为"跳过回合"技能）：回合数 +1，交给对方，手值不变。
+        /// **已经校验过条件**的跳过（供"先做副作用、再结束回合"的技能使用）。
+        ///
+        /// 为什么需要它：邪术师的流程是
+        /// "校验可发动 -> 改某人体力 -> 结束回合"，
+        /// 而**改完体力之后条件就不成立了**（所有人血量被改成一致），
+        /// 再走一次校验会抛"非法跳过"（测试抓到）。
+        ///
+        /// ⚠️ 调用方必须自己保证进入时条件成立。
+        /// </summary>
+        public void SkipTurnAlreadyValidated()
+        {
+            if (IsGameOver) return;
+
+            _brokenThisTurn.Clear();
+            (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
+
+            TurnCount++;
+            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
+            CheckTurnLimit();
+        }
         ///
         /// 与 <see cref="SkipTurn"/> 的区别：后者是角色的技能（双盾 / 潜行），
         /// 有严格的前置条件；而"放弃攻击"是玩家在任何时候都可以做的选择
@@ -1132,6 +1154,26 @@ namespace FingerDiceDuel.Core
             {
                 rule.SyncSkipState(player);
                 return rule.CanSkip(player, null);
+            }
+
+            return player.HasDoubleShield;
+        }
+
+        /// <summary>
+        /// 该玩家当前是否可以跳过回合（**带 GameManager** 的版本）。
+        ///
+        /// ⚠️ 有些角色的跳过条件要**看别人**（邪术师：场上必须有人体力与自己不同），
+        ///    没有 manager 就查不到 —— 所以调用方应优先用这个重载。
+        ///    静态版保留给无法拿到 manager 的老调用点。
+        /// </summary>
+        public bool CanSkipTurnFor(PlayerState player)
+        {
+            if (player == null) return false;
+
+            if (player.Character is ITurnSkipRule rule)
+            {
+                rule.SyncSkipState(player);
+                return rule.CanSkip(player, this);
             }
 
             return player.HasDoubleShield;
