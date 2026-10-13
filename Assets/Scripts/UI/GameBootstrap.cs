@@ -1488,7 +1488,16 @@ namespace FingerDiceDuel.UI
             if (_controller == null) return;
             if (!_controller.IsHumanChooser) return;
 
-            if (_controller.Gamble()) RefreshView();
+            bool moved = _controller.Gamble();
+
+            // 诊断：开赌失败时把原因带出来 ——
+            // 玩家实测"赌完之后卡住"，需要知道是没掷、还是掷了没走通。
+            Debug.Log($"[FDD开赌] moved={moved} phase={_controller.Phase}" +
+                      $" roll={_controller.LastGambleRoll}" +
+                      $" selected={_controller.SelectedHand?.Value.ToString() ?? "NULL"}" +
+                      $" 诊断={_controller.LastAiMoveDiagnostic}");
+
+            if (moved) RefreshView();
         }
 
         /// <summary>发动当前的"角色抉择"（剑客的追加攻击、游侠的强化等）。</summary>

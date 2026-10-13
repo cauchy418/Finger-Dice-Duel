@@ -311,6 +311,45 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Gamble_attack_waits_for_a_target_then_resolves()
+        {
+            // 玩家实测："赌完之后卡住"（掷出 8 = 攻击）。
+            //
+            // 根因：赌博路径**从没设过 `_selectedTarget`**（赌博没有被加数），
+            // 而 ClickHand 的选目标分支走 ConfirmTargetPlayer()，
+            // 那个方法要求 `_selectedTarget` 非 null —— 于是静默返回 false，
+            // ClickHand 却返回 true，表现成"点了目标没反应"。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(8);      // 8 = 攻击
+            board.BeginTurn();
+
+            board.ClickHand(game.PlayerA.LeftHand);
+            Assert.True(board.Gamble(), "开赌应成功。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                "掷出攻击应停在选打谁。");
+
+            int before = game.PlayerB.Health;
+
+            // 点对手的手 -> 应真的打出去
+            Assert.True(board.ClickHand(game.PlayerB.LeftHand),
+                "点目标应被接受。");
+
+            Assert.NotNull(board.LastTurn, "点完目标应完成结算（不能卡住）。");
+            Assert.True(board.LastTurn.WasGamble, "这次结算应记为赌博。");
+            Assert.AreEqual(8, board.LastTurn.GambleRoll);
+            Assert.True(game.PlayerB.Health < before,
+                "赌出 8 应造成伤害。");
+        }
+
+        [Test]
         public void Battle_log_says_the_gambler_rolled_rather_than_computed()
         {
             // 玩家要求战报能看出这是赌博 —— 不能写成 "N + M = K"，

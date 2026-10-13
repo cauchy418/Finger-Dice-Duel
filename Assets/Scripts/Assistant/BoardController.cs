@@ -492,6 +492,7 @@ namespace FingerDiceDuel.Assistant
 
             // 是攻击 -> 先让玩家选打谁
             Phase = BoardPhase.ChoosingTargetPlayer;
+
             if (!BeginTargetPlayerChoice())
             {
                 // 没有可打的人 -> 放弃这次赌博（算用掉回合）
@@ -1191,6 +1192,13 @@ namespace FingerDiceDuel.Assistant
         /// <summary>玩家点击了一张手牌。返回 true 表示这次点击被接受。</summary>
         public bool ClickHand(Hand hand)
         {
+            // 诊断：记录每一次点击（含阶段与结果）——
+            // "点了没反应"这类问题光看状态字段定位不到是哪一步拒的。
+            _advanceTrace.Add($"CLICK h={hand?.Value.ToString() ?? "N"}" +
+                              $" phase={Phase}" +
+                              $" sel={SelectedHand?.Value.ToString() ?? "N"}" +
+                              $" tgt={_selectedTarget?.Value.ToString() ?? "N"}" +
+                              $" roll={_pendingGambleRoll}");
             // ⚠️ **强制赌博时点他人的手要明确拒绝并说明原因**（玩家要求：
             //    "弹提示并拒绝"）。
             //
@@ -1368,6 +1376,15 @@ namespace FingerDiceDuel.Assistant
                         if (!CanBeAttacked(owner)) return false;
 
                         TargetPlayer = owner;
+                        // ⚠️ 赌博路径从没设过 `_selectedTarget`（赌博没有"被加数"），
+                        //    而 `ConfirmTargetPlayer` 要求它非 null ——
+                        //    不补这一句就会**静默返回 false**、`ClickHand` 却返回 true，
+                        //    表现成"点了目标没反应、对局卡住"（玩家实测）。
+                        //
+                        //    用挨打那人的手当占位：结算需要一只"目标手"来定位挨打的人。
+                        if (_selectedTarget == null)
+                            _selectedTarget = owner.LeftHand;
+
                         ConfirmTargetPlayer();
                         return true;
                     }
