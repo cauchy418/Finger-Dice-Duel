@@ -158,10 +158,15 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Gamble_flow_goes_through_the_dedicated_phase()
+        public void Voluntary_gamble_lets_the_player_choose_a_normal_operation()
         {
-            // 玩家确认的流程：点自己一只手 -> 点「开赌」。
-            // 赌博**不需要**点他人的手 —— 所以点完自己的手就停在赌博阶段。
+            // ⚠️ **非强制**时赌徒有两条路（玩家确认："当然也可以继续赌"）：
+            //      · 点他人的手 -> 正常运算
+            //      · 点「开赌」   -> 赌博
+            //
+            //    我第一版**无条件**进赌博阶段，于是"已经赌过、本可以正常运算"
+            //    的回合看起来也像被强制（玩家实测："上一回合已经赌过了
+            //    但仍被强制赌博"）。那是设计缺口，不是状态 bug。
             var providers = new List<SimpleChoiceProvider>
             {
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
@@ -171,26 +176,43 @@ namespace FingerDiceDuel.Tests
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
-            board.GambleRng = new FixedRandom(3);      // 掷 3 = 无效果，不需要选目标
             board.BeginTurn();
 
-            // ① 点自己的手 -> 进入赌博阶段（而不是"选被加数"）
+            Assert.False(game.PlayerA.MustGamble, "前置：非强制状态。");
+
+            // 点自己的手 -> 走正常运算流程（不再被直接推进赌博）
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand));
+            Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
+                "非强制时点自己的手应进入正常运算流程。");
+            Assert.True(board.CanClick(game.PlayerB.LeftHand),
+                "非强制时应能点他人的手做正常运算。");
+        }
+
+        [Test]
+        public void Forced_gamble_goes_straight_to_the_gamble_phase()
+        {
+            // **强制**时：点自己的手 -> 直接进赌博阶段（不给别的选择）
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(3);
+            board.BeginTurn();
+
+            game.PlayerA.MustGamble = true;
+
             Assert.True(board.ClickHand(game.PlayerA.LeftHand));
             Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase,
-                "赌徒点完自己的手应停在开赌阶段。");
+                "强制赌博时点自己的手应直接进赌博阶段。");
 
             Assert.True(board.CanGamble, "此时应能开赌。");
             Assert.False(board.CanClick(game.PlayerB.LeftHand),
                 "赌博阶段不该能点别人的手。");
-
-            // ② 开赌 -> 直接结算（3 = 无效果，不需要选目标）
-            Assert.True(board.Gamble(), "开赌应成功。");
-
-            // ⚠️ 断言用 **LastGambleRoll**（结算后仍保留）而不是 PendingGambleRoll ——
-            //    后者是"本回合待结算的点数"，回合结束后按设计会被清零
-            //    （我第一版断言它，测试立刻抓到：期望 3 实际 0，
-            //      而 0 其实是**正确**的，错的是我的断言）。
-            Assert.AreEqual(3, board.LastGambleRoll, "应记录掷出的点数。");
         }
 
         [Test]
@@ -458,6 +480,11 @@ namespace FingerDiceDuel.Tests
                                                aiForA: ai);
                 board.GambleRng = new FixedRandom(roll);
                 board.BeginTurn();
+
+                // ⚠️ 置成**强制**状态，AI 才会走赌博流程 ——
+                //    非强制时赌徒可以自选正常运算（那是玩家的选择，
+                //    AI 目前按"走正常运算"处理，所以不会掷点）。
+                game.PlayerA.MustGamble = true;
 
                 Assert.True(board.MakeAutomaticMove(),
                     $"掷出 {roll} 时 AI 应能走完这一步。");

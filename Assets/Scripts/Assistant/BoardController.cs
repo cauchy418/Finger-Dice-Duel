@@ -419,14 +419,23 @@ namespace FingerDiceDuel.Assistant
         public IAiChoiceResolver AiResolver { get; set; }
 
         /// <summary>
-        /// 当前是否停在"等赌徒点开赌"这一步。
+        /// 当前是否**可以点「开赌」**。
         ///
-        /// UI 用它决定是否显示「开赌」按钮。
+        /// 两个时机：
+        ///   · <see cref="BoardPhase.ChoosingGamble"/> —— 强制赌博时（上一回合做了正常运算）
+        ///   · <see cref="BoardPhase.ChoosingTargetHand"/> —— **非强制**时也允许：
+        ///     赌徒点完自己的手后，可以点他人的手走正常运算，
+        ///     也可以直接点「开赌」改走赌博（玩家确认"当然也可以继续赌"）
         /// </summary>
         public bool CanGamble
             => !_game.IsGameOver
-               && Phase == BoardPhase.ChoosingGamble
-               && ActivePlayer?.Character is GamblerLogic;
+               && (Phase == BoardPhase.ChoosingGamble
+                   || Phase == BoardPhase.ChoosingTargetHand)
+               && SelectedHand != null
+               && ActivePlayer?.Character is GamblerLogic
+               // 强制赌博时"选目标手"这条路本来就不该存在，所以两种相位都要放行；
+               // 非强制时两种相位也都放行。此处不再额外区分。
+               ;
 
         /// <summary>
         /// **测试钩子**：临时让赌徒绕过"强制赌博"，好让测试能走一次完整流程
@@ -1247,16 +1256,35 @@ namespace FingerDiceDuel.Assistant
                     //
                     //    玩家确认的流程："先点击自己一只手，然后点击右侧按钮开赌"
                     //    —— 赌博**不需要**点他人的手。
-                    if (ActivePlayer?.Character is GamblerLogic && !_allowNormalOperationForTest)
+                    // ⚠️ **赌徒的两条路**（玩家确认的规则）：
+                    //
+                    //   · **本回合必须赌博**（上一回合做了正常运算）
+                    //     -> 点自己的手之后直接进赌博阶段，不给别的选择
+                    //   · **否则可以自选**：点「开赌」就赌，点他人的手就走正常运算
+                    //
+                    //   我第一版**无条件**进赌博阶段，于是"已经赌过、本可以正常运算"
+                    //   的那些回合看起来也像被强制（玩家实测报告：
+                    //   "上一回合已经赌过了但仍被强制赌博"）。
+                    //   MustGamble 只改了提示文案，没给玩家另一条路 —— 那是设计缺口。
+                    if (ActivePlayer?.Character is GamblerLogic
+                        && !_allowNormalOperationForTest
+                        && ActivePlayer.MustGamble)
                     {
+                        // 诊断：赌徒的强制状态与"上一次结算是不是赌博"一起打出来。
+                        // 玩家报"上一回合已经赌过了但仍被强制赌博"——
+                        // 光看界面提示分不清是 MustGamble 没被清，
+                        // 还是"赌徒本来就总是进赌博流程"（后者是设计）。
+                        _advanceTrace.Add(
+                            $"GAMBLER-ENTER must={ActivePlayer.MustGamble}" +
+                            $" lastWasGamble={LastTurn?.WasGamble}" +
+                            $" lastRoll={LastTurn?.GambleRoll}");
+
                         Phase = BoardPhase.ChoosingGamble;
                         _log.Add($"{ActivePlayer.Name}（赌徒）选定了" +
-                                 $"{SideLabel(hand, ActivePlayer)}（{hand.Value}）。");
-                        Hint = ActivePlayer.MustGamble
-                            ? $"{ActivePlayer.Name}（赌徒）：上一回合做了正常运算，" +
-                              $"本回合必须赌博 —— 点「开赌」掷 1d9。"
-                            : $"{ActivePlayer.Name}（赌徒）：点「开赌」掷 1d9，" +
-                              $"点数直接作为本次行动结果（4/6/8 攻击、9 回血、5 合盾）。";
+                                 $"{SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
+                                 $"本回合必须赌博。");
+                        Hint = $"{ActivePlayer.Name}（赌徒）：上一回合做了正常运算，" +
+                               $"本回合必须赌博 —— 点「开赌」掷 1d9。";
                         return true;
                     }
 
