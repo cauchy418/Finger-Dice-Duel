@@ -76,6 +76,12 @@ namespace FingerDiceDuel.Core
         /// <summary>取消者的名字（战报里要写清是谁取消的）。</summary>
         public string CancelledBy;
 
+        /// <summary>本次行动是不是**赌博**（赌徒）。</summary>
+        public bool WasGamble;
+
+        /// <summary>赌博掷出的点数（1d9）。<see cref="WasGamble"/> 为 true 时有效。</summary>
+        public int GambleRoll;
+
         public int Healed;
 
         /// <summary>
@@ -811,6 +817,40 @@ namespace FingerDiceDuel.Core
 
         /// <summary>已通过校验的实际结算流程。</summary>
         private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue, Hand targetHand)
+            => ResolveTurn(actor, actedHand, targetValue, targetHand, gambleResult: 0);
+
+        /// <summary>
+        /// **赌博结算**：掷 1d9，**结果直接作为本次行动的结果**。
+        ///
+        /// 玩家确认的规则：
+        ///   · 4/6/8 攻击、9 回血、5 合盾 —— 与普通运算**同一套**效果规则
+        ///   · 赌博**不需要**点他人的手；打谁在结果出来之后再选
+        ///
+        /// <paramref name="targetHand"/> 只用于"指定挨打的人"（结果出来后才定），
+        /// 可以传 null —— 那就走默认的"打第一位对手"。
+        /// </summary>
+        /// <exception cref="InvalidOperationException">不是赌徒、或比赛已结束时抛出。</exception>
+        public TurnResult ExecuteGamble(PlayerState actor, Hand actedHand, Random rng,
+                                        Hand targetHand = null)
+        {
+            if (IsGameOver)
+                throw new InvalidOperationException("非法赌博：比赛已结束。");
+            if (actor == null)
+                throw new InvalidOperationException("非法赌博：行动方为空。");
+            if (!(actor.Character is GamblerLogic))
+                throw new InvalidOperationException("非法赌博：该角色不是赌徒。");
+            if (actedHand == null || !actor.Owns(actedHand))
+                throw new InvalidOperationException("非法赌博：运算源必须是自己的手。");
+            if (actedHand.IsLocked)
+                throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
+
+            int roll = GamblerLogic.Roll(rng);
+            return ResolveTurn(actor, actedHand, targetValue: 0, targetHand, gambleResult: roll);
+        }
+
+        /// <summary>已通过校验的实际结算流程。</summary>
+        private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue,
+                                       Hand targetHand, int gambleResult)
         {
             var result = new TurnResult { Actor = actor, TargetHand = targetHand };
             _brokenThisTurn.Clear();
@@ -840,7 +880,30 @@ namespace FingerDiceDuel.Core
                 NotifyOwnShieldBroken(actor, actedHand);
 
             // 2. 执行运算：只有行动方的手会改变
-            HandEffectType effect = actedHand.PerformOperation(targetValue);
+            //
+            //    ⚠️ 赌博（gambleResult > 0）**不走运算** ——
+            //       玩家确认"1d9 的结果就作为本次行动结果"，
+            //       所以直接把骰子点数写进运算源，效果规则与普通运算共用
+            //       （Hand.GetEffectType），避免两处各写一份而漂移。
+            HandEffectType effect;
+            if (gambleResult > 0)
+            {
+                actedHand.SetValue(gambleResult);      // 骰子点数即手值
+                effect = Hand.GetEffectType(gambleResult);
+                result.WasGamble = true;
+                result.GambleRoll = gambleResult;
+
+                // ⚠️ `SetValue` 会**清空护盾状态**（它本来的设计就是
+                //    "绕过运算直接设值，状态归 None"）。所以赌出 5 时
+                //    必须自己把状态补成成型护盾，否则会出现
+                //    "效果是护盾、但手牌状态是 None"（测试抓到）。
+                if (effect == HandEffectType.Shield)
+                    actedHand.SetShieldState(ShieldState.Formed);
+            }
+            else
+            {
+                effect = actedHand.PerformOperation(targetValue);
+            }
 
             // 2b. 角色可以**改写效果类型**（圣武士的 4/6 改为合出护盾）。
             //
@@ -894,8 +957,15 @@ namespace FingerDiceDuel.Core
             //
             //    判定用的是"运算后的双手值"：运算源已经是结果值，
             //    另一只手在运算中不变，所以两值之和为 18 即双 9。
+            //    ⚠️ 赌博时 `targetHand` 是 **null**（赌博不点他人的手）——
+            //       所以不能直接 `targetHand.Value`，否则空引用（测试抓到）。
+            //       赌博没有"另一只手"，用运算源自己的值兜底：
+            //       那只手此刻已经是骰子点数，所以"双手和"这类条件不会被误判成成立
+            //       （双 X 需要两只手同值，而骰子点数不会因此凑巧翻倍）。
+            int otherHandValue = targetHand != null ? targetHand.Value : actedHand.Value;
+
             actor.Character?.OnBeforeEffectResolved(
-                actor, actedHand, targetHand.Value, effect, this,
+                actor, actedHand, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
 
             // 3b. 分派效果
@@ -1051,7 +1121,7 @@ namespace FingerDiceDuel.Core
             //     放在效果分派之后、"胜负判定"之前，这样钩子造成的回血/成长能立刻算进判定。
             //     只允许读取玩家**在运算前**已经做好的选择，结算中不能再向 UI 索取输入。
             actor.Character?.OnOperationResolved(
-                actor, actedHand, result.ActedHandValueBefore, targetHand.Value, effect, this,
+                actor, actedHand, result.ActedHandValueBefore, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
 
             // 3d. 收下角色在结算中登记的"追加攻击"（剑客），供战报单独显示一行。

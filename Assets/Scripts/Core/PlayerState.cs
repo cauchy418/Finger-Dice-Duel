@@ -27,6 +27,18 @@ namespace FingerDiceDuel.Core
         public bool IsAlive => Health > 0;
         public bool IsDead => Health <= 0;
 
+        /// <summary>
+        /// **赌徒专用**：本回合是否**必须赌博**。
+        ///
+        /// 玩家确认的规则："若赌徒上一个自己的回合进行了正常的运算（非赌博），
+        /// 那么这一回合就必须赌博"；"赌完就解除，下一回合可以正常运算，
+        /// 当然也可以继续赌，但下一回合正常运算后再下一个回合又得强制赌"。
+        ///
+        /// 由 <see cref="Assistant.BoardController"/> 在回合边界维护 ——
+        /// 只有它知道"上一个自己的回合做了什么"。
+        /// </summary>
+        public bool MustGamble { get; set; }
+
         // ============ 双手 ============
         public Hand LeftHand { get; }
         public Hand RightHand { get; }
