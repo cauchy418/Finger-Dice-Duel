@@ -311,6 +311,61 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Battle_log_says_the_gambler_rolled_rather_than_computed()
+        {
+            // 玩家要求战报能看出这是赌博 —— 不能写成 "N + M = K"，
+            // 那会让玩家以为自己做了一次运算（赌博时根本没点他人的手）。
+            GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+            PlayerState gambler = game.PlayerA;
+
+            TurnResult r = game.ExecuteGamble(gambler, gambler.LeftHand,
+                                             new FixedRandom(8), game.PlayerB.LeftHand);
+
+            string line = BoardController.DescribeTurn(r);
+
+            Assert.True(line.Contains("开赌"),
+                $"战报应写明是开赌。实际：{line}");
+            Assert.True(line.Contains("8"),
+                $"战报应写明掷出的点数。实际：{line}");
+            Assert.False(line.Contains("+"),
+                $"赌博不该写成加法运算。实际：{line}");
+        }
+
+        [Test]
+        public void Ai_gambler_never_gets_stuck_on_the_gamble_phase()
+        {
+            // ⚠️ AI 不会点「开赌」按钮，所以 MakeAutomaticMove 必须代它点 ——
+            //    否则会**卡死在 ChoosingGamble**。
+            //
+            //    这条测试对 1..9 **每一种点数**各跑一次，
+            //    因为不同点数走向不同阶段（攻击要再选目标、其余直接结算），
+            //    只测一个点数盖不住。
+            for (int roll = 1; roll <= 9; roll++)
+            {
+                var ai = new GreedyChoiceProvider();
+                var providers = new List<SimpleChoiceProvider>
+                {
+                    new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                };
+                var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                           Make("B", CharacterDefinition.Soldier),
+                                           providers[0], providers[1]);
+
+                var board = new BoardController(game, providers[0], providers[1],
+                                               aiForA: ai);
+                board.GambleRng = new FixedRandom(roll);
+                board.BeginTurn();
+
+                Assert.True(board.MakeAutomaticMove(),
+                    $"掷出 {roll} 时 AI 应能走完这一步。");
+                Assert.True(board.Phase != BoardPhase.ChoosingGamble,
+                    $"掷出 {roll} 后不该停在等开赌（否则对局卡死）。");
+                Assert.AreEqual(roll, board.LastGambleRoll,
+                    "应记录掷出的点数。");
+            }
+        }
+
+        [Test]
         public void Only_gamblers_can_gamble()
         {
             GameManager game = new GameManager(Make("士", CharacterDefinition.Soldier),

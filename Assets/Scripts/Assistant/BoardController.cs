@@ -2357,6 +2357,27 @@ namespace FingerDiceDuel.Assistant
 
             // 走到这里可能已经停在"选锁手"阶段（合盾且是野蛮人）
             ResolvePendingAiChoices();
+
+            // ⚠️ **AI 赌徒**：点完自己的手会停在"等开赌"，而 AI 不会点按钮 ——
+            //    不处理就会**卡死在 ChoosingGamble**（我在实现时预判到的风险）。
+            //
+            //    这里直接代它点一次「开赌」，并**立刻**处理它可能带来的后续阶段：
+            //    · 掷出攻击 -> 停在"选打谁" -> 这里直接确认默认目标
+            //    · 其余（合盾 / 回血 / 无效果）-> Gamble 内部已经结算完
+            if (Phase == BoardPhase.ChoosingGamble)
+            {
+                if (!Gamble()) return false;
+
+                if (Phase == BoardPhase.ChoosingTargetPlayer)
+                {
+                    if (DefenderCannotBeAttacked) GiveUpAttack();
+                    else ConfirmTargetPlayer();
+                }
+
+                ResolvePendingAiChoices();
+                return true;
+            }
+
             if (Phase != BoardPhase.ChoosingTargetHand) return true;
 
             // ⚠️ 诊断必须**在失败点当场重新记录** ——
@@ -2807,7 +2828,13 @@ namespace FingerDiceDuel.Assistant
             if (t == null || t.Actor == null) return "";
 
             string side = SideLabel(t.ActedHand, t.Actor);
-            string head = $"{t.Actor.Name} {side}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {t.ResultValue}";
+
+            // ⚠️ **赌博不是运算**，不能写成 "N + M = K" —— 那会让玩家以为
+            //    自己算了一手（赌博时根本没点他人的手）。
+            //    玩家要求战报里能看出这是赌博。
+            string head = t.WasGamble
+                ? $"{t.Actor.Name} 开赌：掷出 {t.GambleRoll}"
+                : $"{t.Actor.Name} {side}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {t.ResultValue}";
 
             switch (t.Effect)
             {
