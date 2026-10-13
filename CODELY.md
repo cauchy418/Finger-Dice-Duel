@@ -1,13 +1,16 @@
-﻿# CODELY.md
+# CODELY.md
 
 > 工程结构与开发约定。**规则权威文档是 [`RULES.md`](RULES.md)** ——
 > 代码、测试、UI 都必须与它一致，改动规则先改那里。
 
 ## 项目概况
 
-**Finger Dice Duel**（手指骰子对决）：2D 回合制对战。双方各两只手（初始 1），
-每回合用自己的一只手与对方的一只手相加、取个位（和为 10 → 1），
+**Finger Dice Duel**（手指骰子对决）：2D 回合制对战。每人两只手（初始 1），
+每回合用自己的一只手与**另一名玩家**的一只手相加、取个位（和为 10 → 1），
 结果数字决定效果：**4/6/8 攻击、9 回复、5 护盾**。生命 20，先归零者败。
+
+支持 **1v1** 与 **2v2**（环形四座、1&4 一队 / 2&3 一队、攻击距离、先攻掷骰）。
+**15 名角色**，每个都有独立技能。
 
 | 项 | 值 |
 |---|---|
@@ -23,7 +26,7 @@
 |---|---|
 | `Assets/Scripts/Core/` | 规则内核。**不依赖任何 Unity 类型** |
 | `Assets/Scripts/Characters/` | 角色数据层（`CharacterDefinition`）+ 各角色技能 |
-| `Assets/Scripts/Assistant/` | AI、测试替身、整局驱动、`BoardController` 交互状态机。**不依赖 Unity** |
+| `Assets/Scripts/Assistant/` | AI、测试替身、整局驱动、`BoardController` 交互状态机、2v2 先攻与环形布局。**不依赖 Unity** |
 | `Assets/Scripts/UI/` | 表现层（**唯一**允许引用 `UnityEngine` 的目录） |
 | `Assets/Tests/EditMode/` | 无头测试；`UnityTestShim.cs` 是环境适配门面 |
 | `Assets/Resources/Fonts/` | 思源黑体 Medium（正文）/ Bold（标题），SIL OFL 1.1 |
@@ -215,16 +218,20 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 ## Roadmap
 
 - [ ] **实机验证表现层**（本机无法自动化，只能人工看）
-- [ ] 2v2 / 8 人身份 / 竞技（联网）—— 目前是"敬请期待"占位
+- [x] **2v2**（入门 / 经典 + 先攻界面 + 环形布局 + 攻击距离）
+- [ ] **8 人身份**（4v4 / 身份场）—— 目前是"敬请期待"占位
+- [ ] 竞技（联网）
 - [ ] 菜单按钮音效
 - [ ] 角色卡片列表的滚动提示（最后一张被右边缘切掉）
-- [ ] 关闭 `DiagnoseChoices` 诊断日志（目前硬开，每帧刷屏）
+- [ ] **空运算源**那次不该发生的第二次结算（根因未消除，已有守门与 `[FDD异常]` 日志）
 
 ## 已知风险 / 技术债
 
 | 项 | 说明 |
 |---|---|
 | **表现层无法自动验证** | `Tuanjie.exe` 批处理崩溃，UI 效果只能人工确认 |
-| **平衡隐患** | 单回合最大伤害 8 < 一次回复 9，双方都只顾活命时可拖延；靠 50 回合上限兜底（见 `RULES.md` §18） |
-| **AI 给队友回血未实现** | 1v1 里给对手回血是资敌；等多人玩法再写 |
-| **`DiagnoseChoices` 硬开** | 定位问题时打开的诊断日志还没关 |
+| **平衡隐患** | 单回合最大伤害 8 < 一次回复 9，双方都只顾活命时可拖延；靠回合上限兜底（见 `RULES.md` §17） |
+| **AI 给队友回血未实现** | 1v1 里给对手回血是资敌；2v2 已支持队友但 AI 尚未利用 |
+| **空运算源** | 2v2 AI 对局里偶发"用空运算源去结算"，已由两道守门拦住（不再抛异常、不再崩），改为记录 `[FDD异常]` 现场。**根因未消除** |
+| **AI 赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
+| **诊断字段曾多次跨回合残留** | `LastIllegalOperation` / `_advanceTrace` / `_pendingGambleRoll` 都踩过，统一在回合边界清空（`ResetDiagnostics` / `SetupFirstStep`） |
