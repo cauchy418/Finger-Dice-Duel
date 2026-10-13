@@ -829,13 +829,15 @@ namespace FingerDiceDuel.Core
                 {
                     effect = rewritten;
 
-                    // 改写结果决定手牌状态（与 Hand.PerformOperation 同一约定）
+                    // 改写结果决定手牌状态（与 Hand.PerformOperation 同一约定）。
+                    //
+                    // ⚠️ **不要在这里调 OnShieldFormed** —— 效果分派处
+                    //    （后面那段按 effect 分发的代码）已经会调一次，
+                    //    这里再调就变成"合一次盾触发两次"（圣武士的冲击
+                    //    因此造成 4 点而不是 2 点，测试抓到）。
                     actedHand.SetShieldState(effect == HandEffectType.Shield
                         ? ShieldState.Formed
                         : ShieldState.None);
-
-                    if (effect == HandEffectType.Shield)
-                        actor.Character?.OnShieldFormed(actor, actedHand, this);
                 }
             }
 

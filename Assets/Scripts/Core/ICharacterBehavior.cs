@@ -277,6 +277,37 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**取消某次攻击**"（邪术师）。
+    ///
+    /// 由 <see cref="AttackContext"/> 在**最开头**询问 —— 规则确认它是
+    /// **最早结算**的，能取消掉咒术师那种"攻击方钩子改写伤害"的攻击。
+    ///
+    /// ⚠️ 取消者不是挨打的人，而是**场上的第三方**：所以判定要遍历全部参战玩家。
+    /// </summary>
+    public interface IAttackCanceller
+    {
+        /// <summary>
+        /// 返回 true 表示"这次攻击被取消了"（调用方立即中止结算、不造成伤害）。
+        ///
+        /// <paramref name="attackValue"/> 是**攻击数字**：
+        /// 剑客的追加攻击与圣武士的冲击视为 **0**（因此无法被取消）。
+        /// </summary>
+        bool TryCancelAttack(PlayerState canceller, PlayerState attacker,
+                             PlayerState target, int attackValue, GameManager manager);
+    }
+
+    /// <summary>
+    /// 角色实现"**改写本次攻击造成的伤害**"（魔射手：6 伤害 +2、8 无视护盾）。
+    ///
+    /// 由 <see cref="AttackContext"/> 在攻击方钩子阶段调用。
+    /// </summary>
+    public interface IAttackDamageRule
+    {
+        /// <summary>在攻击方钩子里改写伤害与护盾规则（直接改 <paramref name="context"/>）。</summary>
+        void ApplyAttackRule(AttackContext context, int attackValue, GameManager manager);
+    }
+
+    /// <summary>
     /// 角色实现"我要接管某次攻击"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——

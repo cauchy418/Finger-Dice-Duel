@@ -45,13 +45,8 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Ninja] = () => new NinjaLogic();
             _registry[SpecialLogicType.Assassin] = () => new AssassinLogic();
             _registry[SpecialLogicType.Paladin] = () => new PaladinLogic();
-
-            // ⚠️ 邪术师与魔射手**尚未实现**（规则已确认，代码待写）。
-            //    暂时登记为白板，让"每个枚举值都有实现"的守卫测试先过 ——
-            //    这样圣武士可以独立验证，不会因为另两个角色没写完而卡住构建。
-            //    实现后请把这两行换成真正的 Logic。
-            _registry[SpecialLogicType.Warlock] = () => new DataDrivenCharacter();
-            _registry[SpecialLogicType.ArcaneArcher] = () => new DataDrivenCharacter();
+            _registry[SpecialLogicType.Warlock] = () => new WarlockLogic();
+            _registry[SpecialLogicType.ArcaneArcher] = () => new ArcaneArcherLogic();
         }
 
         /// <summary>

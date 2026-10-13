@@ -159,11 +159,13 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 攻击范围内的角色被攻击时，圣武士可以把目标改成自己。
         ///
-        /// 判据（我的理解，已按此实现）：
-        ///   · 攻击者必须在圣武士的**攻击距离内**（他能拦住这一击）
-        ///   · 原本挨打的**不是自己**（否则没有意义）
+        /// 判据（玩家确认）：**挨打的人**必须在圣武士的**攻击距离内** ——
+        /// 也就是"范围内的角色被攻击时"。
         ///
-        /// ⚠️ 这也是"要不要发动"的抉择 —— 由玩家决定，允许放弃。
+        /// ⚠️ 我第一版错误地判成"攻击者在距离内"，已按玩家澄清改正。
+        ///    两者的区别在 2v2 里会实际体现（对手可能在远处打你的队友）。
+        ///
+        /// 这也是"要不要发动"的抉择 —— 由玩家决定，允许放弃。
         /// </summary>
         public bool TryRedirectToSelf(PlayerState owner, PlayerState attacker,
                                       PlayerState intendedTarget, GameManager manager)
@@ -172,12 +174,13 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(owner, intendedTarget)) return false;   // 本来就是自己
             if (!owner.IsAlive) return false;
 
-            // 攻击者必须在自己攻击距离内
-            if (!manager.CanReach(owner, attacker)) return false;
+            // **挨打的人**必须在自己攻击距离内（这才是"范围内的角色"）
+            if (!manager.CanReach(owner, intendedTarget)) return false;
 
             var request = new ChoiceRequest(
                 HandEffect.PaladinRedirect,
-                $"{intendedTarget.Name} 正被 {attacker.Name} 攻击：要把目标改成自己吗？",
+                $"队友 {intendedTarget.Name} 正被 {attacker.Name} 攻击：" +
+                $"要把目标改成自己吗？",
                 new List<Hand>(2) { owner.LeftHand, owner.RightHand },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不改

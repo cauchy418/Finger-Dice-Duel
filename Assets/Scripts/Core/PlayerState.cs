@@ -102,6 +102,20 @@ namespace FingerDiceDuel.Core
             Health = Math.Min(MaximumHealth, Health + amount);
         }
 
+        /// <summary>
+        /// **精确设置**生命值（不夹到上限、也不做治疗/伤害的语义）。
+        ///
+        /// 用途：邪术师的"把场上一人的体力改成与自己一致" ——
+        /// 那是**赋值**而不是治疗，用 <see cref="Heal"/> 会被上限截断，
+        /// 用 <see cref="TakeDamage"/> 又只能减。
+        ///
+        /// 允许超过上限（规则没有禁止，且"改成一致"就该是一致）。
+        /// </summary>
+        public void SetHealthExact(int value)
+        {
+            Health = Math.Max(0, value);
+        }
+
         // ============ 手部访问 ============
         public Hand GetHand(int index)
         {

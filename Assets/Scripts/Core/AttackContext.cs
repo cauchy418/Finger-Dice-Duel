@@ -145,9 +145,33 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
         {
+            // 0. **最早结算：取消攻击**（邪术师）。
+            //
+            //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
+            //    所以能取消掉咒术师那种"在钩子里改写伤害"的攻击。
+            //
+            //    ⚠️ 取消者不是挨打的人，而是**场上的第三方**，所以要遍历全部参战玩家。
+            //    ⚠️ 追加攻击与冲击的"攻击数字视为 0"（见 AttackValue），
+            //       任何手值都不等于 0，所以它们天然无法被取消 —— 不需要特判。
+            if (TryCancelAttack(manager))
+            {
+                // 取消 = 完全无效：不扣血、不碎盾、不触发后续效果。
+                // 段数设为 0 让后面的循环一次都不跑（比 early-return 更省事，
+                // 且保留"这次攻击发生过"的记录供战报使用）。
+                HitCount = 0;
+                return;
+            }
 
             // 1. 攻击方钩子介入（如咒术师设置 IgnoreShield / 修改 FinalDamage / 游侠设置倍率）
             Attacker.Character?.OnResolveAttack(this);
+
+            // 1b. 攻击方的**伤害规则**改写（魔射手：6 伤害 +2、8 无视护盾）。
+            //
+            //     与 OnResolveAttack 分开是因为它需要**攻击数字**，
+            //     而那个数字要用"运算前的快照"算（SourceHandValueBefore + TargetHandValueBefore），
+            //     写成独立接口可以让规则更清晰地声明"我只按数字办事"。
+            if (Attacker.Character is IAttackDamageRule rule)
+                rule.ApplyAttackRule(this, AttackValue, manager);
 
             FinalDamage = ApplyBonuses(FinalDamage);
 
@@ -237,6 +261,77 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次攻击是否被"代挡"改过目标。</summary>
         public bool WasRedirected { get; private set; }
+
+        /// <summary>本次攻击是否被**取消**（邪术师）。</summary>
+        public bool WasCancelled { get; private set; }
+
+        /// <summary>取消者的名字（供战报显示）。</summary>
+        public string CancelledBy { get; private set; }
+
+        /// <summary>
+        /// **攻击数字**：发起攻击时用的那个数字（4 / 6 / 8）。
+        ///
+        /// ⚠️ 必须用**运算前的快照**算：运算源在钩子阶段已经是结果值，
+        ///    直接用当前值会把数字算错（本项目在"游侠闪避"上踩过同类坑）。
+        ///
+        /// ⚠️ **剑客的追加攻击与圣武士的冲击视为 0** —— 它们不是"发起攻击"，
+        ///    所以邪术师无法取消（任何手值都不会等于 0，因此天然拦不住）。
+        /// </summary>
+        public int AttackValue
+        {
+            get
+            {
+                if (IsSpecialAttack) return 0;
+
+                // 快照是 int（默认 0 表示"没设"）。两者都有值时才算真数字 ——
+                // 0 不是合法手值，所以可以安全地用它当"未设置"的哨兵。
+                if (SourceHandValueBefore <= 0 || TargetHandValueBefore <= 0)
+                {
+                    // 没有快照（直接构造 AttackContext 的测试场景）：
+                    // 退化为 RawDamage（构造时由效果类型给出 4/6/8）。
+                    return RawDamage;
+                }
+
+                return Hand.ComputeSum(SourceHandValueBefore, TargetHandValueBefore);
+            }
+        }
+
+        /// <summary>
+        /// 本次攻击是不是"特殊攻击"（追加攻击 / 冲击）——
+        /// 它们**没有攻击数字**，因此不可被取消。
+        /// </summary>
+        public bool IsSpecialAttack { get; set; }
+
+        /// <summary>
+        /// 询问场上有没有角色能**取消**这次攻击（邪术师）。
+        ///
+        /// 遍历全部参战玩家（取消者是第三方，不是挨打的人）。
+        /// 第一个答应的就取消成功。
+        /// </summary>
+        private bool TryCancelAttack(GameManager manager)
+        {
+            if (manager == null) return false;
+
+            int attackValue = AttackValue;
+            if (attackValue <= 0) return false;      // 特殊攻击（视为 0）不可取消
+
+            IReadOnlyList<PlayerState> all = manager.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+
+                if (p.Character is IAttackCanceller canceller
+                    && canceller.TryCancelAttack(p, Attacker, Defender, attackValue, manager))
+                {
+                    WasCancelled = true;
+                    CancelledBy = p.Name;
+                    return true;
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// 询问防守方是否用一次免伤挡下**这一段**攻击。

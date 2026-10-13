@@ -124,6 +124,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var ctx = new AttackContext(owner, defender, actedHand, (int)effect)
             {
                 IgnoreStatBonuses = true,
+
+                // ⚠️ 追加攻击的"攻击数字视为 0"（玩家确认）——
+                //    因此**邪术师无法取消它**（任何手值都不可能等于 0）。
+                IsSpecialAttack = true,
             };
             // 追加攻击发生在主攻击之前，玩家还没来得及做闪避选择，
             // 所以它的闪避**自动结算**（有几只"1"就闪几段），不弹提示。
