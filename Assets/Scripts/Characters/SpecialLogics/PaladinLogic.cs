@@ -291,9 +291,17 @@ namespace FingerDiceDuel.Core
 
             // ② **对手行动**，而我是可能被打碎盾的防守方
             //
-            //    玩家要求："盾牌破碎时跳出提示，点击目标的手发动"。
-            //    被打碎发生在**对手的回合**，所以必须在这里提前问 ——
-            //    否则结算中途没有机会问玩家。
+            //    ⚠️ 这里**只能按"有没有成型盾"预判**，因为收集发生在结算之前，
+            //       还不知道这次运算会不会真的打碎它。
+            //
+            //       但这会造成**幽灵提问**：对手运算出 9（回复）或 2（无效果）时
+            //       根本没碰盾，却已经问过玩家 —— 玩家实测报过
+            //       "战士运算出 9 时让圣武士错误提示盾牌被破坏"。
+            //
+            //       所以真正的**发问门槛**在结算侧：只有
+            //       OnOtherShieldBroken 真的被触发时才会用到这份答案
+            //       （TriggerShock 由碎盾钩子调用）。
+            //       收集侧的预判只是"提前把选择收上来"，本身不会造成冲击。
             if (ReferenceEquals(context.Defender?.Character, this))
             {
                 if (HasFormedShield(context.Defender) && context.Defender.LeftHand != null)

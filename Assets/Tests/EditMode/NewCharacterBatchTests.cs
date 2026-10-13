@@ -106,6 +106,65 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Paladin_shock_fires_when_the_formed_shield_value_is_five()
+        {
+            // 玩家报告："圣武士 5 去合成盾牌…似乎没有正常提示冲击"
+            //
+            // 运算结果 = 5 也是"形成护盾"，所以合盾冲击必须照常触发。
+            // 这条测试专门覆盖"结果是 5"这条路（与 4 / 6 分开）。
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            int before = foe.Health;
+
+            // 2 + 3 = 5 -> 合出护盾（值就是 5）
+            TestSetup.SetHand(paladin.LeftHand, 2);
+            TestSetup.SetHand(foe.LeftHand, 3);
+
+            game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+
+            Assert.AreEqual(ShieldState.Formed, paladin.LeftHand.State,
+                "结果 5 也应形成护盾。");
+            Assert.AreEqual(before - PaladinLogic.ShockDamage, foe.Health,
+                "合出值为 5 的护盾同样应触发冲击（造成 2 点）。");
+        }
+
+        [Test]
+        public void Paladin_shock_fires_when_its_five_shield_is_broken_by_an_attack()
+        {
+            // 玩家报告：盾牌被破坏时似乎没有正常提示冲击
+            //
+            // ⚠️ 这条只断言"冲击确实发生"（血量下降），不精确断言下降多少 ——
+            //    这个局面里同时还有普通攻击的伤害，两者混在一起，
+            //    精确数值留给专门隔离冲击的测试（见 fixed_two 那几条）。
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            // 圣武士有一面成型的盾（值 5）
+            paladin.RightHand.SetValue(5);
+            paladin.RightHand.SetShieldState(ShieldState.Formed);
+
+            int foeBefore = foe.Health;
+
+            // 对手用 4 的攻击打圣武士 -> 盾被打碎 -> 圣武士触发冲击
+            foe.LeftHand.SetValue(3);
+            TestSetup.SetHand(paladin.LeftHand, 1);     // 3 + 1 = 4
+
+            game.ExecuteTurn(foe, foe.LeftHand, paladin.LeftHand);
+
+            Assert.AreEqual(ShieldState.Broken, paladin.RightHand.State,
+                "盾应被打碎。");
+            Assert.True(foe.Health < foeBefore,
+                "盾被打碎时应触发冲击（对范围内目标造成伤害）。");
+            Assert.True(game.ShockLog.Count > 0,
+                "冲击应被记入战报（否则界面看不到它发生）。");
+        }
+
+        [Test]
         public void Paladin_shock_damage_is_a_fixed_two_regardless_of_bonuses()
         {
             // 玩家确认："冲击不保留攻防加成，造成固定两点伤害"
