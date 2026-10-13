@@ -620,11 +620,20 @@ namespace FingerDiceDuel.UI
         public void RefreshRing(IReadOnlyList<PlayerState> playersBySeat,
                                 Hand selectedHand = null,
                                 IReadOnlyList<Hand> highlightAsChoices = null,
-                                int turnCount = 0, int turnLimit = 0)
+                                int turnCount = 0, int turnLimit = 0,
+                                bool showSkipButton = false,
+                                bool skipButtonInteractable = false)
         {
             if (playersBySeat == null) return;
 
             if (turnLimit > 0) SetTurn(turnCount, turnLimit);
+
+            // ⚠️ 2v2 也必须能显示"跳过回合"按钮。
+            //    曾经这里完全不理会这个按钮，于是 2v2 里邪术师
+            //    （以及其他任何能跳过的角色）**永远看不到按钮**
+            //    （玩家实测："2v2 中邪术师没有跳过回合按钮"）。
+            SetSkipButtonVisible(showSkipButton);
+            SetSkipButtonInteractable(skipButtonInteractable);
 
             for (int i = 0; i < _ringPanels.Count; i++)
             {

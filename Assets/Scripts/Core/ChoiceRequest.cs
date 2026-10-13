@@ -58,6 +58,17 @@ namespace FingerDiceDuel.Core
         /// </summary>
         PaladinRedirect,
 
+        // ---------- 邪术师 ----------
+        /// <summary>
+        /// 邪术师：是否用某只手（+1，永久）取消这次攻击。
+        ///
+        /// **候选就是"与攻击数字相同的那只手"** —— 玩家点它即发动，
+        /// 点「不发动」即放行。所以界面天然满足"点对应数字触发"。
+        ///
+        /// ⚠️ 只在邪术师是**人类**时创建；AI 走自动取消（见 AttackContext）。
+        /// </summary>
+        WarlockCancel,
+
         // ---------- 牧师 ----------
         /// <summary>牧师：9 的回复要回给谁。</summary>
         PriestHealTarget,

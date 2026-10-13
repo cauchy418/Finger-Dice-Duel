@@ -44,11 +44,15 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 攻击数字与自己某只手相同 -> 把那只手 +1（永久）并取消这次攻击。
+        ///
+        /// **两种来源**（玩家要求把人类改成"询问式"）：
+        ///   · 人类：<paramref name="askAnswer"/> 是"是否问过 + 玩家选了什么"
+        ///     （问过且选了手 -> 取消；问过但选了不发动 -> 放行）
+        ///   · AI / 没问过：按 <see cref="AutoCancel"/> 自动取消
         /// </summary>
         public bool TryCancelAttack(PlayerState canceller, PlayerState attacker,
                                     PlayerState target, int attackValue, GameManager manager)
         {
-            if (!AutoCancel) return false;
             if (canceller == null || attackValue <= 0) return false;
 
             // 找到数字相同的那只手（左右都可以）
@@ -60,12 +64,52 @@ namespace FingerDiceDuel.Core
 
             if (matched == null) return false;
 
-            // 把那只手 +1（**永久** —— 与游侠的 1 变 2 同一性质）。
+            CancelWith(canceller, matched);
+            return true;
+        }
+
+        /// <summary>
+        /// **带玩家回答**的取消判定（人类邪术师的"询问式"路径）。
+        ///
+        /// <paramref name="wasAsked"/> 为 true 表示这次攻击**确实问过**该玩家，
+        /// 此时 <paramref name="answer"/> 为 null 就意味着"玩家选了不发动"。
+        /// </summary>
+        public bool TryCancelAttackWithAnswer(PlayerState canceller, int attackValue,
+                                              bool wasAsked, Hand answer)
+        {
+            if (canceller == null || attackValue <= 0) return false;
+
+            if (wasAsked)
+            {
+                // 问过 -> 完全按玩家的意思，**不再自动取消**
+                if (answer == null) return false;
+                if (answer.Value != attackValue) return false;
+
+                CancelWith(canceller, answer);
+                return true;
+            }
+
+            // 没问过（AI）-> 自动策略
+            if (!AutoCancel) return false;
+
+            Hand matched = null;
+            if (canceller.LeftHand != null && canceller.LeftHand.Value == attackValue)
+                matched = canceller.LeftHand;
+            else if (canceller.RightHand != null && canceller.RightHand.Value == attackValue)
+                matched = canceller.RightHand;
+
+            if (matched == null) return false;
+
+            CancelWith(canceller, matched);
+            return true;
+        }
+
+        /// <summary>把某只手 +1（永久）来取消攻击。</summary>
+        private static void CancelWith(PlayerState canceller, Hand hand)
+        {
             // SetValue 会把手值夹到 1..9，并把护盾状态清为 None ——
             // 这一点很关键：+1 之后不再是 5 的手不该继续挂着"盾"。
-            matched.SetValue(matched.Value + 1);
-
-            return true;
+            hand.SetValue(hand.Value + 1);
         }
 
         // ============================================================

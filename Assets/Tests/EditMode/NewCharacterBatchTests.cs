@@ -420,6 +420,88 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Human_warlock_cancels_only_after_clicking_the_matching_hand()
+        {
+            // 玩家要求：人类的邪术师改成"右侧给按钮询问是否发动，
+            //            然后点击对应数字触发"。
+            // 所以"点了那只手 = 取消"，"没点（选了不发动）= 放行"。
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var foe = Make("敌", CharacterDefinition.Blank);
+
+            var game = new GameManager(foe, warlock, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider());
+
+            // 邪术师手上有一个 4；对手发起 3 + 1 = 4 的攻击
+            TestSetup.SetHand(warlock.LeftHand, 4);
+            TestSetup.SetHand(warlock.RightHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 3);
+
+            board.BeginTurn();
+
+            // 第 ① 步：对手选自己的手
+            Assert.True(board.ClickHand(foe.LeftHand));
+
+            // 第 ② 步：对手选目标手（邪术师的右手 1）-> 进入"确认目标玩家"
+            Assert.True(board.ClickHand(warlock.RightHand));
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+
+            // 第 ③ 步：确认目标 -> 这时才收集"是否取消"的抉择
+            board.ConfirmTargetPlayer();
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "应停下来问邪术师是否取消这次攻击。");
+
+            // 候选就是那只与攻击数字相同的手（"点对应数字触发"）
+            Assert.True(board.IsChoiceCandidate(warlock.LeftHand),
+                "与攻击数字相同的那只手应可点。");
+
+            // 玩家点它 -> 取消成立
+            Assert.True(board.ClickHand(warlock.LeftHand), "点对应数字应能发动。");
+
+            Assert.True(board.LastTurn?.WasCancelled == true,
+                "点了对应数字后，这次攻击应被取消。");
+            Assert.AreEqual(5, warlock.LeftHand.Value,
+                "取消的代价是那只手 +1（永久）。");
+        }
+
+        [Test]
+        public void Ai_warlock_still_cancels_automatically_without_being_asked()
+        {
+            // AI 的邪术师不该被"询问"流程挡住 —— 它没被问过，
+            // 应当仍然自动取消（否则技能在 AI 手里失效）。
+            var ai = new GreedyChoiceProvider();
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var foe = Make("敌", CharacterDefinition.Blank);
+
+            var sinks = new SimpleChoiceProvider[] { new SimpleChoiceProvider(),
+                                                     new SimpleChoiceProvider() };
+            var game = new GameManager(foe, warlock, sinks[0], sinks[1]);
+            var board = new BoardController(game, sinks[0], sinks[1],
+                                           aiForB: ai);   // 邪术师是 B = AI
+            board.BindPlayer(warlock, ai, sinks[1]);
+
+            TestSetup.SetHand(warlock.LeftHand, 4);
+            TestSetup.SetHand(warlock.RightHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 3);
+
+            board.BeginTurn();
+            board.MakeAutomaticMove();     // AI 走完自己的回合
+
+            // 换对手行动：AI 邪术师没有被问过，应仍能自动取消
+            var ctx = new AttackContext(foe, warlock, foe.LeftHand, 4)
+            {
+                SourceHandValueBefore = 3,
+                TargetHandValueBefore = 1,      // 3 + 1 = 4
+            };
+            ctx.Resolve(new SimpleChoiceProvider(), game);
+
+            Assert.True(ctx.WasCancelled,
+                "没被问过的 AI 邪术师应仍自动取消。");
+        }
+
+        [Test]
         public void Warlock_never_cancels_its_own_attack()
         {
             // 玩家实测抓到：邪术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
@@ -505,6 +587,48 @@ namespace FingerDiceDuel.Tests
                 "敌人血量更少时，AI 不该把对方血量改高。");
             Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
                 "AI 不该停在该相位。");
+        }
+
+        [Test]
+        public void Warlock_skip_button_appears_in_two_versus_two()
+        {
+            // 玩家实测：2v2 里邪术师**没有**跳过回合按钮。
+            // 这条测试先把"控制器层到底给不给按钮"钉住，
+            // 好区分是规则判错还是界面没画。
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var mate = Make("友", CharacterDefinition.Blank);
+            var foe1 = Make("敌1", CharacterDefinition.Blank);
+            var foe2 = Make("敌2", CharacterDefinition.Blank);
+
+            var sinks = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var seated = new List<PlayerState> { warlock, mate, foe1, foe2 };
+            // 邪术师坐 1 号位 -> 先手就是他
+            GameManager game = GameManager.Create2v2(
+                seated, new List<IChoiceProvider>(sinks));
+
+            var board = new BoardController(game, sinks[0], sinks[1],
+                                           aiForA: null, aiForB: null);
+            // 2v2 的 C/D 也要绑（否则 GetAi 查不到）
+            board.BindPlayer(foe1, null, sinks[2]);
+            board.BindPlayer(foe2, null, sinks[3]);
+
+            board.BeginTurn();
+            Assert.AreEqual(warlock, board.ActivePlayer, "前置：邪术师应是当前行动方。");
+
+            // 满血 -> 没有按钮
+            Assert.False(board.CanSkipTurn, "满血时不该有跳过回合按钮。");
+
+            warlock.TakeDamage(10);
+            Assert.True(board.CanSkipTurn,
+                $"2v2 里体力不满且别人体力不同，应有跳过回合按钮。" +
+                $"[诊断 active={board.ActivePlayer?.Name}" +
+                $" hp={board.ActivePlayer?.Health}/{board.ActivePlayer?.MaximumHealth}" +
+                $" phase={board.Phase}" +
+                $" mateHp={mate.Health} foeHp={foe1.Health}]");
         }
 
         [Test]

@@ -1580,7 +1580,9 @@ namespace FingerDiceDuel.UI
                 // 并且都参与"当前阶段候选高亮"（玩家要看清点哪里）
                 _board.RefreshRing(_twoOnTwoSeated, _controller.SelectedHand, choices,
                                    turnCount: _controller.DisplayTurn,
-                                   turnLimit: _controller.TurnLimit);
+                                   turnLimit: _controller.TurnLimit,
+                                   showSkipButton: ShowSkipButton(),
+                                   skipButtonInteractable: _controller.CanSkipTurn);
             }
             else
             {
@@ -1744,11 +1746,30 @@ namespace FingerDiceDuel.UI
         /// "跳过回合"按钮只在**人类玩家 A 回合、且 A 双盾在手、且还没开始选目标**时出现。
         /// 按钮挂在 A 的右手牌右侧，所以 B 的回合不应该显示它。
         /// </summary>
+        /// <summary>
+        /// 当前是否该显示"跳过回合"按钮。
+        ///
+        /// ⚠️ 曾经写死 `ActivePlayer == _game.PlayerA` ——
+        ///    1v1 里勉强对（人类就是 A），但 **2v2 里完全错**：
+        ///    人类可能是 2/3/4 号位，于是按钮永远不显示
+        ///    （玩家实测："2v2 中邪术师没有跳过回合按钮"）。
+        ///
+        /// 正确的判据是"**当前行动方是不是人类**"，与座位无关。
+        /// </summary>
         private bool ShowSkipButton()
             => _controller != null
                && _controller.IsHumanTurn
-               && ReferenceEquals(_controller.ActivePlayer, _game.PlayerA)
+               && ReferenceEquals(_controller.ActivePlayer, HumanPlayer())
                && _controller.CanSkipTurn;
+
+        /// <summary>本局里"人类控制的那位玩家"（1v1 是 A；2v2 按我的座位取）。</summary>
+        private PlayerState HumanPlayer()
+        {
+            if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
+                return _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, 3)];
+
+            return _game?.PlayerA;
+        }
 
         private string DescribeHint()
         {

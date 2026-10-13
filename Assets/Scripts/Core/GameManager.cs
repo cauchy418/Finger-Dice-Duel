@@ -613,6 +613,24 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<HandEffect, int, Hand> AnsweredLookup { get; set; }
 
+        /// <summary>
+        /// "**某位玩家**对某个抉择的作答"（带玩家参数）。
+        ///
+        /// 与 <see cref="AnsweredLookup"/> 的区别：那个已经绑定到"当前记录者"
+        /// （行动方 / 防守方），而**邪术师是场上的第三方** ——
+        /// 取消攻击的抉择不属于行动方也不属于防守方，所以要按人查。
+        ///
+        /// 由 <see cref="Assistant.BoardController"/> 注入。
+        /// </summary>
+        public System.Func<PlayerState, HandEffect, int, Hand> AnsweredLookupFor { get; set; }
+
+        /// <summary>
+        /// 查询"**是否问过**某玩家是否取消攻击"（由 <see cref="Assistant.BoardController"/> 注入）。
+        ///
+        /// 用于区分"没问过"（AI -> 自动取消）与"问过但选了不发动"（放行）。
+        /// </summary>
+        public System.Func<PlayerState, bool> AskedCancelLookup { get; set; }
+
         /// <summary>结算过程中询问玩家的回调（由上层注入）。</summary>
         public IChoiceGatherer ChoiceGatherer { get; set; }
 
@@ -972,6 +990,11 @@ namespace FingerDiceDuel.Core
                         // 让角色优先采用 AI 的决定，而不是回读可能过期的 sink
                         ctx.AiDecisionLookup = AiDecisionLookup;
                         ctx.ChoiceGatherer = ChoiceGatherer;
+
+                        // 邪术师的"是否取消"要回读玩家在收集阶段的回答 ——
+                        // 与游侠闪避走的是同一条通路。
+                        ctx.AnsweredLookupFor = AnsweredLookupFor;
+                        ctx.AskedCancelLookup = AskedCancelLookup;
 
                         ctx.Resolve(oppChoice, this);
                         result.WasBlocked = ctx.WasBlocked;

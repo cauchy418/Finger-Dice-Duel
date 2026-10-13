@@ -214,6 +214,14 @@ namespace FingerDiceDuel.Assistant
             // 人类玩家的前置抉择就传不到结算（真实 bug：
             // 牧师选了回复却按攻击结算）。
             _game.AnsweredLookup = GetAnsweredChoice;
+
+            // 带**玩家参数**的版本：邪术师是场上的第三方，
+            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectWarlockCancelChoices）。
+            _game.AnsweredLookupFor = GetAnsweredChoiceFor;
+
+            // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
+            // "问过但选了不发动"（后者必须放行）。
+            _game.AskedCancelLookup = WasAskedWarlockCancel;
         }
 
         /// <summary>方便测试：双方共用同一个抉择器对象。</summary>
@@ -603,9 +611,53 @@ namespace FingerDiceDuel.Assistant
             return PreTurnSinkFor(Defender)?.GetExplicitChoice(effect, variant);
         }
 
-        /// <summary>本回合已经答过的抉择（键 = <c>effect#variant</c>）。</summary>
+        /// <summary>
+        /// 本回合已经答过的抉择（键 = <c>effect#variant</c>）。
+        /// </summary>
         private readonly Dictionary<string, Hand> _answeredThisTurn =
             new Dictionary<string, Hand>();
+
+        /// <summary>
+        /// 读回"**某位玩家**对某抉择的作答"（带玩家参数）。
+        ///
+        /// 邪术师是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
+        /// （那个按"行动方 / 防守方"找）。
+        ///
+        /// ⚠️ 用 <c>_askedWarlockCancel</c> 的**键是否存在**表达"问过"，
+        ///    这样"问过但选了不发动"（值为 null）与"没问过"能区分开。
+        /// </summary>
+        private Hand GetAnsweredChoiceFor(PlayerState player, HandEffect effect, int variant)
+        {
+            if (player != null && effect == HandEffect.WarlockCancel
+                && _askedWarlockCancel.TryGetValue(player, out Hand answer))
+            {
+                return answer;      // 可能是 null（玩家选了不发动）
+            }
+
+            return PreTurnSinkFor(player)?.GetExplicitChoice(effect, variant);
+        }
+
+        /// <summary>
+        /// 该玩家**是否被问过**"是否取消攻击"。
+        ///
+        /// 与 <see cref="GetAnsweredChoiceFor"/> 配套：
+        /// 返回 true 表示"问过"，此时 null 答案意味着"玩家选了不发动"。
+        /// </summary>
+        public bool WasAskedWarlockCancel(PlayerState player)
+            => player != null && _askedWarlockCancel.ContainsKey(player);
+
+        /// <summary>
+        /// 本回合"**问过谁是否取消攻击**"（键 = 玩家）。
+        ///
+        /// 为什么需要单独记一份：邪术师的取消是**第三方**的抉择，
+        /// 而且必须区分两种"没选"：
+        ///   · **没问过**（AI，或条件不成立）-> 走自动取消
+        ///   · **问过但选了「不发动」** -> 放行这次攻击
+        /// `_answeredThisTurn` 在答案为 null 时是"删除键"，分不出这两者；
+        /// 这里用"键是否存在"表达"问过"，值为答案（可为 null）。
+        /// </summary>
+        private readonly Dictionary<PlayerState, Hand> _askedWarlockCancel =
+            new Dictionary<PlayerState, Hand>();
 
         private static string AnswerKey(HandEffect effect, int variant)
             => variant == 0 ? effect.ToString() : $"{effect}#{variant}";
@@ -1456,8 +1508,17 @@ namespace FingerDiceDuel.Assistant
             _pendingChoiceDecider = null;
             _preTargetChoiceActive = false;
 
+            // ⚠️ 每回合清空"问过谁取消攻击" ——
+            //    残留会让下一回合变成"问过但没答"，于是玩家的意图被误读
+            //    （选了发动却被当成不发动）。我踩过同类坑（诊断字段跨回合残留）。
+            _askedWarlockCancel.Clear();
+
             CollectFrom(context.Actor, context);
             CollectFrom(context.Defender, context);
+
+            // 邪术师的"是否取消这次攻击"：取消者是**场上的第三方**，
+            // 不属于上面的行动方/防守方，所以单独收集。
+            CollectWarlockCancelChoices();
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
             // 注意：不能用会被回合边界清空的容器 —— 上一个回合的作答
@@ -1512,6 +1573,81 @@ namespace FingerDiceDuel.Assistant
                         _pendingRequests.RemoveAt(i);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// 这次攻击**将会是**什么数字（运算源 + 目标手的和）。
+        ///
+        /// 只有"结果会产生指向某人的攻击效果"时才有意义。
+        /// </summary>
+        public int PredictedAttackValue()
+        {
+            if (SelectedHand == null || _selectedTarget == null) return 0;
+
+            int sum = Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
+
+            return sum == 4 || sum == 6 || sum == 8 ? sum : 0;
+        }
+
+        /// <summary>
+        /// 收集"**人类**邪术师是否要取消这次攻击"的抉择。
+        ///
+        /// 玩家要求的交互：右侧给按钮询问是否发动，然后**点对应数字**触发。
+        /// 所以候选就是"与攻击数字相同的那只手" —— 点它即发动。
+        ///
+        /// ⚠️ 为什么要在**攻击结算之前**问：
+        ///    整个回合是一次性跑完的（`ExecuteResolvedTurn` 里同步结算），
+        ///    没法在结算中途停下来等玩家点击。所以抉择必须提前收集。
+        ///    AI 的邪术师不走这里 —— 它在结算时自动取消（见 AttackContext）。
+        ///
+        /// ⚠️ 三条限制（都已由玩家确认）：
+        ///    · 不能取消**自己**发起的攻击
+        ///    · 多人模式里不能取消**队友**发起的攻击
+        ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
+        /// </summary>
+        private void CollectWarlockCancelChoices()
+        {
+            int attackValue = PredictedAttackValue();
+            if (attackValue <= 0) return;
+            if (ActivePlayer == null || _game == null) return;
+
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+
+                // 只有人类邪术师才问 —— AI 在结算时自动取消
+                if (!(p.Character is WarlockLogic)) continue;
+                if (GetAi(p) != null) continue;
+
+                if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
+                if (_game.IsTeammate(p, ActivePlayer)) continue;             // 队友不算
+
+                // 候选 = 与攻击数字相同的那只手
+                var candidates = new List<Hand>(2);
+                if (p.LeftHand != null && p.LeftHand.Value == attackValue)
+                    candidates.Add(p.LeftHand);
+                if (p.RightHand != null && p.RightHand.Value == attackValue)
+                    candidates.Add(p.RightHand);
+
+                if (candidates.Count == 0) continue;
+
+                // 先登记"**问过这个人**"（值为 null 表示"还没答/答了不发动"）——
+                // 结算时靠它区分"问过但选了不发动"与"根本没问过（AI）"。
+                _askedWarlockCancel[p] = null;
+
+                _pendingRequests.Add(new ChoiceRequest(
+                    HandEffect.WarlockCancel,
+                    $"{ActivePlayer.Name} 发起 {attackValue} 的攻击：" +
+                    $"要用手上那个 {attackValue}（+1，永久）取消它吗？",
+                    candidates,
+                    allowDecline: true,          // 点「不发动」= 放行
+                    declineResult: null,
+                    decider: p));
+
+                _lastCollectInfo += $" +邪术师取消({p.Name}, 攻击值{attackValue})";
             }
         }
 
@@ -1838,6 +1974,14 @@ namespace FingerDiceDuel.Assistant
             if (hand != null && !IsChoiceCandidate(hand)) return;
 
             SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand);
+
+            // 邪术师的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
+            // `_askedWarlockCancel` —— 结算时靠它决定放行还是取消。
+            if (request.Effect == HandEffect.WarlockCancel && _pendingChoiceDecider != null
+                && hand != null && _pendingChoiceDecider.Owns(hand))
+            {
+                _askedWarlockCancel[_pendingChoiceDecider] = hand;
+            }
 
             // 统一定点：控制器自己保存一份本回合的答案。
             //

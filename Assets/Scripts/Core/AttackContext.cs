@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -303,6 +304,27 @@ namespace FingerDiceDuel.Core
         public bool IsSpecialAttack { get; set; }
 
         /// <summary>
+        /// 查询"**某位玩家**对某个抉择的作答"（由 <see cref="GameManager"/> 注入）。
+        ///
+        /// 邪术师的"是否取消"要在**结算时**读回玩家在收集阶段的回答 ——
+        /// 没有它就只能自动取消（那是 AI 的行为）。
+        ///
+        /// ⚠️ 用带玩家参数的版本：邪术师是**场上的第三方**，
+        ///    既不是行动方也不是防守方。
+        /// </summary>
+        public Func<PlayerState, HandEffect, int, Hand> AnsweredLookupFor { get; set; }
+
+        /// <summary>
+        /// 查询"**是否问过**该玩家是否取消攻击"。
+        ///
+        /// 必须能区分两种"没选"：
+        ///   · 没问过（AI）-> 自动取消
+        ///   · 问过但选了「不发动」-> 放行
+        /// 只有 BoardController 知道答案，所以由它注入。
+        /// </summary>
+        public Func<PlayerState, bool> AskedCancelLookup { get; set; }
+
+        /// <summary>
         /// 询问场上有没有角色能**取消**这次攻击（邪术师）。
         ///
         /// 遍历全部参战玩家（取消者是第三方，不是挨打的人）。
@@ -328,6 +350,23 @@ namespace FingerDiceDuel.Core
                 // ⚠️ 多人模式里**不能取消队友的攻击**。
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
+
+                if (p.Character is WarlockLogic warlock)
+                {
+                    // 人类的邪术师走"询问式"：按玩家在收集阶段的回答决定。
+                    // AI 的邪术师没被问过 -> wasAsked = false -> 自动取消。
+                    bool wasAsked = AskedCancelLookup != null && AskedCancelLookup(p);
+                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.WarlockCancel, 0);
+
+                    if (warlock.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
+                    {
+                        WasCancelled = true;
+                        CancelledBy = p.Name;
+                        return true;
+                    }
+
+                    continue;
+                }
 
                 if (p.Character is IAttackCanceller canceller
                     && canceller.TryCancelAttack(p, Attacker, Defender, attackValue, manager))
