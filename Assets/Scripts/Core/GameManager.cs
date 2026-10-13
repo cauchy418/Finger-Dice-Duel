@@ -833,6 +833,24 @@ namespace FingerDiceDuel.Core
         public TurnResult ExecuteGamble(PlayerState actor, Hand actedHand, Random rng,
                                         Hand targetHand = null)
         {
+            if (rng == null) rng = new Random();
+            return ExecuteGambleWithRoll(actor, actedHand, GamblerLogic.Roll(rng), targetHand);
+        }
+
+        /// <summary>
+        /// 用**已经掷好的点数**结算赌博。
+        ///
+        /// ⚠️ 为什么必须有这个重载：掷出攻击（4/6/8）时流程是
+        ///    "开赌掷点 -> 选打谁 -> 结算"，也就是**掷点与结算分属两次调用**。
+        ///    如果结算时又调 <see cref="ExecuteGamble"/>，就会**再掷一次**，
+        ///    玩家看到的点数与实际结算的点数不同
+        ///    （玩家实测："先说投出了 4，点战士时又说投出 2 无效果"）。
+        ///
+        ///    所以点数只能由**开赌那一次**决定，之后一路传递。
+        /// </summary>
+        public TurnResult ExecuteGambleWithRoll(PlayerState actor, Hand actedHand,
+                                                int roll, Hand targetHand = null)
+        {
             if (IsGameOver)
                 throw new InvalidOperationException("非法赌博：比赛已结束。");
             if (actor == null)
@@ -844,8 +862,8 @@ namespace FingerDiceDuel.Core
             if (actedHand.IsLocked)
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
-            int roll = GamblerLogic.Roll(rng);
-            return ResolveTurn(actor, actedHand, targetValue: 0, targetHand, gambleResult: roll);
+            return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
+                               gambleResult: roll);
         }
 
         /// <summary>已通过校验的实际结算流程。</summary>

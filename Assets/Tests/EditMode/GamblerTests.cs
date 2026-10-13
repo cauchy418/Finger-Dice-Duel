@@ -349,6 +349,70 @@ namespace FingerDiceDuel.Tests
                 "赌出 8 应造成伤害。");
         }
 
+        /// <summary>
+        /// 每次都返回**不同**点数的随机源。
+        ///
+        /// 用它才能抓到"结算时又掷了一次"—— 固定点数的话两次掷出相同值，
+        /// 根本看不出来（我第一版用的就是固定源，所以没抓到）。
+        /// </summary>
+        private sealed class CountingRandom : System.Random
+        {
+            private int _call;
+            public int Calls => _call;
+
+            protected override double Sample() => 0.5;
+
+            /// <summary>第一次返回 4（攻击），之后每次递增且与 4 不同。</summary>
+            public override int Next(int minValue, int maxValue)
+            {
+                _call++;
+                return _call == 1 ? 4 : 1 + (_call % 3);   // 2/3/1 循环，永不为 4
+            }
+        }
+
+        [Test]
+        public void Gamble_roll_happens_once_not_again_at_resolution()
+        {
+            // 玩家实测："先说投出了 4，点战士时又说投出 2 无效果。
+            //            疑似点攻击时赌徒又重新赌了一次。"
+            //
+            // 根因：掷出攻击（4/6/8）时流程是"开赌掷点 -> 选打谁 -> 结算"，
+            // 掷点与结算**分属两次调用**；结算那次又调了 ExecuteGamble，
+            // 于是重掷。修法是结算走 ExecuteGambleWithRoll（用已存的点数）。
+            //
+            // 这条测试用**每次都返回不同点数**的随机源，只要重掷就会立刻暴露。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            var rng = new CountingRandom();
+            board.GambleRng = rng;
+
+            // 先调到"开赌必掷出 4"（4 = 攻击，会停下来选目标）
+            board.BeginTurn();
+            board.ClickHand(game.PlayerA.LeftHand);
+            board.Gamble();
+
+            int firstRoll = board.LastGambleRoll;
+            int callsAfterGamble = rng.Calls;
+
+            Assert.AreEqual(4, firstRoll, "前置：首次应掷出 4（攻击）。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+
+            // 点目标 -> 结算
+            Assert.True(board.ClickHand(game.PlayerB.LeftHand), "点目标应被接受。");
+
+            Assert.AreEqual(firstRoll, board.LastTurn?.GambleRoll,
+                "结算用的点数必须与开赌时掷出的**同一次**（不能重掷）。");
+            Assert.AreEqual(callsAfterGamble, rng.Calls,
+                "结算不该再调用随机源（调用次数不该增加）。");
+        }
+
         [Test]
         public void Battle_log_says_the_gambler_rolled_rather_than_computed()
         {

@@ -2639,11 +2639,17 @@ namespace FingerDiceDuel.Assistant
             TurnResult result;
             try
             {
-                // ⚠️ **赌博走另一条入口**：点数已经在"开赌"时掷好并存在
-                //    `_pendingGambleRoll` 里，这里只是结算它。
-                //    不能在这里重新掷 —— 否则玩家看到的点数与结算的点数不同。
+                // ⚠️ **赌博走另一条入口，而且绝不能在这里再掷一次**。
+                //
+                //    点数是"开赌"那一次掷的，存在 `_pendingGambleRoll` 里；
+                //    掷出攻击（4/6/8）时流程是"开赌 -> 选打谁 -> 结算"，
+                //    掷点与结算**分属两次调用** ——
+                //    这里若调 ExecuteGamble 会重新掷，玩家看到的点数
+                //    与实际结算的点数就不同了
+                //    （玩家实测："先说投出了 4，点战士时又说投出 2 无效果"）。
                 result = _pendingGambleRoll > 0
-                    ? _game.ExecuteGamble(ActivePlayer, acted, GambleRng, _selectedTarget)
+                    ? _game.ExecuteGambleWithRoll(ActivePlayer, acted,
+                                                  _pendingGambleRoll, _selectedTarget)
                     : _game.ExecuteTurn(ActivePlayer, acted, target);
             }
             catch (InvalidOperationException ex)
