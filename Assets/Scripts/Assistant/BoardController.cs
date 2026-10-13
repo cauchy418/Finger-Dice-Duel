@@ -262,6 +262,16 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public TurnResult LastTurn { get; private set; }
 
+        /// <summary>
+        /// 刚才那次结算属于第几回合（<see cref="GameManager.TurnCount"/> 的值）。
+        ///
+        /// 用途：界面只应在"**本回合刚刚结算过**"时显示上一手摘要。
+        /// 否则新回合刚开始时会显示**上一位行动者**的旧结算 ——
+        /// 玩家实测看到的正是这个问题：轮到圣武士，摘要却写着"游侠 左手 …"
+        /// （那是上一回合游侠打的那一手）。
+        /// </summary>
+        public int LastTurnNumber { get; private set; } = -1;
+
         /// <summary>给玩家的一句提示。</summary>
         public string Hint { get; private set; } = "";
 
@@ -2467,6 +2477,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             LastTurn = result;
+            LastTurnNumber = _game.TurnCount;
             foreach (string line in DescribeTurnLines(result)) _log.Add(line);
 
             // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——

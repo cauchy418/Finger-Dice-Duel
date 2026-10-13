@@ -48,11 +48,23 @@ namespace FingerDiceDuel.Core
         // ============================================================
 
         /// <summary>
+        /// **variant 0 = 合出盾牌触发的冲击**。
+        ///
+        /// 与"碎盾冲击"（variant 1）分开，是因为**一次运算可能同时发生两件事**
+        /// （用一面成型盾去合出另一面盾：旧的碎、新的成）——
+        /// 玩家要求这时**提示两次**，分别选目标。用 variant 才能各读各的答案。
+        /// </summary>
+        public const int ShockVariantForm = 0;
+
+        /// <summary>**variant 1 = 碎盾（主动或被动）触发的冲击**。</summary>
+        public const int ShockVariantBreak = 1;
+
+        /// <summary>
         /// 合出盾牌时：冲击范围内一名角色（强制发动，目标由玩家选）。
         /// </summary>
         public override void OnShieldFormed(PlayerState owner, Hand shieldHand, GameManager manager)
         {
-            TriggerShock(owner, shieldHand, "合出盾牌", manager);
+            TriggerShock(owner, shieldHand, "合出盾牌", manager, ShockVariantForm);
         }
 
         /// <summary>
@@ -60,7 +72,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public override void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager)
         {
-            TriggerShock(owner, brokenHand, "主动碎盾", manager);
+            TriggerShock(owner, brokenHand, "主动碎盾", manager, ShockVariantBreak);
         }
 
         /// <summary>
@@ -71,7 +83,7 @@ namespace FingerDiceDuel.Core
         public override void OnOtherShieldBroken(PlayerState owner, Hand brokenHand,
                                                 GameManager manager)
         {
-            TriggerShock(owner, brokenHand, "盾被打碎", manager);
+            TriggerShock(owner, brokenHand, "盾被打碎", manager, ShockVariantBreak);
         }
 
         /// <summary>冲击的候选：**攻击范围内**除自己以外的所有角色（含队友）。</summary>
@@ -103,12 +115,13 @@ namespace FingerDiceDuel.Core
         ///    结算一旦开始就一次跑完（本项目反复踩过的坑）。
         /// </summary>
         private void TriggerShock(PlayerState owner, Hand sourceHand, string reason,
-                                  GameManager manager)
+                                  GameManager manager, int variant)
         {
             List<PlayerState> candidates = ShockCandidates(owner, manager);
             if (candidates.Count == 0) return;      // 范围内没人 -> 静默跳过
 
-            PlayerState picked = ReadShockTarget(owner, sourceHand, candidates, reason, manager);
+            PlayerState picked = ReadShockTarget(owner, sourceHand, candidates, reason,
+                                                 manager, variant);
             if (picked == null) picked = candidates[0];   // 强制发动 -> 兜底第一个
 
             int before = picked.Health;
@@ -161,7 +174,7 @@ namespace FingerDiceDuel.Core
         /// <summary>读回玩家选的冲击目标（收集阶段问过；没答过就返回 null）。</summary>
         private PlayerState ReadShockTarget(PlayerState owner, Hand sourceHand,
                                             List<PlayerState> candidates, string reason,
-                                            GameManager manager)
+                                            GameManager manager, int variant)
         {
             var handCandidates = new List<Hand>(candidates.Count * 2);
             for (int i = 0; i < candidates.Count; i++)
@@ -172,11 +185,12 @@ namespace FingerDiceDuel.Core
 
             var request = new ChoiceRequest(
                 HandEffect.PaladinShockTarget,
-                $"圣武士：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点真实伤害。",
+                $"圣武士：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点伤害。",
                 handCandidates,
                 allowDecline: false,          // 强制发动 -> 不能放弃
                 declineResult: null,
-                decider: owner);
+                decider: owner,
+                variant: variant);            // 合盾 / 碎盾 各一份答案
 
             Hand chosen = PreTurnChoiceReader.Read(
                 manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
@@ -248,19 +262,28 @@ namespace FingerDiceDuel.Core
         {
             if (context == null || requests == null) return;
 
-            // ① 自己行动：这次运算会合出盾或碎盾
+            // ① 自己行动：这次运算会合出盾 / 主动碎盾
             if (ReferenceEquals(context.Actor?.Character, this))
             {
                 bool willFormShield = WillFormShield(context);
                 bool willBreakOwnShield = context.ActedHand != null
                                           && context.ActedHand.State == ShieldState.Formed;
 
-                if ((willFormShield || willBreakOwnShield)
-                    && context.ActedHand != null && context.Actor.Owns(context.ActedHand)
-                    && context.Actor.LeftHand != null)
+                if (context.Actor.LeftHand == null) return;
+
+                // ⚠️ **可能同时发生两件事**（玩家要求这时提示两次）：
+                //    用一面成型盾去合出另一面盾 -> 旧的碎（碎盾冲击）、新的成（合盾冲击）。
+                //    所以两条抉择各加一次，用 variant 区分，各读各的答案。
+                if (willBreakOwnShield)
                 {
                     AddShockRequest(context.Actor, context.Defender, requests,
-                                    context.Manager);
+                                    context.Manager, ShockVariantBreak, "主动碎盾");
+                }
+
+                if (willFormShield)
+                {
+                    AddShockRequest(context.Actor, context.Defender, requests,
+                                    context.Manager, ShockVariantForm, "合出盾牌");
                 }
 
                 return;
@@ -274,8 +297,10 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(context.Defender?.Character, this))
             {
                 if (HasFormedShield(context.Defender) && context.Defender.LeftHand != null)
+                {
                     AddShockRequest(context.Defender, context.Actor, requests,
-                                    context.Manager);
+                                    context.Manager, ShockVariantBreak, "盾被打碎");
+                }
             }
         }
 
@@ -302,7 +327,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private static void AddShockRequest(PlayerState owner, PlayerState other,
                                            IList<ChoiceRequest> requests,
-                                           GameManager manager)
+                                           GameManager manager, int variant, string reason)
         {
             if (owner == null || requests == null) return;
 
@@ -330,12 +355,13 @@ namespace FingerDiceDuel.Core
 
             requests.Add(new ChoiceRequest(
                 HandEffect.PaladinShockTarget,
-                $"圣武士：冲击即将触发，请选攻击范围内一名角色（造成 {ShockDamage} 点伤害，" +
-                $"可被护盾挡下或闪避）。",
+                $"圣武士（{reason}）：请选攻击范围内一名角色，" +
+                $"造成 {ShockDamage} 点伤害（可被护盾挡下或闪避）。",
                 hands,
                 allowDecline: false,             // 强制发动（玩家只选目标）
                 declineResult: null,
-                decider: owner));
+                decider: owner,
+                variant: variant));              // 合盾 / 碎盾 各一份答案
         }
     }
 }

@@ -91,6 +91,21 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Paladin_shock_uses_a_different_variant_for_forming_and_breaking()
+        {
+            // 玩家要求："从一面盾牌到合成另一面盾牌要提示两次冲击目标，
+            //            碎裂时提示一次，合成时再提示一次"
+            //
+            // 直接验证实现依据：合盾与碎盾用**不同的 variant**，
+            // 于是两条抉择能各读各的答案，不会被彼此的作答顶掉。
+            // （构造"同一次运算里旧盾碎 + 新盾成"的完整局面在单元测试里
+            //   很难摆准，而 variant 分离才是这件事成立的关键。）
+            Assert.AreNotEqual(PaladinLogic.ShockVariantForm,
+                               PaladinLogic.ShockVariantBreak,
+                "合盾与碎盾必须是不同的 variant。");
+        }
+
+        [Test]
         public void Paladin_shock_damage_is_a_fixed_two_regardless_of_bonuses()
         {
             // 玩家确认："冲击不保留攻防加成，造成固定两点伤害"

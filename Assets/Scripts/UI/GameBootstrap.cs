@@ -1874,8 +1874,22 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private string DescribeLastTurn()
         {
-            if (_controller?.LastTurn == null) return "";
-            return BoardController.DescribeTurn(_controller.LastTurn);
+            TurnResult last = _controller?.LastTurn;
+            if (last == null || last.Actor == null) return "";
+
+            // ⚠️ 只在"**现在还是刚结算那位行动方的回合**"时才显示上一手摘要。
+            //
+            // 否则会挂着**上一位行动者**的结算 ——
+            // 玩家实测看到："轮到圣武士，摘要却写着 游侠 左手: 5+1=6"。
+            // 那其实是上一回合游侠打的那一手，与新回合无关，纯属误导。
+            //
+            // 为什么不比回合号：`BoardController.DisplayTurn` 与
+            // `GameManager.TurnCount` 语义差 1（前者是"当前第几回合"、
+            // 后者是"已完成几回合"），拿它们相等去比永远不会成立。
+            // 直接比行动方既准确又贴合玩家描述的现象。
+            if (!ReferenceEquals(_controller.ActivePlayer, last.Actor)) return "";
+
+            return BoardController.DescribeTurn(last);
         }
 
         private string WinMessage()
