@@ -1757,10 +1757,35 @@ namespace FingerDiceDuel.UI
         /// 正确的判据是"**当前行动方是不是人类**"，与座位无关。
         /// </summary>
         private bool ShowSkipButton()
-            => _controller != null
-               && _controller.IsHumanTurn
-               && ReferenceEquals(_controller.ActivePlayer, HumanPlayer())
-               && _controller.CanSkipTurn;
+        {
+            bool show = _controller != null
+                        && _controller.IsHumanTurn
+                        && ReferenceEquals(_controller.ActivePlayer, HumanPlayer())
+                        && _controller.CanSkipTurn;
+
+            // 诊断：按钮该显示却没显示时，把四个判据逐个打出来。
+            // 这类"界面没画"的问题光看截图分不清是规则判错还是漏传参数。
+            if (VerboseLogging && !show && _controller != null
+                && _controller.ActivePlayer != null
+                && _controller.ActivePlayer.Character is WarlockLogic)
+            {
+                string line =
+                    $"[FDD跳过按钮] 不显示 -> isHumanTurn={_controller.IsHumanTurn}" +
+                    $" active={_controller.ActivePlayer?.Name}" +
+                    $" human={HumanPlayer()?.Name}" +
+                    $" same={ReferenceEquals(_controller.ActivePlayer, HumanPlayer())}" +
+                    $" phase={_controller.Phase}" +
+                    $" canSkip={_controller.CanSkipTurn}" +
+                    $" hp={_controller.ActivePlayer?.Health}/{_controller.ActivePlayer?.MaximumHealth}";
+
+                if (line != _lastSkipDiag) { _lastSkipDiag = line; Debug.Log(line); }
+            }
+
+            return show;
+        }
+
+        /// <summary>诊断去重用（同样的原因只打一次，避免每帧刷屏）。</summary>
+        private string _lastSkipDiag;
 
         /// <summary>本局里"人类控制的那位玩家"（1v1 是 A；2v2 按我的座位取）。</summary>
         private PlayerState HumanPlayer()

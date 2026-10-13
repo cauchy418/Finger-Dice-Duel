@@ -91,6 +91,42 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Paladin_shock_cannot_be_blocked_or_dodged_and_is_logged()
+        {
+            // 玩家报告"冲击可以被盾牌抵挡或者被游侠闪避掉" ——
+            // 规则明确它是**真实伤害**，两样都不该发生。
+            // 这条测试同时钉住"战报里能看到冲击"（否则光看血条分不清
+            // 是被挡住了还是根本没触发）。
+            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Ranger,
+                                     out _, out _);
+            PlayerState paladin = game.PlayerA;
+            PlayerState ranger = game.PlayerB;
+
+            // 干扰项：游侠两手都是 1（能闪避）、且有一面成型盾
+            TestSetup.SetHand(ranger.LeftHand, 1);
+            TestSetup.SetHand(ranger.RightHand, 1);
+            ranger.LeftHand.SetShieldState(ShieldState.Formed);
+
+            int before = ranger.Health;
+
+            // 1 + 3 = 4 -> 圣武士合盾 -> 触发冲击
+            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(ranger.RightHand, 3);
+            game.ExecuteTurn(paladin, paladin.LeftHand, ranger.RightHand);
+
+            Assert.AreEqual(before - PaladinLogic.ShockDamage, ranger.Health,
+                "冲击是真实伤害：既不该被护盾挡住，也不该被闪避。");
+            Assert.AreEqual(ShieldState.Formed, ranger.LeftHand.State,
+                "冲击不该消耗目标的护盾。");
+
+            // 战报里必须能看到冲击
+            var lines = new List<string>(game.ShockLog);
+            Assert.True(lines.Count > 0, "冲击应被记入战报。");
+            Assert.True(lines[0].Contains("真实伤害"),
+                $"战报应写明是真实伤害。实际：{lines[0]}");
+        }
+
+        [Test]
         public void Paladin_shock_deals_two_true_damage_through_a_shield()
         {
             // 玩家确认："造成 2 点真实伤害" —— 真实伤害无视护盾与攻防加成

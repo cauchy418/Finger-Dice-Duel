@@ -2461,6 +2461,10 @@ namespace FingerDiceDuel.Assistant
             LastTurn = result;
             foreach (string line in DescribeTurnLines(result)) _log.Add(line);
 
+            // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——
+            // 单独把本回合的冲击记录补进战报（玩家要求能看见它是否发生）。
+            foreach (string shock in _game.TakeShockLog()) _log.Add(shock);
+
             // 回合真正结束 -> 副本可以清了（它只在回合内兜底用）
             _turnActedHand = null;
             _turnTargetHand = null;

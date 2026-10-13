@@ -111,7 +111,28 @@ namespace FingerDiceDuel.Core
             PlayerState picked = ReadShockTarget(owner, sourceHand, candidates, reason, manager);
             if (picked == null) picked = candidates[0];   // 强制发动 -> 兜底第一个
 
+            int before = picked.Health;
             ApplyTrueDamage(picked, ShockDamage);
+            int dealt = before - picked.Health;
+
+            // 写进战报：这样"冲击到底有没有发生、扣了多少"一眼可见。
+            // 光看血条分不清"被盾挡了"还是"根本没触发"（玩家实测报告过疑惑）。
+            manager?.NoteShock(owner, picked, reason, dealt);
+        }
+
+        /// <summary>
+        /// **真实伤害**：直接扣血，不经护盾、不受攻防加成影响。
+        ///
+        /// ⚠️ 这是本角色的核心保证 —— 玩家明确说过冲击"不该被盾牌抵挡"。
+        ///    所以这里**不能**走 <see cref="AttackContext"/>（那条路会判闪避与护盾）。
+        ///    任何"改成走攻击结算"的重构都会破坏这条规则。
+        /// </summary>
+        private static void ApplyTrueDamage(PlayerState target, int amount)
+        {
+            if (target == null || amount <= 0) return;
+            if (!target.IsAlive) return;
+
+            target.TakeDamage(amount);
         }
 
         /// <summary>读回玩家选的冲击目标（收集阶段问过；没答过就返回 null）。</summary>
@@ -141,15 +162,6 @@ namespace FingerDiceDuel.Core
             if (chosen == null) return null;
 
             return manager.OwnerOfHand(chosen);
-        }
-
-        /// <summary>真实伤害：直接扣血，**不经护盾、不受攻防加成影响**。</summary>
-        private static void ApplyTrueDamage(PlayerState target, int amount)
-        {
-            if (target == null || amount <= 0) return;
-            if (!target.IsAlive) return;
-
-            target.TakeDamage(amount);
         }
 
         // ============================================================

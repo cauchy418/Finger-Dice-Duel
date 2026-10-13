@@ -1194,6 +1194,35 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
+        /// 记录一次圣武士的**冲击**（真实伤害），供战报显示。
+        ///
+        /// 为什么必须写进战报：冲击是"合盾 / 碎盾的副产品"，
+        /// 不占一次运算，所以它**不会**出现在 TurnResult 里。
+        /// 光看血条无法区分"被盾挡住了"和"根本没触发"（玩家实测报告过疑惑）。
+        /// </summary>
+        public void NoteShock(PlayerState source, PlayerState target,
+                              string reason, int damage)
+        {
+            if (source == null || target == null) return;
+
+            _shockLog.Add($"{source.Name}（圣武士 {reason}）对 {target.Name} " +
+                          $"造成 {damage} 点真实伤害（无视护盾与闪避）");
+        }
+
+        private readonly List<string> _shockLog = new List<string>();
+
+        /// <summary>本回合发生的冲击记录（结算后清空）。</summary>
+        public IReadOnlyList<string> ShockLog => _shockLog;
+
+        /// <summary>取出并清空冲击记录（由战报在所有条目汇总完后调用）。</summary>
+        public List<string> TakeShockLog()
+        {
+            var copy = new List<string>(_shockLog);
+            _shockLog.Clear();
+            return copy;
+        }
+
+        /// <summary>
         /// 该玩家当前是否可以跳过回合（**带 GameManager** 的版本）。
         ///
         /// ⚠️ 有些角色的跳过条件要**看别人**（邪术师：场上必须有人体力与自己不同），
