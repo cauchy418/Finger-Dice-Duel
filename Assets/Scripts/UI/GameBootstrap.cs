@@ -1583,6 +1583,15 @@ namespace FingerDiceDuel.UI
                                    turnLimit: _controller.TurnLimit,
                                    showSkipButton: ShowSkipButton(),
                                    skipButtonInteractable: _controller.CanSkipTurn);
+
+                // ⚠️ "发动 / 不发动"在 2v2 里要按**当前做抉择那位的手牌**重新定位。
+                //    它们的默认位置是"相对画布中心 x=700"（1v1 的屏幕右侧），
+                //    在环形布局里会落到左下角的战报上面（玩家实测截图确认）。
+                //    1v1 不调用它 —— 那边已验证过的布局不动。
+                //    （`IsInChoicePhase` 是私有的，这里用公开的 `Chooser` 判断：
+                //      "有抉择归属者"就说明正处在抉择阶段。）
+                if (_controller.Chooser != null)
+                    _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
             }
             else
             {

@@ -876,67 +876,183 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 2v2 专用的"确保跳过按钮存在"。
         ///
-        /// 锚点取**下方那组手牌**（"我"的位置）—— 与 1v1 的手感一致：
-        /// 按钮出现在自己的手牌右侧。
+        /// ⚠️ **锚点必须是最右那张手牌**，不能取"第一张"。
+        ///    我第一版取 `Cards[0]`（左边那张），按钮就压在**右边那张手牌上**
+        ///    （玩家实测截图确认）。
         ///
-        /// 找不到时会次选任意一个环形面板的手牌，保证按钮一定有父节点
-        /// （否则按钮创建了也不可见，等于没修）。
+        /// 优先在"我"那一格（SelfBottom）里找最右的手牌，
+        /// 与 1v1 的手感一致：按钮出现在自己手牌的右侧。
         /// </summary>
         private void EnsureSkipButtonForRing(IReadOnlyList<PlayerState> playersBySeat)
         {
             if (_skipButton != null) return;
 
-            HandCard anchor = FindRingAnchorCard(playersBySeat);
+            HandCard anchor = FindRightmostRingCard();
             if (anchor == null) return;
 
             EnsureSkipButton(anchor.Button.GetComponent<RectTransform>());
         }
 
-        /// <summary>找"我"（SelfBottom）那一格的第一张手牌作为锚点。</summary>
-        private HandCard FindRingAnchorCard(IReadOnlyList<PlayerState> playersBySeat)
+        /// <summary>
+        /// 找环形布局里**屏幕最右侧**的那张手牌作为按钮锚点。
+        ///
+        /// 遍历所有可见面板的所有手牌，取 `anchoredPosition.x` 最大的一张 ——
+        /// 这样不依赖"我"在哪一格，按钮永远在整块手牌区的右边，
+        /// 任何座位（1~4 号位）都会落在安全区域。
+        /// </summary>
+        private HandCard FindRightmostRingCard()
         {
-            HandCard fallback = null;
+            HandCard best = null;
+            float bestX = float.NegativeInfinity;
 
             for (int i = 0; i < _ringPanels.Count; i++)
             {
                 RingPanel panel = _ringPanels[i];
                 if (panel.Root == null || !panel.Root.gameObject.activeInHierarchy) continue;
-                if (panel.Cards == null || panel.Cards.Length == 0) continue;
-                if (panel.Cards[0] == null) continue;
+                if (panel.Cards == null) continue;
 
-                // 优先"我"的位置（屏幕下方中间）
-                if (panel.Position == RingPosition.SelfBottom) return panel.Cards[0];
+                for (int c = 0; c < panel.Cards.Length; c++)
+                {
+                    HandCard card = panel.Cards[c];
+                    if (card == null || card.Button == null) continue;
 
-                if (fallback == null) fallback = panel.Cards[0];
+                    var rect = card.Button.GetComponent<RectTransform>();
+                    if (rect == null) continue;
+
+                    // 优先"我"那一格；同格内取最右
+                    bool mine = panel.Position == RingPosition.SelfBottom;
+                    float x = rect.anchoredPosition.x + (mine ? 10000f : 0f);
+
+                    if (x > bestX) { bestX = x; best = card; }
+                }
             }
 
-            return fallback;
+            return best;
         }
 
         /// <summary>
-        /// 创建/布置"跳过回合"按钮：位于**玩家 A 右手牌的右侧**。
-        /// 只在双盾在手（<see cref="GameBoardUI"/> 的调用方判定）时显示。
+        /// 创建"跳过回合"按钮，并把它放在**手牌区右侧**。
+        ///
+        /// ⚠️ 两条位置约定（都是玩家实测反馈后改的）：
+        ///
+        /// 1. **父节点用 `_canvasRoot`**，与"发动 / 不发动"同一坐标系。
+        ///    原来挂在手牌容器下（`handCardRect.parent`），坐标系不同，
+        ///    同一个数值在 1v1 与 2v2 里落点完全不同。
+        ///
+        /// 2. **按世界坐标算真实屏幕位置**，不猜偏移量。
+        ///    原来用 `handCardRect.anchoredPosition + 260` ——
+        ///    那是"锚点在手牌容器里的坐标"，遇上环形布局就压在手牌上了
+        ///    （玩家截图确认：按钮盖住右边那张手牌）。
         /// </summary>
         private void EnsureSkipButton(RectTransform handCardRect)
         {
             if (_skipButton != null) return;
 
-            _skipButton = CreateButton(handCardRect.parent as RectTransform, "SkipTurnButton",
-                                       Vector2.zero, new Vector2(170f, 64f), "跳过回合");
+            _skipButton = CreateButton(_canvasRoot, "SkipTurnButton",
+                                       Vector2.zero, new Vector2(180f, 56f), "跳过回合");
             _skipButton.GetComponent<Image>().color = new Color(0.28f, 0.42f, 0.30f);
-
-            // 摆在右手牌右侧
-            var rect = _skipButton.GetComponent<RectTransform>();
-            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = handCardRect.anchoredPosition + new Vector2(260f, 0f);
-
             _skipButton.onClick.AddListener(() => { SkipTurnClicked?.Invoke(); });
+
+            PlaceButtonRightOf(handCardRect, _skipButton, 60f);
+        }
+
+        /// <summary>
+        /// 把一个按钮放到**某只手牌的右侧**（世界坐标换算，父节点须为 canvasRoot）。
+        ///
+        /// 这样无论手牌在 1v1 的居中布局、还是 2v2 的环形布局里，
+        /// 按钮都贴在手牌右边，不会压住它。
+        /// </summary>
+        private void PlaceButtonRightOf(RectTransform anchorCard, Button button, float gap)
+        {
+            if (anchorCard == null || button == null || _canvasRoot == null) return;
+
+            var target = button.GetComponent<RectTransform>();
+            if (target == null) return;
+
+            // 手牌右边缘的世界坐标 -> canvasRoot 的局部坐标
+            var corners = new Vector3[4];
+            anchorCard.GetWorldCorners(corners);       // 0=左下 1=左上 2=右上 3=右下
+            float rightWorldX = corners[2].x;
+            float centerWorldY = (corners[0].y + corners[1].y) * 0.5f;
+
+            var world = new Vector3(rightWorldX + gap, centerWorldY, 0f);
+            Vector3 local = _canvasRoot.InverseTransformPoint(world);
+
+            target.anchorMin = target.anchorMax = new Vector2(0.5f, 0.5f);
+            target.pivot = new Vector2(0f, 0.5f);      // 左边缘对齐，向右伸展
+            target.anchoredPosition = new Vector2(local.x, local.y);
         }
 
         /// <summary>显示/隐藏"跳过回合"按钮。</summary>
         public void SetSkipButtonVisible(bool visible)
         {
             if (_skipButton != null) _skipButton.gameObject.SetActive(visible);
+        }
+
+        /// <summary>
+        /// 把"发动 / 不发动"两个按钮放到**本体手牌的右侧**。
+        ///
+        /// 1v1 里它们固定在屏幕右侧（`ChoiceButtonX = 700`，相对画布中心），
+        /// 那在单人手牌布局下刚好合适；但 2v2 的环形布局里，
+        /// 同一个数值会落到**左下角的战报上面**（玩家实测截图确认）。
+        ///
+        /// 所以 2v2 由调用方在刷新时调用本方法，按**当前做抉择那位的**
+        /// 手牌重新定位；1v1 不调用它，保持原样（已验证过的布局不动）。
+        /// </summary>
+        public void PlaceChoiceButtonsNextTo(PlayerState decider)
+        {
+            if (decider == null) return;
+            if (_acceptButton == null && _declineButton == null) return;
+
+            HandCard anchor = FindRightmostCardOf(decider);
+            if (anchor == null) return;
+
+            var rect = anchor.Button.GetComponent<RectTransform>();
+            if (rect == null) return;
+
+            // 两个按钮上下叠放：发动在上、不发动在下
+            if (_acceptButton != null) PlaceButtonRightOf(rect, _acceptButton, 40f);
+            if (_declineButton != null)
+            {
+                PlaceButtonRightOf(rect, _declineButton, 40f);
+
+                // 往下挪一行，避免与"发动"重叠
+                var r = _declineButton.GetComponent<RectTransform>();
+                if (r != null)
+                    r.anchoredPosition = r.anchoredPosition + new Vector2(0f, -46f);
+            }
+        }
+
+        /// <summary>找某位玩家在环形布局里的**最右**那张手牌。</summary>
+        private HandCard FindRightmostCardOf(PlayerState player)
+        {
+            HandCard best = null;
+            float bestX = float.NegativeInfinity;
+
+            for (int i = 0; i < _ringPanels.Count; i++)
+            {
+                RingPanel panel = _ringPanels[i];
+                if (panel.Root == null || !panel.Root.gameObject.activeInHierarchy) continue;
+                if (!ReferenceEquals(panel.Owner, player)) continue;
+                if (panel.Cards == null) continue;
+
+                for (int c = 0; c < panel.Cards.Length; c++)
+                {
+                    HandCard card = panel.Cards[c];
+                    if (card == null || card.Button == null) continue;
+
+                    var rect = card.Button.GetComponent<RectTransform>();
+                    if (rect == null) continue;
+
+                    if (rect.anchoredPosition.x > bestX)
+                    {
+                        bestX = rect.anchoredPosition.x;
+                        best = card;
+                    }
+                }
+            }
+
+            return best;
         }
 
         /// <summary>
