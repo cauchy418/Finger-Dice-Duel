@@ -496,6 +496,50 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Forced_gamble_still_allows_picking_an_attack_target()
+        {
+            // 玩家实测："我在上一回合运算后，这一回合开赌投出 6 后
+            //            无法点击他人攻击，攻击选择和运算选择他人一起被锁死。"
+            //
+            // 根因：那条"强制赌博时拒绝点他人的手"的守卫**没有限定阶段**，
+            // 于是掷出攻击后的"选打谁"（ChoosingTargetPlayer）也被拦了 ——
+            // 而选打谁本来就**必须**点他人的手。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.GambleRng = new FixedRandom(6);      // 6 = 攻击
+            board.BeginTurn();
+
+            game.PlayerA.MustGamble = true;            // 强制状态
+
+            // ① 点自己的手 -> 进赌博阶段
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand));
+            Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase);
+
+            // ② 开赌 -> 掷出 6 -> 停在选打谁
+            Assert.True(board.Gamble());
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+
+            // ③ 强制赌博状态下，**选打谁仍然必须能点他人的手**
+            Assert.True(board.CanClick(game.PlayerB.LeftHand),
+                "选攻击目标时点他人的手必须被允许（哪怕处于强制赌博状态）。");
+
+            int before = game.PlayerB.Health;
+            Assert.True(board.ClickHand(game.PlayerB.LeftHand),
+                "点目标应被接受 —— 不能被强制赌博的守卫拦掉。");
+
+            Assert.NotNull(board.LastTurn, "应完成结算。");
+            Assert.AreEqual(6, board.LastTurn.GambleRoll);
+            Assert.True(game.PlayerB.Health < before, "赌出 6 应造成伤害。");
+        }
+
+        [Test]
         public void Only_gamblers_can_gamble()
         {
             GameManager game = new GameManager(Make("士", CharacterDefinition.Soldier),

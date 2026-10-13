@@ -1213,7 +1213,20 @@ namespace FingerDiceDuel.Assistant
             //
             //    不能静默忽略 —— 玩家会以为"点了没反应 = 游戏坏了"。
             //    也不能允许选中 —— 那等于绕过了强制赌博。
+            //
+            //    ⚠️⚠️ 但这条守卫**只能在"还没开始行动"时生效**
+            //    （ChoosingAttackerHand / ChoosingTargetHand）。
+            //
+            //    我第一版没限阶段，于是掷出攻击后的"**选打谁**"
+            //    （ChoosingTargetPlayer）也被拦了 —— 玩家实测：
+            //    "开赌投出 6 后无法点击他人攻击，攻击选择和运算选择他人
+            //      一起被锁死"。而选打谁本来就**必须**点他人的手。
+            bool stillChoosingOperation =
+                Phase == BoardPhase.ChoosingAttackerHand
+                || Phase == BoardPhase.ChoosingTargetHand;
+
             if (hand != null
+                && stillChoosingOperation
                 && ActivePlayer?.Character is GamblerLogic
                 && ActivePlayer.MustGamble
                 && !ActivePlayer.Owns(hand))
