@@ -540,6 +540,68 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Ai_gambler_gambles_when_no_operation_gives_a_useful_result()
+        {
+            // 玩家给的策略："在无法运算出有效数字如 4/5/6/8/9 时，
+            // 赌徒会非常倾向于开赌。"
+            //
+            // 局面：赌徒 2/1，对手 3/1 ——
+            //   2+3=5（有效！）… 所以要把所有组合都弄成无效。
+            // 改成：赌徒 2/1，对手 3/1，但**用 1+3=4** 也是有效…
+            // 干脆让两边都是 1：1+1=2（无效果），怎么配都是 2。
+            var ai = new GreedyChoiceProvider();
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1], aiForA: ai);
+            board.GambleRng = new FixedRandom(5);
+            board.BeginTurn();
+
+            // 双方手值都是 1 -> 1+1=2（无效果），没有任何有用的运算
+            TestSetup.SetHand(game.PlayerA.LeftHand, 1);
+            TestSetup.SetHand(game.PlayerA.RightHand, 1);
+            TestSetup.SetHand(game.PlayerB.LeftHand, 1);
+            TestSetup.SetHand(game.PlayerB.RightHand, 1);
+
+            Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
+            Assert.True(board.LastGambleRoll > 0,
+                "没有任何有用运算时，AI 赌徒应该开赌。");
+        }
+
+        [Test]
+        public void Ai_gambler_prefers_normal_operation_when_a_useful_result_exists()
+        {
+            // 反过来：能运算出有效数字（这里 1+4=5 -> 合盾）就不该赌
+            var ai = new GreedyChoiceProvider();
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
+                                       Make("B", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+
+            var board = new BoardController(game, providers[0], providers[1], aiForA: ai);
+            board.GambleRng = new FixedRandom(2);      // 万一赌了，点数会是 2（无效果）
+            board.BeginTurn();
+
+            // 赌徒 1/1，对手 4/4 -> 1+4=5（合盾，有效）
+            TestSetup.SetHand(game.PlayerA.LeftHand, 1);
+            TestSetup.SetHand(game.PlayerA.RightHand, 1);
+            TestSetup.SetHand(game.PlayerB.LeftHand, 4);
+            TestSetup.SetHand(game.PlayerB.RightHand, 4);
+
+            Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
+            Assert.AreEqual(0, board.LastGambleRoll,
+                "存在有用的运算时，AI 不该开赌。");
+        }
+
+        [Test]
         public void Only_gamblers_can_gamble()
         {
             GameManager game = new GameManager(Make("士", CharacterDefinition.Soldier),

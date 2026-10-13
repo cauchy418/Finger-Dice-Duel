@@ -2401,6 +2401,40 @@ namespace FingerDiceDuel.Assistant
             LegalMove move = ai.ChooseMove(_game, ActivePlayer);
             if (move.Actor == null) return false;
 
+            // ⚠️ **AI 赌徒的策略**（玩家给的规则）：
+            //    "在无法运算出有效数字如 4/5/6/8/9 时，赌徒会非常倾向于开赌。"
+            //
+            //    必须在**点手之前**判断：一旦点了自己的手，
+            //    强制状态下就直接进赌博阶段了，就来不及比较"运算 vs 赌博"。
+            if (ShouldAiGamble(ActivePlayer))
+            {
+                _lastAiMoveDiagnostic =
+                    $"AI-GAMBLE actor={ActivePlayer?.Name} must={ActivePlayer.MustGamble}";
+
+                // 先点一只手（赌博需要一个运算源），再开赌
+                if (!ClickHand(move.ActedHand)) return false;
+
+                // 强制状态下点手即进 ChoosingGamble；非强制时进 ChoosingTargetHand ——
+                // 两个阶段都允许开赌（见 CanGamble），所以这里统一处理。
+                if (Phase != BoardPhase.ChoosingGamble
+                    && Phase != BoardPhase.ChoosingTargetHand)
+                {
+                    ResolvePendingAiChoices();
+                    return true;
+                }
+
+                if (!Gamble()) return false;
+
+                if (Phase == BoardPhase.ChoosingTargetPlayer)
+                {
+                    if (DefenderCannotBeAttacked) GiveUpAttack();
+                    else ConfirmTargetPlayer();
+                }
+
+                ResolvePendingAiChoices();
+                return true;
+            }
+
             // 诊断字符串在**每个失败点当场重写** ——
             // 只在开头写一次会留下上一次成功调用的旧值，
             // 于是"显示的 phase 与真正失败的位置不一致"（我为此白查过一轮）。
@@ -2504,6 +2538,48 @@ namespace FingerDiceDuel.Assistant
             if (!SkipTurn()) return false;
             return ApplyHealthSwapAndEndTurn(best);
         }
+
+        /// <summary>
+        /// **赌徒是否应该赌博**（AI 策略）。
+        ///
+        /// 玩家给的策略："在无法运算出有效数字如 4/5/6/8/9 时，
+        /// 赌徒会**非常倾向于**开赌。"
+        ///
+        /// 判据：枚举当前所有合法运算，看有没有哪一步的结果落在
+        /// 有效数字集合 {4,5,6,8,9} 里。**一个都没有** -> 开赌。
+        ///
+        /// 理由很直白：正常运算既然出不了任何有用的东西，
+        /// 还不如掷 1d9 —— 9 个面里有 5 个是有用的（4/5/6/8/9）。
+        /// </summary>
+        private bool ShouldAiGamble(PlayerState actor)
+        {
+            if (!(actor?.Character is GamblerLogic)) return false;
+            if (actor.MustGamble) return true;      // 强制时没得选
+
+            IReadOnlyList<LegalMove> moves = _game.GetLegalMoves(actor);
+            if (moves.Count == 0) return true;      // 连运算都做不了 -> 赌
+
+            for (int i = 0; i < moves.Count; i++)
+            {
+                LegalMove m = moves[i];
+                if (m.ActedHand == null || m.TargetHand == null) continue;
+
+                int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
+                if (IsUsefulGambleResult(result)) return false;   // 有有用的运算 -> 不赌
+            }
+
+            return true;                            // 没有任何有用的结果 -> 开赌
+        }
+
+        /// <summary>
+        /// 这个数字算不算"有效结果"（玩家列举：4/5/6/8/9）。
+        ///
+        /// 1/2/3/7 是"无效果"，所以不在里面。
+        /// 直接按**效果类型**判断，与赌博的效果规则共用一套，
+        /// 避免"两处各写一份而漂移"（列表变了只要改效果判定）。
+        /// </summary>
+        private static bool IsUsefulGambleResult(int value)
+            => Hand.GetEffectType(value) != HandEffectType.None;
 
         /// <summary>
         /// 诊断用：最近一次 <see cref="MakeAutomaticMove"/> 里 AI 选出的那一手。
