@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 攻击会改动运算源的手值，因此出手后自然脱离潜行（除非结果又让它变回 7）。
     /// </summary>
     public sealed class AssassinLogic : CharacterTemplate, ITurnSkipRule, IAttackTargetRule,
-                                       ISkillUseCounter
+                                       ISkillUseCounter, IAiMoveAdvisor, ITwoStepGoal
     {
         public override string DisplayName => "刺客";
 
@@ -194,6 +194,61 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         /// <summary>本局发动招牌技能（进入潜行）几次 —— 见 <see cref="ISkillUseCounter"/>。</summary>
         public int SkillUseCount => StealthEnterCount;
+
+        // ============================================================
+        // 双 7 的**两回合计划**（玩家指出：剑客的双 4/6/8 能成，
+        // 刺客的双 7 也就能成 —— 两者用的是同一条 ComboRule 通路）
+        // ============================================================
+        //
+        // ⚠️ 但光有 ComboRule 不够。诊断实测（12 局）：
+        //      对 战士：[1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6]…
+        //    第一手走的是 `1+2=3`，**从不保留 7**，双 7 一次都没成过。
+        //
+        //    原因：`DoublesOf` 只在 `actedAfter == otherHand` 时给分，
+        //    也就是**已经成了**才有奖励；贪心评分看不到
+        //    "我手上已经有一只 7，下一手把这只也做成 7 就成"这条价值。
+        //
+        //    所以这里显式声明"离目标还差几步"，让 AI 能为两步计划铺路。
+
+        /// <summary>
+        /// 离"双 7"还差几步：0 = 已成，1 = 只需再做成一只，2 = 两只都要做。
+        /// </summary>
+        public int StepsToGoal(int actedValueAfter, int otherHandValue)
+        {
+            int have = 0;
+            if (actedValueAfter == StealthValue) have++;
+            if (otherHandValue == StealthValue) have++;
+
+            return 2 - have;
+        }
+
+        /// <summary>7 是达成双 7 必需的值 —— 别拿它去做运算（会把它改掉）。</summary>
+        public bool IsGoalValue(int handValue) => handValue == StealthValue;
+
+        /// <summary>
+        /// 给这一手加分，让 AI **愿意为双 7 铺路**。
+        ///
+        /// 分值设计（与效果档位 44~88 同量级，但不该盖过"这一步能不能赢"）：
+        ///   · 目标是**推进**而不是"这一步赚多少"
+        ///   · 已达成双 7 由价值表的 Combos 给 200（那一层负责）
+        /// </summary>
+        public override int ScoreMoveBonus(MoveValueContext context)
+        {
+            int steps = StepsToGoal(context.ActedValueAfter, context.OtherHandValue);
+
+            switch (steps)
+            {
+                // 差一步：这一手之后手上会有一只 7，下一手再补一只就成
+                // -> 重点奖励（这是"铺路"的关键一手）
+                case 1: return 55;
+
+                // 还差两只：小幅奖励，避免它为了 7 放弃眼前明显更好的机会
+                case 2: return 8;
+
+                default: return 0;      // 已成（0 步）：交给价值表的 Combos
+            }
+        }
+
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {

@@ -62,6 +62,66 @@ namespace FingerDiceDuel.Tests
             // Assert.AreEqual(0, dead.Count, "...");
         }
 
+        /// <summary>
+        /// **刺客诊断**：双 7 到底卡在哪一步？
+        ///
+        /// 玩家指出"剑客的双 4/6/8 能成，刺客的双 7 也就能成"——
+        /// 两者用的是**同一条** ComboRule 通路（DoublesOf）。
+        /// 所以卡点不在"AI 不认识双 7"，而在别处。这个测试把过程摊开看。
+        /// </summary>
+        [Test]
+        public void Diagnose_assassin_double_seven()
+        {
+            var sb = new StringBuilder();
+            int endedWithSeven = 0, reachedBothSeven = 0, games = 0;
+
+            for (int m = 0; m < 12; m++)
+            {
+                CharacterDefinition foeDef = Roster()[(m + 1) % Roster().Length];
+                if (foeDef.Id == CharacterDefinition.AssassinId)
+                    foeDef = Roster()[(m + 2) % Roster().Length];
+
+                PlayerState me = CharacterFactory.CreatePlayer("刺客",
+                                                               CharacterDefinition.Assassin);
+                PlayerState foe = CharacterFactory.CreatePlayer(foeDef.DisplayName, foeDef);
+
+                var game = new GameManager(me, foe, new GreedyChoiceProvider(),
+                                           new GreedyChoiceProvider());
+
+                int maxSevens = 0;
+                bool sawBothSeven = false;
+                var trace = new StringBuilder();
+
+                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 200 };
+                runner.OnTurnResolved = t =>
+                {
+                    if (t?.Actor == null || !ReferenceEquals(t.Actor, me)) return;
+
+                    int sevens = (me.LeftHand.Value == 7 ? 1 : 0)
+                                 + (me.RightHand.Value == 7 ? 1 : 0);
+                    if (sevens > maxSevens) maxSevens = sevens;
+                    if (sevens == 2) sawBothSeven = true;
+
+                    if (trace.Length < 170)
+                        trace.Append($"[{t.ActedHandValueBefore}+{t.ResultValue}->" +
+                                     $"{me.LeftHand.Value}/{me.RightHand.Value}]");
+                };
+
+                runner.Run(game, new GreedyChoiceProvider(), new GreedyChoiceProvider());
+                games++;
+
+                if (maxSevens >= 1) endedWithSeven++;
+                if (sawBothSeven) reachedBothSeven++;
+
+                sb.AppendLine($"对 {foeDef.DisplayName}：双 7 最多 {maxSevens} 只  " + trace);
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"出现过至少一只 7 的对局：{endedWithSeven}/{games}");
+            sb.AppendLine($"出现过双 7 的对局：{reachedBothSeven}/{games}");
+            System.Console.WriteLine(sb.ToString());
+        }
+
         /// <summary>跑一遍全部角色，返回"发动局数"表。</summary>
         private static Dictionary<string, int> ActivateAll()
         {
@@ -189,8 +249,7 @@ namespace FingerDiceDuel.Tests
                     //    必须用"本局进入过几次"的计数器（走 Core 接口，
                     //    因为测试层不能引用 Characters 层）。
                     if (pA.Character is ISkillUseCounter a && a.SkillUseCount > 0) hit = true;
-                    break;
-            }
+                    break;            }
 
             return hit;
         }
