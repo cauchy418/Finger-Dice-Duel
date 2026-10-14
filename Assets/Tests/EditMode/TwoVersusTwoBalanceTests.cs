@@ -87,7 +87,11 @@ namespace FingerDiceDuel.Tests
             int totalGames = 0, totalActions = 0, limitHits = 0;
             int seat14Wins = 0, seat23Wins = 0, seatDraws = 0;
 
-            const int gamesPerMatchup = 4;
+            // 玩家要求：加大轮数（尽量多）。
+            // 每对队伍打 16 局（种子 0..15），共约 153 x 16 = 2448 局。
+            // 玩家要求：加大轮数（尽量多）。
+            // 每对队伍打 64 局，共约 153 x 64 = 9792 局。
+            const int gamesPerMatchup = 64;
             int offset = teams.Count / 2;
 
             var sb = new StringBuilder();
@@ -105,8 +109,11 @@ namespace FingerDiceDuel.Tests
                     var seat14 = t1On14 ? t1 : t2;
                     var seat23 = t1On14 ? t2 : t1;
 
+                    // 种子与**配对**相关：否则每个配对都重用同一批开局，
+                    // 相当于只测了 32 种开局而不是 4896 种。
+                    int seed = g * 101 + i * 7;
                     TwoVersusTwoHarness.Outcome r = TwoVersusTwoHarness.Play(
-                        seat14.a, seat23.a, seat23.b, seat14.b, g, 400, out int actions);
+                        seat14.a, seat23.a, seat23.b, seat14.b, seed, 400, out int actions);
 
                     if (r.Error != null)
                     {
