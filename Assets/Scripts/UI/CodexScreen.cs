@@ -73,6 +73,7 @@ namespace FingerDiceDuel.UI
         private Text _body;
         private Text _page;
         private Text _filterLabel;
+        private Text _alignmentLabel;
 
         private readonly Dictionary<string, Image> _lawButtons =
             new Dictionary<string, Image>();
@@ -139,27 +140,38 @@ namespace FingerDiceDuel.UI
                                       new Vector2(140f, 48f), "返回", 22);
             close.onClick.AddListener(() => CloseRequested?.Invoke());
 
-            // ---- 阵营筛选 ----
+            // ---- 阵营筛选（玩家要求：移到**右侧**，
+            //      与名称、介绍放在一起）----
+            //
+            // ⚠️ 原来它在左侧靠上，与标题同一行区域，
+            //    看起来像"属于标题"而不像"属于角色"。
+            //    现在整体靠右，与名称/介绍形成一列。
+            _alignmentLabel = MakeText(panelRect, "AlignmentLabel",
+                                       new Vector2(330f, halfH - 96f),
+                                       new Vector2(360f, 34f),
+                                       24, TextAnchor.MiddleRight,
+                                       new Color(0.62f, 0.82f, 0.60f));
+
             _filterLabel = MakeText(panelRect, "FilterLabel",
-                                    new Vector2(0f, halfH - 106f),
-                                    new Vector2(PanelW - 160f, 30f),
-                                    19, TextAnchor.MiddleLeft,
+                                    new Vector2(330f, halfH - 138f),
+                                    new Vector2(360f, 28f),
+                                    17, TextAnchor.MiddleRight,
                                     new Color(0.70f, 0.74f, 0.82f));
 
-            BuildAxisRow(panelRect, LawAxes, _lawButtons, halfH - 152f, true);
-            BuildAxisRow(panelRect, GoodAxes, _goodButtons, halfH - 204f, false);
+            BuildAxisRow(panelRect, LawAxes, _lawButtons, halfH - 186f, true);
+            BuildAxisRow(panelRect, GoodAxes, _goodButtons, halfH - 238f, false);
 
             // ---- 属性行 ----
             _stats = MakeText(panelRect, "Stats",
-                              new Vector2(0f, halfH - 252f),
+                              new Vector2(0f, halfH - 300f),
                               new Vector2(PanelW - 120f, 34f),
                               23, TextAnchor.MiddleLeft,
                               new Color(0.95f, 0.85f, 0.55f));
 
             // ---- 正文（占满下半部分，自动换行）----
             _body = MakeText(panelRect, "Body",
-                             new Vector2(0f, -70f),
-                             new Vector2(PanelW - 120f, halfH + 20f),
+                             new Vector2(0f, -80f),
+                             new Vector2(PanelW - 120f, halfH - 30f),
                              18, TextAnchor.UpperLeft,
                              new Color(0.88f, 0.90f, 0.94f));
 
@@ -174,8 +186,13 @@ namespace FingerDiceDuel.UI
                                      new Vector2(150f, 48f), "下一张", 22);
             next.onClick.AddListener(() => Step(1));
 
+            // 页码放在"下一张"的**右边** ——
+            // 我第一版把它放在 -halfW+440、宽 200，
+            // 而"下一张"的右边缘在 -halfW+375，
+            // 所以两者**重叠**（玩家实测："1/18 和下一张重合"）。
+            // 现在改成从 -halfW+390 开始，且居左对齐。
             _page = MakeText(panelRect, "Page",
-                             new Vector2(-halfW + 440f, -halfH + 46f),
+                             new Vector2(-halfW + 500f, -halfH + 46f),
                              new Vector2(200f, 40f),
                              21, TextAnchor.MiddleLeft,
                              new Color(0.75f, 0.78f, 0.85f));
@@ -189,7 +206,10 @@ namespace FingerDiceDuel.UI
             const float width = 120f;
             const float gap = 12f;
             float totalW = axes.Length * width + (axes.Length - 1) * gap;
-            float x = -totalW * 0.5f + width * 0.5f;
+
+            // 整行靠**右**对齐：最右一个按钮的右边缘对齐 510（与名称/介绍同一右边界）
+            const float rightEdge = 510f;
+            float x = rightEdge - totalW + width * 0.5f;
 
             for (int i = 0; i < axes.Length; i++)
             {
@@ -276,7 +296,10 @@ namespace FingerDiceDuel.UI
             }
 
             if (_title != null)
-                _title.text = $"{c.NameZh}　{c.NameEn}　·　{c.Alignment}";
+                _title.text = $"{c.NameZh}　{c.NameEn}";
+
+            if (_alignmentLabel != null)
+                _alignmentLabel.text = c.Alignment;
 
             if (_stats != null)
                 _stats.text = $"生命 {c.MaxHealth}　　攻 {Signed(c.Attack)}　　"
