@@ -132,18 +132,18 @@ namespace FingerDiceDuel.UI
             panelRect.anchoredPosition = Vector2.zero;
             panel.GetComponent<Image>().color = new Color(0.11f, 0.13f, 0.17f);
 
-            float halfW = PanelW * 0.5f;
-            float halfH = PanelH * 0.5f;
 
             // ---- 标题（含中英文与阵营）----
             _title = MakeText(panelRect, "Title",
-                              new Vector2(0f, halfH - 46f), new Vector2(PanelW - 260f, 52f),
+                              Vector2.zero, new Vector2(340f, 52f),
                               36, TextAnchor.MiddleLeft, new Color(0.98f, 0.86f, 0.45f));
+            Anchor(_title.rectTransform, new Vector2(0f, 1f), 60f, -24f, 340f, 52f);
 
             // ---- 关闭 ----
             Button close = MakeButton(panelRect, "Close",
-                                      new Vector2(halfW - 90f, halfH - 46f),
-                                      new Vector2(140f, 48f), "返回", 22);
+                                      Vector2.zero, new Vector2(140f, 48f), "返回", 22);
+            Anchor((RectTransform)close.transform, new Vector2(1f, 1f),
+                   -60f, -26f, 140f, 48f);
             close.onClick.AddListener(() => CloseRequested?.Invoke());
 
             // ---- 阵营筛选（玩家要求：移到**右侧**，
@@ -154,11 +154,14 @@ namespace FingerDiceDuel.UI
             //    现在整体靠右，与名称/介绍形成一列。
             // ---- 阵营标签（紧跟名称右侧）----
             // 玩家要求：阵营**移到名字旁边**（而不是右侧单独一行）
+            // 玩家要求：阵营放在**英文名后面**。
+            // 标题框宽 340、从左边 60 开始，所以阵营从 60+340 = 400 开始。
             _alignmentLabel = MakeText(panelRect, "AlignmentLabel",
-                                       new Vector2(-330f, 352f),
-                                       new Vector2(300f, 40f),
+                                       Vector2.zero, new Vector2(300f, 44f),
                                        26, TextAnchor.MiddleLeft,
                                        new Color(0.62f, 0.82f, 0.60f));
+            Anchor(_alignmentLabel.rectTransform, new Vector2(0f, 1f),
+                   404f, -26f, 300f, 44f);
 
             // ---- 阵营筛选（玩家要求：在返回键下面做一个按钮，
             //      点开后才跳出筛选界面）----
@@ -166,8 +169,11 @@ namespace FingerDiceDuel.UI
             // ⚠️ 原来是常驻的两行按钮，占掉一大块版面；
             //    现在收起来，只在点开时显示。
             _filterToggle = MakeButton(panelRect, "FilterToggle",
-                                       new Vector2(730f, 322f),
-                                       new Vector2(150f, 46f), "阵营筛选", 20);
+                                       Vector2.zero, new Vector2(140f, 46f),
+                                       "阵营筛选", 20);
+            // 玩家要求：放在**返回的正下方**（同宽、右对齐）
+            Anchor((RectTransform)_filterToggle.transform, new Vector2(1f, 1f),
+                   -60f, -84f, 140f, 46f);
             _filterToggle.onClick.AddListener(ToggleFilterPanel);
 
             // 筛选面板：一个容器，里面放提示 + 两行按钮
@@ -177,7 +183,7 @@ namespace FingerDiceDuel.UI
             fp.anchorMin = fp.anchorMax = new Vector2(0.5f, 0.5f);
             fp.pivot = new Vector2(0.5f, 0.5f);
             fp.sizeDelta = new Vector2(420f, 160f);
-            fp.anchoredPosition = new Vector2(120f, halfH - 200f);
+            Anchor(fp, new Vector2(1f, 1f), -230f, -142f, 420f, 160f);
 
             _filterLabel = MakeText(fp, "FilterLabel",
                                     new Vector2(0f, 62f),
@@ -192,44 +198,52 @@ namespace FingerDiceDuel.UI
 
             // ---- 属性行 ----
             // 玩家实测：属性行与技能描述**重叠**了 ——
-            //    因为上一轮我把属性行提到 halfH-170、却把正文一起提了上来。
-            //    现在属性行留在名称下方，正文从它下面才开始。
+            //    因为上一轮我把属性行上移、却把正文一起提了上来。
+            //    现在两者都用**锚点定位**，间距是固定的。
             _stats = MakeText(panelRect, "Stats",
-                              new Vector2(-halfW + 100f, halfH - 200f),
-                              new Vector2(PanelW - 200f, 36f),
+                              Vector2.zero, new Vector2(PanelW - 120f, 36f),
                               24, TextAnchor.MiddleLeft,
                               new Color(0.95f, 0.85f, 0.55f));
+            Anchor(_stats.rectTransform, new Vector2(0f, 1f),
+                   60f, -92f, PanelW - 120f, 36f);
 
             // ---- 正文（占满下半部分，自动换行）----
             // 正文用**固定矩形 + 左上对齐**，起点在属性行下方 ——
             // 这样"属性行"与"技能"之间的间距是可算的，不会再压在一起。
             _body = MakeText(panelRect, "Body",
-                             new Vector2(-halfW + 100f, 100f),
-                             new Vector2(PanelW - 200f, halfH - 180f),
+                             Vector2.zero, new Vector2(PanelW - 120f, 380f),
                              18, TextAnchor.UpperLeft,
                              new Color(0.88f, 0.90f, 0.94f));
 
+            // 正文用**锚点拉伸**：左上 (60, -136)，右下 (-60, 96)
+            // 这样它与属性行之间的间距是固定的，不会再压在一起。
+            RectTransform bodyRect = _body.rectTransform;
+            bodyRect.anchorMin = new Vector2(0f, 0f);
+            bodyRect.anchorMax = new Vector2(1f, 1f);
+            bodyRect.pivot = new Vector2(0f, 1f);
+            bodyRect.offsetMin = new Vector2(60f, 96f);
+            bodyRect.offsetMax = new Vector2(-60f, -136f);
+
             // ---- 底部：翻页 ----
             Button prev = MakeButton(panelRect, "Prev",
-                                     new Vector2(-halfW + 130f, -halfH + 46f),
-                                     new Vector2(150f, 48f), "上一张", 22);
+                                     Vector2.zero, new Vector2(150f, 48f), "上一张", 22);
+            Anchor((RectTransform)prev.transform, new Vector2(0f, 0f),
+                   60f, 34f, 150f, 48f);
             prev.onClick.AddListener(() => Step(-1));
 
             Button next = MakeButton(panelRect, "Next",
-                                     new Vector2(-halfW + 300f, -halfH + 46f),
-                                     new Vector2(150f, 48f), "下一张", 22);
+                                     Vector2.zero, new Vector2(150f, 48f), "下一张", 22);
+            Anchor((RectTransform)next.transform, new Vector2(0f, 0f),
+                   224f, 34f, 150f, 48f);
             next.onClick.AddListener(() => Step(1));
 
-            // 页码放在"下一张"的**右边** ——
-            // 我第一版把它放在 -halfW+440、宽 200，
-            // 而"下一张"的右边缘在 -halfW+375，
-            // 所以两者**重叠**（玩家实测："1/18 和下一张重合"）。
-            // 现在改成从 -halfW+390 开始，且居左对齐。
+            // 页码放在"下一张"右边（用锚点定位）
             _page = MakeText(panelRect, "Page",
-                             new Vector2(-halfW + 500f, -halfH + 46f),
-                             new Vector2(200f, 40f),
+                             Vector2.zero, new Vector2(200f, 40f),
                              21, TextAnchor.MiddleLeft,
                              new Color(0.75f, 0.78f, 0.85f));
+            Anchor(_page.rectTransform, new Vector2(0f, 0f),
+                   390f, 38f, 200f, 40f);
 
             ApplyFilter();
         }
@@ -410,6 +424,23 @@ namespace FingerDiceDuel.UI
         // ============================================================
         // 小工具（与 TwoOnTwoInitiativeScreen 的写法保持一致）
         // ============================================================
+
+        /// <summary>
+        /// 把一个控件**贴在父矩形的某个角上**（而不是用绝对坐标）。
+        ///
+        /// ⚠️ 为什么改成锚点：我先前用的是"父矩形中心 + 绝对偏移"，
+        ///    而面板的 pivot 不一定在中心 —— 玩家实测整体偏移到屏幕外，
+        ///    就是这个原因。锚点定位不依赖 pivot，稳定得多。
+        /// </summary>
+        /// <param name="anchor">(0,1) 左上 / (1,1) 右上 / (0,0) 左下 / (1,0) 右下</param>
+        private static void Anchor(RectTransform rect, Vector2 anchor,
+                                   float offsetX, float offsetY, float width, float height)
+        {
+            rect.anchorMin = rect.anchorMax = anchor;
+            rect.pivot = anchor;
+            rect.sizeDelta = new Vector2(width, height);
+            rect.anchoredPosition = new Vector2(offsetX, offsetY);
+        }
 
         private Text MakeText(RectTransform parent, string name, Vector2 position,
                               Vector2 size, int fontSize, TextAnchor alignment, Color color)
