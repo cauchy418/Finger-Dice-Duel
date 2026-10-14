@@ -434,6 +434,62 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**我的斩杀线要按自己的机制调整**"。
+    ///
+    /// 背景：斩杀线 = 本次攻击的最大伤害 = 基础值 + 攻方攻击加成 − 受方防御加成。
+    /// 但有几个角色的实际伤害**不等于**这个式子：
+    ///   · **游侠**：手上有 2 时可以强化射击（基础值 ×1.5）
+    ///   · **剑客**：双手相同时追加一次 4/6/8 伤害
+    ///   · **刺客**：潜行中 +7
+    ///   · **巨人**：打出 5 时是**两段**，每段伤害 = 另一只手的点数
+    ///
+    /// ⚠️ 为什么必须由角色自己算：这些机制只有角色知道，
+    ///    而 AI（Assistant 层）**不能引用 Characters 层**（项目分层约定）。
+    ///    不调整的话会算错斩杀线 —— 该杀不杀，或者以为能杀却差 1 点。
+    /// </summary>
+    public interface ILethalThresholdAdvisor
+    {
+        /// <summary>
+        /// 估算这一手对某人的**总伤害**（用于判断能不能斩杀）。
+        ///
+        /// ⚠️ 参数给的是**原始值**（结果值 / 攻方攻击加成 / 受方防御加成），
+        ///    让角色能按自己的机制重算 —— 因为有些机制作用在
+        ///    **叠加攻防之前**。例如游侠的强化射击是"基础值 ×1.5"，
+        ///    真实顺序是 `(4 * 1.5) + 攻 - 防`，而不是 `(4 + 攻 - 防) * 1.5`。
+        ///
+        ///    通用情形下直接返回
+        ///    <see cref="AttackContext.ApplyStatBonuses"/> 的结果即可。
+        /// </summary>
+        int EstimateLethalDamage(LethalContext context, int resultValue,
+                                 int attackBonus, int defenseBonus);
+    }
+
+    /// <summary>斩杀线估算的上下文。</summary>
+    public readonly struct LethalContext
+    {
+        /// <summary>本次运算源（那只手）。</summary>
+        public Hand ActedHand { get; }
+
+        /// <summary>被打的那只手（用它的主人当受害者）。</summary>
+        public Hand TargetHand { get; }
+
+        /// <summary>本次运算的结果值。</summary>
+        public int ResultValue { get; }
+
+        /// <summary>自己的**另一只手**的点数（巨人 / 剑客要用）。</summary>
+        public int OtherHandValue { get; }
+
+        public LethalContext(Hand actedHand, Hand targetHand, int resultValue,
+                             int otherHandValue)
+        {
+            ActedHand = actedHand;
+            TargetHand = targetHand;
+            ResultValue = resultValue;
+            OtherHandValue = otherHandValue;
+        }
+    }
+
+    /// <summary>
     /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——

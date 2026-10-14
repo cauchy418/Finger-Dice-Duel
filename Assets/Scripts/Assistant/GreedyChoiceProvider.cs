@@ -293,7 +293,97 @@ namespace FingerDiceDuel.Assistant
             // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
             score += TargetPriorityScore(move, actor, game);
 
+            // ---- **斩杀优先**（玩家要求："在能斩杀对方时，要大幅优先决定攻击"）----
+            //
+            // 斩杀线 = **本次攻击的最大伤害**，即
+            //   基础值 + 攻方攻击加成 − 受方防御加成
+            // 再叠加**角色自己的**修正（游侠有 2 时强化、剑客双持追加、
+            // 刺客潜行 +7、巨人两段求和…见 <see cref="ILethalThresholdAdvisor"/>）。
+            //
+            // ⚠️ 必须放在最后、且量级**远大于**其他所有项 ——
+            //    能一击带走时，前面那些"目标优先级""屯牌价值"全都不重要了。
+            if (IsLethal(move, actor, game, result))
+                score += LethalBonus;
+
             return score;
+        }
+
+        /// <summary>
+        /// **斩杀赏金**。
+        ///
+        /// 取 100000 —— 比目标优先级最高档（10000）还大一个数量级，
+        /// 因为"能不能赢"压过"打谁更好"。
+        /// </summary>
+        public int LethalBonus { get; set; } = 100000;
+
+        /// <summary>
+        /// 这一手能不能**直接斩杀**目标。
+        ///
+        /// 伤害估算必须**与真实结算同源**（<see cref="AttackContext.ApplyStatBonuses"/>），
+        /// 否则会出现"AI 以为是斩杀、其实差 1 点"。
+        /// 角色特有的增伤通过 <see cref="ILethalThresholdAdvisor"/> 叠上来。
+        /// </summary>
+        private bool IsLethal(LegalMove move, PlayerState actor, GameManager game, int result)
+        {
+            if (game == null || actor == null) return false;
+
+            HandEffectType effect = Hand.GetEffectType(result);
+            bool isAttack = effect == HandEffectType.Attack4
+                            || effect == HandEffectType.Attack6
+                            || effect == HandEffectType.Attack8;
+            if (!isAttack) return false;
+
+            PlayerState victim = game.OwnerOfHand(move.TargetHand);
+            if (victim == null || !victim.IsAlive) return false;
+
+            // ⚠️ 打队友不算"斩杀"（那是负收益，另有惩罚）
+            if (game.IsTeammate(actor, victim)) return false;
+
+            // 角色特有的增伤 / 额外段数（游侠强化、剑客追加、刺客潜行、巨人两段…）
+            // 由 TotalLethalDamage 统一处理（传**原始值**给角色自算）。
+            return TotalLethalDamage(move, actor, victim, result) >= victim.Health;
+        }
+
+        /// <summary>
+        /// 估算这一手对某人的**总伤害**（含角色特有机理）。
+        ///
+        /// 提取出来是为了让"斩杀判定"与"测试"走同一条路径 ——
+        /// 否则测试验证的是一份逻辑、实际用的是另一份。
+        /// </summary>
+        public int TotalLethalDamage(LegalMove move, PlayerState actor, PlayerState victim,
+                                     int result)
+        {
+            if (actor == null || victim == null) return 0;
+
+            int atkBonus = actor.Character?.AttackBonus ?? 0;
+            int defBonus = victim.Character?.DefenseBonus ?? 0;
+
+            var advisor = actor.Character as ILethalThresholdAdvisor;
+            if (advisor != null)
+            {
+                int other = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
+                return advisor.EstimateLethalDamage(
+                    new LethalContext(move.ActedHand, move.TargetHand, result, other),
+                    result, atkBonus, defBonus);
+            }
+
+            return AttackContext.ApplyStatBonuses(result, atkBonus, defBonus,
+                                                  ignorePositiveDefense: false);
+        }
+
+        /// <summary>
+        /// 估算一次攻击对某人的实际伤害（与真实结算同一套加减）。
+        ///
+        /// 只算**单段**；多段的合计由角色的
+        /// <see cref="ILethalThresholdAdvisor"/> 负责。
+        /// </summary>
+        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim,
+                                                int result)
+        {
+            return AttackContext.ApplyStatBonuses(result,
+                                                  attacker.Character?.AttackBonus ?? 0,
+                                                  victim.Character?.DefenseBonus ?? 0,
+                                                  ignorePositiveDefense: false);
         }
 
         // ============================================================

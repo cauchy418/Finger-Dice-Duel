@@ -559,15 +559,26 @@ namespace FingerDiceDuel.Core
 
         /// <summary>给一段伤害叠加攻防修正。</summary>
         private int ApplyStatBonuses(int damage)
+            => ApplyStatBonuses(damage,
+                                Attacker.Character?.AttackBonus ?? 0,
+                                Defender.Character?.DefenseBonus ?? 0,
+                                IgnorePositiveDefense);
+
+        /// <summary>
+        /// **公开静态版**：给一段伤害叠加攻防修正（供 AI 估算斩杀线）。
+        ///
+        /// ⚠️ 必须是**同一份实现** —— 否则 AI 的斩杀线会与真实结算漂移，
+        ///    表现为"AI 以为是斩杀、其实差 1 点"（或反过来该杀不杀）。
+        ///
+        /// <paramref name="ignorePositiveDefense"/> 对应咒术师的
+        /// "无视对方正向防御加成"。
+        /// </summary>
+        public static int ApplyStatBonuses(int damage, int attackBonus, int defenseBonus,
+                                           bool ignorePositiveDefense)
         {
-            int atkBonus = Attacker.Character?.AttackBonus ?? 0;
-            int defBonus = Defender.Character?.DefenseBonus ?? 0;
+            if (ignorePositiveDefense && defenseBonus > 0) defenseBonus = 0;
 
-            // 咒术师特性：无视对方的"正向防御加成"
-            if (IgnorePositiveDefense && defBonus > 0)
-                defBonus = 0;
-
-            return System.Math.Max(0, damage + atkBonus - defBonus);
+            return System.Math.Max(0, damage + attackBonus - defenseBonus);
         }
 
         /// <summary>

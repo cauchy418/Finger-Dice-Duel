@@ -16,7 +16,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 攻击会改动运算源的手值，因此出手后自然脱离潜行（除非结果又让它变回 7）。
     /// </summary>
     public sealed class AssassinLogic : CharacterTemplate, ITurnSkipRule, IAttackTargetRule,
-                                       ISkillUseCounter, IAiMoveAdvisor, ITwoStepGoal
+                                       ISkillUseCounter, IAiMoveAdvisor, ITwoStepGoal,
+                                       ILethalThresholdAdvisor
     {
         public override string DisplayName => "刺客";
 
@@ -28,6 +29,31 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         /// <summary>出潜行那一击的额外伤害。</summary>
         public const int StealthBonusDamage = 7;
+
+        /// <summary>
+        /// **刺客的斩杀线**：潜行中出手时伤害 **+7**，所以斩杀线要相应提高。
+        ///
+        /// ⚠️ 加伤作用在**基础值**上（在加攻防之前），
+        ///    与真实结算的顺序一致。
+        ///
+        /// ⚠️ 判据用"**本局是否进入过潜行且当前仍是双 7**" ——
+        ///    因为出手会改动运算源的手值，出手那一刻是否还在潜行，
+        ///    取决于**运算前**的状态。AI 是在运算前评分的，
+        ///    所以这里直接读角色自身的潜行状态是对的。
+        /// </summary>
+        public int EstimateLethalDamage(LethalContext context, int resultValue,
+                                        int attackBonus, int defenseBonus)
+        {
+            int baseValue = resultValue;
+
+            if (_stealthEntered && IsStealthedNow) baseValue += StealthBonusDamage;
+
+            return AttackContext.ApplyStatBonuses(baseValue, attackBonus, defenseBonus,
+                                                  ignorePositiveDefense: false);
+        }
+
+        /// <summary>当前是否处于潜行（双手为 7 且本局进入过）。</summary>
+        public bool IsStealthedNow => _stealthEntered;
 
         /// <summary>本次潜行是否已经用掉了"跳过一回合"的机会。</summary>
         private bool _skipUsedThisStealth;

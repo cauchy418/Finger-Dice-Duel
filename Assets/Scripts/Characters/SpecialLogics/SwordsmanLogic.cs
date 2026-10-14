@@ -13,11 +13,37 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 追加攻击与主攻击是**两次独立结算**：护盾只能挡下其中一次
     /// （见 RULES.md §6.3）。
     /// </summary>
-    public sealed class SwordsmanLogic : CharacterTemplate, IPreTurnChoiceProvider, IExtraAttackProvider, IAiMoveAdvisor
+    public sealed class SwordsmanLogic : CharacterTemplate, IPreTurnChoiceProvider, IExtraAttackProvider, IAiMoveAdvisor,
+                                         ILethalThresholdAdvisor
     {
         public override string DisplayName => "剑客";
 
         public override int DefaultAttackBonus => 2;
+
+        /// <summary>
+        /// **剑客的斩杀线**（玩家要求"剑客的斩杀线也要根据不同手的情况写"）。
+        ///
+        /// = 主攻击伤害 + （若会触发追加攻击）追加伤害。
+        ///
+        /// 追加攻击的伤害是 **固定 4 / 6 / 8**（与结果值相同），
+        /// 而且它 **IgnoreStatBonuses** —— 不吃攻防加成
+        /// （见 SwordsmanLogic 里构造追加攻击的 AttackContext）。
+        ///
+        /// 触发条件是"双手相同且结果是 4/6/8"，用 ShouldFollowUp 判定，
+        /// 保证与真实触发**同一份逻辑**。
+        /// </summary>
+        public int EstimateLethalDamage(LethalContext context, int resultValue,
+                                        int attackBonus, int defenseBonus)
+        {
+            int main = AttackContext.ApplyStatBonuses(resultValue, attackBonus, defenseBonus,
+                                                      ignorePositiveDefense: false);
+
+            // 追加攻击：双手相同（另一只手 == 结果值）且结果是 4/6/8
+            bool followUp = context.OtherHandValue == resultValue
+                            && (resultValue == 4 || resultValue == 6 || resultValue == 8);
+
+            return followUp ? main + resultValue : main;
+        }
         public override int DefaultDefenseBonus => -1;
 
         /// <summary>触发追加攻击需要"另一只手与运算源数字相同"。</summary>

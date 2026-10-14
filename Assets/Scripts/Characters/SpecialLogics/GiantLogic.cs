@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public sealed class GiantLogic : CharacterTemplate, IHandEffectRewriter,
                                       IMultiHitAttack, IHealOverride, IHealAmountProvider,
-                                      IHandEffectDisplay
+                                      IHandEffectDisplay, ILethalThresholdAdvisor
     {
         public override string DisplayName => "巨人";
 
@@ -214,6 +214,39 @@ namespace FingerDiceDuel.Core
                 default:
                     return Hand.GetEffectType(resultValue);
             }
+        }
+
+        /// <summary>
+        /// **巨人的斩杀线**（玩家要求"巨人的斩杀线也要根据不同手的情况写"）。
+        ///
+        /// 巨人的伤害**不看结果值，看另一只手**：
+        ///   · 打出 **5** → **两段**攻击，每段基础伤害 = 另一只手的点数
+        ///     （之后每段各自加攻防）→ 总伤害 = 2 × (另一只手 + 攻 − 防)
+        ///   · 4 / 6 / 8 → **完全无效果**，伤害 0
+        ///   · 其余 → 按普通攻击算
+        ///
+        /// ⚠️ 所以"巨人的斩杀线"必须按**另一只手**算，而不是按结果值 ——
+        ///    用结果值会算出完全错误的数字（另一个手是 3 时，5 的实际伤害是
+        ///    2 × (3 + 攻 − 防)，而不是 5 + 攻 − 防）。
+        /// </summary>
+        public int EstimateLethalDamage(LethalContext context, int resultValue,
+                                        int attackBonus, int defenseBonus)
+        {
+            // 4 / 6 / 8 完全无效果
+            if (resultValue == 4 || resultValue == 6 || resultValue == 8) return 0;
+
+            // 5 -> 两段，每段的基础伤害是"另一只手的点数"
+            if (resultValue == 5)
+            {
+                int perHit = AttackContext.ApplyStatBonuses(
+                    context.OtherHandValue, attackBonus, defenseBonus,
+                    ignorePositiveDefense: false);
+
+                return perHit * HitCount;
+            }
+
+            return AttackContext.ApplyStatBonuses(resultValue, attackBonus, defenseBonus,
+                                                  ignorePositiveDefense: false);
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)

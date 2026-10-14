@@ -25,7 +25,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 读起来像"整局只能发动一次"，与实现不符，已修正。
     /// 反复发动的行为由 <c>RangerReuseTests</c> 覆盖。
     /// </summary>
-    public sealed class RangerLogic : CharacterTemplate, IPreTurnChoiceProvider, IDodgeCapability
+    public sealed class RangerLogic : CharacterTemplate, IPreTurnChoiceProvider, IDodgeCapability,
+                                      ILethalThresholdAdvisor
     {
         /// <summary>可以拿来闪避的手值。</summary>
         public const int DodgeFromValue = 1;
@@ -41,6 +42,35 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         /// <summary>强化后的基础伤害倍率。</summary>
         public const float PowerMultiplier = 1.5f;
+
+        /// <summary>
+        /// **游侠的斩杀线**：手上有 **2** 时，强化射击让基础值 ×1.5，
+        /// 所以斩杀线要相应提高（玩家要求）。
+        ///
+        /// ⚠️ 顺序必须与实际结算一致：**先 ×1.5，再加攻防** ——
+        ///    真实实现是 `RawDamage * DamageMultiplier` 之后再 ApplyStatBonuses，
+        ///    所以不能写成 `(结果 + 攻 - 防) * 1.5`。
+        ///    4 → 6、6 → 9、8 → 12（与注释里写的一致）。
+        /// </summary>
+        public int EstimateLethalDamage(LethalContext context, int resultValue,
+                                       int attackBonus, int defenseBonus)
+        {
+            int baseValue = resultValue;
+
+            // 有 2 才能强化（2 是强化射击的原料，见 GetPowerShotCandidate）
+            if (HasPowerShotFuel(context))
+            {
+                baseValue = (int)System.Math.Round(
+                    resultValue * PowerMultiplier, System.MidpointRounding.AwayFromZero);
+            }
+
+            return AttackContext.ApplyStatBonuses(baseValue, attackBonus, defenseBonus,
+                                                  ignorePositiveDefense: false);
+        }
+
+        /// <summary>手上是否有"2"可用来强化（运算源之外的那只手）。</summary>
+        private static bool HasPowerShotFuel(LethalContext context)
+            => context.OtherHandValue == PowerFromValue;
 
         /// <summary>
         /// 这次攻击是否可以被闪避。
