@@ -2526,6 +2526,16 @@ namespace FingerDiceDuel.Assistant
             //    自己血太少时这么干等于自杀，所以宁可正常打（还能合盾 / 输出）。
             if (ActivePlayer.Health < AiDangerHealth) return false;
 
+            // 玩家给的判据："血量比敌人少的值大于等于**自己能打出的最大伤害**"
+            // —— 用"最大伤害"而不是固定数字，因为它随角色 / 手值变化。
+            int maxDamage = MaxDamageICanDeal(ActivePlayer);
+
+            // ① 优先把**危险的队友**拉上来（玩家要求）：
+            //    "队友血量若处于危险值且自己体力比队友多大于 9 则大幅度倾向于拉队友"
+            PlayerState teammate = FindDangerousTeammate(ActivePlayer);
+            if (teammate != null) return DoWarlockSkip(teammate);
+
+            // ② 否则拉一个"血量比自己多至少 maxDamage"的对手
             PlayerState best = null;
             IReadOnlyList<PlayerState> all = _game.Players;
             for (int i = 0; i < all.Count; i++)
@@ -2535,20 +2545,77 @@ namespace FingerDiceDuel.Assistant
                 if (ReferenceEquals(p, ActivePlayer)) continue;
                 if (_game.IsTeammate(ActivePlayer, p)) continue;
 
-                // 玩家要求的阈值：**血量相差 8 以上**才有意义
-                if (p.Health < ActivePlayer.Health + WarlockSkipHealthGap) continue;
+                if (p.Health - ActivePlayer.Health < maxDamage) continue;
 
                 if (best == null || p.Health > best.Health) best = p;
             }
 
-            // 没有"血够厚的对手"就**不发动**（宁可正常打）。
-            // 规则虽然允许改队友的血（把人拉低），但 AI 不做这种自伤判断。
             if (best == null) return false;
 
-            // 进入相位再发动 —— 复用人类那条路径，避免两套逻辑漂移
-            if (!SkipTurn()) return false;
-            return ApplyHealthSwapAndEndTurn(best);
+            return DoWarlockSkip(best);
         }
+
+        /// <summary>进入相位并发动跳过（复用人类那条路径，避免两套逻辑漂移）。</summary>
+        private bool DoWarlockSkip(PlayerState target)
+        {
+            if (target == null) return false;
+            if (!SkipTurn()) return false;
+            return ApplyHealthSwapAndEndTurn(target);
+        }
+
+        /// <summary>
+        /// **我这一手能打出的最大伤害**（邪术师的跳过判据用它）。
+        ///
+        /// 估算方式：手值里最高的那个直接当攻击数字（4/6/8 才是攻击，
+        /// 所以取"能凑到的最好的攻击值"），再加攻防。
+        ///
+        /// ⚠️ 这是**保守估算** —— 宁可高估也不要低估：
+        ///    高估只是少跳一次（放着好机会没用），
+        ///    低估会在"其实打得死"的时候白送一个回合给对手。
+        /// </summary>
+        private static int MaxDamageICanDeal(PlayerState me)
+        {
+            if (me?.Character == null) return 8;
+
+            int atk = me.Character.AttackBonus;
+
+            // 攻击效果只有 4 / 6 / 8，取最大的 8
+            // （手上有 8，或者能凑出 8 —— 这里用"攻击距离内的对手手值"不划算，
+            //  所以直接按最大攻击档位算，属于保守高估）
+            return System.Math.Max(0, 8 + atk);
+        }
+
+        /// <summary>
+        /// 找一个"处于危险值、且自己血量比它多 9 以上"的队友（玩家给的规则）。
+        ///
+        /// 危险值沿用 <see cref="AiDangerHealth"/>：低于它就该被拉上来。
+        /// </summary>
+        private PlayerState FindDangerousTeammate(PlayerState me)
+        {
+            IReadOnlyList<PlayerState> all = _game.Players;
+            PlayerState best = null;
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, me)) continue;
+                if (!_game.IsTeammate(me, p)) continue;
+
+                // 队友处于危险值
+                if (p.Health > AiDangerHealth) continue;
+
+                // 自己比队友多 9 以上（否则拉上来等于把自己拉下去，不划算）
+                if (me.Health - p.Health <= WarlockTeammatePullGap) continue;
+
+                if (best == null || p.Health < best.Health) best = p;
+            }
+
+            return best;
+        }
+
+        /// <summary>拉队友的血量差门槛（玩家给的数：9）。</summary>
+        public int WarlockTeammatePullGap { get; set; } = 9;
 
         /// <summary>
         /// 邪术师 AI 跳过的**血量差阈值**（玩家给的数：8）。

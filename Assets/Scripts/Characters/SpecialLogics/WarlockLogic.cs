@@ -20,7 +20,8 @@ namespace FingerDiceDuel.Core
     /// <see cref="AutoCancel"/> 设为 false 即可（届时需要接上抉择 UI）。
     /// </summary>
     public sealed class WarlockLogic : CharacterTemplate, IAttackCanceller,
-                                        IAttackRangeProvider, ITurnSkipRule
+                                       FingerDiceDuel.Core.ISkillUseCounter,
+                                       IAttackRangeProvider, ITurnSkipRule
     {
         public override string DisplayName => "邪术师";
 
@@ -86,6 +87,7 @@ namespace FingerDiceDuel.Core
                 if (answer.Value != attackValue) return false;
 
                 CancelWith(canceller, answer);
+                CancelCount++;
                 return true;
             }
 
@@ -101,8 +103,21 @@ namespace FingerDiceDuel.Core
             if (matched == null) return false;
 
             CancelWith(canceller, matched);
+            CancelCount++;
             return true;
         }
+
+        /// <summary>
+        /// 本局**取消过几次攻击**。
+        ///
+        /// ⚠️ 为什么要计数器："只要能取消敌人的攻击就取消"是邪术师的主动策略，
+        ///    但取消的**效果只体现在敌人没掉血上** —— 场上没有任何痕迹，
+        ///    所以"AI 从不取消"这种问题根本测不出来。
+        /// </summary>
+        public int CancelCount { get; private set; }
+
+        /// <summary>本局发动招牌技能（取消攻击）几次 —— <see cref="ISkillUseCounter"/>。</summary>
+        public int SkillUseCount => CancelCount;
 
         /// <summary>把某只手 +1（永久）来取消攻击。</summary>
         private static void CancelWith(PlayerState canceller, Hand hand)

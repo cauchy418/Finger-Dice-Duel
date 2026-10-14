@@ -64,6 +64,18 @@ namespace FingerDiceDuel.Assistant
         public int HealPriorityHealth { get; set; } = 4;
 
         /// <summary>
+        /// 牧师认为"自己处于危险值"的血量**百分比**（玩家给的规则）。
+        ///
+        /// "牧师只需要检查在**危险时刻优先给回血**，否则**全部进攻**"。
+        ///
+        /// ⚠️ 用百分比而不是绝对值：不同角色的生命上限不同
+        ///    （巨人 25、狼人 25、其余 20），绝对阈值在它们之间没有可比性。
+        ///
+        /// 35% 大致对应"再挨一到两下就没了"。
+        /// </summary>
+        public int PriestHealHealthPercent { get; set; } = 35;
+
+        /// <summary>
         /// 当前对局（由 <see cref="BoardController"/> 在询问之前注入）。
         ///
         /// ⚠️ 为什么需要：有些抉择的"正确答案"要看**全场信息** ——
@@ -729,19 +741,36 @@ namespace FingerDiceDuel.Assistant
                     }
 
                 case HandEffect.PriestAttackOrHeal:
-                    // 4/6/8 是"当攻击打"还是"当回复用"。
-                    // 血量偏低时优先回复（回复量 = 该数字，不受攻防影响），
-                    // 否则正常当攻击 —— 否则双方都只顾回血会打成僵局。
+                    // 玩家给的规则：
+                    //   "牧师只需要检查在**危险时刻优先给回血**，否则**全部进攻**"
                     //
-                    // 目标已经**合并进这一次抉择**（点哪只手 = 回给谁），
-                    // 所以这里返回的手既表示"要回复"，也表示"回给谁"。
+                    // 所以判据是"自己是否处于危险值"（血量百分比），
+                    // 而不是一个固定的绝对值 —— 绝对值在不同生命上限的角色
+                    // 之间没有可比性（巨人 25、狼人 25、其余 20）。
                     //
-                    // ⚠️ 候选顺序是"自己两只手在前、对手两只手在后"
-                    // （见 PriestLogic.AddOwnerHands 的调用顺序）。
-                    // AI 只能回给自己 —— 1v1 里把回复给对手是资敌。
-                    return decider != null && decider.Health <= HealPriorityHealth
-                        ? c[0]      // 发动 = 当回复用，且回给自己
-                        : null;     // 放弃 = 当攻击打
+                    // 返回的手既表示"要回复"，也表示"回给谁"。
+                    // ⚠️ 候选顺序是"自己两只手在前、其他人两只手在后"，
+                    //    所以发动时取第一个（= 自己的手）。
+                    if (decider == null) return null;
+
+                    bool danger = decider.Health * 100
+                                  <= decider.MaximumHealth * PriestHealHealthPercent;
+
+                    if (!danger) return null;      // 不危险 -> 全部进攻（放弃 = 当攻击打）
+
+                    // 危险 -> 优先回血，且回给"自己这一队血最低的人"
+                    var healAdvisor = decider.Character as IHealTargetAdvisor;
+                    PlayerState healWant = healAdvisor?.BestHealTarget(decider, Game);
+
+                    if (healWant != null && Game != null)
+                    {
+                        for (int i = 0; i < c.Count; i++)
+                        {
+                            if (ReferenceEquals(Game.OwnerOfHand(c[i]), healWant)) return c[i];
+                        }
+                    }
+
+                    return c[0];
 
                 case HandEffect.SwordsmanFollowUp:
                     {

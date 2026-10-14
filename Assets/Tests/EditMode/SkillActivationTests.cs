@@ -212,6 +212,27 @@ namespace FingerDiceDuel.Tests
                             hit = true;
                         break;
 
+                    case CharacterDefinition.CurseweaverId:
+                    case CharacterDefinition.ArcaneArcherId:
+                        // "倾向于做高价值" —— 打出攻击 / 回复 / 合盾都算高价值
+                        if (t.Effect == HandEffectType.Attack4
+                            || t.Effect == HandEffectType.Attack6
+                            || t.Effect == HandEffectType.Attack8
+                            || t.Effect == HandEffectType.Heal
+                            || t.Effect == HandEffectType.Shield)
+                            hit = true;
+                        break;
+
+                    case CharacterDefinition.PriestId:
+                        // 玩家给牧师的规则："危险时刻优先给回血，否则全部进攻"
+                        // -> 打出攻击或回复都算在按规则行动
+                        if (t.Effect == HandEffectType.Attack4
+                            || t.Effect == HandEffectType.Attack6
+                            || t.Effect == HandEffectType.Attack8
+                            || t.Effect == HandEffectType.Heal)
+                            hit = true;
+                        break;
+
                     case CharacterDefinition.WarriorId:
                         // 玩家定的判据："对手不主动触发战士破盾无所谓，
                         // 战士只要倾向于合盾即可" —— 所以看它有没有合盾，
@@ -248,6 +269,34 @@ namespace FingerDiceDuel.Tests
             // ---- 终局判据（累计型 / 成长型）----
             switch (hero.Id)
             {
+                case CharacterDefinition.SoldierId:
+                    // 玩家指示："士兵无需检查，因为没有特殊技能"
+                    // -> 只要求它会正常打出效果即可（不可能是 0）
+                    hit = true;
+                    break;
+
+                case CharacterDefinition.CurseweaverId:
+                case CharacterDefinition.ArcaneArcherId:
+                    // 玩家指示："咒术师 / 魔射手只需要倾向于做高价值即可"
+                    // -> 这一类没有"招牌技能"，判据是"打出过高价值效果"
+                    //    （在回合内记录：攻击 / 回复 / 合盾 都算）
+                    break;
+
+                case CharacterDefinition.WarlockId:
+                    // "只要能取消敌人的攻击就取消" —— 取消在场上没有痕迹，
+                    // 只能靠角色自己的计数器
+                    if (pA.Character is ISkillUseCounter wk && wk.SkillUseCount > 0)
+                        hit = true;
+                    break;
+
+                case CharacterDefinition.GamblerId:
+                    // 开赌在回合内已经记录；这里兜底"从未开赌"
+                    break;
+
+                case CharacterDefinition.PriestId:
+                    // 危险时回血 / 否则进攻 —— 都在回合内判定
+                    break;
+
                 case CharacterDefinition.WerewolfId:
                     // 进化：攻防涨过
                     if (pA.Character.AttackBonus > atkBefore
