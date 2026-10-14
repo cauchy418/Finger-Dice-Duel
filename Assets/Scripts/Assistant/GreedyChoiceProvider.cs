@@ -63,6 +63,16 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public int HealPriorityHealth { get; set; } = 4;
 
+        /// <summary>
+        /// 当前对局（由 <see cref="BoardController"/> 在询问之前注入）。
+        ///
+        /// ⚠️ 为什么需要：有些抉择的"正确答案"要看**全场信息** ——
+        ///    例如牧师该给谁回血（自己这一队里血最低的存活者），
+        ///    那要遍历全部参战玩家与队伍关系，`ChooseHandFor` 的入参里没有。
+        ///    没有它就只能退回"取第一个候选"（= 永远回自己）。
+        /// </summary>
+        public GameManager Game { get; set; }
+
         /// <summary>是否发动战士连锁破盾。默认放弃（避免自作自受地破自己的盾）。</summary>
         public bool UseChainBreak { get; set; }
 
@@ -192,8 +202,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public int TeammateAttackPenalty { get; set; } = 10000;
 
-        private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)
-        {
+        private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)        {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
             int result = Hand.ComputeSum(acted, target);
@@ -281,7 +290,130 @@ namespace FingerDiceDuel.Assistant
                 }
             }
 
+            // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
+            score += TargetPriorityScore(move, actor, game);
+
             return score;
+        }
+
+        // ============================================================
+        // 2v2 的**攻击目标优先级**（玩家给的顺序）
+        // ============================================================
+        //
+        // 1. 优先攻击"自己和队友都能打到"的对手
+        // 2. 优先攻击血量更低的对手
+        // 3. 优先攻击没有防御（护盾 / 闪避 / 太极）的对手
+        // 4. 优先攻击防御更低的对手
+        // 5. 优先攻击攻击更高的对手
+        //
+        // ⚠️ 这是**字典序**（先满足第 1 条，同档内才比第 2 条…），
+        //    所以权重必须是**递减的若干数量级**，且最高一档
+        //    **大于其余所有档之和** —— 否则"低优先级项累加"
+        //    会翻掉高优先级的判断。
+        //
+        //    取基数 10000：最高档 10000 > 1000+100+10+1 = 1111，安全。
+
+        private const int TargetPriorityBase = 10000;
+
+        /// <summary>
+        /// 给走子评分（<b>仅供测试</b>）。
+        ///
+        /// 目标的优先级规则（血量 / 防御 / 攻击）只能从"两个候选之间谁分高"
+        /// 来验证，所以需要把评分暴露出来 —— 否则测试只能靠"打很多局统计"
+        /// 来间接推断，既慢又不确定。
+        /// </summary>
+        public int ScoreMoveForTest(LegalMove move, PlayerState actor, GameManager game)
+            => ScoreMove(move, actor, game);
+
+        /// <summary>该手牌是否"有防御手段"（护盾 / 太极）。</summary>
+        private static bool HasDefense(Hand hand)
+            => hand != null && (hand.IsShield || hand.IsTaichi);
+
+        /// <summary>
+        /// 把"该打谁"按玩家给的顺序打分。
+        ///
+        /// 量级远大于效果档位（44~88），所以目标选择**压过**
+        /// "这一手打多少" —— 这是刻意的：选错目标比少打两点严重得多。
+        /// </summary>
+        private int TargetPriorityScore(LegalMove move, PlayerState actor, GameManager game)
+        {
+            if (game == null || actor == null) return 0;
+
+            PlayerState target = game.OwnerOfHand(move.TargetHand);
+            if (target == null) return 0;
+
+            // 只对**对手**算这套优先级（打队友另有惩罚）
+            if (ReferenceEquals(target, actor) || game.IsTeammate(actor, target)) return 0;
+
+            int score = 0;
+
+            // ① 自己和队友都能打到 -> 最高优先
+            if (BothTeamCanReachActor(actor, target, game))
+                score += TargetPriorityBase;
+
+            // ② 血量更低（血越少分越高）
+            score += (100 - HealthPercentOf(target)) * (TargetPriorityBase / 100);
+
+            // ③ 没有防御
+            bool defended = HasDefense(target.LeftHand) || HasDefense(target.RightHand);
+            if (!defended) score += TargetPriorityBase / 100;
+
+            // ④ 防御更低（数值越小=防御越低，越优先）
+            int def = target.Character?.DefenseBonus ?? 0;
+            score += (10 - Clamp(def + 5, 0, 10)) * 10;
+
+            // ⑤ 攻击更高（威胁更大，先打掉）
+            int atk = target.Character?.AttackBonus ?? 0;
+            score += Clamp(atk + 5, -10, 10);
+
+            return score;
+        }
+
+        private static int Clamp(int v, int lo, int hi)
+            => v < lo ? lo : (v > hi ? hi : v);
+
+        /// <summary>目标血量的百分比（0~100，越低越优先）。</summary>
+        private static int HealthPercentOf(PlayerState p)
+        {
+            if (p == null || p.MaximumHealth <= 0) return 100;
+
+            return Clamp(p.Health * 100 / p.MaximumHealth, 0, 100);
+        }
+
+        /// <summary>
+        /// "我和队友都能打到这个目标吗"。
+        ///
+        /// 1v1（没有队友）时恒不成立 —— 那是对的：
+        /// 没有队友就谈不上"都能打到"。
+        /// </summary>
+        private static bool BothTeamCanReachActor(PlayerState actor, PlayerState target,
+                                                  GameManager game)
+        {
+            if (actor == null || target == null || game == null) return false;
+            if (!CanReach(actor, target, game)) return false;
+
+            bool hasTeammate = false;
+            IReadOnlyList<PlayerState> all = game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, actor)) continue;
+                if (!game.IsTeammate(actor, p)) continue;
+
+                hasTeammate = true;
+                if (!CanReach(p, target, game)) return false;
+            }
+
+            return hasTeammate;
+        }
+
+        /// <summary>某玩家能否打到另一个玩家（比较攻击距离）。</summary>
+        private static bool CanReach(PlayerState from, PlayerState to, GameManager game)
+        {
+            if (from == null || to == null || game == null) return false;
+
+            return game.DistanceBetween(from, to) <= GameManager.BaseRangeOf(from);
         }
 
         /// <summary>
@@ -445,9 +577,30 @@ namespace FingerDiceDuel.Assistant
             {
                 case HandEffect.BarbarianLockTarget:
                     {
+                        // 锁手该锁**对手最依赖的那只手**，而不是单纯"数值最大"。
+                        //
+                        // 判据：这只手能给对手带来多好的效果 ——
+                        // 用**对手自己的价值表**算（他看重什么，锁掉什么最疼）。
+                        //
+                        // 为什么不是"数值最大"：数值大不等于有用
+                        // （例如对狼人来说 7 反而是死牌、对巨人的 4/6/8 完全无效果）。
+                        // 用对手自己的价值表就自动涵盖了这些反直觉的情况。
+                        HandValueProfile foeProfile =
+                            HandValueProfiles.For(Game?.OwnerOfHand(c[0])?.Definition);
+
                         Hand best = c[0];
-                        for (int i = 1; i < c.Count; i++)
-                            if (c[i].Value > best.Value) best = c[i];
+                        int bestScore = int.MinValue;
+
+                        for (int i = 0; i < c.Count; i++)
+                        {
+                            int s = foeProfile?.WeightOf(c[i].Value) ?? c[i].Value;
+
+                            // 已成型的盾额外加分：锁住它等于让对手少一次免伤
+                            if (c[i].IsShield) s += 30;
+
+                            if (s > bestScore) { bestScore = s; best = c[i]; }
+                        }
+
                         return best;
                     }
 
@@ -458,14 +611,32 @@ namespace FingerDiceDuel.Assistant
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
 
                 case HandEffect.PriestHealTarget:
-                    // 候选顺序是"自己两只手在前、对手两只手在后"
-                    // （见 PriestLogic.AddOwnerHands 的调用顺序），
-                    // 所以取第一个候选就一定是自己的手 —— 不需要额外查询归属。
-                    return c[0];
-
                 case HandEffect.PriestExtraHealTarget:
-                    // 双 9 的额外回复同理：给自己
-                    return c[0];
+                    {
+                        // 玩家给的规则：
+                        //   只有 2v2 什么时候回给队友要写，
+                        //   目前写成**优先给一队血量最低的人回复**。
+                        //
+                        // ⚠️ 这里**不能**再用"第一个候选就是自己的手"那个假设 ——
+                        //    2v2 里队友是 C/D，候选顺序是"自己 -> 其他人"，
+                        //    取第一个就等于永远只回自己（玩家实测就是这个症状）。
+                        //
+                        // 依赖方向：AI（Assistant 层）不能引用 Characters 层，
+                        // 所以由角色通过 IHealTargetAdvisor 自报该给谁。
+                        var advisor = decider?.Character as IHealTargetAdvisor;
+                        PlayerState want = advisor?.BestHealTarget(decider, Game);
+
+                        if (want != null)
+                        {
+                            for (int i = 0; i < c.Count; i++)
+                            {
+                                if (Game != null && ReferenceEquals(Game.OwnerOfHand(c[i]), want))
+                                    return c[i];
+                            }
+                        }
+
+                        return c[0];
+                    }
 
                 case HandEffect.PriestAttackOrHeal:
                     // 4/6/8 是"当攻击打"还是"当回复用"。

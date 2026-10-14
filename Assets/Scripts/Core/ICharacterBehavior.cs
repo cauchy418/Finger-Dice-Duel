@@ -418,6 +418,22 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**AI 应该把这次回复给谁**"。
+    ///
+    /// 场景：牧师在 2v2 里该给**自己这一队血量最低的存活者**回复
+    /// （玩家给的规则："目前写成优先给一队血量最低的人回复"）。
+    ///
+    /// ⚠️ 为什么需要接口：这条规则只有角色自己知道，
+    ///    而 AI（Assistant 层）**不能引用 Characters 层**（项目分层约定）。
+    ///    由角色声明、AI 调用，依赖方向就反转过来了。
+    /// </summary>
+    public interface IHealTargetAdvisor
+    {
+        /// <summary>AI 该把回复给谁（返回 null 表示"没意见，按默认走"）。</summary>
+        PlayerState BestHealTarget(PlayerState owner, GameManager manager);
+    }
+
+    /// <summary>
     /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——

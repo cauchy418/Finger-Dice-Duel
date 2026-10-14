@@ -22,7 +22,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     ///
     /// 本角色没有跨回合状态。
     /// </summary>
-    public sealed class PriestLogic : CharacterTemplate, IPreTurnChoiceProvider, IHealOverride
+    public sealed class PriestLogic : CharacterTemplate, IPreTurnChoiceProvider,
+                                      IHealOverride, IHealTargetAdvisor
     {
         /// <summary>9 的回复量（= 数字 9）。</summary>
         public const int HealAmount = Hand.HealAmount;
@@ -434,11 +435,51 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             Hand chosen = PreTurnChoiceReader.Read(sink, provider, request, owner);
             if (chosen == null) return owner;
 
-            if (manager?.PlayerA != null && manager.PlayerA.Owns(chosen)) return manager.PlayerA;
-            if (manager?.PlayerB != null && manager.PlayerB.Owns(chosen)) return manager.PlayerB;
+            // ⚠️ 归属判断必须查**全部参战玩家**，不能用 PlayerA/PlayerB ——
+            //    2v2 里 A 的队友是 C/D，用两人假设会把队友错判成"不是任何人的手"，
+            //    于是回复落到默认的自己身上（玩家实测就是这个问题）。
+            PlayerState byOwner = manager?.OwnerOfHand(chosen);
+            if (byOwner != null) return byOwner;
 
             return owner;
         }
+
+        /// <summary>
+        /// **AI 该把回复给谁**（玩家给的规则）：
+        ///
+        /// > 只有 2v2 什么时候回给队友要写，目前写成**优先给一队血量最低的人回复**
+        ///
+        /// 顺序：
+        ///   ① 2v2（有队友）时：**自己这一队里血量最低的存活者**（含自己）
+        ///   ② 队友都满血 / 只有自己：回自己
+        ///
+        /// ⚠️ 为什么不是"挑血最少的那个"（连敌人也算）—— 敌人血少是**好事**，
+        ///    给他回血是自伤。玩家明确说的是"**一队**血量最低的人"。
+        /// </summary>
+        public static PlayerState BestHealTargetFor(PlayerState owner, GameManager manager)
+        {
+            if (owner == null || manager == null) return owner;
+
+            PlayerState best = null;
+            IReadOnlyList<PlayerState> all = manager.Players;
+
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+
+                // 只看"自己这一队"（自己也算）
+                if (!ReferenceEquals(p, owner) && !manager.IsTeammate(owner, p)) continue;
+
+                if (best == null || p.Health < best.Health) best = p;
+            }
+
+            return best ?? owner;
+        }
+
+        /// <summary>AI 的回复目标 —— 见 <see cref="IHealTargetAdvisor"/>。</summary>
+        public PlayerState BestHealTarget(PlayerState owner, GameManager manager)
+            => BestHealTargetFor(owner, manager);
 
         /// <summary>兼容旧调用：默认解析"本次回复"的目标。</summary>
         public static PlayerState ResolveTarget(PlayerState owner, GameManager manager,

@@ -2349,6 +2349,10 @@ namespace FingerDiceDuel.Assistant
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];
             IChoiceProvider provider = GetChoice(_pendingChoiceDecider);
 
+            // ⚠️ 注入对局引用：有些抉择要看全场信息（牧师该给谁回血），
+            //    而 ChooseHandFor 的入参里没有 game。
+            if (provider is GreedyChoiceProvider greedy) greedy.Game = _game;
+
             Hand pick = provider?.ChooseHandFor(request, _pendingChoiceDecider);
             bool legal = IsChoiceCandidate(pick);
             if (!legal) pick = null;          // 非法或放弃
