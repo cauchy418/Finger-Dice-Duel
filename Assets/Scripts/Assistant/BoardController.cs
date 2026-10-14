@@ -2501,20 +2501,27 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// AI 的邪术师：能跳过就跳过，并把**体力最高的对手**改成与自己一致。
+        /// AI 的邪术师：**安全**且对手体力比自己高 **8 以上**时跳过回合，
+        /// 把对手的体力拉低到与自己一致。
         ///
-        /// 返回 true 表示已经用掉了这个回合。
+        /// 玩家给的策略："邪术师会在安全的情况下，和对手血量相差 8 以上时
+        /// 跳过回合（让对手血量减少）"。
         ///
-        /// ⚠️ **敌人血量更少时不跳过**（玩家要求）。
-        ///    理由：技能是"把对方的体力改成与自己一致"，如果对方本来就比我少，
-        ///    这一改等于**帮对方回血**（自伤）。只有对方血更多时才是收益。
+        /// 三条判据：
+        ///   · 对手体力 **> 自己 + 8**（差值小于 8 收益太小，不值得用掉整个回合）
+        ///   · **安全**：跳过等于把回合白送给对方，所以自己不能处在"会被一波带走"
+        ///     的危险区间 —— 低于 <see cref="AiDangerHealth"/> 时不跳
+        ///   · 对手必须比自己血多（否则这一改是**帮对方回血**，见下一个注释）
         /// </summary>
         private bool TryAiWarlockSkip()
         {
             if (!(ActivePlayer?.Character is WarlockLogic)) return false;
             if (!CanSkipTurn) return false;
 
-            // 找一个"体力**高于自己**的对手"（排除队友与自己）
+            // ⚠️ **安全性**：跳过 = 白送一个回合给对方。
+            //    自己血太少时这么干等于自杀，所以宁可正常打（还能合盾 / 输出）。
+            if (ActivePlayer.Health < AiDangerHealth) return false;
+
             PlayerState best = null;
             IReadOnlyList<PlayerState> all = _game.Players;
             for (int i = 0; i < all.Count; i++)
@@ -2524,13 +2531,13 @@ namespace FingerDiceDuel.Assistant
                 if (ReferenceEquals(p, ActivePlayer)) continue;
                 if (_game.IsTeammate(ActivePlayer, p)) continue;
 
-                // ⚠️ 必须**严格高于**自己 —— 否则是帮对方回血
-                if (p.Health <= ActivePlayer.Health) continue;
+                // 玩家要求的阈值：**血量相差 8 以上**才有意义
+                if (p.Health < ActivePlayer.Health + WarlockSkipHealthGap) continue;
 
                 if (best == null || p.Health > best.Health) best = p;
             }
 
-            // 没有"血更厚的对手"就**不发动**（宁可正常打）。
+            // 没有"血够厚的对手"就**不发动**（宁可正常打）。
             // 规则虽然允许改队友的血（把人拉低），但 AI 不做这种自伤判断。
             if (best == null) return false;
 
@@ -2538,6 +2545,21 @@ namespace FingerDiceDuel.Assistant
             if (!SkipTurn()) return false;
             return ApplyHealthSwapAndEndTurn(best);
         }
+
+        /// <summary>
+        /// 邪术师 AI 跳过的**血量差阈值**（玩家给的数：8）。
+        ///
+        /// 调平衡改这里 —— 调大 = 更保守（更少跳），调小 = 更激进。
+        /// </summary>
+        public int WarlockSkipHealthGap { get; set; } = 8;
+
+        /// <summary>
+        /// AI 认为"自己血太少、不该白送回合"的血量线。
+        ///
+        /// 跳过回合 = 把主动权交给对方，所以自己必须还有本钱。
+        /// 默认 8：低于它时优先正常打（合盾 / 输出 / 回复都可能救命）。
+        /// </summary>
+        public int AiDangerHealth { get; set; } = 8;
 
         /// <summary>
         /// **赌徒是否应该赌博**（AI 策略）。

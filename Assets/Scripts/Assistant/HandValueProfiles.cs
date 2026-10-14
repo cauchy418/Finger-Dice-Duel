@@ -137,6 +137,71 @@ namespace FingerDiceDuel.Assistant
                 .Set(7, 90)                       // 潜行的种子
                 .Set(8, 62).Set(5, 58)
                 .AddCombo(ComboRule.DoublesOf(200, "双 7：一运算即可进入潜行", 7));
+
+            // ---- 圣武士（防 +1）----
+            // **4 / 5 / 6 都是"合出护盾"**（4 与 6 由改写而来），
+            // 而合盾会额外触发一次 **2 点冲击** —— 所以三者价值**等同且都高**
+            // （玩家原话："圣武士 456 都是高价值"）。
+            // 反过来说 1/2/3/7/8/9 都打不出盾，价值相对低。
+            Own[CharacterDefinition.PaladinId] = new HandValueProfile()
+                .Set(4, 80).Set(5, 80).Set(6, 80)      // 三条路都通向"盾 + 冲击"
+                .Set(7, 45).Set(8, 45).Set(9, 45)      // 打不出盾
+                .Set(1, 52).Set(2, 50).Set(3, 50)
+                .AddCombo(ComboRule.ContainsAll(60, "手上有一个 4/5/6 就能合盾", 4, 5, 6));
+
+            // ---- 邪术师（攻 0 / 防 −1）----
+            // 他的核心不是"打出什么"，而是**手上留着什么**：
+            // 留着的数字与对手的攻击数字相同时可以取消攻击（并把那只手 +1）。
+            // 所以价值**接近基线、略偏"覆盖面广"的低值**（1/2/3/7 能凑出更多种攻击数字）。
+            Own[CharacterDefinition.WarlockId] = new HandValueProfile()
+                .Set(1, 66).Set(2, 66).Set(3, 64).Set(7, 64)
+                .Set(4, 58).Set(6, 58).Set(8, 58).Set(9, 58)
+                .Set(5, 52);                            // 5 当盾的价值一般（防 −1）
+
+            // ---- 魔射手（攻 0 / 防 −1，距离 3）----
+            // 玩家原话："魔弓手几乎不变" —— 它的三条规则（4 两段、6 +2、8 无视盾）
+            // 大体上是"把攻击变强"，没有需要刻意去凑的特定数字，
+            // 所以**基本沿用基线**，只把 8 略调高（无视盾 + 基础最高）。
+            Own[CharacterDefinition.ArcaneArcherId] = new HandValueProfile()
+                .Set(8, 62).Set(4, 56).Set(6, 58)
+                .Set(5, 52);
+
+            // ---- 赌徒（攻 0 / 防 0）----
+            // 它**本来就不靠运算**（赌博时掷 1d9 取代结果），
+            // 所以手值对它的意义主要是"正常运算那几回合"与"被加数"。
+            // 价值**整体贴近基线**，只是 5 略高（合盾是稳妥的一手）。
+            Own[CharacterDefinition.GamblerId] = new HandValueProfile()
+                .Set(5, 58).Set(4, 54).Set(6, 54).Set(8, 56);
+
+            // ---- 武僧（攻 0 / 防 0）----
+            // **5 是高价值**（玩家原话）：5 进入太极形态，
+            // 被攻击时减半并反弹 —— 它是一个"攻守兼备"的姿态。
+            // ⚠️ 而且**起手 5 就已经是太极**（见 MonkLogic.ApplyTaichiToFives），
+            //    所以 5 的价值比普通角色的"合盾"更高。
+            // ⚠️ 0 是太极打出来之后的残留，本身无用（而且被碰就变 1）—— 但 0 不是
+            //    可选起始值，所以价值表里不用管它。
+            Own[CharacterDefinition.MonkId] = new HandValueProfile()
+                .Set(5, 88)                             // 太极：减半 + 反弹
+                .Set(4, 50).Set(6, 50).Set(8, 52)
+                .Set(9, 52)
+                .AddCombo(ComboRule.ContainsAll(70, "有 5 就能摆出太极", 5));
+
+            // ---- 巨人（攻 +2 / 防 +2，生命 25）----
+            // 玩家原话："巨人只有 5 和 9 是高数值"。
+            // 依据：
+            //   · **4 / 6 / 8 完全无效果**（不能攻击）-> 低价值
+            //   · **5 = 两段攻击**（每段伤害 = 另一只手的点数）-> 高价值
+            //   · **9 = 两段回复**（每段回复量 = 另一只手的点数）-> 高价值
+            //   · 1/2/3/7 无效果，但它们是"另一只手"的候选 —— 数值越大，
+            //     5 与 9 打出去越强，所以**越高越好**（7 比 1 值钱）。
+            Own[CharacterDefinition.GiantId] = new HandValueProfile()
+                .Set(5, 92)                             // 两段攻击，伤害看另一只手
+                .Set(9, 90)                             // 两段回复
+                .Set(4, 8).Set(6, 8).Set(8, 8)          // 完全无效果 -> 死牌
+                .Set(7, 70).Set(3, 60).Set(2, 58).Set(1, 56)
+                .AddCombo(ComboRule.ContainsAll(80, "有 5 或 9 就能打出高价值", 5, 9))
+                .AddCombo(ComboRule.ContainsAll(50, "5/9 的威力取决于另一只手：配大数更强",
+                                                7));
         }
 
         // ============================================================
@@ -184,6 +249,45 @@ namespace FingerDiceDuel.Assistant
             OpponentAdjust[CharacterDefinition.AssassinId] = new List<ValueAdjust>
             {
                 new ValueAdjust(7, -45),
+            };
+
+            // ---- 面对圣武士 ----
+            // 他的 **4 / 5 / 6** 都能合盾（并在合盾时触发 2 点冲击）——
+            // 我留这些数字能挡他，但对"分配手值给他"来说要压低。
+            OpponentAdjust[CharacterDefinition.PaladinId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(4, -20), new ValueAdjust(5, -20), new ValueAdjust(6, -20),
+            };
+
+            // ---- 面对武僧 ----
+            // 他的 5 是太极（被攻击时减半 + 反弹）-> 别把 5 送到他手上。
+            // ⚠️ 反弹**无视距离**，所以没有"离他远点"这种规避方式，只能别喂 5。
+            OpponentAdjust[CharacterDefinition.MonkId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -55),
+                // 反弹**可被盾挡 / 可被闪避**，所以我自己的 5（合盾）与 1（游侠闪避）
+                // 反而**升值** —— 那是应对反弹的手段。
+                new ValueAdjust(1, +10),
+            };
+
+            // ---- 面对巨人 ----
+            // 他的 **5（两段攻击）与 9（两段回复）** 是高价值，
+            // 而且**4 / 6 / 8 对他完全无效果**。
+            // 所以：别给他 5 / 9；4 / 6 / 8 给他也无所谓（甚至可以说是"安全牌"）。
+            OpponentAdjust[CharacterDefinition.GiantId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -35), new ValueAdjust(9, -35),
+                new ValueAdjust(4, +8), new ValueAdjust(6, +8), new ValueAdjust(8, +8),
+            };
+
+            // ---- 面对邪术师 ----
+            // 他靠"手上留着的数字"取消攻击（与我的攻击数字相同的那只手会被 +1）。
+            // 我打出的攻击数字若正好是他手上的数字，就会被取消 ——
+            // 所以**我自己的攻击数字**要避开他手上的值（这条在走子评分里没法表达，
+            // 因为那取决于他手上有什么）；这里只把"送他覆盖面广的低值"压一点。
+            OpponentAdjust[CharacterDefinition.WarlockId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(1, -8), new ValueAdjust(2, -8), new ValueAdjust(7, -8),
             };
         }
 

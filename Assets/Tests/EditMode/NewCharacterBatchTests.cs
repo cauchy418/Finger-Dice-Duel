@@ -904,7 +904,18 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            warlock.TakeDamage(7);
+            // ⚠️ 按玩家给的 AI 策略，邪术师只在
+            //    "**安全**（自己血够多）**且**与对手血量相差 **8 以上**"时才跳。
+            //
+            //    场面要同时满足：
+            //      · 自己 10（>= AiDangerHealth 8，算安全）
+            //      · 对手 20（10 + 8 = 18 <= 20，差值够）
+            //    ⚠️ 我第一版让自己 13，那要求对手 >= 21 —— 超过生命上限 20，
+            //       永远摆不出来（测试当场抓到）。
+            warlock.TakeDamage(10);                    // 邪术师 10 / 20
+            Assert.AreEqual(10, warlock.Health);
+            Assert.AreEqual(20, foe.Health);
+
             int warlockHealth = warlock.Health;
 
             Assert.True(board.MakeAutomaticMove(), "AI 应该自己走完这一步。");
@@ -912,6 +923,29 @@ namespace FingerDiceDuel.Tests
                 "AI 应把对手体力改成与自己一致。");
             Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
                 "AI 不该停在需要点击的相位上（否则对局会卡死）。");
+        }
+
+        [Test]
+        public void Ai_warlock_skips_the_swap_when_health_gap_is_too_small()
+        {
+            // 玩家给的阈值是 8：差值不够时**不跳**（宁可正常打）。
+            var ai = new GreedyChoiceProvider();
+            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var foe = Make("敌", CharacterDefinition.Blank);
+
+            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var board = new BoardController(game,
+                                           new SimpleChoiceProvider(),
+                                           new SimpleChoiceProvider(),
+                                           aiForA: ai);
+            board.BeginTurn();
+
+            warlock.TakeDamage(7);                     // 邪术师 13，对手 20 -> 差 7 < 8
+
+            Assert.True(board.MakeAutomaticMove(), "AI 应能正常行动。");
+            Assert.AreEqual(20, foe.Health,
+                "差值不足 8 时不该用掉整个回合去换血（对手血量应保持 20）。");
         }
 
         // ============================================================

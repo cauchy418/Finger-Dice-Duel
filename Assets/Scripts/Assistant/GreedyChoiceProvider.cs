@@ -232,8 +232,19 @@ namespace FingerDiceDuel.Assistant
             // 把对手的手打成 2，会让它下一手容易凑出 3（偏弱），略加分
             if (target == 2) score += 5;
 
-            // ---- 打队友是坏事 ----
+            // ---- "别反哺"：这一手会不会让我**下一手更难打出高价值** ----
             //
+            // ⚠️ 玩家要求"避免对手下一手能合成更高价值"，但**核实后发现
+            //    这个游戏里不存在"把差手值留给对手"这回事**：
+            //    `GetLegalMoves` 允许把**任何其他玩家**的手当加数，
+            //    而被加数的手值**不会被改变** ——
+            //    所以对手的可选集只取决于他自己手上的两只手，与我的留牌无关。
+            //
+            //    真正的"反哺"是**同一件事的另一面**：我留下的牌决定**我自己**
+            //    下一手能打出什么。所以这里评估"我这边的下一手潜力"。
+            score += DenyScore(actor, game, result, other.Value);
+
+            // ---- 打队友是坏事 ----            //
             // 规则的顺序是"打敌人 → 没敌人才打队友"，但评分原来只看效果与手值，
             // 于是 AI 会把队友当靶子（玩家实测 + 批量测试复现：
             // 60 局 2v2 里 616 次攻击落在队友身上）。
@@ -301,6 +312,90 @@ namespace FingerDiceDuel.Assistant
 
         private static Hand GetOtherHand(PlayerState actor, Hand acted)
             => ReferenceEquals(acted, actor.LeftHand) ? actor.RightHand : actor.LeftHand;
+
+        /// <summary>
+        /// "这一手之后，我自己**下一手**最好的结果值多少"。
+        ///
+        /// 玩家要求的"避免反哺"在这款游戏里的**正确形态**：
+        ///   · 对手的可选集只取决于他自己手上的牌（我们留什么不影响他），
+        ///     所以不存在"把差牌喂给对手"这回事
+        ///   · 真正会被反哺的是**自己** —— 留下的两只手决定下一手能打出什么
+        ///
+        /// 所以这里模拟"下一回合我用留下的两只手之一去加场上任一对手的手"，
+        /// 取其中**最好的效果分**（用与 <see cref="ScoreMove"/> 同一套档位），
+        /// 再乘一个不大的权重 —— 它只该在"当前这一手差不多"时起决定作用。
+        ///
+        /// 实现上只枚举**效果档位**，不重复算组合 / 屯牌分，
+        /// 避免与 <see cref="HandValueScore"/> 叠加成双份。
+        /// </summary>
+        private int DenyScore(PlayerState actor, GameManager game,
+                              int actedAfter, int otherHandValue)
+        {
+            if (game == null || actor == null) return 0;
+
+            // ⚠️ **有"签名组合规则"的角色跳过这一项**。
+            //
+            //    狼人要凑"双手和为 7"、剑客要双 4/6/8、刺客要双 7 ——
+            //    这些都是**角色自己的完整计划**，而通用的"下一手潜力"
+            //    与它们经常相反（例如 7 对狼人是死牌，但 7 的下一手潜力很高）。
+            //    两者一起算会把签名计划压掉
+            //    （测试当场抓到：狼人 20 回合都触发不了一次和 7）。
+            HandValueProfile profile = HandValueProfiles.For(actor.Definition);
+            if (profile != null && profile.Combos.Count > 0) return 0;
+
+            int best = 0;
+
+            // 两种"留下的手"（下一回合可能拿任一只当运算源）
+            best = System.Math.Max(best, BestNextEffect(actor, game, actedAfter));
+            best = System.Math.Max(best, BestNextEffect(actor, game, otherHandValue));
+
+            return best * NextTurnPotentialWeight / 100;
+        }
+
+        /// <summary>用 <paramref name="myHand"/> 当运算源时，下一手最好的效果分。</summary>
+        private static int BestNextEffect(PlayerState actor, GameManager game, int myHand)
+        {
+            int best = 0;
+
+            IReadOnlyList<PlayerState> all = game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (ReferenceEquals(p, actor)) continue;
+
+                foreach (Hand theirs in p.Hands)
+                {
+                    int result = Hand.ComputeSum(myHand, theirs.Value);
+
+                    int s;
+                    switch (Hand.GetEffectType(result))
+                    {
+                        case HandEffectType.Attack4: s = 44; break;
+                        case HandEffectType.Attack6: s = 66; break;
+                        case HandEffectType.Attack8: s = 88; break;
+                        case HandEffectType.Shield: s = 50; break;
+                        case HandEffectType.Heal: s = 30; break;
+                        default: s = 0; break;
+                    }
+
+                    if (s > best) best = s;
+                }
+            }
+
+            return best;
+        }
+
+        /// <summary>
+        /// "下一手潜力"在总分里的千分比权重。
+        ///
+        /// ⚠️ 取 120（最高约 +10 分）—— 我第一版取 300（+26）就把
+        ///    游侠的"强化射击"压过去了（测试当场抓到：
+        ///    它宁可留着 2 也不肯变 3 强化）。
+        ///    所以它必须**明显小于**一次效果档位（44~88），
+        ///    只在"这一手打什么已经定了"之后做微调。
+        /// </summary>
+        public int NextTurnPotentialWeight { get; set; } = 120;
 
         /// <summary>用数值较低的那面盾去挡，尽量保留高数字的手。</summary>
         public override Hand AskWhichShieldToBlock(PlayerState defender, Hand shieldA, Hand shieldB,
