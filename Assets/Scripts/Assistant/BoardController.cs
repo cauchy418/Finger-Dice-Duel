@@ -1104,6 +1104,17 @@ namespace FingerDiceDuel.Assistant
         private bool _thiefWantsSteal;
 
         /// <summary>
+        /// 盗贼 AI 走到哪一步了（**独立字段**，不会被别的诊断覆盖）。
+        ///
+        /// ⚠️ 存在的理由：上一轮我把它写进 LastAiMoveDiagnostic，
+        ///    而普通运算的 FAIL-STEP2 会**后写覆盖**它 ——
+        ///    读到的永远是最后那一条，等于没打诊断（白查两轮）。
+        /// </summary>
+        public string ThiefAiTrace => _thiefAiTrace;
+
+        private string _thiefAiTrace = "";
+
+        /// <summary>
         /// 当前是否处在**真正的回合边界**（可以清空"仅本回合有效"的抉择记录）。
         ///
         /// 判据是"**行动方变了**"，而不是"运算源为空"。
@@ -1345,14 +1356,29 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool TryAiThiefSteal()
         {
-            if (!(ActivePlayer?.Character is ThiefLogic)) return false;
-            if (!_game.CanStealOn(ActivePlayer)) return false;
+            // ⚠️ 用**独立字段**记录走到哪一步 —— 上一轮我把它写进
+            //    LastAiMoveDiagnostic，结果被后续的普通运算诊断**覆盖**，
+            //    等于没打诊断（白查两轮）。所以这里单独存一份。
+            _thiefAiTrace = "enter";
+
+            if (!(ActivePlayer?.Character is ThiefLogic))
+            {
+                _thiefAiTrace = "exit:不是盗贼";
+                return false;
+            }
+
+            if (!_game.CanStealOn(ActivePlayer))
+            {
+                _thiefAiTrace = $"exit:冷却 turn={_game.TurnCount} last={_game.LastStealTurn}";
+                return false;
+            }
 
             IReadOnlyList<Hand> mine = ActivePlayer.Hands;
 
             Hand bestMine = null;
             Hand bestTheirs = null;
             int bestScore = -1;
+            int scanned = 0;
 
             IReadOnlyList<PlayerState> all = _game.Players;
             for (int m = 0; m < mine.Count; m++)
@@ -1370,6 +1396,8 @@ namespace FingerDiceDuel.Assistant
                     {
                         Hand theirHand = theirs[t];
                         if (theirHand == null) continue;
+
+                        scanned++;
 
                         // ① 判定必须生效（原先 ≥ 偷来的）
                         if (myHand.Value < theirHand.Value) continue;
@@ -1389,29 +1417,38 @@ namespace FingerDiceDuel.Assistant
                 }
             }
 
-            // 没有"划算的偷窃" -> 不偷，走正常运算（价值表负责合成更大点数）
-            //
-            // ⚠️ TODO（下一轮）：
-            //    这里的 AI 偷窃还有问题 —— 测试 Ai_thief_steals_when_it_can_trigger_a_high_value
-            //    与 Ai_thief_prefers_stealing_the_best_high_value 目前**失败**：
-            //    AI 没有偷，手牌完全没变。
-            //    已经排除的：TryAiThiefSteal 被调用了（在 MakeAutomaticMove 里）、
-            //    判据本身正确、GreedyChoiceProvider 是 IMoveSelector。
-            //    下一步该在这一行打诊断（或直接单步），确认是
-            //    `CanStealOn` 返回 false 还是 `ClickHand` / `BeginSteal` 失败。
-            if (bestMine == null) return false;
+            if (bestMine == null)
+            {
+                _thiefAiTrace = $"exit:没有划算的偷窃 scanned={scanned} " +
+                                $"L={ActivePlayer?.LeftHand?.Value} R={ActivePlayer?.RightHand?.Value}";
+                return false;
+            }
 
-            if (!ClickHand(bestMine)) return false;
-            if (!BeginSteal()) return false;
+            _thiefAiTrace = $"选了 {bestMine.Value}->{bestTheirs.Value} score={bestScore}";
+
+            if (!ClickHand(bestMine))
+            {
+                _thiefAiTrace += " / exit:ClickHand 失败 phase=" + Phase;
+                return false;
+            }
+
+            if (!BeginSteal())
+            {
+                _thiefAiTrace += " / exit:BeginSteal 失败 phase=" + Phase +
+                                 " canSteal=" + CanSteal;
+                return false;
+            }
 
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
                 BeginTurn();          // 必须刷新 ActivePlayer（见 CompleteSteal 的注释）
                 ResolvePendingAiChoices();
+                _thiefAiTrace += " / 偷窃成功";
             }
-            catch (System.InvalidOperationException)
+            catch (System.InvalidOperationException ex)
             {
+                _thiefAiTrace += " / exit:ExecuteSteal 抛异常 " + ex.Message;
                 return false;
             }
 
@@ -2665,6 +2702,24 @@ namespace FingerDiceDuel.Assistant
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
             if (TryAiWarlockSkip()) return true;
 
+            // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
+            //
+            // ⚠️⚠️ **必须放在普通运算之前**。
+            //
+            //    我第一版把它放在普通运算的 ClickHand **之后**，
+            //    于是普通运算**先执行了**、盗贼那一块**永远走不到** ——
+            //    表现为"AI 从不偷"（两条测试失败，而且我加的诊断
+            //    一次都没打印，因为方法根本没被调用）。
+            //
+            //    判据是"值不值得偷"：不值得才回去走正常运算
+            //    （正常运算的偏好由盗贼价值表负责合成更大点数）。
+            if (Phase == BoardPhase.ChoosingAttackerHand
+                && ActivePlayer?.Character is ThiefLogic
+                && TryAiThiefSteal())
+            {
+                return true;
+            }
+
             LegalMove move = ai.ChooseMove(_game, ActivePlayer);
             if (move.Actor == null) return false;
 
@@ -2735,15 +2790,6 @@ namespace FingerDiceDuel.Assistant
 
                 ResolvePendingAiChoices();
                 return true;
-            }
-
-            // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
-            //
-            // 放在"选运算源"之前：偷窃是**放弃运算**的另一条路，
-            // 所以要先判"值不值得偷"，不值得才走正常运算。
-            if (Phase == BoardPhase.ChoosingAttackerHand && ActivePlayer?.Character is ThiefLogic)
-            {
-                if (TryAiThiefSteal()) return true;
             }
 
             if (Phase != BoardPhase.ChoosingTargetHand) return true;

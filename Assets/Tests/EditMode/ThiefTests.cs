@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Tests
                 $"有高价值可偷时，AI 应该偷（偷来 8）。" +
                 $"[L={thief.LeftHand.Value} R={thief.RightHand.Value} " +
                 $"foeL={foe.LeftHand.Value} foeR={foe.RightHand.Value} " +
-                $"AI诊断={board.LastAiMoveDiagnostic}]");
+                $"AI诊断={board.LastAiMoveDiagnostic} 盗贼AI={board.ThiefAiTrace}]");
             Assert.AreEqual(9, foe.LeftHand.Value,
                 "被偷者应该拿到盗贼原来的 9（证明发生了交换）。");
         }
@@ -151,7 +151,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(8, thief.LeftHand.Value,
                 $"4 与 8 都能偷时，应取更好的 8。" +
                 $"[L={thief.LeftHand.Value} foeL={foe.LeftHand.Value} " +
-                $"foeR={foe.RightHand.Value}]");
+                $"foeR={foe.RightHand.Value} 盗贼AI={board.ThiefAiTrace}]");
         }
 
         [Test]
