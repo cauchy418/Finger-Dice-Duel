@@ -424,6 +424,27 @@ namespace FingerDiceDuel.Assistant
             {
                 new ValueAdjust(8, -8), new ValueAdjust(9, -8),
             };
+
+            // ---- 面对盗贼 ----
+            // 推导依据（见 RULES §8.19）：
+            //   盗贼最大的弱点是"**原先 ≥ 偷来的**"——
+            //   他**握着低数字就偷不到高数字**。
+            //   而被偷者**不触发效果、也不形成盾**，
+            //   所以"送他一个高值"几乎只有他得利。
+            OpponentAdjust[CharacterDefinition.ThiefId] = new List<ValueAdjust>
+            {
+                // 偷到就能直接打出高价值 -> 最该压
+                new ValueAdjust(8, -25), new ValueAdjust(9, -25),
+
+                // 攻击数字，也该压
+                new ValueAdjust(4, -15), new ValueAdjust(6, -15),
+
+                // ⚠️ 5 只小幅压 —— **反直觉的一条**：
+                //    被偷的**完整盾会变成碎盾**，
+                //    所以递出完整 5 其实**不亏**
+                //    （盾反正没了，只是换了只手）。
+                new ValueAdjust(5, -10),
+            };
         }
 
         /// <summary>
