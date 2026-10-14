@@ -213,7 +213,7 @@ namespace FingerDiceDuel.Core
             //        那只手会从 5 变成 0，本次攻击就按"减半 + 反弹"走；
             //        若排在后面，玩家可能既闪避又太极（规则上只应发生一种）。
             int reflectTotal = 0;
-            bool taichiUsed = TryMitigateByTaichi(manager, perHit * hits);
+            bool taichiUsed = TryMitigateByTaichi(manager, perHit * hits, perHit);
 
             // ⚠️ **只在太极真的发动时**才改写每段伤害。
             //
@@ -222,11 +222,13 @@ namespace FingerDiceDuel.Core
             //    返回的是预置的 0，把**所有角色的所有攻击**都打成了 0 伤害
             //    （55 项测试立刻失败）。
             //    改成"只在发动时读它写下的属性"，就不可能误伤未发动的路径。
-            if (taichiUsed)
-            {
-                perHit = WasMitigated ? MitigatedPerHit : perHit;
-                reflectTotal = ReflectedDamage;
-            }
+            // ⚠️ **只有第一段**被太极减免 —— 玩家确认：
+            //    "一个太极只能弹一段伤害，另一段是要吃的。"
+            //
+            //    我第一版把减半后的值应用到**每一段**，
+            //    等于一个太极挡住了所有段 —— 那是错的。
+            int mitigatedFirstHit = WasMitigated ? MitigatedPerHit : perHit;
+            if (taichiUsed) reflectTotal = ReflectedDamage;
 
             IPreTurnChoiceSink sink = defenderChoice as IPreTurnChoiceSink;
 
@@ -253,8 +255,11 @@ namespace FingerDiceDuel.Core
                     continue;
                 }
 
-                Defender.TakeDamage(perHit);
-                AppliedDamage += perHit;
+                // 太极只减免第一段，其余各段照常计算伤害
+                int dealt = (taichiUsed && i == 0) ? mitigatedFirstHit : perHit;
+
+                Defender.TakeDamage(dealt);
+                AppliedDamage += dealt;
                 LandedHits++;
             }
 
@@ -348,14 +353,15 @@ namespace FingerDiceDuel.Core
         ///    结果写在 <see cref="MitigatedPerHit"/> / <see cref="ReflectedDamage"/> 上，
         ///    调用方只在返回 true 时读。
         /// </summary>
-        private bool TryMitigateByTaichi(GameManager manager, int totalIncoming)
+        private bool TryMitigateByTaichi(GameManager manager, int totalIncoming,
+                                         int perHitDamage)
         {
             // 反弹达到嵌套上限就不再弹（防无限递归）
             if (ReflectDepth >= MaxReflectDepth) return false;
 
             if (Defender?.Character is not IDamageMitigator mitigator) return false;
 
-            if (!mitigator.TryMitigate(Defender, this, totalIncoming,
+            if (!mitigator.TryMitigate(Defender, this, totalIncoming, perHitDamage,
                                       out int reduced, out int reflect))
             {
                 return false;
@@ -364,9 +370,10 @@ namespace FingerDiceDuel.Core
             WasMitigated = true;
             ReflectedDamage = reflect;
 
-            // 折回"每段伤害"：太极作用在总伤害上，逐段循环仍按原段数跑。
-            int hits = HitCount < 1 ? 1 : HitCount;
-            MitigatedPerHit = reduced / hits;
+            // ⚠️ 不再折算成"每段"：太极只对付**第一段**，
+            //    所以这里存的就是"被减免后的第一段伤害"。
+            //    其余各段由循环里按原值结算。
+            MitigatedPerHit = reduced;
 
             return true;
         }

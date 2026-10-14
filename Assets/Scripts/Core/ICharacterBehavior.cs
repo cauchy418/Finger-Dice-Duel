@@ -381,7 +381,17 @@ namespace FingerDiceDuel.Core
         /// <param name="incomingDamage">原本会造成的伤害（已含攻防加成）。</param>
         /// <param name="reducedDamage">化解后实际承受的伤害。</param>
         /// <param name="reflectDamage">反弹给攻击方的伤害（0 = 不反弹）。</param>
+        /// <param name="incomingDamage">整次攻击的总伤害（仅用于判断是否 &gt; 0）。</param>
+        /// <param name="perHitDamage">
+        /// **单段**伤害。
+        ///
+        /// ⚠️ 武僧的太极只对付**一段** —— 玩家确认：
+        ///    "一个太极只能弹一段伤害是对的，不要改成能一次挡多段伤害；
+        ///     例如巨人的攻击打到太极上，一个太极只能减免反弹一段伤害，
+        ///     另一段伤害是要吃的。"
+        /// </param>
         bool TryMitigate(PlayerState owner, AttackContext context, int incomingDamage,
+                         int perHitDamage,
                          out int reducedDamage, out int reflectDamage);
     }
 

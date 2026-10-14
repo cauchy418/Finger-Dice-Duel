@@ -94,7 +94,12 @@ namespace FingerDiceDuel.Core
         ///   · 自己有一只手处于**太极形态**
         ///   · **不是咒术师的攻击**（咒术师无视护盾，太极也无从借力）
         /// </summary>
+        /// <param name="perHitDamage">**单段**伤害（不是整次的总伤害）。</param>
+        /// <param name="incomingDamage">整次攻击的总伤害（仅用于判断是否 > 0）。</param>
+        /// <param name="reducedDamage">太极**减免掉的那一段**的伤害量。</param>
+        /// <param name="reflectDamage">反弹回去的量。</param>
         public bool TryMitigate(PlayerState owner, AttackContext context, int incomingDamage,
+                                int perHitDamage,
                                 out int reducedDamage, out int reflectDamage)
         {
             reducedDamage = 0;
@@ -120,9 +125,21 @@ namespace FingerDiceDuel.Core
             // 而且"被他人触碰会变 1"—— 见 OnTouchedAsAddend）
             taichi.SetValue(TaichiBrokenValue);
 
-            // 减半：受上取整、反弹下取整（总和守恒）
-            reducedDamage = (incomingDamage + 1) / 2;
-            reflectDamage = incomingDamage / 2;
+            // ⚠️ **一个太极只对付一段**（玩家明确确认的规则）：
+            //
+            //    "武僧一个太极只能弹一段伤害是对的，不要改成能一次挡多段伤害；
+            //     例如巨人的攻击打到太极上，一个太极只能减免反弹一段伤害，
+            //     另一段伤害是要吃的。"
+            //
+            //    所以我第一版（作用在整次总伤害上）是**错的** ——
+            //    那会让两段的攻击被减半两次，等于一个太极挡住了两段。
+            //
+            //    正确：只拿**单段**伤害来减半，
+            //    其余各段由调用方照常结算（见 AttackContext）。
+            //
+            //    减半：受上取整、反弹下取整（这一段的总和守恒）
+            reducedDamage = (perHitDamage + 1) / 2;
+            reflectDamage = perHitDamage / 2;
 
             return true;
         }
