@@ -86,11 +86,11 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 但**起手 9 打不出 9**（9+1=10→1）—— 所以要的是"手上能凑到 9"，
             // 而不是"手值是 9"。9 仍然高（锁定了一个 9），但不能高到离谱。
             Own[CharacterDefinition.PriestId] = new HandValueProfile()
-                .Set(9, 75)
-                .Set(4, 70).Set(6, 70).Set(8, 72)   // 攻守兼备
+                .Set(4, 74).Set(6, 74).Set(8, 76)   // 攻守兼备 —— 主力
+                .Set(9, 60)                          // 只回血，不推进战局，别排太高
                 .Set(7, 50)                          // 对牧师无用
-                .AddCombo(ComboRule.ContainsAll(70, "有 9 就能回复 9 血", 9))
-                .AddCombo(ComboRule.ContainsAll(40, "有 4/6/8 可自由选择攻或回复", 4, 6, 8));
+                .AddCombo(ComboRule.ContainsAll(80, "有 4/6/8 可自由选择攻或回复", 4, 6, 8))
+                .AddCombo(ComboRule.ContainsAll(50, "有 9 就能回复 9 血", 9));
 
             // ---- 游侠（防 -2）----
             // 1 → 2 **完全闪避**一次攻击；2 → 3 让攻击基础值 ×1.5。
