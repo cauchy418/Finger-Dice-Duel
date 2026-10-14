@@ -1302,7 +1302,18 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, SelectedHand, target);
-                SetupFirstStep();
+
+                // ⚠️ 必须调 **BeginTurn()**，不能用 SetupFirstStep()。
+                //
+                //    `ActivePlayer` 是**缓存字段**，只有 BeginTurn() 会把它
+                //    刷成新的 CurrentPlayer（见 BeginTurn 里的赋值）。
+                //    普通运算的结算收尾走的也是 BeginTurn()。
+                //
+                //    我第一版只调了 SetupFirstStep()，于是
+                //    `game.CurrentPlayer` 已经换成对手、而 `ActivePlayer`
+                //    还停在盗贼身上 —— 表现为**盗贼像连动两个回合**
+                //    （玩家实测："偷窃之后会跳过对方回合"）。
+                BeginTurn();
                 ResolvePendingAiChoices();
             }
             catch (System.InvalidOperationException ex)
@@ -1369,7 +1380,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
-                SetupFirstStep();
+                BeginTurn();          // 同上：必须刷新 ActivePlayer
                 ResolvePendingAiChoices();
             }
             catch (System.InvalidOperationException)

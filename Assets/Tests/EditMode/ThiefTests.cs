@@ -63,6 +63,74 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Steal_hands_the_turn_to_the_opponent()
+        {
+            // ⚠️ 玩家实测："盗贼偷窃之后会跳过对方回合，
+            //              感觉上像盗贼连动两回合。"
+            //
+            // 所以偷窃**不能**推进两次回合 —— 它只是消耗盗贼自己的回合，
+            // 之后必须轮到对方。
+            GameManager game = Match(out PlayerState thief, out PlayerState foe);
+
+            PlayerState before = game.CurrentPlayer;
+            Assert.True(ReferenceEquals(before, thief), "前置：先手是盗贼。");
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(foe.LeftHand, 4);
+
+            game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            Assert.True(ReferenceEquals(game.CurrentPlayer, foe),
+                $"偷窃之后应轮到**对方**，实际是 {game.CurrentPlayer?.Name}。");
+            Assert.AreEqual(1, game.TurnCount,
+                $"偷窃只消耗一个回合，实际 TurnCount={game.TurnCount}。");
+        }
+
+        [Test]
+        public void Ineffective_steal_hands_the_turn_to_the_opponent()
+        {
+            // 同一件事的另一半：判定不生效时也要正常换手
+            GameManager game = Match(out PlayerState thief, out PlayerState foe);
+
+            TestSetup.SetHand(thief.LeftHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 8);
+
+            game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            Assert.True(ReferenceEquals(game.CurrentPlayer, foe),
+                $"不生效的偷窃也应轮到对方，实际 {game.CurrentPlayer?.Name}。");
+            Assert.AreEqual(1, game.TurnCount, "只消耗一个回合。");
+        }
+
+        [Test]
+        public void Steal_through_the_board_hands_the_turn_to_the_opponent()
+        {
+            // 上一组测试证明 ExecuteSteal 本身换手正确，
+            // 所以"偷完像连动两回合"一定出在**控制器**那一层。
+            // 这条把控制器也覆盖上。
+            BoardController board = Board(out PlayerState thief, out PlayerState foe,
+                                          out GameManager game);
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(foe.LeftHand, 4);
+
+            board.BeginTurn();
+
+            Assert.True(board.ClickHand(thief.LeftHand), "点自己的手");
+            Assert.True(board.BeginSteal(), "点偷窃按钮");
+            Assert.True(board.ClickHand(foe.LeftHand), "点对方的手完成偷窃");
+
+            Assert.True(ReferenceEquals(board.ActivePlayer, foe),
+                $"偷窃之后行动方应是**对方**，实际 {board.ActivePlayer?.Name}。" +
+                $"[phase={board.Phase} TurnCount={game.TurnCount} " +
+                $"current={game.CurrentPlayer?.Name} selected={board.SelectedHand?.Value}]");
+
+            // 而且盗贼本回合不能再偷（冷却生效）
+            Assert.False(game.CanStealOn(thief),
+                "偷过的那个回合不能再偷。");
+        }
+
+        [Test]
         public void Steal_button_appears_only_after_picking_own_hand()
         {
             BoardController board = Board(out PlayerState thief, out _, out _);
