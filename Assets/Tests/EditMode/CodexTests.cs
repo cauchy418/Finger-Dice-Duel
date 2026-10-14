@@ -110,6 +110,68 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Alignments_match_the_players_assignment()
+        {
+            // 玩家**逐个指定**了九宫格分配 —— 这条把它钉住，
+            // 以后不小心改动会被捕到。
+            var expect = new Dictionary<string, Alignment>
+            {
+                // 守序善良：圣武士 牧师 骑士
+                { CharacterDefinition.PaladinId, Alignment.LawfulGood },
+                { CharacterDefinition.PriestId, Alignment.LawfulGood },
+                { CharacterDefinition.KnightId, Alignment.LawfulGood },
+                // 守序中立：剑客 战士
+                { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
+                { CharacterDefinition.WarriorId, Alignment.LawfulNeutral },
+                // 守序邪恶：魔射手
+                { CharacterDefinition.ArcaneArcherId, Alignment.LawfulEvil },
+                // 中立善良：游侠 武僧
+                { CharacterDefinition.RangerId, Alignment.NeutralGood },
+                { CharacterDefinition.MonkId, Alignment.NeutralGood },
+                // 绝对中立：忍者 士兵
+                { CharacterDefinition.NinjaId, Alignment.TrueNeutral },
+                { CharacterDefinition.SoldierId, Alignment.TrueNeutral },
+                // 中立邪恶：邪术师 盗贼
+                { CharacterDefinition.WarlockId, Alignment.NeutralEvil },
+                { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
+                // 混乱善良：野蛮人
+                { CharacterDefinition.BarbarianId, Alignment.ChaoticGood },
+                // 混乱中立：刺客 赌徒 咒术师
+                { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.CurseweaverId, Alignment.ChaoticNeutral },
+                // 混乱邪恶：狼人 巨人
+                { CharacterDefinition.WerewolfId, Alignment.ChaoticEvil },
+                { CharacterDefinition.GiantId, Alignment.ChaoticEvil },
+            };
+
+            var wrong = new List<string>();
+            foreach (KeyValuePair<string, Alignment> kv in expect)
+            {
+                CodexEntry e = CharacterCodex.For(kv.Key);
+                if (e == null) { wrong.Add(kv.Key + "(无资料)"); continue; }
+                if (e.Alignment != kv.Value)
+                    wrong.Add($"{kv.Key}: 期望 {kv.Value} 实际 {e.Alignment}");
+            }
+
+            Assert.AreEqual(0, wrong.Count,
+                "阵营与玩家指定不一致：" + string.Join(" / ", wrong));
+
+            // 九宫格里每一格都要有人（否则筛选会出现空白页）
+            for (int i = 0; i <= 8; i++)
+            {
+                Alignment a = (Alignment)i;
+                List<CharacterDefinition> list =
+                    CharacterCodex.Filter(Alignments.LawAxisOf(a), Alignments.GoodAxisOf(a));
+
+                // 注意：两个轴只能定位到"格"，
+                // 所以每格至少有一人才算完整。
+                Assert.True(list.Count > 0,
+                    $"阵营 {Alignments.NameOf(a)} 这一格是空的。");
+            }
+        }
+
+        [Test]
         public void Filtering_by_one_axis_returns_a_subset()
         {
             List<CharacterDefinition> all =

@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Characters
 
         static CharacterCodex()
         {
-            Add(CharacterDefinition.SoldierId, "Soldier", Alignment.LawfulGood,
+            Add(CharacterDefinition.SoldierId, "Soldier", Alignment.TrueNeutral,
                 shortSkill: "攻防各 +1 的白板基准。",
                 playGuide: "没有技能，全靠攻防各 +1 的底子。用它练基本功："
                          + "优先凑 4/6/8 打输出，血量健康时不必急着合盾。",
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Characters
                     "与圣武士 / 野蛮人 / 骑士：场上盾越多，连锁破盾的选择越多。",
                 });
 
-            Add(CharacterDefinition.CurseweaverId, "Curseweaver", Alignment.ChaoticEvil,
+            Add(CharacterDefinition.CurseweaverId, "Curseweaver", Alignment.ChaoticNeutral,
                 shortSkill: "攻击无视护盾，并无视对手的正向防御加成。",
                 playGuide: "出手就是收益：4/6/8 打出去没人能靠盾挡住。"
                          + "不必花回合合盾（你自己防 −1，盾的价值也低）。",
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Characters
                     "与圣武士：圣武士的盾不挡他的伤害，但合盾仍会触发冲击。",
                 });
 
-            Add(CharacterDefinition.BarbarianId, "Barbarian", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.BarbarianId, "Barbarian", Alignment.ChaoticGood,
                 shortSkill: "合出盾时可控制对手一只手，盾碎时解锁。",
                 playGuide: "合盾不只是防御，更是控制：锁住对手更值钱的那只手。"
                          + "锁手在盾碎时解除，所以算好盾能撑多久。",
@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Characters
                     "与咒术师：咒术师无视护盾，但锁手仍然生效。",
                 });
 
-            Add(CharacterDefinition.PriestId, "Priest", Alignment.NeutralGood,
+            Add(CharacterDefinition.PriestId, "Priest", Alignment.LawfulGood,
                 shortSkill: "9 回复（可给别人）；4/6/8 可选当攻击或回复；双 9 再回一次。",
                 playGuide: "4/6/8 是二选一，所以它们比别的角色更灵活。"
                          + "危险时才回血，否则全部进攻 —— 只顾回血会打成僵局。"
@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Characters
                     "与巨人：巨人的 9 是两段回复，牧师是一段但可指定目标。",
                 });
 
-            Add(CharacterDefinition.RangerId, "Ranger", Alignment.ChaoticGood,
+            Add(CharacterDefinition.RangerId, "Ranger", Alignment.NeutralGood,
                 shortSkill: "1 → 2 完全闪避一次攻击；2 → 3 让攻击基础值 ×1.5。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。",
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Characters
                     "与忍者：忍者拆两段各吃攻防，剑客是一次固定追加 —— 算法不同。",
                 });
 
-            Add(CharacterDefinition.NinjaId, "Ninja", Alignment.LawfulEvil,
+            Add(CharacterDefinition.NinjaId, "Ninja", Alignment.TrueNeutral,
                 shortSkill: "攻击拆成两段、伤害减半，每段各自计算攻防。",
                 playGuide: "高值受益更大：8 → 4+4 两段各吃加成；4 → 2+2 最亏"
                          + "（攻 +1 被吃了两次）。所以优先凑 6 与 8。",
@@ -134,7 +134,7 @@ namespace FingerDiceDuel.Characters
                     "与巨人：巨人的 5 也是两段，但每段伤害取决于另一只手。",
                 });
 
-            Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticEvil,
+            Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticNeutral,
                 shortSkill: "经运算达成双 7 → 进入潜行：不能被攻击，出潜行 +7 伤害。",
                 playGuide: "要的是双 7，一手做不出来 ——"
                          + "先保留一只 7，再用另一只去凑 7。"
@@ -160,7 +160,7 @@ namespace FingerDiceDuel.Characters
                     "与战士 / 野蛮人 / 骑士：他们也会合盾，场上盾多时双方技能都更活跃。",
                 });
 
-            Add(CharacterDefinition.WarlockId, "Warlock", Alignment.LawfulEvil,
+            Add(CharacterDefinition.WarlockId, "Warlock", Alignment.NeutralEvil,
                 shortSkill: "手上留着与对手攻击数字相同的牌即可取消该次攻击（那只手 +1，永久）。",
                 playGuide: "核心不是\"打出什么\"，而是\"手上留着什么\"。"
                          + "只要能取消敌人的攻击就取消。"
@@ -177,7 +177,7 @@ namespace FingerDiceDuel.Characters
                     "与武僧：太极反弹\"攻击数字视为 0\"，同样无法被取消。",
                 });
 
-            Add(CharacterDefinition.ArcaneArcherId, "ArcaneArcher", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.ArcaneArcherId, "ArcaneArcher", Alignment.LawfulEvil,
                 shortSkill: "攻击距离 3；4 打两段、6 伤害 +2、8 无视护盾。",
                 playGuide: "距离 3 让你能打到环上更远的人，先手优势明显。"
                          + "8 是穿透盾牌的答案，4/6 是稳定输出 —— 三者都好用。",
@@ -217,7 +217,7 @@ namespace FingerDiceDuel.Characters
                     "与邪术师：骑士的攻击加成随距离成长，被取消时损失更大。",
                 });
 
-            Add(CharacterDefinition.MonkId, "Monk", Alignment.LawfulNeutral,
+            Add(CharacterDefinition.MonkId, "Monk", Alignment.NeutralGood,
                 shortSkill: "5 不合盾而进入太极：被攻击时减半并把剩余反弹给攻击方。",
                 playGuide: "5 是高价值（太极攻守兼备，而且开局那个 5 就已经是太极）。"
                          + "被攻击时可以选择发动：把 5 变 0、受一半、反弹一半。"
@@ -234,7 +234,7 @@ namespace FingerDiceDuel.Characters
                     "与游侠：反弹可以被闪避。",
                 });
 
-            Add(CharacterDefinition.GiantId, "Giant", Alignment.TrueNeutral,
+            Add(CharacterDefinition.GiantId, "Giant", Alignment.ChaoticEvil,
                 shortSkill: "4/6/8 完全无效果、5 不合盾；5 是两段攻击、9 是两段回复。",
                 playGuide: "只有 5 与 9 是高价值。"
                          + "打 5 时每段伤害 = 另一只手的点数，"
@@ -250,7 +250,7 @@ namespace FingerDiceDuel.Characters
                     "与忍者：两者都是多段，但巨人每段伤害取决于另一只手。",
                 });
 
-            Add(CharacterDefinition.ThiefId, "Thief", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.ThiefId, "Thief", Alignment.NeutralEvil,
                 shortSkill: "放弃运算改为偷窃：双方点数互换，原先 ≥ 偷来的才生效。",
                 playGuide: "流程是点自己的手 → 点【偷窃】→ 点别人的手。"
                          + "判定看\"原先 ≥ 偷来的\"：所以握着大数字才偷得到好东西。"

@@ -153,10 +153,11 @@ namespace FingerDiceDuel.UI
             //    看起来像"属于标题"而不像"属于角色"。
             //    现在整体靠右，与名称/介绍形成一列。
             // ---- 阵营标签（紧跟名称右侧）----
+            // 玩家要求：阵营**移到名字旁边**（而不是右侧单独一行）
             _alignmentLabel = MakeText(panelRect, "AlignmentLabel",
-                                       new Vector2(330f, halfH - 92f),
-                                       new Vector2(360f, 34f),
-                                       26, TextAnchor.MiddleRight,
+                                       new Vector2(-330f, 352f),
+                                       new Vector2(300f, 40f),
+                                       26, TextAnchor.MiddleLeft,
                                        new Color(0.62f, 0.82f, 0.60f));
 
             // ---- 阵营筛选（玩家要求：在返回键下面做一个按钮，
@@ -165,7 +166,7 @@ namespace FingerDiceDuel.UI
             // ⚠️ 原来是常驻的两行按钮，占掉一大块版面；
             //    现在收起来，只在点开时显示。
             _filterToggle = MakeButton(panelRect, "FilterToggle",
-                                       new Vector2(halfW - 90f, halfH - 110f),
+                                       new Vector2(730f, 322f),
                                        new Vector2(150f, 46f), "阵营筛选", 20);
             _filterToggle.onClick.AddListener(ToggleFilterPanel);
 
@@ -176,7 +177,7 @@ namespace FingerDiceDuel.UI
             fp.anchorMin = fp.anchorMax = new Vector2(0.5f, 0.5f);
             fp.pivot = new Vector2(0.5f, 0.5f);
             fp.sizeDelta = new Vector2(420f, 160f);
-            fp.anchoredPosition = new Vector2(300f, halfH - 216f);
+            fp.anchoredPosition = new Vector2(120f, halfH - 200f);
 
             _filterLabel = MakeText(fp, "FilterLabel",
                                     new Vector2(0f, 62f),
@@ -190,16 +191,21 @@ namespace FingerDiceDuel.UI
             _filterPanel.SetActive(false);
 
             // ---- 属性行 ----
+            // 玩家实测：属性行与技能描述**重叠**了 ——
+            //    因为上一轮我把属性行提到 halfH-170、却把正文一起提了上来。
+            //    现在属性行留在名称下方，正文从它下面才开始。
             _stats = MakeText(panelRect, "Stats",
-                              new Vector2(0f, halfH - 170f),
-                              new Vector2(PanelW - 120f, 34f),
-                              23, TextAnchor.MiddleLeft,
+                              new Vector2(-halfW + 100f, halfH - 200f),
+                              new Vector2(PanelW - 200f, 36f),
+                              24, TextAnchor.MiddleLeft,
                               new Color(0.95f, 0.85f, 0.55f));
 
             // ---- 正文（占满下半部分，自动换行）----
+            // 正文用**固定矩形 + 左上对齐**，起点在属性行下方 ——
+            // 这样"属性行"与"技能"之间的间距是可算的，不会再压在一起。
             _body = MakeText(panelRect, "Body",
-                             new Vector2(0f, 40f),
-                             new Vector2(PanelW - 120f, halfH + 30f),
+                             new Vector2(-halfW + 100f, 100f),
+                             new Vector2(PanelW - 200f, halfH - 180f),
                              18, TextAnchor.UpperLeft,
                              new Color(0.88f, 0.90f, 0.94f));
 

@@ -502,23 +502,11 @@ namespace FingerDiceDuel.UI
             // 图鉴入口：玩家要求放在**右上角问号的下面**，做成书本状
             Button codex = MakeButton(_selectRoot, "Codex",
                                       new Vector2(880f, 388f),
-                                      new Vector2(64f, 64f), "书");
-            codex.GetComponent<Image>().color = new Color(0.36f, 0.28f, 0.18f);
+                                      new Vector2(64f, 64f), "图");
+            codex.GetComponent<Image>().color = new Color(0.30f, 0.34f, 0.44f);
             codex.onClick.AddListener(OnCodexClicked);
 
-            // 书脊：在左侧贴一条深色细条，
-            // 让它看起来像一本**立着的书**而不是一个方按钮。
-            var spine = new GameObject("Spine", typeof(Image));
-            spine.transform.SetParent(codex.transform, false);
-            var spineRect = spine.GetComponent<RectTransform>();
-            spineRect.anchorMin = new Vector2(0f, 0f);
-            spineRect.anchorMax = new Vector2(0f, 1f);
-            spineRect.pivot = new Vector2(0f, 0.5f);
-            spineRect.sizeDelta = new Vector2(8f, 0f);
-            spineRect.anchoredPosition = new Vector2(2f, 0f);
-            spine.GetComponent<Image>().color = new Color(0.20f, 0.14f, 0.08f);
-            spine.GetComponent<Image>().raycastTarget = false;
-
+            // 玩家要求：从"书"改成"图"（不再做书本状）。
             _screenMainMenu.Add(codex.gameObject);
 
             // 真正结束进程的入口放在主菜单 —— 对局中那个按钮只负责"返回标题"
