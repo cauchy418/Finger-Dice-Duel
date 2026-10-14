@@ -1721,6 +1721,13 @@ namespace FingerDiceDuel.Core
         {
             if (player == null) return false;
 
+            // ⚠️ **两只手都被锁** -> 无手可用 -> 允许跳过。
+            //
+            //    玩家确认："两只手都被锁住，右侧出现跳过按钮让该玩家回合被跳过。"
+            //    没有这条时，那位玩家会**无法行动也无法跳过** ——
+            //    2v2 循环赛里这种局面会出现「无合法步」（实测 589 局中有 23 处）。
+            if (player.HasNoUsableHand) return true;
+
             if (player.Character is ITurnSkipRule rule)
             {
                 rule.SyncSkipState(player);

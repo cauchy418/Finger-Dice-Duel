@@ -63,6 +63,16 @@ namespace FingerDiceDuel.Core
         public bool HasDoubleShield =>
             LeftHand.State == ShieldState.Formed && RightHand.State == ShieldState.Formed;
 
+        /// <summary>
+        /// **两只手都不能作为运算源**。
+        ///
+        /// 目前只有一种情况：两只手**都被锁定**（野蛮人锁手）。
+        /// 被锁的手不能当运算源，两只都被锁就无手可用 ——
+        /// 玩家确认的规则："两只手都被锁住，右侧出现跳过按钮让该玩家回合被跳过。"
+        /// </summary>
+        public bool HasNoUsableHand =>
+            LeftHand.IsLocked && RightHand.IsLocked;
+
         // ============ 构造 ============
         public PlayerState(string name = "Player", ICharacterBehavior character = null,
                            int maxHealth = DefaultMaxHealth)

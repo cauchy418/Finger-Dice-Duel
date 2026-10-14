@@ -109,22 +109,27 @@ namespace FingerDiceDuel.Tests
                     LegalMove move = selector.ChooseMove(game, actor);
                     if (move.Actor == null)
                     {
-                        // 无合法步。把**现场**一并带出来（否则只能知道"出错了"）。
-                        var detail = new System.Text.StringBuilder();
-                        detail.Append($"座位 {game.SeatOf(actor)} 无合法步");
-                        detail.Append($"（第 {actions + 1} 次行动）");
-                        detail.Append(" 活着=");
-                        for (int k = 0; k < seated.Count; k++)
-                            if (seated[k].IsAlive) detail.Append($"P{game.SeatOf(seated[k])} ");
-                        detail.Append("| 各对手可达=");
-                        for (int k = 0; k < seated.Count; k++)
+                        // 无合法步。**若规则允许跳过，就跳过** ——
+                        // 这正是玩家确认的规则：
+                        //   · 两只手都被锁 -> 出现跳过按钮，回合被跳过；
+                        //   · 两只手都是完整盾 -> 也可以跳过。
+                        // 没有这一步时，这种局面会被当成异常（实测 589 局中有 23 处）。
+                        if (game.CanSkipTurnFor(actor))
                         {
-                            if (ReferenceEquals(seated[k], actor)) continue;
-                            detail.Append($"[P{game.SeatOf(seated[k])}"
-                                         + $"活={(seated[k].IsAlive ? 1 : 0)}"
-                                         + $"距={game.DistanceBetween(actor, seated[k])}"
-                                         + $"可打={(game.CanReach(actor, seated[k]) ? 1 : 0)}] ");
+                            game.SkipTurnAlreadyValidated();
+                            actions++;
+                            continue;
                         }
+
+                        // 不能跳过却又无手可用：把**现场**带出来。
+                        var detail = new System.Text.StringBuilder();
+                        detail.Append($"座位 {game.SeatOf(actor)} 无合法步且不能跳过");
+                        detail.Append($"（第 {actions + 1} 次行动）");
+                        detail.Append($" 左L={actor.LeftHand.IsLocked}左盾={actor.LeftHand.IsShield}");
+                        detail.Append($" 右L={actor.RightHand.IsLocked}右盾={actor.RightHand.IsShield}");
+                        detail.Append(" 活着=");
+                        for (int q = 0; q < seated.Count; q++)
+                            if (seated[q].IsAlive) detail.Append($"P{game.SeatOf(seated[q])} ");
                         return Fail(detail.ToString());
                     }
 
