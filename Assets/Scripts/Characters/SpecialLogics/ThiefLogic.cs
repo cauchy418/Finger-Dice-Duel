@@ -110,15 +110,35 @@ namespace FingerDiceDuel.Core
             //
             // ① **状态只在数值仍然是 5 时才保留** ——
             //    否则会出现"值为 3 的碎盾"这种怪异状态。
-            // ② **被偷的人拿到完整盾时，它变成碎盾**（玩家原话：
-            //    "它变成碎盾"）—— 因为他没有"合盾"这个动作。
-            // ③ **盗贼偷到 5 时，一律得到完整盾**（玩家原话：
-            //    "无论之前这个 5 是什么状态，盗贼都会合成一面盾牌"）。
+            // ② **被偷的人拿到完整盾时，它变成碎盾**（玩家原话："它变成碎盾"）——
+            //    因为他没有"合盾"这个动作。
+            // ③ **盗贼偷到 5 时**（玩家最新规则）：
+            //      · 用 **≥ 5** 的数字去偷 5 -> **完整盾**
+            //      · 用 **1~4** 的数字去偷 5 -> **破碎的盾**
+            //    直觉解释：自己带过去的底子够厚（≥5 本来就能当盾），
+            //    才撑得起一面完整的盾。
+            // ④ **不继承太极**（玩家最新规则）：
+            //    "对于武僧，盗贼不会偷到一个带有太极的 5，
+            //     他只会偷到盾 / 破碎的 5" ——
+            //    太极是武僧专属的形态，换到别人手上只是普通盾。
             //
-            // ①与③合起来就是：盗贼这边是 5 就是完整盾，不是 5 就清空。
-            mine.SetShieldState(stolen == 5 ? ShieldState.Formed : ShieldState.None);
+            // 盗贼这边
+            if (stolen != 5)
+            {
+                mine.SetShieldState(ShieldState.None);
+            }
+            else if (original >= 5)
+            {
+                mine.SetShieldState(ShieldState.Formed);      // ≥5 去偷 5 -> 完整盾
+            }
+            else
+            {
+                mine.SetShieldState(ShieldState.Broken);      // 1~4 去偷 5 -> 碎盾
+            }
 
-            // 被偷者：拿到的那只手若仍是 5，保留状态但**完整盾要降为碎盾**（规则②）
+            // 被偷者那边：拿到的那只手若仍是 5，状态按"他没合盾"处理
+            // ⚠️ 若被偷者是**武僧**，他收到 5 会变成**太极**（玩家最新规则），
+            //    由 MonkLogic.OnOtherPlayerStoleFromMe 处理 —— 见下面那个方法。
             if (original != 5)
             {
                 theirs.SetShieldState(ShieldState.None);
@@ -129,6 +149,24 @@ namespace FingerDiceDuel.Core
             }
 
             return new StealOutcome(original, stolen);
+        }
+
+        /// <summary>
+        /// **被偷者收到 5 之后的状态修正**（玩家最新规则）。
+        ///
+        /// "同理**武僧收到一个 5 也只会是太极状态**" ——
+        /// 也就是这一条要由武僧自己解释，别人收到就是普通盾/碎盾。
+        ///
+        /// 由 <see cref="GameManager"/> 在交换之后调用。
+        /// </summary>
+        public static void ApplyVictimShieldSemantics(PlayerState victim, Hand received)
+        {
+            if (victim == null || received == null) return;
+            if (received.Value != 5) return;
+
+            // 武僧：5 就是太极形态（与开局那个 5 同一条规则）
+            if (victim.Character is MonkLogic)
+                received.SetShieldState(ShieldState.Taichi);
         }
 
         /// <summary>

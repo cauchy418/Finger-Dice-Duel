@@ -51,6 +51,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>「开赌」按钮（赌徒专用）。</summary>
         private Button _gambleButton;
+
+        /// <summary>盗贼的「偷窃」按钮（按需创建）。</summary>
+        private Button _stealButton;
         private Button _exitButton;
         private Button _declineButton;
         private Button _acceptButton;
@@ -1031,6 +1034,56 @@ namespace FingerDiceDuel.UI
         {
             if (_cardsA == null || _cardsA.Length == 0) return null;
             return _cardsA[_cardsA.Length - 1];
+        }
+
+        // ============================================================
+        // 盗贼：「偷窃」按钮
+        // ============================================================
+
+        /// <summary>
+        /// 显示 / 隐藏「偷窃」按钮。
+        ///
+        /// 玩家给的交互：点自己的手 -> 点「偷窃」-> 点别人的手。
+        /// 所以按钮只在"盗贼点了自己一只手、且本回合没偷过"时出现。
+        /// </summary>
+        public void SetStealButtonVisible(bool visible)
+        {
+            if (!visible)
+            {
+                if (_stealButton != null) _stealButton.gameObject.SetActive(false);
+                return;
+            }
+
+            EnsureStealButton();
+            if (_stealButton != null) _stealButton.gameObject.SetActive(true);
+        }
+
+        /// <summary>「偷窃」按钮被点击。</summary>
+        public event Action StealClicked;
+
+        /// <summary>
+        /// 创建「偷窃」按钮，放在**手牌区右侧**（与开赌 / 跳过同一套定位规则）。
+        ///
+        /// 位置由 <see cref="PlaceButtonRightOf"/> 按世界坐标算出，
+        /// 所以 1v1 与 2v2 都不会压住手牌。
+        /// </summary>
+        private void EnsureStealButton()
+        {
+            if (_stealButton != null) return;
+
+            HandCard anchor = FindRightmostRingCard() ?? RightmostSideCard();
+            if (anchor == null) return;
+
+            var rect = anchor.Button.GetComponent<RectTransform>();
+            if (rect == null) return;
+
+            _stealButton = CreateButton(_canvasRoot, "StealButton",
+                                        Vector2.zero, new Vector2(160f, 56f), "偷窃");
+            // 深紫色 —— 与开赌（棕）、跳过（灰）区分开
+            _stealButton.GetComponent<Image>().color = new Color(0.42f, 0.20f, 0.52f);
+            _stealButton.onClick.AddListener(() => { StealClicked?.Invoke(); });
+
+            PlaceButtonRightOf(rect, _stealButton, 60f);
         }
 
         /// <summary>显示/隐藏"跳过回合"按钮。</summary>

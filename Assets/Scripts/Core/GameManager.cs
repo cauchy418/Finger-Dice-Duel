@@ -926,6 +926,9 @@ namespace FingerDiceDuel.Core
 
             ThiefLogic.StealOutcome outcome = ThiefLogic.Steal(myHand, theirHand);
 
+            // 被偷者若是武僧，他收到的 5 会变成**太极**（玩家最新规则）
+            ThiefLogic.ApplyVictimShieldSemantics(OwnerOfHand(theirHand), theirHand);
+
             // 结算：只有**生效**时才按偷来的数字触发效果
             return ResolveSteal(actor, myHand, theirHand, outcome);
         }

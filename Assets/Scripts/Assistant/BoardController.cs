@@ -66,6 +66,14 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         ChoosingGamble = 8,
 
+        /// <summary>
+        /// 等待**盗贼**点"要被偷的那只手"。
+        ///
+        /// 玩家确认的流程：点自己的手 -> 点右侧「偷窃」按钮 -> 点别人的手。
+        /// 无限距离、可以偷队友。
+        /// </summary>
+        ChoosingStealTarget = 9,
+
         /// <summary>兼容旧名字，与 <see cref="ChoosingPreTurnChoice"/> 等价。</summary>
         ChoosingLockTarget = ChoosingPreTurnChoice,
     }
@@ -861,6 +869,9 @@ namespace FingerDiceDuel.Assistant
             _shieldChoices.Clear();
             TargetPlayer = null;      // 目标玩家每个回合重新确认
 
+            // 盗贼的"想偷"标记也属于"本回合的一次行动"，同样在第一步清掉
+            _thiefWantsSteal = false;
+
             // ⚠️ 赌博点数属于"本回合的一次行动"，**回合第一步**就要清掉。
             //
             //    我第一版放在 BeginCharacterChoices（收集抉择时），
@@ -958,6 +969,11 @@ namespace FingerDiceDuel.Assistant
                     // 赌博阶段**只等点「开赌」**，手牌本身不再接受点击。
                     // （运算源已经选好了；再点手牌没有意义，容易误触。）
                     return false;
+
+                case BoardPhase.ChoosingStealTarget:
+                    // 盗贼：可以点**任何其他人**的手（无限距离、可以偷队友）。
+                    // 自己除外 —— 偷自己没有意义。
+                    return !ActivePlayer.Owns(hand);
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
@@ -1063,6 +1079,16 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>当前是否停在"选目标手之前的抉择"。</summary>
         private bool _preTargetChoiceActive;
+
+        /// <summary>
+        /// 盗贼已经按过「偷窃」按钮（本回合）。
+        ///
+        /// ⚠️ 为什么需要一个标记而不是只看 Phase：
+        ///    点完自己的手后控制器会**自动推进**到"选加数"，
+        ///    那时玩家直接点别人的手也应该算偷窃。
+        ///    <see cref="BeginSteal"/> 置位，<c>SetupFirstStep</c> 清掉。
+        /// </summary>
+        private bool _thiefWantsSteal;
 
         /// <summary>
         /// 当前是否处在**真正的回合边界**（可以清空"仅本回合有效"的抉择记录）。
@@ -1198,6 +1224,163 @@ namespace FingerDiceDuel.Assistant
         public bool DefenderCannotBeAttacked
             => Phase == BoardPhase.ChoosingTargetPlayer && !HasAnyLegalTarget;
 
+        // ============================================================
+        // 盗贼：偷窃的三步流程
+        // ============================================================
+        //
+        // 玩家给的交互："操作为先点击自己的手，点击右侧按钮偷窃，
+        //              再点击他人的手完成偷窃。"
+
+        /// <summary>
+        /// 本回合能不能偷窃（上回合发起过就不能）—— UI 据此显示「偷窃」按钮。
+        ///
+        /// ⚠️ 允许在**两个阶段**都显示按钮：
+        ///   · <see cref="BoardPhase.ChoosingAttackerHand"/> —— 刚点完自己的手
+        ///   · <see cref="BoardPhase.ChoosingTargetHand"/> —— 控制器点完自己的手后
+        ///     **会自动推进**到这里（见 ClickHand 的 ChoosingAttackerHand 分支）
+        ///
+        /// 我第一版只认前者，于是按钮**永远显示不出来**
+        /// （测试当场抓到：phase=ChoosingTargetHand）。
+        /// 两个阶段都允许，同时也保留了"再点自己的手可取消"这个既有手势。
+        /// </summary>
+        public bool CanSteal
+            => (Phase == BoardPhase.ChoosingAttackerHand
+                || Phase == BoardPhase.ChoosingTargetHand)
+               && ActivePlayer?.Character is ThiefLogic
+               && SelectedHand != null
+               && _game.CanStealOn(ActivePlayer);
+
+        /// <summary>
+        /// 玩家点了「偷窃」按钮：进入"选被偷的手"这一步。
+        ///
+        /// 推文提示里带上"偷来的数字不能大于当前这只手"——
+        /// 否则玩家不知道判定规则，点了没反应会以为游戏坏了。
+        /// </summary>
+        public bool BeginSteal()
+        {
+            if (!CanSteal) return false;
+
+            // ⚠️ 这个标记必须与阶段**同时**设置：
+            //    点完自己的手之后控制器会自动推进到"选加数"，
+            //    所以"点别人的手"这件事在**两个阶段**都可能发生。
+            //    只靠 Phase 判断会漏掉"自动推进后直接点别人"那条路。
+            _thiefWantsSteal = true;
+
+            Phase = BoardPhase.ChoosingStealTarget;
+            Hint = $"盗贼：请点一只手来偷（无限距离，可以偷队友）。" +
+                   $"偷来的数字不大于 {SelectedHand.Value} 才会生效。";
+            return true;
+        }
+
+        /// <summary>「偷窃」按钮的入口（与 <see cref="Gamble"/> 对称）。</summary>
+        public bool Steal() => BeginSteal();
+
+        /// <summary>
+        /// 完成偷窃 —— 在 <see cref="BoardPhase.ChoosingStealTarget"/> 阶段点手牌时调用。
+        /// </summary>
+        private bool CompleteSteal(Hand target)
+        {
+            if (Phase != BoardPhase.ChoosingStealTarget) return false;
+            if (target == null || SelectedHand == null) return false;
+
+            // 不能偷自己
+            if (ActivePlayer != null && ActivePlayer.Owns(target)) return false;
+
+            try
+            {
+                LastTurn = _game.ExecuteSteal(ActivePlayer, SelectedHand, target);
+                SetupFirstStep();
+                ResolvePendingAiChoices();
+            }
+            catch (System.InvalidOperationException ex)
+            {
+                LastIllegalOperation = ex.Message;
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// **盗贼 AI**：找一个"判定生效且效果最好"的目标去偷。
+        ///
+        /// 返回 true 表示已经用掉了这个回合。
+        /// </summary>
+        private bool TryAiThiefSteal()
+        {
+            if (!(ActivePlayer?.Character is ThiefLogic)) return false;
+            if (!_game.CanStealOn(ActivePlayer)) return false;
+
+            IReadOnlyList<Hand> mine = ActivePlayer.Hands;
+
+            Hand bestMine = null;
+            Hand bestTheirs = null;
+            int bestScore = -1;
+
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int m = 0; m < mine.Count; m++)
+            {
+                Hand myHand = mine[m];
+                if (myHand == null || myHand.IsLocked) continue;
+
+                for (int p = 0; p < all.Count; p++)
+                {
+                    PlayerState owner = all[p];
+                    if (owner == null || !owner.IsAlive) continue;
+
+                    IReadOnlyList<Hand> theirs = owner.Hands;
+                    for (int t = 0; t < theirs.Count; t++)
+                    {
+                        Hand theirHand = theirs[t];
+                        if (theirHand == null) continue;
+
+                        // 判定必须生效（原先 ≥ 偷来的）才有价值
+                        if (myHand.Value < theirHand.Value) continue;
+
+                        int score = StealScore(theirHand.Value);
+                        if (score > bestScore)
+                        {
+                            bestScore = score;
+                            bestMine = myHand;
+                            bestTheirs = theirHand;
+                        }
+                    }
+                }
+            }
+
+            if (bestMine == null) return false;      // 没有划算的 -> 正常运算
+
+            if (!ClickHand(bestMine)) return false;
+            if (!BeginSteal()) return false;
+
+            try
+            {
+                LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
+                SetupFirstStep();
+                ResolvePendingAiChoices();
+            }
+            catch (System.InvalidOperationException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>偷来这个数字值多少（盗贼 AI 用）。</summary>
+        private static int StealScore(int stolen)
+        {
+            switch (Hand.GetEffectType(stolen))
+            {
+                case HandEffectType.Attack8: return 88;
+                case HandEffectType.Attack6: return 66;
+                case HandEffectType.Attack4: return 44;
+                case HandEffectType.Shield: return 50;
+                case HandEffectType.Heal: return 30;
+                default: return 0;
+            }
+        }
+
         /// <summary>玩家点击了一张手牌。返回 true 表示这次点击被接受。</summary>
         public bool ClickHand(Hand hand)
         {
@@ -1241,6 +1424,12 @@ namespace FingerDiceDuel.Assistant
 
             switch (Phase)
             {
+                // ---- 盗贼：第三步，点"要被偷的那只手"----
+                // 放在最前面，因为它与"选运算源 / 选加数"完全无关
+                // （偷窃是**放弃运算**的另一条路）。
+                case BoardPhase.ChoosingStealTarget:
+                    return CompleteSteal(hand);
+
                 case BoardPhase.ChoosingDefenseShield:
                     ApplyDefenseChoice(hand);
                     // 选盾同时也是一个通用抉择的结果，写进 sink 供 AttackContext 回读
@@ -1333,6 +1522,21 @@ namespace FingerDiceDuel.Assistant
                         _preTargetChoiceActive = false;
                         SetupFirstStep();
                         return false;
+                    }
+
+                    // ⚠️ **盗贼**：在"选加数"这一步点**别人的手**时，
+                    //    如果已经按过「偷窃」按钮（或他本来就是来偷的），
+                    //    就走偷窃而不是加法运算。
+                    //
+                    //    判定放在"取消选择"之后、"收集抉择"之前 ——
+                    //    这样"再点自己的手取消"这个既有手势仍然有效。
+                    if (ActivePlayer?.Character is ThiefLogic
+                        && !ActivePlayer.Owns(hand)
+                        && _game.CanStealOn(ActivePlayer)
+                        && (Phase == BoardPhase.ChoosingStealTarget
+                            || _thiefWantsSteal))
+                    {
+                        return CompleteSteal(hand);
                     }
 
                     // 再次点击已选中的运算源 = 取消选择
@@ -2472,6 +2676,15 @@ namespace FingerDiceDuel.Assistant
 
                 ResolvePendingAiChoices();
                 return true;
+            }
+
+            // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
+            //
+            // 放在"选运算源"之前：偷窃是**放弃运算**的另一条路，
+            // 所以要先判"值不值得偷"，不值得才走正常运算。
+            if (Phase == BoardPhase.ChoosingAttackerHand && ActivePlayer?.Character is ThiefLogic)
+            {
+                if (TryAiThiefSteal()) return true;
             }
 
             if (Phase != BoardPhase.ChoosingTargetHand) return true;

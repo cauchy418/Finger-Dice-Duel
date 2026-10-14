@@ -44,6 +44,112 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, GameManager.BaseRangeOf(t), "盗贼攻击距离 1。");
         }
 
+        // ============================================================
+        // 界面的三步流程（玩家要求：点自己 -> 点按钮 -> 点别人）
+        // ============================================================
+
+        /// <summary>造一个带控制器的局面（走真机那条路）。</summary>
+        private static BoardController Board(out PlayerState thief, out PlayerState foe,
+                                            out GameManager game)
+        {
+            thief = Make("贼", CharacterDefinition.Thief);
+            foe = Make("兵", CharacterDefinition.Soldier);
+
+            game = new GameManager(thief, foe, new SimpleChoiceProvider(),
+                                   new SimpleChoiceProvider());
+
+            return new BoardController(game,
+                                       new SimpleChoiceProvider(), new SimpleChoiceProvider());
+        }
+
+        [Test]
+        public void Steal_button_appears_only_after_picking_own_hand()
+        {
+            BoardController board = Board(out PlayerState thief, out _, out _);
+
+            board.BeginTurn();
+
+            // 还没点自己的手 -> 按钮不该出现
+            Assert.False(board.CanSteal, "没选运算源时不该显示偷窃按钮。");
+
+            Assert.True(board.CanClick(thief.LeftHand),
+                $"前置：自己的手应该可点。[phase={board.Phase} " +
+                $"active={board.ActivePlayer?.Name} " +
+                $"owns={board.ActivePlayer?.Owns(thief.LeftHand)} " +
+                $"locked={thief.LeftHand.IsLocked}]");
+            Assert.True(board.ClickHand(thief.LeftHand),
+                $"第一步：点自己的手。[phase={board.Phase} " +
+                $"selected={board.SelectedHand?.Value.ToString() ?? "NULL"}]");
+            Assert.True(board.CanSteal,
+                $"点了自己的手 -> 应显示偷窃按钮。" +
+                $"[phase={board.Phase} selected={board.SelectedHand?.Value.ToString() ?? "NULL"} " +
+                $"active={board.ActivePlayer?.Name}]");
+        }
+
+        [Test]
+        public void Steal_flow_goes_through_the_three_steps()
+        {
+            BoardController board = Board(out PlayerState thief, out PlayerState foe,
+                                          out GameManager game);
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(foe.LeftHand, 4);
+
+            board.BeginTurn();
+
+            // ① 点自己的手
+            Assert.True(board.ClickHand(thief.LeftHand), "点自己的手");
+
+            // ② 点「偷窃」按钮
+            Assert.True(board.BeginSteal(), "点偷窃按钮");
+            Assert.AreEqual(BoardPhase.ChoosingStealTarget, board.Phase,
+                "应进入「选被偷的手」这一步。");
+
+            // ③ 点别人的手 —— 完成偷窃
+            Assert.True(board.ClickHand(foe.LeftHand), "点别人的手完成偷窃");
+
+            Assert.AreEqual(4, thief.LeftHand.Value, "盗贼拿到 4。");
+            Assert.AreEqual(9, foe.LeftHand.Value, "对手拿到 9。");
+        }
+
+        [Test]
+        public void Cannot_pick_own_hand_as_the_steal_target()
+        {
+            BoardController board = Board(out PlayerState thief, out _, out _);
+
+            board.BeginTurn();
+            board.ClickHand(thief.LeftHand);
+            board.BeginSteal();
+
+            // 自己那两只手都不该能点
+            Assert.False(board.CanClick(thief.LeftHand), "不能偷自己的左手。");
+            Assert.False(board.CanClick(thief.RightHand), "不能偷自己的右手。");
+        }
+
+        [Test]
+        public void Steal_target_can_be_any_other_player()
+        {
+            // 玩家明确："无限距离、**可以偷队友**"。
+            //
+            // ⚠️ 这里只验"任意他人（含队友）都可被点"这一条判据 ——
+            //    它由 CanClick 的 ChoosingStealTarget 分支实现
+            //    （`return !ActivePlayer.Owns(hand)`，**不看是不是队友**）。
+            //    我不在这里另建 2v2 局面：那需要复刻 Create2v2 的座位约定，
+            //    而本测试不依赖座位关系也能验证"不看队伍"这一点。
+            BoardController board = Board(out PlayerState thief, out PlayerState foe, out _);
+
+            board.BeginTurn();
+            board.ClickHand(thief.LeftHand);
+            board.BeginSteal();
+
+            Assert.True(board.CanClick(foe.LeftHand), "对手的手可以偷。");
+            Assert.True(board.CanClick(foe.RightHand), "对手另一只手也可以偷。");
+
+            // 关键：判据里**没有任何队伍判断**，所以队友同样可以
+            // （座位与队伍关系由 2v2 的既有测试覆盖）
+            Assert.False(board.CanClick(thief.LeftHand), "自己的手不行。");
+        }
+
         [Test]
         public void Steal_swaps_both_values()
         {
@@ -98,25 +204,94 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Steal_of_five_always_makes_a_whole_shield()
+        public void Steal_of_five_with_high_original_gives_a_whole_shield()
         {
-            // 玩家给的例子："盗贼原先手里有个 7，拿 7 去偷了别人的 5，
-            //               7 比 5 大，**无论之前这个 5 是什么状态**，
-            //               盗贼都会合成一面盾牌"
+            // 玩家最新规则："只有用**大于等于 5** 的数字去偷一个 5，
+            //               这个 5 才是完整盾"
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
-            // 把那 5 弄成"破碎的盾"，验证它仍然合成**完整**盾
-            TestSetup.SetHand(foe.LeftHand, 5);
-            foe.LeftHand.SetShieldState(ShieldState.Broken);
-
             TestSetup.SetHand(thief.LeftHand, 7);
+            TestSetup.SetHand(foe.LeftHand, 5);
+
+            // 那 5 之前是碎的，验证它**仍然**合成完整盾
+            foe.LeftHand.SetShieldState(ShieldState.Broken);
 
             TurnResult r = game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
-            Assert.True(r.StealEffective, "7 ≥ 5，应生效。");
-            Assert.AreEqual(HandEffectType.Shield, r.Effect, "偷来的 5 -> 合盾。");
+            Assert.True(r.StealEffective, "7 ≥ 5，生效。");
             Assert.AreEqual(ShieldState.Formed, thief.LeftHand.State,
-                "偷来的 5 一律合成**完整**盾（不管它之前是什么状态）。");
+                "用 ≥5 去偷 5 -> 完整盾。");
+        }
+
+        [Test]
+        public void Steal_of_five_with_low_original_gives_a_broken_shield()
+        {
+            // 玩家最新规则："用 **1~4** 去偷只会得到一个**破碎的盾**"
+            GameManager game = Match(out PlayerState thief, out PlayerState foe);
+
+            TestSetup.SetHand(thief.LeftHand, 4);
+            TestSetup.SetHand(foe.LeftHand, 5);
+
+            TurnResult r = game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            Assert.False(r.StealEffective, "4 < 5，判定不生效。");
+            Assert.AreEqual(5, thief.LeftHand.Value, "交换照做，拿到 5。");
+            Assert.AreEqual(ShieldState.Broken, thief.LeftHand.State,
+                "用 1~4 去偷 5 -> 破碎的盾（不是完整盾）。");
+        }
+
+        [Test]
+        public void Thief_never_inherits_taichi_from_a_monk()
+        {
+            // 玩家最新规则："对于武僧，盗贼**不会偷到一个带有太极的 5**，
+            //               他只会偷到盾 / 破碎的 5"
+            GameManager game = Match(out PlayerState thief, out PlayerState foe);
+            game.GetType();
+
+            // 把对手换成武僧
+            var monk = Make("僧", CharacterDefinition.Monk);
+            var game2 = new GameManager(thief, monk, new SimpleChoiceProvider(),
+                                        new SimpleChoiceProvider());
+
+            TestSetup.SetHand(thief.LeftHand, 7);
+            TestSetup.SetHand(monk.LeftHand, 5);
+            monk.LeftHand.SetShieldState(ShieldState.Taichi);      // 武僧的太极
+
+            game2.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+
+            Assert.AreEqual(ShieldState.Formed, thief.LeftHand.State,
+                "盗贼只拿到**普通完整盾**，不继承太极。");
+            Assert.False(thief.LeftHand.State == ShieldState.Taichi,
+                "盗贼不该拿到太极形态。");
+        }
+
+        [Test]
+        public void Monk_receiving_a_five_gets_taichi()
+        {
+            // 玩家最新规则："同理**武僧收到一个 5 也只会是太极状态**"
+            var thief = Make("贼", CharacterDefinition.Thief);
+            var monk = Make("僧", CharacterDefinition.Monk);
+            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+
+            // ⚠️ 造法要选对：武僧手上放**非 5**（3），盗贼用 **5** 去偷它 ——
+            //    交换后武僧才拿到那个 5。
+            //
+            //    我第一版写成"武僧手上是 5、盗贼是 3"，那样武僧拿到的是 3，
+            //    根本验证不到"收到 5"；而且第二次调用还会撞上冷却
+            //    （"上回合已经偷过"）—— 两条都是测试自己写错。
+            TestSetup.SetHand(thief.LeftHand, 5);
+            TestSetup.SetHand(monk.LeftHand, 3);
+
+            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+
+            Assert.AreEqual(5, monk.LeftHand.Value, "武僧拿到盗贼原来的 5。");
+            Assert.AreEqual(ShieldState.Taichi, monk.LeftHand.State,
+                "武僧收到的 5 只会是**太极**状态（不是普通盾）。");
+
+            // 盗贼那边：偷来的 3 不是盾
+            Assert.AreEqual(3, thief.LeftHand.Value, "盗贼拿到 3。");
+            Assert.AreEqual(ShieldState.None, thief.LeftHand.State);
         }
 
         [Test]

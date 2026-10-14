@@ -346,6 +346,7 @@ namespace FingerDiceDuel.UI
             _board.RestartClicked += OnRestartClicked;
             _board.SkipTurnClicked += OnSkipTurnClicked;
             _board.GambleClicked += OnGambleClicked;
+            _board.StealClicked += OnStealClicked;
             _board.DeclineClicked += OnDeclineClicked;
             _board.AcceptClicked += OnAcceptClicked;
             _board.ExitClicked += OnExitClicked;
@@ -1511,6 +1512,26 @@ namespace FingerDiceDuel.UI
             if (moved) RefreshView();
         }
 
+        /// <summary>
+        /// 盗贼点了「偷窃」：进入"选被偷的手"这一步。
+        ///
+        /// 玩家给的交互是三步：点自己的手 -> 点「偷窃」-> 点别人的手。
+        /// 所以这里只是**推进阶段**，真正完成在
+        /// <c>BoardController.ClickHand</c> 的 ChoosingStealTarget 分支。
+        /// </summary>
+        private void OnStealClicked()
+        {
+            if (_controller == null) return;
+            if (!_controller.IsHumanChooser) return;
+
+            bool moved = _controller.BeginSteal();
+
+            Debug.Log($"[FDD偷窃] moved={moved} phase={_controller.Phase}" +
+                      $" selected={_controller.SelectedHand?.Value.ToString() ?? "NULL"}");
+
+            if (moved) RefreshView();
+        }
+
         /// <summary>发动当前的"角色抉择"（剑客的追加攻击、游侠的强化等）。</summary>
         private void OnAcceptClicked()
         {
@@ -1645,6 +1666,9 @@ namespace FingerDiceDuel.UI
 
             // 赌徒的「开赌」按钮：只在"等开赌"这一步显示
             _board.SetGambleButtonVisible(_controller.CanGamble);
+
+            // 盗贼的「偷窃」按钮：只在"点了自己的手、且本回合没偷过"时显示
+            _board.SetStealButtonVisible(_controller.CanSteal);
 
             _board.SetLog(_controller.Log);
             _board.SetHint(DescribeHint(), DescribeLastTurn());
