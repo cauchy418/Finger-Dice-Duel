@@ -104,7 +104,14 @@ namespace FingerDiceDuel.Characters
             }
         }
 
-        /// <summary>中文阵营名（例如"守序善良"）。</summary>
-        public static string NameOf(Alignment a) => LawAxisOf(a) + GoodAxisOf(a);
+        /// <summary>
+        /// 中文阵营名（例如"守序善良"）。
+        ///
+        /// ⚠️ "中立中立"要说成**"绝对中立"**（玩家要求）——
+        ///    两条轴直接拼接会得到一个读起来很怪的名字，
+        ///    而九宫格里只有这一格有专用说法（D&amp;D 也叫 True Neutral）。
+        /// </summary>
+        public static string NameOf(Alignment a)
+            => a == Alignment.TrueNeutral ? "绝对中立" : LawAxisOf(a) + GoodAxisOf(a);
     }
 }

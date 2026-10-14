@@ -172,6 +172,25 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void True_neutral_reads_as_absolute_neutral()
+        {
+            // 玩家要求："中立中立"改为**"绝对中立"**。
+            //
+            // 因为名字是两条轴拼出来的，直接拼会得到"中立中立"。
+            Assert.AreEqual("绝对中立", Alignments.NameOf(Alignment.TrueNeutral));
+
+            // 其余八格仍然是拼接（防止改动误伤它们）
+            Assert.AreEqual("守序善良", Alignments.NameOf(Alignment.LawfulGood));
+            Assert.AreEqual("守序中立", Alignments.NameOf(Alignment.LawfulNeutral));
+            Assert.AreEqual("守序邪恶", Alignments.NameOf(Alignment.LawfulEvil));
+            Assert.AreEqual("中立善良", Alignments.NameOf(Alignment.NeutralGood));
+            Assert.AreEqual("中立邪恶", Alignments.NameOf(Alignment.NeutralEvil));
+            Assert.AreEqual("混乱善良", Alignments.NameOf(Alignment.ChaoticGood));
+            Assert.AreEqual("混乱中立", Alignments.NameOf(Alignment.ChaoticNeutral));
+            Assert.AreEqual("混乱邪恶", Alignments.NameOf(Alignment.ChaoticEvil));
+        }
+
+        [Test]
         public void Filtering_by_one_axis_returns_a_subset()
         {
             List<CharacterDefinition> all =
