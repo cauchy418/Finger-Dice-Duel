@@ -211,12 +211,25 @@ namespace FingerDiceDuel.Assistant
         private static void BuildOpponentAdjust()
         {
             // ---- 面对咒术师 ----
-            // 他的攻击**无视护盾** -> 我合盾完全白费，5 大幅贬值。
-            // 若我是游侠，他的攻击**不可闪避** -> 我的 1 也贬值。
+            // 玩家指示："面对咒术师时盾牌和闪避 / 减伤要降价值。"
+            //
+            // 核实了他的**三重压制**（见 CurseweaverLogic）：
+            //   · `IgnoreShield = true`        -> 护盾**不挡伤、不消耗、不破碎**
+            //   · `PreventsDodge = true`       -> 闪避**完全无效**
+            //   · `IgnorePositiveDefense = true` -> 正向防御加成无效
+            //
+            // 对应到价值表：
+            //   · **5（合盾）**：盾还在（他不消耗它），只是这一轮完全不挡伤 ——
+            //     所以不是"完全废掉"，而是价值大幅缩水。
+            //   · **1（游侠闪避）**：**彻底无效**，所以压到接近 0。
+            //   · **7 / 8 / 9**：减伤 / 防守反击类的载体（防高数值），
+            //     同样被无视防御压制。
             OpponentAdjust[CharacterDefinition.CurseweaverId] = new List<ValueAdjust>
             {
-                new ValueAdjust(5, -45),      // 盾对他无效
-                new ValueAdjust(1, -30),      // 游侠的闪避对他无效（对别的角色无害）
+                new ValueAdjust(5, -50),      // 盾不挡伤（但仍留着，不能减到底）
+                new ValueAdjust(1, -55),      // 游侠的闪避**彻底无效**
+                new ValueAdjust(8, -12),      // 减伤 / 高防守数值被无视防御压制
+                new ValueAdjust(9, -12),
             };
 
             // ---- 面对狼人 ----

@@ -182,8 +182,32 @@ namespace FingerDiceDuel.Tests
             int atkBefore = pA.Character?.AttackBonus ?? 0;
             int defBefore = pA.Character?.DefenseBonus ?? 0;
 
-            var runner = new MatchRunner { RecordHistory = false, MaxTurns = MaxTurns };
-            runner.OnTurnResolved = t =>
+            // ⚠️⚠️ **必须走 BoardController，不能用 MatchRunner（直连 GameManager）**。
+            //
+            //    有几条策略只存在于**控制器**里，直连时永远不会触发：
+            //      · 赌徒的开赌判断（ShouldAiGamble）
+            //      · 邪术师的主动跳过（TryAiWarlockSkip）
+            //    我第一版用 MatchRunner，于是赌徒 30 局全 0% ——
+            //    而它其实在真实对局里是会开赌的（循环赛胜率正常）。
+            //    这是"尺子量错了地方"的第三次，所以这次写进注释里。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+
+            var board = new BoardController(game,
+                                           providers[0], providers[1],
+                                           aiForA: new GreedyChoiceProvider(),
+                                           aiForB: new GreedyChoiceProvider());
+
+            // ⚠️ 不能用 MatchRunner（直连 GameManager）—— 有几条策略只存在于
+            //    **控制器**里，直连时永远不触发：赌徒的开赌判断、邪术师的主动跳过。
+            //    我第一版就是这么写的，结果赌徒 30 局全 0%，
+            //    而它在真实对局里其实会开赌。这是"尺子量错地方"的第三次。
+            //
+            //    BoardController 没有回合回调，所以用
+            //    "TurnCount 变了 = 有新结算" + 公开的 LastTurn 来取结果。
+            System.Action<TurnResult> onTurn = t =>
             {
                 if (hit || t?.Actor == null) return;
                 if (!ReferenceEquals(t.Actor, pA)) return;   // 只看"我"这一边
@@ -195,13 +219,16 @@ namespace FingerDiceDuel.Tests
                     case CharacterDefinition.SwordsmanId:
                         if (t.ExtraAttack.HasValue) hit = true;   // 追加攻击（"剑气"）
                         break;
+
                     case CharacterDefinition.GiantId:
                     case CharacterDefinition.NinjaId:
                         if (t.HitCount > 1) hit = true;           // 多段
                         break;
+
                     case CharacterDefinition.GamblerId:
                         if (t.WasGamble) hit = true;              // 开赌
                         break;
+
                     case CharacterDefinition.RangerId:
                         // 玩家指示："游侠只需检查是否**倾向于合 1** 即可"
                         //
@@ -259,7 +286,23 @@ namespace FingerDiceDuel.Tests
 
             try
             {
-                runner.Run(game, new GreedyChoiceProvider(), new GreedyChoiceProvider());
+                board.BeginTurn();
+
+                // 双方都是 AI -> 一直推进到分出胜负或到回合上限
+                int safety = MaxTurns * 4;
+                int lastSeen = -1;
+
+                while (!game.IsGameOver && game.TurnCount < MaxTurns && safety-- > 0)
+                {
+                    if (!board.MakeAutomaticMove()) break;
+
+                    // TurnCount 变了说明刚结算完一个回合
+                    if (board.LastTurn != null && game.TurnCount != lastSeen)
+                    {
+                        lastSeen = game.TurnCount;
+                        onTurn(board.LastTurn);
+                    }
+                }
             }
             catch (System.Exception)
             {

@@ -575,7 +575,15 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ai_gambler_prefers_normal_operation_when_a_useful_result_exists()
         {
-            // 反过来：能运算出有效数字（这里 1+4=5 -> 合盾）就不该赌
+            // ⚠️ 规则在 2025 年被玩家收紧了：
+            //    "赌徒在**无法运算出高价值点数**时优先赌。"
+            //
+            //    这里的高价值 = **能推进战局**的 4/6/8 攻击。
+            //    合盾（5）与纯回复（9）**不算** —— 它们不改变局面，
+            //    而赌博有 4/9 的概率直接掷出攻击，值得一赌。
+            //
+            //    所以这条测试的场面必须能运算出**攻击**，
+            //    而不是合盾（我原来用的是 1+4=5，按新规则它该去赌）。
             var ai = new GreedyChoiceProvider();
             var providers = new List<SimpleChoiceProvider>
             {
@@ -589,11 +597,11 @@ namespace FingerDiceDuel.Tests
             board.GambleRng = new FixedRandom(2);      // 万一赌了，点数会是 2（无效果）
             board.BeginTurn();
 
-            // 赌徒 1/1，对手 4/4 -> 1+4=5（合盾，有效）
+            // 赌徒 1/1，对手 3/3 -> 1+3=**4**（攻击，高价值）-> 不赌
             TestSetup.SetHand(game.PlayerA.LeftHand, 1);
             TestSetup.SetHand(game.PlayerA.RightHand, 1);
-            TestSetup.SetHand(game.PlayerB.LeftHand, 4);
-            TestSetup.SetHand(game.PlayerB.RightHand, 4);
+            TestSetup.SetHand(game.PlayerB.LeftHand, 3);
+            TestSetup.SetHand(game.PlayerB.RightHand, 3);
 
             Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
             Assert.AreEqual(0, board.LastGambleRoll,

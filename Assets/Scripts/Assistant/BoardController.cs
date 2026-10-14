@@ -2652,17 +2652,40 @@ namespace FingerDiceDuel.Assistant
             IReadOnlyList<LegalMove> moves = _game.GetLegalMoves(actor);
             if (moves.Count == 0) return true;      // 连运算都做不了 -> 赌
 
+            // 玩家给的规则："赌徒在**无法运算出高价值点数**时优先赌。"
+            //
+            // ⚠️ 判据是**高价值**，不是"有效果"。
+            //    我原来用的是"有没有产生效果"（4/5/6/8/9 都算），
+            //    而那个条件在实战里几乎总成立（4/6/8 攻击、5 合盾、9 回复），
+            //    于是赌徒**从不主动开赌** —— 30 局发动率 0%。
+            //
+            //    高价值 = **能推进战局**的：4/6/8 的攻击。
+            //    合盾（5）与纯回复（9）不算 —— 它们不改变局面，
+            //    而赌博有 4/9 的概率直接掷出攻击，值得一赌。
             for (int i = 0; i < moves.Count; i++)
             {
                 LegalMove m = moves[i];
                 if (m.ActedHand == null || m.TargetHand == null) continue;
 
                 int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
-                if (IsUsefulGambleResult(result)) return false;   // 有有用的运算 -> 不赌
+                if (IsHighValueResult(result)) return false;   // 能打出高价值 -> 不赌
             }
 
-            return true;                            // 没有任何有用的结果 -> 开赌
+            return true;                            // 打不出高价值 -> 开赌
         }
+
+        /// <summary>
+        /// 这个数字算不算**高价值**（能推进战局）。
+        ///
+        /// 只算攻击（4/6/8）—— 合盾与纯回复不改变局面，
+        /// 而赌博有 4/9 的概率直接掷出攻击。
+        ///
+        /// ⚠️ 与 <see cref="IsUsefulGambleResult"/> 的区别：
+        ///    那个是"有没有效果"（含合盾与回复），
+        ///    这个是"值不值得为它放弃赌博"。两者用途不同，不要合并。
+        /// </summary>
+        private static bool IsHighValueResult(int result)
+            => result == 4 || result == 6 || result == 8;
 
         /// <summary>
         /// 这个数字算不算"有效结果"（玩家列举：4/5/6/8/9）。
