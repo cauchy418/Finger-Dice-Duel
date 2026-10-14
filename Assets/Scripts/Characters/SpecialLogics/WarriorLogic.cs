@@ -67,7 +67,18 @@ namespace FingerDiceDuel.Core
         public int RangeBreakCount { get; private set; }
 
         /// <summary>本局发动招牌技能几次 —— 见 <see cref="ISkillUseCounter"/>。</summary>
-        public int SkillUseCount => ChainBreakCount + RangeBreakCount;
+        public int SkillUseCount => ChainBreakCount + RangeBreakCount + ShieldFormCount;
+
+        /// <summary>
+        /// 本局**合出盾牌**几次。
+        ///
+        /// ⚠️ 为什么单独算它：玩家明确说过
+        ///    "对手不主动触发战士破盾无所谓，**战士只要倾向于合盾即可**"。
+        ///    两个技能都**以盾为前提**（自己的盾碎了才能连锁、
+        ///    另一只手是盾才能换射程），所以"有没有去合盾"才是
+        ///    AI 该被衡量的东西 —— 而"技能有没有打出去"取决于对手。
+        /// </summary>
+        public int ShieldFormCount { get; private set; }
 
         /// <summary>
         /// 运算前收集"要不要发动连锁破盾、打碎哪面盾"。
@@ -292,6 +303,8 @@ namespace FingerDiceDuel.Core
         public override void OnShieldFormed(PlayerState owner, Hand shieldHand, GameManager manager)
         {
             if (owner == null || shieldHand == null) return;
+
+            ShieldFormCount++;
 
             var otherHand = owner.GetOtherHand(shieldHand);
             if (otherHand != null && otherHand.State == ShieldState.Broken)

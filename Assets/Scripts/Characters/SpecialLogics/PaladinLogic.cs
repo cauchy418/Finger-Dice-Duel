@@ -19,9 +19,23 @@ namespace FingerDiceDuel.Core
                                        FingerDiceDuel.Core.IHandEffectRewriter,
                                        IAttackRangeProvider,
                                        FingerDiceDuel.Core.IAttackRedirector,
-                                       FingerDiceDuel.Core.IAiMoveAdvisor
+                                       FingerDiceDuel.Core.IAiMoveAdvisor,
+                                       FingerDiceDuel.Core.ISkillUseCounter
     {
         public override string DisplayName => "圣武士";
+
+        /// <summary>
+        /// 本局**合出盾牌**几次（4/5/6 都会走到这里）。
+        ///
+        /// ⚠️ 为什么需要它：<c>ShockLog</c> 只在**真正打出冲击**时才写，
+        ///    而没有候选目标时会静默跳过（见 TriggerShock 的 early return）——
+        ///    所以"圣武士一次都没合盾"与"合了盾但冲击没打出去"从 ShockLog
+        ///    上分不出来。用它把两件事区分开。
+        /// </summary>
+        public int ShieldFormCount { get; private set; }
+
+        /// <summary>本局发动招牌技能（合盾触发冲击）几次 —— <see cref="ISkillUseCounter"/>。</summary>
+        public int SkillUseCount => ShieldFormCount;
 
         /// <summary>
         /// 让 AI **主动去合盾**（玩家指出："圣武士类似 [武僧与战士]，都是 5 高价值"）。
@@ -40,9 +54,28 @@ namespace FingerDiceDuel.Core
             int after = context.ActedValueAfter;
 
             // 4 / 5 / 6 都能合盾（4 与 6 由 RewriteEffect 改写而来）
-            if (after == 4 || after == 5 || after == 6) return 30;
+            if (after != 4 && after != 5 && after != 6) return 0;
 
-            return 0;
+            // ⚠️ **玩家特别要求的一条**：
+            //    "当可以从一面完整的盾牌合成另一面完整盾牌
+            //      （如完整的 4 主动去碰 2 合成 6）要**大幅度**去做"
+            //
+            //    理由：圣武士的冲击是**每次合盾白赚的固定伤害**。
+            //    已经有一面完整的盾时，拿它当运算源去碰出 4/5/6，
+            //    等于"用一次运算换一次免费伤害" —— 比单纯屯盾强得多。
+            //
+            //    所以给这一手**远大于**普通合盾的奖励（400 而不是 30）——
+            //    量级足以压过一次攻击档位（44~88），
+            //    因为这确实是更好的选择。
+            //
+            //    判据：运算源本身就是一面**完整的盾**。
+            if (context.ActedHand != null
+                && context.ActedHand.State == ShieldState.Formed)
+            {
+                return 400;
+            }
+
+            return 30;
         }
 
         public override int DefaultAttackBonus => 0;
@@ -87,6 +120,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public override void OnShieldFormed(PlayerState owner, Hand shieldHand, GameManager manager)
         {
+            ShieldFormCount++;
             TriggerShock(owner, shieldHand, "合出盾牌", manager, ShockVariantForm);
         }
 

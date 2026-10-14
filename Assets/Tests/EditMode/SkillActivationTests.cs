@@ -177,7 +177,6 @@ namespace FingerDiceDuel.Tests
                                        new GreedyChoiceProvider());
 
             bool hit = false;
-            bool shockSeen = false;
 
             // 开局快照（用于"成长类"判据）
             int atkBefore = pA.Character?.AttackBonus ?? 0;
@@ -210,9 +209,10 @@ namespace FingerDiceDuel.Tests
                         break;
 
                     case CharacterDefinition.WarriorId:
-                        // 连锁破盾 / 碎盾换射程：技能发动后在场上没有别的痕迹，
-                        // 只能读角色自己的计数器（走 Core 接口）
-                        if (pA.Character is ISkillUseCounter w && w.SkillUseCount > 0)
+                        // 玩家定的判据："对手不主动触发战士破盾无所谓，
+                        // 战士只要倾向于合盾即可" —— 所以看它有没有合盾，
+                        // 而不是看技能有没有打出去（那取决于对手）。
+                        if (pA.Character is ISkillUseCounter wr && wr.SkillUseCount > 0)
                             hit = true;
                         break;
 
@@ -224,8 +224,10 @@ namespace FingerDiceDuel.Tests
                         break;
 
                     case CharacterDefinition.PaladinId:
-                        // 合盾触发冲击：战报里会有冲击记录
-                        if (shockSeen) hit = true;
+                        // 合盾（4/5/6）：这是冲击的前提，用它检测比 ShockLog 可靠 ——
+                        // ShockLog 只在真正打出冲击时才写，没目标时会静默跳过。
+                        if (pA.Character is ISkillUseCounter pl && pl.SkillUseCount > 0)
+                            hit = true;
                         break;
                 }
             };
@@ -238,10 +240,6 @@ namespace FingerDiceDuel.Tests
             {
                 return false;   // 崩溃不算"发动"（循环赛那边专门报崩溃）
             }
-
-            // 圣武士的冲击是**副产品**，不占一次运算，所以只能在局末看战报
-            // （take 会清空，所以这里只判"有没有过"）
-            if (game.ShockLog != null && game.ShockLog.Count > 0) shockSeen = true;
 
             // ---- 终局判据（累计型 / 成长型）----
             switch (hero.Id)
