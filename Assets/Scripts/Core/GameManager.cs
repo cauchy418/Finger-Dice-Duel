@@ -79,6 +79,20 @@ namespace FingerDiceDuel.Core
         /// <summary>本次行动是不是**赌博**（赌徒）。</summary>
         public bool WasGamble;
 
+        // ---------- 盗贼的偷窃 ----------
+
+        /// <summary>本次行动是不是**偷窃**（盗贼）。</summary>
+        public bool StealUsed;
+
+        /// <summary>偷窃前盗贼那只手的点数（"原先"）。</summary>
+        public int StealOriginal;
+
+        /// <summary>偷来的点数（"偷窃后"）。</summary>
+        public int StealTaken;
+
+        /// <summary>这次偷窃算不算**生效**（原先 ≥ 偷来的）。</summary>
+        public bool StealEffective;
+
         /// <summary>赌博掷出的点数（1d9）。<see cref="WasGamble"/> 为 true 时有效。</summary>
         public int GambleRoll;
 
@@ -840,6 +854,170 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public string MonkZeroTouchNote { get; private set; }
 
+        // ============================================================
+        // 盗贼：偷窃
+        // ============================================================
+
+        /// <summary>
+        /// 盗贼上一次**发起**偷窃是在第几回合（−1 = 还没偷过）。
+        ///
+        /// 玩家规则："若上回合**发起了**偷窃，本回合不能继续偷窃"，
+        /// 且"**只要点了偷窃就算'发起过'**"（哪怕判定不生效）。
+        ///
+        /// ⚠️ 记的是**回合号**而不是布尔值 —— 布尔值在"跳过回合"等
+        ///    不推进回合数的路径上会残留（本项目在诊断字段上踩过这个坑）。
+        /// </summary>
+        private int _lastStealTurn = -1;
+
+        /// <summary>上一次发起偷窃的是谁（配合 <see cref="_lastStealTurn"/> 用）。</summary>
+        private PlayerState _lastStealActor;
+
+        /// <summary>盗贼本回合能不能偷窃（上回合偷过就不能）。</summary>
+        public bool CanStealOn(PlayerState thief)
+        {
+            if (thief == null || IsGameOver) return false;
+            if (!(thief.Character is ThiefLogic)) return false;
+
+            // ⚠️ 判据是"**上一回合**这个人偷过"，而不是"这次结算的回合号等于现在"。
+            //
+            //    我第一版写的是 `_lastStealTurn != TurnCount` —— 那是错的，
+            //    因为 `TurnCount` 在结算**之后**才自增：
+            //    偷窃发生在回合 0、结束时 TurnCount 变成 1，
+            //    于是下一次比较是 `0 != 1` -> 判成"可以偷"，
+            //    冷却**完全失效**（测试当场抓到）。
+            //
+            //    正确判据：上一次偷窃记录的是"偷完之后"的回合号，
+            //    所以只要它与**当前**回合号不同，就说明已经过去了一个回合。
+            if (!ReferenceEquals(_lastStealActor, thief)) return true;
+
+            return _lastStealTurn != TurnCount;
+        }
+
+        /// <summary>
+        /// **偷窃**：交换盗贼与被偷者的两只手（点数与状态），
+        /// 若"偷窃前的点数 ≥ 偷来的点数"则按**偷来的数字**触发效果。
+        ///
+        /// 玩家给的完整规则见 <see cref="ThiefLogic"/> 的类注释。
+        ///
+        /// 消耗整个回合。
+        /// </summary>
+        /// <exception cref="InvalidOperationException">校验失败时抛出。</exception>
+        public TurnResult ExecuteSteal(PlayerState actor, Hand myHand, Hand theirHand)
+        {
+            if (IsGameOver)
+                throw new InvalidOperationException("非法偷窃：比赛已结束。");
+            if (actor == null)
+                throw new InvalidOperationException("非法偷窃：行动方为空。");
+            if (!(actor.Character is ThiefLogic))
+                throw new InvalidOperationException("非法偷窃：该角色不是盗贼。");
+            if (myHand == null || !actor.Owns(myHand))
+                throw new InvalidOperationException("非法偷窃：必须用自己的一只手。");
+            if (myHand.IsLocked)
+                throw new InvalidOperationException("非法偷窃：被锁定的手不能用来偷窃。");
+            if (theirHand == null)
+                throw new InvalidOperationException("非法偷窃：没有指定被偷的手。");
+            if (ReferenceEquals(theirHand, myHand))
+                throw new InvalidOperationException("非法偷窃：不能偷自己。");
+            if (!CanStealOn(actor))
+                throw new InvalidOperationException("非法偷窃：上回合已经偷过，本回合不能再偷。");
+
+            // 标记"发起过" —— 玩家明确：只要点了偷窃就算，哪怕判定不生效
+            _lastStealActor = actor;
+
+            ThiefLogic.StealOutcome outcome = ThiefLogic.Steal(myHand, theirHand);
+
+            // 结算：只有**生效**时才按偷来的数字触发效果
+            return ResolveSteal(actor, myHand, theirHand, outcome);
+        }
+
+        /// <summary>偷窃的结算：判定生效则按偷来的数字走效果分派。</summary>
+        private TurnResult ResolveSteal(PlayerState actor, Hand myHand, Hand theirHand,
+                                        ThiefLogic.StealOutcome outcome)
+        {
+            var result = new TurnResult
+            {
+                Actor = actor,
+                TargetHand = theirHand,
+                StealUsed = true,
+                StealOriginal = outcome.Original,
+                StealTaken = outcome.Stolen,
+                StealEffective = outcome.Effective,
+            };
+
+            // ⚠️ 无论生效与否，交换**已经发生**（在 ThiefLogic.Steal 里），
+            //    所以这里只负责"要不要触发效果"。
+            if (!outcome.Effective)
+            {
+                _shockLog.Clear();
+                CurrentPlayer = NextPlayerAfter(actor);
+                TurnCount++;
+                _lastStealTurn = TurnCount;      // 记"偷完之后"的回合号
+                CheckTurnLimit();
+                return result;
+            }
+
+            int stolen = outcome.Stolen;
+
+            // 偷来的 5 -> **合成一面完整的盾**（玩家明确要求：
+            // "无论之前这个 5 是什么状态，盗贼都会合成一面盾牌"）。
+            // 所以这里**不受**"已碎"影响，直接设成完整盾。
+            HandEffectType effect = ThiefLogic.EffectOfStolen(stolen);
+
+            result.ResultValue = stolen;
+            result.Effect = effect;
+
+            if (effect == HandEffectType.Shield)
+            {
+                myHand.SetShieldState(ShieldState.Formed);
+                actor.Character?.OnShieldFormed(actor, myHand, this);
+            }
+            else if (effect == HandEffectType.Heal)
+            {
+                int before = actor.Health;
+                actor.Heal(Hand.HealAmount);
+                result.Healed = actor.Health - before;
+                result.HealAmount = Hand.HealAmount;
+                result.HealTarget = actor;
+            }
+            else if (effect == HandEffectType.Attack4
+                     || effect == HandEffectType.Attack6
+                     || effect == HandEffectType.Attack8)
+            {
+                // 攻击目标 = 被偷者的主人（玩家没有额外说明，用最自然的选择）
+                PlayerState victim = OwnerOfHand(theirHand) ?? DamageTargetPlayer
+                                     ?? GetOpponent(actor);
+
+                if (victim != null && !SuppressAttackDamage)
+                {
+                    var ctx = new AttackContext(actor, victim, myHand, stolen);
+                    ctx.Resolve(GetChoiceProvider(victim), this);
+                    result.DamageDealt = ctx.AppliedDamage;
+                    result.HitCount = ctx.HitCount;
+                }
+            }
+
+            actor.Character?.OnOperationResolved(actor, myHand, outcome.Original, stolen,
+                                                 effect, this, null);
+
+            CheckGameOver();
+
+            if (!IsGameOver)
+            {
+                TurnCount++;
+                _lastStealTurn = TurnCount;      // 记"偷完之后"的回合号
+                CurrentPlayer = NextPlayerAfter(actor);
+                CheckTurnLimit();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。
+        /// </summary>
+        public int LastStealTurn => _lastStealTurn;
+
+        /// <summary>已通过校验的实际结算流程。</summary>
         /// <summary>已通过校验的实际结算流程。</summary>
         /// <summary>已通过校验的实际结算流程。</summary>
         private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue, Hand targetHand)

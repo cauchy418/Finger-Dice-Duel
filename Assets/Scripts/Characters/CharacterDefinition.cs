@@ -66,6 +66,7 @@ namespace FingerDiceDuel.Core
         public const string KnightId = "knight";
         public const string MonkId = "monk";
         public const string GiantId = "giant";
+        public const string ThiefId = "thief";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -228,6 +229,23 @@ namespace FingerDiceDuel.Core
                          "打出 9 时进行两段回复，每段回复量等于另一只手的点数。" +
                          "生命上限 +5（25）。攻防 +2 / +2。");
 
+        /// <summary>
+        /// **盗贼**：攻 0 / 防 −1，攻击距离 1。
+        ///
+        /// 可以放弃运算改为**偷窃**别人的数字。
+        /// </summary>
+        public static CharacterDefinition Thief { get; } = new CharacterDefinition(
+            ThiefId, "盗贼", SpecialLogicType.Thief,
+            attackBonus: 0, defenseBonus: -1,
+            description: "可以放弃运算，改为偷窃他人的数字：先点自己的一只手，" +
+                         "再点偷窃按钮，然后点别人的手完成。偷窃即双方点数互换，" +
+                         "原先的点数大于等于偷来的点数才生效，" +
+                         "效果由偷来的数字决定（偷来 4 即发起攻击、偷来 5 即合成盾牌、" +
+                         "偷来 9 即回复）；否则交换照做但没有效果。" +
+                         "被偷的人只被改变点数，不触发效果。" +
+                         "上回合发起过偷窃则本回合不能再偷。无限距离，可以偷队友。" +
+                         "攻 0 / 防 −1。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -235,7 +253,7 @@ namespace FingerDiceDuel.Core
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
-            Monk, Giant
+            Monk, Giant, Thief
         };
     }
 }
