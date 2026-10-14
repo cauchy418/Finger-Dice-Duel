@@ -33,6 +33,20 @@ namespace FingerDiceDuel.Assistant
         private static readonly Dictionary<string, List<ValueAdjust>> OpponentAdjust =
             new Dictionary<string, List<ValueAdjust>>();
 
+        /// <summary>
+        /// **按"我方角色"再区分一次**的同表修正（键 = 对手 Id）。
+        ///
+        /// 为什么需要它：武僧的 5 是"太极"，而太极**对咒术师完全失效**、
+        /// 对其他人有效 —— 这个区别看起来像"对手修正"，实际上
+        /// 只对**武僧自己**成立。
+        /// 直接写进 <see cref="OpponentAdjust"/> 会误伤别的角色
+        /// （我第一版就是这么写的，立刻被玩家那条"只有咒术师让 5 贬值"
+        /// 的测试抓到：游侠的 5 也被加上了 28）。
+        /// </summary>
+        private static readonly Dictionary<string, Dictionary<string, List<ValueAdjust>>>
+            SelfSpecificAdjust =
+                new Dictionary<string, Dictionary<string, List<ValueAdjust>>>();
+
         private sealed class ValueAdjust
         {
             public int Value;
@@ -219,10 +233,20 @@ namespace FingerDiceDuel.Assistant
             // 被攻击时减半并反弹 —— 它是一个"攻守兼备"的姿态。
             // ⚠️ 而且**起手 5 就已经是太极**（见 MonkLogic.ApplyTaichiToFives），
             //    所以 5 的价值比普通角色的"合盾"更高。
+            //
+            // ⚠⚠ 但这层"太极加值"并不是无条件的 —— 玩家指出：
+            //    "武僧的太极也是无法抵挡咒术的，
+            //     所以武僧的 5 面对咒术要降价值。"
+            //    核实：MonkLogic.TryMitigate 里有
+            //      if (context.Attacker?.Character is CurseweaverLogic) return false;
+            //    —— 咒术师攻击下太极不减半、不反弹、5 也不消耗。
+            //
+            //    所以拆成两层：**这里只给到 60**（与普通角色合盾相同），
+            //    太极的 +28 放在后面"除咒术师以外"的对手修正里。
             // ⚠️ 0 是太极打出来之后的残留，本身无用（而且被碰就变 1）—— 但 0 不是
             //    可选起始值，所以价值表里不用管它。
             Own[CharacterDefinition.MonkId] = new HandValueProfile()
-                .Set(5, 88)                             // 太极：减半 + 反弹
+                .Set(5, 60)                             // 只算"合盾"本身；太极加值在下面
                 .Set(4, 50).Set(6, 50).Set(8, 52)
                 .Set(9, 52)
                 .AddCombo(ComboRule.ContainsAll(70, "有 5 就能摆出太极", 5));
@@ -248,6 +272,23 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
         // 面对某角色时，我自己的价值表要做的修正
         // ============================================================
+
+        private static List<ValueAdjust> SelfSpecificAdjustFor(string meId, string oppId)
+        {
+            if (!SelfSpecificAdjust.TryGetValue(meId, out Dictionary<string, List<ValueAdjust>> mine))
+            {
+                mine = new Dictionary<string, List<ValueAdjust>>();
+                SelfSpecificAdjust[meId] = mine;
+            }
+
+            if (!mine.TryGetValue(oppId, out List<ValueAdjust> list))
+            {
+                list = new List<ValueAdjust>();
+                mine[oppId] = list;
+            }
+
+            return list;
+        }
 
         private static void BuildOpponentAdjust()
         {
@@ -472,7 +513,24 @@ namespace FingerDiceDuel.Assistant
                 //    （盾反正没了，只是换了只手）。
                 new ValueAdjust(5, -10),
             };
-        }
+        
+            
+
+            // ---- 武僧的太极加值：除咒术师以外都有 ----
+            //
+            // ⚠️ 这是武僧价值表里"5 只给到 60"的另一半：
+            //    太极那层加值在**除咒术师以外**的对局里补回来。
+            //    效果：面对咒术师 -> 60-50 = 10（普通合盾水平）；
+            //          其他对手   -> 60+28 = 88（与之前相同）。
+            for (int i = 0; i < CharacterDefinition.BuiltIn.Length; i++)
+            {
+                CharacterDefinition opp = CharacterDefinition.BuiltIn[i];
+                if (opp == null || opp.Id == CharacterDefinition.CurseweaverId) continue;
+
+                SelfSpecificAdjustFor(CharacterDefinition.MonkId, opp.Id)
+                    .Add(new ValueAdjust(5, 28));
+            }
+}
 
         /// <summary>
         /// 面对**赌徒**时，是否需要"挡住高价值"（玩家给的规则）。
@@ -516,6 +574,15 @@ namespace FingerDiceDuel.Assistant
             {
                 for (int i = 0; i < adjusts.Count; i++)
                     profile.Adjust(adjusts[i].Value, adjusts[i].Delta);
+            }
+
+            // 再应用"只对我这个角色成立"的修正
+            if (oppId != null && me != null
+                && SelfSpecificAdjust.TryGetValue(me.Id, out Dictionary<string, List<ValueAdjust>> mine)
+                && mine.TryGetValue(oppId, out List<ValueAdjust> extra))
+            {
+                for (int i = 0; i < extra.Count; i++)
+                    profile.Adjust(extra[i].Value, extra[i].Delta);
             }
 
             return profile;
