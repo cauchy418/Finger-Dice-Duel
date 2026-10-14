@@ -355,6 +355,69 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Giant_has_plus_five_max_health()
+        {
+            PlayerState g = Make("巨", CharacterDefinition.Giant);
+
+            Assert.AreEqual(25, g.MaximumHealth, "巨人生命上限应为 20 + 5 = 25。");
+            Assert.AreEqual(25, g.Health, "开局应满血。");
+        }
+
+        [Test]
+        public void Giant_does_not_ask_for_a_target_on_four_six_eight()
+        {
+            // 玩家实测："巨人 4/6/8 还需要点击一次目标，实际上不应该点"
+            foreach (int target in new[] { 3, 5, 7 })   // 1+3=4, 1+5=6, 1+7=8
+            {
+                var providers = new List<SimpleChoiceProvider>
+                {
+                    new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                };
+                var game = new GameManager(Make("巨", CharacterDefinition.Giant),
+                                           Make("兵", CharacterDefinition.Soldier),
+                                           providers[0], providers[1]);
+                var board = new BoardController(game, providers[0], providers[1]);
+
+                game.PlayerA.LeftHand.SetValue(1);
+                game.PlayerB.LeftHand.SetValue(target);
+
+                board.BeginTurn();
+                Assert.True(board.ClickHand(game.PlayerA.LeftHand), "选运算源");
+                Assert.True(board.ClickHand(game.PlayerB.LeftHand), "选加数");
+
+                Assert.True(board.Phase != BoardPhase.ChoosingTargetPlayer,
+                    $"巨人打出 {game.PlayerA.LeftHand.Value + target} 时不该要求点目标" +
+                    $"（当前阶段 {board.Phase}）。");
+            }
+        }
+
+        [Test]
+        public void Giant_does_ask_for_a_target_on_five()
+        {
+            // 反过来：5 是两段真攻击，**必须**选打谁
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("巨", CharacterDefinition.Giant),
+                                       Make("兵", CharacterDefinition.Soldier),
+                                       providers[0], providers[1]);
+            var board = new BoardController(game, providers[0], providers[1]);
+
+            // 另一只手 3，1 + 4 = 5
+            game.PlayerA.RightHand.SetValue(3);
+            game.PlayerA.LeftHand.SetValue(1);
+            game.PlayerB.LeftHand.SetValue(4);
+
+            board.BeginTurn();
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand), "选运算源");
+            Assert.True(board.ClickHand(game.PlayerB.LeftHand), "选加数");
+
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                "巨人打出 5（两段攻击）时必须要求点目标。");
+        }
+
+        [Test]
         public void Giant_nine_heals_twice_the_other_hand()
         {
             // 玩家确认："打出 9 时进行两段回复，回复量为另一只手的点数"、"都回自己"

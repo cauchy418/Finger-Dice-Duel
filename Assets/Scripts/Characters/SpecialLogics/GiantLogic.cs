@@ -40,6 +40,44 @@ namespace FingerDiceDuel.Core
 
         public override int DefaultDefenseBonus => 2;
 
+        /// <summary>生命上限 +5（玩家要求："同时巨人最大体力上限 +5"）。</summary>
+        public const int HealthBonus = 5;
+
+        public override int MaxHealthBonus => HealthBonus;
+
+        /// <summary>
+        /// **巨人是否需要"点一次目标"**。
+        ///
+        /// 玩家实测："巨人 4/6/8 还需要点击一次目标，实际上不应该点；
+        /// 而 5 则默认攻击运算目标了"。
+        ///
+        /// 为什么不能沿用基类：基类按 <c>context.Effect</c> 判断，
+        /// 而巨人的 4/6/8 在**基础效果**层面本来就是 `None`
+        /// （`Hand.GetEffectType(4)` = Attack4，但巨人要把它变成"无效果"）——
+        /// 所以必须按**结果值**判断：
+        ///
+        ///   · 4 / 6 / 8 -> 无效果 -> **不点目标**
+        ///   · 5        -> 两段攻击 -> **要点目标**（它是真的会打人）
+        ///   · 9        -> 回自己 -> 不点目标
+        ///
+        /// ⚠️ 5 必须保留"点目标"这一步：它虽然改写成 Attack6，
+        ///    但那是**两段真攻击**，不指定打谁就说不过去。
+        /// </summary>
+        public override bool ResultNeedsTarget(PreTurnChoiceContext context)
+        {
+            if (context == null) return false;
+
+            int result = context.ResultValue;
+
+            // 5 -> 两段攻击，必须选目标
+            if (result == 5) return true;
+
+            // 4 / 6 / 8 被改写成无效果 -> 不要目标
+            // 9 回自己 -> 不要目标
+            // 其余（1/2/3/7）本来就无效果
+            return false;
+        }
+
         /// <summary>攻击距离 1。</summary>
         public override int BaseAttackRange => 1;
 

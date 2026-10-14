@@ -225,7 +225,8 @@ namespace FingerDiceDuel.Core
             attackBonus: 2, defenseBonus: 2,
             description: "4/6/8 无法攻击，5 也无法合成盾牌。打出 5 时发起两段攻击，" +
                          "每段的基础伤害等于另一只手的点数（之后各自再加攻防加成）；" +
-                         "打出 9 时进行两段回复，每段回复量等于另一只手的点数。攻防 +2 / +2。");
+                         "打出 9 时进行两段回复，每段回复量等于另一只手的点数。" +
+                         "生命上限 +5（25）。攻防 +2 / +2。");
 
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
