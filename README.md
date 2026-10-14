@@ -164,7 +164,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**718 项逻辑测试全部通过**。
+当前状态：**726 项逻辑测试全部通过**。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -181,7 +181,7 @@ Assets/
     Characters/   15 个角色逻辑 + 数据化定义
     Assistant/    棋盘状态机、AI 抉择、整局驱动、2v2 先攻、动画/音效的"纯数据计划"
     UI/           表现层（唯一允许引用 UnityEngine 的层）
-  Tests/EditMode/ 718 项无头测试
+  Tests/EditMode/ 726 项无头测试
   Resources/Fonts/ 思源黑体（Medium 正文 / Bold 标题）
 Tools/
   HeadlessTests/  无头测试运行器
@@ -280,6 +280,27 @@ UI  →  Assistant  →  Core
 > ⚠️ 这套测试**必须走 `BoardController`** —— 赌徒的开赌判断与
 > 邪术师的主动跳过只存在于控制器里，直连 `GameManager` 时永远不会触发
 > （曾经因此把赌徒误判成 0%）。
+
+## 角色图鉴
+
+主菜单右上角的「图」按钮（问号下方）进入图鉴：可翻页的卡片，
+每张依次显示**名称（中英文）、阵营、生命 / 攻 / 防 / 距离、
+技能（一句 + 详细）、操作指导、如何针对、与其他角色的特殊交互**。
+
+- 攻击距离为无限时显示为 **∞**（代码里是 `int.MaxValue`）。
+- 「阵营筛选」按钮在「返回」正下方，点开才弹出九宫格按钮；
+  **两条轴可以依次叠加**（再点一次取消）。
+
+### 阵营九宫格
+
+| | 善良 | 中立 | 邪恶 |
+| --- | --- | --- | --- |
+| **守序** | 圣武士、牧师、骑士 | 剑客、战士 | 魔射手 |
+| **中立** | 游侠、武僧 | **绝对中立**：忍者、士兵 | 邪术师、盗贼 |
+| **混乖** | 野蛮人 | 刺客、赌徒、咒术师 | 狼人、巨人 |
+
+⚠️ 只有中立×中立那一格有专用说法（**绝对中立**），
+其余八格都是两条轴拼接而成。
 
 ## 开发文档
 

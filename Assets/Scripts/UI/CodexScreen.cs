@@ -137,7 +137,10 @@ namespace FingerDiceDuel.UI
             _title = MakeText(panelRect, "Title",
                               Vector2.zero, new Vector2(340f, 52f),
                               36, TextAnchor.MiddleLeft, new Color(0.98f, 0.86f, 0.45f));
-            Anchor(_title.rectTransform, new Vector2(0f, 1f), 60f, -24f, 340f, 52f);
+            // ⚠️ 标题框加宽到 460：英文名有长的（Curseweaver、ArcaneArcher），
+            //    框子太窄会被换行成两行（玩家截图里就是这样）。
+            Anchor(_title.rectTransform, new Vector2(0f, 1f), 60f, -24f, 460f, 52f);
+            _title.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             // ---- 关闭 ----
             Button close = MakeButton(panelRect, "Close",
@@ -161,7 +164,8 @@ namespace FingerDiceDuel.UI
                                        26, TextAnchor.MiddleLeft,
                                        new Color(0.62f, 0.82f, 0.60f));
             Anchor(_alignmentLabel.rectTransform, new Vector2(0f, 1f),
-                   404f, -26f, 300f, 44f);
+                   526f, -26f, 260f, 44f);
+            _alignmentLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             // ---- 阵营筛选（玩家要求：在返回键下面做一个按钮，
             //      点开后才跳出筛选界面）----
@@ -371,7 +375,7 @@ namespace FingerDiceDuel.UI
 
             if (_stats != null)
                 _stats.text = $"生命 {c.MaxHealth}　　攻 {Signed(c.Attack)}　　"
-                            + $"防 {Signed(c.Defense)}　　距离 {c.Range}";
+                            + $"防 {Signed(c.Defense)}　　距离 {RangeText(c.Range)}";
 
             if (_body != null)
             {
@@ -415,6 +419,19 @@ namespace FingerDiceDuel.UI
         }
 
         private static string Signed(int v) => v > 0 ? "+" + v : v.ToString();
+
+        /// <summary>
+        /// 攻击距离的显示文本。
+        ///
+        /// ⚠️ 无限距离在代码里是 <c>InfiniteAttackRange</c>
+        ///    （int.MaxValue = 2147483647），直接输出就是玩家截图里那个样子。
+        ///
+        /// ⚠⚠ 这个方法我上一轮已经写过一次，但那个脚本静默失败了
+        ///    （锚点没匹配上却没报错），所以玩家看到的仍然是数字。
+        ///    这次用断言确认替换真的发生了。
+        /// </summary>
+        private static string RangeText(int range)
+            => range >= int.MaxValue ? "∞" : range.ToString();
 
         public void SetVisible(bool visible)
         {

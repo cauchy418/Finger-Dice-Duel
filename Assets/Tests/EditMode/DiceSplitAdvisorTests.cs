@@ -230,12 +230,14 @@ namespace FingerDiceDuel.Tests
             // 这一组是"盾完全白费 / 盾没有副作用"的对照组：他们**不该**让 5 贬值
             // ⚠️ 牧师不在这里 —— 他有一条"挡合双 9"的轻贬值（5 减 12），
             //    因为 4+5 / 3+6 / 2+7 / 1+8 都能凑出 9，而 9 是回 9 血。
+            // ⚠️ 忍者不在这一组：
+            //    玩家要求"针对忍者时**盾的价值相对下降**，
+            //    因为他破盾效率高且一般总有一段能打到"。
             CharacterDefinition[] shieldIsFine =
             {
                 CharacterDefinition.Ranger,
                 CharacterDefinition.Werewolf,
                 CharacterDefinition.Swordsman,
-                CharacterDefinition.Ninja,
                 CharacterDefinition.Assassin,
             };
             for (int i = 0; i < shieldIsFine.Length; i++)
@@ -297,12 +299,22 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void The_ninja_dislikes_four_because_halving_hurts_low_values_most()
+        public void The_ninja_ranks_four_below_eight_but_not_below_baseline()
         {
+            // ⚠️ 玩家纠正了我原来的误解：
+            //    "忍者……**4 受技能增益其实和 8 一样**，
+            //     8 比 4 好仅仅只是因为本身价值 8 就应该比 4 高。"
+            //
+            //    攻击拆两段后，**两段各自加一次攻防** 的增益
+            //    对 4 与 8 是一样的（都是 +1 乘两），
+            //    所以 4 不该被压到基线之下 —— 它只是比 8 低。
             HandValueProfile ninja = HandValueProfiles.For(CharacterDefinition.Ninja);
 
-            Assert.True(ninja.WeightOf(4) < Base.WeightOf(4), "忍者的 4 应低于基线。");
-            Assert.True(ninja.WeightOf(4) < ninja.WeightOf(8), "4 应低于 8。");
+            Assert.True(ninja.WeightOf(4) > Base.WeightOf(4),
+                "忍者的 4 不该低于基线（它同样享受两段增益）。");
+            Assert.True(ninja.WeightOf(4) < ninja.WeightOf(8), "4 仍应低于 8。");
+            Assert.True(ninja.WeightOf(6) < ninja.WeightOf(8), "6 应低于 8。");
+            Assert.True(ninja.WeightOf(4) < ninja.WeightOf(6), "4 应低于 6（基础价值排序）。");
         }
 
         [Test]
