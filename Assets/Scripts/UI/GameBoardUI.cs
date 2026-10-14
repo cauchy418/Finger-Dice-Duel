@@ -1300,8 +1300,8 @@ namespace FingerDiceDuel.UI
                 else if (card.Button.interactable) outline = HandVisual.OutlineState.Available;
 
                 card.ValueText.text = hand.Value.ToString();
-                card.StatusText.text = HandVisual.StatusText(hand);
-                card.Background.color = HandVisual.CardColor(hand);
+                card.StatusText.text = HandVisual.StatusText(hand, card.Owner);
+                card.Background.color = HandVisual.CardColor(hand, card.Owner);
                 card.Outline.color = HandVisual.OutlineColor(outline);
                 card.Outline.enabled = outline != HandVisual.OutlineState.Hidden;
             }

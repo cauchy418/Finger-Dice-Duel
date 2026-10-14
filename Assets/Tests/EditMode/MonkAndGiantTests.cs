@@ -355,6 +355,52 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Giant_display_rules_are_inverted_from_the_base_ones()
+        {
+            // 玩家实测："巨人 4/6/8 在 UI 上不要显示红色的攻击，
+            //            要让 5 显示红色的攻击。"
+            //
+            // 通用规则是 5 = 护盾、4/6/8 = 攻击，**巨人正好相反** ——
+            // 界面若按通用规则上色，玩家会看着红色以为"这张能打人"。
+            PlayerState g = Make("巨", CharacterDefinition.Giant);
+            var display = g.Character as IHandEffectDisplay;
+
+            Assert.NotNull(display, "巨人应实现 IHandEffectDisplay。");
+
+            // 4 / 6 / 8 -> 界面显示成无效果（不红）
+            foreach (int v in new[] { 4, 6, 8 })
+            {
+                Assert.AreEqual(HandEffectType.None, display.DisplayedEffectOf(v),
+                    $"巨人打出 {v} 时界面不该显示成攻击。");
+            }
+
+            // 5 -> 界面显示成攻击（红）
+            HandEffectType five = display.DisplayedEffectOf(5);
+            Assert.True(five == HandEffectType.Attack4
+                        || five == HandEffectType.Attack6
+                        || five == HandEffectType.Attack8,
+                $"巨人打出 5 时界面应显示成攻击（实际 {five}）。");
+
+            // 对照：通用规则下 5 是护盾、4/6/8 是攻击 —— 正好相反
+            Assert.AreEqual(HandEffectType.Shield, Hand.GetEffectType(5),
+                "前置：通用规则里 5 是护盾。");
+            Assert.AreEqual(HandEffectType.Attack4, Hand.GetEffectType(4),
+                "前置：通用规则里 4 是攻击。");
+        }
+
+        [Test]
+        public void Other_characters_keep_the_base_display_rules()
+        {
+            // 没实现 IHandEffectDisplay 的角色不受影响（守卫：别把默认行为改坏）
+            PlayerState s = Make("兵", CharacterDefinition.Soldier);
+
+            Assert.True(s.Character is IHandEffectDisplay == false,
+                "士兵不该实现 IHandEffectDisplay（它没有改写效果）。");
+            Assert.AreEqual(HandEffectType.Shield, Hand.GetEffectType(5),
+                "普通角色的 5 仍是护盾。");
+        }
+
+        [Test]
         public void Giant_has_plus_five_max_health()
         {
             PlayerState g = Make("巨", CharacterDefinition.Giant);

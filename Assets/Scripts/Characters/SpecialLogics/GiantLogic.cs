@@ -18,7 +18,8 @@ namespace FingerDiceDuel.Core
     ///     因为攻击数字就是 5，取消发生在逐段循环之前，所以天然一次抵消两段
     /// </summary>
     public sealed class GiantLogic : CharacterTemplate, IHandEffectRewriter,
-                                      IMultiHitAttack, IHealOverride, IHealAmountProvider
+                                      IMultiHitAttack, IHealOverride, IHealAmountProvider,
+                                      IHandEffectDisplay
     {
         public override string DisplayName => "巨人";
 
@@ -182,6 +183,37 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(owner.RightHand, actedHand)) return owner.LeftHand;
 
             return null;
+        }
+
+        /// <summary>
+        /// 界面上这张手该显示成什么效果。
+        ///
+        /// 玩家实测："巨人 4/6/8 在 UI 上不要显示红色的攻击，要让 5 显示红色的攻击。"
+        ///
+        /// 通用规则是 5 = 护盾（蓝色）、4/6/8 = 攻击（红色），
+        /// 而**巨人正好相反** —— 所以必须把改写后的结果告诉界面，
+        /// 否则玩家会看着红色以为"这张能打人"。
+        ///
+        /// 直接复用 <see cref="RewriteEffect"/> 的同一套判定，
+        /// 保证"显示"与"实际"不可能漂移。
+        /// </summary>
+        public HandEffectType DisplayedEffectOf(int resultValue)
+        {
+            switch (resultValue)
+            {
+                // 4 / 6 / 8 完全无效果 -> 显示成普通（不红）
+                case 4:
+                case 6:
+                case 8:
+                    return HandEffectType.None;
+
+                // 5 是两段攻击 -> 显示成攻击（红）
+                case 5:
+                    return HandEffectType.Attack6;
+
+                default:
+                    return Hand.GetEffectType(resultValue);
+            }
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)

@@ -15,7 +15,7 @@ namespace FingerDiceDuel.UI
         private static readonly Color BrokenCard = new Color(0.30f, 0.30f, 0.36f);
         private static readonly Color LockedCard = new Color(0.16f, 0.15f, 0.15f);
 
-        public static Color CardColor(Core.Hand hand)
+        public static Color CardColor(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return NormalCard;
             if (hand.IsLocked) return LockedCard;
@@ -29,7 +29,7 @@ namespace FingerDiceDuel.UI
                 case Core.ShieldState.Taichi: return HealCard;
             }
 
-            switch (Core.Hand.GetEffectType(hand.Value))
+            switch (EffectOf(hand, owner))
             {
                 case Core.HandEffectType.Attack4:
                 case Core.HandEffectType.Attack6:
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>手牌第二行的小字：护盾 / 锁定 / 效果提示。</summary>
-        public static string StatusText(Core.Hand hand)
+        public static string StatusText(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return "";
 
@@ -93,7 +93,7 @@ namespace FingerDiceDuel.UI
                 case Core.ShieldState.Taichi: return "太极 · 减半反弹";
             }
 
-            switch (Core.Hand.GetEffectType(hand.Value))
+            switch (EffectOf(hand, owner))
             {
                 case Core.HandEffectType.Attack4: return "攻击 4";
                 case Core.HandEffectType.Attack6: return "攻击 6";
@@ -101,6 +101,29 @@ namespace FingerDiceDuel.UI
                 case Core.HandEffectType.Heal: return "回复 9";
                 default: return "—";
             }
+        }
+
+        /// <summary>
+        /// 这张手在界面上应显示成哪种效果。
+        ///
+        /// ⚠️ **不能直接用 <c>Hand.GetEffectType</c>** ——
+        ///    有些角色会改写效果，界面上必须按**角色自己的规则**显示，
+        ///    否则会出现"看起来能打人、其实无效果"（玩家实测：
+        ///    巨人的 4/6/8 显示成红色攻击、而 5 反而显示成护盾，
+        ///    两者正好与实际相反）。
+        ///
+        /// 角色通过 <see cref="Core.IHandEffectDisplay"/> 自报，
+        /// 没实现就退回通用规则。
+        /// </summary>
+        private static Core.HandEffectType EffectOf(Core.Hand hand, Core.PlayerState owner)
+        {
+            if (hand == null) return Core.HandEffectType.None;
+
+            // owner 可能是 null（早期构建阶段 / 直连测试），此时退回通用规则
+            var display = owner?.Character as Core.IHandEffectDisplay;
+            if (display != null) return display.DisplayedEffectOf(hand.Value);
+
+            return Core.Hand.GetEffectType(hand.Value);
         }
 
         /// <summary>护盾状态的简短描述，用于玩家信息行。</summary>

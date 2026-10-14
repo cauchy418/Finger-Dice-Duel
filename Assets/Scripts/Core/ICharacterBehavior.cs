@@ -348,6 +348,23 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**我这张手在界面上该显示成什么效果**"。
+    ///
+    /// 用途：有些角色会**改写效果类型**，而界面若按通用的
+    /// <see cref="Hand.GetEffectType"/> 去上色，就会与实际效果不符。
+    ///
+    /// 目前的实现者：**巨人** —— 它的 4/6/8 是无效果、**5 反而是攻击**，
+    /// 与通用规则（5 = 护盾）正好相反，所以界面上必须按它自己的规则显示。
+    ///
+    /// 由表现层（<c>UI/HandVisual</c>）在绘制手牌时查询。
+    /// </summary>
+    public interface IHandEffectDisplay
+    {
+        /// <summary>这张手在界面上应显示成哪种效果（决定配色与状态小字）。</summary>
+        HandEffectType DisplayedEffectOf(int resultValue);
+    }
+
+    /// <summary>
     /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——
