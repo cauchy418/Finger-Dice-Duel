@@ -136,6 +136,34 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Two_taichi_stack_on_the_same_segment()
+        {
+            // 同一击（总 5）但武僧有**两个太极**，玩家确认：
+            //   "第一次弹一半伤害，第二次弹剩余伤害的一半，
+            //    即只吃 1/4 伤害剩下全部反弹。"
+            //
+            // 关键：第二个太极的目标是**减免过的伤害**。
+            // 探针实测：这一击的段伤害是 9（不是 5），两个太极都发动：
+            //   9 -> 弹 4、受 5；5 -> 弹 2、受 3；累计减免 6 -> 受 3、反弹 6
+            //   第一轮：5 -> 弹 floor(5/2)=2、受 3（剩余 3）
+            //   第二轮：3 -> 弹 floor(3/2)=1、受 2（剩余 2）
+            //   合计：受 3（第一轮的）... 不，受方最终只承受**最后一轮的 taken**，
+            //   而反弹是各轮累加。
+            //
+            //   ⚠️ 注意：每一轮反弹的都是**当前剩余伤害**的一半，
+            //      而不是"把这一轮的伤害分成两半各自处理"。
+            //      所以：受 = 2（最后一轮的 taken）、反弹 = 2+1 = 3。
+            Result r = Resolve(CharacterDefinition.Soldier, 3, 7, 2);
+
+            Assert.AreEqual(3, r.MonkLost,
+                "双太极：9 逐次折半 -> 最终受 3。[" + r.Log + "]");
+            Assert.AreEqual(6, r.AtkLost,
+                "双太极：反弹 4+2=6。[" + r.Log + "]");
+            Assert.True(r.Log.Contains("fired=2"),
+                "应连续发动两次太极。[" + r.Log + "]");
+        }
+
+        [Test]
         public void Taichi_is_consumed_after_it_fires()
         {
             // 发动后那张手变成 0，而且**不该再被当作可发动的太极**

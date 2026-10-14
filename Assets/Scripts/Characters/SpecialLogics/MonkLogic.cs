@@ -111,15 +111,17 @@ namespace FingerDiceDuel.Core
             // ⚠️ 咒术师的攻击：**不减半、不反弹、5 也不消耗**
             if (context.Attacker?.Character is CurseweaverLogic) return false;
 
-            Hand taichi = TaichiHandOf(owner);
-            if (taichi == null) return false;
+            List<Hand> mine = TaichiHandsOf(owner);
+            if (mine.Count == 0) return false;
+
+            Hand taichi = mine[0];
 
             // ⚠️ **是否发动由玩家决定**（玩家要求"也要给按钮选择是否发动"）。
             //
             //    走与游侠闪避同一条通路：收集阶段问过、答案记进 sink，
             //    这里回读。读不到答案（AI / 没问过）时**默认发动** ——
             //    减半天生比吃满伤害好，不发动只是白白吃亏。
-            if (!WantsToUseTaichi(owner, context, taichi)) return false;
+            // （是否发动改为按 variant 逐个询问，见下面的 taichiAvailable 循环）
 
             // ⚠⚠ **必须先记下数量，再把手设成 0**！
             //
@@ -127,7 +129,14 @@ namespace FingerDiceDuel.Core
             //    TaichiCountOf(owner) —— 而那时已经是 0 个太极了，
             //    于是**循环一次都不跑**：手被消耗了、伤害却没减。
             //    （现有测试立刻报错：期望受 3、实际受 5。）
-            int taichiAvailable = TaichiCountOf(owner);
+            // 答应了几个太极：每个请求各自回答一次
+            int taichiAvailable = 0;
+            for (int i = 0; i < mine.Count; i++)
+            {
+                if (WantsToUseTaichi(owner, context, mine[i], i)) taichiAvailable++;
+            }
+
+            if (taichiAvailable == 0) return false;
 
 
             // 太极发动：那只 5 变成 0（此后它只是一只普通的 0，
@@ -148,16 +157,27 @@ namespace FingerDiceDuel.Core
             //    所以这里**逐次折半**：每多一个太极就再对“剩余”减半一次。
             //    每次都是受上取整、反弹下取整 —— 与单个太极的算法一致，
             //    所以偶数伤害时恰好是“只吃 1/4”。
+            // ⚠️ 每一轮的**输入是"上一轮减免后的伤害"**，
+            //    而不是每次都拿原始的段伤害。
+            //
+            //    玩家说明："本质太极弹的是伤害，
+            //    尝试让第二个太极的目标是**减免过的伤害**再反弹。"
+            //
+            //    所以下一轮的 remaining 就是这一轮**受方实际承受**的那部分。
+            //    反弹量因此是**逐次递减**的（5 -> 2 -> 1），
+            //    而不是每次都弹同一个数。
             int remaining = segmentDamage;
 
             while (stages < taichiAvailable)
             {
-                int reflect = remaining / 2;
-                int taken = remaining - reflect;
+                int reflect = remaining / 2;        // 这一轮反弹掉的
+                int taken = remaining - reflect;    // 这一轮受方仍要承受的
 
                 totalReduced += reflect;
                 totalReflect += reflect;
                 stages++;
+
+                // 下一轮的目标 = 这一轮减免后的伤害
                 remaining = taken;
 
                 if (remaining <= 0) break;
@@ -173,7 +193,7 @@ namespace FingerDiceDuel.Core
         /// 再回读 sink（人类在收集阶段点的）。没有答案时返回 true（默认发动）。
         /// </summary>
         private static bool WantsToUseTaichi(PlayerState owner, AttackContext context,
-                                             Hand taichi)
+                                             Hand taichi, int variant)
         {
             GameManager manager = context?.Manager;
             if (manager == null) return true;      // 拿不到上下文 -> 默认发动
@@ -208,18 +228,40 @@ namespace FingerDiceDuel.Core
             if (!ReferenceEquals(context.Defender?.Character, this)) return;
             if (!context.IsAttack) return;
 
-            Hand taichi = TaichiHandOf(context.Defender);
-            if (taichi == null) return;
+            // ⚠️ **每个太极各发一个请求**（用 variant 区分）。
+            //
+            //    玩家确认："若武僧有两个太极，他对一段攻击是能都弹的。"
+            //    但原来只发**一个**请求（ChoiceCandidates 只有 1 个），
+            //    所以玩家**根本没机会发动第二个** ——
+            //    表现为"只减半一次"。
+            //
+            //    sink 的键是 effect + variant，所以多个请求不会互相覆盖。
+            List<Hand> mine = TaichiHandsOf(context.Defender);
+            for (int i = 0; i < mine.Count; i++)
+            {
+                requests.Add(new ChoiceRequest(
+                    HandEffect.MonkTaichi,
+                    $"武僧被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
+                    $"只受一半伤害并把剩余的反弹给攻击方）",
+                    new List<Hand>(1) { mine[i] },
+                    allowDecline: true,
+                    declineResult: null,
+                    decider: context.Defender,
+                    acceptLabel: "发动太极",
+                    variant: i));
+            }
+        }
 
-            requests.Add(new ChoiceRequest(
-                HandEffect.MonkTaichi,
-                $"武僧被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
-                $"只受一半伤害并把剩余的反弹给攻击方）",
-                new List<Hand>(1) { taichi },
-                allowDecline: true,
-                declineResult: null,
-                decider: context.Defender,
-                acceptLabel: "发动太极"));
+        /// <summary>武僧当前处于太极形态的**全部**手（最多两只）。</summary>
+        public static List<Hand> TaichiHandsOf(PlayerState player)
+        {
+            var list = new List<Hand>();
+            if (player == null) return list;
+
+            if (player.LeftHand != null && player.LeftHand.IsTaichi) list.Add(player.LeftHand);
+            if (player.RightHand != null && player.RightHand.IsTaichi) list.Add(player.RightHand);
+
+            return list;
         }
 
         /// <summary>
