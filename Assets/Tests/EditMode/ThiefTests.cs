@@ -174,6 +174,34 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Steal_target_step_is_a_human_decision()
+        {
+            // ⚠️ **回归测试**（玩家实测的卡死）。
+            //
+            // 症状：按了「偷窃」之后游戏卡住，点手牌没反应。
+            // 诊断里是 `phase=ChoosingStealTarget isHumanChooser=False`。
+            //
+            // 根因：`ChooserFor` 漏了 ChoosingStealTarget 分支 ->
+            //      chooser=null -> IsHumanChooser=false ->
+            //      UI 把玩家的点击**全丢了**。
+            //
+            // 这条测试钉住"这一步必须由**行动方自己**决定"。
+            // 与既有的 ChoosingTargetPlayer / ChoosingGamble 是同一类要求。
+            BoardController board = Board(out PlayerState thief, out _, out _);
+
+            board.BeginTurn();
+            board.ClickHand(thief.LeftHand);
+
+            Assert.True(board.BeginSteal(), "按下偷窃按钮");
+            Assert.AreEqual(BoardPhase.ChoosingStealTarget, board.Phase);
+
+            Assert.True(board.IsHumanChooser,
+                "偷窃目标这一步必须由行动方自己点 —— 否则 UI 会丢弃点击并卡死。");
+            Assert.True(ReferenceEquals(board.Chooser, board.ActivePlayer),
+                "chooser 应该是行动方（盗贼本人）。");
+        }
+
+        [Test]
         public void Steal_target_can_be_any_other_player()
         {
             // 玩家明确："无限距离、**可以偷队友**"。

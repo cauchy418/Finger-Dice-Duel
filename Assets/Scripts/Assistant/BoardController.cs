@@ -399,6 +399,19 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingHealthSwapTarget:
                         return ActivePlayer;
 
+                    // ⚠️ **盗贼的偷窃目标也由行动方自己点。**
+                    //
+                    //    我第一版漏了这个分支，于是 chooser=null ->
+                    //    IsHumanChooser=false -> UI 把玩家点手牌**全丢了**
+                    //    -> 按了偷窃之后**卡死**（玩家实测，诊断里就是
+                    //       `phase=ChoosingStealTarget isHumanChooser=False`）。
+                    //
+                    //    上面 ChoosingTargetPlayer 那段注释写的正是**同一个坑**，
+                    //    我又踩了一次 —— 所以新阶段必须在**四个**地方登记：
+                    //    ChooserFor、CanClick、ClickHand、以及 Hint 文案。
+                    case BoardPhase.ChoosingStealTarget:
+                        return ActivePlayer;
+
                     default:
                         return null;
                 }
