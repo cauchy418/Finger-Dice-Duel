@@ -75,6 +75,12 @@ namespace FingerDiceDuel.UI
         private Text _filterLabel;
         private Text _alignmentLabel;
 
+        /// <summary>阵营筛选的开关按钮（在返回键下面）。</summary>
+        private Button _filterToggle;
+
+        /// <summary>筛选面板（点开才显示）。</summary>
+        private GameObject _filterPanel;
+
         private readonly Dictionary<string, Image> _lawButtons =
             new Dictionary<string, Image>();
         private readonly Dictionary<string, Image> _goodButtons =
@@ -146,32 +152,54 @@ namespace FingerDiceDuel.UI
             // ⚠️ 原来它在左侧靠上，与标题同一行区域，
             //    看起来像"属于标题"而不像"属于角色"。
             //    现在整体靠右，与名称/介绍形成一列。
+            // ---- 阵营标签（紧跟名称右侧）----
             _alignmentLabel = MakeText(panelRect, "AlignmentLabel",
-                                       new Vector2(330f, halfH - 96f),
+                                       new Vector2(330f, halfH - 92f),
                                        new Vector2(360f, 34f),
-                                       24, TextAnchor.MiddleRight,
+                                       26, TextAnchor.MiddleRight,
                                        new Color(0.62f, 0.82f, 0.60f));
 
-            _filterLabel = MakeText(panelRect, "FilterLabel",
-                                    new Vector2(330f, halfH - 138f),
-                                    new Vector2(360f, 28f),
-                                    17, TextAnchor.MiddleRight,
+            // ---- 阵营筛选（玩家要求：在返回键下面做一个按钮，
+            //      点开后才跳出筛选界面）----
+            //
+            // ⚠️ 原来是常驻的两行按钮，占掉一大块版面；
+            //    现在收起来，只在点开时显示。
+            _filterToggle = MakeButton(panelRect, "FilterToggle",
+                                       new Vector2(halfW - 90f, halfH - 110f),
+                                       new Vector2(150f, 46f), "阵营筛选", 20);
+            _filterToggle.onClick.AddListener(ToggleFilterPanel);
+
+            // 筛选面板：一个容器，里面放提示 + 两行按钮
+            _filterPanel = new GameObject("FilterPanel", typeof(RectTransform));
+            _filterPanel.transform.SetParent(panelRect, false);
+            RectTransform fp = _filterPanel.GetComponent<RectTransform>();
+            fp.anchorMin = fp.anchorMax = new Vector2(0.5f, 0.5f);
+            fp.pivot = new Vector2(0.5f, 0.5f);
+            fp.sizeDelta = new Vector2(420f, 160f);
+            fp.anchoredPosition = new Vector2(300f, halfH - 216f);
+
+            _filterLabel = MakeText(fp, "FilterLabel",
+                                    new Vector2(0f, 62f),
+                                    new Vector2(400f, 26f),
+                                    16, TextAnchor.MiddleCenter,
                                     new Color(0.70f, 0.74f, 0.82f));
 
-            BuildAxisRow(panelRect, LawAxes, _lawButtons, halfH - 186f, true);
-            BuildAxisRow(panelRect, GoodAxes, _goodButtons, halfH - 238f, false);
+            BuildAxisRow(fp, LawAxes, _lawButtons, 18f, true);
+            BuildAxisRow(fp, GoodAxes, _goodButtons, -32f, false);
+
+            _filterPanel.SetActive(false);
 
             // ---- 属性行 ----
             _stats = MakeText(panelRect, "Stats",
-                              new Vector2(0f, halfH - 300f),
+                              new Vector2(0f, halfH - 170f),
                               new Vector2(PanelW - 120f, 34f),
                               23, TextAnchor.MiddleLeft,
                               new Color(0.95f, 0.85f, 0.55f));
 
             // ---- 正文（占满下半部分，自动换行）----
             _body = MakeText(panelRect, "Body",
-                             new Vector2(0f, -80f),
-                             new Vector2(PanelW - 120f, halfH - 30f),
+                             new Vector2(0f, 40f),
+                             new Vector2(PanelW - 120f, halfH + 30f),
                              18, TextAnchor.UpperLeft,
                              new Color(0.88f, 0.90f, 0.94f));
 
@@ -224,6 +252,20 @@ namespace FingerDiceDuel.UI
                 x += width + gap;
             }
         }
+
+        /// <summary>
+        /// 切换筛选面板的显示（玩家要求：点按钮后才跳出筛选界面）。
+        /// </summary>
+        public void ToggleFilterPanel()
+        {
+            if (_filterPanel == null) return;
+
+            _filterPanel.SetActive(!_filterPanel.activeSelf);
+        }
+
+        /// <summary>筛选面板当前是否打开（测试用）。</summary>
+        public bool IsFilterPanelOpen
+            => _filterPanel != null && _filterPanel.activeSelf;
 
         /// <summary>点某个筛选轴：未选中则选中、已选中则取消。</summary>
         public void ToggleAxis(string axis, bool isLaw)
@@ -279,9 +321,15 @@ namespace FingerDiceDuel.UI
 
             if (_filterLabel != null)
             {
-                string law = string.IsNullOrEmpty(_lawAxis) ? "守序/中立/混乱" : _lawAxis;
-                string good = string.IsNullOrEmpty(_goodAxis) ? "善良/中立/邪恶" : _goodAxis;
-                _filterLabel.text = $"阵营筛选：{law}　·　{good}（再点一次取消）";
+                bool noLaw = string.IsNullOrEmpty(_lawAxis);
+                bool noGood = string.IsNullOrEmpty(_goodAxis);
+
+                // 玩家要求：面板收起来了，所以提示要说清楚
+                // "当前有没有筛选"与"怎么取消"。
+                _filterLabel.text = (noLaw && noGood)
+                    ? "未筛选（点下面两行选阵营，再点一次取消）"
+                    : $"已筛选：{(noLaw ? "任意" : _lawAxis)}　·　"
+                      + $"{(noGood ? "任意" : _goodAxis)}（再点一次取消）";
             }
 
             CodexCardData c = Current;
