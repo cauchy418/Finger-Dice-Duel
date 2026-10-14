@@ -11,6 +11,15 @@ namespace FingerDiceDuel.Core
     {
         public string Id { get; }
         public string DisplayName { get; }
+
+        /// <summary>
+        /// **英文名**（图鉴用）。
+        ///
+        /// 为什么单独存一个字段：图鉴要显示"名称（中英文）"，
+        /// 而 <see cref="DisplayName"/> 是中文、且被战报与界面广泛引用，
+        /// 不能改成"中英合写"（会把所有地方都弄脏）。
+        /// </summary>
+        public string EnglishName { get; }
         public SpecialLogicType Logic { get; }
 
         /// <summary>造成伤害修正（白板 = 0）。</summary>
@@ -27,13 +36,15 @@ namespace FingerDiceDuel.Core
         public CharacterDefinition(string id, string displayName, SpecialLogicType logic,
                                    int attackBonus = 0, int defenseBonus = 0,
                                    int maxHealth = PlayerState.DefaultMaxHealth,
-                                   string description = null)
+                                   string description = null,
+                                    string englishName = null)
         {
             if (string.IsNullOrEmpty(id))
                 throw new ArgumentException("角色 Id 不能为空。", nameof(id));
 
             Id = id;
             DisplayName = string.IsNullOrEmpty(displayName) ? id : displayName;
+            EnglishName = englishName ?? string.Empty;
             Logic = logic;
             AttackBonus = attackBonus;
             DefenseBonus = defenseBonus;

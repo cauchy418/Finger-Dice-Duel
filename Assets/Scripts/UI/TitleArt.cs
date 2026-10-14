@@ -36,6 +36,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>对局中。</summary>
         InMatch = 3,
+
+        /// <summary>图鉴。</summary>
+        Codex = 10,
     }
 
     /// <summary>

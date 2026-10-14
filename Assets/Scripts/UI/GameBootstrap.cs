@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Characters;   // 图鉴资料（表现层入口是唯一允许看到它的地方）
 using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -491,6 +492,12 @@ namespace FingerDiceDuel.UI
                                        () => ShowComingSoon("8 人身份局"));
 
             _screenMainMenu.Add(p1.gameObject);
+
+            // 图鉴入口（玩家要求：可翻页卡片 + 阵营筛选）
+            Button codex = MakeModeButton(_selectRoot, "ModeCodex", new Vector2(0f, -510f),
+                                          "图鉴", "角色技能、操作与针对手段",
+                                          OnCodexClicked);
+            _screenMainMenu.Add(codex.gameObject);
             _screenMainMenu.Add(p2.gameObject);
             _screenMainMenu.Add(p8.gameObject);
 
@@ -530,6 +537,80 @@ namespace FingerDiceDuel.UI
             button.onClick.AddListener(() => onClick?.Invoke());
             return button;
         }
+
+        // ============================================================
+        // 图鉴
+        // ============================================================
+
+        private CodexScreen _codex;
+
+        /// <summary>
+        /// 打开图鉴。
+        ///
+        /// ⚠️ 这里是**唯一允许同时看到 Characters 与 UI 两层**的地方
+        ///    （GameBootstrap 是表现层入口）——
+        ///    所以由它把 CodexEntry 转成 UI 层自己的
+        ///    CodexCardData，而不是让 UI 去引用 Characters。
+        /// </summary>
+        private void OnCodexClicked()
+        {
+            BuildCodexIfNeeded();
+            _codex.SetVisible(true);
+            ShowScreen(GameScreen.Codex);
+        }
+
+        private void BuildCodexIfNeeded()
+        {
+            if (_codex != null) return;
+
+            _codex = new CodexScreen();
+            _codex.CloseRequested += () => ShowScreen(GameScreen.MainMenu);
+            _codex.Build(_selectRoot, BuildCodexCards());
+        }
+
+        /// <summary>把 Characters 层的图鉴资料转成 UI 层的扁平结构。</summary>
+        private static List<CodexCardData> BuildCodexCards()
+        {
+            var list = new List<CodexCardData>();
+            CharacterDefinition[] all = CharacterDefinition.BuiltIn;
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                CharacterDefinition def = all[i];
+                if (def == null) continue;
+
+                CodexEntry e = CharacterCodex.For(def);
+                if (e == null) continue;
+
+                // 攻防与生命用**运行时实例**（骑士的攻防会随碎盾变）
+                PlayerState probe = CharacterFactory.CreatePlayer(def.DisplayName, def);
+
+                var card = new CodexCardData
+                {
+                    NameZh = def.DisplayName,
+                    NameEn = e.EnglishName,
+                    Alignment = Alignments.NameOf(e.Alignment),
+                    MaxHealth = CharacterFactory.MaxHealthOf(def),
+                    Attack = probe?.Character?.AttackBonus ?? def.AttackBonus,
+                    Defense = probe?.Character?.DefenseBonus ?? def.DefenseBonus,
+                    Range = probe != null ? GameManager.BaseRangeOf(probe) : 1,
+                    ShortSkill = e.ShortSkill,
+                    DetailSkill = e.DetailSkill,
+                    PlayGuide = e.PlayGuide,
+                    Counter = e.Counter,
+                    LawAxis = Alignments.LawAxisOf(e.Alignment),
+                    GoodAxis = Alignments.GoodAxisOf(e.Alignment),
+                };
+
+                for (int k = 0; k < e.Interactions.Count; k++)
+                    card.Interactions.Add(e.Interactions[k]);
+
+                list.Add(card);
+            }
+
+            return list;
+        }
+
 
         private void OnOneOnOneClicked() => ShowScreen(GameScreen.OneOnOneMenu);
 
