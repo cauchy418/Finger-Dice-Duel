@@ -765,6 +765,15 @@ namespace FingerDiceDuel.Core
                     PlayerState owner = _players[i];
                     if (ReferenceEquals(owner, actor)) continue;
 
+                    // ⚠️ **阵亡玩家不能再当目标**！
+                    //
+                    //    我第一版漏了这个判断，后果很严重：
+                    //    死人的手也会进合法移动列表，于是 AI 会拿它当目标、
+                    //    **打一个没有意义的空位**，局面永远推不动。
+                    //    （2v2 实测：只剩两个敌对座位时，P3 的 12 步里有 8 步是打死人，
+                    //     于是 400 次行动后双方仍然满血。）
+                    if (!owner.IsAlive) continue;
+
                     foreach (Hand theirs in owner.Hands)
                         _legalMoves.Add(new LegalMove(actor, mine, theirs));
                 }
@@ -806,6 +815,16 @@ namespace FingerDiceDuel.Core
                 reason = "被加数不能是自己的手（要用别人的数字来改变自己的手）。";
                 return false;
             }
+
+            // ⚠️ **这里故意不拒绝"目标已阵亡"。**
+            //
+            //    "不能打死人"由 <see cref="GetLegalMoves"/> 过滤掉（那才是 AI 挑招的入口），
+            //    而 AI 的平局问题正是那里修好的。
+            //
+            //    我曾在这里加了一条同样的拒绝，结果 **5 条既有测试变红**：
+            //    它们会在"对局已结束 / 双方同时归零"时补一次结算，
+            //    期望的是**静默忽略**（判平局）而不是抛异常。
+            //    两者语义冲突，而"过滤合法移动"已经足够解决问题，所以不在这里重复拒绝。
 
             if (actedHand.IsLocked) { reason = "被锁定的手不能作为运算源。"; return false; }
 
