@@ -872,25 +872,65 @@ namespace FingerDiceDuel.Core
         /// <summary>上一次发起偷窃的是谁（配合 <see cref="_lastStealTurn"/> 用）。</summary>
         private PlayerState _lastStealActor;
 
-        /// <summary>盗贼本回合能不能偷窃（上回合偷过就不能）。</summary>
+        /// <summary>
+        /// **盗贼自己的行动次数**（每结算一次他的行动 +1）。
+        ///
+        /// 为什么要单独计数，而不是用 `TurnCount`：
+        ///   `TurnCount` 每过一个回合都会变，于是"回合号 != 上次回合号"
+        ///   **永远成立** —— 冷却形同虚设，盗贼可以**连续偷**
+        ///   （玩家实测："盗贼现在可以连续偷"）。
+        ///
+        ///   正确判据是"他**上一次行动**偷过吗"，所以需要一个
+        ///   只在**他自己行动时**递增的计数器。
+        /// </summary>
+        private readonly Dictionary<PlayerState, int> _ownTurnOrdinal =
+            new Dictionary<PlayerState, int>();
+
+        /// <summary>某玩家**当前**的行动序号（没有记录时返回 0）。</summary>
+        private int CurrentOwnTurnOrdinal(PlayerState player)
+        {
+            if (player == null) return -1;
+            _ownTurnOrdinal.TryGetValue(player, out int cur);
+            return cur;
+        }
+
+        /// <summary>
+        /// **推进某人的行动序号**（他"这次行动"结束了）。
+        /// </summary>
+        ///
+        /// 由 <see cref="ResolveSteal"/> 在偷窃收尾时调用 ——
+        /// 与普通运算的 <see cref="ResolveTurn"/> 末尾对应。
+        /// 有了它，"他上一次行动偷过吗"才有正确的时间基准。
+        /// </summary>
+        private void BumpOwnTurnOrdinal(PlayerState player)
+        {
+            if (player == null) return;
+
+            _ownTurnOrdinal.TryGetValue(player, out int cur);
+            _ownTurnOrdinal[player] = cur + 1;
+        }
+
+        /// <summary>盗贼本回合能不能偷窃（他自己上一次行动偷过就不能）。</summary>
         public bool CanStealOn(PlayerState thief)
         {
             if (thief == null || IsGameOver) return false;
             if (!(thief.Character is ThiefLogic)) return false;
 
-            // ⚠️ 判据是"**上一回合**这个人偷过"，而不是"这次结算的回合号等于现在"。
+            // ⚠️ 判据：**这个人上一次自己的行动**是不是偷窃。
             //
-            //    我第一版写的是 `_lastStealTurn != TurnCount` —— 那是错的，
-            //    因为 `TurnCount` 在结算**之后**才自增：
-            //    偷窃发生在回合 0、结束时 TurnCount 变成 1，
-            //    于是下一次比较是 `0 != 1` -> 判成"可以偷"，
-            //    冷却**完全失效**（测试当场抓到）。
+            //    我踩过两次：
+            //      ① 用 `_lastStealTurn != TurnCount` —— TurnCount 在结算后才自增，
+            //         于是刚偷完就判成"可以偷"。
+            //      ② 改成"记录偷完之后的回合号"仍然不对 ——
+            //         因为 TurnCount **每回合都会变**，
+            //         等再次轮到他时回合号当然又不同了，所以**永远可以偷**。
             //
-            //    正确判据：上一次偷窃记录的是"偷完之后"的回合号，
-            //    所以只要它与**当前**回合号不同，就说明已经过去了一个回合。
+            //    真正要比的是"他自己的两次行动之间有没有别的行动"，
+            //    所以用 <see cref="_ownTurnOrdinal"/> 这个按人计数的序号。
             if (!ReferenceEquals(_lastStealActor, thief)) return true;
+            if (!_ownTurnOrdinal.TryGetValue(thief, out int serial)) return true;
 
-            return _lastStealTurn != TurnCount;
+            return _lastStealTurn != serial;
         }
 
         /// <summary>
@@ -971,7 +1011,15 @@ namespace FingerDiceDuel.Core
                 _shockLog.Clear();
                 CurrentPlayer = NextPlayerAfter(actor);
                 TurnCount++;
-                _lastStealTurn = TurnCount;      // 记"偷完之后"的回合号
+                // ⚠️ 顺序很重要：**先递增、再记录**。
+                //    回忆一下判据：`_lastStealTurn != CurrentOwnTurnOrdinal(thief)`
+                //    -> 可以偷。
+                //    若先记录 0 再递增到 1，那么下一次行动时
+                //    读到的序号已经是 1，与记录的 0 不等 -> 又能偷了（冷却失效）。
+                //    正确做法：先把他这一次行动算完，
+                //    再记下"他这一次行动的序号"。
+                BumpOwnTurnOrdinal(actor);
+                _lastStealTurn = CurrentOwnTurnOrdinal(actor);
                 CheckTurnLimit();
                 return result;
             }
@@ -1003,17 +1051,20 @@ namespace FingerDiceDuel.Core
                      || effect == HandEffectType.Attack6
                      || effect == HandEffectType.Attack8)
             {
-                // 攻击目标 = 被偷者的主人（玩家没有额外说明，用最自然的选择）
-                PlayerState victim = OwnerOfHand(theirHand) ?? DamageTargetPlayer
-                                     ?? GetOpponent(actor);
-
-                if (victim != null && !SuppressAttackDamage)
-                {
-                    var ctx = new AttackContext(actor, victim, myHand, stolen);
-                    ctx.Resolve(GetChoiceProvider(victim), this);
-                    result.DamageDealt = ctx.AppliedDamage;
-                    result.HitCount = ctx.HitCount;
-                }
+                // ⚠️ **不在这里结算伤害**（玩家实测要求）：
+                //    "盗贼偷窃出攻击数字要**再次点击目标**才可以攻击，
+                //      现在是默认攻击。"
+                //
+                //    所以这里只**登记**"偷出了一个待结算的攻击"，
+                //    由上层（BoardController）走与普通运算一样的
+                //    「选打谁」那一步，玩家确认后才真的打。
+                //
+                //    这与"攻击目标单独确认"的既有规则一致 ——
+                //    偷窃只是换了个方式得到攻击数字，目标确认不该被跳过。
+                PendingStealAttackValue = stolen;
+                PendingStealAttackHand = myHand;
+                StealAttackAwaitingTarget = true;
+                return result;                  // 把收尾交给上层
             }
 
             actor.Character?.OnOperationResolved(actor, myHand, outcome.Original, stolen,
@@ -1024,13 +1075,81 @@ namespace FingerDiceDuel.Core
             if (!IsGameOver)
             {
                 TurnCount++;
-                _lastStealTurn = TurnCount;      // 记"偷完之后"的回合号
+                // ⚠️ 顺序很重要：**先递增、再记录**。
+                //    回忆一下判据：`_lastStealTurn != CurrentOwnTurnOrdinal(thief)`
+                //    -> 可以偷。
+                //    若先记录 0 再递增到 1，那么下一次行动时
+                //    读到的序号已经是 1，与记录的 0 不等 -> 又能偷了（冷却失效）。
+                //    正确做法：先把他这一次行动算完，
+                //    再记下"他这一次行动的序号"。
+                BumpOwnTurnOrdinal(actor);
+                _lastStealTurn = CurrentOwnTurnOrdinal(actor);      // 他的"这次行动"结束了
                 CurrentPlayer = NextPlayerAfter(actor);
                 CheckTurnLimit();
             }
 
             return result;
         }
+
+        // ============================================================
+        // 盗贼：偷出攻击时的"待确认目标"
+        // ============================================================
+
+        /// <summary>是否正在等"偷出的攻击"选定目标。</summary>
+        public bool StealAttackAwaitingTarget { get; private set; }
+
+        /// <summary>偷出来的那个攻击数字（4/6/8）。</summary>
+        public int PendingStealAttackValue { get; private set; }
+
+        /// <summary>偷窃时用的是哪只手（结算伤害时要用它当运算源）。</summary>
+        public Hand PendingStealAttackHand { get; private set; }
+
+        /// <summary>
+        /// **结算"偷出的攻击"**（上层在选定目标之后调用）。
+        ///
+        /// 与普通运算的攻击走同一套 <see cref="AttackContext"/>，
+        /// 所以闪避 / 护盾 / 太极 / 取消都照常生效。
+        /// </summary>
+        public TurnResult ResolvePendingStealAttack(PlayerState actor, PlayerState victim)
+        {
+            StealAttackAwaitingTarget = false;
+
+            TurnResult result = LastTurnResult ?? new TurnResult();
+            if (actor == null || victim == null || PendingStealAttackHand == null)
+                return result;
+
+            if (!SuppressAttackDamage)
+            {
+                var ctx = new AttackContext(actor, victim, PendingStealAttackHand,
+                                            PendingStealAttackValue);
+                ctx.Resolve(GetChoiceProvider(victim), this);
+
+                result.DamageDealt = ctx.AppliedDamage;
+                result.HitCount = ctx.HitCount;
+            }
+
+            result.TargetHand = PendingStealAttackHand;
+            LastTurnResult = result;
+
+            PendingStealAttackHand = null;
+            PendingStealAttackValue = 0;
+
+            CheckGameOver();
+
+            if (!IsGameOver)
+            {
+                TurnCount++;
+                CurrentPlayer = NextPlayerAfter(actor);
+                CheckTurnLimit();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 最近一次结算的 <see cref="TurnResult"/>（供"偷出的攻击"分两步时续写）。
+        /// </summary>
+        public TurnResult LastTurnResult { get; private set; }
 
         /// <summary>
         /// 盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。

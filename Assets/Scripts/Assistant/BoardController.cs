@@ -1314,6 +1314,25 @@ namespace FingerDiceDuel.Assistant
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, SelectedHand, target);
 
+                // ⚠️ 偷出**攻击数字**时，伤害不能在这里结算 ——
+                //    玩家要求"要再次点击目标才可以攻击"，
+                //    所以先进入「选打谁」，与普通运算的攻击同一条流程。
+                //    ResolveSteal 已经把这次攻击登记成"待选目标"。
+                if (_game.StealAttackAwaitingTarget)
+                {
+                    Phase = BoardPhase.ChoosingTargetPlayer;
+                    TargetPlayer = null;
+                    Hint = $"{ActivePlayer.Name}（盗贼）偷到了 " +
+                           $"{_game.PendingStealAttackValue}：请选择攻击目标。";
+
+                    if (!BeginTargetPlayerChoice())
+                    {
+                        GiveUpAttack();
+                        BeginTurn();
+                    }
+                    return true;
+                }
+
                 // ⚠️ 必须调 **BeginTurn()**，不能用 SetupFirstStep()。
                 //
                 //    `ActivePlayer` 是**缓存字段**，只有 BeginTurn() 会把它

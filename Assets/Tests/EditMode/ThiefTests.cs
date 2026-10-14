@@ -193,6 +193,9 @@ namespace FingerDiceDuel.Tests
 
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
+            // 偷出攻击时是两步：先选目标，选完才换手
+            if (game.StealAttackAwaitingTarget) game.ResolvePendingStealAttack(thief, foe);
+
             Assert.True(ReferenceEquals(game.CurrentPlayer, foe),
                 $"偷窃之后应轮到**对方**，实际是 {game.CurrentPlayer?.Name}。");
             Assert.AreEqual(1, game.TurnCount,
@@ -209,6 +212,8 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(foe.LeftHand, 8);
 
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            if (game.StealAttackAwaitingTarget) game.ResolvePendingStealAttack(thief, foe);
 
             Assert.True(ReferenceEquals(game.CurrentPlayer, foe),
                 $"不生效的偷窃也应轮到对方，实际 {game.CurrentPlayer?.Name}。");
@@ -232,6 +237,9 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.ClickHand(thief.LeftHand), "点自己的手");
             Assert.True(board.BeginSteal(), "点偷窃按钮");
             Assert.True(board.ClickHand(foe.LeftHand), "点对方的手完成偷窃");
+
+            // 偷出攻击 -> 先进入「选打谁」
+            if (board.Phase == BoardPhase.ChoosingTargetPlayer) board.ConfirmTargetPlayer();
 
             Assert.True(ReferenceEquals(board.ActivePlayer, foe),
                 $"偷窃之后行动方应是**对方**，实际 {board.ActivePlayer?.Name}。" +
@@ -436,7 +444,13 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(r.StealEffective, "9 ≥ 4，应生效。");
             Assert.AreEqual(HandEffectType.Attack4, r.Effect, "偷来的 4 -> 攻击。");
-            Assert.True(foe.Health < before, "应造成伤害。");
+
+            // 盗贼的攻击是**两步**：先登记待选目标，选完才结算
+            Assert.True(game.StealAttackAwaitingTarget, "应处于待选目标状态。");
+            Assert.AreEqual(before, foe.Health, "还没选目标 -> 伤害不落地。");
+
+            game.ResolvePendingStealAttack(thief, foe);
+            Assert.True(foe.Health < before, "选完目标后才造成伤害。");
         }
 
         [Test]
@@ -626,7 +640,17 @@ namespace FingerDiceDuel.Tests
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
             Assert.False(game.CanStealOn(thief),
-                "偷过之后（回合号相同）不能再偷。");
+                "刚偷过（同一次行动）不能再偷。");
+
+            // 另一半：让他再得到一次行动机会，
+            // 他上一次行动就是偷窃 -> **仍然不能偷**
+            // （这就是玩家报的"连续偷"那个 bug）。
+            game.ResolvePendingStealAttack(thief, foe);   // 若是攻击则先收尾
+            game.ExecuteTurn(foe, foe.LeftHand, thief.RightHand);   // 对旋一手
+            Assert.True(ReferenceEquals(game.CurrentPlayer, thief), "应重新轮到盗贼。");
+
+            Assert.False(game.CanStealOn(thief),
+                "他自己的上一个回合偷过 -> 本回合不能再偷。");
 
             Assert.Throws<System.InvalidOperationException>(
                 () => game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand),
@@ -662,6 +686,10 @@ namespace FingerDiceDuel.Tests
 
             int before = foe.Health;
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            Assert.AreEqual(before, foe.Health, "先不打伤害（等选目标）。");
+
+            game.ResolvePendingStealAttack(thief, foe);
 
             // 盗贼 攻0、士兵 防+1 -> 4 - 1 = 3
             Assert.AreEqual(3, before - foe.Health, "4 点攻击 - 士兵防御 1 = 3 点伤害。");
