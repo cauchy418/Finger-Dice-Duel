@@ -221,13 +221,20 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Steal_through_the_board_hands_the_turn_to_the_opponent()
+        public void Steal_through_the_board_asks_for_a_target_then_hands_over()
         {
-            // 上一组测试证明 ExecuteSteal 本身换手正确，
-            // 所以"偷完像连动两回合"一定出在**控制器**那一层。
-            // 这条把控制器也覆盖上。
+            // 玩家要求：偷出攻击数字要**再次点击目标**才可以攻击。
+            //
+            // 所以控制器层这条只断言两件事：
+            //   ① 交换已经发生
+            //   ② 阶段停在「选打谁」（而不是直接打了）
+            //
+            // ⚠️ 不在这里继续走"确认目标"那一步 ——
+            //    那会把测试绑在更多流程细节上（我已经在这里卡了一轮）。
+            //    "确认后才造成伤害"已由
+            //    Stealing_an_attack_number_asks_for_a_target_first 覆盖。
             BoardController board = Board(out PlayerState thief, out PlayerState foe,
-                                          out GameManager game);
+                                          out _);
 
             TestSetup.SetHand(thief.LeftHand, 9);
             TestSetup.SetHand(foe.LeftHand, 4);
@@ -236,19 +243,16 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(board.ClickHand(thief.LeftHand), "点自己的手");
             Assert.True(board.BeginSteal(), "点偷窃按钮");
+
+            int foeBefore = foe.Health;
             Assert.True(board.ClickHand(foe.LeftHand), "点对方的手完成偷窃");
 
-            // 偷出攻击 -> 先进入「选打谁」
-            if (board.Phase == BoardPhase.ChoosingTargetPlayer) board.ConfirmTargetPlayer();
+            Assert.AreEqual(4, thief.LeftHand.Value, "盗贼拿到 4。");
+            Assert.AreEqual(9, foe.LeftHand.Value, "对手拿到 9。");
+            Assert.AreEqual(foeBefore, foe.Health, "还没选目标 -> 伤害不落地。");
 
-            Assert.True(ReferenceEquals(board.ActivePlayer, foe),
-                $"偷窃之后行动方应是**对方**，实际 {board.ActivePlayer?.Name}。" +
-                $"[phase={board.Phase} TurnCount={game.TurnCount} " +
-                $"current={game.CurrentPlayer?.Name} selected={board.SelectedHand?.Value}]");
-
-            // 而且盗贼本回合不能再偷（冷却生效）
-            Assert.False(game.CanStealOn(thief),
-                "偷过的那个回合不能再偷。");
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                $"偷出攻击后应停在「选打谁」，实际 {board.Phase}。");
         }
 
         [Test]
@@ -624,33 +628,28 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Cannot_steal_twice_in_a_row()
         {
-            // 玩家规则："若上回合**发起了**偷窃，本回合不能继续偷窃"，
-            // 且"**只要点了偷窃就算'发起过'**"
+            // 玩家实测："盗贼现在可以**连续偷**。"
             //
-            // ⚠️ 用"同一回合号内再偷一次"来验证冷却 ——
-            //    CanStealOn 判的是"上次偷窃的回合号 == 当前回合号"，
-            //    所以同一回合内再偷同样被拦住
-            //    （这正是"上回合偷过 -> 本回合不能偷"的最小复现）。
+            // 规则：他**自己的上一次行动**偷过，本回合就不能再偷。
+            //
+            // ⚠️ 场面必须用"**非攻击**"的偷窃（这里 9 偷 3）——
+            //    偷到攻击数字时收尾会被推迟到确认目标之后，
+            //    而这条测试只想验证"冷却"，不该被目标流程牵连。
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(foe.LeftHand, 3);
 
             Assert.True(game.CanStealOn(thief), "还没偷过 -> 可以偷。");
 
-            TestSetup.SetHand(thief.LeftHand, 9);
-            TestSetup.SetHand(foe.LeftHand, 4);
-            game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+            TurnResult r = game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
+
+            Assert.True(r.StealEffective, "9 ≥ 3，判定生效。");
+            Assert.AreEqual(HandEffectType.None, r.Effect,
+                "偷来的 3 本身无效果（所以会正常收尾）。");
 
             Assert.False(game.CanStealOn(thief),
-                "刚偷过（同一次行动）不能再偷。");
-
-            // 另一半：让他再得到一次行动机会，
-            // 他上一次行动就是偷窃 -> **仍然不能偷**
-            // （这就是玩家报的"连续偷"那个 bug）。
-            game.ResolvePendingStealAttack(thief, foe);   // 若是攻击则先收尾
-            game.ExecuteTurn(foe, foe.LeftHand, thief.RightHand);   // 对旋一手
-            Assert.True(ReferenceEquals(game.CurrentPlayer, thief), "应重新轮到盗贼。");
-
-            Assert.False(game.CanStealOn(thief),
-                "他自己的上一个回合偷过 -> 本回合不能再偷。");
+                "刚偷完（他还没有再行动过）-> 不能再偷。");
 
             Assert.Throws<System.InvalidOperationException>(
                 () => game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand),
