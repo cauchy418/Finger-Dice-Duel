@@ -172,13 +172,27 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void The_curseweaver_values_his_own_five_highly()
+        public void The_curseweaver_five_matches_the_soldier_but_attacks_rise()
         {
-            // 他无视**别人**的盾 -> 他自己的盾是净赚的
+            // ⚠️ 玩家纠正："咒术师 5 **不必是最高价值**，
+            //    **和士兵 5 持平即可**，他的**攻击数字权重应该上升**。"
+            //
+            //    原来的理由（"他无视别人的盾 -> 自己的盾净赚"）
+            //    对他不成立：他自己也只能靠 5 合盾，与别人无异。
             HandValueProfile cw = HandValueProfiles.For(CharacterDefinition.Curseweaver);
+            HandValueProfile soldier = HandValueProfiles.For(CharacterDefinition.Soldier);
 
-            Assert.True(cw.WeightOf(5) >= Base.WeightOf(5) + 30,
-                $"咒术师自己的 5 应明显高于基线（{cw.WeightOf(5)} vs {Base.WeightOf(5)}）。");
+            Assert.AreEqual(soldier.WeightOf(5), cw.WeightOf(5),
+                $"咒术师的 5 应与士兵持平（{cw.WeightOf(5)} vs {soldier.WeightOf(5)}）。");
+
+            // 攻击数字均上升（高于基线）
+            Assert.True(cw.WeightOf(8) > Base.WeightOf(8), "咒术师的 8 应高于基线。");
+            Assert.True(cw.WeightOf(6) > Base.WeightOf(6), "咒术师的 6 应高于基线。");
+            Assert.True(cw.WeightOf(4) > Base.WeightOf(4), "咒术师的 4 应高于基线。");
+
+            // 且按基础价值排序
+            Assert.True(cw.WeightOf(8) > cw.WeightOf(6), "8 应高于 6。");
+            Assert.True(cw.WeightOf(6) > cw.WeightOf(4), "6 应高于 4。");
         }
 
         [Test]
