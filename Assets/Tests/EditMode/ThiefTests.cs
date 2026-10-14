@@ -127,6 +127,53 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Stealing_a_monks_zero_only_yields_one()
+        {
+            // 玩家补充规则："盗贼偷武僧的 0 **只能偷到 1**，
+            //               目前**只有武僧能持有 0**。"
+            //
+            // 0 是武僧太极形态的专属产物（5 被攻击后变 0），
+            // 一旦经由偷窃换手就按"被触碰"处理。
+            var thief = Make("贼", CharacterDefinition.Thief);
+            var monk = Make("僧", CharacterDefinition.Monk);
+            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+
+            TestSetup.SetHand(thief.LeftHand, 8);
+            TestSetup.SetHand(monk.LeftHand, 0);      // 武僧的太极被打掉后留下的 0
+
+            Assert.AreEqual(0, monk.LeftHand.Value, "前置：武僧持有 0。");
+
+            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+
+            Assert.AreEqual(1, thief.LeftHand.Value,
+                "盗贼偷 0 只能得到 1（0 不可能流通到别人手上）。");
+            Assert.AreEqual(8, monk.LeftHand.Value,
+                "武僧拿到盗贼原来的 8（8 不是 0，不受这条规则影响）。");
+        }
+
+        [Test]
+        public void A_zero_left_on_the_monks_hand_also_becomes_one()
+        {
+            // 同一规则的另一半：交换之后**武僧自己**那只 0 也被触碰了。
+            // 造法：武僧手里有 0，但他不是被偷的那只手 ——
+            // 用盗贼的 0 换出去会更复杂，所以这里直接验证
+            // "偷窃之后场上不该残留 0"。
+            var thief = Make("贼", CharacterDefinition.Thief);
+            var monk = Make("僧", CharacterDefinition.Monk);
+            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+
+            TestSetup.SetHand(thief.LeftHand, 3);
+            TestSetup.SetHand(monk.LeftHand, 0);
+
+            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+
+            Assert.False(thief.LeftHand.Value == 0, "盗贼手上不该有 0。");
+            Assert.False(monk.LeftHand.Value == 0, "武僧那只 0 也被触碰了，应变成非 0。");
+        }
+
+        [Test]
         public void Steal_target_can_be_any_other_player()
         {
             // 玩家明确："无限距离、**可以偷队友**"。

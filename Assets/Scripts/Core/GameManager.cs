@@ -926,6 +926,23 @@ namespace FingerDiceDuel.Core
 
             ThiefLogic.StealOutcome outcome = ThiefLogic.Steal(myHand, theirHand);
 
+            // ⚠️ **武僧的 0 被触碰就变 1**（玩家补充规则）。
+            //
+            //    "盗贼偷武僧的 0 只能偷到 1，目前只有武僧能持有 0。"
+            //
+            //    这是"0 被他人触碰后立即变成 1"那条规则在偷窃路径上的延伸 ——
+            //    ⚠️ 我原来的 `ResolveTurn` 里只处理了"被当**加数**用"，
+            //       而偷窃**不走运算**，所以那条守卫覆盖不到这里
+            //       （这是"两条路径各写一份而漂移"的典型案例）。
+            //
+            //    所以两边都要纠正：手值 0 在任何人手上都只可能是武僧的太极产物，
+            //    一旦经由偷窃换手，就按"被触碰"处理。
+            if (myHand.Value == ThiefLogic.MonksZeroBecomesOne)
+                myHand.SetValue(1);            // 盗贼只能偷到 1
+
+            if (theirHand.Value == ThiefLogic.MonksZeroBecomesOne)
+                theirHand.SetValue(1);         // 武僧那只 0 也被触碰了
+
             // 被偷者若是武僧，他收到的 5 会变成**太极**（玩家最新规则）
             ThiefLogic.ApplyVictimShieldSemantics(OwnerOfHand(theirHand), theirHand);
 

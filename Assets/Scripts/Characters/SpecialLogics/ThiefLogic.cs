@@ -56,6 +56,20 @@ namespace FingerDiceDuel.Core
         public override int BaseAttackRange => 1;
 
         /// <summary>
+        /// **武僧的 0 被偷走时只能得到 1**（玩家补充规则）。
+        ///
+        /// > "盗贼偷武僧的 0 只能偷到 1，目前**只有武僧能持有 0**。"
+        ///
+        /// 也就是 0 是武僧太极形态的专属产物，**不可能流通到别人手上** ——
+        /// 一旦经由偷窃换手就按"被触碰"处理（与
+        /// <see cref="MonkLogic.OnTouchedAsAddend"/> 同一条规则）。
+        /// </summary>
+        public const int MonksZeroBecomesOne = 0;
+
+        /// <summary>偷到 0 时实际得到的值（1）。</summary>
+        public const int ZeroStolenBecomes = 1;
+
+        /// <summary>
         /// 本回合能选择的偷窃目标（由上层在收集阶段填好），
         /// 结算时回读。
         /// </summary>
