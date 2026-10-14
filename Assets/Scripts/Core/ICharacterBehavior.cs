@@ -390,9 +390,18 @@ namespace FingerDiceDuel.Core
         ///     例如巨人的攻击打到太极上，一个太极只能减免反弹一段伤害，
         ///     另一段伤害是要吃的。"
         /// </param>
-        bool TryMitigate(PlayerState owner, AttackContext context, int incomingDamage,
-                         int perHitDamage,
-                         out int reducedDamage, out int reflectDamage);
+        /// <param name="segmentDamage">这一段当前的伤害量。</param>
+        /// <param name="stages">
+        /// 这一段上实际发动了**几次**减免。
+        ///
+        /// ⚠️ 一般角色只能发动 1 次；武僧有**两个太极**时可以发动 2 次：
+        ///    "第一次弹一半伤害，第二次弹剩余伤害的一半，
+        ///     即只吃 1/4 伤害剩下全部反弹。"
+        /// </param>
+        /// <param name="totalReduced">这一段上被减免掉的总量。</param>
+        /// <param name="totalReflect">这一段上要反弹回去的总量。</param>
+        bool TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,
+                         out int stages, out int totalReduced, out int totalReflect);
     }
 
     /// <summary>

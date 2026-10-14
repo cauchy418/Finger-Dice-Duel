@@ -94,19 +94,19 @@ namespace FingerDiceDuel.Core
         ///   · 自己有一只手处于**太极形态**
         ///   · **不是咒术师的攻击**（咒术师无视护盾，太极也无从借力）
         /// </summary>
-        /// <param name="perHitDamage">**单段**伤害（不是整次的总伤害）。</param>
-        /// <param name="incomingDamage">整次攻击的总伤害（仅用于判断是否 > 0）。</param>
-        /// <param name="reducedDamage">太极**减免掉的那一段**的伤害量。</param>
-        /// <param name="reflectDamage">反弹回去的量。</param>
-        public bool TryMitigate(PlayerState owner, AttackContext context, int incomingDamage,
-                                int perHitDamage,
-                                out int reducedDamage, out int reflectDamage)
+        /// <param name="segmentDamage">这一段当前的伤害量。</param>
+        /// <param name="stages">实际发动了几次减免（有几个太极就能发动几次）。</param>
+        /// <param name="totalReduced">被减免掉的总量。</param>
+        /// <param name="totalReflect">要反弹回去的总量。</param>
+        public bool TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,
+                                out int stages, out int totalReduced, out int totalReflect)
         {
-            reducedDamage = 0;
-            reflectDamage = 0;
+            stages = 0;
+            totalReduced = 0;
+            totalReflect = 0;
 
             if (owner == null || context == null) return false;
-            if (incomingDamage <= 0) return false;
+            if (segmentDamage <= 0) return false;
 
             // ⚠️ 咒术师的攻击：**不减半、不反弹、5 也不消耗**
             if (context.Attacker?.Character is CurseweaverLogic) return false;
@@ -121,6 +121,15 @@ namespace FingerDiceDuel.Core
             //    减半天生比吃满伤害好，不发动只是白白吃亏。
             if (!WantsToUseTaichi(owner, context, taichi)) return false;
 
+            // ⚠⚠ **必须先记下数量，再把手设成 0**！
+            //
+            //    我第一版先 SetValue(0)、再在循环里调
+            //    TaichiCountOf(owner) —— 而那时已经是 0 个太极了，
+            //    于是**循环一次都不跑**：手被消耗了、伤害却没减。
+            //    （现有测试立刻报错：期望受 3、实际受 5。）
+            int taichiAvailable = TaichiCountOf(owner);
+
+
             // 太极发动：那只 5 变成 0（此后它只是一只普通的 0，
             // 而且"被他人触碰会变 1"—— 见 OnTouchedAsAddend）
             taichi.SetValue(TaichiBrokenValue);
@@ -131,17 +140,30 @@ namespace FingerDiceDuel.Core
             //     例如巨人的攻击打到太极上，一个太极只能减免反弹一段伤害，
             //     另一段伤害是要吃的。"
             //
-            //    所以我第一版（作用在整次总伤害上）是**错的** ——
-            //    那会让两段的攻击被减半两次，等于一个太极挡住了两段。
+            //    但**两个太极可以叠在同一段上**：
+            //    "若武僧有两个太极，他对一段攻击是能都弹的，
+            //     第一次弹一半伤害，第二次弹剩余伤害的一半，
+            //     即只吃 1/4 伤害剩下全部反弹。"
             //
-            //    正确：只拿**单段**伤害来减半，
-            //    其余各段由调用方照常结算（见 AttackContext）。
-            //
-            //    减半：受上取整、反弹下取整（这一段的总和守恒）
-            reducedDamage = (perHitDamage + 1) / 2;
-            reflectDamage = perHitDamage / 2;
+            //    所以这里**逐次折半**：每多一个太极就再对“剩余”减半一次。
+            //    每次都是受上取整、反弹下取整 —— 与单个太极的算法一致，
+            //    所以偶数伤害时恰好是“只吃 1/4”。
+            int remaining = segmentDamage;
 
-            return true;
+            while (stages < taichiAvailable)
+            {
+                int reflect = remaining / 2;
+                int taken = remaining - reflect;
+
+                totalReduced += reflect;
+                totalReflect += reflect;
+                stages++;
+                remaining = taken;
+
+                if (remaining <= 0) break;
+            }
+
+            return stages > 0;
         }
 
         /// <summary>
@@ -198,6 +220,23 @@ namespace FingerDiceDuel.Core
                 declineResult: null,
                 decider: context.Defender,
                 acceptLabel: "发动太极"));
+        }
+
+        /// <summary>
+        /// 武僧当前有**几个太极**（0 / 1 / 2）。
+        ///
+        /// 玩家确认：两个太极可以**叠在同一段伤害上**，
+        /// 第一次弹一半、第二次弹剩余伤害的一半。
+        /// </summary>
+        public static int TaichiCountOf(PlayerState player)
+        {
+            if (player == null) return 0;
+
+            int n = 0;
+            if (player.LeftHand != null && player.LeftHand.IsTaichi) n++;
+            if (player.RightHand != null && player.RightHand.IsTaichi) n++;
+
+            return n;
         }
 
         /// <summary>找出处于太极形态的那只手；没有则返回 null。</summary>

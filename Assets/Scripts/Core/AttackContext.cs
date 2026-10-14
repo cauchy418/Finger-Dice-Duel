@@ -213,7 +213,11 @@ namespace FingerDiceDuel.Core
             //        那只手会从 5 变成 0，本次攻击就按"减半 + 反弹"走；
             //        若排在后面，玩家可能既闪避又太极（规则上只应发生一种）。
             int reflectTotal = 0;
-            bool taichiUsed = TryMitigateByTaichi(manager, perHit * hits, perHit);
+
+            // ⚠️ `out` 参数在 C# 里**必须在提前 return 前也赋值**，
+            //    所以 TryMitigateByTaichi 一开始会把它置成原值。
+            //    **只有返回 true 时才能相信它里面的值**。
+            bool taichiUsed = TryMitigateByTaichi(manager, perHit, out int hit0Damage);
 
             // ⚠️ **只在太极真的发动时**才改写每段伤害。
             //
@@ -222,12 +226,13 @@ namespace FingerDiceDuel.Core
             //    返回的是预置的 0，把**所有角色的所有攻击**都打成了 0 伤害
             //    （55 项测试立刻失败）。
             //    改成"只在发动时读它写下的属性"，就不可能误伤未发动的路径。
-            // ⚠️ **只有第一段**被太极减免 —— 玩家确认：
+            // ⚠️ **一个太极只对付一段** —— 玩家确认：
             //    "一个太极只能弹一段伤害，另一段是要吃的。"
             //
-            //    我第一版把减半后的值应用到**每一段**，
-            //    等于一个太极挡住了所有段 —— 那是错的。
-            int mitigatedFirstHit = WasMitigated ? MitigatedPerHit : perHit;
+            //    但**两个太极可以叠在同一段上**（逐次折半），
+            //    所以这里的 reduced 已经把该段的多次减免算进去了。
+            //    反弹总量也在同一处累加。
+            int mitigatedFirstHit = WasMitigated ? hit0Damage : perHit;
             if (taichiUsed) reflectTotal = ReflectedDamage;
 
             IPreTurnChoiceSink sink = defenderChoice as IPreTurnChoiceSink;
@@ -340,6 +345,11 @@ namespace FingerDiceDuel.Core
         public int MitigatedPerHit { get; private set; }
 
         /// <summary>
+        /// 这一段上实际发动了**几次**减免（武僧有两个太极时会是 2）。
+        /// </summary>
+        public int MitigationStages { get; private set; }
+
+        /// <summary>
         /// 询问挨打的人是否用**太极**化解这次攻击（武僧）。
         ///
         /// 只有**挨打的人自己**能化解（不像代挡那样遍历全场）——
@@ -353,27 +363,40 @@ namespace FingerDiceDuel.Core
         ///    结果写在 <see cref="MitigatedPerHit"/> / <see cref="ReflectedDamage"/> 上，
         ///    调用方只在返回 true 时读。
         /// </summary>
-        private bool TryMitigateByTaichi(GameManager manager, int totalIncoming,
-                                         int perHitDamage)
+        /// <summary>
+        /// 询问守方是否发动减免（武僧的太极）。
+        ///
+        /// ⚠️ **只处理第一段后的结果**：
+        ///    玩家确认"一个太极只对付一段"，
+        ///    但**两个太极可以叠在同一段上**逐次折半。
+        ///    多段攻击时，应该只有**第一段**被这里减免；
+        ///    其余各段后续如需再改（目前规则下不需要）。
+        /// </summary>
+        private bool TryMitigateByTaichi(GameManager manager, int perHitDamage,
+                                        out int firstHitDamage)
         {
+            // C# 要求 out 在**提前 return 前也必须赋值** ——
+            // 所以先预置原值，真的发动时再在下面覆盖它。
+            // ⚠️ 调用方**只在本方法返回 true 时**才能信这个值。
+            firstHitDamage = perHitDamage;
+
             // 反弹达到嵌套上限就不再弹（防无限递归）
             if (ReflectDepth >= MaxReflectDepth) return false;
 
             if (Defender?.Character is not IDamageMitigator mitigator) return false;
 
-            if (!mitigator.TryMitigate(Defender, this, totalIncoming, perHitDamage,
-                                      out int reduced, out int reflect))
+            if (!mitigator.TryMitigate(Defender, this, perHitDamage,
+                                      out int stages, out int reduced, out int reflect))
             {
                 return false;
             }
 
             WasMitigated = true;
+            MitigationStages = stages;
             ReflectedDamage = reflect;
 
-            // ⚠️ 不再折算成"每段"：太极只对付**第一段**，
-            //    所以这里存的就是"被减免后的第一段伤害"。
-            //    其余各段由循环里按原值结算。
-            MitigatedPerHit = reduced;
+            // 第一段的最终伤害 = 原值 - 被减免掉的部分
+            firstHitDamage = perHitDamage - reduced;
 
             return true;
         }
