@@ -177,6 +177,7 @@ namespace FingerDiceDuel.Tests
                                        new GreedyChoiceProvider());
 
             bool hit = false;
+            bool shockSeen = false;
 
             // 开局快照（用于"成长类"判据）
             int atkBefore = pA.Character?.AttackBonus ?? 0;
@@ -203,9 +204,28 @@ namespace FingerDiceDuel.Tests
                         if (t.WasGamble) hit = true;              // 开赌
                         break;
                     case CharacterDefinition.PriestId:
-                        // 把回复给了别人（牧师特有的"回给对手"）
+                        // 把回复给了别人（牧师特有的"回给队友"）
                         if (t.HealTarget != null && !ReferenceEquals(t.HealTarget, pA))
                             hit = true;
+                        break;
+
+                    case CharacterDefinition.WarriorId:
+                        // 连锁破盾 / 碎盾换射程：技能发动后在场上没有别的痕迹，
+                        // 只能读角色自己的计数器（走 Core 接口）
+                        if (pA.Character is ISkillUseCounter w && w.SkillUseCount > 0)
+                            hit = true;
+                        break;
+
+                    case CharacterDefinition.MonkId:
+                        // 太极：某一手处于 Taichi 状态（这本身就是发动的前提）
+                        if (pA.LeftHand.State == ShieldState.Taichi
+                            || pA.RightHand.State == ShieldState.Taichi)
+                            hit = true;
+                        break;
+
+                    case CharacterDefinition.PaladinId:
+                        // 合盾触发冲击：战报里会有冲击记录
+                        if (shockSeen) hit = true;
                         break;
                 }
             };
@@ -218,6 +238,10 @@ namespace FingerDiceDuel.Tests
             {
                 return false;   // 崩溃不算"发动"（循环赛那边专门报崩溃）
             }
+
+            // 圣武士的冲击是**副产品**，不占一次运算，所以只能在局末看战报
+            // （take 会清空，所以这里只判"有没有过"）
+            if (game.ShockLog != null && game.ShockLog.Count > 0) shockSeen = true;
 
             // ---- 终局判据（累计型 / 成长型）----
             switch (hero.Id)

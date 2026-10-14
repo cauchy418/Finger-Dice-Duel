@@ -27,9 +27,31 @@ namespace FingerDiceDuel.Core
     ///   - `IPreTurnChoiceProvider`：运算前声明"要不要发动连锁破盾、打碎哪面盾"。
     ///   - `GameManager.BreakShieldAndNotify(...)`：统一破盾入口，保证连锁链正确触发。
     /// </summary>
-    public class WarriorLogic : CharacterTemplate, IPreTurnChoiceProvider
+    public class WarriorLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter,
+                                IAiMoveAdvisor
     {
         public override string DisplayName => "Warrior";
+
+        /// <summary>
+        /// 让 AI **主动去合盾**（玩家指出："武僧和战士一起做，因为两人都是 5 高价值"）。
+        ///
+        /// 依据：战士的两个技能**都要求先有盾** ——
+        ///   · 连锁破盾：自己的盾碎时，连带打碎场上一面完好的盾
+        ///   · 碎盾换射程：另一只手是完整盾牌时，可碎它换无限距离
+        /// 而盾只能由"运算出 5"产生。没有盾，两个技能都无从发动。
+        ///
+        /// ⚠️ 只靠价值表不够：它的 5 已经是 55（基线），
+        ///    而"打出 5 只能合盾、没有伤害"在贪心评分里打不过一次攻击。
+        ///    所以必须给"合盾"一条**直接奖励**。
+        /// </summary>
+        public override int ScoreMoveBonus(MoveValueContext context)
+        {
+            // 合盾（结果 5）
+            if (context.ActedValueAfter == 5) return 28;
+
+            // 已经是双盾时别再合盾（没有新收益）
+            return 0;
+        }
 
         /// <summary>
         /// 本局**连锁破盾**发动过几次（"自己的盾碎了，连带打碎场上一面完好的盾"）。
@@ -43,6 +65,9 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本局**碎盾换射程**发动过几次（牺牲自己的完整盾换无限距离）。</summary>
         public int RangeBreakCount { get; private set; }
+
+        /// <summary>本局发动招牌技能几次 —— 见 <see cref="ISkillUseCounter"/>。</summary>
+        public int SkillUseCount => ChainBreakCount + RangeBreakCount;
 
         /// <summary>
         /// 运算前收集"要不要发动连锁破盾、打碎哪面盾"。

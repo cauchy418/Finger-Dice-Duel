@@ -110,6 +110,121 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Monk_double_taichi_cannot_skip_the_turn()
+        {
+            // 玩家要求核实："武僧两个 5（太极）是不能跳过回合的"
+            //
+            // 跳过回合的条件是 **双盾在手**（两只手都是 Formed）。
+            // 太极虽然也是"5"，但它**不是盾**，所以双太极不该能跳过。
+            GameManager game = Match(CharacterDefinition.Monk, CharacterDefinition.Soldier,
+                                     out _, out _);
+            PlayerState monk = game.PlayerA;
+
+            monk.LeftHand.SetValue(5);
+            monk.RightHand.SetValue(5);
+            game.ApplyInitialTaichiForm();
+
+            Assert.AreEqual(ShieldState.Taichi, monk.LeftHand.State, "前置：左手应是太极。");
+            Assert.AreEqual(ShieldState.Taichi, monk.RightHand.State, "前置：右手应是太极。");
+            Assert.False(monk.HasDoubleShield, "双太极**不是**双盾。");
+            Assert.False(game.CanSkipTurnFor(monk),
+                "双太极**不能**跳过回合（玩家明确要求）。");
+        }
+
+        [Test]
+        public void Monk_two_fives_from_an_operation_are_taichi_not_shields()
+        {
+            // 玩家要求核实："武僧两个 5（太极）"
+            //
+            // ⚠️ 这条覆盖的是**运算产生**的 5，而不是开局摆的 5 ——
+            //    GameManager 在效果分派时会把胜出的手设成 ShieldState.Formed，
+            //    所以 MonkLogic 必须在 OnShieldFormed 里把它**纠正回太极**。
+            //    我第一版漏了这一步，太极会被悄悄变成普通护盾
+            //    （那就变成"能完全挡一次"，而不是"减半反弹"）。
+            GameManager game = Match(CharacterDefinition.Monk, CharacterDefinition.Soldier,
+                                     out _, out _);
+            PlayerState monk = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            // ⚠️ 对手的手值必须不是 5 —— 否则 monk 的 1 + 对手的 5 = 6，
+            //    不是我要验证的 5（我第一版就踩了这个）。
+            // 运算源 1 + 对方 4 = 5
+            TestSetup.SetHand(monk.LeftHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 4);
+            game.ExecuteTurn(monk, monk.LeftHand, foe.LeftHand);
+
+            Assert.AreEqual(5, monk.LeftHand.Value, "前置：运算出 5。");
+            Assert.AreEqual(ShieldState.Taichi, monk.LeftHand.State,
+                "运算产生的 5 也必须是太极，不能是护盾。");
+
+            // 再把右手也做成 5
+            TestSetup.SetHand(monk.RightHand, 1);
+            TestSetup.SetHand(foe.RightHand, 4);
+            game.ExecuteTurn(monk, monk.RightHand, foe.RightHand);
+
+            Assert.AreEqual(5, monk.RightHand.Value, "前置：右手也运算出 5。");
+            Assert.AreEqual(ShieldState.Taichi, monk.RightHand.State, "右手也应是太极。");
+
+            // 关键断言：双太极不能跳过回合
+            Assert.False(monk.HasDoubleShield,
+                "两手都是 5 且都是太极时，HasDoubleShield 必须为 false。");
+            Assert.False(game.CanSkipTurnFor(monk),
+                "双太极不能跳过回合。");
+        }
+
+        [Test]
+        public void Monk_double_taichi_halves_and_reflects_not_blocks()
+        {
+            // 双太极被攻击时仍然是"减半 + 反弹"，不是"完全挡下"。
+            //
+            // ⚠️ 必须走**控制器**（而不是直连 ExecuteTurn）：
+            //    太极是"可选发动"，而 SimpleChoiceProvider 没记录过作答时
+            //    会返回放弃值（等价于 UI 的取消按钮）——
+            //    那是**正确语义**，但直连测试就会得到一个没发动太极的局面。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("兵", CharacterDefinition.Soldier),
+                                       Make("僧", CharacterDefinition.Monk),
+                                       providers[0], providers[1]);
+            var board = new BoardController(game, providers[0], providers[1]);
+
+            PlayerState foe = game.PlayerA;
+            PlayerState monk = game.PlayerB;
+
+            monk.LeftHand.SetValue(5);
+            monk.RightHand.SetValue(5);
+            game.ApplyInitialTaichiForm();
+
+            int monkBefore = monk.Health;
+            int foeBefore = foe.Health;
+
+            // 士兵 3+1 = 4（攻 +1 -> 5 点）
+            TestSetup.SetHand(foe.LeftHand, 3);
+            TestSetup.SetHand(monk.LeftHand, 1);
+
+            board.BeginTurn();
+            Assert.True(board.ClickHand(foe.LeftHand), "选运算源");
+            Assert.True(board.ClickHand(monk.LeftHand), "选加数");
+            board.ConfirmTargetPlayer();
+
+            // ⚠️ 要点**右手**的太极 —— 左手是运算源，会被改写成 1，
+            //    太极状态随之消失（我第一版就点错了手）。
+            Assert.False(board.IsChoiceCandidate(monk.LeftHand),
+                "左手的太极已被运算消耗，不该是候选。");
+            Assert.True(board.IsChoiceCandidate(monk.RightHand),
+                "候选应只剩下右手的太极。");
+            Assert.True(board.ClickHand(monk.RightHand), "点发动太极（用右手的太极）。");
+
+            int monkLost = monkBefore - monk.Health;
+            int foeLost = foeBefore - foe.Health;
+
+            Assert.AreEqual(3, monkLost, "太极不是完全挡下，应受一半（ceil(5/2)=3）。");
+            Assert.AreEqual(2, foeLost, "应反弹一半给攻击方（floor(5/2)=2）。");
+        }
+
+        [Test]
         public void Monk_taichi_does_not_fire_when_the_player_declines()
         {
             // ⚠️ 玩家要求"太极也要给按钮选择是否发动" ——

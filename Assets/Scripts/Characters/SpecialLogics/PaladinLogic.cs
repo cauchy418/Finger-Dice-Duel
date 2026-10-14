@@ -18,9 +18,32 @@ namespace FingerDiceDuel.Core
     public sealed class PaladinLogic : CharacterTemplate, IPreTurnChoiceProvider,
                                        FingerDiceDuel.Core.IHandEffectRewriter,
                                        IAttackRangeProvider,
-                                       FingerDiceDuel.Core.IAttackRedirector
+                                       FingerDiceDuel.Core.IAttackRedirector,
+                                       FingerDiceDuel.Core.IAiMoveAdvisor
     {
         public override string DisplayName => "圣武士";
+
+        /// <summary>
+        /// 让 AI **主动去合盾**（玩家指出："圣武士类似 [武僧与战士]，都是 5 高价值"）。
+        ///
+        /// 依据：圣武士的 4 / 5 / 6 都通向"合盾 + 2 点冲击"，
+        /// 而冲击是**白赚的额外伤害**。价值表已经把 4/5/6 抬到 80，
+        /// 但那只影响"屯牌偏好"；这里再给一层**直接奖励**，
+        /// 让它真的把这一手打出去。
+        ///
+        /// ⚠️ 为什么不只靠价值表：价值表的权重会被缩放（除以 10 再乘 12），
+        ///    与一次攻击档位（44~88）相比太小，
+        ///    所以"屯着 5"和"打出 5 合盾"可能分不出高下。
+        /// </summary>
+        public override int ScoreMoveBonus(MoveValueContext context)
+        {
+            int after = context.ActedValueAfter;
+
+            // 4 / 5 / 6 都能合盾（4 与 6 由 RewriteEffect 改写而来）
+            if (after == 4 || after == 5 || after == 6) return 30;
+
+            return 0;
+        }
 
         public override int DefaultAttackBonus => 0;
         public override int DefaultDefenseBonus => 1;
