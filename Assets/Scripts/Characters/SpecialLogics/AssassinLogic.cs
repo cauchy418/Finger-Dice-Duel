@@ -265,11 +265,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             switch (steps)
             {
                 // 差一步：这一手之后手上会有一只 7，下一手再补一只就成
-                // -> 重点奖励（这是"铺路"的关键一手）
-                case 1: return 55;
+                //
+                // ⚠️ 从 55 提到 90：55 只把发动率带到 30%（30 局），
+                //    因为"再补一只"的机会常被对手打乱 ——
+                //    所以铺路那一手本身要更值得，趁有机会就抓住。
+                case 1: return 90;
 
                 // 还差两只：小幅奖励，避免它为了 7 放弃眼前明显更好的机会
-                case 2: return 8;
+                case 2: return 15;
 
                 default: return 0;      // 已成（0 步）：交给价值表的 Combos
             }

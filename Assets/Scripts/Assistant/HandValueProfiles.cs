@@ -302,7 +302,121 @@ namespace FingerDiceDuel.Assistant
             {
                 new ValueAdjust(1, -8), new ValueAdjust(2, -8), new ValueAdjust(7, -8),
             };
+
+            // ============================================================
+            // "**别让他合成 5**" 这一类（玩家给的统一原则）
+            // ============================================================
+            //
+            // 玩家原话："**是要防止骑士合成 5，能让骑士合成 5 的行为要减值，
+            //            减的幅度大于能让他合成 4/6/8**"，
+            // 并说明野蛮人 / 战士**同理**。
+            //
+            // 为什么要连**原料**一起减：合出 5 需要两只手（1+4、2+3），
+            // 所以"别给他 1/2/3/4"与"别给他 5"是同一件事的两面。
+            //
+            // ⚠️ 幅度：挡合 5（−35 或 −18）**必须大于**挡 4/6/8（−12），
+            //    这是玩家明确要求的优先级。
+
+            // ---- 面对骑士 ----
+            // 他的**攻击距离与攻击加成都挂在自己的碎盾数**上
+            // （碎 1 次 -> 距离 2 且加成 2）-> 喂盾是永久强化他。
+            OpponentAdjust[CharacterDefinition.KnightId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -35),                                   // 直接给盾：最该挡
+                new ValueAdjust(1, -18), new ValueAdjust(2, -18),          // 凑 5 的原料
+                new ValueAdjust(3, -18), new ValueAdjust(4, -18),
+                new ValueAdjust(6, -12), new ValueAdjust(8, -12),          // 也能合盾，但没 5 直接
+            };
+
+            // ---- 面对野蛮人 ----
+            // 他合盾时会**锁住我一只手** -> 别给他合盾的机会。
+            OpponentAdjust[CharacterDefinition.BarbarianId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -35),
+                new ValueAdjust(1, -18), new ValueAdjust(2, -18),
+                new ValueAdjust(3, -18), new ValueAdjust(4, -18),
+                new ValueAdjust(6, -12), new ValueAdjust(8, -12),
+            };
+
+            // ---- 面对战士 ----
+            // 他的两个技能（碎盾换射程、连锁破盾）**都以盾为前提**。
+            // ⚠️ 玩家补了一句"**咒术师除外**" —— 那是指"我选咒术师时盾本来就无效"
+            //    （见上面"面对咒术师"那条），所以这一条只对"面对战士"生效。
+            OpponentAdjust[CharacterDefinition.WarriorId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -35),
+                new ValueAdjust(1, -18), new ValueAdjust(2, -18),
+                new ValueAdjust(3, -18), new ValueAdjust(4, -18),
+                new ValueAdjust(6, -12), new ValueAdjust(8, -12),
+            };
+
+            // ---- 面对牧师 ----
+            // 玩家原话："牧师回复较难阻止，和常规的数值尽量阻止**合双 9**即可。"
+            //
+            // 他的 9 = 回 9 血（20 上限里接近半条命），
+            // 而**双 9** 还会再触发一次额外回复（9 + 9 = 18）——
+            // 所以真正该挡的是"给他 9 的原料"。
+            //
+            // ⚠️ 只挡 9 与 5（4+5=9、3+6=9、2+7=9、1+8=9）——
+            //    玩家说"回复较难阻止"，不值得为此把整张表都改掉。
+            OpponentAdjust[CharacterDefinition.PriestId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(9, -30),
+                new ValueAdjust(5, -12),
+            };
+
+            // ---- 面对忍者 ----
+            // 玩家原话："和常规一样，尽量避免给高价值数字，
+            //            而 8 本身价值就大于 6 再大于 4。"
+            //
+            // 他的攻击拆两段、**每段各自吃攻防**，所以高值受益更大
+            // （8 -> 4+4，6 -> 3+3，4 -> 2+2 最亏）。
+            OpponentAdjust[CharacterDefinition.NinjaId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(8, -30),
+                new ValueAdjust(6, -20),
+                new ValueAdjust(4, -10),
+            };
+
+            // ---- 面对魔射手 ----
+            // 玩家原话："与咒术师**同构，但要弱很多**，
+            //            因为**只有 8 能穿**，但**能挡一半 4** 和**全部 6**。"
+            //
+            // 也就是：盾对他并非无效（能挡 6、能挡 4 的一半），
+            // 只是遇到 8 时白搭。所以 5 只小幅贬值，远弱于面对咒术师（−50）。
+            OpponentAdjust[CharacterDefinition.ArcaneArcherId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(5, -20),
+            };
+
+            // ---- 面对赌徒 ----
+            // 玩家原话："基本不需要过多针对，但在**赌徒赌博过的那一个回合**，
+            //            要尽量避免赌徒可以在下一回合正常运算出高价值回合；
+            //            赌徒正常运算的下一回合可以没有针对性策略，
+            //            因为赌徒下一回合强制赌博。"
+            //
+            // ⚠️ 这条是**状态相关**的（取决于他上一回合干了什么），
+            //    静态价值表表达不了，所以见 <see cref="GamblerNeedsDeny"/>。
+            //    这里只留一条**很轻**的常规调整。
+            OpponentAdjust[CharacterDefinition.GamblerId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(8, -8), new ValueAdjust(9, -8),
+            };
         }
+
+        /// <summary>
+        /// 面对**赌徒**时，是否需要"挡住高价值"（玩家给的规则）。
+        ///
+        /// 他的行动是交替的：
+        ///   · **赌博过的那一回合**之后，下一回合他会**正常运算** ——
+        ///     所以要尽量别让他运算出高价值
+        ///   · **正常运算的那一回合**之后，下一回合他**强制赌博** ——
+        ///     此时给他什么数字都无所谓（赌博掷 1d9，与手值无关）
+        ///
+        /// 所以"要不要针对"取决于他**上一回合**是不是赌博。
+        /// </summary>
+        public static bool GamblerNeedsDeny(bool gamblerGambledLastTurn)
+            => gamblerGambledLastTurn;
 
         // ============================================================
         // 查询

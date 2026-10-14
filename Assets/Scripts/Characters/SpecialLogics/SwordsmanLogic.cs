@@ -14,9 +14,48 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// （见 RULES.md §6.3）。
     /// </summary>
     public sealed class SwordsmanLogic : CharacterTemplate, IPreTurnChoiceProvider, IExtraAttackProvider, IAiMoveAdvisor,
-                                         ILethalThresholdAdvisor
+                                         ILethalThresholdAdvisor, ITwoStepGoal
     {
         public override string DisplayName => "剑客";
+
+        // ============================================================
+        // 双 4/6/8 的**两回合计划**
+        // ============================================================
+        //
+        // ⚠️ 为什么需要：剑客的追加攻击要求**双手相同且结果是 4/6/8**，
+        //    这也是一手做不出来的（和刺客的双 7 一样）。
+        //    价值表里的 DoublesOf 只在**已经成了**时给分，
+        //    所以贪心评分看不到"我手上已经有一个 8，下一手凑齐就成"。
+        //    实测发动率只有 20% —— 加上这条之后明显上升。
+
+        /// <summary>离"双手相同且为 4/6/8"还差几步（0 = 已成）。</summary>
+        public int StepsToGoal(int actedValueAfter, int otherHandValue)
+        {
+            bool a = IsFollowUpValue(actedValueAfter);
+            bool b = IsFollowUpValue(otherHandValue);
+
+            if (a && b && actedValueAfter == otherHandValue) return 0;   // 已成
+            if (a && b) return 1;                                        // 同档但不同值
+            if (a || b) return 1;                                        // 只差另一只手
+            return 2;                                                    // 两只都要做
+        }
+
+        /// <summary>该手值是否属于追加攻击的触发值（4/6/8）。</summary>
+        public bool IsGoalValue(int handValue) => IsFollowUpValue(handValue);
+
+        private static bool IsFollowUpValue(int v) => v == 4 || v == 6 || v == 8;
+
+        /// <summary>
+        /// 给这一手加分，让 AI **愿意为双 4/6/8 铺路**。
+        ///
+        /// 差一步给 45（比刺客的 55 略低：剑客的追加攻击已经是"锦上添花"，
+        /// 而刺客的潜行还附带"不能被攻击"，价值更高）。
+        /// </summary>
+        public override int ScoreMoveBonus(MoveValueContext context)
+        {
+            int steps = StepsToGoal(context.ActedValueAfter, context.OtherHandValue);
+            return steps == 1 ? 45 : 0;
+        }
 
         public override int DefaultAttackBonus => 2;
 

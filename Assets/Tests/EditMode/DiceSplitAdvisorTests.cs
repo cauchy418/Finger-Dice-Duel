@@ -210,25 +210,61 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_curseweaver_is_the_only_one_that_devalues_my_five()
         {
-            // 只有咒术师无视护盾 -> 只有面对他时 5 才贬值
+            // ⚠️ 规则在 2025 年被玩家扩展了，这条测试的**措辞**要跟着改：
+            //
+            //   原来："只有咒术师无视护盾 -> 只有面对他时 5 才贬值"
+            //   现在：**咒术师依然是唯一"让我方盾完全无效"的对手**，
+            //        但另有一类新对手会让我方主动**不想**合盾 ——
+            //        因为合盾等于**送他们盾**（骑士靠碎盾成长、
+            //        野蛮人靠合盾锁我的手、战士的两个技能都以盾为前提）。
+            //
+            //   所以这条测试现在验证的是**两种不同的贬值原因**：
+            //     · 咒术师：盾**无效**（他无视护盾）
+            //     · 骑士 / 野蛮人 / 战士：盾**资敌**（别给他凑 5）
             int baseline = HandValueProfiles.For(CharacterDefinition.Blank,
                                                  CharacterDefinition.Blank).WeightOf(5);
 
             Assert.True(HandValueProfiles.For(CharacterDefinition.Blank,
                                               CharacterDefinition.Curseweaver).WeightOf(5) < baseline);
 
-            CharacterDefinition[] others =
+            // 这一组是"盾完全白费 / 盾没有副作用"的对照组：他们**不该**让 5 贬值
+            // ⚠️ 牧师不在这里 —— 他有一条"挡合双 9"的轻贬值（5 减 12），
+            //    因为 4+5 / 3+6 / 2+7 / 1+8 都能凑出 9，而 9 是回 9 血。
+            CharacterDefinition[] shieldIsFine =
             {
-                CharacterDefinition.Warrior, CharacterDefinition.Barbarian,
-                CharacterDefinition.Priest, CharacterDefinition.Ranger,
-                CharacterDefinition.Werewolf, CharacterDefinition.Swordsman,
-                CharacterDefinition.Ninja, CharacterDefinition.Assassin,
+                CharacterDefinition.Ranger,
+                CharacterDefinition.Werewolf,
+                CharacterDefinition.Swordsman,
+                CharacterDefinition.Ninja,
+                CharacterDefinition.Assassin,
             };
-            for (int i = 0; i < others.Length; i++)
+            for (int i = 0; i < shieldIsFine.Length; i++)
             {
                 Assert.AreEqual(baseline,
-                    HandValueProfiles.For(CharacterDefinition.Blank, others[i]).WeightOf(5),
-                    $"面对 {others[i].DisplayName} 时我的 5 不该贬值。");
+                    HandValueProfiles.For(CharacterDefinition.Blank, shieldIsFine[i]).WeightOf(5),
+                    $"面对 {shieldIsFine[i].DisplayName} 时我的 5 不该贬值。");
+            }
+
+            // 这一组是"别送他盾"（玩家明确要求：挡合 5 的幅度大于挡 4/6/8）
+            CharacterDefinition[] deniesTheirShield =
+            {
+                CharacterDefinition.Knight, CharacterDefinition.Barbarian,
+                CharacterDefinition.Warrior,
+            };
+            for (int i = 0; i < deniesTheirShield.Length; i++)
+            {
+                int five = HandValueProfiles.For(CharacterDefinition.Blank,
+                                                 deniesTheirShield[i]).WeightOf(5);
+                int four = HandValueProfiles.For(CharacterDefinition.Blank,
+                                                 deniesTheirShield[i]).WeightOf(4);
+
+                Assert.True(five < baseline,
+                    $"面对 {deniesTheirShield[i].DisplayName} 时，我的 5 应贬值（别送他盾）。");
+
+                // 玩家明确要求：挡合 5 的幅度**大于**挡 4/6/8
+                Assert.True(five < four,
+                    $"面对 {deniesTheirShield[i].DisplayName} 时，" +
+                    $"5 要比 4 贬得更多（{five} 应小于 {four}）。");
             }
         }
 
