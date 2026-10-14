@@ -1,5 +1,7 @@
 namespace FingerDiceDuel.Core
 {
+    using System.Collections.Generic;
+
     /// <summary>
     /// **武僧**（攻 0 / 防 0，攻击距离 1）。
     ///
@@ -20,7 +22,7 @@ namespace FingerDiceDuel.Core
     /// 不该因为取整而让它比"四舍五入"更亏；而且这样**总伤害守恒**（受 + 反弹 = N）。
     /// </summary>
     public sealed class MonkLogic : CharacterTemplate, IHandEffectRewriter,
-                                     IDamageMitigator
+                                     IDamageMitigator, IPreTurnChoiceProvider
     {
         public override string DisplayName => "武僧";
 
@@ -107,8 +109,15 @@ namespace FingerDiceDuel.Core
             Hand taichi = TaichiHandOf(owner);
             if (taichi == null) return false;
 
+            // ⚠️ **是否发动由玩家决定**（玩家要求"也要给按钮选择是否发动"）。
+            //
+            //    走与游侠闪避同一条通路：收集阶段问过、答案记进 sink，
+            //    这里回读。读不到答案（AI / 没问过）时**默认发动** ——
+            //    减半天生比吃满伤害好，不发动只是白白吃亏。
+            if (!WantsToUseTaichi(owner, context, taichi)) return false;
+
             // 太极发动：那只 5 变成 0（此后它只是一只普通的 0，
-            // 而且"被他人触碰会变 1"—— 见 OnOtherPlayerUsedMyHandAsAddend）
+            // 而且"被他人触碰会变 1"—— 见 OnTouchedAsAddend）
             taichi.SetValue(TaichiBrokenValue);
 
             // 减半：受上取整、反弹下取整（总和守恒）
@@ -116,6 +125,62 @@ namespace FingerDiceDuel.Core
             reflectDamage = incomingDamage / 2;
 
             return true;
+        }
+
+        /// <summary>
+        /// 回读"玩家是否选择发动太极"。
+        ///
+        /// <see cref="PreTurnChoiceReader.Read"/> 优先问抉择器（AI），
+        /// 再回读 sink（人类在收集阶段点的）。没有答案时返回 true（默认发动）。
+        /// </summary>
+        private static bool WantsToUseTaichi(PlayerState owner, AttackContext context,
+                                             Hand taichi)
+        {
+            GameManager manager = context?.Manager;
+            if (manager == null) return true;      // 拿不到上下文 -> 默认发动
+
+            var request = new ChoiceRequest(
+                HandEffect.MonkTaichi,
+                $"武僧被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
+                $"只受一半伤害并把剩余的反弹给攻击方）",
+                new List<Hand>(1) { taichi },
+                allowDecline: true,
+                declineResult: null,               // 放弃 = 不发动，正常吃满伤害
+                decider: owner,
+                acceptLabel: "发动太极");
+
+            Hand chosen = PreTurnChoiceReader.Read(
+                manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
+                manager.GetChoiceProvider(owner), request, owner);
+
+            // 选了候选（那只太极手）= 发动；null（明确放弃）= 不发动。
+            return chosen != null;
+        }
+
+        /// <summary>
+        /// 收集"是否发动太极"—— 必须在**结算之前**问，否则结算中途没有机会。
+        ///
+        /// 只在"我是这次攻击的防守方"时问（太极是防守姿态）。
+        /// </summary>
+        public override void CollectPreTurnChoices(PreTurnChoiceContext context,
+                                                   IList<ChoiceRequest> requests)
+        {
+            if (context == null || requests == null) return;
+            if (!ReferenceEquals(context.Defender?.Character, this)) return;
+            if (!context.IsAttack) return;
+
+            Hand taichi = TaichiHandOf(context.Defender);
+            if (taichi == null) return;
+
+            requests.Add(new ChoiceRequest(
+                HandEffect.MonkTaichi,
+                $"武僧被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
+                $"只受一半伤害并把剩余的反弹给攻击方）",
+                new List<Hand>(1) { taichi },
+                allowDecline: true,
+                declineResult: null,
+                decider: context.Defender,
+                acceptLabel: "发动太极"));
         }
 
         /// <summary>找出处于太极形态的那只手；没有则返回 null。</summary>
@@ -126,6 +191,41 @@ namespace FingerDiceDuel.Core
             if (player.RightHand != null && player.RightHand.IsTaichi) return player.RightHand;
 
             return null;
+        }
+
+        /// <summary>
+        /// 把武僧手上所有**值为 5** 的手变成太极形态。
+        ///
+        /// 玩家要求："武僧初始有 5 的话这个 5 是可以发动的，处于太极状态" ——
+        /// 即**开局就是 5**（掷骰决定的手值 / 测试直接摆的局面）也算太极，
+        /// 不必先用运算"打出来"。
+        ///
+        /// ⚠️ 为什么需要单独一步：`ShieldState` 只在**运算产生 Shield 效果**时
+        ///    才会被设成 Taichi（见 <see cref="RewriteEffect"/>）。
+        ///    开局直接摆出来的 5 没有经过那一步，状态还是 None ——
+        ///    于是"有 5 却不能发动太极"。
+        ///
+        /// 由上层在**开局设定手值之后**调用（见
+        /// <c>GameManager.ApplyInitialTaichiForm</c>）。
+        /// </summary>
+        public static void ApplyTaichiToFives(PlayerState player)
+        {
+            if (player == null) return;
+            if (!(player.Character is MonkLogic)) return;
+
+            ApplyTo(player.LeftHand);
+            ApplyTo(player.RightHand);
+
+            void ApplyTo(Hand hand)
+            {
+                if (hand == null) return;
+                if (hand.Value != TaichiValue) return;
+
+                // 只动"没有任何护盾状态"的手 —— 已成型的盾 / 已碎的盾不该被改写
+                if (hand.State != ShieldState.None) return;
+
+                hand.SetShieldState(ShieldState.Taichi);
+            }
         }
 
         // ============================================================

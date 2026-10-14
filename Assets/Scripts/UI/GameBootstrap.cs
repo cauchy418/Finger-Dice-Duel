@@ -1352,6 +1352,17 @@ namespace FingerDiceDuel.UI
         {
             ShowScreen(GameScreen.InMatch);
 
+            // ⚠️ **武僧初始的 5 也进入太极形态**（玩家要求）。
+            //
+            //    必须在这里统一做一次：`ShieldState.Taichi` 原本只在
+            //    "运算产生 Shield 效果"时才被设上，而开局直接摆出来的 5
+            //    （掷骰决定的手值 / 直接开局）没经过那一步 ——
+            //    于是"有 5 却不能发动太极"。
+            //
+            //    放在开局这里而不是各建局路径里，是为了让 1v1 与 2v2、
+            //    入门与经典**共用同一处**，不会漏掉某条路。
+            _game.ApplyInitialTaichiForm();
+
             // 2v2：四个人绑到环形位置，标题用队伍说明。
             if (_isTwoOnTwo && _twoOnTwoSeated != null)
             {

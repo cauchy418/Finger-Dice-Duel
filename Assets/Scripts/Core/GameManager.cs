@@ -704,6 +704,24 @@ namespace FingerDiceDuel.Core
             PlayerB.Character?.OnMatchReset(PlayerB, this);
         }
 
+        /// <summary>
+        /// 把场上所有武僧手上**值为 5** 的手变成**太极形态**。
+        ///
+        /// 玩家要求："武僧初始有 5 的话这个 5 是可以发动的，处于太极状态。"
+        ///
+        /// 为什么需要单独一步：`ShieldState.Taichi` 原本只在**运算产生 Shield 效果**
+        /// 时才被设上；而开局直接摆出来的 5（掷骰决定的手值、测试直接设的手值）
+        /// 没经过那一步，状态还是 None —— 于是"有 5 却不能发动太极"。
+        ///
+        /// 由上层在**开局手值确定之后**调用（掷骰分配完成 / 直接开局）。
+        /// 幂等：已经是太极或被锁定 / 已成型的手不会被改写。
+        /// </summary>
+        public void ApplyInitialTaichiForm()
+        {
+            for (int i = 0; i < _players.Count; i++)
+                MonkLogic.ApplyTaichiToFives(_players[i]);
+        }
+
         // ============================================================
         // 合法运算枚举与校验
         // ============================================================

@@ -146,6 +146,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
         {
+            Manager = manager;
             // 0. **最早结算：取消攻击**（邪术师）。
             //
             //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
@@ -318,6 +319,14 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次攻击的伤害是否被**太极化解**（武僧）。</summary>
         public bool WasMitigated { get; private set; }
+
+        /// <summary>
+        /// 当前对局（在 <see cref="Resolve"/> 时记下）。
+        ///
+        /// 用途：角色在结算途中需要回读"玩家在收集阶段的作答"
+        /// （武僧的"是否发动太极"），那需要 <see cref="GameManager.GetChoiceProvider"/>。
+        /// </summary>
+        public GameManager Manager { get; private set; }
 
         /// <summary>被太极**反弹**给攻击方的伤害（0 = 没反弹）。</summary>
         public int ReflectedDamage { get; private set; }

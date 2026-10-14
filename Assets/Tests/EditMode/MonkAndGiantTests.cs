@@ -67,16 +67,100 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Monk_taichi_halves_damage_and_reflects_the_rest()
+        public void Monk_initial_five_is_already_taichi()
+        {
+            // 玩家要求："武僧初始有 5 的话这个 5 是可以发动的，处于太极状态"
+            //
+            // 开局直接摆出的 5 没经过"运算产生 Shield"那一步，
+            // 状态原本还是 None —— 于是有 5 却发动不了太极。
+            GameManager game = Match(CharacterDefinition.Monk, CharacterDefinition.Soldier,
+                                     out _, out _);
+            PlayerState monk = game.PlayerA;
+
+            // 模拟掷骰 / 直接开局摆出的手值
+            monk.LeftHand.SetValue(5);
+            monk.RightHand.SetValue(3);
+
+            Assert.AreEqual(ShieldState.None, monk.LeftHand.State,
+                "前置：直接设值得到的是普通状态。");
+
+            game.ApplyInitialTaichiForm();
+
+            Assert.AreEqual(ShieldState.Taichi, monk.LeftHand.State,
+                "初始的 5 应进入太极形态。");
+            Assert.AreEqual(3, monk.RightHand.Value, "不是 5 的手不受影响。");
+            Assert.AreEqual(ShieldState.None, monk.RightHand.State);
+        }
+
+        [Test]
+        public void Monk_initial_taichi_does_not_overwrite_a_formed_shield()
+        {
+            // 防御性：只动"没有护盾状态"的手，别把已成型的盾改成太极
+            GameManager game = Match(CharacterDefinition.Monk, CharacterDefinition.Soldier,
+                                     out _, out _);
+            PlayerState monk = game.PlayerA;
+
+            monk.LeftHand.SetValue(5);
+            monk.LeftHand.SetShieldState(ShieldState.Formed);
+
+            game.ApplyInitialTaichiForm();
+
+            Assert.AreEqual(ShieldState.Formed, monk.LeftHand.State,
+                "已成型的盾不该被改成太极。");
+        }
+
+        [Test]
+        public void Monk_taichi_does_not_fire_when_the_player_declines()
+        {
+            // ⚠️ 玩家要求"太极也要给按钮选择是否发动" ——
+            //    所以**没点发动就不该发动**（正常吃满伤害、那只 5 也不消耗）。
+            //
+            //    ⚠️ 这条测试原来断言的是"自动发动"，规则改了之后
+            //       它立刻失败（期望 0 实际 5）—— 那正是测试该做的事。
+            GameManager game = Match(CharacterDefinition.Soldier, CharacterDefinition.Monk,
+                                     out _, out _);
+            PlayerState foe = game.PlayerA;
+            PlayerState monk = game.PlayerB;
+
+            monk.RightHand.SetValue(5);
+            monk.RightHand.SetShieldState(ShieldState.Taichi);
+
+            int monkBefore = monk.Health;
+            int foeBefore = foe.Health;
+
+            foe.LeftHand.SetValue(3);
+            TestSetup.SetHand(monk.LeftHand, 1);
+
+            game.ExecuteTurn(foe, foe.LeftHand, monk.LeftHand);
+
+            Assert.AreEqual(5, monk.RightHand.Value,
+                "没点'发动太极'时，那张 5 不该被消耗。");
+            Assert.AreEqual(ShieldState.Taichi, monk.RightHand.State,
+                "太极形态应保持。");
+            Assert.AreEqual(5, monkBefore - monk.Health,
+                "没发动 -> 正常吃满伤害（士兵 3+1=4，攻+1 => 5）。");
+            Assert.AreEqual(foeBefore, foe.Health, "没发动 -> 不该有反弹。");
+        }
+
+        [Test]
+        public void Monk_taichi_halves_damage_and_reflects_when_activated()
         {
             // 玩家确认："被攻击时可以把 5 变成 0，受到本次攻击应有的一半伤害，
             //            将剩余的伤害反弹给攻击方"
-            GameManager game = Match(CharacterDefinition.Soldier, CharacterDefinition.Monk,
-                                     out _, out _);
+            //
+            // 走**控制器**这条路，才能真的"点一下发动太极"。
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("兵", CharacterDefinition.Soldier),
+                                       Make("僧", CharacterDefinition.Monk),
+                                       providers[0], providers[1]);
+            var board = new BoardController(game, providers[0], providers[1]);
+
             PlayerState foe = game.PlayerA;      // 士兵打武僧
             PlayerState monk = game.PlayerB;
 
-            // 武僧有一只手处于太极形态
             monk.RightHand.SetValue(5);
             monk.RightHand.SetShieldState(ShieldState.Taichi);
 
@@ -87,23 +171,30 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(3);
             TestSetup.SetHand(monk.LeftHand, 1);
 
-            game.ExecuteTurn(foe, foe.LeftHand, monk.LeftHand);
+            board.BeginTurn();
 
-            // 太极发动：那只 5 变成 0
-            Assert.AreEqual(0, monk.RightHand.Value,
-                "太极发动后那只手应变成 0。");
-            Assert.AreEqual(ShieldState.None, monk.RightHand.State,
-                "变成 0 之后不再是太极形态。");
+            // 士兵走完三步 -> 停在"武僧是否发动太极"
+            Assert.True(board.ClickHand(foe.LeftHand), "选运算源");
+            Assert.True(board.ClickHand(monk.LeftHand), "选加数");
+
+            // ⚠️ 第 ③ 步要先确认"打谁"，之后才收集角色抉择
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+            board.ConfirmTargetPlayer();
+
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
+                "应停下来问武僧是否发动太极（玩家要求的按钮）。");
+            Assert.True(board.IsChoiceCandidate(monk.RightHand),
+                "候选应是那张太极的手。");
+
+            // 点它 = 发动
+            Assert.True(board.ClickHand(monk.RightHand), "点发动太极。");
 
             int monkLost = monkBefore - monk.Health;
             int foeLost = foeBefore - foe.Health;
 
-            Assert.True(monkLost > 0, "武僧应受到一半伤害（不是完全免伤）。");
-            Assert.True(foeLost > 0, "攻击方应受到反弹伤害。");
-
-            // 减半：武僧受的是 ceil(5/2)=3，反弹 floor(5/2)=2
-            Assert.AreEqual(3, monkLost, "武僧应受一半（上取整）。");
-            Assert.AreEqual(2, foeLost, "攻击方应受剩余的一半。");
+            Assert.AreEqual(0, monk.RightHand.Value, "发动后那张手应变成 0。");
+            Assert.AreEqual(3, monkLost, "武僧应受一半（ceil(5/2)=3）。");
+            Assert.AreEqual(2, foeLost, "攻击方应受剩余的一半（floor(5/2)=2）。");
         }
 
         [Test]
