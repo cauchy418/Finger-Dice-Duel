@@ -96,14 +96,48 @@ namespace FingerDiceDuel.Assistant
             return sb.ToString();
         }
 
-        /// <summary>完整的规则说明（基础 + 角色），用于右上角问号弹窗。</summary>
+        /// <summary>
+        /// 完整的规则说明，用于右上角问号弹窗。
+        ///
+        /// ⚠️ **不再列出角色介绍**（玩家要求）。
+        ///
+        ///    原因：主菜单右上角已经有**图鉴**，里面每个角色都有
+        ///    技能、操作指导、如何针对与特殊交互 —— 比这里一行字详细得多。
+        ///    两处各写一份只会**互相过时**。所以这里只留一句指引。
+        /// </summary>
         public static string Full(IReadOnlyList<CharacterDefinition> roster)
-            => BasicRules() + "\n" + CharacterList(roster);
+            => BasicRules()
+             + "\n【角色】\n"
+             + "各角色的技能、操作指导与针对手段，详情见图鉴\n"
+             + "（主菜单右上角的「图」按钮）。";
+
+        /// <summary>
+        /// **当前已经可以玩的模式**（玩家要求：
+        /// "更新没有开发模式的占位符，显示可游玩的所有模式而不只有 1v1"）。
+        ///
+        /// ⚠️ 原来这里只写了"1v1 · 人机对战"，但 2v2 其实**已经能玩**，
+        ///    所以那是一条**过时且误导**的文案。
+        /// </summary>
+        public static IReadOnlyList<string> PlayableModes()
+            => new List<string>
+            {
+                "1 v 1 · 人机对战（可选入门 / 经典，入门可选难度）",
+                "2 v 2 · 人机练习（四人同屏）",
+                "8 人身份局 · 待开放",
+            };
 
         /// <summary>"敬请期待"弹窗的文案。</summary>
         public static string ComingSoon(string feature)
-            => $"{feature}正在开发中，敬请期待。\n\n" +
-               "目前可以玩的是：\n" +
-               "· 1v1 · 人机对战";
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"{feature}正在开发中，敬请期待。");
+            sb.AppendLine();
+            sb.AppendLine("目前可以玩的模式：");
+
+            IReadOnlyList<string> modes = PlayableModes();
+            for (int i = 0; i < modes.Count; i++) sb.AppendLine("· " + modes[i]);
+
+            return sb.ToString();
+        }
     }
 }

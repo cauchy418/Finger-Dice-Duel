@@ -168,14 +168,19 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Full_rules_contain_both_basic_and_character_sections()
+        public void Full_rules_keep_the_basics_and_point_to_the_codex()
         {
+            // ⚠️ 玩家要求：问号弹窗**删除角色介绍**，
+            //    只留一句"详情见图鉴"。
+            //
+            //    原因：主菜单右上角已经有图鉴，两处各写一份只会互相过时。
             var roster = new List<CharacterDefinition>(CharacterDefinition.BuiltIn);
 
             string text = RuleBook.Full(roster);
 
             Assert.True(text.Contains("一回合做什么"), "应含基础规则。");
-            Assert.True(text.Contains("角色技能"), "应含角色一览。");
+            Assert.True(text.Contains("图鉴"), "应指向图鉴。");
+            Assert.False(text.Contains("角色技能"), "不应再列出角色介绍。");
         }
 
         [Test]
@@ -186,6 +191,10 @@ namespace FingerDiceDuel.Tests
             Assert.True(text.Contains("2 v 2 组队模式"), "应说明是哪个功能。");
             Assert.True(text.Contains("敬请期待"), "应说明尚未开放。");
             Assert.True(text.Contains("人机"), "应告诉玩家现在能玩什么。");
+
+            // 玩家要求：列出**所有**可玩模式（不只 1v1）
+            Assert.True(text.Contains("1 v 1"), "应列出 1v1。");
+            Assert.True(text.Contains("2 v 2"), "应列出 2v2（它已经能玩）。");
         }
 
         [Test]

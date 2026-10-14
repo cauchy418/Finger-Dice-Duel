@@ -499,7 +499,7 @@ namespace FingerDiceDuel.UI
             Button help = MakeHelpButton(_selectRoot);
             _screenMainMenu.Add(help.gameObject);
 
-            // 图鉴入口：玩家要求放在**右上角问号的下面**，做成书本状
+            // 图鉴入口：玩家要求放在**右上角问号的下面**（图标字为「图」）
             Button codex = MakeButton(_selectRoot, "Codex",
                                       new Vector2(880f, 388f),
                                       new Vector2(64f, 64f), "图");
@@ -1146,6 +1146,15 @@ namespace FingerDiceDuel.UI
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
             _screenTwoOnTwoInitiative?.SetVisible(screen == GameScreen.TwoOnTwoInitiative);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
+
+            // ⚠️ 图鉴也必须在这里管住！
+            //
+            //    我原来只在 OnCodexClicked 里 SetVisible(true)，
+            //    但**没有人把它关掉** ——
+            //    于是点"返回"切回主菜单后，图鉴还盖在上面
+            //    （玩家实测："点返回没有关闭图鉴"）。
+            //    与其他屏幕一样，按"当前屏幕是不是它"来决定。
+            _codex?.SetVisible(screen == GameScreen.Codex);
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
                 || screen == GameScreen.TwoOnTwoMenu
