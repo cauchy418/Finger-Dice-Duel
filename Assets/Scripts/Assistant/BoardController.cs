@@ -1326,7 +1326,20 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **盗贼 AI**：找一个"判定生效且效果最好"的目标去偷。
+        /// **盗贼 AI**（玩家给的策略）：
+        ///
+        /// > "能成功偷到并触发**高价值数字**就偷；不能偷则尽量
+        /// >   **合成更大点数的高价值数字**，**8 和 9 价值上升**。"
+        ///
+        /// 所以判据是**两段**：
+        ///   ① 存在一个"判定生效（原先 ≥ 偷来的）且偷来的是**高价值数字**"
+        ///      的目标 -> 偷其中**最好**的那个
+        ///   ② 否则**不偷**，回去走正常运算 ——
+        ///      而正常运算的偏好由盗贼的价值表负责
+        ///      （8 > 9 > 6 > 5 > 4，见 HandValueProfiles）
+        ///
+        /// ⚠️ 我第一版是"只要有得分 > 0 的机会就偷"，
+        ///    那会为了一个无效果的 3 放弃正常运算 —— 与玩家策略不符。
         ///
         /// 返回 true 表示已经用掉了这个回合。
         /// </summary>
@@ -1358,10 +1371,14 @@ namespace FingerDiceDuel.Assistant
                         Hand theirHand = theirs[t];
                         if (theirHand == null) continue;
 
-                        // 判定必须生效（原先 ≥ 偷来的）才有价值
+                        // ① 判定必须生效（原先 ≥ 偷来的）
                         if (myHand.Value < theirHand.Value) continue;
 
+                        // ② 而且偷来的必须是**高价值数字**（4/5/6/8/9）——
+                        //    偷一个 3 只会白白用掉这个回合（还没效果）。
                         int score = StealScore(theirHand.Value);
+                        if (score <= 0) continue;
+
                         if (score > bestScore)
                         {
                             bestScore = score;
@@ -1372,7 +1389,17 @@ namespace FingerDiceDuel.Assistant
                 }
             }
 
-            if (bestMine == null) return false;      // 没有划算的 -> 正常运算
+            // 没有"划算的偷窃" -> 不偷，走正常运算（价值表负责合成更大点数）
+            //
+            // ⚠️ TODO（下一轮）：
+            //    这里的 AI 偷窃还有问题 —— 测试 Ai_thief_steals_when_it_can_trigger_a_high_value
+            //    与 Ai_thief_prefers_stealing_the_best_high_value 目前**失败**：
+            //    AI 没有偷，手牌完全没变。
+            //    已经排除的：TryAiThiefSteal 被调用了（在 MakeAutomaticMove 里）、
+            //    判据本身正确、GreedyChoiceProvider 是 IMoveSelector。
+            //    下一步该在这一行打诊断（或直接单步），确认是
+            //    `CanStealOn` 返回 false 还是 `ClickHand` / `BeginSteal` 失败。
+            if (bestMine == null) return false;
 
             if (!ClickHand(bestMine)) return false;
             if (!BeginSteal()) return false;
@@ -1380,7 +1407,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
-                BeginTurn();          // 同上：必须刷新 ActivePlayer
+                BeginTurn();          // 必须刷新 ActivePlayer（见 CompleteSteal 的注释）
                 ResolvePendingAiChoices();
             }
             catch (System.InvalidOperationException)
@@ -1391,17 +1418,25 @@ namespace FingerDiceDuel.Assistant
             return true;
         }
 
-        /// <summary>偷来这个数字值多少（盗贼 AI 用）。</summary>
+        /// <summary>
+        /// 偷来这个数字值多少（盗贼 AI 用）。
+        ///
+        /// **只有高价值数字才有分**（4/5/6/8/9）——
+        /// 1/2/3/7 返回 0，表示"不值得为它用掉这个回合"。
+        ///
+        /// 梯度按玩家要求："**8 和 9 价值上升**"，
+        /// 与盗贼价值表里的 8 > 9 > 6 > 5 > 4 保持一致。
+        /// </summary>
         private static int StealScore(int stolen)
         {
             switch (Hand.GetEffectType(stolen))
             {
-                case HandEffectType.Attack8: return 88;
-                case HandEffectType.Attack6: return 66;
-                case HandEffectType.Attack4: return 44;
-                case HandEffectType.Shield: return 50;
-                case HandEffectType.Heal: return 30;
-                default: return 0;
+                case HandEffectType.Attack8: return 92;   // 最高攻击
+                case HandEffectType.Heal: return 86;      // 回复 9
+                case HandEffectType.Attack6: return 76;
+                case HandEffectType.Shield: return 66;    // 偷来 5：整盾还是碎盾看原先
+                case HandEffectType.Attack4: return 62;
+                default: return 0;                        // 1/2/3/7 -> 不值得偷
             }
         }
 

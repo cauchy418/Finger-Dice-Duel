@@ -62,6 +62,119 @@ namespace FingerDiceDuel.Tests
                                        new SimpleChoiceProvider(), new SimpleChoiceProvider());
         }
 
+        // ============================================================
+        // 盗贼的 AI 策略（玩家给的规则）
+        // ============================================================
+
+        /// <summary>造一个"双方都是 AI"的局面，让盗贼自己走。</summary>
+        private static BoardController AiBoard(out PlayerState thief, out PlayerState foe,
+                                              out GameManager game)
+        {
+            thief = Make("贼", CharacterDefinition.Thief);
+            foe = Make("兵", CharacterDefinition.Soldier);
+
+            game = new GameManager(thief, foe, new SimpleChoiceProvider(),
+                                   new SimpleChoiceProvider());
+
+            return new BoardController(game,
+                                       new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                                       aiForA: new GreedyChoiceProvider(),
+                                       aiForB: new GreedyChoiceProvider());
+        }
+
+        [Test]
+        public void Ai_thief_steals_when_it_can_trigger_a_high_value()
+        {
+            // 玩家策略："**能成功偷到并触发高价值数字就偷**"
+            BoardController board = AiBoard(out PlayerState thief, out PlayerState foe,
+                                            out GameManager game);
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(thief.RightHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 8);       // 偷来 8 -> 最高攻击
+            TestSetup.SetHand(foe.RightHand, 1);
+
+            board.BeginTurn();
+            Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
+
+            // ⚠️ 用**手牌状态**判断有没有偷 —— 这是最硬的证据。
+            //    （我第一版读 board.LastTurn.StealUsed，但它不可靠：
+            //      CompleteSteal 里会调 BeginTurn()，而 LastTurn 的语义是
+            //      "最近一次已结算的回合"，容易被后续步骤影响。）
+            Assert.AreEqual(8, thief.LeftHand.Value,
+                $"有高价值可偷时，AI 应该偷（偷来 8）。" +
+                $"[L={thief.LeftHand.Value} R={thief.RightHand.Value} " +
+                $"foeL={foe.LeftHand.Value} foeR={foe.RightHand.Value} " +
+                $"AI诊断={board.LastAiMoveDiagnostic}]");
+            Assert.AreEqual(9, foe.LeftHand.Value,
+                "被偷者应该拿到盗贼原来的 9（证明发生了交换）。");
+        }
+
+        [Test]
+        public void Ai_thief_does_not_steal_a_worthless_number()
+        {
+            // 玩家策略的另一半：偷来的若是 1/2/3/7（无效果），
+            // **不值得为它用掉这个回合** -> 应该回去正常运算。
+            BoardController board = AiBoard(out PlayerState thief, out PlayerState foe,
+                                            out GameManager game);
+
+            // 盗贼手里只有 2（偷 2 得 2 -> 无效果）；对手另一只手是 1
+            TestSetup.SetHand(thief.LeftHand, 2);
+            TestSetup.SetHand(thief.RightHand, 2);
+            TestSetup.SetHand(foe.LeftHand, 2);
+            TestSetup.SetHand(foe.RightHand, 1);
+
+            board.BeginTurn();
+            board.MakeAutomaticMove();
+
+            Assert.False(board.LastTurn != null && board.LastTurn.StealUsed,
+                "偷来 2 没有效果，不该偷 —— 应该走正常运算。" +
+                $"[最近结算={(board.LastTurn == null ? "NULL" : board.LastTurn.Effect.ToString())}]");
+        }
+
+        [Test]
+        public void Ai_thief_prefers_stealing_the_best_high_value()
+        {
+            // 多个高价值可偷时，取**最好**的那个（8 > 9 > 6 > 5 > 4）
+            BoardController board = AiBoard(out PlayerState thief, out PlayerState foe,
+                                            out GameManager game);
+
+            TestSetup.SetHand(thief.LeftHand, 9);
+            TestSetup.SetHand(thief.RightHand, 1);
+            TestSetup.SetHand(foe.LeftHand, 4);       // 可偷 4
+            TestSetup.SetHand(foe.RightHand, 8);      // 也可偷 8（更好）
+
+            board.BeginTurn();
+            Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
+
+            // 应该在**两个高价值里挑更好的**（8 > 4）
+            Assert.AreEqual(8, thief.LeftHand.Value,
+                $"4 与 8 都能偷时，应取更好的 8。" +
+                $"[L={thief.LeftHand.Value} foeL={foe.LeftHand.Value} " +
+                $"foeR={foe.RightHand.Value}]");
+        }
+
+        [Test]
+        public void Thief_value_table_ranks_eight_and_nine_highest()
+        {
+            // 玩家要求："**8 和 9 价值上升**"，
+            // 且"不能偷则尽量合成**更大点数**的高价值数字"
+            HandValueProfile p = HandValueProfiles.For(CharacterDefinition.Thief);
+
+            Assert.True(p.WeightOf(8) > p.WeightOf(9),
+                $"8（最高攻击）应高于 9（{p.WeightOf(8)} vs {p.WeightOf(9)}）。");
+            Assert.True(p.WeightOf(9) > p.WeightOf(6),
+                $"9 应高于 6（{p.WeightOf(9)} vs {p.WeightOf(6)}）。");
+            Assert.True(p.WeightOf(6) > p.WeightOf(4),
+                $"6 应高于 4 —— 这就是「更大点数」（{p.WeightOf(6)} vs {p.WeightOf(4)}）。");
+
+            // 8 与 9 都要明显高于基线（"价值上升"）
+            Assert.True(p.WeightOf(8) > HandValueProfile.Baseline[8],
+                "8 应该比基线更高。");
+            Assert.True(p.WeightOf(9) > HandValueProfile.Baseline[9],
+                "9 应该比基线更高。");
+        }
+
         [Test]
         public void Steal_hands_the_turn_to_the_opponent()
         {
