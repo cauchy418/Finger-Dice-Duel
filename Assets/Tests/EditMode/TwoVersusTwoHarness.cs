@@ -109,9 +109,23 @@ namespace FingerDiceDuel.Tests
                     LegalMove move = selector.ChooseMove(game, actor);
                     if (move.Actor == null)
                     {
-                        // 无合法步：不该发生（手总是可用的）。当作异常暴露出来，
-                        // 而不是静默当成平局 —— 静默会把 bug 藏成"数据不好看"。
-                        return Fail($"座位 {game.SeatOf(actor)} 无合法步（第 {actions + 1} 次行动）");
+                        // 无合法步。把**现场**一并带出来（否则只能知道"出错了"）。
+                        var detail = new System.Text.StringBuilder();
+                        detail.Append($"座位 {game.SeatOf(actor)} 无合法步");
+                        detail.Append($"（第 {actions + 1} 次行动）");
+                        detail.Append(" 活着=");
+                        for (int k = 0; k < seated.Count; k++)
+                            if (seated[k].IsAlive) detail.Append($"P{game.SeatOf(seated[k])} ");
+                        detail.Append("| 各对手可达=");
+                        for (int k = 0; k < seated.Count; k++)
+                        {
+                            if (ReferenceEquals(seated[k], actor)) continue;
+                            detail.Append($"[P{game.SeatOf(seated[k])}"
+                                         + $"活={(seated[k].IsAlive ? 1 : 0)}"
+                                         + $"距={game.DistanceBetween(actor, seated[k])}"
+                                         + $"可打={(game.CanReach(actor, seated[k]) ? 1 : 0)}] ");
+                        }
+                        return Fail(detail.ToString());
                     }
 
                     game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
