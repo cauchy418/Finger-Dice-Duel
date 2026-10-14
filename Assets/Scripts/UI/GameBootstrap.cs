@@ -648,8 +648,10 @@ namespace FingerDiceDuel.UI
             _screenTwoOnTwo.Add(practice.gameObject);
             _screenTwoOnTwo.Add(pvp.gameObject);
 
-            Button back = MakeButton(_selectRoot, "TtBack", new Vector2(-420f, -256f),
-                                     new Vector2(220f, 76f), "返回");
+            // 玩家实测：2v2 的返回按钮偏左（原来在 -420），
+            // 要与 1v1 子菜单保持一致（居中）。
+            Button back = MakeButton(_selectRoot, "TtBack", new Vector2(0f, -280f),
+                                     new Vector2(240f, 64f), "返回");
             back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(GameScreen.MainMenu));
             _screenTwoOnTwo.Add(back.gameObject);
