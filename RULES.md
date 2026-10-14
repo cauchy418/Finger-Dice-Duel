@@ -537,7 +537,7 @@ AI 的走子评分是**字典序**（高优先级的档位压过一切低档位�
 
 ### 对手针对性价值修正
 
-17 名角色全覆盖，分三类：
+18 名角色全覆盖（唯一没有的是士兵 —— 他没有特殊技能），分三类：
 
 1. **盾无效型**（咒术师）：5 减 50、1 减 55、8/9 各减 12
    - ⚠️ **武僧的 5 也要降**：太极对咒术师**完全失效**
@@ -653,7 +653,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**726 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**729 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
