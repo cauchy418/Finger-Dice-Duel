@@ -15,7 +15,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 潜行是"按当前手值持续判定"的状态：双手都是 7 就在潜行中。
     /// 攻击会改动运算源的手值，因此出手后自然脱离潜行（除非结果又让它变回 7）。
     /// </summary>
-    public sealed class AssassinLogic : CharacterTemplate, ITurnSkipRule, IAttackTargetRule
+    public sealed class AssassinLogic : CharacterTemplate, ITurnSkipRule, IAttackTargetRule,
+                                       ISkillUseCounter
     {
         public override string DisplayName => "刺客";
 
@@ -178,13 +179,27 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             {
                 _stealthEntered = true;
                 _skipUsedThisStealth = false;
+                StealthEnterCount++;
             }
         }
+
+        /// <summary>
+        /// 本局**进入过潜行**几次（"经运算达成双 7"）。
+        ///
+        /// ⚠️ 为什么要计数器：潜行会被后续运算**解除**（手值不再是双 7），
+        ///    所以只看终局状态测不出"AI 到底有没有去凑双 7"——
+        ///    我只能靠它把"AI 从没凑到"与"凑到过但后来解除了"区分开。
+        /// </summary>
+        public int StealthEnterCount { get; private set; }
+
+        /// <summary>本局发动招牌技能（进入潜行）几次 —— 见 <see cref="ISkillUseCounter"/>。</summary>
+        public int SkillUseCount => StealthEnterCount;
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
             _skipUsedThisStealth = false;
             _stealthEntered = false;    // 重开一局必须清空，否则带着上一局的潜行
+            StealthEnterCount = 0;
         }
     }
 }

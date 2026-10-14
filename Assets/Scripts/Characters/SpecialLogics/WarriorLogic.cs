@@ -32,6 +32,19 @@ namespace FingerDiceDuel.Core
         public override string DisplayName => "Warrior";
 
         /// <summary>
+        /// 本局**连锁破盾**发动过几次（"自己的盾碎了，连带打碎场上一面完好的盾"）。
+        ///
+        /// ⚠️ 为什么需要它：这个技能发动后**场上没有任何可观测的痕迹**
+        ///    （破盾本身也会被之后的操作覆盖），于是"AI 从不发动它"
+        ///    这种问题根本测不出来 —— 我就是被这个卡住的。
+        ///    加个计数器，技能发动率才可验证。
+        /// </summary>
+        public int ChainBreakCount { get; private set; }
+
+        /// <summary>本局**碎盾换射程**发动过几次（牺牲自己的完整盾换无限距离）。</summary>
+        public int RangeBreakCount { get; private set; }
+
+        /// <summary>
         /// 运算前收集"要不要发动连锁破盾、打碎哪面盾"。
         ///
         /// 只在**自己的盾这次会碎**时才提问（见类注释里的两条判定）。
@@ -92,6 +105,7 @@ namespace FingerDiceDuel.Core
             if (!ReferenceEquals(chosen, other)) return;
 
             other.ForceBreakShield();                   // 完整盾 -> 破碎
+            RangeBreakCount++;
         }
 
         /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
@@ -210,6 +224,7 @@ namespace FingerDiceDuel.Core
                 if (!ReferenceEquals(candidates[i].Shield, picked)) continue;
                 if (candidates[i].Shield.State != ShieldState.Formed) return;   // 防御性
                 manager.BreakShieldAndNotify(candidates[i].Owner, candidates[i].Shield);
+                ChainBreakCount++;
                 return;
             }
             // 选了一个不在候选里 / 已经碎掉的盾 -> 视为放弃

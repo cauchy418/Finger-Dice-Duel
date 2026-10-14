@@ -365,6 +365,21 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// 角色实现"**我有没有发动过招牌技能**"（供 AI 与测试观测）。
+    ///
+    /// 为什么需要：有些技能发动后在场上**不留痕迹**（潜行会被后续运算解除、
+    /// 锁手会随盾碎解锁、连锁破盾会被别的操作覆盖），于是
+    /// "AI 从不使用这个技能"这类问题**根本测不出来** —— 我在这上面卡过。
+    ///
+    /// 实现者返回"本局发动过几次"（累计值，重开一局清零）。
+    /// </summary>
+    public interface ISkillUseCounter
+    {
+        /// <summary>本局发动过几次招牌技能。</summary>
+        int SkillUseCount { get; }
+    }
+
+    /// <summary>
     /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
     ///
     /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——

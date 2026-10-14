@@ -122,7 +122,16 @@ namespace FingerDiceDuel.Core
 
             target.Lock();
             _lockMap[shieldHand] = target;
+            LockCount++;
         }
+
+        /// <summary>
+        /// 本局**锁手**发动过几次（合盾时控制对手一只手）。
+        ///
+        /// ⚠️ 为什么要计数器：锁手的效果在终局可能已经解除了
+        ///    （盾碎即解锁），只看终局状态测不出"AI 到底用没用这个技能"。
+        /// </summary>
+        public int LockCount { get; private set; }
 
         private static ChoiceRequest BuildRequest(PlayerState owner, PlayerState opponent,
                                                   List<Hand> candidates)
