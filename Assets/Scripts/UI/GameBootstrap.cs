@@ -573,6 +573,21 @@ namespace FingerDiceDuel.UI
             _codex.Build(_selectRoot, BuildCodexCards());
         }
 
+        /// <summary>
+        /// 取一个角色的**一句技能描述**（图鉴里【技能】那条）。
+        ///
+        /// ⚠️ 这里是表现层入口允许同时看到 Characters 与 UI 两层的地方，
+        ///    所以由它把图鉴的短描述取出来交给界面。
+        /// </summary>
+        private static string SkillHintText(CharacterDefinition def)
+        {
+            CodexEntry e = CharacterCodex.For(def);
+            if (e != null && !string.IsNullOrEmpty(e.ShortSkill)) return e.ShortSkill;
+
+            // 图鉴里没有时回退到长描述
+            return def?.Description ?? "";
+        }
+
         /// <summary>把 Characters 层的图鉴资料转成 UI 层的扁平结构。</summary>
         private static List<CodexCardData> BuildCodexCards()
         {
@@ -652,7 +667,8 @@ namespace FingerDiceDuel.UI
             // 要与 1v1 子菜单保持一致（居中）。
             Button back = MakeButton(_selectRoot, "TtBack", new Vector2(0f, -280f),
                                      new Vector2(240f, 64f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            // 玩家要求：与 1v1 一致用**默认蓝色**。
+            // 原来这里把它覆盖成了灰色（0.30, 0.33, 0.40）。
             back.onClick.AddListener(() => ShowScreen(GameScreen.MainMenu));
             _screenTwoOnTwo.Add(back.gameObject);
 
@@ -1256,7 +1272,10 @@ namespace FingerDiceDuel.UI
         private CharacterRosterView BuildRosterRow(string name, Vector2 position, int initialIndex)
         {
             var view = new CharacterRosterView();
-            view.Build(_selectRoot, name, position, _roster, UiFont.Regular, initialIndex);
+            // 玩家要求：角色选择界面的技能介绍
+            // **全部采用图鉴里【技能】那条短描述**。
+            view.Build(_selectRoot, name, position, _roster, UiFont.Regular, initialIndex,
+                       SkillHintText);
             view.ScrollToSelected();
             return view;
         }
@@ -1288,7 +1307,8 @@ namespace FingerDiceDuel.UI
         {
             if (target == null || def == null) return;
 
-            target.text = $"【{def.DisplayName}】  {def.Description}";
+            // 详情也用图鉴那条短描述（与卡片一致）
+            target.text = $"【{def.DisplayName}】  {SkillHintText(def)}";
         }
 
 

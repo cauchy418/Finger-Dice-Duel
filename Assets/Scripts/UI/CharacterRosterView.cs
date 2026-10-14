@@ -62,10 +62,24 @@ namespace FingerDiceDuel.UI
         /// <param name="roster">要展示的角色（顺序即卡片顺序）。</param>
         /// <param name="font">字体。</param>
         /// <param name="initialIndex">初始选中索引。</param>
+        /// <summary>
+        /// 把角色换成**一句技能描述**的委托。
+        ///
+        /// ⚠️ 为什么用委托而不直接调图鉴：
+        ///    图鉴资料在 <c>FingerDiceDuel.Characters</c> 层，
+        ///    而**表现层不能引用它**（分层铁律）。
+        ///    所以由入口（GameBootstrap）注入一个取短描述的方法。
+        ///    传 null 时回退到原来的"截断长描述"行为。
+        /// </summary>
+        private System.Func<CharacterDefinition, string> _skillText;
+
         public void Build(RectTransform parent, string name, Vector2 position,
                           IReadOnlyList<CharacterDefinition> roster, Font font,
-                          int initialIndex = 0)
+                          int initialIndex = 0,
+                          System.Func<CharacterDefinition, string> skillText = null)
         {
+            _skillText = skillText;
+
             // ---- 可视区域：ScrollRect + 遮罩 ----
             var viewGo = new GameObject(name,
                 typeof(Image), typeof(ScrollRect), typeof(RectMask2D));
@@ -148,10 +162,15 @@ namespace FingerDiceDuel.UI
                      17, TextAnchor.MiddleCenter, new Color(0.78f, 0.84f, 0.92f), font).text =
                 DescribeStats(def);
 
-            // 技能摘要（截断，完整说明在详情面板）
+            // 技能摘要
+            //
+            // ⚠️ 玩家要求：**全部采用图鉴里【技能】那条短描述**。
+            //    原来是把长描述截断到 26 字，
+            //    截出来的句子常常读不通（而且与图鉴不一致）。
+            //    图鉴里那句是**人写的、一句话说完**，更适合卡片。
+            string hint = _skillText != null ? _skillText(def) : Shorten(def.Description);
             MakeText(rect, "Hint", new Vector2(0f, -26f), new Vector2(CardWidth - 14f, 40f),
-                     14, TextAnchor.UpperCenter, new Color(0.60f, 0.68f, 0.78f), font).text =
-                Shorten(def.Description);
+                     14, TextAnchor.UpperCenter, new Color(0.60f, 0.68f, 0.78f), font).text = hint;
 
             int captured = index;
             go.GetComponent<Button>().onClick.AddListener(() => Select(captured));
