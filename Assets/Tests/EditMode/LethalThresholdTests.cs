@@ -184,6 +184,89 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
+        // 情境化阻挡：3 : 7 的比率约束
+        // ============================================================
+
+        /// <summary>造一个"双方都血量低"的局面（阻挡效果最强的情境）。</summary>
+        private static GreedyChoiceProvider DangerAi(out PlayerState me, out PlayerState foe,
+                                                     out GameManager game)
+        {
+            me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Soldier);
+            foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+
+            game = new GameManager(me, foe, new SimpleChoiceProvider(),
+                                   new SimpleChoiceProvider());
+            var ai = new GreedyChoiceProvider { Game = game };
+
+            // 双方都打到 20% 血 -> 两个方向的情境同时触发
+            SetHealth(me, System.Math.Max(1, me.MaximumHealth / 5));
+            SetHealth(foe, System.Math.Max(1, foe.MaximumHealth / 5));
+
+            return ai;
+        }
+
+        [Test]
+        public void Denial_never_outweighs_my_own_gain()
+        {
+            // 玩家要求："阻止对方的减值数值**不能比**让自己合成高价值的数值多，
+            //            比率要调整到合适的值如 **3 : 7** 左右。"
+            GreedyChoiceProvider ai = DangerAi(out _, out PlayerState foe,
+                                               out GameManager game);
+            game.GetType();     // 保持引用（局面已由 DangerAi 摆好）
+
+            const int scale = 42;                  // 与实现里的 DenyWeightScale 一致
+            int foeWeight = HandValueProfiles.For(foe.Definition).WeightOf(8);
+            int exposure = foeWeight * scale / 100;
+
+            // 情境同时触发时，"阻挡权重"最多是 exposure 的两倍（我危险 + 他危险）
+            int maxDeny = exposure * 2 * ai.DenyRatioPercent / 100;
+
+            // 我方一手最多能拿到的价值分（权重档位最高约 90）
+            int maxMine = 90 / HandValueProfiles.MoveScoreScale * 12;
+
+            Assert.True(maxDeny < maxMine,
+                $"阻挡的减值（最多 {maxDeny}）**不能**超过自己合成的收益（最多 {maxMine}）。" +
+                $"当前 DenyRatioPercent={ai.DenyRatioPercent}。");
+        }
+
+        [Test]
+        public void Denial_ratio_is_around_three_to_seven()
+        {
+            // 3 : 7 是"目标区间"，允许 ±10% 偏差。
+            GreedyChoiceProvider ai = DangerAi(out _, out _, out _);
+
+            int mine = 90;                                     // 我方一手最高档
+            int theirs = 90 * ai.DenyRatioPercent / 100;
+            double ratio = theirs / (double)(mine + theirs);   // 对方占的比例
+
+            Assert.True(ratio > 0.20 && ratio < 0.40,
+                $"阻挡应占约 30%（3/7），实际 {ratio * 100:F0}%（DenyRatioPercent={ai.DenyRatioPercent}）。");
+        }
+
+        [Test]
+        public void Denial_does_not_fire_when_nobody_is_in_danger()
+        {
+            // 平时（双方血量都健康）不该多算这一项 —— 否则会改变既有行为
+            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Soldier);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+
+            var game = new GameManager(me, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var ai = new GreedyChoiceProvider { Game = game };
+
+            var move = new LegalMove(me, me.LeftHand, foe.LeftHand);
+            int healthy = ai.ScoreMoveForTest(move, me, game);
+
+            // 把双方都打残 -> 阻挡生效，分数应变化
+            SetHealth(me, 2);
+            SetHealth(foe, 2);
+            int danger = ai.ScoreMoveForTest(move, me, game);
+
+            Assert.True(danger != healthy,
+                $"血量低时分数应变化（健康 {healthy} vs 危险 {danger}）。");
+        }
+
+        // ============================================================
         // 刺客：潜行中 +7
         // ============================================================
 

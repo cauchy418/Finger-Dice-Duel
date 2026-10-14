@@ -302,6 +302,14 @@ namespace FingerDiceDuel.Assistant
                 }
             }
 
+            // ---- **情境化阻挡**（玩家给的新规则）----
+            //
+            // "在敌方血量低时，要大幅增加阻止对方合成盾 / 闪避 / 太极和回复数字的意愿；
+            //  在自己血量低时，要大幅增加阻止对方合成攻击数字的意愿。
+            //  但阻止对方的减值数值**不能比让自己合成高价值的数值多**，
+            //  比率要调整到合适的值如 3：7 左右。"
+            score += SituationalDenyScore(move, actor, game);
+
             // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
             score += TargetPriorityScore(move, actor, game);
 
@@ -416,6 +424,122 @@ namespace FingerDiceDuel.Assistant
         //    取基数 10000：最高档 10000 > 1000+100+10+1 = 1111，安全。
 
         private const int TargetPriorityBase = 10000;
+
+        // ============================================================
+        // 情境化阻挡（玩家给的新规则）
+        // ============================================================
+        //
+        // 规则原文：
+        //   · **敌方血量低** -> 大幅增加"阻止他合成**盾 / 闪避 / 太极 / 回复**数字"的意愿
+        //   · **自己血量低** -> 大幅增加"阻止他合成**攻击**数字"的意愿
+        //   · 但"阻止对方"的减值**不能比**"让自己合成高价值"的数值多，
+        //     比率调到 **3 : 7** 左右
+        //
+        // ## 3 : 7 是怎么落地的
+        //
+        // 走子总分里"自己的价值"与"对方的价值"原本就分开算：
+        //   · **我方**：<see cref="HandValueScore"/> -> `preference / 10 * HandValueWeight`
+        //     其中 `HandValueWeight` 默认 12 -> 满权重 12 分
+        //   · **对方**：本方法 -> `* DenyRatioPercent / 100`
+        //
+        // 所以只要取 **DenyRatioPercent ≈ 43**，
+        // 对方那一侧的权重就是 `12 * 0.43 ≈ 5`，
+        // 与我方的 12 之比正好是 **5 : 12 ≈ 3 : 7**。
+        //
+        // ⚠️ 关键：`DenyRatioPercent` 是**作用在对方价值之上的缩放**，
+        //    所以它天然保证了"阻挡的减值**永远不会超过**自己合成的收益" ——
+        //    这正是玩家那条约束的意思。
+
+        /// <summary>
+        /// "阻挡对方"相对于"发展自己"的比率（百分比）。
+        ///
+        /// 43 ≈ 3/7 的比值（5 : 12）。**调平衡改这里。**
+        /// </summary>
+        public int DenyRatioPercent { get; set; } = 43;
+
+        /// <summary>
+        /// 把"这次运算会让**对方**拿到什么"折算成扣分。
+        ///
+        /// 只有**情境触发**时才生效（自己或对方血量低），
+        /// 否则返回 0 —— 平时不需要多算这一项。
+        /// </summary>
+        private int SituationalDenyScore(LegalMove move, PlayerState actor, GameManager game)
+        {
+            if (game == null || actor == null) return 0;
+
+            PlayerState victim = game.OwnerOfHand(move.TargetHand);
+            if (victim == null || !victim.IsAlive) return 0;
+
+            // 只对**对手**算（给队友的数字无所谓）
+            if (ReferenceEquals(victim, actor) || game.IsTeammate(actor, victim)) return 0;
+
+            // ⚠️ 被加数的手值**不会被改变**（见 GetLegalMoves 的说明），
+            //    所以"我给他留下什么"这个说法在这款游戏里不成立 ——
+            //    他手上有什么就是什么，与我无关。
+            //
+            //    真正起作用的方向是：**运算后我自己的两只手会变成什么**，
+            //    因为**对手下一手可以拿它当被加数**。
+            //    运算源会变成结果值，另一只手不变 —— 两只都要算。
+            int otherValue = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
+            int actedAfter = move.ActedHand.Value;
+
+            // 用**对手自己的价值表**衡量：他看重什么，我就少留什么
+            HandValueProfile foeProfile = HandValueProfiles.For(victim.Definition);
+            if (foeProfile == null) return 0;
+
+            bool foeDanger = IsLowHealth(victim);
+            bool meDanger = IsLowHealth(actor);
+            if (!foeDanger && !meDanger) return 0;
+
+            // 取"两只手里对对手更有用的那一只" —— 这是我留下的最大敞口
+            int exposure = System.Math.Max(DenyWeightOf(foeProfile, actedAfter),
+                                           DenyWeightOf(foeProfile, otherValue));
+
+            int denyWeight = 0;
+
+            if (meDanger)
+            {
+                // 我快死了 -> 最怕他凑出**攻击**（用我留下的数字当被加数）
+                denyWeight += exposure;
+            }
+
+            if (foeDanger)
+            {
+                // 他快死了 -> 最怕他凑出**盾 / 闪避 / 太极 / 回复**
+                // 这些在他的价值表里同样是高值（盾 = 5、回复 = 9）
+                denyWeight += exposure;
+            }
+
+            // ⚠️ 负数（= 扣分），且**按比率缩放** —— 保证永不超过我方收益
+            return -(denyWeight * DenyRatioPercent) / 100;
+        }
+
+        /// <summary>
+        /// 该手值在对手眼里值多少（用来衡量"留给他好不好"）。
+        ///
+        /// 直接用对手的价值表权重 —— 他看重什么就扣得多，
+        /// 不需要在这里硬编码"哪些数字是盾 / 闪避 / 攻击"。
+        /// </summary>
+        private static int DenyWeightOf(HandValueProfile foeProfile, int value)
+            => foeProfile.WeightOf(value) * DenyWeightScale / 100;
+
+        /// <summary>
+        /// 把对手的价值权重缩到与效果分同量级。
+        ///
+        /// 权重约 50~90 -> 乘 42/100 之后约 21~38，
+        /// 再乘 <see cref="DenyRatioPercent"/>（43%）-> 约 9~16。
+        /// 与我方 <see cref="HandValueWeight"/>（12）之比约为 **3 : 7**。
+        /// </summary>
+        private const int DenyWeightScale = 42;
+
+        /// <summary>"血量低"的判定（双方共用）。</summary>
+        private bool IsLowHealth(PlayerState p)
+            => p != null && p.MaximumHealth > 0
+               && p.Health * 100 <= p.MaximumHealth * DenyDangerHealthPercent;
+
+        /// <summary>触发"情境化阻挡"的血量百分比（默认 40%）。</summary>
+        public int DenyDangerHealthPercent { get; set; } = 40;
+
 
         /// <summary>
         /// 给走子评分（<b>仅供测试</b>）。
