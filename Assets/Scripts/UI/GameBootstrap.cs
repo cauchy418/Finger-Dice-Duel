@@ -564,10 +564,17 @@ namespace FingerDiceDuel.UI
                                          string subtitle, System.Action onClick)
             => MakeModeButton(parent, name, position, title, subtitle, onClick);
 
-        /// <summary>子菜单共用的“返回”按钮。</summary>
-        private Button MakeBackButton(RectTransform parent, GameScreen target)
+        /// <summary>
+        /// 子菜单共用的“返回”按钮。
+        ///
+        /// <paramref name="y"/> 必须按“上面有几个按钮”给：
+        /// 按钮是 116 高、间距 156，所以**三个按钮时返回会压在第三个上**。
+        /// （玩家实测：竞技模式里返回与 8 人身份局重叠。）
+        /// </summary>
+        private Button MakeBackButton(RectTransform parent, GameScreen target,
+                                      float y = -300f)
         {
-            Button back = MakeButton(parent, "Back", new Vector2(0f, -300f),
+            Button back = MakeButton(parent, "Back", new Vector2(0f, y),
                                      new Vector2(240f, 64f), "返回");
             back.onClick.AddListener(() => ShowScreen(target));
             return back;
@@ -621,7 +628,10 @@ namespace FingerDiceDuel.UI
             _screenCompetition.Add(one.gameObject);
             _screenCompetition.Add(two.gameObject);
             _screenCompetition.Add(eight.gameObject);
-            _screenCompetition.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
+
+            // 三个按钮（-222 为最下一个）—— 返回必须放到它下面。
+            _screenCompetition.Add(
+                MakeBackButton(_selectRoot, GameScreen.MainMenu, y: -370f).gameObject);
         }
 
         /// <summary>娱乐模式：目前只有双将。</summary>

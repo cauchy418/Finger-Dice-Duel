@@ -400,7 +400,14 @@ namespace FingerDiceDuel.Core
         /// </param>
         /// <param name="totalReduced">这一段上被减免掉的总量。</param>
         /// <param name="totalReflect">这一段上要反弹回去的总量。</param>
+        /// <param name="stagesUsed">
+        /// 这一段上**已经发动过几次**。
+        ///
+        /// ⚠️ 玩家要求把**闪避移到太极之前**，于是太极改成**逐段询问**（每个未被闪避的段各问一次）。
+        ///    实现方只算**新增那一次**的递减。
+        /// </param>
         bool TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,
+                         int stagesUsed,
                          out int stages, out int totalReduced, out int totalReflect);
     }
 

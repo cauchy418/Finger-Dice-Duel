@@ -99,6 +99,7 @@ namespace FingerDiceDuel.Core
         /// <param name="totalReduced">被减免掉的总量。</param>
         /// <param name="totalReflect">要反弹回去的总量。</param>
         public bool TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,
+                                int stagesUsed,
                                 out int stages, out int totalReduced, out int totalReflect)
         {
             stages = 0;
@@ -111,33 +112,43 @@ namespace FingerDiceDuel.Core
             // ⚠️ 咒术师的攻击：**不减半、不反弹、5 也不消耗**
             if (context.Attacker?.Character is CurseweaverLogic) return false;
 
-            List<Hand> mine = TaichiHandsOf(owner);
-            if (mine.Count == 0) return false;
-
-            Hand taichi = mine[0];
-
-            // ⚠️ **是否发动由玩家决定**（玩家要求"也要给按钮选择是否发动"）。
+            // ⚠⚠ **必须在改动任何手之前，把（手, variant）固定下来。**
             //
-            //    走与游侠闪避同一条通路：收集阶段问过、答案记进 sink，
-            //    这里回读。读不到答案（AI / 没问过）时**默认发动** ——
-            //    减半天生比吃满伤害好，不发动只是白白吃亏。
-            // （是否发动改为按 variant 逐个询问，见下面的 taichiAvailable 循环）
-
-            // ⚠⚠ **必须先记下数量，再把手设成 0**！
+            //    实测确认的根因：第一次发动把一只太极手设成 0 之后，
+            //    <see cref="TaichiHandsOf"/> 只剩 1 只 —— **它的索引从 1 变成 0**。
+            //    于是再问 variant 0，又去读那只已经是 0 的手的答案 → 失败。
+            //    （现象：双太极只减半一次。）
             //
-            //    我第一版先 SetValue(0)、再在循环里调
-            //    TaichiCountOf(owner) —— 而那时已经是 0 个太极了，
-            //    于是**循环一次都不跑**：手被消耗了、伤害却没减。
-            //    （现有测试立刻报错：期望受 3、实际受 5。）
-            // 答应了几个太极：每个请求各自回答一次
-            int taichiAvailable = 0;
-            for (int i = 0; i < mine.Count; i++)
-            {
-                if (WantsToUseTaichi(owner, context, mine[i], i)) taichiAvailable++;
-            }
+            //    所以先把"答应发动的太极手"按 variant 顺序固定成列表，
+            //    之后用 <paramref name="stagesUsed"/> **直接取第几只**，不再重新索引。
+            List<Hand> all = TaichiHandsOf(owner);
+            if (all.Count == 0) return false;
 
-            if (taichiAvailable == 0) return false;
+            // ⚠⚠ **按索引挑手**，而不是每次重建一个"答应的手"列表。
+            //
+            //    我试过重建，但那会错位：第一次发动把一只手设成 0 后，
+            //    <see cref="TaichiHandsOf"/> 只剩 1 只，重建出来的列表里它是**索引 0**，
+            //    于是又去问 variant 0（那只已经是 0 的手）→ 读不到有效答案。
+            //
+            //    正确做法：只问**当前该用的那一只**（索引 = stagesUsed），
+            //    而"最多能发动几次"由 <see cref="TryMitigateByTaichi"/>
+            //    里已经验证过的计数来限制。
+            // ⚠️ **不能用 `stagesUsed >= all.Count` 来判断"没有更多太极"！**
+            //
+            //    `all` 是每次现查的，而**上一只太极发动后会被设成 0**，
+            //    于是它从列表里消失、`all.Count` 缩小（实测：2 -> 1）。
+            //    我加过这句守卫，结果把"还有第二个太极"误判成"没有了"。
+            //    （实测：call1 ok=True；call2 因 stagesUsed=1 >= all.Count=1 而返回 false。）
+            //
+            //    正确做法：**只问当前该用的那一只**（origin 索引 = stagesUsed），
+            //    而"最多能发动几次"由**外层**（AttackContext 的 taichiRemaining）限制。
+            //    若该索引上已经没有可用的手，下面会自然拿不到。
+            if (all.Count == 0) return false;
 
+            Hand taichi = all[stagesUsed < all.Count ? stagesUsed : all.Count - 1];
+            if (!WantsToUseTaichi(owner, context, taichi, stagesUsed)) return false;
+
+            int taichiAvailable = all.Count > stagesUsed + 1 ? all.Count : stagesUsed + 1;
 
             // 太极发动：那只 5 变成 0（此后它只是一只普通的 0，
             // 而且"被他人触碰会变 1"—— 见 OnTouchedAsAddend）
@@ -149,38 +160,24 @@ namespace FingerDiceDuel.Core
             //     例如巨人的攻击打到太极上，一个太极只能减免反弹一段伤害，
             //     另一段伤害是要吃的。"
             //
-            //    但**两个太极可以叠在同一段上**：
-            //    "若武僧有两个太极，他对一段攻击是能都弹的，
-            //     第一次弹一半伤害，第二次弹剩余伤害的一半，
-            //     即只吃 1/4 伤害剩下全部反弹。"
-            //
-            //    所以这里**逐次折半**：每多一个太极就再对“剩余”减半一次。
-            //    每次都是受上取整、反弹下取整 —— 与单个太极的算法一致，
-            //    所以偶数伤害时恰好是“只吃 1/4”。
-            // ⚠️ 每一轮的**输入是"上一轮减免后的伤害"**，
-            //    而不是每次都拿原始的段伤害。
-            //
-            //    玩家说明："本质太极弹的是伤害，
-            //    尝试让第二个太极的目标是**减免过的伤害**再反弹。"
-            //
-            //    所以下一轮的 remaining 就是这一轮**受方实际承受**的那部分。
-            //    反弹量因此是**逐次递减**的（5 -> 2 -> 1），
-            //    而不是每次都弹同一个数。
+            //    但**两个太极可以叠在同一段上**（逐次折半）。
+            //    现在是**逐段调用**（闪避已排到太极之前），
+            //    所以只算"**新增那一次**"的递减。
             int remaining = segmentDamage;
 
-            while (stages < taichiAvailable)
+            for (int k = 0; k < stagesUsed; k++)
             {
-                int reflect = remaining / 2;        // 这一轮反弹掉的
-                int taken = remaining - reflect;    // 这一轮受方仍要承受的
-
-                totalReduced += reflect;
-                totalReflect += reflect;
-                stages++;
-
-                // 下一轮的目标 = 这一轮减免后的伤害
-                remaining = taken;
-
+                int r = remaining / 2;
+                remaining -= r;
                 if (remaining <= 0) break;
+            }
+
+            if (remaining > 0)
+            {
+                int reflect = remaining / 2;
+                totalReduced = reflect;
+                totalReflect = reflect;
+                stages = stagesUsed + 1;
             }
 
             return stages > 0;

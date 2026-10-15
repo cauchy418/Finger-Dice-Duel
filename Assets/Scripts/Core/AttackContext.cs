@@ -214,36 +214,29 @@ namespace FingerDiceDuel.Core
             //        若排在后面，玩家可能既闪避又太极（规则上只应发生一种）。
             int reflectTotal = 0;
 
-            // ⚠️ `out` 参数在 C# 里**必须在提前 return 前也赋值**，
-            //    所以 TryMitigateByTaichi 一开始会把它置成原值。
-            //    **只有返回 true 时才能相信它里面的值**。
-            bool taichiUsed = TryMitigateByTaichi(manager, perHit, out int hit0Damage);
-
-            // ⚠️ **只在太极真的发动时**才改写每段伤害。
+            // ⚠️ **太极不在这里问了** —— 玩家要求把**闪避移到太极之前**：
+            //    "先闪避再太极" —— 没闪掉的那一段才吃太极。
             //
-            //    我第一版让 TryMitigateByTaichi 用 out 参数，而 C# 要求
-            //    out 在**提前 return 前也必须赋值**——于是"没发动"时
-            //    返回的是预置的 0，把**所有角色的所有攻击**都打成了 0 伤害
-            //    （55 项测试立刻失败）。
-            //    改成"只在发动时读它写下的属性"，就不可能误伤未发动的路径。
-            // ⚠️ **一个太极只对付一段** —— 玩家确认：
-            //    "一个太极只能弹一段伤害，另一段是要吃的。"
+            //    为什么不能只挪一行调用：
+            //      · <see cref="TryDodgeThisHit"/> **有副作用**（游侠的闪避会**消耗一只"1"**），
+            //        所以不能"先预判一遍、再正式问一遍"；
+            //      · 太极原本在循环**之前**询问，而闪避在循环**里** —— 顺序天然是太极在前。
             //
-            //    但**两个太极可以叠在同一段上**（逐次折半），
-            //    所以这里的 reduced 已经把该段的多次减免算进去了。
-            //    反弹总量也在同一处累加。
-            int mitigatedFirstHit = WasMitigated ? hit0Damage : perHit;
-            if (taichiUsed) reflectTotal = ReflectedDamage;
+            //    所以改成：**在循环里、每段先闪避，未被闪避的段才吃太极**。
+            int taichiRemaining = 2;      // 最多两只手；能用几次由逐次询问决定
+            int taichiStagesUsed = 0;
+            int perHitReduction = 0;
+            bool taichiUsed = false;
 
             IPreTurnChoiceSink sink = defenderChoice as IPreTurnChoiceSink;
 
             for (int i = 0; i < hits; i++)
             {
-                // 2a. 闪避（游侠每次消耗一只"1"；刺客潜行则整次攻击都打不到）
+                // 2a. **闪避**（游侠每次消耗一只"1"；刺客潜行则整次攻击都打不到）
                 //
-                // ⚠️ 太极已经接管了这次攻击时**不再判闪避** ——
-                //    否则会出现"减半了还被闪掉"，等于双重免伤。
-                if (!taichiUsed && sink != null && TryDodgeThisHit(sink, manager, i))
+                //     现在它排在**太极之前**（玩家要求）：
+                //     闪掉的段不再吃太极，太极留给后面真正落地的段。
+                if (sink != null && TryDodgeThisHit(sink, manager, i))
                 {
                     WasDodged = true;
                     DodgedHits++;
@@ -251,22 +244,53 @@ namespace FingerDiceDuel.Core
                 }
 
                 // 2b. 护盾：一面盾只能挡下这一段
-                //
-                // 同理：太极接管后不再消耗护盾（太极**不是盾**）。
-                if (!taichiUsed && TryConsumeShield(defenderChoice, manager))
+                if (TryConsumeShield(defenderChoice, manager))
                 {
                     WasBlocked = true;
                     BlockedHits++;
                     continue;
                 }
 
-                // 太极只减免第一段，其余各段照常计算伤害
-                int dealt = (taichiUsed && i == 0) ? mitigatedFirstHit : perHit;
+                // 2c. **太极化解**（武僧）——
+                //     未被闪避、未被盾挡的段，若还有太极可用，就减半并累加反弹。
+                //
+                //     ⚠⚠ **同一段上要把太极问到用完** —— 这是个内层循环，
+                //     不是"每段只询问一次"。
+                //     玩家确认："两个太极对一段攻击是能都弹的：
+                //     第一次弹一半，第二次弹剩余伤害的一半。"
+                int dealt = perHit;
+                int reductionThisSegment = 0;
+
+                while (taichiRemaining > 0)
+                {
+                    // 传**该段当前剩余的伤害**（dealt）——
+                    // 这正是玩家说的"第二个太极的目标是减免过的伤害"。
+                    if (!TryMitigateByTaichi(manager, dealt, taichiStagesUsed,
+                                             out int reduced, out int reflect))
+                    {
+                        break;
+                    }
+
+                    taichiUsed = true;
+                    taichiStagesUsed++;
+                    taichiRemaining--;
+                    reductionThisSegment += reduced;
+                    reflectTotal += reflect;
+
+                    // 该段当前剩余 = 原值 - 累计被减免的量
+                    dealt = perHit - reductionThisSegment;
+                    if (dealt <= 0) break;
+                }
+
+                if (i == 0) perHitReduction = reductionThisSegment;
 
                 Defender.TakeDamage(dealt);
                 AppliedDamage += dealt;
                 LandedHits++;
             }
+
+            // 保持旧行为：第一段的最终伤害写入属性（供诊断与测试读）
+            if (taichiUsed) MitigatedPerHit = perHit - perHitReduction;
 
             // 3. **太极反弹**：把化解下来的那部分伤害打回给攻击方。
             //
@@ -372,31 +396,30 @@ namespace FingerDiceDuel.Core
         ///    多段攻击时，应该只有**第一段**被这里减免；
         ///    其余各段后续如需再改（目前规则下不需要）。
         /// </summary>
-        private bool TryMitigateByTaichi(GameManager manager, int perHitDamage,
-                                        out int firstHitDamage)
+        private bool TryMitigateByTaichi(GameManager manager, int segmentDamage,
+                                        int stagesUsed,
+                                        out int reduced, out int reflect)
         {
-            // C# 要求 out 在**提前 return 前也必须赋值** ——
-            // 所以先预置原值，真的发动时再在下面覆盖它。
-            // ⚠️ 调用方**只在本方法返回 true 时**才能信这个值。
-            firstHitDamage = perHitDamage;
+            reduced = 0;
+            reflect = 0;
 
             // 反弹达到嵌套上限就不再弹（防无限递归）
             if (ReflectDepth >= MaxReflectDepth) return false;
 
             if (Defender?.Character is not IDamageMitigator mitigator) return false;
 
-            if (!mitigator.TryMitigate(Defender, this, perHitDamage,
-                                      out int stages, out int reduced, out int reflect))
+            if (!mitigator.TryMitigate(Defender, this, segmentDamage, stagesUsed,
+                                      out _, out int totalReduced, out int totalReflect))
             {
                 return false;
             }
 
-            WasMitigated = true;
-            MitigationStages = stages;
-            ReflectedDamage = reflect;
+            reduced = totalReduced;
+            reflect = totalReflect;
 
-            // 第一段的最终伤害 = 原值 - 被减免掉的部分
-            firstHitDamage = perHitDamage - reduced;
+            WasMitigated = true;
+            MitigationStages = stagesUsed + 1;
+            ReflectedDamage = totalReflect;
 
             return true;
         }
