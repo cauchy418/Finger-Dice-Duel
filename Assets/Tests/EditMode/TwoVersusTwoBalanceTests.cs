@@ -81,7 +81,13 @@ namespace FingerDiceDuel.Tests
 
             var wins = new Dictionary<string, int>();
             var games = new Dictionary<string, int>();
-            for (int i = 0; i < roster.Length; i++) { wins[roster[i].Id] = 0; games[roster[i].Id] = 0; }
+            var draws = new Dictionary<string, int>();
+            for (int i = 0; i < roster.Length; i++)
+            {
+                wins[roster[i].Id] = 0;
+                games[roster[i].Id] = 0;
+                draws[roster[i].Id] = 0;
+            }
 
             var anomalies = new List<string>();
             int totalGames = 0, totalActions = 0, limitHits = 0;
@@ -139,13 +145,21 @@ namespace FingerDiceDuel.Tests
                         wins[seat23.a.Id]++; wins[seat23.b.Id]++;
                         seat23Wins++;
                     }
-                    else seatDraws++;
+                    else
+                    {
+                        seatDraws++;
+                        // 平局：四个人都算一局平局
+                        // （玩家要求指出哪些角色特别容易平局）
+                        draws[seat14.a.Id]++; draws[seat14.b.Id]++;
+                        draws[seat23.a.Id]++; draws[seat23.b.Id]++;
+                    }
                 }
             }
 
-            var rows = new List<(string name, int w, int n)>();
+            var rows = new List<(string name, string id, int w, int n)>();
             for (int i = 0; i < roster.Length; i++)
-                rows.Add((roster[i].DisplayName, wins[roster[i].Id], games[roster[i].Id]));
+                rows.Add((roster[i].DisplayName, roster[i].Id,
+                          wins[roster[i].Id], games[roster[i].Id]));
 
             rows.Sort((x, y) =>
             {
@@ -154,11 +168,13 @@ namespace FingerDiceDuel.Tests
                 return ry.CompareTo(rx);
             });
 
-            sb.AppendLine("角色        队伍胜     出场    队伍胜率");
+            sb.AppendLine("角色        队伍胜     出场    队伍胜率   平局率");
             foreach (var row in rows)
             {
                 double rate = row.n == 0 ? 0 : row.w / (double)row.n;
-                sb.AppendLine($"{row.name,-10} {row.w,6} {row.n,8}      {rate * 100:F1}%");
+                double dr = row.n == 0 ? 0 : draws[row.id] / (double)row.n;
+                sb.AppendLine($"{row.name,-10} {row.w,6} {row.n,8}      {rate * 100:F1}%"
+                            + $"   {dr * 100,5:F1}%");
             }
 
             sb.AppendLine();
@@ -186,6 +202,10 @@ namespace FingerDiceDuel.Tests
             // ⚠️ 这一条**不因为异常而失败** ——
             //    先把数据和现场拿到手，再决定异常怎么处理；
             //    否则这条测试会在我还没看清原因时就变红。
+            // 报告写成文件（断言消息会被截断，NUnit 输出也不好取）
+            try { System.IO.File.WriteAllText("Tools/2v2-report.txt", sb.ToString()); }
+            catch (System.Exception) { }
+
             Assert.True(totalGames > 100, "对局数太少，统计不可信。");
         }
     }

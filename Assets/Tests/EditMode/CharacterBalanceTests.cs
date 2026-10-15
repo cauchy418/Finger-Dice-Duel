@@ -131,11 +131,13 @@ namespace FingerDiceDuel.Tests
                 return ry.CompareTo(rx);
             });
 
-            sb.AppendLine("角色        胜     负     平    胜率");
+            sb.AppendLine("角色        胜     负     平    胜率   平局率");
             foreach (var row in rows)
             {
+                int tot = row.w + row.l + row.d;
+                double drawRate = tot == 0 ? 0 : row.d / (double)tot;
                 sb.AppendLine($"{row.name,-8} {row.w,5} {row.l,6} {row.d,6}   " +
-                              $"{Rate(row.w, row.l, row.d) * 100:F1}%");
+                              $"{Rate(row.w, row.l, row.d) * 100:F1}%   {drawRate * 100,5:F1}%");
             }
 
             // 全局健康度：平均回合数 + 达到上限的局数
@@ -174,6 +176,10 @@ namespace FingerDiceDuel.Tests
             // ⚠️ 无头运行器不带 UnityEngine，所以用 Console 输出
             //    （无头测试的日志就是从 stdout 读的）。
             System.Console.WriteLine(sb.ToString());
+            // 报告写成文件（断言消息会被截断，NUnit 输出也不好取）
+            try { System.IO.File.WriteAllText("Tools/1v1-report.txt", sb.ToString()); }
+            catch (System.Exception) { }
+
             Assert.AreEqual(0, anomalies.Count,
                 "循环赛里出现了异常（崩溃 / 卡死 / 超时），详见日志。");
         }
@@ -246,6 +252,10 @@ namespace FingerDiceDuel.Tests
 
                 // 1v1 经典：先掷 1d20 决定初始手值（见 PrepareClassicStart）
                 PrepareClassicStart(game, seed);
+
+                // 玩家要求：所有模式的上限统一为 **50 轮**。
+                // 1v1 一轮 = 2 个回合，所以 50 轮 = 100 个回合。
+                game.RoundLimit = GameManager.DefaultRoundLimit;
 
                 var runner = new MatchRunner { RecordHistory = false, MaxTurns = 200 };
                 MatchResult r = runner.Run(game, new GreedyChoiceProvider(),

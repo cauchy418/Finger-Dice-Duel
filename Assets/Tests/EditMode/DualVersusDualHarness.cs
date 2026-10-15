@@ -113,7 +113,8 @@ namespace FingerDiceDuel.Tests
                 //    互相打不动，平均需要 **166 回合**才分出胜负。
                 //    限在 50 会把它们全部截断成平局，而平局在胜率里算半负 ——
                 //    于是“狼人+巨人”看起来只有 23.7%，放开后实际是 98.8% 胜。
-                game.RoundLimit = 300;
+                // 玩家要求：所有模式的轮次上限统一为 50 轮。
+                game.RoundLimit = GameManager.DefaultRoundLimit;
 
                 PrepareStart(game, seed);
 
@@ -277,6 +278,16 @@ namespace FingerDiceDuel.Tests
                                 dualTally[first.Name].LimitHits++;
                                 dualTally[second.Name].LimitHits++;
 
+                                // 角色口径也要记 —— 玩家要求指出"哪些角色特别容易平局"。
+                                //
+                                // ⚠️ 两个坑（都踩过）：
+                                //   ① 漏了这里 -> 角色表的"打满上限"全是 0.0%；
+                                //   ② 只记 LimitHits 而**不记 Games** -> 角色口径的场次偏小，
+                                //      而 LimitRate 的分母是 Games，于是平局率被严重放大
+                                //      （实测巨人显示 12.5% 而不是正确的 25.8%）。
+                                AddRoleLimit(roleTally, first);
+                                AddRoleLimit(roleTally, second);
+
                                 if (crossAxis)
                                 {
                                     axisTally[first.Axis].Games++;
@@ -332,6 +343,21 @@ namespace FingerDiceDuel.Tests
 
             totalGames = games;
             return Report(duals, dualTally, roleTally, axisTally, gamesPerPair, games, anomalies);
+        }
+
+        /// <summary>给某个双将里的两名角色记一次"打满上限"（**同时记场次**）。</summary>
+        private static void AddRoleLimit(Dictionary<string, Tally> map, Dual dual)
+        {
+            foreach (string key in new[] { dual.Primary.DisplayName, dual.Secondary.DisplayName })
+            {
+                if (!map.TryGetValue(key, out Tally t))
+                {
+                    t = new Tally();
+                    map[key] = t;
+                }
+                t.Games++;
+                t.LimitHits++;
+            }
         }
 
         private static void AddRole(Dictionary<string, Tally> map, CharacterDefinition def,
@@ -407,12 +433,13 @@ namespace FingerDiceDuel.Tests
                             + $"  打满 {byDecisive[i].Value.LimitRate * 100,5:F1}%"
                             + $"  （{byDecisive[i].Value.Wins}/{byDecisive[i].Value.Games}）");
 
-            sb.AppendLine("  最拖的 10 组（打满上限比例）：");
             var byLimit = new List<KeyValuePair<string, Tally>>(dualTally);
             byLimit.Sort((x, y) => y.Value.LimitRate.CompareTo(x.Value.LimitRate));
+
+            sb.AppendLine("  最容易平局的 10 组（打满 50 轮上限 = 平局）：");
             for (int i = 0; i < byLimit.Count && i < 10; i++)
                 sb.AppendLine($"    {i + 1,2}. {byLimit[i].Key,-16}"
-                            + $"打满 {byLimit[i].Value.LimitRate * 100,5:F1}%");
+                            + $"平局率 {byLimit[i].Value.LimitRate * 100,5:F1}%");
 
             int limitTotal = 0;
             foreach (var kv in dualTally) limitTotal += kv.Value.LimitHits;
