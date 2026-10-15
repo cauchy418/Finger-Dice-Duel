@@ -39,19 +39,7 @@ namespace FingerDiceDuel.Characters
                     + $"（{primary.DisplayName} vs {secondary.DisplayName}）。",
                     nameof(secondary));
 
-            ICharacterBehavior a = CharacterFactory.CreateBehavior(primary);
-            ICharacterBehavior b = CharacterFactory.CreateBehavior(secondary);
-
-            // ⚠️ 子角色**不经 CharacterFactory 建玩家**，
-            //    所以必须显式注入它们的 Definition ——
-            //    否则 DisplayName 会回退成类型名（实测：期望"战士"、实际"Warrior"）。
-            (a as CharacterTemplate)?.ApplyDefinition(primary);
-            (b as CharacterTemplate)?.ApplyDefinition(secondary);
-
-            var dual = new DualGeneralBehavior(a, b);
-
-            // 战报与 UI 只认主将名（玩家确认）
-            dual.SetNames(primary.DisplayName, secondary.DisplayName);
+            ICharacterBehavior dual = CreateBehavior(primary, secondary);
 
             // ⚠️ 体力上限**取最大**（玩家确认）——
             //    不能相加，否则双将血量翻倍。
@@ -65,7 +53,85 @@ namespace FingerDiceDuel.Characters
         }
 
         /// <summary>
-        /// 两名角色是否同属一个**阵营序列**（守序 / 中立 / 混乱）。
+        /// 只造**行为对象**（不建 <see cref="PlayerState"/>）。
+        ///
+        /// 用于需要自己组建对局的场合
+        /// （双将不能走 <see cref="CharacterFactory.CreateMatch"/>，
+        /// 因为它只会用**单角色**建玩家）。
+        /// </summary>
+        public static ICharacterBehavior CreateBehavior(CharacterDefinition primary,
+                                                        CharacterDefinition secondary)
+        {
+            if (primary == null) throw new ArgumentNullException(nameof(primary));
+            if (secondary == null) throw new ArgumentNullException(nameof(secondary));
+
+            if (ReferenceEquals(primary, secondary))
+                throw new ArgumentException("双将的两名角色必须不同。", nameof(secondary));
+
+            if (!SameAxis(primary, secondary))
+                throw new ArgumentException(
+                    $"双将的两名角色必须同属守序、中立、混乱三者之一"
+                    + $"（{primary.DisplayName} vs {secondary.DisplayName}）。",
+                    nameof(secondary));
+
+            ICharacterBehavior a = CharacterFactory.CreateBehavior(primary);
+            ICharacterBehavior b = CharacterFactory.CreateBehavior(secondary);
+            (a as CharacterTemplate)?.ApplyDefinition(primary);
+            (b as CharacterTemplate)?.ApplyDefinition(secondary);
+
+            var dual = new DualGeneralBehavior(a, b);
+            dual.SetNames(primary.DisplayName, secondary.DisplayName);
+            return dual;
+        }
+
+        /// <summary>
+        /// **随机搭配一对**同阵营角色（供人机对手用）。
+        ///
+        /// 玩家确认："人机随机搭配不需要给人机选角色"。
+        ///
+        /// 做法：先从全部角色里随机一个当**主将**，
+        /// 再从**同阵营的副将候选**里随机一个。
+        /// 这样天然满足"同阵营、不同角色"，不需要重试。
+        ///
+        /// 返回 null 表示无法搭配（例如角色表为空）。
+        /// </summary>
+        public static bool TryRandomPair(out CharacterDefinition primary,
+                                         out CharacterDefinition secondary)
+        {
+            primary = null;
+            secondary = null;
+
+            CharacterDefinition[] all = CharacterDefinition.BuiltIn;
+            if (all == null || all.Length == 0) return false;
+
+            // 先随机挑一个**有同阵营伙伴**的主将（避开重试）
+            var candidates = new List<CharacterDefinition>(all.Length);
+            for (int i = 0; i < all.Length; i++)
+            {
+                if (all[i] == null) continue;
+                if (PartnersFor(all[i]).Count > 0) candidates.Add(all[i]);
+            }
+            if (candidates.Count == 0) return false;
+
+            int rnd = _random.Next(candidates.Count);
+            primary = candidates[rnd];
+
+            List<CharacterDefinition> partners = PartnersFor(primary);
+            if (partners.Count == 0) return false;
+
+            secondary = partners[_random.Next(partners.Count)];
+            return true;
+        }
+
+        /// <summary>
+        /// 固定种子的随机数（可复现，方便测试与排查）。
+        ///
+        /// ⚠️ 不用 <c>UnityEngine.Random</c>：本类在 Characters 层，
+        ///    **不得引用 UnityEngine**（分层铁律）。
+        /// </summary>
+        private static readonly System.Random _random = new System.Random();
+
+        /// <summary>两名角色是否同属一个**阵营序列**（守序 / 中立 / 混乱）。
         ///
         /// ⚠️ 这个限制不只是为了风格——它**避开了技能冲突**：
         ///    会互相覆盖的 5 个"接管型"接口

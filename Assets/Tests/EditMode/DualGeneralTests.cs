@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -121,6 +122,60 @@ namespace FingerDiceDuel.Tests
                     "副将候选不应包含主将自己。");
                 Assert.True(DualGeneralFactory.SameAxis(CharacterDefinition.Soldier, partners[i]),
                     "副将候选必须同阵营。");
+            }
+        }
+
+        [Test]
+        public void Random_pair_always_shares_the_axis_and_differs()
+        {
+            // 玩家确认："人机随机搭配不需要给人机选角色"。
+            // 随机搭配必须**天然合法**（同阵营、不同角色），不靠重试。
+            for (int i = 0; i < 200; i++)
+            {
+                Assert.True(DualGeneralFactory.TryRandomPair(out CharacterDefinition a,
+                                                             out CharacterDefinition b),
+                    "应能随机搭配出一对。");
+                Assert.NotNull(a, "主将不应为空。");
+                Assert.NotNull(b, "副将不应为空。");
+                Assert.False(ReferenceEquals(a, b), "两名不能是同一个人。");
+                Assert.True(DualGeneralFactory.SameAxis(a, b), "两名必须同阵营。");
+
+                // 而且必须能真的建出来（不只是名字合法）
+                Assert.NotNull(DualGeneralFactory.Create("甲", a, b),
+                    "随机搭配出的一对必须可用。");
+            }
+        }
+
+        [Test]
+        public void A_dual_general_match_runs_and_resolves()
+        {
+            // 这是"双将能真正当一局打"的关键验证：
+            // 光能建出来不算数，要能进 GameManager 并跑出正常结果。
+            // 取各阵营一对代表性组合。
+            var pairs = new[]
+            {
+                new[] { CharacterDefinition.Warrior, CharacterDefinition.Swordsman },
+                new[] { CharacterDefinition.Monk, CharacterDefinition.Thief },
+                new[] { CharacterDefinition.Giant, CharacterDefinition.Assassin },
+            };
+
+            for (int i = 0; i < pairs.Length; i++)
+            {
+                PlayerState mine = DualGeneralFactory.Create("甲", pairs[i][0], pairs[i][1]);
+                PlayerState foe = DualGeneralFactory.Create("乙", pairs[i][1], pairs[i][0]);
+
+                var choiceA = new GreedyChoiceProvider();
+                var choiceB = new GreedyChoiceProvider();
+                var game = new GameManager(mine, foe, choiceA, choiceB);
+
+                MatchResult r = new MatchRunner().Run(game, choiceA, choiceB);
+
+                Assert.True(r.Turns > 0,
+                    $"双将对局应至少走一回合（{pairs[i][0].DisplayName}"
+                    + $"+{pairs[i][1].DisplayName}，实际 {r.Turns}）。");
+                Assert.False(r.HitTurnLimit,
+                    $"双将对局不应撞回合上限（{pairs[i][0].DisplayName}"
+                    + $"+{pairs[i][1].DisplayName}）。");
             }
         }
 

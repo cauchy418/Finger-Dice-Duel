@@ -149,6 +149,13 @@ namespace FingerDiceDuel.UI
         /// <summary>双将的开始按钮（两名都选好才可点）。</summary>
         private Button _dgStart;
 
+        /// <summary>本局是不是**双将对局**。</summary>
+        private bool _isDualGeneral;
+
+        /// <summary>双将：**人机对手**的主将 / 副将（随机搭配）。</summary>
+        private CharacterDefinition _dgFoePrimary;
+        private CharacterDefinition _dgFoeSecondary;
+
         /// <summary>
         /// 取**同阵营的副将候选**。
         ///
@@ -923,7 +930,49 @@ namespace FingerDiceDuel.UI
         {
             if (_dgPrimary == null || _dgSecondary == null) return;
 
-            ShowComingSoon($"{_dgPrimary.DisplayName} + {_dgSecondary.DisplayName} 对局");
+            // 玩家确认：**只有玩家自己选**，
+            // 人机对手**随机搭配**，不给人机选角色。
+            if (!DualGeneralFactory.TryRandomPair(out _dgFoePrimary, out _dgFoeSecondary))
+            {
+                ShowComingSoon("双将对局（无法为人机搭配角色）");
+                return;
+            }
+
+            _pendingDefA = _dgPrimary;
+            _pendingDefB = _dgFoePrimary;
+            PrepareDualMatch(_dgPrimary, _dgSecondary, _dgFoePrimary, _dgFoeSecondary);
+
+            // 玩家确认：**骰先攻等与经典模式相似**（不做入门模式）。
+            _diceRoll.Begin(_game);
+            ShowScreen(GameScreen.DiceRoll);
+        }
+
+        /// <summary>
+        /// 建立**双将**对局（不调 BeginTurn）。
+        ///
+        /// 与 <see cref="PrepareMatch"/> 的区别：不能用
+        /// <c>CharacterFactory.CreateMatch</c> —— 它只会用**单角色**建玩家。
+        /// 双将要自己组 <see cref="PlayerState"/> 再交给 <see cref="GameManager"/> 。
+        /// </summary>
+        private void PrepareDualMatch(CharacterDefinition myPrimary, CharacterDefinition mySecondary,
+                                      CharacterDefinition foePrimary, CharacterDefinition foeSecondary)
+        {
+            _choiceA = new SimpleChoiceProvider();
+            _choiceB = new SimpleChoiceProvider();
+
+            PlayerState a = DualGeneralFactory.Create("P1", myPrimary, mySecondary);
+            PlayerState b = DualGeneralFactory.Create("P2", foePrimary, foeSecondary);
+
+            _game = new GameManager(a, b, _choiceA, _choiceB);
+
+            IMoveSelector aiA = null;
+            IMoveSelector aiB = PlayerBIsAI ? (IMoveSelector)MakeAI() : null;
+
+            _controller = new BoardController(_game, _choiceA, _choiceB,
+                                              aiForA: aiA,
+                                              aiForB: aiB);
+            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+            _isDualGeneral = true;
         }
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
@@ -1813,6 +1862,10 @@ namespace FingerDiceDuel.UI
             //
             // 隐藏界面是 `ShowScreen` 的职责（切分组显隐），这里不需要也不应该插手。
 
+            // 从其他模式进来时先清掉双将标志，
+            // 否则标题栏会把 1v1 当成双将显示。
+            _isDualGeneral = false;
+
             CharacterDefinition defA = _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)];
             CharacterDefinition defB = _roster[Mathf.Clamp(_indexB, 0, _roster.Count - 1)];
 
@@ -1866,6 +1919,15 @@ namespace FingerDiceDuel.UI
             if (_game == null || _controller == null) return;
             if (_pendingDefA == null || _pendingDefB == null) return;
 
+            _controller.SetFirstPlayer(_diceRoll.StartingPlayer);
+
+            // 双将：骰先攻完了也走同一条路（与经典模式一致）
+            if (_isDualGeneral)
+            {
+                StartPreparedMatch();
+                return;
+            }
+
             // 先手 = 点数**大**的那位（后选但先动，与"点数小先决定"互补）。
             // 必须在一局开始前设好，否则第一回合会按默认（A）走。
             _controller.SetFirstPlayer(_diceRoll.StartingPlayer);
@@ -1902,7 +1964,19 @@ namespace FingerDiceDuel.UI
             else
             {
                 _board.BindPlayers(_game.PlayerA, _game.PlayerB);
-                _board.SetTitle($"{_pendingDefA.DisplayName}  vs  {_pendingDefB.DisplayName}");
+
+                if (_isDualGeneral)
+                {
+                    // 玩家要求：**战报只显示主将名**，
+                    // 但标题栏不是战报—— 两名都列出来才知道对手有什么技能。
+                    _board.SetTitle(
+                        $"双将：我（{_pendingDefA.DisplayName} + {_dgSecondary?.DisplayName}" +
+                        $"）  vs  人机（{_pendingDefB.DisplayName} + {_dgFoeSecondary?.DisplayName}）");
+                }
+                else
+                {
+                    _board.SetTitle($"{_pendingDefA.DisplayName}  vs  {_pendingDefB.DisplayName}");
+                }
             }
 
             _board.HideGameOver();
