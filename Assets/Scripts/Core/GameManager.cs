@@ -151,7 +151,24 @@ namespace FingerDiceDuel.Core
         public bool IsGameOver { get; private set; }
         public PlayerState Winner { get; private set; }
         public PlayerState CurrentPlayer { get; private set; }
+        /// <summary>
+        /// 每人的累计行动次数（**原义保留**，冷却与诊断仍在用）。
+        /// </summary>
         public int TurnCount { get; private set; }
+
+        /// <summary>
+        /// **已完成的轮次数**。
+        ///
+        /// 玩家规则：一轮 = **所有角色都经过一次行动**。
+        ///   · 1v1：从 1 号位行动，到再次回到 1 号位行动，就是新的一轮；
+        ///   · 2v2：回到 1 号位行动 = 下一轮；
+        ///   · 若 1 号位阵亡，则以"下一个还活着的座位"作为轮的起点。
+        ///
+        /// ⚠️ 为什么不复用 <see cref="TurnCount"/>：它的语义是"每人一次行动"，
+        ///    1v1 里一轮 = 2 个回合、2v2 里一轮 = 4 个回合。
+        ///    两者混用会让上限判断与界面显示都差几倍。
+        /// </summary>
+        public int RoundCount { get; private set; }
 
         /// <summary>本回合已破碎护盾集合，防止连锁破盾递归死循环。</summary>
         private readonly HashSet<Hand> _brokenThisTurn = new HashSet<Hand>();
@@ -179,6 +196,17 @@ namespace FingerDiceDuel.Core
         /// 这保证了对局一定会在有限步内结束，不会出现"双方都只顾回复"的死循环。
         /// </summary>
         public const int DefaultTurnLimit = 50;
+
+        /// <summary>
+        /// **所有模式的轮次上限**（玩家确认：统一 50 轮）。
+        ///
+        /// ⚠️ 语义是**轮**：一轮 = 所有角色都经过一次行动。
+        ///    所以 50 轮在 1v1 里等于 100 个回合、在 2v2 里等于 200 个回合。
+        /// </summary>
+        public const int DefaultRoundLimit = 50;
+
+        /// <summary>本局的**轮次**上限（默认 <see cref="DefaultRoundLimit"/> = 50 轮）。</summary>
+        public int RoundLimit { get; set; } = DefaultRoundLimit;
 
         /// <summary>
         /// 本局的回合数上限。
@@ -329,6 +357,7 @@ namespace FingerDiceDuel.Core
 
             CurrentPlayer = a;
             TurnCount = 0;
+            RoundCount = 0;
 
             // 开局即通知角色复位，保证内部状态与首局状态一致。
             NotifyMatchReset();
@@ -505,6 +534,41 @@ namespace FingerDiceDuel.Core
         /// 名单顺序是刻意排成"队伍交错"的（A 队0、B 队1、C 队0、D 队1），
         /// 所以轮转天然形成两队的交替出手。
         /// </summary>
+        /// <summary>
+        /// 一轮的**起点**：名单里第一个还活着的角色（1 号位）。
+        ///
+        /// 名单顺序就是座位顺序（1v1 是 [A, B]；2v2 由落座决定）。
+        /// 若 1 号位阵亡，则顺延到下一个还活着的座位 —— 与玩家规则一致。
+        /// </summary>
+        public PlayerState RoundAnchor
+        {
+            get
+            {
+                for (int i = 0; i < _players.Count; i++)
+                    if (_players[i] != null && _players[i].IsAlive) return _players[i];
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 在**某人行动结束、回合已转给下一个人之后**调用，判断是否进入新的一轮。
+        ///
+        /// 判据：下一个人就是 <see cref="RoundAnchor"/>（第一个还活着的座位）。
+        ///   · 1v1：A 是锚点 -> A 行动完下一个人是 B（不是锚点）；
+        ///          B 行动完下一个人是 A（是锚点）-> 轮次 +1。✅
+        ///   · 2v2：1 号位 -> 2 -> 3 -> 4 -> 回到 1 号位时 +1。✅
+        ///   · 1 号位阵亡：锚点顺延到 2 号位。✅
+        ///
+        /// ⚠️ 必须用**实际出招的 actor** 来推下一个人，不能用 CurrentPlayer ——
+        ///    <see cref="ExecuteTurn"/> 允许 actor 与 CurrentPlayer 不一致。
+        /// </summary>
+        private void AdvanceRoundAfter(PlayerState actor)
+        {
+            PlayerState next = NextPlayerAfter(actor);
+            PlayerState anchor = RoundAnchor;
+            if (next != null && ReferenceEquals(next, anchor)) RoundCount++;
+        }
+
         private PlayerState NextPlayerAfter(PlayerState current)
         {
             int count = _players.Count;
@@ -707,6 +771,7 @@ namespace FingerDiceDuel.Core
             IsGameOver = false;
             Winner = null;
             TurnCount = 0;
+            RoundCount = 0;
             CurrentPlayer = PlayerA;
 
             NotifyMatchReset();
@@ -1159,6 +1224,7 @@ namespace FingerDiceDuel.Core
             {
                 TurnCount++;
                 CurrentPlayer = NextPlayerAfter(actor);
+                AdvanceRoundAfter(actor);
                 CheckTurnLimit();
             }
 
@@ -1558,8 +1624,11 @@ namespace FingerDiceDuel.Core
                 // 表现为"双方交替错位一轮"（真实 bug，两条盾牌测试抓到）。
                 CurrentPlayer = NextPlayerAfter(actor);
 
-                // 5b. 回合数上限：打满 <see cref="TurnLimit"/> 回合仍未分出胜负 -> 平局。
-                //     必须在切换回合之后判断（TurnCount 记的是"已完成的回合数"）。
+                // 5a. **轮次推进**：下一个人是"轮的起点"就算进入新的一轮。
+                AdvanceRoundAfter(actor);
+
+                // 5b. **轮次上限**：打满 <see cref="RoundLimit"/> 轮仍未分出胜负 -> 平局。
+                //     必须在切换回合之后判断。
                 CheckTurnLimit();
                 result.GameOver = IsGameOver;
                 result.Winner = Winner;
@@ -1568,11 +1637,20 @@ namespace FingerDiceDuel.Core
             return result;
         }
 
-        /// <summary>打满回合上限仍未分胜负时，按平局结束对局。</summary>
+        /// <summary>
+        /// 打满**轮次上限**（<see cref="RoundLimit"/> = 50 轮）仍未分出胜负时，按平局结束对局。
+        ///
+        /// ⚠️ 玩家要求：所有模式的上限都按**轮**算，统一 50 轮。
+        ///    一轮 = 所有角色都经过一次行动，所以 50 轮在 1v1 里等于 100 个回合、
+        ///    在 2v2 里等于 200 个回合。
+        ///
+        /// 方法名保留 <c>CheckTurnLimit</c> 是为了不动既有调用点；
+        /// 判定用的已经是 <see cref="RoundCount"/> / <see cref="RoundLimit"/>。
+        /// </summary>
         private void CheckTurnLimit()
         {
             if (IsGameOver) return;
-            if (TurnCount < TurnLimit) return;
+            if (RoundCount < RoundLimit) return;
 
             IsGameOver = true;
             Winner = null;   // 平局
@@ -1611,6 +1689,7 @@ namespace FingerDiceDuel.Core
 
             TurnCount++;
             CurrentPlayer = NextPlayerAfter(CurrentPlayer);
+            AdvanceRoundAfter(CurrentPlayer);
             CheckTurnLimit();   // 跳过同样计入回合数上限
         }
 
@@ -1633,6 +1712,7 @@ namespace FingerDiceDuel.Core
 
             TurnCount++;
             CurrentPlayer = NextPlayerAfter(CurrentPlayer);
+            AdvanceRoundAfter(CurrentPlayer);
             CheckTurnLimit();
         }
         ///
@@ -1651,6 +1731,7 @@ namespace FingerDiceDuel.Core
 
             TurnCount++;
             CurrentPlayer = NextPlayerAfter(CurrentPlayer);
+            AdvanceRoundAfter(CurrentPlayer);
 
             CheckTurnLimit();
         }

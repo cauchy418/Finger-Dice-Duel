@@ -65,7 +65,10 @@ namespace FingerDiceDuel.Tests
         /// <param name="seat3">座位 3</param>
         /// <param name="seat4">座位 4</param>
         /// <param name="seed">初始手值的种子</param>
-        /// <param name="turnLimit">回合上限（每次行动算 1）</param>
+        /// <param name="turnLimit">
+        /// **轮次**上限（一轮 = 所有角色都经过一次行动；2v2 里等于 4 次行动）。
+        /// ⚠️ 玩家要求把上限按轮算，这里传的是轮数，不是行动次数。
+        /// </param>
         /// <param name="actions">实际进行了多少次行动</param>
         internal static Outcome Play(CharacterDefinition seat1, CharacterDefinition seat2,
                                      CharacterDefinition seat3, CharacterDefinition seat4,
@@ -91,13 +94,21 @@ namespace FingerDiceDuel.Tests
             try
             {
                 GameManager game = GameManager.Create2v2(seated, providers);
-                game.TurnLimit = turnLimit;
+                game.RoundLimit = turnLimit;
+
+                // 循环上限必须**明显大于**"轮次上限折算成行动数"，
+                // 否则循环会先退出、把对局当成"未决"（2v2 一轮 = 4 次行动）。
+                //
+                // ⚠️ 改成轮次口径后实测：只留 +16 的余量会在循环赛里踩到
+                //    AccessViolation（对局已经打满轮次、动作还在推进）。
+                //    所以这里留出充足余量。
+                int actionCap = turnLimit * 4 + 200;
 
                 // 经典开局：每人掷 1d20 决定初始手值
                 for (int i = 0; i < seated.Count; i++)
                     ApplyClassicHands(seated[i], seed * 17 + i * 5 + 3);
 
-                while (!game.IsGameOver && actions < turnLimit)
+                while (!game.IsGameOver && actions < actionCap)
                 {
                     PlayerState actor = game.CurrentPlayer;
                     if (actor == null) break;                     // 全部阵亡

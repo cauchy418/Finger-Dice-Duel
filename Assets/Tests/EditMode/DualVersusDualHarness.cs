@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Tests
             /// <summary>模拟器被 MaxTurns 强行中断（异常情况，应当为 0）。</summary>
             public bool HitLimit;
 
-            /// <summary>正常打满了对局的回合上限（规则内的平局）。</summary>
+            /// <summary>正常打满了对局的轮次上限（规则内的平局）。</summary>
             public bool ReachedLimit;
 
             public string Error;
@@ -113,11 +113,14 @@ namespace FingerDiceDuel.Tests
                 //    互相打不动，平均需要 **166 回合**才分出胜负。
                 //    限在 50 会把它们全部截断成平局，而平局在胜率里算半负 ——
                 //    于是“狼人+巨人”看起来只有 23.7%，放开后实际是 98.8% 胜。
-                game.TurnLimit = 300;
+                game.RoundLimit = 300;
 
                 PrepareStart(game, seed);
 
-                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 350 };
+                // ⚠️ 上限已改成按**轮**算（1 轮 = 双方各行动一次 = 2 个回合），
+                //    所以模拟器的行动次数上限必须大于“轮数 x 每轮行动数” ——
+                //    否则会出现“模拟器被迫中断”（改成轮口径后实测踩到 40+ 条）。
+                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 700 };
                 MatchResult r = runner.Run(game, choiceA, choiceB);
 
                 result.HitLimit = r.HitTurnLimit;

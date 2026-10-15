@@ -2472,10 +2472,33 @@ namespace FingerDiceDuel.Assistant
         public int TurnCount => _game.TurnCount;
 
         /// <summary>
+        /// 本局**已完成**的轮次数（一轮 = 所有角色都经过一次行动）。
+        /// 内部/测试用；UI 显示请用 <see cref="DisplayRound"/>。
+        /// </summary>
+        public int RoundCount => _game.RoundCount;
+
+        /// <summary>
+        /// **轮次上限**（所有模式统一 50 轮）。
+        /// </summary>
+        public int RoundLimit => _game?.RoundLimit ?? GameManager.DefaultRoundLimit;
+
+        /// <summary>
+        /// UI 显示的"当前是第几轮"（**从 1 开始**）。
+        ///
+        /// 玩家操作的第一个回合属于**第 1 轮**，而 `RoundCount` 记的是
+        /// "已完成的轮次数"（开局为 0），所以显示值要 +1。
+        ///
+        /// 为什么不在 `GameManager` 里把 `RoundCount` 改成 1 起：
+        /// 它的语义（已完成数）被上限判定依赖，改语义的连带风险很大。
+        /// **只在显示层换算。**
+        /// </summary>
+        public int DisplayRound => Math.Min(RoundCount + 1, RoundLimit);
+
+        /// <summary>
         /// UI 显示的"当前是第几回合"（**从 1 开始**）。
         ///
-        /// 玩家操作的第一个回合就是**第 1 回合**，而 `TurnCount` 记的是
-        /// "已完成的回合数"（开局为 0），所以显示值要 +1。
+        /// ⚠️ 玩家要求界面改成显示**轮次**，所以这里保留给战报/诊断用，
+        ///    牌桌顶栏请用 <see cref="DisplayRound"/>。
         ///
         /// 为什么不在 `GameManager` 里把 `TurnCount` 改成 1 起：
         /// 它的语义（已完成数）被胜负判定与多份测试依赖，

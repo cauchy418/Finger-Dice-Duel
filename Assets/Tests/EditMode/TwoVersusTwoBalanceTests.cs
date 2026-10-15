@@ -113,7 +113,7 @@ namespace FingerDiceDuel.Tests
                     // 相当于只测了 32 种开局而不是 4896 种。
                     int seed = g * 101 + i * 7;
                     TwoVersusTwoHarness.Outcome r = TwoVersusTwoHarness.Play(
-                        seat14.a, seat23.a, seat23.b, seat14.b, seed, 400, out int actions);
+                        seat14.a, seat23.a, seat23.b, seat14.b, seed, 50, out int actions);
 
                     if (r.Error != null)
                     {

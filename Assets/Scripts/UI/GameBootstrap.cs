@@ -1553,9 +1553,11 @@ namespace FingerDiceDuel.UI
         {
             _game = GameManager.Create2v2(seated, providers.ConvertAll(x => (IChoiceProvider)x));
 
-            // 2v2 的回合上限是 **100**（玩家要求）——
-            // 2v2 每"回合"只有一个人行动，同样的回合数只够 1v1 的四分之一。
-            _game.TurnLimit = TwoOnTwoTurnLimit;
+            // 玩家要求：**所有模式的轮次上限统一为 50 轮**。
+            // 旧版给 2v2 单独设 100 回合，是因为那时按"每人一次行动"计数；
+            // 现在按**轮**计数（一轮 = 所有角色都经过一次行动），
+            // 50 轮在 2v2 里已经等于 200 个回合，不需要再放大。
+            _game.RoundLimit = GameManager.DefaultRoundLimit;
 
             // 前两人的 AI 走构造参数（与 1v1 同一路径）；
             // 其余玩家用 BindPlayer 登记 —— 只有"我"是人类（ai 传 null）。
@@ -2237,8 +2239,8 @@ namespace FingerDiceDuel.UI
                 // 每个人的手牌都显示在自己的环形面板上，
                 // 并且都参与"当前阶段候选高亮"（玩家要看清点哪里）
                 _board.RefreshRing(_twoOnTwoSeated, _controller.SelectedHand, choices,
-                                   turnCount: _controller.DisplayTurn,
-                                   turnLimit: _controller.TurnLimit,
+                                   turnCount: _controller.DisplayRound,
+                                   turnLimit: _controller.RoundLimit,
                                    showSkipButton: ShowSkipButton(),
                                    skipButtonInteractable: _controller.CanSkipTurn);
 
@@ -2258,8 +2260,8 @@ namespace FingerDiceDuel.UI
                                choices,
                                showSkipButton: ShowSkipButton(),
                                skipButtonInteractable: _controller.CanSkipTurn,
-                               turnCount: _controller.DisplayTurn,
-                               turnLimit: _controller.TurnLimit,
+                               turnCount: _controller.DisplayRound,
+                               turnLimit: _controller.RoundLimit,
                                extraHighlights: null);
             }
 

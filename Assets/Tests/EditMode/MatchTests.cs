@@ -309,8 +309,10 @@ namespace FingerDiceDuel.Tests
 
                     Assert.True(game.IsGameOver,
                         $"{a.Id} vs {b.Id} 应在回合上限内结束。");
-                    Assert.True(result.Turns <= GameManager.DefaultTurnLimit,
-                        $"{a.Id} vs {b.Id} 回合数 {result.Turns} 不应超过上限 {GameManager.DefaultTurnLimit}。");
+                    // 上限按**轮**算（统一 50 轮）；1v1 里一轮 = 2 个回合。
+                    Assert.True(result.Turns <= GameManager.DefaultRoundLimit * 2,
+                        $"{a.Id} vs {b.Id} 回合数 {result.Turns} 不应超过"
+                        + $" {GameManager.DefaultRoundLimit} 轮（= {GameManager.DefaultRoundLimit * 2} 回合）。");
                 }
             }
         }
@@ -327,7 +329,10 @@ namespace FingerDiceDuel.Tests
             MatchResult result = runner.Run(game, selector, selector);
 
             Assert.True(game.IsGameOver, "打满上限后对局应结束。");
-            Assert.AreEqual(GameManager.DefaultTurnLimit, result.Turns, "应恰好打满上限。");
+            // ⚠️ 玩家要求把上限按**轮**算（统一 50 轮），而 `Turns` 记的是**回合**。
+            //    1v1 里一轮 = 2 个回合，所以恰好打满 = 100 个回合。
+            Assert.AreEqual(GameManager.DefaultRoundLimit * 2, result.Turns,
+                "1v1 打满 50 轮 = 100 个回合。");
             Assert.Null(result.Winner, "打满上限应按平局记录（无胜者）。");
             Assert.Null(game.Winner);
             Assert.False(result.HitTurnLimit,

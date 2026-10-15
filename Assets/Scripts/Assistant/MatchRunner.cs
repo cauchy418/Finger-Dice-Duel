@@ -23,8 +23,11 @@ namespace FingerDiceDuel.Assistant
         public bool HitTurnLimit { get; internal set; }
 
         /// <summary>
-        /// 是否**打满了对局的回合上限**（<see cref="GameManager.TurnLimit"/>），
+        /// 是否**打满了对局的轮次上限**（<see cref="GameManager.RoundLimit"/>），
         /// 即规则内的平局。
+        ///
+        /// ⚠️ 玩家已把上限改成按**轮**算（一轮 = 所有角色都经过一次行动），
+        ///    所以这里判的是 <see cref="GameManager.RoundCount"/> 而不是回合数。
         ///
         /// ⚠️ 与 <see cref="HitTurnLimit"/> 的区别：
         ///    · <see cref="HitTurnLimit"/> = 模拟器被 <c>MaxTurns</c> **强行中断**（异常情况）；
@@ -110,8 +113,7 @@ namespace FingerDiceDuel.Assistant
             // 为什么需要区分：统计胜率时，把这种局当成"负"会严重误导 ——
             // 实测"狼人+巨人"在 50 回合上限下 96% 都是这种局，
             // 被算成半负后排倒数第一；把上限放开到 300，它是 98.8% 胜。
-            result.ReachedTurnLimit = result.Winner == null
-                                   && result.Turns >= game.TurnLimit;
+            result.ReachedTurnLimit = game.RoundCount >= game.RoundLimit;
 
             result.Winner = game.Winner;
             result.WinnerIsPlayerA = ReferenceEquals(game.Winner, game.PlayerA);

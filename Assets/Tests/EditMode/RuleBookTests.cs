@@ -123,8 +123,8 @@ namespace FingerDiceDuel.Tests
         {
             string text = RuleBook.BasicRules();
 
-            Assert.True(text.Contains(GameManager.DefaultTurnLimit.ToString()),
-                $"规则应写明回合上限 {GameManager.DefaultTurnLimit}。");
+            Assert.True(text.Contains(GameManager.DefaultRoundLimit.ToString()),
+                $"规则应写明轮次上限 {GameManager.DefaultRoundLimit}。");
         }
 
         [Test]

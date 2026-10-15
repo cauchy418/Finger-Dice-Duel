@@ -879,7 +879,8 @@ namespace FingerDiceDuel.UI
         public void SetTurn(int turnCount, int turnLimit)
         {
             if (_turnText == null) return;
-            _turnText.text = $"回合 {turnCount} / {turnLimit}";
+            // 玩家要求：界面改显示**轮次**（一轮 = 所有角色都经过一次行动）。
+            _turnText.text = $"轮次 {turnCount} / {turnLimit}";
         }
 
         /// <summary>
