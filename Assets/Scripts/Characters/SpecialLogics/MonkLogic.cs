@@ -163,22 +163,29 @@ namespace FingerDiceDuel.Core
             //    但**两个太极可以叠在同一段上**（逐次折半）。
             //    现在是**逐段调用**（闪避已排到太极之前），
             //    所以只算"**新增那一次**"的递减。
-            int remaining = segmentDamage;
+            // ⚠⚠ **这里只算"这一轮新增的减免"，不能累加。**
+            //
+            //    玩家指出的错误：段伤害 9、两个太极时，
+            //      第一轮 9 -> 弹 4 受 5   ✅
+            //      第二轮 5 -> **应为弹 2 受 3**，但实际返回了 1（受 4）❌
+            //
+            //    原因：外层（AttackContext）已经在累加反弹与减免，
+            //    而本方法又把"已经发生过的减免"累加进了 totalReduced ——
+            //    于是外层拿到的是**累计值减去上一轮的**，而不是本轮的。
+            //
+            //    **正确语义：out 参数 = 本次调用新增的那一份。**
+            //    所以这里只算"当前 remaining 的一半"，不再回溯累加。
+            if (segmentDamage <= 0) return false;
 
-            for (int k = 0; k < stagesUsed; k++)
-            {
-                int r = remaining / 2;
-                remaining -= r;
-                if (remaining <= 0) break;
-            }
+            int reflect = segmentDamage / 2;      // 这一轮反弹（下取整）
+            int taken = segmentDamage - reflect;  // 这一轮受方仍要承受
 
-            if (remaining > 0)
-            {
-                int reflect = remaining / 2;
-                totalReduced = reflect;
-                totalReflect = reflect;
-                stages = stagesUsed + 1;
-            }
+            totalReduced = reflect;
+            totalReflect = reflect;
+            stages = stagesUsed + 1;
+
+            // taken 不用回传：外层用"perHit - 累计减免"自己算。
+            _ = taken;
 
             return stages > 0;
         }

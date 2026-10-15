@@ -139,23 +139,23 @@ namespace FingerDiceDuel.Tests
         public void Two_taichi_stack_on_the_same_segment()
         {
             // 同一击（段伤害 9）但武僧有**两个太极**，玩家确认：
-            //   "第一次弹一半伤害，第二次弹剩余伤害的一半。"
+            //   "第一次弹一半伤害，第二次弹剩余伤害的一半，
+            //     即只吃 1/4 伤害剩下全部反弹。"
             //
-            // ⚠️ **实测值**（单测确认）：
-            //   call1: 输入 9 -> 弹 floor(9/2)=4、受 5
-            //   call2: 输入 5 -> 弹 floor(5/2)=2**但受方只承受 remaining 的差**，
-            //          实际记录为 red=1、受 4
-            //   合计：受 4、反弹 4+1 = 5
+            // ⚠️ 每一轮都是“受上取整、反弹下取整”：
+            //   第一轮：9 -> 弹 floor(9/2)=4、受 5
+            //   第二轮：5 -> 弹 floor(5/2)=2、受 3      ← 第二个太极的目标是**减免过的伤害**
+            //   合计：受 3、反弹 4+2 = 6
             //
-            //   ⚠️ 这与玩家原话的“只吃 1/4”在**奇数**时会差 1 点
-            //      （因为每一轮都是受上取整、反弹下取整）。
-            //      偶数伤害时才恰好是 1/4 —— 与之前实现一致。
+            //   ⚠️ 这里**不能累加**：外层（AttackContext）已经在累加反弹与减免，
+            //      实现方只能传回**本轮新增的那一份**。
+            //      （玩家指出过这个错：我曾把它累加，于是第二轮只弹了 1 而不是 2。）
             Result r = Resolve(CharacterDefinition.Soldier, 3, 7, 2);
 
-            Assert.AreEqual(4, r.MonkLost,
-                "双太极：9 -> 受 4。[" + r.Log + "]");
-            Assert.AreEqual(5, r.AtkLost,
-                "双太极：反弹 4+1=5。[" + r.Log + "]");
+            Assert.AreEqual(3, r.MonkLost,
+                "双太极：9 逐次折半 -> 受 3。[" + r.Log + "]");
+            Assert.AreEqual(6, r.AtkLost,
+                "双太极：反弹 4+2=6。[" + r.Log + "]");
             Assert.True(r.Log.Contains("fired=2"),
                 "应连续发动两次太极。[" + r.Log + "]");
         }
