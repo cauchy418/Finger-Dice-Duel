@@ -315,24 +315,44 @@ namespace FingerDiceDuel.Characters
         HandEffectType IHandEffectRewriter.RewriteEffect(PlayerState actor, Hand actedHand,
                                                          int targetValue, GameManager manager)
         {
+            // ⚠⚠ **没有子角色会改写时，必须返回原效果，不是 None。**
+            //
+            //    <see cref="GameManager"/> 用 <c>rewritten != effect</c> 来判“是否被改写”，
+            //    所以 <c>None</c> 的含义是**“把效果改成无效果”**
+            //    （巨人的 4/6/8 正是这么用的），而不是“没改写”。
+            //
+            //    我第一版在没有改写器时返回了 None —— 于是
+            //    **游侠+邪术师这种“两个都不实现改写器”的组合，
+            //    所有数字全变成了无效果**（玩家实测：8 不攻击）。
+            //    巨人只是**恰好确实想把 8 变成 None**，所以看起来是对的。
+            HandEffectType original = actedHand != null
+                ? Hand.GetEffectType(actedHand.Value)
+                : HandEffectType.None;
+
             for (int i = 0; i < _parts.Count; i++)
             {
                 if (!(_parts[i] is IHandEffectRewriter r)) continue;
-                HandEffectType rewritten = r.RewriteEffect(actor, actedHand, targetValue, manager);
-                if (rewritten != HandEffectType.None) return rewritten;
+
+                // 取**第一个实现了改写器的子角色的答案**，
+                // 包括它返回的 None（=“我要把它变成无效果”）。
+                // 各子角色在“不想改写”时会自己返回原效果。
+                return r.RewriteEffect(actor, actedHand, targetValue, manager);
             }
-            return HandEffectType.None;
+
+            return original;
         }
 
         HandEffectType IHandEffectDisplay.DisplayedEffectOf(int resultValue)
         {
+            // 同上：**没有子角色会改显示时，返回原效果**。
+            // 巨人的 4/6/8 确实要显示成“不红”，所以它的 None 是有意义的。
             for (int i = 0; i < _parts.Count; i++)
             {
                 if (!(_parts[i] is IHandEffectDisplay d)) continue;
-                HandEffectType shown = d.DisplayedEffectOf(resultValue);
-                if (shown != HandEffectType.None) return shown;
+                return d.DisplayedEffectOf(resultValue);
             }
-            return HandEffectType.None;
+
+            return Hand.GetEffectType(resultValue);
         }
 
         bool IDamageMitigator.TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,

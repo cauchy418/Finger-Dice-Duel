@@ -125,6 +125,66 @@ namespace FingerDiceDuel.Tests
             }
         }
 
+        /// <summary>
+        /// **没有子角色会改写时，必须返回原效果**。
+        ///
+        /// 这条测试钉住一个真实线上 bug：
+        ///   <c>GameManager</c> 用 <c>rewritten != effect</c> 判“是否被改写”，
+        ///   所以返回 <c>None</c> 的含义是**“把效果改成无效果”**
+        ///   （巨人的 4/6/8 正是这么用的），而不是“没改写”。
+        ///
+        ///   我第一版在“两名子角色都不实现改写器”时返回了 None，
+        ///   于是**游侠 + 邪术师的 8 变成了无效果**（玩家实测：8 不攻击）。
+        /// </summary>
+        [Test]
+        public void Effect_rewrite_falls_back_to_the_original_when_no_part_rewrites()
+        {
+            // 游侠与邪术师**都不实现** IHandEffectRewriter
+            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Ranger,
+                                                       CharacterDefinition.Warlock);
+
+            var rewriter = me.Character as IHandEffectRewriter;
+            Assert.NotNull(rewriter, "容器必须实现 IHandEffectRewriter。");
+
+            int[] values = { 4, 5, 6, 7, 8, 9 };
+            for (int i = 0; i < values.Length; i++)
+            {
+                int v = values[i];
+                var hand = new Hand(v);
+                hand.SetValue(v);
+
+                HandEffectType expected = Hand.GetEffectType(v);
+                HandEffectType got = rewriter.RewriteEffect(me, hand, 5, null);
+
+                Assert.AreEqual(expected, got,
+                    $"没有改写器时 v{v} 应保持原效果（实际 {got}）。");
+            }
+        }
+
+        [Test]
+        public void Giant_partner_still_suppresses_its_own_numbers()
+        {
+            // 巨人的 4/6/8 确实要变成“无效果”，不能被上一条修正误伤。
+            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Giant,
+                                                       CharacterDefinition.Assassin);
+            var rewriter = (IHandEffectRewriter)me.Character;
+
+            int[] dead = { 4, 6, 8 };
+            for (int i = 0; i < dead.Length; i++)
+            {
+                var hand = new Hand(dead[i]);
+                hand.SetValue(dead[i]);
+                Assert.AreEqual(HandEffectType.None, rewriter.RewriteEffect(me, hand, 5, null),
+                    $"巨人的 {dead[i]} 应为无效果。");
+            }
+
+            // 5 变成两段攻击
+            var five = new Hand(5);
+            five.SetValue(5);
+            Assert.AreEqual(HandEffectType.Attack6, rewriter.RewriteEffect(me, five, 5, null),
+                "巨人的 5 应为攻击。");
+        }
+
         [Test]
         public void Random_pair_always_shares_the_axis_and_differs()
         {
