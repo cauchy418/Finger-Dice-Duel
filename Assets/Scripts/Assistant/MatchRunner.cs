@@ -22,6 +22,20 @@ namespace FingerDiceDuel.Assistant
         /// <summary>是否因为达到回合上限而中止（说明该对局可能陷入循环）。</summary>
         public bool HitTurnLimit { get; internal set; }
 
+        /// <summary>
+        /// 是否**打满了对局的回合上限**（<see cref="GameManager.TurnLimit"/>），
+        /// 即规则内的平局。
+        ///
+        /// ⚠️ 与 <see cref="HitTurnLimit"/> 的区别：
+        ///    · <see cref="HitTurnLimit"/> = 模拟器被 <c>MaxTurns</c> **强行中断**（异常情况）；
+        ///    · 本字段 = 对局**正常打满**规则上限（规则内的平局）。
+        ///
+        /// 统计胜率时**必须**区分这两者：把打满上限的局当成"负"会严重误导 ——
+        /// 实测"狼人+巨人"在 50 回合上限下 96% 都是打满，被算成半负后排倒数第一；
+        /// 把上限放开到 300，它是 98.8% 胜。
+        /// </summary>
+        public bool ReachedTurnLimit { get; internal set; }
+
         /// <summary>实际执行的回合数。</summary>
         public int Turns { get; internal set; }
 
@@ -85,7 +99,19 @@ namespace FingerDiceDuel.Assistant
                 OnTurnResolved?.Invoke(turn);
             }
 
+            // ⚠️ `HitTurnLimit` **保持原义**：模拟器被 `MaxTurns` 强行中断
+            //    （`IsGameOver` 仍为 false）。既有测试依赖它，不能改。
             if (!game.IsGameOver) result.HitTurnLimit = true;
+
+            // 另立一个字段表示"打满了 GameManager 的回合上限" ——
+            // 那是**规则内的平局**（`CheckTurnLimit` 置了 IsGameOver / Winner=null），
+            // 与"模拟器被迫中断"是两回事。
+            //
+            // 为什么需要区分：统计胜率时，把这种局当成"负"会严重误导 ——
+            // 实测"狼人+巨人"在 50 回合上限下 96% 都是这种局，
+            // 被算成半负后排倒数第一；把上限放开到 300，它是 98.8% 胜。
+            result.ReachedTurnLimit = result.Winner == null
+                                   && result.Turns >= game.TurnLimit;
 
             result.Winner = game.Winner;
             result.WinnerIsPlayerA = ReferenceEquals(game.Winner, game.PlayerA);

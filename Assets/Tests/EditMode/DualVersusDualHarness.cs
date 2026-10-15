@@ -29,7 +29,13 @@ namespace FingerDiceDuel.Tests
         {
             /// <summary>赢家是不是"甲"（第一个双将）。null = 平局。</summary>
             public bool? FirstWon;
+
+            /// <summary>模拟器被 MaxTurns 强行中断（异常情况，应当为 0）。</summary>
             public bool HitLimit;
+
+            /// <summary>正常打满了对局的回合上限（规则内的平局）。</summary>
+            public bool ReachedLimit;
+
             public string Error;
             public int Turns;
         }
@@ -101,12 +107,21 @@ namespace FingerDiceDuel.Tests
                 var choiceB = new GreedyChoiceProvider();
                 var game = new GameManager(pA, pB, choiceA, choiceB);
 
+                // ⚠⚠ **回合上限必须放宽到 300**。
+                //
+                //    默认上限是 50，而实测：只要双方都有巨人（各 +2 防、+5 生命），
+                //    互相打不动，平均需要 **166 回合**才分出胜负。
+                //    限在 50 会把它们全部截断成平局，而平局在胜率里算半负 ——
+                //    于是“狼人+巨人”看起来只有 23.7%，放开后实际是 98.8% 胜。
+                game.TurnLimit = 300;
+
                 PrepareStart(game, seed);
 
-                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 200 };
+                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 350 };
                 MatchResult r = runner.Run(game, choiceA, choiceB);
 
                 result.HitLimit = r.HitTurnLimit;
+                result.ReachedLimit = r.ReachedTurnLimit;
                 result.Turns = r.Turns;
 
                 if (r.Winner == null) result.FirstWon = null;
@@ -155,10 +170,35 @@ namespace FingerDiceDuel.Tests
         {
             public int Games;
             public int Wins;
+
+            /// <summary>**真正的**平局（双方都没死也没到上限就结束）。</summary>
             public int Draws;
+
+            /// <summary>打满回合上限（**不是**胜负，也不算真正的平局）。</summary>
             public int LimitHits;
 
+            /// <summary>胜率（分母包含平局，供参考）。</summary>
             public double Rate => Games == 0 ? 0 : Wins / (double)Games;
+
+            /// <summary>
+            /// **决出胜负那些局里的胜率**。
+            ///
+            /// 为何看这个：打满上限的局本来就是“没分出胜负”，
+            /// 把它当负会严重误导 ——
+            /// 实测：巨人系被截断成平局后，胜率从 98.8% 掉到 23.7%。
+            /// </summary>
+            public double DecisiveRate
+            {
+                get
+                {
+                    // 分母 = 真正分出胜负的局数 = 总局数 - 真实平局 - 打满上限
+                    int decisive = Games - Draws - LimitHits;
+                    return decisive <= 0 ? 0 : Wins / (double)decisive;
+                }
+            }
+
+            /// <summary>打满上限的比例（越高说明这组越拖）。</summary>
+            public double LimitRate => Games == 0 ? 0 : LimitHits / (double)Games;
         }
 
         /// <summary>
@@ -217,18 +257,39 @@ namespace FingerDiceDuel.Tests
 
                             if (o.HitLimit)
                             {
+                                // 模拟器被迫中断 —— 这才是真异常
+                                if (anomalies.Count < 40)
+                                    anomalies.Add($"{first.Name} vs {second.Name} (seed={seed})：模拟器被迫中断");
+                            }
+
+                            // ⚠️ **场次必须在所有分支之前记**。
+                            //    我第一版把 Games++ 放在下面，而打满上限的分支会 continue ——
+                            //    于是那些局根本没进场次统计，LimitRate 的分母偏小，
+                            //    决胜胜率甚至算出了 172.8% 这种不可能的值。
+                            dualTally[first.Name].Games++;
+                            dualTally[second.Name].Games++;
+
+                            if (o.ReachedLimit)
+                            {
                                 dualTally[first.Name].LimitHits++;
                                 dualTally[second.Name].LimitHits++;
-                                if (anomalies.Count < 40)
-                                    anomalies.Add($"{first.Name} vs {second.Name} (seed={seed})：打到回合上限");
+
+                                if (crossAxis)
+                                {
+                                    axisTally[first.Axis].Games++;
+                                    axisTally[first.Axis].LimitHits++;
+                                    axisTally[second.Axis].Games++;
+                                    axisTally[second.Axis].LimitHits++;
+                                }
+
+                                // 上限截断**不算异常**（它是玩法性质，不是 bug），
+                                // 所以不进 anomalies，只在报告里单独列一行。
+                                continue;
                             }
 
                             // a 就是先手方（firstIsA 已按需要交换过）
                             Dual a = firstIsA ? first : second;
                             Dual b = firstIsA ? second : first;
-
-                            dualTally[first.Name].Games++;
-                            dualTally[second.Name].Games++;
 
                             if (o.FirstWon == null)
                             {
@@ -301,23 +362,25 @@ namespace FingerDiceDuel.Tests
 
             sb.AppendLine();
             sb.AppendLine("--- 角色胜率（角色出现在哪个双将里就计哪个）---");
-            sb.AppendLine("角色        胜     负   场次     胜率");
+            sb.AppendLine("角色        胜     负   场次   决胜胜率   打满上限");
             var roles = new List<KeyValuePair<string, Tally>>(roleTally);
-            roles.Sort((x, y) => y.Value.Rate.CompareTo(x.Value.Rate));
+            roles.Sort((x, y) => y.Value.DecisiveRate.CompareTo(x.Value.DecisiveRate));
             for (int i = 0; i < roles.Count; i++)
             {
                 Tally t = roles[i].Value;
-                sb.AppendLine($"{roles[i].Key,-8}{t.Wins,6}{t.Games - t.Wins,6}{t.Games,6}   {t.Rate * 100,5:F1}%");
+                sb.AppendLine($"{roles[i].Key,-8}{t.Wins,6}{t.Games - t.Wins,6}{t.Games,6}"
+                            + $"   {t.DecisiveRate * 100,6:F1}%   {t.LimitRate * 100,6:F1}%");
             }
 
             sb.AppendLine();
             sb.AppendLine("--- 阵营胜率（只统计外战：不同阵营之间的对局）---");
+            sb.AppendLine("阵营      胜 / 场次    决胜胜率   打满上限");
             string[] order = { "守序", "中立", "混乱" };
             for (int k = 0; k < order.Length; k++)
             {
                 Tally t = axisTally[order[k]];
-                sb.AppendLine($"{order[k],-6}{t.Wins,6} / {t.Games,-6}   {t.Rate * 100,5:F1}%"
-                            + $"   （平 {t.Draws}）");
+                sb.AppendLine($"{order[k],-6}{t.Wins,6} / {t.Games,-6}   {t.DecisiveRate * 100,6:F1}%"
+                            + $"   {t.LimitRate * 100,6:F1}%   （平 {t.Draws}）");
             }
 
             sb.AppendLine();
@@ -325,15 +388,28 @@ namespace FingerDiceDuel.Tests
             var all = new List<KeyValuePair<string, Tally>>(dualTally);
             all.Sort((x, y) => y.Value.Rate.CompareTo(x.Value.Rate));
 
-            sb.AppendLine("  最强 15：");
-            for (int i = 0; i < all.Count && i < 15; i++)
-                sb.AppendLine($"    {i + 1,2}. {all[i].Key,-16}{all[i].Value.Rate * 100,5:F1}%"
-                            + $"  （{all[i].Value.Wins}/{all[i].Value.Games}）");
+            sb.AppendLine("  最强 15（按决胜胜率）：");
+            var byDecisive = new List<KeyValuePair<string, Tally>>(dualTally);
+            byDecisive.Sort((x, y) => y.Value.DecisiveRate.CompareTo(x.Value.DecisiveRate));
+            for (int i = 0; i < byDecisive.Count && i < 15; i++)
+                sb.AppendLine($"    {i + 1,2}. {byDecisive[i].Key,-16}"
+                            + $"{byDecisive[i].Value.DecisiveRate * 100,5:F1}%"
+                            + $"  打满 {byDecisive[i].Value.LimitRate * 100,5:F1}%"
+                            + $"  （{byDecisive[i].Value.Wins}/{byDecisive[i].Value.Games}）");
 
-            sb.AppendLine("  最弱 15：");
-            for (int i = Math.Max(0, all.Count - 15); i < all.Count; i++)
-                sb.AppendLine($"    {i + 1,2}. {all[i].Key,-16}{all[i].Value.Rate * 100,5:F1}%"
-                            + $"  （{all[i].Value.Wins}/{all[i].Value.Games}）");
+            sb.AppendLine("  最弱 15（按决胜胜率）：");
+            for (int i = Math.Max(0, byDecisive.Count - 15); i < byDecisive.Count; i++)
+                sb.AppendLine($"    {i + 1,2}. {byDecisive[i].Key,-16}"
+                            + $"{byDecisive[i].Value.DecisiveRate * 100,5:F1}%"
+                            + $"  打满 {byDecisive[i].Value.LimitRate * 100,5:F1}%"
+                            + $"  （{byDecisive[i].Value.Wins}/{byDecisive[i].Value.Games}）");
+
+            sb.AppendLine("  最拖的 10 组（打满上限比例）：");
+            var byLimit = new List<KeyValuePair<string, Tally>>(dualTally);
+            byLimit.Sort((x, y) => y.Value.LimitRate.CompareTo(x.Value.LimitRate));
+            for (int i = 0; i < byLimit.Count && i < 10; i++)
+                sb.AppendLine($"    {i + 1,2}. {byLimit[i].Key,-16}"
+                            + $"打满 {byLimit[i].Value.LimitRate * 100,5:F1}%");
 
             int limitTotal = 0;
             foreach (var kv in dualTally) limitTotal += kv.Value.LimitHits;

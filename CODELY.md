@@ -235,3 +235,34 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | **空运算源** | 2v2 AI 对局里偶发"用空运算源去结算"，已由两道守门拦住（不再抛异常、不再崩），改为记录 `[FDD异常]` 现场。**根因未消除** |
 | **AI 赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
 | **诊断字段曾多次跨回合残留** | `LastIllegalOperation` / `_advanceTrace` / `_pendingGambleRoll` 都踩过，统一在回合边界清空（`ResetDiagnostics` / `SetupFirstStep`） |
+
+## 双将模式（实现说明）
+
+| 文件 | 职责 |
+|---|---|
+| `Characters/DualGeneralBehavior.cs` | **能力容器**：实现全部组合接口，按规则合并并转发给子角色 |
+| `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
+| `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
+| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：45 个双将、990 对 |
+| `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
+| `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
+
+### 为什么是“容器”
+
+> 上层到处是 `player.Character is IX` 的**单次 cast**（共 16 个接口），
+> 而一个玩家只能有一个 `Character` ——
+> 所以双将**必须自己实现那些接口**，再把调用转发给子角色。
+
+### 分层
+
+> `DualGeneralFactory` 在 **Characters** 层，**不在 Core** 的 `CharacterFactory` 里 ——
+> 因为 **Core 不得引用 Characters**（分层铁律）。
+>
+> UI 层也**不引用 Characters**：“同阵营副将”由 `GameBootstrap` **注入委托**
+> （`_dgPartnersOf = DualGeneralFactory.PartnersFor`）。
+
+### 一个值得记住的坑
+
+> `HandEffectType.None` 是**合法取值**（代表无效果），不能当“未找到”的哨兵值。
+> 同类错误还有 `IHandEffectRewriter` 的 `out` 参数预置 0。
+> 规律：**“默认值有意义”的枚举不能兼任“未找到”**。
