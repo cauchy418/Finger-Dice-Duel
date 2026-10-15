@@ -59,6 +59,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>阵营混战（8 人）：人机 / 真人。</summary>
         FactionBattleMenu = 16,
+
+        /// <summary>双将的**选将界面**（先选主将，副将候选只剩同阵营）。</summary>
+        DualGeneralSelect = 17,
     }
 
     /// <summary>

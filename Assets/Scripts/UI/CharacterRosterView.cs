@@ -38,6 +38,10 @@ namespace FingerDiceDuel.UI
 
         private int _selectedIndex = -1;
 
+        /// <summary>当前展示的角色（换名单后会被替换）。</summary>
+        private readonly List<CharacterDefinition> _roster = new List<CharacterDefinition>();
+        private Font _font;
+
         /// <summary>选中项变化时回调（索引）。</summary>
         public event Action<int> SelectionChanged;
 
@@ -49,6 +53,7 @@ namespace FingerDiceDuel.UI
 
         private sealed class CardWidget
         {
+            public GameObject Root;        // 换名单时要销毁它
             public Image Background;
             public Outline Outline;
         }
@@ -79,6 +84,7 @@ namespace FingerDiceDuel.UI
                           System.Func<CharacterDefinition, string> skillText = null)
         {
             _skillText = skillText;
+            _font = font;
 
             // ---- 可视区域：ScrollRect + 遮罩 ----
             var viewGo = new GameObject(name,
@@ -120,12 +126,44 @@ namespace FingerDiceDuel.UI
             scroll.inertia = false;      // 卡片列表不需要惯性，点选更稳
 
             // ---- 卡片 ----
-            _cards.Clear();
-            for (int i = 0; i < roster.Count; i++)
-                _cards.Add(BuildCard(roster[i], i, font));
-
-            Select(initialIndex, notify: false);
+            SetRoster(roster, initialIndex);
         }
+
+        /// <summary>
+        /// **换一份名单**（双将选角要用：选完主将后，副将候选只剩同阵营的那几个）。
+        ///
+        /// 会销毁旧卡片、按新名单重建，并把可视区域宽度调成新名单的宽度
+        /// （名单变短时不调整会让可滚动范围虚高、滚动条拖到空白处）。
+        ///
+        /// <paramref name="selectIndex"/> 为 -1 表示不选任何一项。
+        /// </summary>
+        public void SetRoster(IReadOnlyList<CharacterDefinition> roster, int selectIndex = 0)
+        {
+            if (_content == null || roster == null) return;
+
+            for (int i = 0; i < _cards.Count; i++)
+            {
+                if (_cards[i]?.Root != null)
+                    UnityEngine.Object.Destroy(_cards[i].Root);
+            }
+            _cards.Clear();
+            _roster.Clear();
+
+            for (int i = 0; i < roster.Count; i++) _roster.Add(roster[i]);
+
+            float totalWidth = _roster.Count * CardWidth + (_roster.Count + 1) * CardGap;
+            _content.sizeDelta = new Vector2(totalWidth, ViewHeight);
+            _content.anchoredPosition = new Vector2(CardGap, 0f);
+
+            for (int i = 0; i < _roster.Count; i++)
+                _cards.Add(BuildCard(_roster[i], i, _font));
+
+            _selectedIndex = -1;
+            if (selectIndex >= 0 && selectIndex < _cards.Count) Select(selectIndex, notify: false);
+        }
+
+        /// <summary>当前展示的角色数量（供测试与诊断）。</summary>
+        public int Count => _cards.Count;
 
         private CardWidget BuildCard(CharacterDefinition def, int index, Font font)
         {
@@ -144,6 +182,7 @@ namespace FingerDiceDuel.UI
 
             var widget = new CardWidget
             {
+                Root = go,
                 Background = bg,
                 Outline = go.GetComponent<Outline>(),
             };

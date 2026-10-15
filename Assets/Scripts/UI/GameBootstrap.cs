@@ -131,6 +131,34 @@ namespace FingerDiceDuel.UI
         /// <summary>阵营混战（8 人）。</summary>
         private ScreenGroup _screenFactionBattleMenu;
 
+        /// <summary>双将选将界面。</summary>
+        private ScreenGroup _screenDualSelect;
+
+        // ---- 双将选将的状态 ----
+        /// <summary>已选的**主将**（null = 还没选）。</summary>
+        private CharacterDefinition _dgPrimary;
+        /// <summary>已选的**副将**（null = 还没选）。</summary>
+        private CharacterDefinition _dgSecondary;
+
+        /// <summary>双将的角色卡列表。</summary>
+        private CharacterRosterView _dgRoster;
+        /// <summary>双将的详情面板。</summary>
+        private Text _dgDetail;
+        /// <summary>双将的状态提示（"请选择主将 / 请选择副将" 之类）。</summary>
+        private Text _dgStatus;
+        /// <summary>双将的开始按钮（两名都选好才可点）。</summary>
+        private Button _dgStart;
+
+        /// <summary>
+        /// 取**同阵营的副将候选**。
+        ///
+        /// ⚠️ 用委托注入而不直接调：
+        ///    "同阵营"的判定在 <c>FingerDiceDuel.Characters</c> 层，
+        ///    而 UI 层**不能引用 Characters**（分层铁律）。
+        ///    所以由入口（本类，唯一允许同时看到两层的地方）注入。
+        /// </summary>
+        private System.Func<CharacterDefinition, IReadOnlyList<CharacterDefinition>> _dgPartnersOf;
+
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
 
@@ -357,8 +385,12 @@ namespace FingerDiceDuel.UI
             BuildDualGeneralScreen();
             BuildDualGeneralMenuScreen();
             BuildFactionBattleMenuScreen();
+            BuildDualSelectScreen();
             BuildModeScreen();
             BuildDifficultyScreen();
+            // 双将的"同阵营副将" 过滤：由本类注入（UI 层不能引用 Characters）。
+            _dgPartnersOf = DualGeneralFactory.PartnersFor;
+
             BuildCharacterScreen();
             BuildTwoOnTwoCharacterScreen();
             BuildInitiativeScreen();
@@ -674,7 +706,7 @@ namespace FingerDiceDuel.UI
 
             Button ai = MakeSubModeButton(_selectRoot, "DualAi", new Vector2(0f, 60f),
                                           "人机对战", "与 AI 对战",
-                                          () => ShowComingSoon("双将对决（人机）"));
+                                          () => ShowScreen(GameScreen.DualGeneralSelect));
             Button pvp = MakeSubModeButton(_selectRoot, "DualPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家",
                                            () => ShowComingSoon("双将对决（真人）"));
@@ -700,6 +732,198 @@ namespace FingerDiceDuel.UI
             _screenFactionBattleMenu.Add(ai.gameObject);
             _screenFactionBattleMenu.Add(pvp.gameObject);
             _screenFactionBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.DualGeneral).gameObject);
+        }
+
+        // ============================================================
+        // 双将的选将界面
+        // ============================================================
+
+        /// <summary>
+        /// **双将选将**：先选**主将**，选完后副将候选**只剩同阵营**。
+        ///
+        /// 玩家确认的规则：
+        ///   · 两名必须**不同角色**
+        ///   · 必须**同一阵营序列**（守序 / 中立 / 混乱）
+        ///
+        /// 为什么用"一条列表 + 两步选" 而不是两条列表：
+        ///   副将候选**取决于主将**，两条并列列表会让人以为它们互相独立；
+        ///   而且屏幕高度只够两条，详情面板就没地方了。
+        /// </summary>
+        private void BuildDualSelectScreen()
+        {
+            _screenDualSelect = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "DgTitle", new Vector2(0f, 272f),
+                                  new Vector2(1200f, 64f), 44, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "双将选将";
+            _screenDualSelect.Add(title.gameObject);
+
+            // 状态提示：告诉玩家现在该选什么
+            _dgStatus = MakeText(_selectRoot, "DgStatus", new Vector2(0f, 208f),
+                                 new Vector2(1120f, 36f), 24, TextAnchor.MiddleCenter,
+                                 new Color(0.86f, 0.90f, 0.96f));
+            _screenDualSelect.Add(_dgStatus.gameObject);
+
+            // 角色卡列表
+            _dgRoster = new CharacterRosterView();
+            _dgRoster.Build(_selectRoot, "DgRoster", new Vector2(0f, 132f),
+                            _roster, UiFont.Regular, 0, SkillHintText);
+            _dgRoster.SelectionChanged += OnDualSelectionChanged;
+            _screenDualSelect.Add(_dgRoster.Root.gameObject);
+
+            // 详情（显示当前选中的角色）
+            _dgDetail = MakeDetailPanel("DgDetail", new Vector2(0f, 62f));
+            _screenDualSelect.Add(_dgDetail.transform.parent.gameObject);
+
+            // 已选的主/副将摘要
+            Text picked = MakeText(_selectRoot, "DgPicked", new Vector2(0f, 8f),
+                                   new Vector2(1120f, 32f), 21, TextAnchor.MiddleCenter,
+                                   new Color(0.72f, 0.80f, 0.90f));
+            _dgPicked = picked;
+            _screenDualSelect.Add(picked.gameObject);
+
+            _dgStart = MakeButton(_selectRoot, "DgStart", new Vector2(150f, -52f),
+                                  new Vector2(300f, 68f), "开始对局");
+            _dgStart.onClick.AddListener(OnDualStartClicked);
+            _screenDualSelect.Add(_dgStart.gameObject);
+
+            Button reset = MakeButton(_selectRoot, "DgReset", new Vector2(-180f, -52f),
+                                      new Vector2(240f, 68f), "重选");
+            reset.GetComponent<Image>().color = new Color(0.34f, 0.30f, 0.38f);
+            reset.onClick.AddListener(ResetDualSelection);
+            _screenDualSelect.Add(reset.gameObject);
+
+            Button back = MakeButton(_selectRoot, "DgBack", new Vector2(-460f, -52f),
+                                     new Vector2(220f, 68f), "返回");
+            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            back.onClick.AddListener(() => ShowScreen(GameScreen.DualGeneralMenu));
+            _screenDualSelect.Add(back.gameObject);
+
+            _screenDualSelect.Add(MakeHelpButton(_selectRoot).gameObject);
+
+            ResetDualSelection();
+        }
+
+        /// <summary>"已选主/副将"的摘要文本。</summary>
+        private Text _dgPicked;
+
+        /// <summary>清空选择，回到"请选主将"。</summary>
+        private void ResetDualSelection()
+        {
+            _dgPrimary = null;
+            _dgSecondary = null;
+            RefreshDualSelect();
+        }
+
+        /// <summary>
+        /// 根据当前状态刷新整个选将界面。
+        ///
+        /// 三种状态：
+        ///   1 还没选主将 -> 列表是**全部角色**
+        ///   2 选了主将、没选副将 -> 列表只剩**同阵营**（且不含主将）
+        ///   3 两名都选了 -> 列表回到全部（方便重选），开始按钮可点
+        /// </summary>
+        private void RefreshDualSelect()
+        {
+            if (_dgRoster == null) return;
+
+            bool pickingSecondary = _dgPrimary != null && _dgSecondary == null;
+
+            IReadOnlyList<CharacterDefinition> list = _roster;
+            if (pickingSecondary)
+            {
+                list = _dgPartnersOf != null
+                    ? _dgPartnersOf(_dgPrimary)
+                    : (IReadOnlyList<CharacterDefinition>)new List<CharacterDefinition>();
+            }
+
+            _dgRoster.SetRoster(list, list.Count > 0 ? 0 : -1);
+            _dgRoster.ScrollToSelected();
+
+            if (list.Count > 0) RefreshDetail(_dgDetail, list[0]);
+            else if (_dgDetail != null) _dgDetail.text = "没有可选的副将。";
+
+            if (_dgStatus != null)
+            {
+                if (_dgPrimary == null)
+                    _dgStatus.text = "第一步：选择主将";
+                else if (_dgSecondary == null)
+                    _dgStatus.text = "第二步：选择副将"
+                                   + "（只能选与主将同阵营的角色）";
+                else
+                    _dgStatus.text = "选好了，可以开始";
+            }
+
+            if (_dgPicked != null)
+            {
+                string a = _dgPrimary != null ? _dgPrimary.DisplayName : "—";
+                string b = _dgSecondary != null ? _dgSecondary.DisplayName : "—";
+                _dgPicked.text = $"主将：{a}    副将：{b}";
+            }
+
+            if (_dgStart != null) _dgStart.interactable = _dgPrimary != null && _dgSecondary != null;
+        }
+
+        /// <summary>
+        /// 选中某张卡。
+        ///
+        /// 注意：**点卡片就是“选定”** ——
+        /// 第一次点选主将，之后点选副将（此时列表已只剩同阵营）。
+        /// </summary>
+        private void OnDualSelectionChanged(int index)
+        {
+            IReadOnlyList<CharacterDefinition> list = CurrentDualList();
+            if (index < 0 || index >= list.Count) return;
+
+            CharacterDefinition def = list[index];
+
+            // 玩家点了哪张卡，详情面板就要跟着变（RefreshDualSelect 只在重建列表时刷新详情）
+            RefreshDetail(_dgDetail, def);
+
+            if (_dgPrimary == null)
+            {
+                _dgPrimary = def;
+                RefreshDualSelect();
+                return;
+            }
+
+            if (_dgSecondary == null)
+            {
+                // 同一个人不能当自己的副将（列表已过滤，这里再保一层）
+                if (ReferenceEquals(def, _dgPrimary)) return;
+
+                _dgSecondary = def;
+                RefreshDualSelect();
+                return;
+            }
+
+            // 两名都选了：再点就重新开始（把这张当主将）
+            _dgPrimary = def;
+            _dgSecondary = null;
+            RefreshDualSelect();
+        }
+
+        /// <summary>当前列表对应的角色集合（与界面上看到的一致）。</summary>
+        private IReadOnlyList<CharacterDefinition> CurrentDualList()
+        {
+            if (_dgPrimary != null && _dgSecondary == null && _dgPartnersOf != null)
+                return _dgPartnersOf(_dgPrimary);
+            return _roster;
+        }
+
+        /// <summary>
+        /// 点“开始对局”。
+        ///
+        /// ⚠️ 目前只做**校验与提示**：双将的**对局流程**（创建玩家、
+        ///    掷骰先攻、牌桌绑定）还没接。下一步做那一块。
+        /// </summary>
+        private void OnDualStartClicked()
+        {
+            if (_dgPrimary == null || _dgSecondary == null) return;
+
+            ShowComingSoon($"{_dgPrimary.DisplayName} + {_dgSecondary.DisplayName} 对局");
         }
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
@@ -1342,6 +1566,7 @@ namespace FingerDiceDuel.UI
             _screenDualGeneral?.SetVisible(screen == GameScreen.DualGeneral);
             _screenDualGeneralMenu?.SetVisible(screen == GameScreen.DualGeneralMenu);
             _screenFactionBattleMenu?.SetVisible(screen == GameScreen.FactionBattleMenu);
+            _screenDualSelect?.SetVisible(screen == GameScreen.DualGeneralSelect);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
