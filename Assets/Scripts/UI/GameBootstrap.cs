@@ -117,6 +117,20 @@ namespace FingerDiceDuel.UI
         private Text _selectTitle;
 
         // ---- 界面流程 ----
+        // ---- 玩家要求的三大模式层级 ----
+        /// <summary>冒险模式（PVE 占位）。</summary>
+        private ScreenGroup _screenAdventure;
+        /// <summary>竞技模式（原 1v1 / 2v2 / 8 人）。</summary>
+        private ScreenGroup _screenCompetition;
+        /// <summary>娱乐模式（现只有双将）。</summary>
+        private ScreenGroup _screenCasual;
+        /// <summary>双将模式子菜单。</summary>
+        private ScreenGroup _screenDualGeneral;
+        /// <summary>双将对决（1v1）。</summary>
+        private ScreenGroup _screenDualGeneralMenu;
+        /// <summary>阵营混战（8 人）。</summary>
+        private ScreenGroup _screenFactionBattleMenu;
+
         private ScreenGroup _screenMainMenu;
         private ScreenGroup _screenOneOnOne;
 
@@ -335,6 +349,14 @@ namespace FingerDiceDuel.UI
             BuildMainMenuScreen();
             BuildOneOnOneScreen();
             BuildTwoOnTwoScreen();
+
+            // 玩家要求的三大模式层级
+            BuildAdventureScreen();
+            BuildCompetitionScreen();
+            BuildCasualScreen();
+            BuildDualGeneralScreen();
+            BuildDualGeneralMenuScreen();
+            BuildFactionBattleMenuScreen();
             BuildModeScreen();
             BuildDifficultyScreen();
             BuildCharacterScreen();
@@ -482,19 +504,26 @@ namespace FingerDiceDuel.UI
                                   new Vector2(0f, 48f), 1500f);
             _screenMainMenu.Add(dividerRoot);
 
-            // 三个模式
-            Button p1 = MakeModeButton(_selectRoot, "Mode1v1", new Vector2(0f, -42f),
-                                       "1 v 1", "单挑对决", OnOneOnOneClicked);
-            Button p2 = MakeModeButton(_selectRoot, "Mode2v2", new Vector2(0f, -198f),
-                                       "2 v 2", "双人组队", OnTwoOnTwoClicked);
-            Button p8 = MakeModeButton(_selectRoot, "Mode8p", new Vector2(0f, -354f),
-                                       "8 人身份局", "身份阵营对抗",
-                                       () => ShowComingSoon("8 人身份局"));
+            // 玩家要求：主界面改成**三个大模式**。
+            //   1 冒险模式（后续开发的 PVE，现在点进去是占位）
+            //   2 竞技模式（**原本的 1v1 / 2v2 / 8 人都收进去**）
+            //   3 娱乐模式（现在只有双将）
+            Button mAdventure = MakeModeButton(_selectRoot, "ModeAdventure",
+                                               new Vector2(0f, -42f),
+                                               "冒险模式", "剧情与挑战（敬请期待）",
+                                               () => ShowScreen(GameScreen.Adventure));
+            Button mCompetition = MakeModeButton(_selectRoot, "ModeCompetition",
+                                                 new Vector2(0f, -198f),
+                                                 "竞技模式", "对战：1v1 / 2v2 / 8 人",
+                                                 () => ShowScreen(GameScreen.Competition));
+            Button mCasual = MakeModeButton(_selectRoot, "ModeCasual",
+                                            new Vector2(0f, -354f),
+                                            "娱乐模式", "双将等变体玩法",
+                                            () => ShowScreen(GameScreen.Casual));
 
-            _screenMainMenu.Add(p1.gameObject);
-
-            _screenMainMenu.Add(p2.gameObject);
-            _screenMainMenu.Add(p8.gameObject);
+            _screenMainMenu.Add(mAdventure.gameObject);
+            _screenMainMenu.Add(mCompetition.gameObject);
+            _screenMainMenu.Add(mCasual.gameObject);
 
             Button help = MakeHelpButton(_selectRoot);
             _screenMainMenu.Add(help.gameObject);
@@ -521,6 +550,146 @@ namespace FingerDiceDuel.UI
                                 20, TextAnchor.MiddleCenter, new Color(0.55f, 0.60f, 0.70f));
             tip.text = "点击右上角 ? 查看游戏规则";
             _screenMainMenu.Add(tip.gameObject);
+        }
+
+        // ============================================================
+        // 玩家要求的三大模式子界面
+        // ============================================================
+
+        /// <summary>
+        /// 一个子菜单里的“竞技型”按钮（标题 + 副标题）。
+        /// </summary>
+        private Button MakeSubModeButton(RectTransform parent, string name,
+                                         Vector2 position, string title,
+                                         string subtitle, System.Action onClick)
+            => MakeModeButton(parent, name, position, title, subtitle, onClick);
+
+        /// <summary>子菜单共用的“返回”按钮。</summary>
+        private Button MakeBackButton(RectTransform parent, GameScreen target)
+        {
+            Button back = MakeButton(parent, "Back", new Vector2(0f, -300f),
+                                     new Vector2(240f, 64f), "返回");
+            back.onClick.AddListener(() => ShowScreen(target));
+            return back;
+        }
+
+        /// <summary>子菜单共用的大标题。</summary>
+        private Text MakeSubTitle(RectTransform parent, string name, string text)
+        {
+            Text title = MakeText(parent, name, new Vector2(0f, 240f),
+                                  new Vector2(1000f, 70f), 52,
+                                  TextAnchor.MiddleCenter, new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = text;
+            return title;
+        }
+
+        /// <summary>冒险模式：目前是占位（后续开发 PVE）。</summary>
+        private void BuildAdventureScreen()
+        {
+            _screenAdventure = new ScreenGroup();
+            _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
+
+            Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
+                                           "剧情冒险", "即将开放",
+                                           () => ShowComingSoon("剧情冒险"));
+            Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
+                                            "挑战关卡", "即将开放",
+                                            () => ShowComingSoon("挑战关卡"));
+
+            _screenAdventure.Add(pve.gameObject);
+            _screenAdventure.Add(chal.gameObject);
+            _screenAdventure.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
+        }
+
+        /// <summary>
+        /// 竞技模式：**原本主菜单上的 1v1 / 2v2 / 8 人全部收在这里**。
+        /// </summary>
+        private void BuildCompetitionScreen()
+        {
+            _screenCompetition = new ScreenGroup();
+            _screenCompetition.Add(MakeSubTitle(_selectRoot, "CompTitle", "竞技模式").gameObject);
+
+            Button one = MakeSubModeButton(_selectRoot, "Comp1v1", new Vector2(0f, 90f),
+                                           "1 v 1", "单挑对决", OnOneOnOneClicked);
+            Button two = MakeSubModeButton(_selectRoot, "Comp2v2", new Vector2(0f, -66f),
+                                           "2 v 2", "双人组队", OnTwoOnTwoClicked);
+            Button eight = MakeSubModeButton(_selectRoot, "Comp8p", new Vector2(0f, -222f),
+                                             "8 人身份局", "身份阵营对抗（待开放）",
+                                             () => ShowComingSoon("8 人身份局"));
+
+            _screenCompetition.Add(one.gameObject);
+            _screenCompetition.Add(two.gameObject);
+            _screenCompetition.Add(eight.gameObject);
+            _screenCompetition.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
+        }
+
+        /// <summary>娱乐模式：目前只有双将。</summary>
+        private void BuildCasualScreen()
+        {
+            _screenCasual = new ScreenGroup();
+            _screenCasual.Add(MakeSubTitle(_selectRoot, "CasualTitle", "娱乐模式").gameObject);
+
+            Button dual = MakeSubModeButton(_selectRoot, "CasualDual", new Vector2(0f, 60f),
+                                            "双将模式", "同阵营两名角色同时上阵",
+                                            () => ShowScreen(GameScreen.DualGeneral));
+
+            _screenCasual.Add(dual.gameObject);
+            _screenCasual.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
+        }
+
+        /// <summary>双将模式子菜单：双将对决（1v1）与阵营混战（8 人）。</summary>
+        private void BuildDualGeneralScreen()
+        {
+            _screenDualGeneral = new ScreenGroup();
+            _screenDualGeneral.Add(MakeSubTitle(_selectRoot, "DualTitle", "双将模式").gameObject);
+
+            Button duel = MakeSubModeButton(_selectRoot, "DualDuel", new Vector2(0f, 60f),
+                                            "双将对决", "1 v 1：各自两名同阵营角色",
+                                            () => ShowScreen(GameScreen.DualGeneralMenu));
+            Button faction = MakeSubModeButton(_selectRoot, "DualFaction", new Vector2(0f, -96f),
+                                               "阵营混战", "8 人：待 8 人模式完成后开放",
+                                               () => ShowScreen(GameScreen.FactionBattleMenu));
+
+            _screenDualGeneral.Add(duel.gameObject);
+            _screenDualGeneral.Add(faction.gameObject);
+            _screenDualGeneral.Add(MakeBackButton(_selectRoot, GameScreen.Casual).gameObject);
+        }
+
+        /// <summary>双将对决（1v1）：人机 / 真人。</summary>
+        private void BuildDualGeneralMenuScreen()
+        {
+            _screenDualGeneralMenu = new ScreenGroup();
+            _screenDualGeneralMenu.Add(MakeSubTitle(_selectRoot, "DualDuelTitle", "双将对决").gameObject);
+
+            Button ai = MakeSubModeButton(_selectRoot, "DualAi", new Vector2(0f, 60f),
+                                          "人机对战", "与 AI 对战",
+                                          () => ShowComingSoon("双将对决（人机）"));
+            Button pvp = MakeSubModeButton(_selectRoot, "DualPvp", new Vector2(0f, -96f),
+                                           "真人对战", "联网对战玩家",
+                                           () => ShowComingSoon("双将对决（真人）"));
+
+            _screenDualGeneralMenu.Add(ai.gameObject);
+            _screenDualGeneralMenu.Add(pvp.gameObject);
+            _screenDualGeneralMenu.Add(MakeBackButton(_selectRoot, GameScreen.DualGeneral).gameObject);
+        }
+
+        /// <summary>阵营混战（8 人）：人机 / 真人。⚠️ 等 8 人模式完成后再套用。</summary>
+        private void BuildFactionBattleMenuScreen()
+        {
+            _screenFactionBattleMenu = new ScreenGroup();
+            _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle", "阵营混战").gameObject);
+
+            Button ai = MakeSubModeButton(_selectRoot, "FactionAi", new Vector2(0f, 60f),
+                                          "人机对战", "与 AI 对战",
+                                          () => ShowComingSoon("阵营混战（人机）"));
+            Button pvp = MakeSubModeButton(_selectRoot, "FactionPvp", new Vector2(0f, -96f),
+                                           "真人对战", "联网对战玩家",
+                                           () => ShowComingSoon("阵营混战（真人）"));
+
+            _screenFactionBattleMenu.Add(ai.gameObject);
+            _screenFactionBattleMenu.Add(pvp.gameObject);
+            _screenFactionBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.DualGeneral).gameObject);
         }
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
@@ -1157,6 +1326,12 @@ namespace FingerDiceDuel.UI
             _board?.SetVisible(inMatch);
 
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
+            _screenAdventure?.SetVisible(screen == GameScreen.Adventure);
+            _screenCompetition?.SetVisible(screen == GameScreen.Competition);
+            _screenCasual?.SetVisible(screen == GameScreen.Casual);
+            _screenDualGeneral?.SetVisible(screen == GameScreen.DualGeneral);
+            _screenDualGeneralMenu?.SetVisible(screen == GameScreen.DualGeneralMenu);
+            _screenFactionBattleMenu?.SetVisible(screen == GameScreen.FactionBattleMenu);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);

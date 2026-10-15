@@ -39,6 +39,26 @@ namespace FingerDiceDuel.UI
 
         /// <summary>图鉴。</summary>
         Codex = 10,
+
+        // ---------- 玩家要求的三大模式（新主菜单层级）----------
+
+        /// <summary>冒险模式（后续开发的 PVE，目前是占位）。</summary>
+        Adventure = 11,
+
+        /// <summary>竞技模式（对战：原本 1v1 / 2v2 / 8 人都在这里）。</summary>
+        Competition = 12,
+
+        /// <summary>娱乐模式（现在只有双将）。</summary>
+        Casual = 13,
+
+        /// <summary>双将模式子菜单（双将对决 / 阵营混战）。</summary>
+        DualGeneral = 14,
+
+        /// <summary>双将对决（1v1）：人机 / 真人。</summary>
+        DualGeneralMenu = 15,
+
+        /// <summary>阵营混战（8 人）：人机 / 真人。</summary>
+        FactionBattleMenu = 16,
     }
 
     /// <summary>
