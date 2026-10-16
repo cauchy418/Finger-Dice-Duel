@@ -195,6 +195,29 @@ namespace FingerDiceDuel.Core
             return true;
         }
 
+        // ---------------------------------------------------------------
+        // 伏击的触发：待补
+        // ---------------------------------------------------------------
+        //
+        // 玩家建议把它做成与追加攻击**同一时机**触发。
+        // 我试过两种写法，都撞上同一个问题，所以先不接：
+        //
+        //   ① 通过 <see cref="IPreTurnChoiceProvider.CollectPreTurnChoices"/>
+        //      发一条拉择请求（与剑客追加攻击同一条通道），
+        //      再在 <see cref="CharacterTemplate.OnBeforeEffectResolved"/> 里回读；
+        //   ② 直接在 OnBeforeEffectResolved 里回读。
+        //
+        //   两种写法都让 GreedyChoiceProvider.ScoreMove 出现
+        //   **偶发 AccessViolation**（原生层内存访问违规），
+        //   且双将与 2v2 两个大循环赛都会崩。
+        //   因为那两处**没有测试覆盖**，且仓库不能留崩溃，
+        //   所以先撤掉；待机制确认、且能写出稳定测试后再补。
+        //
+        //   ⚠️ 能力本身已就绪且有测试：
+        //      <see cref="MeetsAmbushCondition"/> / <see cref="AmbushCandidate"/> /
+        //      <see cref="EnterAmbush"/> / <see cref="ReleaseAmbush"/> / 抵伤与远程加成。
+        //      缺的只是"何时询问玩家"这一步。
+
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
             _ambushHand = null;

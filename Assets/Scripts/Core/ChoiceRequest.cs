@@ -110,6 +110,15 @@ namespace FingerDiceDuel.Core
         /// <summary>剑客：双 4/6/8 时是否发动"无视攻防加成"的追加攻击。</summary>
         SwordsmanFollowUp,
 
+        /// <summary>
+        /// 猎人：运算后若两只手同时是 1/2/3 且数字相同，
+        /// 是否把参与运算的那只手暗置（进入伏击）。
+        ///
+        /// 玩家确认这是**主动选择**（"旁边给按钮"），
+        /// 所以走与剑客追加攻击**同一条**拉择通道。
+        /// </summary>
+        HunterAmbush,
+
         // ---------- 狼人 ----------
         /// <summary>狼人：是否发动"双手和为 7"的回复与成长（预留）。</summary>
         WerewolfSurge,
