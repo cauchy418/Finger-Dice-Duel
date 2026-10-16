@@ -52,8 +52,14 @@ namespace FingerDiceDuel.Core
             int result = actedHand?.Value ?? 0;
 
             // 统计"本局自加过几次"（供技能发动率）。
-            // 判据：被加数就是发起运算的那只手 —— 即"拿自己的手当被加数"。
-            if (actedHand != null && ReferenceEquals(actedHand, _selfAddendMark))
+            //
+            // ⚠️⚠️ 比的必须是**被加数**，不是 actedHand。
+            //    我第一版写成 `ReferenceEquals(actedHand, _selfAddendMark)` ——
+            //    而 `_selfAddendMark` 记的是**被加数**那只手、
+            //    `actedHand` 是**运算源**，自加时两者永远不等，
+            //    于是计数**永远是 0**（发动率统计里魔术师一直显示 0% 的真因）。
+            //    这里用入参 `targetValue`（= 被加数的值）去比。
+            if (_selfAddendMark != null && targetValue == _selfAddendMark.Value)
                 SelfAddendCount++;
 
             if (result == MagicAttackValue)

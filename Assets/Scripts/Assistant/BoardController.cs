@@ -1451,7 +1451,7 @@ namespace FingerDiceDuel.Assistant
 
                         // ② 而且偷来的必须是**高价值数字**（4/5/6/8/9）——
                         //    偷一个 3 只会白白用掉这个回合（还没效果）。
-                        int score = StealScore(theirHand.Value);
+                        int score = StealScore(theirHand.Value, myHand.Value);
                         if (score <= 0) continue;
 
                         if (score > bestScore)
@@ -1512,16 +1512,52 @@ namespace FingerDiceDuel.Assistant
         /// 与盗贼价值表里的 8 > 9 > 6 > 5 > 4 保持一致。
         /// </summary>
         private static int StealScore(int stolen)
+            => StealScore(stolen, stolen);
+
+        /// <summary>
+        /// 偷窃的划算程度（玩家给的两条规则）。
+        ///
+        /// 规则原话：
+        ///   · "盗贼在**没法凑出高价值数字**时，用**小数字偷大数字**的价值**小幅度提升**（偷 8、9）"
+        ///   · "在没法凑出高价值数字时用**大数字偷到有效数字**的价值**大幅度提升**"
+        ///
+        /// 两条都在说同一件事的两端：**这一偷让我的手值提升了多少**。
+        ///   · 小数字（1/2/3）本来没有价值 -> 偷到 8/9 是"从废牌变好牌"，
+        ///     提升很大，给**小幅**加分（玩家指定"小幅度"）。
+        ///   · 大数字（7/8/9）本来就没法凑出高价值（因为它们去运算只会变小），
+        ///     用它偷到一个**有效数字**（4/5/6/8/9）= 把"没法用的好牌"变现，
+        ///     给**大幅**加分（玩家指定"大幅度"）。
+        ///
+        /// \u26a0\ufe0f 评分仍然以"偷来的数字本身值多少"为主（<paramref name="stolen"/> 那一栏），
+        ///    下面那两项只是**加成**，不会把"偷 3"变成值得做的事
+        ///    （`Hand.GetEffectType(3)` 仍是 None -> 基础分 0，加成也只在有效时给）。
+        /// </summary>
+        private static int StealScore(int stolen, int myCurrent)
         {
+            int baseScore;
             switch (Hand.GetEffectType(stolen))
             {
-                case HandEffectType.Attack8: return 92;   // 最高攻击
-                case HandEffectType.Heal: return 86;      // 回复 9
-                case HandEffectType.Attack6: return 76;
-                case HandEffectType.Shield: return 66;    // 偷来 5：整盾还是碎盾看原先
-                case HandEffectType.Attack4: return 62;
-                default: return 0;                        // 1/2/3/7 -> 不值得偷
+                case HandEffectType.Attack8: baseScore = 92; break;   // 最高攻击
+                case HandEffectType.Heal: baseScore = 86; break;      // 回复 9
+                case HandEffectType.Attack6: baseScore = 76; break;
+                case HandEffectType.Shield: baseScore = 66; break;    // 偷来 5：整盾还是碎盾看原先
+                case HandEffectType.Attack4: baseScore = 62; break;
+                default: baseScore = 0; break;                        // 1/2/3/7 -> 不值得偷
             }
+
+            if (baseScore == 0) return 0;      // 偷来的是废数字：任何加成都不该救它
+
+            int bonus = 0;
+
+            // ① 用**小数字**去偷**大数字**：小幅提升（玩家给了上界"小幅度"）
+            //    1/2/3 本来是废牌，能换到 8/9 这种高价值是纯赚。
+            if (myCurrent <= 3 && stolen >= 8) bonus += 8;
+
+            // ② 用**大数字**去偷到**有效数字**：大幅提升
+            //    7/8/9 留在手上只能越算越小，换成一个有效数字是"把死牌变现"。
+            if (myCurrent >= 7 && baseScore > 0) bonus += 22;
+
+            return baseScore + bonus;
         }
 
         /// <summary>玩家点击了一张手牌。返回 true 表示这次点击被接受。</summary>
