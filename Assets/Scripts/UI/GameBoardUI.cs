@@ -601,7 +601,18 @@ namespace FingerDiceDuel.UI
 
             if (_presentation == null) return;
 
-            if (me != null) _presentation.RegisterNameRow(me, _nameTextA);
+            // ⚠️ **不要在这里登记"我"**（原来写的是
+            //    `if (me != null) _presentation.RegisterNameRow(me, _nameTextA);`）。
+            //
+            //    `_nameTextA` 是 **1v1 布局**的名字文本（见 BuildLayout），
+            //    而 2v2 走环形布局、根本不用它。登记上去的后果是：
+            //    "我"这块面板会以那块**隐藏文本**为准 ——
+            //    "轮到谁"的高亮与伤害 / 回复的冒字锚点都落到看不见的元素上。
+            //
+            //    现在 `RefreshRing` 会按面板把四个人**都**登记好，
+            //    所以这里只需要管"当前行动方"那一个（下面那句）。
+            //    参数 `me` 保留是为了不破坏调用点签名。
+            _ = me;
 
             // 用他自己的面板名字行作为飘字锚点
             RingPanel panel = FindPanelOf(active);
@@ -657,6 +668,17 @@ namespace FingerDiceDuel.UI
                 panel.NameText.text = DescribeNameLine(panel.Owner);
                 UpdateHealthBar(panel.HpFill, panel.Owner);
                 panel.StatusText.text = HandVisual.ShieldSummary(panel.Owner);
+
+                // ⚠️ **把四块面板的名字行都登记进去**，不能只登记当前行动方。
+                //
+                //    `RegisterNameRow` 写的是"按玩家索引的表"，它有两个用途：
+                //      ① "轮到谁"的高亮（ShowActivePlayer 会遍历这张表）
+                //      ② 冒字锚点（FloatAnchorOf 要找这位玩家的名字行）
+                //    而原来只在 `SetRingActive(active)` 里登记**行动方那一个** ——
+                //    于是 2v2 里另外三个人的名字行既不会被高亮，
+                //    他们的伤害 / 回复冒字也找不到锚点，只能退到画布中心。
+                if (_presentation != null)
+                    _presentation.RegisterNameRow(panel.Owner, panel.NameText);
 
                 // 座位号直接用 RingLayout 给的真实座位，**不再二次推算**
                 panel.SeatText.text = SeatLabel(panel);
@@ -845,8 +867,25 @@ namespace FingerDiceDuel.UI
         public Vector2 FloatAnchorOf(PlayerState player, PlayerState playerA, PlayerState playerB)
         {
             RectTransform row = null;
+
+            // 1v1：直接用专用的两个名字行字段
             if (player != null && ReferenceEquals(player, playerA)) row = _nameRowA;
             else if (player != null && ReferenceEquals(player, playerB)) row = _nameRowB;
+
+            // ⚠️ **2v2 走这里**：四个人没有 `_nameRowA/B` 这两个字段，
+            //    但每块环形面板都有自己的名字行 —— 用面板查出来。
+            //
+            //    我第一版只查了上面两个字段，于是 2v2 的 C/D（对手与队友）
+            //    全都拿不到锚点，`row == null` 直接退到画布中心：
+            //    表现就是"伤害 / 回复的冒字位置不对，不在各自角色上方"
+            //    （玩家实测报告）。
+            if (row == null)
+            {
+                RingPanel panel = FindPanelOf(player);
+                if (panel != null) row = panel.NameText != null
+                    ? panel.NameText.rectTransform
+                    : null;
+            }
 
             if (row == null || _canvasRoot == null) return Vector2.zero;
 
@@ -1314,7 +1353,24 @@ namespace FingerDiceDuel.UI
             int atk = p.Character?.AttackBonus ?? 0;
             int def = p.Character?.DefenseBonus ?? 0;
 
-            return $"{p.Name}    攻 {Signed(atk)}    防 {Signed(def)}    " +
+            // ⚠️ **必须带上角色名**。
+            //
+            //    `p.Name` 存的是**关系标签**："我" / "队友" / "对手1" / "对手2"
+            //    （见 GameBootstrap 里建 2v2 时给 names[] 的赋值），
+            //    它**不是角色名**。所以只显示 p.Name 的话，
+            //    2v2 里四块面板全都看不出对方是什么角色
+            //    （玩家实测报告："2v2 模式不显示对手角色了"）。
+            //
+            //    同一张面板下面还有一行 SeatText 写着"三位（对手）"——
+            //    所以这里补上角色名，两行合起来才是完整信息。
+            //    ⚠️ 角色名要走 `p.Definition`（`CharacterDefinition`），
+            //    不能用 `p.Character` —— 后者是 `ICharacterBehavior`，
+            //    **没有 DisplayName**，而且表现层不允许引用 Characters 层。
+            string who = p.Definition != null
+                ? $"{p.Definition.DisplayName}（{p.Name}）"
+                : p.Name;
+
+            return $"{who}    攻 {Signed(atk)}    防 {Signed(def)}    " +
                    $"{p.Health}/{p.MaximumHealth}";
         }
 
