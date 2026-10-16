@@ -1037,6 +1037,9 @@ namespace FingerDiceDuel.UI
         private void OnCodexClicked()
         {
             BuildCodexIfNeeded();
+
+            // 图鉴入口 -> **只有角色卡**（可阵营筛选）
+            _codex.SetCards(BuildCodexCards(), allowFilter: true);
             _codex.SetVisible(true);
             ShowScreen(GameScreen.Codex);
         }
@@ -1053,8 +1056,15 @@ namespace FingerDiceDuel.UI
         private void OnMagicOrbClicked()
         {
             BuildCodexIfNeeded();
+
+            // 魔法球入口 -> **只有指南页**（伤害类型指引 / 状态一览）。
+            //
+            // 玩家要求："魔法球和图鉴入口进入是一个东西，把伤害类型指引和
+            // 状态一览单独放进魔法球入口"。所以这里换成另一套卡片集，
+            // 并把阵营筛选整块隐藏（对指南页做阵营筛选没有意义）。
+            _codex.SetCards(BuildGuideCards(), allowFilter: false);
             _codex.SetVisible(true);
-            _codex.GoTo(0);            // 第 0 页就是「伤害类型指引」
+            _codex.GoTo(0);
             ShowScreen(GameScreen.Codex);
         }
 
@@ -1064,6 +1074,9 @@ namespace FingerDiceDuel.UI
 
             _codex = new CodexScreen();
             _codex.CloseRequested += () => ShowScreen(GameScreen.MainMenu);
+
+            // ⚠️ 先给一套初始卡片（Build 需要它才能建出界面）。
+            //    真正显示哪一套由两个入口各自调 SetCards 决定。
             _codex.Build(_selectRoot, BuildCodexCards());
         }
 
@@ -1122,17 +1135,25 @@ namespace FingerDiceDuel.UI
                 list.Add(card);
             }
 
-            // ⚠️ **两张指南页放在最前面** ——
-            //    ① 「伤害类型指引」：法师可以选的 10 种伤害类型
-            //    ② 「状态一览」：命中后挂上的 9 种负面状态
-            //    它们分散在"法师"那一张里，玩家翻到时已经记不住哪个是哪个了。
-            //
-            //    复用同一套 CodexCardData 字段（不新增卡片类型）：
-            //    技能 = 清单，详细 = 命中口径，指南 = 持续时间，针对 = 怎么应对。
-            list.Insert(0, BuildStatusCard());
-            list.Insert(0, BuildDamageTypeCard());
-
+            // ⚠️ 指南页**不在这里** —— 玩家要求把它们单独放进魔法球入口
+            //    （原来两个入口进的是同一个东西，页码也连着数）。
+            //    见 <see cref="BuildGuideCards"/>。
             return list;
+        }
+
+        /// <summary>
+        /// **魔法球入口**的卡片集：只有两张指南页。
+        ///
+        /// 玩家要求："把伤害类型指引和状态一览单独放进魔法球入口"。
+        /// 顺序：① 伤害类型指引 ② 状态一览。
+        /// </summary>
+        private static List<CodexCardData> BuildGuideCards()
+        {
+            return new List<CodexCardData>
+            {
+                BuildDamageTypeCard(),
+                BuildStatusCard(),
+            };
         }
 
         /// <summary>
@@ -1167,8 +1188,9 @@ namespace FingerDiceDuel.UI
                 GoodAxis = null,
             };
 
-            // 清单文字**取自 Core**（`StatusNames.GuideLine`）——
+            // 清单文字**取自 Core**（`StatusNames.GuideLine`，已带状态符号）——
             // 这样界面显示与规则、测试三边必然是同一份文案，不会漂移。
+            card.TwoColumnItems = true;      // 两列：否则会顶到翻页按钮上
             for (int i = 0; i < StatusNames.AllTypes.Length; i++)
                 card.Interactions.Add(StatusNames.GuideLine(StatusNames.AllTypes[i]));
 
@@ -1211,12 +1233,10 @@ namespace FingerDiceDuel.UI
                 GoodAxis = null,
             };
 
-            // 9 种状态各一行：名称 + 效果
-            for (int i = 1; i <= 9; i++)
-            {
-                var st = (StatusEffect)i;
-                card.Interactions.Add($"{StatusNames.Of(st)}：{StatusNames.Describe(st)}");
-            }
+            // 9 种状态各一行：**符号 + 名称 + 效果**（符号与状态图标栏同源）
+            card.TwoColumnItems = true;      // 两列：否则会顶到翻页按钮上
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+                card.Interactions.Add(StatusNames.StatusLine(StatusNames.AllStatuses[i]));
 
             return card;
         }

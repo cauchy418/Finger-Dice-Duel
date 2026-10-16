@@ -39,6 +39,16 @@ namespace FingerDiceDuel.UI
         /// <summary>与其他角色的特殊交互（每条一行）。</summary>
         public List<string> Interactions = new List<string>();
 
+        /// <summary>
+        /// 清单**按两列排版**（左右各一条，成对一行）。
+        ///
+        /// ⚠️ 为什么需要：指南页的清单是"短条目 + 长说明"，
+        ///    单列排下来会**顶到翻页按钮上** —— 玩家截图里「力场」那行与
+        ///    「上一张 / 下一张 / 页码」叠在一起了。
+        ///    两列既能塞下、也不至于太长。
+        /// </summary>
+        public bool TwoColumnItems;
+
         /// <summary>所属"守序 / 中立 / 混乱"。</summary>
         public string LawAxis;
 
@@ -116,6 +126,36 @@ namespace FingerDiceDuel.UI
         private const float PanelH = 860f;
 
         public RectTransform Root => _root;
+
+        /// <summary>
+        /// **切换显示的卡片集**。
+        ///
+        /// 玩家要求："魔法球和图鉴入口进入是一个东西 —— 把伤害类型指引和状态一览
+        /// 单独放进魔法球入口"。所以现在两套：
+        ///   · 图鉴入口   -> 全部**角色卡**（可阵营筛选）
+        ///   · 魔法球入口 -> 只有**指南页**（伤害类型指引 / 状态一览，无筛选意义）
+        ///
+        /// <paramref name="allowFilter"/> 为 false 时把阵营筛选整块**隐藏** ——
+        /// 对指南页做阵营筛选毫无意义，留着只会让人困惑。
+        /// </summary>
+        public void SetCards(IReadOnlyList<CodexCardData> cards, bool allowFilter)
+        {
+            _all.Clear();
+            if (cards != null)
+            {
+                for (int i = 0; i < cards.Count; i++)
+                    if (cards[i] != null) _all.Add(cards[i]);
+            }
+
+            _allowFilter = allowFilter;
+            if (_filterPanel != null) _filterPanel.SetActive(allowFilter);
+
+            _lawAxis = null;
+            _goodAxis = null;
+            ApplyFilter();
+        }
+
+        private bool _allowFilter = true;
 
         public void Build(RectTransform parent, IReadOnlyList<CodexCardData> cards)
         {
@@ -412,9 +452,35 @@ namespace FingerDiceDuel.UI
                 if (c.Interactions != null && c.Interactions.Count > 0)
                 {
                     sb.AppendLine();
-                    sb.AppendLine("【与其他角色的特殊交互】");
-                    for (int i = 0; i < c.Interactions.Count; i++)
-                        sb.AppendLine("· " + c.Interactions[i]);
+                    sb.AppendLine(c.TwoColumnItems
+                        ? "【伤害类型 / 状态】（左 -> 右）"
+                        : "【与其他角色的特殊交互】");
+
+                    if (c.TwoColumnItems)
+                    {
+                        // 两列：每行放两条，左右对齐。
+                        //
+                        // ⚠️ 用**等宽空格补齐**左列 —— uGUI 的 Text 是单一文本块，
+                        //    没法像表格那样精确分栏；补空格是这里最稳的做法
+                        //    （同一字体下中文与全角空格等宽，能看出明显分栏）。
+                        const int LeftWidth = 26;
+
+                        for (int i = 0; i < c.Interactions.Count; i += 2)
+                        {
+                            string left = c.Interactions[i];
+                            string right = (i + 1 < c.Interactions.Count)
+                                ? c.Interactions[i + 1] : "";
+
+                            sb.Append(PadRight(left, LeftWidth));
+                            if (right.Length > 0) sb.Append("　").Append(right);
+                            sb.AppendLine();
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < c.Interactions.Count; i++)
+                            sb.AppendLine("· " + c.Interactions[i]);
+                    }
                 }
 
                 _body.text = sb.ToString();
@@ -423,8 +489,28 @@ namespace FingerDiceDuel.UI
             if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
         }
 
-        private static void Highlight(Dictionary<string, Image> buttons, string active)
+        /// <summary>
+        /// 按**显示宽度**右侧补全角空格（两列排版的左列用）。
+        ///
+        /// ⚠️ 为什么不用 <c>string.PadRight</c>：它按 **char 个数**补齐，
+        ///    而中文与符号的显示宽度是 ASCII 的两倍 ——
+        ///    直接用它会让含英文/数字的行（例如 "9 → 4"）**短一截、列错位**。
+        /// </summary>
+        private static string PadRight(string s, int displayWidth)
         {
+            if (s == null) s = "";
+
+            int width = 0;
+            for (int i = 0; i < s.Length; i++)
+                width += s[i] < 0x2E80 ? 1 : 2;      // 中日韩 / 全角符号算两格
+
+            int pad = displayWidth - width;
+            if (pad <= 0) return s;
+
+            return s + new string('\u3000', pad / 2) + new string(' ', pad % 2);
+        }
+
+        private static void Highlight(Dictionary<string, Image> buttons, string active)        {
             foreach (KeyValuePair<string, Image> kv in buttons)
             {
                 if (kv.Value == null) continue;

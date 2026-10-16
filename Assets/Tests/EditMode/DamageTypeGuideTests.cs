@@ -78,16 +78,59 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Every_guide_line_is_non_empty_and_starts_with_its_type_name()
+        public void Every_guide_line_starts_with_its_status_glyph()
         {
+            // 玩家要求："状态一栏每一个状态的标记也放入" ——
+            // 图鉴的指南页要带**与状态图标栏同源**的符号。
             for (int i = 0; i < StatusNames.AllTypes.Length; i++)
             {
                 DamageType t = StatusNames.AllTypes[i];
                 string line = StatusNames.GuideLine(t);
+                string glyph = StatusNames.GlyphOf(StatusNames.StatusOf(t));
 
                 Assert.IsFalse(string.IsNullOrEmpty(line), $"{t} 的指引文字空了。");
-                Assert.IsTrue(line.StartsWith(StatusNames.Of(t)), $"{t} 的指引应当以类型名开头（界面靠它对齐）。");
+                Assert.IsTrue(line.StartsWith(glyph),
+                    $"{t} 的指引应当以它对应状态的符号「{glyph}」开头（现在是「{line}」）。");
+                Assert.IsTrue(line.Contains(StatusNames.Of(t)),
+                    $"{t} 的指引里应当出现类型名「{StatusNames.Of(t)}」。");
             }
+        }
+
+        [Test]
+        public void Every_status_line_starts_with_its_glyph()
+        {
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+            {
+                StatusEffect st = StatusNames.AllStatuses[i];
+                string line = StatusNames.StatusLine(st);
+                string glyph = StatusNames.GlyphOf(st);
+
+                Assert.IsTrue(line.StartsWith(glyph),
+                    $"状态「{StatusNames.Of(st)}」的一行应当以「{glyph}」开头（现在是「{line}」）。");
+                Assert.IsTrue(line.Contains(StatusNames.Describe(st)),
+                    $"状态「{StatusNames.Of(st)}」的一行应当包含它的效果说明。");
+            }
+        }
+
+        [Test]
+        public void Every_glyph_is_distinct_and_non_empty()
+        {
+            var seen = new List<string>();
+
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+            {
+                string g = StatusNames.GlyphOf(StatusNames.AllStatuses[i]);
+
+                Assert.IsFalse(string.IsNullOrEmpty(g),
+                    $"{StatusNames.Of(StatusNames.AllStatuses[i])} 没有符号。");
+                Assert.IsFalse(seen.Contains(g), $"符号「{g}」被两个状态共用了。");
+                seen.Add(g);
+            }
+
+            // 力场没有状态，但也需要一个占位符号（否则那一行会缺一格）
+            Assert.IsFalse(string.IsNullOrEmpty(StatusNames.GlyphOf(StatusEffect.None)));
+            Assert.IsFalse(seen.Contains(StatusNames.GlyphOf(StatusEffect.None)),
+                "占位符号不该与任何真实状态重复。");
         }
 
         [Test]

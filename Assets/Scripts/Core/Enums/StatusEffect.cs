@@ -225,9 +225,35 @@ namespace FingerDiceDuel.Core
         };
 
         /// <summary>
-        /// 图鉴「伤害类型指引」里那一行的文字：
-        /// `雷鸣 → 残响：只能攻击与自己距离 1 的角色`；
-        /// 力场没有状态，写成 `力场：穿盾、无视正向防御、不可闪避（不挂状态）`。
+        /// 状态的**图标符号**（基础几何字符，CJK 字体里基本都有）。
+        ///
+        /// ⚠️ 放在 Core 而不是 UI：图鉴的指南页与状态图标栏都要用它，
+        ///    两处各写一份必然会漂移（改了一处忘了另一处）。
+        ///
+        /// ⚠️ 刻意**不用 Emoji** —— 字体回退不一定带彩色 Emoji，
+        ///    缺字会显示成方框（本项目在 ∞ 上踩过同类问题）。
+        /// </summary>
+        public static string GlyphOf(StatusEffect s)
+        {
+            switch (s)
+            {
+                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心 = 残响
+                case StatusEffect.Acid: return "\u25bc";        // ▼ 滴落 = 强酸
+                case StatusEffect.Poison: return "\u2620";      // ☠ 中毒
+                case StatusEffect.Blind: return "\u25c9";       // ◉ 眼睛 = 目盲
+                case StatusEffect.Decay: return "\u2716";       // ✖ 断掉的十字 = 不能治疗
+                case StatusEffect.Burn: return "\u25b2";        // ▲ 火苗 = 燃烧
+                case StatusEffect.Freeze: return "\u2744";      // ❄ 冰冻
+                case StatusEffect.Shock: return "\u26a1";       // ⚡ 感电
+                case StatusEffect.Stun: return "\u2733";        // ✳ 星芒 = 震慑
+                default: return "\u25cb";                       // ○ 占位（无状态）
+            }
+        }
+
+        /// <summary>
+        /// 图鉴「伤害类型指引」里那一行的文字（带图标）：
+        /// `◎ 雷鸣 → 残响：只能攻击与自己距离 1 的角色`；
+        /// 力场没有状态，写成 `○ 力场：穿盾、无视正向防御、不可闪避（不挂状态）`。
         ///
         /// 放在 Core 是为了让**界面与测试共用同一份文案**（只有一处真相）。
         /// </summary>
@@ -236,9 +262,17 @@ namespace FingerDiceDuel.Core
             StatusEffect st = StatusOf(type);
 
             if (st == StatusEffect.None)
-                return Of(type) + "：穿盾、无视正向防御、不可闪避（不挂状态）";
+                return GlyphOf(StatusEffect.None) + " " + Of(type)
+                     + "：穿盾、无视正向防御、不可闪避（不挂状态）";
 
-            return Of(type) + " → " + Of(st) + "：" + Describe(st);
+            return GlyphOf(st) + " " + Of(type) + " → " + Of(st) + "：" + Describe(st);
         }
+
+        /// <summary>
+        /// 图鉴「状态一览」里那一行的文字（带图标）：
+        /// `◎ 残响：只能攻击与自己距离 1 的角色`。
+        /// </summary>
+        public static string StatusLine(StatusEffect st)
+            => GlyphOf(st) + " " + Of(st) + "：" + Describe(st);
     }
 }

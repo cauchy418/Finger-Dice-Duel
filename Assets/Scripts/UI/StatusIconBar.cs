@@ -146,23 +146,13 @@ namespace FingerDiceDuel.UI
         // 图标外观（换成美术资源时只改这里）
         // ============================================================
 
-        /// <summary>状态对应的符号（基础几何字符，CJK 字体里基本都有）。</summary>
-        public static string GlyphOf(StatusEffect s)
-        {
-            switch (s)
-            {
-                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心 = 残响
-                case StatusEffect.Acid: return "\u25bc";        // ▼ 滴落 = 强酸
-                case StatusEffect.Poison: return "\u2620";      // ☠ 中毒
-                case StatusEffect.Blind: return "\u25c9";       // ◉ 眼睛 = 目盲
-                case StatusEffect.Decay: return "\u2716";       // ✖ 断掉的十字 = 不能治疗
-                case StatusEffect.Burn: return "\u25b2";        // ▲ 火苗 = 燃烧
-                case StatusEffect.Freeze: return "\u2744";      // ❄ 冰冻
-                case StatusEffect.Shock: return "\u26a1";       // ⚡ 感电
-                case StatusEffect.Stun: return "\u2733";        // ✳ 星芒 = 震慑
-                default: return "?";
-            }
-        }
+        /// <summary>
+        /// 状态对应的符号。
+        ///
+        /// ⚠️ 直接转给 <see cref="StatusNames.GlyphOf"/> —— **只有一处真相**。
+        ///    图鉴的指南页也要显示同一批符号，两处各写一份必然漂移。
+        /// </summary>
+        public static string GlyphOf(StatusEffect s) => StatusNames.GlyphOf(s);
 
         /// <summary>状态对应的主色（伤害类型的主色）。</summary>
         public static Color ColorOf(StatusEffect s)
