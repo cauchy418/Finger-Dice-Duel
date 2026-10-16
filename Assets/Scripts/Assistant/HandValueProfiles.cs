@@ -293,12 +293,17 @@ namespace FingerDiceDuel.Assistant
             //
             // ⚠️ 2 应该给得明显高于其他"无效果"数字（1/3/7），
             //    否则 AI 会把它当废牌丢掉。
+            // ⚠️ 玩家纠正过一次：**2 有价值，但一定低于 4/6/8**。
+            //    我第一版把 2 给到 70，比 6 的 64 还高 —— 那是错的：
+            //    2 只是"能打"，而 4/6/8 打出来是 4/6/8 点。
+            //    所以 2 应该落在"无效果数字"与"4/6/8"之间：
+            //    比 1/3/7 明显高（它至少能攻击），但低于 4/6/8。
             Own[CharacterDefinition.MagicianId] = new HandValueProfile()
-                .Set(2, 70)                            // 2 = 攻击（不同于别人）
-                .Set(4, 62).Set(6, 64).Set(8, 66)      // 常规攻击，越高越好
-                .Set(5, 58).Set(9, 58)
-                .Set(1, 52).Set(3, 52).Set(7, 48)
-                .AddCombo(ComboRule.ContainsAll(90, "有 2 就能自己凑出攻击", 2))
+                .Set(8, 72).Set(6, 66).Set(4, 62)      // 常规攻击，越高越好
+                .Set(2, 56)                            // 能攻击，但只有 2 点
+                .Set(5, 58).Set(9, 58)                 // 盾 / 回复
+                .Set(1, 50).Set(3, 50).Set(7, 46)      // 无效果
+                .AddCombo(ComboRule.ContainsAll(60, "有 2 就能自己凑出攻击", 2))
                 .AddCombo(ComboRule.ContainsAll(50, "自己的两只手都能当原料，组合面更宽",
                                                 2, 4, 6));
         }

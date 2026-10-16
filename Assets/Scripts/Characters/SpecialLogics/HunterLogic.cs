@@ -119,8 +119,21 @@ namespace FingerDiceDuel.Core
         ///    于是伏击的 +1 永远生效不了。
         ///    写成 <c>DefaultAttackBonus</c> 就能让注入的基础值上再加伏击加成。
         /// </summary>
-        public override int DefaultAttackBonus
-            => 0 + (IsAmbushing ? AmbushAttackBonus : 0);
+        // ⚠️ 必须走 `AdjustAttackBonus`，**不能**走 `DefaultAttackBonus`。
+        //
+        //    `AttackBonus` 的读法是
+        //      AdjustAttackBonus(_statsApplied ? _attackBonus : DefaultAttackBonus)
+        //    而实际对局里 `CharacterFactory` **一定会注入**攻防（于是 `_statsApplied == true`），
+        //    这时读到的是注入值 `_attackBonus` —— 我第一版把 +1 写在
+        //    `DefaultAttackBonus` 上，**在注入路径上根本不会被读到**，
+        //    伏击的 +1 等于没加（测试当场抓到：期望 1、实际 0）。
+        //
+        //    写在 `AdjustAttackBonus` 里就能让"注入的基础值 + 伏击加成"。
+        protected override int AdjustAttackBonus(int baseBonus)
+            => IsAmbushing ? baseBonus + AmbushAttackBonus : baseBonus;
+
+        /// <summary>未注入时的默认值仍是 0（伏击加成由上一条统一叠加）。</summary>
+        public override int DefaultAttackBonus => 0;
 
         /// <summary>伏击状态下攻击距离 3；否则 1。</summary>
         public int BaseAttackRangeEffective => IsAmbushing ? AmbushRange : BaseAttackRange;

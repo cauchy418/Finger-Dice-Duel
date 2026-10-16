@@ -809,7 +809,26 @@ namespace FingerDiceDuel.Core
         /// 枚举 <paramref name="actor"/> 当前所有合法运算（每人最多 2×2 = 4 种）。
         /// 被锁定的手不能作为运算源，但仍可作为运算目标。
         /// </summary>
+        /// <summary>
+        /// 枚举 <paramref name="actor"/> 当前所有合法运算。
+        ///
+        /// ⚠️ **返回的是副本，不是内部那个复用列表**。
+        ///
+        ///    原来这里 `return _legalMoves;` —— 而下一步任何一次
+        ///    `GetLegalMoves` 都会 `_legalMoves.Clear()`，于是**前一个调用者
+        ///    手里的引用会集体变成空 LegalMove**。
+        ///    实测表现：2v2 循环赛里 `GreedyChoiceProvider.ScoreMove` 读到
+        ///    `move.ActedHand == null`，并**崩溃成 AccessViolation**（原生层直接挂掉）。
+        ///
+        ///    这个隐患一直存在（"先拿列表、再问一次合法步"就会踩到），
+        ///    只是加魔术师的自加选项**改变了列表长度与调用时机**，才让它稳定复现。
+        ///    返回副本是最省心的修法：调用方拿到的列表不再与内部状态共享生命周期。
+        /// </summary>
         public IReadOnlyList<LegalMove> GetLegalMoves(PlayerState actor)
+            => new List<LegalMove>(BuildLegalMoves(actor));
+
+        /// <summary>真正枚举合法步（共用内部复用列表以省分配）。</summary>
+        private List<LegalMove> BuildLegalMoves(PlayerState actor)
         {
             _legalMoves.Clear();
             if (actor == null || IsGameOver) return _legalMoves;
@@ -920,6 +939,18 @@ namespace FingerDiceDuel.Core
                     reason = "被加数不能是自己的手（要用别人的数字来改变自己的手）。";
                     return false;
                 }
+            }
+
+            // ⚠️ **暗置的手不能被当成运算数字**（玩家确认：对手不能碰这只手）。
+            //
+            //    我第一版只在 `GetLegalMoves` 里过滤了它 —— 于是 AI 挑不到，
+            //    但 `IsLegalMove` 仍会放行（测试抓到：校验层期望 false、实际 true）。
+            //    两层必须一致：枚举入口过滤是为了性能与 AI，
+            //    校验层是**规则本身**，缺了它任何直接调用都能绕过规则。
+            if (targetHand.IsConcealed)
+            {
+                reason = "被暗置的手不能被当成运算数字。";
+                return false;
             }
 
             // ⚠️ **这里故意不拒绝"目标已阵亡"。**
