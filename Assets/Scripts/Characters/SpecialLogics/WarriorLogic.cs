@@ -90,7 +90,7 @@ namespace FingerDiceDuel.Core
                                                    IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (context.Actor?.Character != this) return;   // 只有自己行动时才会"自己的盾碎"
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;   // 只有自己行动时才会"自己的盾碎"
 
             // ① 新增技能：碎掉另一只手上的**完整盾牌**，换本次攻击距离无限。
             //

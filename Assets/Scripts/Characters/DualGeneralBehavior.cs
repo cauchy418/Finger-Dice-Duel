@@ -27,7 +27,8 @@ namespace FingerDiceDuel.Characters
         ILethalThresholdAdvisor, IAttackDamageRule, IAttackCanceller, IAttackRedirector,
         IDodgeBlocker, IRangeBreakEffect, IExtraAttackProvider, IAiMoveAdvisor,
         IAttackTargetRule, IDodgeCapability, ISkillUseCounter, ITwoStepGoal,
-        IHandEffectDisplay, IResultTargetProvider, ITargetHandChoiceProvider
+        IHandEffectDisplay, IResultTargetProvider, ITargetHandChoiceProvider,
+        ICharacterBehaviorContainer
     {
         // ⚠️ 存成 `ICharacterBehavior`（Core 层接口）而不是 `CharacterTemplate`：
         //    容器本身在 Characters 层，但构造参数不应强制调用方持有具体类型。
@@ -226,6 +227,27 @@ namespace FingerDiceDuel.Characters
         {
             for (int i = 0; i < _parts.Count; i++)
                 if (_parts[i] is IPreTurnChoiceProvider p) p.CollectPreTurnChoices(context, requests);
+        }
+
+        /// <summary>
+        /// **这位角色是不是本双将的部件之一**。
+        ///
+        /// 契约在 Core（<see cref="ICharacterBehaviorContainer"/>），
+        /// 实现在这里 —— 这样 Core 不用认识 Characters 层。
+        ///
+        /// ⚠️ 部件**不能**假设“被调用就说明轮到我”：
+        ///    容器的 <c>CollectPreTurnChoices</c> 会转给**每一个**部件。
+        ///    所以部件一律用
+        ///    <see cref="CharacterBehaviors.ActorHas"/> 先确认身份。
+        /// </summary>
+        public bool Contains(ICharacterBehavior part)
+        {
+            if (part == null) return false;
+
+            for (int i = 0; i < _parts.Count; i++)
+                if (ReferenceEquals(_parts[i], part)) return true;
+
+            return false;
         }
 
         public override void CollectFollowUpChoices(ChoiceRequest answered, Hand answer,

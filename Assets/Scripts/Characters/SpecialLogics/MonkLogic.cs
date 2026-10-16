@@ -245,7 +245,7 @@ namespace FingerDiceDuel.Core
                                                    IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (!ReferenceEquals(context.Defender?.Character, this)) return;
+            if (!CharacterBehaviors.ActorHas(context.Defender, this)) return;
             if (!context.IsAttack) return;
 
             // ⚠️ **每个太极各发一个请求**（用 variant 区分）。

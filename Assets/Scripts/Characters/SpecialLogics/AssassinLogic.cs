@@ -109,7 +109,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null) return;
 
             PlayerState self = context.Defender;
-            if (self?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(self, this)) return;
             if (!IsStealthActive(self)) return;
 
             context.Dodged = true;
@@ -159,7 +159,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null) return;
-            if (context.Attacker?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             // 出手时若仍在潜行，则这一击 +7（并随即破除潜行）
             if (!IsStealthActive(context.Attacker)) return;

@@ -241,7 +241,15 @@ namespace FingerDiceDuel.Core
                                                    IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (!ReferenceEquals(context.Actor?.Character, this)) return;
+
+            // ⚠️ **不能**写 `ReferenceEquals(context.Actor?.Character, this)`。
+            //
+            //    双将时 `actor.Character` 是 `DualGeneralBehavior` **容器**，
+            //    永远不等于部件本身 —— 那种写法在双将里恒为假，
+            //    猎人的伏击按钮就永远不出现（玩家实测报告）。
+            //    而容器的 `CollectPreTurnChoices` 会转给**每一个**部件，
+            //    所以这里必须用"我在不在这位角色的技能集合里"来判断。
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
 
             // ① 伏击只发生在**非攻击**的运算上
             if (context.IsAttack) return;

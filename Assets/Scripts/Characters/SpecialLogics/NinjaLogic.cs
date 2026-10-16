@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null) return;
 
             // 只影响自己发起的攻击
-            if (context.Attacker?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             // 把这次攻击拆成两段；伤害在 AttackContext 里平均分配
             context.HitCount = HitCount;

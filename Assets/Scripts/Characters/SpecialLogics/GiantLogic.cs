@@ -137,7 +137,7 @@ namespace FingerDiceDuel.Core
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null) return;
-            if (context.Attacker?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             // ⚠️ 用 RewriteEffect 记下的"另一只手点数"，**不要在这里重新推断**：
             //    此时运算源已经变成结果值（5），再想分辨哪只是运算源

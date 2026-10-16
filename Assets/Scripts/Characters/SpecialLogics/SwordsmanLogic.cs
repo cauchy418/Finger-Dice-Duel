@@ -137,7 +137,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (context == null || requests == null) return;
 
-            if (context.Actor?.Character != this) return;
+            // ⚠️ 同 HunterLogic：双将时 `actor.Character` 是容器，
+            //    `!= this` 会**恒为真**，追加攻击在双将里静默失效。
+            //    （这是与"双将猎人没有伏击按钮"同一类的坑，
+            //     由 HunterLogic 那次修复一并发现并改正。）
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
             if (!ShouldFollowUp(context)) return;
 
             // ⚠️ 提示里的数值必须用**运算结果**（ResultValue），

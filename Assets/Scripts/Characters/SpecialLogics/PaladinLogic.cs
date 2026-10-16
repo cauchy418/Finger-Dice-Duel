@@ -320,7 +320,7 @@ namespace FingerDiceDuel.Core
             if (context == null || requests == null) return;
 
             // ① 自己行动：这次运算会合出盾 / 主动碎盾
-            if (ReferenceEquals(context.Actor?.Character, this))
+            if (CharacterBehaviors.ActorHas(context.Actor, this))
             {
                 bool willFormShield = WillFormShield(context);
                 bool willBreakOwnShield = context.ActedHand != null
@@ -359,7 +359,7 @@ namespace FingerDiceDuel.Core
             //       OnOtherShieldBroken 真的被触发时才会用到这份答案
             //       （TriggerShock 由碎盾钩子调用）。
             //       收集侧的预判只是"提前把选择收上来"，本身不会造成冲击。
-            if (ReferenceEquals(context.Defender?.Character, this))
+            if (CharacterBehaviors.ActorHas(context.Defender, this))
             {
                 if (HasFormedShield(context.Defender) && context.Defender.LeftHand != null)
                 {

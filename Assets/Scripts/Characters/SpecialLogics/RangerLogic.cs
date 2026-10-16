@@ -106,14 +106,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!context.IsAttack) return;      // 只有攻击才涉及闪避 / 强化
 
             // ① 我是防守方 -> 问闪避（咒术师的攻击不可闪避，见 IsDodgeable）
-            if (context.Defender?.Character == this)
+            if (CharacterBehaviors.ActorHas(context.Defender, this))
             {
                 if (IsDodgeable(context)) AddDodgeRequests(context, requests);
                 return;                          // 同一次运算不会既闪避又强化
             }
 
             // ② 我是行动方 -> 问强化射击
-            if (context.Actor?.Character == this)
+            if (CharacterBehaviors.ActorHas(context.Actor, this))
             {
                 AddPowerShotRequest(context, requests);
             }
@@ -245,7 +245,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!context.IsAttack) return;
 
             PlayerState self = context.Defender;
-            if (self?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(self, this)) return;
 
             // 攻击者若声明"我的攻击不可闪避"（咒术师），直接跳过。
             // 判定看**攻击者身份**，不看伤害数值。
@@ -328,7 +328,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null) return;
 
             // 强化只对"自己发起的攻击"生效
-            if (context.Attacker?.Character != this) return;
+            if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             Hand chosen = ReadPowerShotChoice(context);
             if (chosen == null) return;                      // 玩家放弃强化

@@ -2098,6 +2098,26 @@ namespace FingerDiceDuel.UI
             _game = null;
             _aiDelayTimer = 0f;
 
+            // ⚠️ **把这一局的"模式判定"一起关掉**（玩家要求：
+            //    "每次游戏结束就把该游戏的判定关掉"）。
+            //
+            //    原来只清了 _controller 与 _game，而 2v2 的两个标志留着：
+            //      _isTwoOnTwo      = true
+            //      _twoOnTwoSeated  = 上一局的四个人（非空）
+            //    后果：退出 2v2、回主菜单、再开一局 1v1（含双将）时，
+            //    RefreshView 第一条就命中
+            //      `if (_isTwoOnTwo && _twoOnTwoSeated != null && Count == 4)`
+            //    于是**整局都按 2v2 渲染**，永远走不到 1v1 的 BindPlayers ——
+            //    这正是玩家反复报告的"进了 2v2 之后进 1v1 还是 2v2 界面"。
+            //
+            //    放在 CleanupMatch 里而不是各个入口，是因为
+            //    **退出**与**重开**都经过这里，一处即覆盖所有路径。
+            _isTwoOnTwo = false;
+            _twoOnTwoSeated = null;
+
+            // 双将标志同理：它决定标题栏的写法
+            _isDualGeneral = false;
+
             // 清掉表现层状态：否则震动可能停在偏移位置、闪烁残留、音效还在响
             _animatedTurn = null;
             _pauseUntil = 0f;

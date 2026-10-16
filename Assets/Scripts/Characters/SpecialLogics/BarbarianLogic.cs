@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Core
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (context.Actor?.Character != this) return;          // 只有自己行动时才发动
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;          // 只有自己行动时才发动
             if (context.Effect != HandEffectType.Shield) return;   // 只有合出护盾才发动
 
             // ⚠️ 必须确认**运算源是自己的手**。

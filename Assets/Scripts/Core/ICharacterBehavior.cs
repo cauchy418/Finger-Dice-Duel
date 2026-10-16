@@ -280,6 +280,41 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **把多个角色行为包成一个角色**的容器（双将）。
+    ///
+    /// ⚠️ 为什么要单独定义在 Core：
+    ///    双将时 <c>actor.Character</c> 是**容器**，不是部件本身，
+    ///    所以部件判“这次该不该我发动”时**不能**写
+    ///    <c>ReferenceEquals(actor.Character, this)</c> —— 那种写法在双将里恒为假，
+    ///    技能会**静默失效**（玩家实测：“双将猎人没有出现伏击按钮”）。
+    ///
+    ///    而容器实体（<c>DualGeneralBehavior</c>）住在 Characters 层，
+    ///    Core 不允许认识它 —— 所以**契约定义在 Core、实现在 Characters**。
+    /// </summary>
+    public interface ICharacterBehaviorContainer
+    {
+        /// <summary>这个容器里是不是有这个部件。</summary>
+        bool Contains(ICharacterBehavior part);
+    }
+
+    /// <summary>
+    /// 部件侧的统一判断：**我在不在这位角色的技能集合里**。
+    ///
+    /// 单独角色时就是 <c>actor.Character == part</c>；
+    /// 双将时问容器的 <see cref="ICharacterBehaviorContainer.Contains"/>。
+    /// </summary>
+    public static class CharacterBehaviors
+    {
+        public static bool ActorHas(PlayerState actor, ICharacterBehavior part)
+        {
+            if (actor?.Character == null || part == null) return false;
+            if (ReferenceEquals(actor.Character, part)) return true;
+
+            return actor.Character is ICharacterBehaviorContainer c && c.Contains(part);
+        }
+    }
+
+    /// <summary>
     /// **可以把自己的手当被加数**的角色实现本接口（魔术师）。
     ///
     /// 玩家确认："可以选择自己的手当被加数"
