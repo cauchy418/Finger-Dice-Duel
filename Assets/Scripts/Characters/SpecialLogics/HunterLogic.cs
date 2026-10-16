@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public sealed class HunterLogic : CharacterTemplate,
         IHandEffectRewriter, IHandEffectDisplay, IDamageMitigator,
-        IAttackRangeProvider
+        IAttackRangeProvider, IPreTurnChoiceProvider
     {
         /// <summary>伏击要求两只手都是 1/2/3 —— 上界（含）。</summary>
         public const int AmbushMaxValue = 3;
@@ -69,19 +69,51 @@ namespace FingerDiceDuel.Core
             Hand right = owner.RightHand;
             if (left == null || right == null) return false;
 
-            // 两只手都要是 1/2/3
             if (left.Value < 1 || left.Value > AmbushMaxValue) return false;
             if (right.Value < 1 || right.Value > AmbushMaxValue) return false;
 
-            // 数字相同
             return left.Value == right.Value;
         }
 
-        /// <summary>伏击可以发生在"参与运算的那只手"上。</summary>
-        public Hand AmbushCandidate(PlayerState owner, Hand actedHand)
+        /// <summary>
+        /// **玩家给出的判定**（这是权威版本）：
+        /// 运算之后，**发起运算的那只手**（它的值已经变成结果值）与**另一只手**
+        /// 数值相同，且两者都在 1/2/3。
+        ///
+        /// 玩家原话与例子：
+        ///   "指的是我运算后两只手数值相同，例如左手是 9，右手是 2，
+        ///    这回合我用 9+3=2，触发伏击。"
+        ///
+        /// 拆开看：左手 9 发起运算、加数是 3 -> 9 + 3 = 12 -> 归一化 **2**，
+        /// 于是左手变成 2，而右手本来就是 2 -> 两手同为 2 -> 触发。
+        ///
+        /// \u26a0\ufe0f 我第一版写错过：当时用"两只手**都** <= 3"去判，
+        ///    等于要求**原来那只 9 就 <= 3** —— 那当然永远不成立，
+        ///    我因此误判成"条件不可达"。真正要比的是**运算之后**的两只手。
+        /// </summary>
+        public static bool MeetsAmbushCondition(PlayerState owner, Hand actedHand, int resultValue)
         {
-            if (!MeetsAmbushCondition(owner)) return null;
-            if (actedHand == null) return null;
+            if (owner == null || actedHand == null) return false;
+            if (!owner.Owns(actedHand)) return false;
+
+            Hand other = ReferenceEquals(actedHand, owner.LeftHand) ? owner.RightHand : owner.LeftHand;
+            if (other == null) return false;
+
+            // 运算后：发起运算的那只手 = 结果值；另一只手不变
+            if (resultValue < 1 || resultValue > AmbushMaxValue) return false;
+            if (other.Value < 1 || other.Value > AmbushMaxValue) return false;
+
+            return resultValue == other.Value;
+        }
+
+        /// <summary>
+        /// 这次运算之后可以暗置哪只手（不满足则 null）。
+        ///
+        /// <paramref name="resultValue"/> = 发起运算那只手的**新值**（结果值）。
+        /// </summary>
+        public Hand AmbushCandidate(PlayerState owner, Hand actedHand, int resultValue)
+        {
+            if (!MeetsAmbushCondition(owner, actedHand, resultValue)) return null;
             if (actedHand.IsLocked || actedHand.IsConcealed) return null;
             if (actedHand.State != ShieldState.None) return null;
             return actedHand;
@@ -196,27 +228,87 @@ namespace FingerDiceDuel.Core
         }
 
         // ---------------------------------------------------------------
-        // 伏击的触发：待补
+        // 伏击的"主动选择"：与剑客追加攻击**同一条通道**
         // ---------------------------------------------------------------
-        //
-        // 玩家建议把它做成与追加攻击**同一时机**触发。
-        // 我试过两种写法，都撞上同一个问题，所以先不接：
-        //
-        //   ① 通过 <see cref="IPreTurnChoiceProvider.CollectPreTurnChoices"/>
-        //      发一条拉择请求（与剑客追加攻击同一条通道），
-        //      再在 <see cref="CharacterTemplate.OnBeforeEffectResolved"/> 里回读；
-        //   ② 直接在 OnBeforeEffectResolved 里回读。
-        //
-        //   两种写法都让 GreedyChoiceProvider.ScoreMove 出现
-        //   **偶发 AccessViolation**（原生层内存访问违规），
-        //   且双将与 2v2 两个大循环赛都会崩。
-        //   因为那两处**没有测试覆盖**，且仓库不能留崩溃，
-        //   所以先撤掉；待机制确认、且能写出稳定测试后再补。
-        //
-        //   ⚠️ 能力本身已就绪且有测试：
-        //      <see cref="MeetsAmbushCondition"/> / <see cref="AmbushCandidate"/> /
-        //      <see cref="EnterAmbush"/> / <see cref="ReleaseAmbush"/> / 抵伤与远程加成。
-        //      缺的只是"何时询问玩家"这一步。
+
+        /// <summary>
+        /// 收集阶段：满足条件就提一条“要不要伏击”的拉择。
+        ///
+        /// ⚠️ 收集期**只读** —— 不碰任何手的状态。
+        ///    （上一次尝试引发过偶发崩溃，所以这里严格保持只读。）
+        /// </summary>
+        public override void CollectPreTurnChoices(PreTurnChoiceContext context,
+                                                   IList<ChoiceRequest> requests)
+        {
+            if (context == null || requests == null) return;
+            if (!ReferenceEquals(context.Actor?.Character, this)) return;
+
+            // ① 伏击只发生在**非攻击**的运算上
+            if (context.IsAttack) return;
+
+            Hand acted = context.ActedHand;
+            if (acted == null || !context.Actor.Owns(acted)) return;
+
+            // ② 较的是**运算结果**与另一只手
+            //    （收集阶段运算还没执行，所以不能读 acted.Value）
+            if (!MeetsAmbushCondition(context.Actor, acted, context.ResultValue)) return;
+
+            int value = context.ResultValue;
+            requests.Add(new ChoiceRequest(
+                HandEffect.HunterAmbush,
+                $"猎人：运算后两手同为 {value}，"
+                + $"可以把这只手暗置进入伏击"
+                + $"（攻击 +{AmbushAttackBonus}、距离 {AmbushRange}；"
+                + $"被攻击时抵挡一次伤害并恢复）。要伏击吗？",
+                new List<Hand>(1) { acted },
+                allowDecline: true,
+                declineResult: null,
+                decider: context.Actor,
+                acceptLabel: "伏击"));
+        }
+
+        /// <summary>
+        /// **同一时机落实伏击**（与剑客追加攻击同一个钩子）。
+        ///
+        /// 玩家确认："剑客什么时候能触发追加攻击，
+        /// 猎人什么时候就能触发伏击"。
+        /// 此时运算已完成（actedHand.Value 已是结果值）、主效果尚未分派。
+        /// </summary>
+        public override void OnBeforeEffectResolved(PlayerState owner, Hand actedHand,
+                                                    int targetValue, HandEffectType effect,
+                                                    GameManager manager, IPreTurnChoiceSink choiceSink)
+        {
+            if (owner == null || manager == null) return;
+            if (actedHand == null || !owner.Owns(actedHand)) return;
+            if (IsAmbushing) return;
+
+            // 攻击不伏击（那只手会被覆盖成输出手）
+            if (IsAttackEffect(effect)) return;
+
+            // 此刻 actedHand.Value 已经是结果值
+            Hand candidate = AmbushCandidate(owner, actedHand, actedHand.Value);
+            if (candidate == null) return;
+
+            var request = new ChoiceRequest(
+                HandEffect.HunterAmbush,
+                "猎人：要伏击吗？",
+                new List<Hand>(1) { candidate },
+                allowDecline: true,
+                declineResult: null,
+                decider: owner,
+                acceptLabel: "伏击");
+
+            Hand chosen = PreTurnChoiceReader.Read(choiceSink, manager.GetChoiceProvider(owner),
+                                                   request, owner);
+            if (chosen == null) return;
+
+            EnterAmbush(candidate);
+        }
+
+        private static bool IsAttackEffect(HandEffectType effect)
+            => effect == HandEffectType.Attack4
+               || effect == HandEffectType.Attack6
+               || effect == HandEffectType.Attack8;
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
