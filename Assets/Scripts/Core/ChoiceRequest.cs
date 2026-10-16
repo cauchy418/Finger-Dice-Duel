@@ -196,6 +196,20 @@ namespace FingerDiceDuel.Core
 
         /// <summary>是否愿意**放弃这次攻击**来设定伤害类型。</summary>
         bool WantsToAbandonAttack { get; set; }
+
+        /// <summary>
+        /// 由 Core 注入**当前对局**。
+        ///
+        /// ⚠️ 为什么需要它：抉择器（`GreedyChoiceProvider`）要按局面挑伤害类型，
+        ///    而它的 `Game` 属性原本**只在 `BoardController` 里被赋值** ——
+        ///    无头路径（`MatchRunner` / 测试 harness）从不设置，
+        ///    于是 AI 的分支第一句 `if (Game == null) return null;` 直接放弃，
+        ///    表现成"AI 法师从不在无头对局里铺状态"。
+        ///
+        ///    用接口而不是反射：反射在 IL2CPP 下有裁剪风险，
+        ///    而这里已经有现成的实现类型可以声明。
+        /// </summary>
+        void SetGameForChoices(GameManager game);
     }
 
     /// <summary>
@@ -216,6 +230,17 @@ namespace FingerDiceDuel.Core
 
         /// <summary>设定待用类型（覆盖旧的 —— 玩家确认只保留最新选择）。</summary>
         void SetPendingDamageType(DamageType type);
+
+        /// <summary>
+        /// 从抉择器**回读**这一次的选择并落到自己身上
+        /// （选了"放弃攻击"才记类型；没放弃就什么都不做）。
+        /// </summary>
+        void ReadFromSink(IDamageTypeChoiceSink sink);
+
+        /// <summary>
+        /// 本回合是否决定**放弃攻击**（由 <see cref="ReadFromSink"/> 回读写入）。
+        /// </summary>
+        bool WantsToAbandonThisTurn { get; set; }
     }
 
     /// <summary>

@@ -54,6 +54,13 @@ namespace FingerDiceDuel.Assistant
         public bool WantsToAbandonAttack { get; set; }
 
         /// <summary>
+        /// 由 Core 注入当前对局（见 <see cref="IDamageTypeChoiceSink.SetGameForChoices"/>）。
+        ///
+        /// 与 <see cref="Game"/> 是同一个字段 —— 只是给 Core 一个不用反射的入口。
+        /// </summary>
+        public void SetGameForChoices(GameManager game) => Game = game;
+
+        /// <summary>
         /// 由调用方注入："**这一击能不能直接斩杀**"。
         ///
         /// 能斩杀时就不该放弃攻击去挂状态 —— 立刻赢下比赛胜过铺一个状态。

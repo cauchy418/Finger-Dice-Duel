@@ -3415,16 +3415,17 @@ namespace FingerDiceDuel.Assistant
             // 用 GameManager 的开关在分派攻击时短路，而不是跳过整个回合 ——
             // 跳过整个回合会让手值回退（玩家实测报的 bug）。
             //
-            // ⚠️ **法师的"放弃攻击"也走这条开关。**
+            // ⚠️ **法师的"放弃攻击"也走这条开关，但它在别处设。**
+            //
             //    玩家确认：放弃攻击 = "运算照常、手值照常改变，但不造成伤害"，
             //    只是**多了一个副作用**：为下一次攻击记下伤害类型。
-            //    这样两条"放弃"就共用同一套伤害抑制逻辑，不会出现
-            //    "潜行时放弃会抑制、法师放弃却还在打人"这种不一致。
-            bool mageAbandoned = (ActivePlayer?.Character
-                                  as FingerDiceDuel.Characters.SpecialLogics.MageLogic)
-                                 ?.WantsToAbandonThisTurn == true;
-
-            _game.SuppressAttackDamage = _giveUpAttack || mageAbandoned;
+            //
+            //    ⚠️ 但**不能在这里读法师的标记** —— 此处是 ResolveTurn 的**入口**，
+            //       结果还没算出来、`GameManager.ResolveMageStatusIntent`
+            //       还没跑，标记必然是 false（实测 24961 次法师回合里
+            //       suppress 一次都不成立）。真正的设置点在
+            //       `GameManager.ResolveMageStatusIntent`（结果算完之后）。
+            _game.SuppressAttackDamage = _giveUpAttack;
 
             // 本次攻击的距离覆盖（战士碎盾换射程 / 游侠强化）。
             // 必须与 CanBeAttacked 看到的是同一个值，否则会出现

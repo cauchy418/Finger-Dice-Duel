@@ -277,30 +277,20 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         /// <summary>
-        /// ⚠️ **这是一个"已知缺口"的测量工具，暂时不断言。**
+        /// **AI 法师在无头对局里真的会铺伤害类型 / 挂状态。**
         ///
-        /// 现象（已确认并逐步缩小）：AI 法师走无头对局时，
-        /// `MageLogic.PendingDamageType` 恒为 None、对手身上也从没出现过状态。
-        ///
-        /// 已经排除的可能性（都实测过）：
-        ///   · 不是"没接钩子" —— `GameManager.ResolveMageStatusIntent` 确实被调用，
-        ///     且诊断显示 `ctx=4 isAtk=True actorHas=True isProvider=True
-        ///     type=MageLogic`（条件全满足）；
-        ///   · 不是"签名不匹配" —— `CollectPreTurnChoices` 的参数已从
-        ///     `List&lt;ChoiceRequest&gt;` 改成 `IList&lt;ChoiceRequest&gt;` 并加了 `override`
-        ///     （那确实是一处真 bug：签名不一致会静默变成"永不调用的新方法"）；
-        ///   · 不是"结果值没填" —— 诊断显示 `ctx` 与运算结果一致。
-        ///
-        /// ⚠️ 尚未查清的是"为什么诊断条件全满足、`requests` 仍然是 0"。
-        /// **下一步**：在 `MageLogic.CollectPreTurnChoices` 里逐句打点，
-        /// 确认它到底有没有被进入。
-        ///
-        /// 之所以先不 assert：它现在必然红，红了就挡住整条流水线；
-        /// 而它的价值（把"AI 到底会不会用法师"变成可测量）已经拿到了。
-        /// 修好之后请把下面的 Assert 打开 —— 那才是它的终点形态。
+        /// 这条测试曾经是"已知缺口"（只测量、不断言）。根因是两处：
+        ///   ① `MageLogic.CollectPreTurnChoices` 的签名写成 `List&lt;ChoiceRequest&gt;`
+        ///      且没有 `override`，于是**没有覆盖基类方法**，
+        ///      通过接口调用走的是基类空实现（C# 9 没有默认接口成员，不报错）；
+        ///   ② `GreedyChoiceProvider.Game` 只在 `BoardController` 里被赋值，
+        ///      而 `MatchRunner` / 测试 harness **从不设置它** ——
+        ///      AI 的法师分支第一句 `if (Game == null) return null;` 直接放弃。
+        ///      已改为通过 <see cref="IDamageTypeChoiceSink.SetGameForChoices"/>
+        ///      在 `GameManager` 的调用点注入（三条路径都覆盖）。
         /// </summary>
         [Test]
-        public void Ai_mage_should_eventually_apply_a_status_in_a_headless_match()
+        public void Ai_mage_applies_a_status_in_a_headless_match()
         {
             int everApplied = 0;
 
@@ -321,15 +311,9 @@ namespace FingerDiceDuel.Tests
                 if (logic.HasPendingType || foe.Statuses.Count > 0) everApplied++;
             }
 
-            if (everApplied == 0)
-            {
-                System.Console.WriteLine(
-                    "【已知缺口】AI 法师在无头对局里从没铺过伤害类型 / 挂过状态。"
-                    + "见本测试的文档注释（已排除钩子未接、签名不匹配、结果值未填）。");
-            }
-
-            // TODO（下一步）：改成
-            // Assert.IsTrue(everApplied > 0, "...");
+            Assert.IsTrue(everApplied > 0,
+                "AI 法师走无头对局时应当至少铺上一次伤害类型或挂上一个状态 —— "
+                + "否则这个角色的招牌能力在 AI 手里等于不存在。");
         }
 
         // ============================================================

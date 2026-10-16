@@ -1121,6 +1121,17 @@ namespace FingerDiceDuel.Core
             sink.WantsToAbandonAttack = false;
             sink.ChosenDamageType = DamageType.None;
 
+            // ⚠️⚠️ **把当前对局注入抉择器** —— 这是"AI 法师从不在无头对局里
+            //    铺状态"的**根因**：
+            //    `GreedyChoiceProvider.Game` 原本只在 `BoardController` 里被赋值
+            //    （`if (provider is GreedyChoiceProvider g) g.Game = _game;`），
+            //    而 `MatchRunner` 与各测试 harness **从不设置它**；
+            //    于是 AI 的法师分支第一句 `if (Game == null) return null;`
+            //    直接放弃，永远不问、永远不铺。
+            //
+            //    放在这个调用点：界面 / 无头 / 测试三条路径都会经过这里。
+            sink.SetGameForChoices(this);
+
             // ⚠️ 用 **IChoiceProvider 接口**而不是 AbstractChoiceProvider ——
             //    后者在 Assistant 层，Core 看不到（分层铁律）。
             IChoiceProvider provider = GetChoiceProvider(actor);
@@ -1157,8 +1168,25 @@ namespace FingerDiceDuel.Core
                     provider.ChooseHandFor(requests[i], actor);
             }
 
-            if (sink.WantsToAbandonAttack && sink.ChosenDamageType != DamageType.None)
-                mage.SetPendingDamageType(sink.ChosenDamageType);
+            
+
+            // ⚠️ **统一把选择落到法师身上**（界面路径也会调同一个方法，
+            //    但那是"收集完就落"，这里是"结算时才落" —— 两条路径都幂等）。
+            //
+            //    漏了这一步的表现：`WantsToAbandonAttack` 已经置真、
+            //    但法师自己身上没有类型，于是命中时 `StatusToApplyOnHit`
+            //    返回 None，状态挂不上（AI 法师铺了等于没铺）。
+            mage.ReadFromSink(sink);
+
+            // ⚠️⚠️ **"放弃攻击"的伤害抑制开关必须在这里设。**
+            //
+            //    不能放在 `BoardController.ResolveTurn` 的入口：
+            //    那里读 `WantsToAbandonThisTurn` 时，结果还没算出来、
+            //    `ResolveMageStatusIntent` 还没跑 —— 标记必然是 false，
+            //    于是 suppress 永远不成立（实测 24961 次法师回合里一次都没有）。
+            //
+            //    放在这里（结果已算完、效果尚未分派）时序才对。
+            if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
         }
 
         /// <summary>
@@ -1622,6 +1650,39 @@ namespace FingerDiceDuel.Core
         public string LastStatusNote { get; private set; } = string.Empty;
 
         /// <summary>
+        /// **"放弃攻击"时也要挂状态。**
+        ///
+        /// 玩家确认：法师放弃攻击是为了给**下一次**攻击铺类型，这一击本就该白扔。
+        /// 但"放弃"≠"没命中" —— 那个类型是给**后续**命中用的，
+        /// 而这一次的命中同样应该正常消耗类型并挂状态。
+        ///
+        /// ⚠️ 为什么单独一个方法：`SuppressAttackDamage` 在效果分派处**直接 break**，
+        ///    根本不创建 <see cref="AttackContext"/>，而"命中即挂状态"是挂在
+        ///    `AttackContext.Resolve` 末尾的 —— 于是"放弃的那一击"永远挂不上状态。
+        /// </summary>
+        private void ApplyMageStatusOnSuppressedAttack(PlayerState actor, PlayerState victim,
+                                                        TurnResult result)
+        {
+            
+            if (actor?.Character is not IStatusApplyingAttack applier) return;
+
+            // 用一个最小的 context 问"这次要挂什么"（法师只读自己的待用类型）
+            var probe = new AttackContext(actor, victim, actor.LeftHand, result.ResultValue);
+            StatusEffect status = applier.StatusToApplyOnHit(probe);
+
+            if (actor.Character is Characters.SpecialLogics.MageLogic mage)
+                mage.ConsumeDamageType();
+
+            if (status == StatusEffect.None) return;
+            if (victim == null || !victim.IsAlive) return;
+
+            
+            victim.ApplyStatus(status, PlayerState.StatusDurationTurns, actor);
+            result.AppliedStatus = status;
+            result.StatusHit = true;
+        }
+
+        /// <summary>
         /// 盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。
         /// </summary>
         public int LastStealTurn => _lastStealTurn;
@@ -1924,6 +1985,8 @@ namespace FingerDiceDuel.Core
                                                                  HandEffect.PriestHealTarget);
             }
 
+            
+
             switch (effect)
             {
                 case HandEffectType.Attack4:
@@ -1957,6 +2020,21 @@ namespace FingerDiceDuel.Core
                             result.WasBlocked = false;
                             result.WasDodged = false;
                             result.DamageDealt = 0;
+
+                            // ⚠️⚠️ **但"放弃攻击"不等于"没命中"。**
+                            //
+                            //    玩家确认：法师放弃攻击是为了**给下一次攻击铺类型**，
+                            //    这一次本来就该白扔。所以这里的语义是
+                            //    "命中但不造成伤害" —— 而火焰/毒素等状态挂在
+                            //    **下一次**命中的攻击上。
+                            //
+                            //    ⚠️ 我原来直接 `break`，于是**根本没有创建 AttackContext**，
+                            //       而"命中即挂状态"是挂在 `AttackContext.Resolve` 末尾的 ——
+                            //       结果就是"AI 法师铺了类型却永远挂不上状态"。
+                            //       这里补一次 `ApplyAttackerStatus`，让放弃的那一击
+                            //       也能正常消耗类型并挂状态（与普通命中同一套判定）。
+                            
+                            ApplyMageStatusOnSuppressedAttack(actor, opponent, result);
                             break;
                         }
 

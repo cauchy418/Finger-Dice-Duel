@@ -102,7 +102,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void CollectPreTurnChoices(PreTurnChoiceContext context,
                                                    IList<ChoiceRequest> requests)
         {
+            
+
             if (context == null || requests == null) return;
+
+            
 
             // 归属校验：双将容器里可能挂着别的角色，别替别人登记
             if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
@@ -140,6 +144,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 acceptLabel: "就选它",
                 skipWhen: () => !WantsToAbandonThisTurn);
             requests.Add(pick);
+
+            
         }
 
         /// <summary>
