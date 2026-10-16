@@ -52,9 +52,11 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.WarriorId, "Warrior", Alignment.LawfulNeutral,
-                shortSkill: "自己的盾碎时可连锁打碎场上一面盾。",
-                playGuide: "两个技能都以盾为前提，所以核心是主动合盾。"
-                         + "合出盾后：想够到远处的对手就碎盾换射程；"
+                shortSkill: "盾碎时可连锁打碎场上一面盾；"
+                          + "攻击时碎盾可换本次攻击距离无限。",
+                playGuide: "核心是主动合盾。"
+                         + "攻击时若另一只手是完整盾，可碎它换本次攻击距离无限 ——"
+                         + "够不到远处对手时这是解法；"
                          + "自己的盾本来就要碎时，顺手连锁打碎对手的盾最赚。",
                 counter: "别让他合成 5（那是他合盾的唯一来源）。"
                        + "给他的数字里 1/2/3/4/5 都要压低，4/6/8 次之。",
@@ -110,9 +112,11 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.RangerId, "Ranger", Alignment.NeutralGood,
-                shortSkill: "1 → 2 完全闪避一次攻击；2 → 3 让攻击基础值 ×1.5。",
+                shortSkill: "1 → 2 完全闪避一次攻击；"
+                          + "2 → 3 让攻击基础值 ×1.5 且本次攻击距离无限。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
-                         + "被攻击时用掉 1 换掉整次攻击永远划算。",
+                         + "被攻击时用掉 1 换掉整次攻击永远划算。"
+                         + "强化射击同时把距离变成无限 —— 够不到远处对手时这是解法。",
                 counter: "别给他 1 与 2 —— 那是他闪避与强化的原料。"
                        + "面对咒术师时他的 1 完全无效（攻击不可闪避）。",
                 interactions: new[]

@@ -115,6 +115,56 @@ namespace FingerDiceDuel.Tests
         private static readonly Dictionary<string, string> LongButJustified =
             new Dictionary<string, string>();
 
+        /// <summary>
+        /// **必须写进图鉴的机制**（玩家纠正："不要把这种重要的机制从图鉴里删掉"）。
+        ///
+        /// 起因：我精简图鉴时，把战士的"碎盾换无限距离"从技能里删掉了，
+        /// 而游侠的"强化射击使本次攻击距离无限"**从来就没写过**。
+        /// 玩家指出：攻击距离什么时候变成无限，是玩家做决策必须知道的事。
+        ///
+        /// \u26a0\ufe0f 所以**篇幅上限不能成为删掉机制的理由**。
+        ///    这条测试用来守住"机制没被删掉"：
+        ///    每个角色的图鉴（技能 + 指南 + 针对 + 交互）里，
+        ///    必须提到下面的关键词之一。
+        /// </summary>
+        private static readonly Dictionary<string, string[]> MustMention =
+            new Dictionary<string, string[]>
+            {
+                // 战士：碎盾换射程 -> 本次攻击距离无限
+                { CharacterDefinition.WarriorId, new[] { "无限" } },
+                // 游侠：强化射击 -> 本次攻击距离无限
+                { CharacterDefinition.RangerId, new[] { "无限" } },
+                // 盗贼：偷窃是无限距离
+                { CharacterDefinition.ThiefId, new[] { "无限" } },
+            };
+
+        [Test]
+        public void Important_mechanics_are_never_dropped_from_the_codex()
+        {
+            var bad = new List<string>();
+
+            foreach (KeyValuePair<string, string[]> kv in MustMention)
+            {
+                CodexEntry e = CharacterCodex.For(kv.Key);
+                if (e == null) { bad.Add(kv.Key + "(无资料)"); continue; }
+
+                // 图鉴玩家能看到的所有文字
+                string all = e.ShortSkill + "\n" + e.DetailSkill + "\n"
+                             + e.PlayGuide + "\n" + e.Counter + "\n"
+                             + string.Join("\n", e.Interactions);
+
+                for (int i = 0; i < kv.Value.Length; i++)
+                {
+                    if (all.IndexOf(kv.Value[i], System.StringComparison.Ordinal) < 0)
+                        bad.Add($"{kv.Key} 的图鉴里没提到「{kv.Value[i]}」");
+                }
+            }
+
+            Assert.AreEqual(0, bad.Count,
+                "这些重要机制从图鉴里丢了（玩家明确要求不能删）：\n"
+                + string.Join("\n", bad));
+        }
+
         [Test]
         public void Codex_entries_are_not_over_long()
         {
