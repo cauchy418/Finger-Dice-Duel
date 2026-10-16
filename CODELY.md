@@ -17,7 +17,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **776 项**无头测试，秒级 |
+| 测试 | **777 项**无头测试，秒级 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 ## 目录结构
@@ -80,6 +80,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 - **非法操作不要静默失败**：`GameManager.ExecuteTurn` 对不合法运算抛
   `InvalidOperationException`，便于 UI/AI 层尽早暴露 bug
 - **改规则要同步三处**：`RULES.md`、代码、`Assets/Tests/EditMode` 的对应测试
+- **写角色图鉴必须对照篇幅基准** → 见 [`CODE-STYLE.md`](CODE-STYLE.md)。
+  玩家明确要求「不要长篇大论」，并且已由
+  `CodexTests.Codex_entries_are_not_over_long` **强制守住**。
+  一句话：**有机制的角色，每段不超过机制简单角色的两倍**。
 - **不要修改** `Library/` `Temp/` `Logs/` `.codely.packages/`
 
 ---

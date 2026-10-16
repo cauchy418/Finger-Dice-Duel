@@ -87,6 +87,84 @@ namespace FingerDiceDuel.Tests
                 + string.Join("、", bad));
         }
 
+        /// <summary>
+        /// **图鉴篇幅约定**（玩家要求，2026-02 定）。
+        ///
+        /// 玩家原话："把写图鉴这个记住，有机制的大概写多长，没机制的大概写多长，
+        /// 之后不要再特别容易出现长篇大论的情况。"
+        ///
+        /// 实测（精简后 20 名角色的中位数与区间）：
+        ///
+        ///   段落        机制简单        有机制        硬上限（本测试）
+        ///   技能一句    ~8~15           ~17~22       45
+        ///   操作指南    ~30~38          ~50~60       80
+        ///   如何针对    ~19~40          ~20~40       80
+        ///
+        /// **机制简单** = 一句能说完（士兵、游侠、骑士、狼人、魔射手、巨人…）
+        /// **有机制**   = 需要说清触发条件与代价（武僧、盗贼、邪术师、猎人、魔术师…）
+        ///
+        /// \u26a0\ufe0f 上限只挡"长篇大论"，不追求人人等长 ——
+        ///    因为"把简单角色也写长"和"把有机制的角色写短"都是错的方向。
+        ///    定这条之前，武僧的"如何针对"曾写到 167 字（中位数的 5 倍）。
+        ///
+        /// \u26a0\ufe0f 例外机制：若某段确实**重要到无法删**，把它加进下面的
+        ///    <see cref="LongButJustified"/> 并**写清理由** ——
+        ///    这样例外是显式的、会被复核的，而不是悄悄漂长。
+        ///    （玩家："若实在重要无法删除可以例外。"）
+        /// </summary>
+        private static readonly Dictionary<string, string> LongButJustified =
+            new Dictionary<string, string>();
+
+        [Test]
+        public void Codex_entries_are_not_over_long()
+        {
+            const int maxSkill = 45;
+            const int maxGuide = 80;
+            const int maxCounter = 80;
+
+            CharacterDefinition[] all = CharacterDefinition.BuiltIn;
+            var bad = new List<string>();
+
+            for (int i = 0; i < all.Length; i++)
+            {
+                CodexEntry e = CharacterCodex.For(all[i]);
+                if (e == null) continue;
+
+                // 只统计中文字数 —— 更贴近"读起来有多长"
+                int skill = ChineseCount(e.ShortSkill);
+                int guide = ChineseCount(e.PlayGuide);
+                int counter = ChineseCount(e.Counter);
+
+                bool exempt = LongButJustified.ContainsKey(all[i].Id);
+
+                if (!exempt && skill > maxSkill)
+                    bad.Add($"{all[i].DisplayName} 技能 {skill} > {maxSkill}");
+                if (!exempt && guide > maxGuide)
+                    bad.Add($"{all[i].DisplayName} 操作指南 {guide} > {maxGuide}");
+                if (!exempt && counter > maxCounter)
+                    bad.Add($"{all[i].DisplayName} 如何针对 {counter} > {maxCounter}");
+            }
+
+            Assert.AreEqual(0, bad.Count,
+                "图鉴段落过长（玩家要求不要长篇大论；"
+                + "确有必要就加进 LongButJustified 并写明理由）：\n"
+                + string.Join("\n", bad));
+        }
+
+        /// <summary>统计中文字符数（读起来多长，而不是字节数）。</summary>
+        private static int ChineseCount(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return 0;
+
+            int n = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                char c = text[i];
+                if (c >= '\u4e00' && c <= '\u9fff') n++;
+            }
+            return n;
+        }
+
         [Test]
         public void Alignments_cover_the_nine_grid()
         {
@@ -143,6 +221,10 @@ namespace FingerDiceDuel.Tests
                 // 混乱邪恶：狼人 巨人
                 { CharacterDefinition.WerewolfId, Alignment.ChaoticEvil },
                 { CharacterDefinition.GiantId, Alignment.ChaoticEvil },
+                // 守序邪恶：猎人（玩家指定）
+                { CharacterDefinition.HunterId, Alignment.LawfulEvil },
+                // 混乱善良：魔术师（玩家指定）
+                { CharacterDefinition.MagicianId, Alignment.ChaoticGood },
             };
 
             var wrong = new List<string>();
