@@ -254,17 +254,24 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Guide_lines_mention_the_players_rules()
         {
-            // 抽几条容易被写错的：逐条对照玩家给的原话
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Cold).Contains("减半"),
-                "寒冷 = 结果减半");
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Poison).Contains("不可被抵挡"),
+            // 抽几条容易被写错的：逐条对照玩家给的原话。
+            //
+            // ⚠️ 玩家要求把两页拆开之后：
+            //    第 1 页（伤害类型）= "附加两回合XX状态"
+            //    第 2 页（状态一览）= 状态的具体效果
+            //    所以"效果"类断言要看 **StatusLine**，"挂什么状态"看 GuideLine。
+            Assert.IsTrue(StatusNames.GuideLine(DamageType.Cold).Contains("冰冻状态"),
+                "寒冷 = 附加两回合冰冻状态");
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Freeze).Contains("减半"),
+                "冰冻 = 结果减半");
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Poison).Contains("不可被抵挡"),
                 "毒素不可被抵挡");
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Necrotic).Contains("不能回复"),
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Decay).Contains("不能回复"),
                 "暗蚀 = 不能回血");
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Thunder).Contains("距离 1"),
-                "雷鸣 = 只能打距离 1");
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Radiant).Contains("距离 1"),
-                "光耀 = 只能选距离 1 的手");
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Resonance).Contains("距离 1"),
+                "雷鸣 / 残响 = 只能打距离 1");
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Blind).Contains("距离 1"),
+                "光耀 / 目盲 = 只能选距离 1 的手");
         }
     }
 }

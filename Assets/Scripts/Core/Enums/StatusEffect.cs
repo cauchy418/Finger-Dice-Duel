@@ -143,15 +143,15 @@ namespace FingerDiceDuel.Core
         {
             switch (status)
             {
-                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心圆（声波）
-                case StatusEffect.Acid: return "\u25bd";   // ▽ 倒三角（滴落）
-                case StatusEffect.Poison: return "\u2660";   // ♠ 黑桃（骷髅牌的替代：☠ 字体里没有）
-                case StatusEffect.Blind: return "\u25c9";   // ◉ 鱼眼（眼睛）
-                case StatusEffect.Decay: return "\u271a";   // ✚ 十字（被斩断的治疗：✖ 字体里没有）
-                case StatusEffect.Burn: return "\u25c6";   // ◆ 实心菱形（火焰/热源：▲ 已移交给力场）
-                case StatusEffect.Freeze: return "\u2603";   // ☃ 雪人（❄ 雪花系列字体里都没有）
-                case StatusEffect.Shock: return "\u26a0";   // ⚠ 警告（电压危险：⚡/☇ 字体里都没有）
-                case StatusEffect.Stun: return "\u273d";   // ✽ 重花瓣星（精神冲击：✳ 字体里没有）
+                case StatusEffect.Resonance: return "残响";
+                case StatusEffect.Acid: return "强酸";
+                case StatusEffect.Poison: return "中毒";
+                case StatusEffect.Blind: return "目盲";
+                case StatusEffect.Decay: return "腐朽";
+                case StatusEffect.Burn: return "燃烧";
+                case StatusEffect.Freeze: return "冰冻";
+                case StatusEffect.Shock: return "感电";
+                case StatusEffect.Stun: return "震慑";
                 default: return "无";
             }
         }
@@ -247,18 +247,31 @@ namespace FingerDiceDuel.Core
             return st == StatusEffect.None ? ForceColor : StatusColorOf(st);
         }
 
+        /// <summary>
+        /// 状态对应的**主色**（0xRRGGBB）。
+        ///
+        /// ⚠️ 放在 Core、且是**唯一一份**：状态图标栏与图鉴指引都用它，
+        ///    两处各写一份必然会漂移（改了一处忘了另一处）。
+        ///
+        /// 玩家本轮指定的 5 个颜色：
+        ///   · 雷鸣 / 残响 -> **紫**
+        ///   · 强酸        -> **黄绿**
+        ///   · 毒素        -> **绿**
+        ///   · 暗蚀 / 腐朽 -> **深绿**
+        ///   · 闪电 / 感电 -> **深蓝**
+        /// </summary>
         public static int StatusColorOf(StatusEffect s)
         {
             switch (s)
             {
-                case StatusEffect.Resonance: return 0x33A6CC;   // 青蓝
-                case StatusEffect.Acid: return 0x8CBF26;        // 黄绿
-                case StatusEffect.Poison: return 0x9B59B6;      // 紫
+                case StatusEffect.Resonance: return 0x9B4FD0;   // 紫（雷鸣 / 残响）
+                case StatusEffect.Acid: return 0xB6CC2E;        // 黄绿
+                case StatusEffect.Poison: return 0x3FA34D;      // 绿
                 case StatusEffect.Blind: return 0xF2C72E;       // 亮金
-                case StatusEffect.Decay: return 0x7D8C7D;       // 灰绿
+                case StatusEffect.Decay: return 0x1E5B2E;       // 深绿（暗蚀 / 腐朽）
                 case StatusEffect.Burn: return 0xE8701A;        // 橙红（火焰）
                 case StatusEffect.Freeze: return 0x4C9EE6;      // 冰蓝
-                case StatusEffect.Shock: return 0xF5D020;       // 明黄
+                case StatusEffect.Shock: return 0x1A4FA0;       // 深蓝（闪电 / 感电）
                 // 玩家要求："心灵现在红色太深，换成比火焰淡的粉色"
                 case StatusEffect.Stun: return 0xF08CBB;        // 淡粉（比火焰淡）
                 default: return 0x9AA0AC;                       // 中性灰
@@ -313,8 +326,11 @@ namespace FingerDiceDuel.Core
                 return Colorize(GlyphOf(StatusEffect.None), ForceColor) + " " + Of(type)
                      + "：穿盾、无视正向防御、不可闪避（不挂状态）";
 
+            // ⚠️ 玩家要求**去掉 `→`**（"-> 的部分删除没有意义"），
+            //    并直接写明"附加两回合XX状态" —— 这样一页就说清了
+            //    "这个类型会挂上什么、挂多久"。
             return Colorize(GlyphOf(st), st) + " " + Of(type)
-                 + " → " + Of(st) + "：" + Describe(st);
+                 + "：附加两回合" + Of(st) + "状态";
         }
 
         /// <summary>
