@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace FingerDiceDuel.Core
 {
     /// <summary>
@@ -295,6 +297,9 @@ namespace FingerDiceDuel.Core
     {
         /// <summary>这个容器里是不是有这个部件。</summary>
         bool Contains(ICharacterBehavior part);
+
+        /// <summary>容器里的全部部件（顺序即优先级）。</summary>
+        IReadOnlyList<ICharacterBehavior> Parts { get; }
     }
 
     /// <summary>
@@ -311,6 +316,34 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(actor.Character, part)) return true;
 
             return actor.Character is ICharacterBehaviorContainer c && c.Contains(part);
+        }
+
+        /// <summary>
+        /// **这位角色里第一个实现了 <typeparamref name="T"/> 的部件**（没有则 null）。
+        ///
+        /// \u26a0\ufe0f \u4e3a\u4ec0\u4e48\u5fc5\u987b\u8d70\u5b83\uff0c\u800c\u4e0d\u80fd\u5199
+        ///    <c>actor.Character is IHealOverride</c>\uff1a
+        ///    \u53cc\u5c06\u65f6 <c>actor.Character</c> \u662f <c>DualGeneralBehavior</c> **\u5bb9\u5668**\uff0c
+        ///    \u5b83\u81ea\u5df1\u5e76\u4e0d\u5b9e\u73b0\u90a3\u4e9b\u80fd\u529b\u63a5\u53e3\uff08\u53ea\u662f\u8f6c\u53d1\uff09\uff0c
+        ///    \u6240\u4ee5\u90a3\u79cd\u5199\u6cd5**\u6052\u4e3a\u5047** \u2014\u2014
+        ///    \u6280\u80fd\u4f1a\u9759\u9ed8\u5730\u9000\u5316\u6210\u9ed8\u8ba4\u884c\u4e3a\u3002
+        ///
+        ///    \u5b9e\u6d4b\uff08\u73a9\u5bb6\u62a5\u544a\uff09\uff1a\u53cc\u5c06\u91cc\u7267\u5e08\u7684 9
+        ///    \u201c\u53ea\u4ece 2 \u8840\u56de\u5230 11 \u8840\u800c\u4e0d\u662f 20 \u8840\u201d\u2014\u2014
+        ///    \u6b63\u662f\u56e0\u4e3a\u8fd9\u91cc\u9000\u5230\u4e86 else \u5206\u652f\uff08\u9ed8\u8ba4\u56de\u590d\uff09\u3002
+        /// </summary>
+        public static T FirstImplementer<T>(PlayerState actor) where T : class
+        {
+            if (actor?.Character == null) return null;
+            if (actor.Character is T direct) return direct;
+
+            if (actor.Character is ICharacterBehaviorContainer c && c.Parts != null)
+            {
+                for (int i = 0; i < c.Parts.Count; i++)
+                    if (c.Parts[i] is T t) return t;
+            }
+
+            return null;
         }
     }
 

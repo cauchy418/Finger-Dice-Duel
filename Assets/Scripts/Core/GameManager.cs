@@ -516,7 +516,8 @@ namespace FingerDiceDuel.Core
 
         /// <summary>某人的基础攻击距离（没实现接口时按 1 处理）。</summary>
         public static int BaseRangeOf(PlayerState player)
-            => player?.Character is IAttackRangeProvider p ? p.BaseAttackRange : 1;
+            => CharacterBehaviors.FirstImplementer<IAttackRangeProvider>(player) is IAttackRangeProvider p
+                ? p.BaseAttackRange : 1;
 
         /// <summary>这张手牌属于谁（在**全部**参战玩家里查）。
         ///
@@ -1499,7 +1500,7 @@ namespace FingerDiceDuel.Core
             //     必须在这里做：手值已经变成结果值（盾就是 5），
             //     但护盾状态还没设 —— 改写后要由我们补上状态，
             //     否则会出现"看起来是盾、实际不是盾"。
-            if (actor.Character is IHandEffectRewriter rewriter)
+            if (CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(actor) is IHandEffectRewriter rewriter)
             {
                 HandEffectType rewritten = rewriter.RewriteEffect(
                     actor, actedHand, targetValue, this);
@@ -1678,7 +1679,7 @@ namespace FingerDiceDuel.Core
                         // 默认：回复行动方自己。
                         // 但角色可以"接管"这一步（例如牧师的 9 能回给对手），
                         // 接管时不再执行默认治疗，避免一次 9 回两次。
-                        if (actor.Character is IHealOverride healer)
+                        if (CharacterBehaviors.FirstImplementer<IHealOverride>(actor) is IHealOverride healer)
                         {
                             var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                             PlayerState target = healer.ApplyHeal(actor, this, sink);
@@ -1688,7 +1689,7 @@ namespace FingerDiceDuel.Core
                             //
                             // ⚠️ 必须让角色能接管这一处 —— 巨人的 9 是"两段回复"，
                             //    总量不是固定的 9（玩家规则），写死会让它的回复量永远错。
-                            int amount = actor.Character is IHealAmountProvider amountProvider
+                            int amount = CharacterBehaviors.FirstImplementer<IHealAmountProvider>(actor) is IHealAmountProvider amountProvider
                                 ? amountProvider.HealAmountOf(actor, this)
                                 : PriestLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
@@ -1864,7 +1865,7 @@ namespace FingerDiceDuel.Core
             if (player == null) return false;
 
             // 角色可以自己接管跳过规则（例如刺客的潜行）
-            if (player.Character is ITurnSkipRule rule)
+            if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
             {
                 rule.SyncSkipState(player);
                 return rule.CanSkip(player, null);
@@ -1926,7 +1927,7 @@ namespace FingerDiceDuel.Core
             //    2v2 循环赛里这种局面会出现「无合法步」（实测 589 局中有 23 处）。
             if (player.HasNoUsableHand) return true;
 
-            if (player.Character is ITurnSkipRule rule)
+            if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
             {
                 rule.SyncSkipState(player);
                 return rule.CanSkip(player, this);
