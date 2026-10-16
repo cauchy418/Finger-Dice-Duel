@@ -448,8 +448,6 @@ namespace FingerDiceDuel.UI
                     : "";
             }
 
-            _measureFont = _font;
-
             if (_body != null)
             {
                 var sb = new StringBuilder();
@@ -604,94 +602,6 @@ namespace FingerDiceDuel.UI
         ///    （换行会让右列另起一行，看起来就是"没对齐"）。
         /// </summary>
         private const float BodyFontSize = 17f;
-
-        /// <summary>
-        /// **按像素**量出一段文字（含富文本标签）的渲染宽度。
-        ///
-        /// ⚠️ 富文本标签（`<color=#RRGGBB>` / `</color>`）本身**不显示**，
-        ///    所以要先剥掉再量 —— 否则会把标签的字符也算成宽度，右列被推远。
-        /// </summary>
-        private static float MeasureWidth(string s)
-        {
-            if (string.IsNullOrEmpty(s) || _measureFont == null) return 0f;
-
-            // ⚠️ 用 **TextGenerator**（Unity 原生的排版器）而不是
-            //    `Font.GetCharacterInfo` —— 后者只认主字体，
-            //    中文/符号走的是**字体回退**，量出来会是 0（列宽全错）。
-            string plain = StripRichText(s);
-
-            var gen = new UnityEngine.TextGenerator();
-            gen.Invalidate();
-
-            var settings = new UnityEngine.TextGenerationSettings
-            {
-                font = _measureFont,
-                fontSize = (int)BodyFontSize,
-                fontStyle = UnityEngine.FontStyle.Normal,
-                richText = false,          // 已经剥掉标签了，不需要它再解析
-                lineSpacing = 1f,
-                scaleFactor = 1f,
-            };
-
-            gen.GetPreferredWidth(plain, settings);
-            float w = gen.GetPreferredWidth(plain, settings);
-
-            return w;
-        }
-
-        private static Font _measureFont;
-
-        /// <summary>取两列里**最宽**的那条（左列对齐宽度）。</summary>
-        private static float MeasureWidth(List<string> items)
-        {
-            float max = 0f;
-            for (int i = 0; i < items.Count; i++)
-            {
-                float w = MeasureWidth(items[i]);
-                if (w > max) max = w;
-            }
-            return max;
-        }
-
-        /// <summary>
-        /// 在 <paramref name="s"/> 后面补空格，直到渲染宽度达到
-        /// <paramref name="target"/>（像素）。多退少补到一个空格的精度。
-        /// </summary>
-        private static string PadToWidth(string s, float target)
-        {
-            float w = MeasureWidth(s);
-            if (w >= target || _measureFont == null) return s;
-
-            var sb = new StringBuilder(s);
-            float space = MeasureWidth(" ");
-
-            // space 为 0 时（字体没量出来）退回"补一个空格"，避免死循环
-            if (space <= 0.01f) { sb.Append(" "); return sb.ToString(); }
-
-            int count = (int)((target - w) / space);
-            for (int i = 0; i < count; i++) sb.Append(' ');
-
-            return sb.ToString();
-        }
-
-        /// <summary>剥掉富文本标签（只用于**量宽度**，不用于显示）。</summary>
-        private static string StripRichText(string s)
-        {
-            if (string.IsNullOrEmpty(s) || s.IndexOf('<') < 0) return s;
-
-            var sb = new StringBuilder(s.Length);
-            bool inTag = false;
-
-            for (int i = 0; i < s.Length; i++)
-            {
-                char ch = s[i];
-                if (ch == '<') { inTag = true; continue; }
-                if (ch == '>') { inTag = false; continue; }
-                if (!inTag) sb.Append(ch);
-            }
-
-            return sb.ToString();
-        }
 
         private static void Highlight(Dictionary<string, Image> buttons, string active)        {
             foreach (KeyValuePair<string, Image> kv in buttons)
