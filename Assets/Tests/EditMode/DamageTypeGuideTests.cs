@@ -94,15 +94,36 @@ namespace FingerDiceDuel.Tests
 
                 if (st == StatusEffect.None)
                 {
-                    // 力场没有状态 -> 不着色（否则标签白占宽度、对齐也不一样）
-                    Assert.IsTrue(line.StartsWith(StatusNames.GlyphOf(StatusEffect.None)),
-                        $"力场那一行不应当带颜色标签（现在是「{line}」）。");
+                    // 力场没有状态，但**玩家要求它也要有颜色**（更深的红色）——
+                    // 所以它用单独的颜色入口，而不是不着色。
+                    Assert.IsTrue(line.StartsWith(ColorTag(StatusEffect.None)),
+                        $"力场那一行应当以深红的符号开头（现在是「{line}」）。");
                     continue;
                 }
 
                 Assert.IsTrue(line.StartsWith(ColorTag(st)),
                     $"{t} 的指引应当以带颜色的状态符号开头（现在是「{line}」）。");
             }
+        }
+
+        [Test]
+        public void Force_line_uses_the_dark_red_and_psychic_uses_a_lighter_pink()
+        {
+            // 玩家要求："力场采用更深的红色"、"心灵现在红色太深，换成比火焰淡的粉色"
+            string force = StatusNames.GuideLine(DamageType.Force);
+            Assert.IsTrue(force.Contains(StatusNames.ForceColor.ToString("X6")),
+                $"力场那一行应当用深红 0x{StatusNames.ForceColor:X6}。");
+
+            int psychic = StatusNames.StatusColorOf(StatusEffect.Stun);
+            int burn = StatusNames.StatusColorOf(StatusEffect.Burn);
+
+            Assert.IsTrue(psychic != burn, "心灵与火焰不能是同一个颜色。");
+
+            // "比火焰淡"：亮度更高、饱和度更低（用简单判据：整体亮度更大）
+            int pl = (psychic >> 16 & 0xFF) + (psychic >> 8 & 0xFF) + (psychic & 0xFF);
+            int bl = (burn >> 16 & 0xFF) + (burn >> 8 & 0xFF) + (burn & 0xFF);
+            Assert.IsTrue(pl > bl,
+                $"心灵（0x{psychic:X6}）应当比火焰（0x{burn:X6}）更淡（整体亮度更高）。");
         }
 
         [Test]
@@ -127,8 +148,50 @@ namespace FingerDiceDuel.Tests
         ///    否则"格式写错了"也会被测试一并接受（自我实现式断言）。
         /// </summary>
         private static string ColorTag(StatusEffect st)
-            => "<color=#" + StatusNames.StatusColorOf(st).ToString("X6") + ">"
-             + StatusNames.GlyphOf(st) + "</color>";
+        {
+            int rgb = st == StatusEffect.None
+                ? StatusNames.ForceColor          // 力场没有状态，用单独的颜色入口
+                : StatusNames.StatusColorOf(st);
+
+            return "<color=#" + rgb.ToString("X6") + ">"
+                 + StatusNames.GlyphOf(st) + "</color>";
+        }
+
+        [Test]
+        public void Every_glyph_exists_in_the_bundled_font()
+        {
+            // ⚠️ 这一条是血泪教训：闪电换了两次字形都还是空白，
+            //    最后直接读 NotoSansCJKsc 的 cmap 才发现 ——
+            //    这个字体**根本没有** ⚡(U+26A1) / ☇(U+2607) / ❄(U+2744) /
+            //    ❅(U+2745) / ❆(U+2746) / ☠(U+2620) / ✖(U+2716) / ✳(U+2733)。
+            //
+            //    所以把"已知缺字形"的码位列出来，防止有人凭直觉选一个更好看的符号。
+            var forbidden = new Dictionary<int, string>
+            {
+                { 0x26A1, "⚡ 闪电 —— 字体里没有" },
+                { 0x2607, "☇ 闪电 —— 字体里没有" },
+                { 0x2744, "❄ 雪花 —— 字体里没有" },
+                { 0x2745, "❅ 雪花 —— 字体里没有" },
+                { 0x2746, "❆ 雪花 —— 字体里没有" },
+                { 0x2620, "☠ 骷髅 —— 字体里没有" },
+                { 0x2716, "✖ 重叉 —— 字体里没有" },
+                { 0x2733, "✳ 星芒 —— 字体里没有" },
+                { 0x2A1C, "⧜ 闪电 —— 字体里没有" },
+            };
+
+            for (int i = 0; i <= 9; i++)
+            {
+                var st = (StatusEffect)i;
+                string g = StatusNames.GlyphOf(st);
+                if (g.Length == 0) continue;
+
+                int cp = g[0];
+                string why;
+                Assert.IsFalse(forbidden.TryGetValue(cp, out why),
+                    $"状态「{StatusNames.Of(st)}」用的是 {why}"
+                    + " —— 请从字体确实拥有的字符里选（见 NotoSansCJKsc 的 cmap）。");
+            }
+        }
 
         [Test]
         public void Guide_colours_are_distinct_per_status()

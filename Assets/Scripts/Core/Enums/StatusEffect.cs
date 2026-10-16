@@ -143,15 +143,15 @@ namespace FingerDiceDuel.Core
         {
             switch (status)
             {
-                case StatusEffect.Resonance: return "残响";
-                case StatusEffect.Acid: return "强酸";
-                case StatusEffect.Poison: return "中毒";
-                case StatusEffect.Blind: return "目盲";
-                case StatusEffect.Decay: return "腐朽";
-                case StatusEffect.Burn: return "燃烧";
-                case StatusEffect.Freeze: return "冰冻";
-                case StatusEffect.Shock: return "感电";
-                case StatusEffect.Stun: return "震慑";
+                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心圆（声波）
+                case StatusEffect.Acid: return "\u25bd";   // ▽ 倒三角（滴落）
+                case StatusEffect.Poison: return "\u2660";   // ♠ 黑桃（骷髅牌的替代：☠ 字体里没有）
+                case StatusEffect.Blind: return "\u25c9";   // ◉ 鱼眼（眼睛）
+                case StatusEffect.Decay: return "\u271a";   // ✚ 十字（被斩断的治疗：✖ 字体里没有）
+                case StatusEffect.Burn: return "\u25c6";   // ◆ 实心菱形（火焰/热源：▲ 已移交给力场）
+                case StatusEffect.Freeze: return "\u2603";   // ☃ 雪人（❄ 雪花系列字体里都没有）
+                case StatusEffect.Shock: return "\u26a0";   // ⚠ 警告（电压危险：⚡/☇ 字体里都没有）
+                case StatusEffect.Stun: return "\u273d";   // ✽ 重花瓣星（精神冲击：✳ 字体里没有）
                 default: return "无";
             }
         }
@@ -230,20 +230,41 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 放在 Core、且是**唯一一份**：状态图标栏与图鉴指引都用它，
         ///    两处各写一份必然会漂移（改了一处忘了另一处）。
         /// </summary>
+        /// <summary>
+        /// **力场**的颜色（玩家要求："力场采用更深的红色"）。
+        ///
+        /// ⚠️ 力场**没有状态**，但界面上仍要有一个颜色 ——
+        ///    所以单独给一个入口，不要让它落到中性灰上。
+        /// </summary>
+        public const int ForceColor = 0x8B1A1A;      // 深红
+
+        /// <summary>
+        /// **界面用**的颜色：力场走 <see cref="ForceColor"/>，其余走状态色。
+        /// </summary>
+        public static int GuideColorOf(DamageType type)
+        {
+            StatusEffect st = StatusOf(type);
+            return st == StatusEffect.None ? ForceColor : StatusColorOf(st);
+        }
+
         public static int StatusColorOf(StatusEffect s)
         {
             switch (s)
             {
                 case StatusEffect.Resonance: return 0x33A6CC;   // 青蓝
                 case StatusEffect.Acid: return 0x8CBF26;        // 黄绿
-                case StatusEffect.Poison: return 0x7A3F9E;      // 紫
+                case StatusEffect.Poison: return 0x9B59B6;      // 紫
                 case StatusEffect.Blind: return 0xF2C72E;       // 亮金
-                case StatusEffect.Decay: return 0x526152;       // 暗灰绿
-                case StatusEffect.Burn: return 0xD9591A;        // 橙红
+                case StatusEffect.Decay: return 0x7D8C7D;       // 灰绿
+                case StatusEffect.Burn: return 0xE8701A;        // 橙红（火焰）
                 case StatusEffect.Freeze: return 0x4C9EE6;      // 冰蓝
-                case StatusEffect.Shock: return 0xFAE633;       // 明黄
-                case StatusEffect.Stun: return 0xD9338C;        // 品红
+                case StatusEffect.Shock: return 0xF5D020;       // 明黄
+                // 玩家要求："心灵现在红色太深，换成比火焰淡的粉色"
+                case StatusEffect.Stun: return 0xF08CBB;        // 淡粉（比火焰淡）
                 default: return 0x9AA0AC;                       // 中性灰
+
+                // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
+                //    玩家要求："力场采用更深的红色"。
             }
         }
 
@@ -260,20 +281,20 @@ namespace FingerDiceDuel.Core
         {
             switch (s)
             {
-                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心 = 残响
-                case StatusEffect.Acid: return "\u25bc";        // ▼ 滴落 = 强酸
-                case StatusEffect.Poison: return "\u2620";      // ☠ 中毒
-                case StatusEffect.Blind: return "\u25c9";       // ◉ 眼睛 = 目盲
-                case StatusEffect.Decay: return "\u2716";       // ✖ 断掉的十字 = 不能治疗
-                case StatusEffect.Burn: return "\u25b2";        // ▲ 火苗 = 燃烧
-                case StatusEffect.Freeze: return "\u2744";      // ❄ 冰冻
-                // ⚠️ U+26A1(⚡) 在 **Noto Sans CJK SC 里没有字形** —— 实测：
-                //    状态一览里"感电"那一行前面是**空白**。
-                //    换成 U+2A1C（4 道闪电）—— 同样是闪电语义，
-                //    且随 Noto Sans Symbols 2 一起回退（CJK 字体常带）。
-                case StatusEffect.Shock: return "\u2a1c";
-                case StatusEffect.Stun: return "\u2733";        // ✳ 星芒 = 震慑
-                default: return "\u25cb";                       // ○ 占位（无状态）
+                case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心圆（声波）
+                case StatusEffect.Acid: return "\u25bd";        // ▽ 倒三角（滴落）
+                case StatusEffect.Poison: return "\u2660";      // ♠ 黑桃（骷髅牌的替代）
+                case StatusEffect.Blind: return "\u25c9";       // ◉ 鱼眼（眼睛）
+                case StatusEffect.Decay: return "\u271a";       // ✚ 十字（被斩断的治疗）
+                case StatusEffect.Burn: return "\u25c6";        // ◆ 实心菱形（热源）
+                case StatusEffect.Freeze: return "\u2603";      // ☃ 雪人
+                case StatusEffect.Shock: return "\u26a0";       // ⚠ 警告（电压危险）
+                case StatusEffect.Stun: return "\u273d";        // ✽ 重花瓣星（精神冲击）
+
+                // △ 力场（玩家要求："把三角形标记移给力场"）
+                case StatusEffect.None: return "\u25b3";
+
+                default: return "\u25cb";                       // ○ 兜底
             }
         }
 
@@ -289,7 +310,7 @@ namespace FingerDiceDuel.Core
             StatusEffect st = StatusOf(type);
 
             if (st == StatusEffect.None)
-                return GlyphOf(StatusEffect.None) + " " + Of(type)
+                return Colorize(GlyphOf(StatusEffect.None), ForceColor) + " " + Of(type)
                      + "：穿盾、无视正向防御、不可闪避（不挂状态）";
 
             return Colorize(GlyphOf(st), st) + " " + Of(type)
@@ -317,8 +338,11 @@ namespace FingerDiceDuel.Core
         {
             if (st == StatusEffect.None) return glyph;
 
-            return "<color=#" + StatusColorOf(st).ToString("X6") + ">"
-                 + glyph + "</color>";
+            return Colorize(glyph, StatusColorOf(st));
         }
+
+        /// <summary>按给定颜色上色（力场用，它没有状态）。</summary>
+        private static string Colorize(string glyph, int rgb)
+            => "<color=#" + rgb.ToString("X6") + ">" + glyph + "</color>";
     }
 }
