@@ -34,7 +34,7 @@ git checkout 1ab020b262a7c896fb237fb9461b7c28cc356ab6 -- \
   Assets/Tests/EditMode/MagicianTests.cs
 ```
 
-> 回退后请跑一次 `Tools/HeadlessTests/run-tests.ps1`（应为 789 项全绿）。
+> 回退后请跑一次 `Tools/HeadlessTests/run-tests.ps1`（应为 790 项全绿）。
 > **只回退魔术师这几处**，不要 `git reset` 整棵树 —— 那会连带撤掉同期修好的
 > 高亮、牧师 9、双将守卫等无关修复。
 

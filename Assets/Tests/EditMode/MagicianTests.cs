@@ -207,28 +207,53 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Two_is_an_attack_dealing_two_point_two_damage()
+        public void Magician_attacks_deal_a_fixed_four_damage()
         {
+            // 玩家改动（2026-02）：魔术师的攻击（2/4/6/8）
+            // **一律固定 4 点伤害、且不吃攻防加成**。
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
 
-            // 手值 2 -> 魔术师应把它改写成攻击
+            // 2 仍然要被改写成攻击
             magician.LeftHand.SetValue(2);
             var rewriter = magician.Character as IHandEffectRewriter;
             Assert.NotNull(rewriter, "魔术师应实现 IHandEffectRewriter。");
-
             HandEffectType effect = rewriter.RewriteEffect(magician, magician.LeftHand, 5, null);
             Assert.AreNotEqual((int)HandEffectType.None, (int)effect,
                 "运算出 2 对魔术师应是攻击，而不是无效果。");
 
-            // 结算一次 2 的攻击：伤害应为 2 + 攻(0) - 守方防(1) = 1
+            // 四种攻击牌都必须是**固定 4 点**
+            int[] attacks = { 2, 4, 6, 8 };
+            for (int i = 0; i < attacks.Length; i++)
+            {
+                PlayerState me = Make("魔", CharacterDefinition.Magician);
+                PlayerState target = Make("敌", CharacterDefinition.Soldier);
+                me.LeftHand.SetValue(attacks[i]);
+
+                int before = target.Health;
+                var ctx = new AttackContext(me, target, me.LeftHand, attacks[i]);
+                ctx.Resolve(null, null);
+
+                Assert.AreEqual(MagicianLogic.FixedAttackDamage, before - target.Health,
+                    $"攻击值 {attacks[i]} 应造成固定 {MagicianLogic.FixedAttackDamage} 点伤害。");
+            }
+        }
+
+        [Test]
+        public void Magician_attack_ignores_stat_bonuses()
+        {
+            // "不吃攻防加成"：给魔术师加攻、给对手加防，伤害都必须是 4
+            PlayerState magician = Make("魔", CharacterDefinition.Magician);
+            PlayerState foe = Make("敌", CharacterDefinition.Giant);   // 防 +2
+
+            magician.LeftHand.SetValue(6);
             int before = foe.Health;
-            var ctx = new AttackContext(magician, foe, magician.LeftHand, 2);
+
+            var ctx = new AttackContext(magician, foe, magician.LeftHand, 6);
             ctx.Resolve(null, null);
 
-            int expected = 2 + magician.Character.AttackBonus - foe.Character.DefenseBonus;
-            Assert.AreEqual(expected, before - foe.Health,
-                "2 点攻击应造成吃攻防加成后的伤害。");
+            Assert.AreEqual(MagicianLogic.FixedAttackDamage, before - foe.Health,
+                "对手防 +2 也不应把伤害压下去（不吃攻防加成）。");
         }
 
         [Test]
