@@ -463,8 +463,14 @@ namespace FingerDiceDuel.Core
         /// <summary>对方被选中的那只手。</summary>
         public Hand TargetHand { get; }
 
-        /// <summary>这次运算的结果（已按十进制归一化）。</summary>
-        public int ResultValue { get; }
+        /// <summary>
+        /// 这次运算的结果（已按十进制归一化）。
+        ///
+        /// ⚠️ 可写：构造时按"两手的和"算出来，但**发起运算的那只手在结算中
+        ///    会先被改写成结果值**，所以"结算中途"问的抉择要重新填一次
+        ///    （法师的"结果是不是 4/6/8"就依赖它 —— 填错会永远问不出东西）。
+        /// </summary>
+        public int ResultValue { get; set; }
 
         /// <summary>
         /// 这次运算会产生什么效果。

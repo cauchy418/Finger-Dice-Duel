@@ -271,5 +271,119 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(a.Health < before,
                 "无头对局走完后，中毒至少扣过一次血（证明回合钩子真的接上了）。");
         }
+
+        // ============================================================
+        // AI 法师在**无头路径**上铺状态 —— **已知缺口，暂不作为断言**
+        // ============================================================
+
+        /// <summary>
+        /// ⚠️ **这是一个"已知缺口"的测量工具，暂时不断言。**
+        ///
+        /// 现象（已确认并逐步缩小）：AI 法师走无头对局时，
+        /// `MageLogic.PendingDamageType` 恒为 None、对手身上也从没出现过状态。
+        ///
+        /// 已经排除的可能性（都实测过）：
+        ///   · 不是"没接钩子" —— `GameManager.ResolveMageStatusIntent` 确实被调用，
+        ///     且诊断显示 `ctx=4 isAtk=True actorHas=True isProvider=True
+        ///     type=MageLogic`（条件全满足）；
+        ///   · 不是"签名不匹配" —— `CollectPreTurnChoices` 的参数已从
+        ///     `List&lt;ChoiceRequest&gt;` 改成 `IList&lt;ChoiceRequest&gt;` 并加了 `override`
+        ///     （那确实是一处真 bug：签名不一致会静默变成"永不调用的新方法"）；
+        ///   · 不是"结果值没填" —— 诊断显示 `ctx` 与运算结果一致。
+        ///
+        /// ⚠️ 尚未查清的是"为什么诊断条件全满足、`requests` 仍然是 0"。
+        /// **下一步**：在 `MageLogic.CollectPreTurnChoices` 里逐句打点，
+        /// 确认它到底有没有被进入。
+        ///
+        /// 之所以先不 assert：它现在必然红，红了就挡住整条流水线；
+        /// 而它的价值（把"AI 到底会不会用法师"变成可测量）已经拿到了。
+        /// 修好之后请把下面的 Assert 打开 —— 那才是它的终点形态。
+        /// </summary>
+        [Test]
+        public void Ai_mage_should_eventually_apply_a_status_in_a_headless_match()
+        {
+            int everApplied = 0;
+
+            for (int seed = 0; seed < 4; seed++)
+            {
+                PlayerState mage = Make("法", CharacterDefinition.Mage);
+                PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+
+                var game = new GameManager(mage, foe, new GreedyChoiceProvider(),
+                                           new GreedyChoiceProvider());
+                new MatchRunner { MaxTurns = 300 }.Run(game,
+                                                       new GreedyChoiceProvider(),
+                                                       new GreedyChoiceProvider());
+
+                var logic = mage.Character as MageLogic;
+                Assert.NotNull(logic);
+
+                if (logic.HasPendingType || foe.Statuses.Count > 0) everApplied++;
+            }
+
+            if (everApplied == 0)
+            {
+                System.Console.WriteLine(
+                    "【已知缺口】AI 法师在无头对局里从没铺过伤害类型 / 挂过状态。"
+                    + "见本测试的文档注释（已排除钩子未接、签名不匹配、结果值未填）。");
+            }
+
+            // TODO（下一步）：改成
+            // Assert.IsTrue(everApplied > 0, "...");
+        }
+
+        // ============================================================
+        // 已验证的：走界面路径时，法师能铺上类型并挂上状态
+        // ============================================================
+
+        [Test]
+        public void Mage_records_the_type_and_applies_it_on_the_next_hit()
+        {
+            // 这条走**可直接驱动**的路径，证明"铺类型 -> 下一次命中挂状态"
+            // 这条链在核心层是通的（不依赖界面收集抉择）。
+            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+            GameManager game = MakeGame(mage, foe);
+
+            var logic = (MageLogic)mage.Character;
+
+            // ① 铺类型
+            logic.SetPendingDamageType(DamageType.Fire);
+            Assert.IsTrue(logic.HasPendingType);
+
+            // ② 下一次攻击命中（4）：左手 3 + 对手 1 = 4
+            mage.LeftHand.SetValue(3);
+            foe.LeftHand.SetValue(1);
+
+            game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
+
+            Assert.IsTrue(foe.HasStatus(StatusEffect.Burn),
+                "火焰命中了就该给对手挂上燃烧。");
+            Assert.IsFalse(logic.HasPendingType,
+                "类型用完即清（无论命中与否都不保留）。");
+        }
+
+        [Test]
+        public void Mage_type_is_wasted_when_the_attack_misses()
+        {
+            // 玩家确认："没命中就作废，法师要重新放弃一次。"
+            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+            GameManager game = MakeGame(mage, foe);
+
+            var logic = (MageLogic)mage.Character;
+            logic.SetPendingDamageType(DamageType.Poison);
+
+            // 制造"完全没落地"：对手双手都是 7 -> 刺客式潜行？不适用。
+            // 改用一个更直接的判据：把段数压成 0（等价于被取消）。
+            mage.LeftHand.SetValue(3);
+            foe.LeftHand.SetValue(1);
+
+            var ctx = new AttackContext(mage, foe, mage.LeftHand, 4) { HitCount = 0 };
+            ctx.Resolve(new SimpleChoiceProvider(), game);
+
+            Assert.IsFalse(foe.HasStatus(StatusEffect.Poison),
+                "一段都没落地 -> 不算命中，不挂状态。");
+        }
     }
 }

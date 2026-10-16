@@ -1093,6 +1093,75 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
+        /// **法师：铺伤害类型的统一入口（界面与无头两条路都走它）。**
+        ///
+        /// 界面路径由 <c>BoardController</c> 在"收集完抉择"之后调用
+        /// <c>MageLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
+        /// 直接驱动 GameManager，**从不收集抉择** ——
+        /// 于是 AI 法师的"选伤害类型"永远落不到自己身上，
+        /// 表现为"AI 法师从不挂状态"（与之前魔术师计数那次同一类坑）。
+        ///
+        /// 这里兜底：若法师还没回读过选择，就从它的抉择器**当场问一次**。
+        /// 已经回读过的不再问（避免覆盖界面玩家的明确选择）。
+        /// </summary>
+        private void ResolveMageStatusIntent(PlayerState actor, Hand actedHand,
+                                               Hand targetHand)
+        {
+            if (actor?.Character == null) return;
+
+            var mage = actor.Character as IMageState;
+            if (mage == null) return;
+
+            // 已经有待用类型 -> 不用再问
+            if (mage.HasPendingType) return;
+
+            if (!(GetChoiceProvider(actor) is IDamageTypeChoiceSink sink)) return;
+
+            // 让 AI 就"这一次是不是放弃攻击"表态
+            sink.WantsToAbandonAttack = false;
+            sink.ChosenDamageType = DamageType.None;
+
+            // ⚠️ 用 **IChoiceProvider 接口**而不是 AbstractChoiceProvider ——
+            //    后者在 Assistant 层，Core 看不到（分层铁律）。
+            IChoiceProvider provider = GetChoiceProvider(actor);
+            if (provider == null) return;
+
+            // 问一次"要不要放弃攻击"（AI 会在这里设 WantsToAbandonAttack）
+            var context = new PreTurnChoiceContext(actor, actor, actedHand,
+                                                   targetHand ?? actor.RightHand)
+            {
+                Manager = this,
+                AlivePlayerCount = AlivePlayerCount,
+
+                // ⚠️ **必须显式填结果值** —— 界面路径由 BoardController 填，
+                //    而无头路径没人填。`MageLogic.CollectPreTurnChoices`
+                //    正是用 `ResultValue` 判断"结果是不是 4/6/8"，
+                //    不填就永远问不出东西（AI 法师从不挂状态 —— 测试抓到过）。
+                //    此刻发起运算的那只手**已经是结果值**
+                //    （PerformOperation 已执行、效果尚未分派）。
+                ResultValue = actedHand?.Value ?? 0,
+            };
+
+            var requests = new List<ChoiceRequest>();
+            (actor.Character as IPreTurnChoiceProvider)
+                ?.CollectPreTurnChoices(context, requests);
+
+            // (临时诊断已移除)
+
+            for (int i = 0; i < requests.Count; i++)
+            {
+                if (requests[i].Effect == HandEffect.MageAbandonAttack)
+                    provider.ChooseHandFor(requests[i], actor);
+                else if (requests[i].Effect == HandEffect.MageDamageType
+                         && sink.WantsToAbandonAttack)
+                    provider.ChooseHandFor(requests[i], actor);
+            }
+
+            if (sink.WantsToAbandonAttack && sink.ChosenDamageType != DamageType.None)
+                mage.SetPendingDamageType(sink.ChosenDamageType);
+        }
+
+        /// <summary>
         /// 若这次是"拿自己的手当被加数"（魔术师的特色），把被加数那只手标给角色，
         /// **仅供技能发动率统计**。
         ///
@@ -1783,6 +1852,18 @@ namespace FingerDiceDuel.Core
                     result.FreezeHalvedFrom = before;
                 }
             }
+
+            // 2d. **法师：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
+            //
+            //     ⚠️ 必须放在**这里**（结果已经算出来）：
+            //        `MageLogic.CollectPreTurnChoices` 用 `context.ResultValue`
+            //        判断"结果是不是 4/6/8"，而在 ExecuteTurn 入口处结果还没算出来。
+            //        我第一版放在入口，于是**永远问不出东西**、
+            //        AI 法师从不挂状态（新测试立刻抓到）。
+            //
+            //     与冰冻同一位置，也都在"效果分派之前" —— 因为这一步会决定
+            //     本次要不要真的打伤害（放弃 = 不造成伤害）。
+            ResolveMageStatusIntent(actor, actedHand, targetHand);
 
             // 3. 运算前碎掉的盾：只有**结果仍然是 5** 时才保留 Broken 标记。
             //

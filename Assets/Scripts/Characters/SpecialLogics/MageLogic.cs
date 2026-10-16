@@ -91,8 +91,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// ⚠️ 与猎人/剑客同一模式：必须在**运算前收集**，
         ///    结算一旦开始就一次跑完，没法中途问人类玩家。
         /// </summary>
-        public void CollectPreTurnChoices(PreTurnChoiceContext context,
-                                          List<ChoiceRequest> requests)
+        /// ⚠️⚠️ 签名必须与基类**完全一致**：`IList<ChoiceRequest>` 而不是
+        ///     `List<ChoiceRequest>`。
+        ///
+        ///     我第一版写成了 `List<ChoiceRequest>`（也没有 `override`），
+        ///     于是它**没有覆盖基类方法**，只是一个名字相同的新方法 ——
+        ///     通过 `IPreTurnChoiceProvider` 调用时走的是基类的**空实现**，
+        ///     表现成"法师从来不问要不要放弃攻击、AI 从不挂状态"。
+        ///     C# 9 没有默认接口成员，所以这种签名不匹配**不会报错**，只会静默失效。
+        public override void CollectPreTurnChoices(PreTurnChoiceContext context,
+                                                   IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
 
