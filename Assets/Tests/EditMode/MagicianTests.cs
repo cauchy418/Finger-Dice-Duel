@@ -209,8 +209,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Magician_attacks_deal_their_face_damage()
         {
-            // 玩家改动（2026-02）：魔术师的攻击（2/4/6/8）
-            // **一律固定 4 点伤害、且不吃攻防加成**。
+            // **最初版本**（当前采用）：魔术师的攻击牌是 2/4/6/8，
+            // 伤害**就是牌面数字**（2 打 2 点、8 打 8 点），**吃攻防加成**。
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
 
@@ -222,9 +222,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreNotEqual((int)HandEffectType.None, (int)effect,
                 "运算出 2 对魔术师应是攻击，而不是无效果。");
 
-            // 四种攻击牌都必须是**固定 4 点**
-            // **最初版本**：伤害就是"牌面数字"（2 是特殊攻击，打 2 点），
-            // 都吃攻防加成 —— 所以这里按引擎公式算期望值。
+            // 四种攻击牌的伤害都按引擎公式算期望值
+            // （2 是"借"来的攻击，打 2 点；4/6/8 直接按牌面）
             int[] attacks = { 2, 4, 6, 8 };
             for (int i = 0; i < attacks.Length; i++)
             {
