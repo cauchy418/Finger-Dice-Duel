@@ -90,7 +90,35 @@ namespace FingerDiceDuel.Assistant
                 LegalMove move = selector.ChooseMove(game, actor);
                 if (move.Actor == null)
                 {
-                    // 双方都无手可用（理论上不会发生）：判定为平局，避免死循环。
+                    // ⚠️ **没有合法步时，先问"这一位能不能跳过回合"，而不是直接判平局。**
+                    //
+                    //    为什么必须在这里处理：`SkipTurn` 的入口只存在于
+                    //    **界面层**（BoardController 的跳过按钮）。无头路径
+                    //    （MatchRunner / 各测试 harness）直接驱动 GameManager，
+                    //    于是"两手都不能运算"的玩家会让整局**卡在这里**。
+                    //
+                    //    实测触发场景（玩家早就指出过）：
+                    //      猎人进**伏击**会暗置一只手；若另一只手随后被锁
+                    //      （野蛮人锁手），他就两只手都不能运算 -> 无合法步。
+                    //      我一度把"AI 自动接受伏击"打开，于是：
+                    //        全角色循环赛 5 处卡死、双将交叉对战失败、
+                    //        "hunter vs barbarian 应在回合上限内结束"失败。
+                    //    补上这一段之后，那些局面就会**正常跳过**而不是卡住。
+                    if (game.CanSkipTurnFor(actor))
+                    {
+                        game.SkipTurn();          // 内部会把回合交给下一位
+                        result.Turns++;
+
+                        TurnResult skipped = game.LastTurnResult;
+                        if (skipped != null)
+                        {
+                            if (RecordHistory) result.History.Add(skipped);
+                            OnTurnResolved?.Invoke(skipped);
+                        }
+                        continue;
+                    }
+
+                    // 真的无路可走（且规则也不允许跳过）：判定为平局，避免死循环。
                     result.HitTurnLimit = true;
                     break;
                 }

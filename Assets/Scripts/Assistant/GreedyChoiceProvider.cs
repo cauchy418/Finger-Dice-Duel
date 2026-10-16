@@ -967,29 +967,18 @@ namespace FingerDiceDuel.Assistant
                 case HandEffect.RangerPowerShot:
                     return c[0];       // 每次都给强化，白赚
 
-                // ⚠️ 猎人**伏击**：条件已满足（两手同为 1/2/3），纯赚 ——
-                //    暗置一只手换来"攻击 +1 / 距离 3 / 一次抵伤"，
-                //    而且另一只手照常行动。
+                // ⚠️ 猎人**伏击**：条件已满足（两手同为 1/2/3）。
                 //
-                //    \u26a0\ufe0f **暂缓开启**：
-                //    我上一轮加上这条后，AI 确实开始进伏击了（探针实测 ambush=1），
-                //    但随即暴露出一个**更深的既有问题**：
-                //      进伏击会**暗置一只手**；若另一只手随后被锁（野蛮人），
-                //      该玩家就**两只手都不能运算** -> 无合法步。
-                //      跳过回合的按钮只存在于界面层（BoardController），
-                //      而无头循环赛/矩阵测试直接驱动 GameManager -> **卡死**。
-                //      实测：全角色循环赛 5 处卡死、双将交叉对战失败、
-                //            "hunter vs barbarian 应在回合上限内结束" 失败。
+                //    但不能**无条件**接受 —— 伏击**只有一次**（抵伤即消耗），
+                //    无脑用掉会把自己一只手封住、却没换来任何东西。
+                //    实测：无条件接受时猎人 1v1 胜率 49.6% -> 41.8%、
+                //    平局率 3.7% -> **19.3%**（大量僵局）。
                 //
-                //    我已经顺手修了一处相关的真 bug（`PlayerState.HasNoUsableHand`
-                //    原来只查 `IsLocked`、没算**暗置**，与 `GetLegalMoves` 的口径不一致），
-                //    但那还不足以让上面那些 harness 不卡。
-                //
-                //    所以先回到"不自动伏击"，**保证仓库是绿的**；
-                //    等把"暗置 + 被锁 -> 自动跳过"这条链路在**无头环境**里也打通，
-                //    再重新打开这里。玩家的手工操作不受影响（按钮仍然会给）。
-                // case HandEffect.HunterAmbush:
-                //     return c[0];
+                //    所以只在"**对手这一手可能打出攻击**"时才埋伏 ——
+                //    这时伏击能**截掉他一次攻击**，才是真的赚。
+                //    （判据：他两只手里有一只能与我的某个手值凑出 4/6/8。）
+                case HandEffect.HunterAmbush:
+                    return OpponentLikelyCanAttack(request) ? c[0] : request.DeclineResult;
 
                 case HandEffect.RangerDodge:
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
@@ -1075,6 +1064,54 @@ namespace FingerDiceDuel.Assistant
                 default:
                     return request.DeclineResult;
             }
+        }
+
+        /// <summary>
+        /// **对手这一手是否可能打出攻击**（供猎人决定要不要伏击）。
+        ///
+        /// 判据：他两只手里有任意一只，能与**我的某个手值**凑出 4/6/8 ——
+        /// 那就说明他下一手有能力攻击，伏击才值得用来**截掉他一次攻击**。
+        ///
+        /// ⚠️ 为什么必须加这个限制：伏击**只有一次**（抵伤即消耗）。
+        ///    无条件接受会把自己一只手封住、却什么都没换来 ——
+        ///    实测：猎人 1v1 胜率 49.6% -> 41.8%、平局率 3.7% -> 19.3%。
+        /// </summary>
+        private bool OpponentLikelyCanAttack(ChoiceRequest request)
+        {
+            GameManager game = Game;
+            PlayerState decider = request.Decider;
+            if (game == null || decider == null) return false;
+
+            // 我的两只手值（他会拿它们当被加数）
+            int[] mine = { decider.LeftHand?.Value ?? 0, decider.RightHand?.Value ?? 0 };
+
+            for (int p = 0; p < game.Players.Count; p++)
+            {
+                PlayerState foe = game.Players[p];
+                if (foe == null || !foe.IsAlive) continue;
+                if (ReferenceEquals(foe, decider) || game.IsTeammate(decider, foe)) continue;
+
+                int[] theirs = { foe.LeftHand?.Value ?? 0, foe.RightHand?.Value ?? 0 };
+
+                for (int a = 0; a < theirs.Length; a++)
+                {
+                    if (theirs[a] <= 0) continue;
+                    for (int b = 0; b < mine.Length; b++)
+                    {
+                        if (mine[b] <= 0) continue;
+
+                        HandEffectType eff = Hand.GetEffectType(
+                            Hand.ComputeSum(theirs[a], mine[b]));
+
+                        if (eff == HandEffectType.Attack4
+                            || eff == HandEffectType.Attack6
+                            || eff == HandEffectType.Attack8)
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
