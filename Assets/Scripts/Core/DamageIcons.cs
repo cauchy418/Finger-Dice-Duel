@@ -247,6 +247,29 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
+        /// 状态的图标键。
+        ///
+        /// ⚠️ 状态与"造成它的伤害类型"**共用同一个图形**（残响 = 雷鸣的图形）——
+        ///    因为玩家看到的语义就是同一个东西，用两套图形反而会让人以为是两回事。
+        /// </summary>
+        public static string KeyOfStatus(StatusEffect st)
+        {
+            switch (st)
+            {
+                case StatusEffect.Resonance: return "thunder";
+                case StatusEffect.Acid: return "acid";
+                case StatusEffect.Poison: return "poison";
+                case StatusEffect.Blind: return "radiant";
+                case StatusEffect.Decay: return "necrotic";
+                case StatusEffect.Burn: return "fire";
+                case StatusEffect.Freeze: return "cold";
+                case StatusEffect.Shock: return "lightning";
+                case StatusEffect.Stun: return "psychic";
+                default: return "force";
+            }
+        }
+
+        /// <summary>
         /// 把某个图标画成 **RGBA32** 像素（长度 = <see cref="Size"/>² × 4，行序**自下而上**）。
         ///
         /// ⚠️ 行序自下而上是为了**直接**喂给 <c>Texture2D.LoadRawTextureData</c> /

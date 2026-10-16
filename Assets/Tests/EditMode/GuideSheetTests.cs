@@ -104,20 +104,28 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Page_two_lists_nine_statuses()
+        public void Page_two_lists_nine_statuses_with_png_icons()
         {
             GuideSheet s = GuideSheets.Statuses();
 
-            Assert.AreEqual(9, s.Lines.Count, "9 种负面状态，每种一行。");
-            Assert.IsTrue(s.TwoColumn);
+            // ⚠️ 玩家要求："状态一览里同步用 png 替换掉字符"——
+            //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
+            Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
+            Assert.AreEqual(1, s.Groups.Count);
+            Assert.AreEqual(9, s.Groups[0].Entries.Count, "9 种负面状态。");
 
-            foreach (StatusEffect st in StatusNames.AllStatuses)
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
-                bool found = false;
-                for (int i = 0; i < s.Lines.Count; i++)
-                    if (s.Lines[i].Contains(StatusNames.Of(st))) found = true;
+                StatusEffect st = StatusNames.AllStatuses[i];
+                GuideEntry e = s.Groups[0].Entries[i];
 
-                Assert.IsTrue(found, $"状态表里缺少「{StatusNames.Of(st)}」。");
+                Assert.IsTrue(e.Text.Contains(StatusNames.Of(st)),
+                    $"状态表里缺少「{StatusNames.Of(st)}」。");
+                Assert.IsTrue(e.Text.Contains(StatusNames.Describe(st)),
+                    $"「{StatusNames.Of(st)}」应当包含效果说明。");
+                Assert.IsFalse(string.IsNullOrEmpty(e.IconKey),
+                    $"「{StatusNames.Of(st)}」应当有图标键（PNG）。");
+                Assert.IsTrue(e.Color != 0, $"「{StatusNames.Of(st)}」应当有颜色。");
             }
         }
 
@@ -180,12 +188,14 @@ namespace FingerDiceDuel.Tests
 
             for (int i = 0; i < magic.Entries.Count; i++)
             {
+                // ⚠️ 玩家要求"伤害类型里原来的字符图标可以换掉了" ——
+                //    所以这里比对的是**不带字符**的 `MagicLinePlain`。
                 bool matched = false;
                 foreach (DamageType t in StatusNames.AllTypes)
-                    if (magic.Entries[i].Text == StatusNames.GuideLine(t)) matched = true;
+                    if (magic.Entries[i].Text == GuideSheets.MagicLinePlain(t)) matched = true;
 
                 Assert.IsTrue(matched,
-                    $"这一行不是 Core 的 GuideLine：「{magic.Entries[i].Text}」。");
+                    $"这一行不是 Core 的 MagicLinePlain：「{magic.Entries[i].Text}」。");
             }
 
             GuideGroup phys = GuideSheets.PhysicalGroup();
@@ -194,9 +204,14 @@ namespace FingerDiceDuel.Tests
                                 phys.Entries[i].Text);
 
             GuideSheet st2 = GuideSheets.Statuses();
+
+            // 状态页现在是"名称：效果"的**纯文字**（图标交给 PNG）
             for (int i = 0; i < st2.Lines.Count; i++)
-                Assert.AreEqual(StatusNames.StatusLine(StatusNames.AllStatuses[i]),
+            {
+                StatusEffect st = StatusNames.AllStatuses[i];
+                Assert.AreEqual(StatusNames.Of(st) + "：" + StatusNames.Describe(st),
                                 st2.Lines[i]);
+            }
         }
 
         [Test]

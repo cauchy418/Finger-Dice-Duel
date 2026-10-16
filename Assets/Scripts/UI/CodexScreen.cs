@@ -498,7 +498,6 @@ namespace FingerDiceDuel.UI
                         if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
                         return;
                     }
-
                     // 角色卡：仍然走正文（单列）
                     sb.AppendLine();
                     sb.AppendLine("【与其他角色的特殊交互】");

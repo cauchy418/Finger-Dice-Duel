@@ -236,8 +236,10 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < types.Count; i++)
             {
+                // ⚠️ 用**不带字符符号**的文案 —— 图标改由 PNG 负责
+                //    （玩家要求："伤害类型里原来的字符图标可以换掉了"）。
                 entries.Add(new GuideEntry(IconKeyOf(types[i]), ColorOf(types[i]),
-                                           MagicLine(types[i])));
+                                           MagicLinePlain(types[i])));
             }
 
             return new GuideGroup(MagicCategoryTitle, entries);
@@ -260,14 +262,48 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// **第 2 页「状态一览」**：9 种负面状态各自的效果。
+        ///
+        /// ⚠️ 玩家要求："状态一览里同步用 png 替换掉字符"——
+        ///    所以这一页也走**分组渲染**（含 PNG 图标），不再用字符符号。
+        ///    分组模型与第 1 页一致，这样界面只有**一条**渲染路径。
         /// </summary>
         public static GuideSheet Statuses()
         {
             var lines = new List<string>(StatusNames.AllStatuses.Length);
-            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
-                lines.Add(StatusNames.StatusLine(StatusNames.AllStatuses[i]));
+            var entries = new List<GuideEntry>(StatusNames.AllStatuses.Length);
 
-            return new GuideSheet("状态一览", "Status Effects", lines, twoColumn: true);
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+            {
+                StatusEffect st = StatusNames.AllStatuses[i];
+
+                // 只用"名称：效果"，不带字符符号（图标由 PNG 负责）
+                lines.Add(StatusNames.Of(st) + "：" + StatusNames.Describe(st));
+
+                entries.Add(new GuideEntry(DamageIcons.KeyOfStatus(st),
+                                           StatusNames.StatusColorOf(st),
+                                           StatusNames.Of(st) + "：" + StatusNames.Describe(st)));
+            }
+
+            return new GuideSheet("状态一览", "Status Effects", lines, twoColumn: false,
+                                  groups: new List<GuideGroup>
+                                  {
+                                      new GuideGroup("负面状态", entries),
+                                  });
+        }
+
+        /// <summary>
+        /// 魔法伤害的一行（**不带字符符号**，图标交给 PNG）。
+        ///
+        /// 玩家要求："伤害类型里原来的字符图标可以换掉了"。
+        /// </summary>
+        public static string MagicLinePlain(DamageType t)
+        {
+            StatusEffect st = StatusNames.StatusOf(t);
+
+            if (st == StatusEffect.None)
+                return StatusNames.Of(t) + "：穿盾、无视正向防御、不可闪避（不挂状态）";
+
+            return StatusNames.Of(t) + "：附加两回合" + StatusNames.Of(st) + "状态";
         }
     }
 }
