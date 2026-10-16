@@ -103,12 +103,15 @@ namespace FingerDiceDuel.Tests
             Assert.True(provider.ResultNeedsTarget(selfCtx),
                 "自加凑出的 2 是攻击，必须追问目标。");
 
-            // 非自加：1 碰**对手的** 1 -> 2 -> 不是攻击 -> 不追问
+            // 非自加：1 碰**对手的** 1 -> 2 -> 同样是攻击 -> 同样要追问
             var foeCtx = new PreTurnChoiceContext(magician, foe,
                                                   magician.LeftHand, foe.LeftHand);
             Assert.AreEqual(2, foeCtx.ResultValue, "前提：1 + 1 = 2。");
-            Assert.False(provider.ResultNeedsTarget(foeCtx),
-                "碰对手的手凑出的 2 不是攻击，不该追问目标。");
+            // ⚠️ 玩家的规则是"**运算出 2 可以攻击**"，没有限定必须自加。
+            //    我第一版只让"自加凑的 2"追问目标，玩家实测仍旧"自动攻击"
+            //    （日志：对方右(1) + 目标1 = 2）。所以口径统一成**只看结果值**。
+            Assert.True(provider.ResultNeedsTarget(foeCtx),
+                "运算出 2 就是攻击，无论被加数是谁的手 —— 都要追问目标。");
         }
 
         [Test]

@@ -46,19 +46,11 @@ namespace FingerDiceDuel.Core
         {
             int result = actedHand?.Value ?? 0;
 
-            // ⚠️ 判定必须**直接从被加数手是不是自己的**得出，
-            //    不能依赖"上层在运算前告知"的标记：
-            //      · `MarkSelfAddend` **从来没有任何调用点**，
-            //        所以那个标记恒为 false，守卫 `!标记` 恒为真 ——
-            //        看起来像"2 会变攻击"，实际写反了；
-            //      · 而玩家实测的现象是"魔术师的 2 要再点一次目标"，
-            //        正是 2 **没有**被当成攻击、于是多走了一次选目标。
-            //
-            //    现在直接判：被加数手也是这位角色的手 -> 就是"拿自己的手当被加数"。
-            //    这样不依赖任何易漏的调用约定（我也把那个标记删掉了）。
-            bool selfAddend = CharacterBehaviors.ActorHasSelfAddend(actor, actedHand);
-
-            if (result == MagicAttackValue && selfAddend)
+            // 规则（玩家）："运算出 2 可以攻击" —— 不限定必须自加。
+            // 所以这里只看结果值。与 ResultNeedsTarget 的口径保持一致：
+            // 一个说"是攻击"，另一个说"要问打谁"，两者必须同时成立，
+            // 否则会出现"变红了却不问目标"或"问了目标却不红"。
+            if (result == MagicAttackValue)
                 return HandEffectType.Attack4;
 
             return Hand.GetEffectType(result);
@@ -89,10 +81,19 @@ namespace FingerDiceDuel.Core
         {
             if (context == null) return false;
 
-            // 只有"拿自己的手当被加数"凑出的 2 才是攻击
-            if (!CharacterBehaviors.ActorHasSelfAddend(context.Actor, context.TargetHand))
-                return false;
-
+            // ⚠️ **只要结果是 2 就要问**，不要再加"必须自加"的条件。
+            //
+            //    我第一版写成"自加且结果为 2"，结果玩家又测出：
+            //      "魔术师的 2 还是没有让我点目标，现在还是自动攻击了"
+            //      （日志：对方右(1) + 目标1 = 2，被当成不需要目标）。
+            //
+            //    根因：这个判定被调用的时机是 `ChoosingTargetHand` ——
+            //    **玩家还没点被加数**，而 `_selectedTarget` 此时指向的对象
+            //    并不保证是"被加数那只手"。所以从上下文里**推不出**
+            //    "这次是不是自加"，那个条件只会把能力挡掉。
+            //
+            //    而玩家给出的规则是"**运算出 2 可以攻击**"——
+            //    没有限定必须自加。所以无条件按结果值判。
             return context.ResultValue == MagicAttackValue;
         }
 

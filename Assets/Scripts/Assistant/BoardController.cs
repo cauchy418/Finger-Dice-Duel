@@ -1648,6 +1648,40 @@ namespace FingerDiceDuel.Assistant
                     Phase = BoardPhase.ChoosingTargetHand;
                     Hint = $"已选择 {SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
                            $"请选择要打 {Defender.Name} 的哪一只手（再点一次已选的手可取消）。";
+
+                    // ⚠️ **把"这一步能点的所有手"填进候选，让它们都亮起来**。
+                    //
+                    //    原来这里不填，于是亮框（Highlighted）一个都没有 ——
+                    //    而 `RefreshSide` 里"可点"只是**低调亮边**（Available），
+                    //    玩家看不出该点哪里。玩家实测：
+                    //      "只有魔术师自己的手高亮，对手的手不高亮了，
+                    //       实际上也能点对面的手" ——
+                    //    正是这个原因：**可点 ≠ 高亮**，两套判据不一致。
+                    //
+                    //    填法必须与 `CanClick` 的 ChoosingTargetHand 分支一致：
+                    //      · 别的玩家（含队友）的手都可以当被加数；
+                    //      · 自己是魔术师时，自己的另一只手也可以；
+                    //      · 已选的那只手不列（它是"取消选择"，另有交互）。
+                    _pendingChoiceCandidates.Clear();
+                    for (int pi = 0; pi < _game.Players.Count; pi++)
+                    {
+                        PlayerState owner = _game.Players[pi];
+                        if (owner == null || !owner.IsAlive) continue;
+
+                        bool isSelf = ReferenceEquals(owner, ActivePlayer);
+                        if (isSelf && !(ActivePlayer.Character is ISelfAddendProvider sa
+                                        && sa.AllowsSelfAddend))
+                            continue;
+
+                        foreach (Hand h in owner.Hands)
+                        {
+                            if (h == null) continue;
+                            if (ReferenceEquals(h, SelectedHand)) continue;
+                            if (h.IsConcealed) continue;
+                            if (isSelf && !h.CanBeOperated) continue;
+                            _pendingChoiceCandidates.Add(h);
+                        }
+                    }
                     return true;
 
                 case BoardPhase.ChoosingTargetHand:
