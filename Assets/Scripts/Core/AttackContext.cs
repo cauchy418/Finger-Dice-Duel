@@ -325,6 +325,48 @@ namespace FingerDiceDuel.Core
                 reflectCtx.Resolve(manager.GetChoiceProvider(Attacker), manager);
                 ReflectedDealt = reflectCtx.AppliedDamage;
             }
+
+            // 4. **法师：命中即挂状态**。
+            //
+            //    玩家确认的命中口径：
+            //      · 被盾**抵挡**（BlockedHits）、被太极**减免**（WasMitigated）
+            //        -> **仍算命中**，照样挂状态；
+            //      · 被**闪避**导致一段都没落地、或被**取消**（HitCount == 0）
+            //        -> **不算命中**（不挂，且那次的"放弃"作废）。
+            //
+            //    ⚠️ 挂状态的是**攻击方**的角色（法师），挂到**被实际承受伤害的人**身上
+            //       （圣武士可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
+            ApplyAttackerStatus(manager);
+        }
+
+        /// <summary>
+        /// 把攻击方角色声明的状态挂到**实际承受伤害的人**身上（法师体系）。
+        ///
+        /// 没命中就什么都不做 —— 但**注意**：法师的"放弃换来的类型"该不该作废
+        /// 由 <c>MageLogic</c> 在使用后自行清空决定（见 <c>MageLogic.ConsumeDamageType</c>），
+        /// 这里只负责"命中才挂"。
+        /// </summary>
+        private void ApplyAttackerStatus(GameManager manager)
+        {
+            if (Attacker == null) return;
+            if (!(Attacker.Character is IStatusApplyingAttack applier)) return;
+
+            StatusEffect status = applier.StatusToApplyOnHit(this);
+
+            // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
+            if (Attacker.Character is Characters.SpecialLogics.MageLogic mage)
+                mage.ConsumeDamageType();
+
+            if (status == StatusEffect.None) return;
+
+            // 取消 / 一段都没落地 -> 不算命中
+            if (HitCount == 0) return;
+            if (LandedHits == 0 && BlockedHits == 0) return;      // 全被闪避
+
+            PlayerState victim = Defender;
+            if (victim == null || !victim.IsAlive) return;
+
+            victim.ApplyStatus(status, PlayerState.StatusDurationTurns, Attacker);
         }
 
         /// <summary>
@@ -613,8 +655,8 @@ namespace FingerDiceDuel.Core
         /// <summary>给一段伤害叠加攻防修正。</summary>
         private int ApplyStatBonuses(int damage)
             => ApplyStatBonuses(damage,
-                                Attacker.Character?.AttackBonus ?? 0,
-                                Defender.Character?.DefenseBonus ?? 0,
+                                StatusRules.EffectiveAttackBonus(Attacker),
+                                StatusRules.EffectiveDefenseBonus(Defender),
                                 IgnorePositiveDefense);
 
         /// <summary>

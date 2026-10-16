@@ -83,7 +83,6 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次行动是不是**偷窃**（盗贼）。</summary>
         public bool StealUsed;
-
         /// <summary>偷窃前盗贼那只手的点数（"原先"）。</summary>
         public int StealOriginal;
 
@@ -95,6 +94,32 @@ namespace FingerDiceDuel.Core
 
         /// <summary>赌博掷出的点数（1d9）。<see cref="WasGamble"/> 为 true 时有效。</summary>
         public int GambleRoll;
+
+        // ---------- 法师的状态体系 ----------
+
+        /// <summary>
+        /// 被**冰冻**减半前的原始结果（0 = 本次没被减半）。
+        ///
+        /// 用途：战报要能说清"算出 9 被冰冻减半成 4"。
+        /// </summary>
+        public int FreezeHalvedFrom;
+
+        /// <summary>
+        /// 本次行动为下一次攻击**指定的伤害类型**（法师）。
+        ///
+        /// 非 <see cref="DamageType.None"/> 时表示"这一次放弃了攻击、只是选了类型"。
+        /// </summary>
+        public DamageType ChosenDamageType;
+
+        /// <summary>本次攻击**挂到目标身上**的状态（没有则为 None）。</summary>
+        public StatusEffect AppliedStatus;
+
+        /// <summary>
+        /// 本次伤害**是否命中**（用于决定要不要挂状态）。
+        ///
+        /// 玩家确认：被盾抵挡 / 太极减免**也算命中**；只有**闪避 / 取消**不算。
+        /// </summary>
+        public bool StatusHit;
 
         public int Healed;
 
@@ -268,6 +293,29 @@ namespace FingerDiceDuel.Core
         /// 1v1 时恰好一个人；2v2 时最多两个。
         /// 排除了阵亡者 —— 否则界面会把死人列成可选目标。
         /// </summary>
+        /// <summary>
+        /// **所有**不同队伍的存活者 —— **不做任何状态过滤**（残响 / 震慑也照列）。
+        ///
+        /// 用途：界面显示"场上有哪些敌人"、以及统计类逻辑。
+        /// 要拿"**可以打**的目标"请用 <see cref="OpponentsOf"/>。
+        /// </summary>
+        public List<PlayerState> AllOpponentsOf(PlayerState player)
+        {
+            var result = new List<PlayerState>(2);
+            if (player == null) return result;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (ReferenceEquals(p, player)) continue;
+                if (IsTeammate(p, player)) continue;
+                if (!p.IsAlive) continue;
+                result.Add(p);
+            }
+
+            return result;
+        }
+
         public IReadOnlyList<PlayerState> OpponentsOf(PlayerState player)
         {
             var result = new List<PlayerState>(2);
@@ -279,6 +327,17 @@ namespace FingerDiceDuel.Core
                 if (ReferenceEquals(p, player)) continue;
                 if (IsTeammate(p, player)) continue;
                 if (!p.IsAlive) continue;
+
+                // ⚠️ **法师状态带来的"打不到"**（残响 / 震慑）。
+                //
+                //    玩家确认的处理方式："若打出攻击数字且无合法目标就放弃攻击，
+                //    和 1v1 面对刺客潜行类似" —— 也就是说这里过滤掉之后，
+                //    界面上会变成"放弃攻击"，而不是整局卡住。
+                //
+                //    · 残响：只能打距离 1 的角色
+                //    · 震慑：不能打"给自己挂震慑的那个法师"
+                if (!StatusRules.CanAttackTarget(player, p, this)) continue;
+                if (StatusRules.IsBlockedByStun(player, p)) continue;
 
                 result.Add(p);
             }
@@ -777,6 +836,10 @@ namespace FingerDiceDuel.Core
             PlayerA.Reset();
             PlayerB.Reset();
 
+            // ⚠️ **法师的负面状态必须一起清掉** —— 否则第二局会带着上一局的
+            //    中毒 / 燃烧 / 震慑开局（与"野蛮人的锁手映射"同一类坑）。
+            ClearAllStatuses();
+
             IsGameOver = false;
             Winner = null;
             TurnCount = 0;
@@ -784,6 +847,13 @@ namespace FingerDiceDuel.Core
             CurrentPlayer = PlayerA;
 
             NotifyMatchReset();
+        }
+
+        /// <summary>清空**所有**参战玩家的负面状态（含 2v2 的另外两位）。</summary>
+        public void ClearAllStatuses()
+        {
+            for (int i = 0; i < _players.Count; i++)
+                _players[i]?.ClearStatuses();
         }
 
         private void NotifyMatchReset()
@@ -866,6 +936,11 @@ namespace FingerDiceDuel.Core
                     {
                         if (ReferenceEquals(own, mine)) continue;    // 一只手不能加自己
                         if (own.IsConcealed) continue;               // 暗置手不能当被加数
+
+                        // ⚠️ **目盲**（法师的光耀）：只能选**距离 1** 的手当被加数。
+                        //    自己的手距离是 0，所以自加**不受目盲限制**。
+                        if (!StatusRules.CanUseHandAsAddend(actor, own, this)) continue;
+
                         _legalMoves.Add(new LegalMove(actor, mine, own));
                     }
                 }
@@ -884,10 +959,18 @@ namespace FingerDiceDuel.Core
                     //     于是 400 次行动后双方仍然满血。）
                     if (!owner.IsAlive) continue;
 
+                    // ⚠️ **目盲**：只能选距离 1 的手当被加数（这里是别的玩家）。
+                    if (!StatusRules.CanUseHandAsAddend(actor, owner.LeftHand, this)
+                        && !StatusRules.CanUseHandAsAddend(actor, owner.RightHand, this))
+                        continue;
+
                     foreach (Hand theirs in owner.Hands)
                     {
                         // 玩家确认：暗置的手**不能被当成运算数字**。
                         if (theirs.IsConcealed) continue;
+
+                        if (!StatusRules.CanUseHandAsAddend(actor, theirs, this)) continue;
+
                         _legalMoves.Add(new LegalMove(actor, mine, theirs));
                     }
                 }
@@ -933,6 +1016,21 @@ namespace FingerDiceDuel.Core
             if (ReferenceEquals(actedHand, targetHand))
             {
                 reason = "加数与被加数必须是不同的两只手。";
+                return false;
+            }
+
+            // ⚠️ **法师的状态限制（目盲 / 残响 / 震慑）**。
+            //
+            //    规则：被加数的手必须在合法范围内（目盲 = 距离 1）；
+            //    而"打谁"由**结果效果**决定 —— 若结果是攻击，
+            //    挨打的人是当前默认攻击目标，必须通过残响与震慑的检查。
+            //
+            //    玩家确认的做法："若打出攻击数字且无合法目标就放弃攻击"
+            //    —— 与 1v1 面对刺客潜行时同一处理。所以这里不是拒绝运算，
+            //    而是**拒绝把它当成攻击**；实际放行由 ResolveTurn 决定。
+            if (!StatusRules.CanUseHandAsAddend(actor, targetHand, this))
+            {
+                reason = "目盲：只能选择与自己距离 1 的手。";
                 return false;
             }
 
@@ -1338,6 +1436,97 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public TurnResult LastTurnResult { get; private set; }
 
+        // ============================================================
+        // 法师的状态：回合开始 / 回合结束结算
+        // ============================================================
+
+        /// <summary>
+        /// **轮到某人行动之前**的状态结算（中毒 / 感电）。
+        ///
+        /// · 中毒：2 点毒素伤害，**不可被抵挡**（玩家确认：可能直接把他打死、跳过其行动）
+        /// · 感电：1 点闪电伤害，自己 + **环上相邻**的玩家各一次，
+        ///         可被盾抵挡 / 游侠闪避 / 太极减免
+        ///
+        /// ⚠️ 这两种伤害**不会再挂回状态**（玩家明确要求），否则会变成无法摆脱的循环。
+        ///
+        /// ⚠️ 调用时机由上层（<see cref="Assistant.BoardController"/> /
+        ///    <see cref="Assistant.MatchRunner"/>）在"把行动权交给某人之前"触发 ——
+        ///    因为只有它们知道"这一位要开始行动了"。
+        /// </summary>
+        public void ResolveStatusTurnStart(PlayerState actor)
+        {
+            if (actor == null || !actor.IsAlive) return;
+
+            // ---- 中毒：不可被抵挡 ----
+            int poison = StatusRules.TurnStartDamage(actor, out bool unstoppable);
+            if (poison > 0 && unstoppable)
+            {
+                actor.TakeDamage(poison);
+                LastStatusNote = $"{actor.Name} 中毒，受到 {poison} 点毒素伤害（不可抵挡）";
+                CheckGameOver();
+                if (IsGameOver) return;
+            }
+
+            // ---- 感电：自己 + 相邻 ----
+            List<PlayerState> shocked = StatusRules.ShockVictims(actor, this);
+            for (int i = 0; i < shocked.Count; i++)
+            {
+                PlayerState victim = shocked[i];
+                if (victim == null || !victim.IsAlive) continue;
+
+                // 走普通伤害流程（可被盾 / 太极抵挡；游侠若满足条件也能闪避）
+                var ctx = new AttackContext(actor, victim, actor.LeftHand,
+                                            StatusRules.ShockDamagePerTurn)
+                {
+                    IgnoreStatBonuses = true,      // 闪电伤害是固定 1 点
+                };
+                ctx.Resolve(GetChoiceProvider(victim), this);
+
+                if (LastStatusNote.Length == 0)
+                    LastStatusNote = $"{victim.Name} 感电，受到 {StatusRules.ShockDamagePerTurn} 点闪电伤害";
+
+                CheckGameOver();
+                if (IsGameOver) return;
+            }
+        }
+
+        /// <summary>
+        /// **某人的回合结束之后**的状态结算（燃烧）与**状态计数递减**。
+        ///
+        /// · 燃烧：3 点火焰伤害，可被盾抵挡 / 游侠闪避 / 太极减免
+        /// · 递减：**目标自己的回合**结束时把所有状态计数 −1，归零即移除
+        ///
+        /// ⚠️ 递减放在这里（"他自己的回合结束"）而不是"每个回合都减" ——
+        ///    玩家确认的持续时间是**目标自己的 2 个回合**，与别人的回合无关。
+        /// </summary>
+        public void ResolveStatusTurnEnd(PlayerState actor)
+        {
+            if (actor == null) return;
+
+            // ---- 燃烧 ----
+            if (actor.IsAlive)
+            {
+                int burn = StatusRules.TurnEndDamage(actor);
+                if (burn > 0)
+                {
+                    var ctx = new AttackContext(actor, actor, actor.LeftHand, burn)
+                    {
+                        IgnoreStatBonuses = true,      // 固定 3 点
+                    };
+                    ctx.Resolve(GetChoiceProvider(actor), this);
+
+                    LastStatusNote = $"{actor.Name} 燃烧，受到 {burn} 点火焰伤害";
+                    CheckGameOver();
+                }
+            }
+
+            // ---- 状态计数递减（归零即移除）----
+            actor.TickStatuses();
+        }
+
+        /// <summary>最近一次状态结算的说明（供战报 / 测试；空字符串 = 本次没有）。</summary>
+        public string LastStatusNote { get; private set; } = string.Empty;
+
         /// <summary>
         /// 盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。
         /// </summary>
@@ -1539,6 +1728,34 @@ namespace FingerDiceDuel.Core
                     actedHand.SetShieldState(effect == HandEffectType.Shield
                         ? ShieldState.Formed
                         : ShieldState.None);
+                }
+            }
+
+            // 2c. **冰冻**（法师的寒冷）：运算得到的结果**减半（向下取整）**。
+            //
+            //     玩家原话："运算后得到的结果减半（向下取整）。如算出 9 变成 4，
+            //     算出 5 变成 2。"
+            //
+            //     ⚠️ 必须放在**改写之后、效果分派之前**：
+            //       · 放太早会被 RewriteEffect 用旧值覆盖；
+            //       · 放太晚（效果分派后）就已经先按 9 回过血了。
+            //     归一化后的 9 是"回复"，减半成 4 就是"攻击" —— 效果类型要跟着重算。
+            if (actor != null && actor.HasStatus(StatusEffect.Freeze))
+            {
+                int before = actedHand.Value;
+                int halved = StatusRules.ApplyResultModifiers(actor, before);
+
+                if (halved != before)
+                {
+                    actedHand.SetValue(halved);
+                    effect = Hand.GetEffectType(halved);
+
+                    // 手牌状态跟随新效果（与 PerformOperation 同一约定）
+                    actedHand.SetShieldState(effect == HandEffectType.Shield
+                        ? ShieldState.Formed
+                        : ShieldState.None);
+
+                    result.FreezeHalvedFrom = before;
                 }
             }
 

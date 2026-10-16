@@ -73,6 +73,25 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **攻击命中后要给目标挂状态**的角色实现本接口（法师）。
+    ///
+    /// 为什么单独一个接口：挂状态的时机在 `AttackContext.Resolve` 的最后
+    /// ——必须等"闪避 / 取消 / 盾 / 太极"全部判完，才知道**算不算命中**。
+    ///
+    /// 玩家确认的命中口径：
+    ///   · 被盾**抵挡**、被太极**减免** -> **仍算命中**（照样挂状态）
+    ///   · 被**闪避**、被邪术师**取消** -> **不算命中**（不挂状态）
+    /// </summary>
+    public interface IStatusApplyingAttack
+    {
+        /// <summary>
+        /// 本次攻击要挂上的状态（<see cref="StatusEffect.None"/> = 不挂）。
+        /// 由 <see cref="AttackContext"/> 在确认命中后调用。
+        /// </summary>
+        StatusEffect StatusToApplyOnHit(AttackContext context);
+    }
+
+    /// <summary>
     /// 攻击**不可被闪避**的角色实现本接口（咒术师）。
     ///
     /// 为什么要单独一个接口，而不是让游侠去判断 `is CurseweaverLogic`：

@@ -39,6 +39,114 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public bool MustGamble { get; set; }
 
+        // ============ 法师的负面状态 ============
+        /// <summary>
+        /// 身上的**负面状态**（法师体系）。
+        ///
+        /// 以 <see cref="StatusEffect"/> 为键，值 = 剩余"目标自己的回合数"
+        /// （玩家确认的持续时间为 **2**）。
+        ///
+        /// ⚠️ 用**计数**而不是"记录到第几回合"：这样与座位、先手、
+        ///    2v2 的轮转顺序都无关，也不会因为"命中发生在两种回合交替处"
+        ///    而多算或少算一次。
+        /// </summary>
+        private readonly System.Collections.Generic.Dictionary<StatusEffect, int> _statuses
+            = new System.Collections.Generic.Dictionary<StatusEffect, int>();
+
+        /// <summary>身上所有负面状态（按枚举顺序，便于界面稳定显示）。</summary>
+        public System.Collections.Generic.IReadOnlyList<StatusEffect> Statuses
+        {
+            get
+            {
+                var list = new System.Collections.Generic.List<StatusEffect>();
+                for (int i = 1; i <= MaxStatusValue; i++)
+                {
+                    var s = (StatusEffect)i;
+                    if (_statuses.ContainsKey(s)) list.Add(s);
+                }
+                return list;
+            }
+        }
+
+        private const int MaxStatusValue = 9;
+
+        /// <summary>是否带有某个状态。</summary>
+        public bool HasStatus(StatusEffect status)
+            => status != StatusEffect.None && _statuses.ContainsKey(status);
+
+        /// <summary>剩余"目标自己的回合数"（没有该状态时为 0）。</summary>
+        public int StatusTurnsLeft(StatusEffect status)
+            => _statuses.TryGetValue(status, out int n) ? n : 0;
+
+        /// <summary>
+        /// 施加（或**刷新**）一个状态。
+        ///
+        /// 玩家确认：**同一种效果再次施加时只刷新持续时间，不叠加强度**。
+        /// 所以这里直接覆盖计数，而不是累加。
+        ///
+        /// <paramref name="source"/> 记录**施加者** —— 只有"震慑"用得到
+        /// （被震慑者不能攻击施加者），所以允许为 null。
+        /// </summary>
+        public void ApplyStatus(StatusEffect status, int turns = StatusDurationTurns,
+                                PlayerState source = null)
+        {
+            if (status == StatusEffect.None || turns <= 0) return;
+            _statuses[status] = turns;
+            if (source != null) _statusSources[status] = source;
+        }
+
+        private readonly System.Collections.Generic.Dictionary<StatusEffect, PlayerState>
+            _statusSources = new System.Collections.Generic.Dictionary<StatusEffect, PlayerState>();
+
+        /// <summary>某个状态是谁挂上的（没有记录时返回 null）。</summary>
+        public PlayerState StatusSourceOf(StatusEffect status)
+            => _statusSources.TryGetValue(status, out PlayerState p) ? p : null;
+
+        /// <summary>移除一个状态。</summary>
+        public void RemoveStatus(StatusEffect status)
+        {
+            _statuses.Remove(status);
+            _statusSources.Remove(status);
+        }
+
+        /// <summary>玩家确认的持续时间：**目标自己的 2 个回合**。</summary>
+        public const int StatusDurationTurns = 2;
+
+        /// <summary>
+        /// 在**该玩家自己的回合结束**时递减所有状态计数，归零即移除。
+        ///
+        /// 返回**本次过期的状态**（供战报 / 测试）。
+        /// </summary>
+        public System.Collections.Generic.List<StatusEffect> TickStatuses()
+        {
+            var expired = new System.Collections.Generic.List<StatusEffect>();
+            var keys = new System.Collections.Generic.List<StatusEffect>(_statuses.Keys);
+
+            for (int i = 0; i < keys.Count; i++)
+            {
+                int left = _statuses[keys[i]] - 1;
+                if (left <= 0)
+                {
+                    _statuses.Remove(keys[i]);
+                    _statusSources.Remove(keys[i]);
+                    expired.Add(keys[i]);
+                }
+                else
+                {
+                    _statuses[keys[i]] = left;
+                }
+            }
+
+            return expired;
+        }
+
+        /// <summary>清空所有状态（开局复位用）。</summary>
+        public void ClearStatuses()
+        {
+            _statuses.Clear();
+            _statusSources.Clear();
+        }
+
         // ============ 双手 ============
         public Hand LeftHand { get; }
         public Hand RightHand { get; }
@@ -126,9 +234,20 @@ namespace FingerDiceDuel.Core
             Health = Math.Max(0, Health - amount);
         }
 
+        /// <summary>
+        /// 回复生命值。
+        ///
+        /// ⚠️ **腐朽**（法师的暗蚀状态）在这里拦截：带着腐朽的人**完全不能回血**。
+        ///
+        /// 为什么放在这个最底层的方法里、而不是逐个回复技能去判断：
+        /// 回血的入口不止一处（牧师、巨人、狼人的成长回血…），
+        /// 逐个判断必然会漏；而这里是**唯一**真正改生命值上行的出口。
+        /// （<see cref="SetHealth"/> 是"赋值"语义 —— 邪术师那种不算治疗，不受腐朽影响。）
+        /// </summary>
         public void Heal(int amount)
         {
             if (amount <= 0) return;
+            if (HasStatus(StatusEffect.Decay)) return;      // 腐朽：禁止回血
             Health = Math.Min(MaximumHealth, Health + amount);
         }
 

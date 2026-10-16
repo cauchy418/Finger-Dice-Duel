@@ -80,6 +80,7 @@ namespace FingerDiceDuel.Core
         public const string ThiefId = "thief";
         public const string HunterId = "hunter";
         public const string MagicianId = "magician";
+        public const string MageId = "mage";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -291,6 +292,26 @@ namespace FingerDiceDuel.Core
                          "运算出 2/4/6/8 都是攻击，伤害 = 牌面数字（吃攻防加成）。" +
                          "攻 0 / 防 −1，攻击距离 2。");
 
+        /// <summary>
+        /// **法师（Mage）**：攻 0 / 防 −1，距离 1，**中立善良**。
+        ///
+        /// 运算出攻击数字（4/6/8）时可**放弃这次攻击**，
+        /// 给**下一次**攻击指定一种**伤害类型**（10 选 1）；
+        /// 命中后给目标挂上对应负面状态，持续目标自己的 2 个回合。
+        /// </summary>
+        public static CharacterDefinition Mage { get; } = new CharacterDefinition(
+            MageId, "法师", SpecialLogicType.Mage,
+            attackBonus: 0, defenseBonus: -1,
+            description: "运算出攻击数字（4/6/8）时，可以选择放弃这次攻击，" +
+                         "改为给下一次攻击指定一种伤害类型（10 选 1）：" +
+                         "雷鸣（残响）、强酸、毒素、光耀（目盲）、暗蚀（腐朽）、" +
+                         "火焰（燃烧）、寒冷（冰冻）、闪电（感电）、" +
+                         "力场（同咒术师，不挂状态）、心灵（震慑）。" +
+                         "命中后目标获得对应负面状态，持续目标自己的 2 个回合；" +
+                         "被盾抵挡 / 太极减免仍算命中，被闪避或被取消则作废（要重新放弃一次）。" +
+                         "连续放弃时只保留最新的选择。" +
+                         "攻 0 / 防 −1，攻击距离 1。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -298,7 +319,7 @@ namespace FingerDiceDuel.Core
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief, Hunter, Magician
+            Monk, Giant, Thief, Hunter, Magician, Mage
         };
     }
 }
