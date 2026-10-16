@@ -278,7 +278,7 @@ namespace FingerDiceDuel.Tests
                             hit = true;
                         break;
 
-                    case CharacterDefinition.WarriorId:
+                    case CharacterDefinition.FighterId:
                         // 玩家定的判据："对手不主动触发战士破盾无所谓，
                         // 战士只要倾向于合盾即可" —— 所以看它有没有合盾，
                         // 而不是看技能有没有打出去（那取决于对手）。
@@ -368,10 +368,10 @@ namespace FingerDiceDuel.Tests
                     if (pA.Character is KnightLogic k && k.ShieldBreakCount > 0) hit = true;
                     break;
 
-                case CharacterDefinition.WarriorId:
+                case CharacterDefinition.FighterId:
                     // ⚠️ 连锁破盾与碎盾换射程在场上**没有别的痕迹**
                     //    （盾会被后续操作覆盖），所以只能靠角色自己的计数器。
-                    if (pA.Character is WarriorLogic w
+                    if (pA.Character is FighterLogic w
                         && (w.ChainBreakCount > 0 || w.RangeBreakCount > 0)) hit = true;
                     break;
 

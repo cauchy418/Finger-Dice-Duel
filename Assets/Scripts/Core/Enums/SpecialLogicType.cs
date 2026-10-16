@@ -15,7 +15,7 @@ namespace FingerDiceDuel.Core
         Curseweaver = 1,
 
         /// <summary>战士：破坏对方护盾时连锁破坏另一面；可修复己方护盾。</summary>
-        Warrior = 2,
+        Fighter = 2,
 
         /// <summary>野蛮人：造成伤害后锁定对方一只手一回合。</summary>
         Barbarian = 3,
@@ -101,11 +101,11 @@ namespace FingerDiceDuel.Core
         Magician = 20,
 
         /// <summary>
-        /// 法师（Mage）：运算出攻击数字（4/6/8）时可**放弃这次攻击**，
+        /// 法师（Wizard）：运算出攻击数字（4/6/8）时可**放弃这次攻击**，
         /// 给**下一次**攻击指定一种**伤害类型**（10 选 1）；命中后给目标
         /// 挂上对应负面状态（持续目标自己的 2 个回合）。
         /// 力场不挂状态，只按咒术师的方式穿透。
         /// </summary>
-        Mage = 21
+        Wizard = 21
     }
 }

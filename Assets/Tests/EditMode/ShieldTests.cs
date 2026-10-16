@@ -273,7 +273,7 @@ namespace FingerDiceDuel.Tests
             _game.ExecuteTurn(_a, _a.LeftHand, _b.LeftHand);
             Assert.AreEqual(ShieldState.None, _a.LeftHand.State);
 
-            // 模拟"被战士修复"（真实修复由 WarriorLogic.OnShieldFormed 触发）
+            // 模拟"被战士修复"（真实修复由 FighterLogic.OnShieldFormed 触发）
             _a.LeftHand.SetShieldState(ShieldState.Formed);
             Assert.True(_a.LeftHand.IsShield);
 

@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Assistant
             => GetChoice(HandEffect.ShieldBlock, shieldA);
 
         /// <summary>P1：自动放弃连锁破盾（规则允许放弃）。</summary>
-        public ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior,
+        public ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
                                                            IReadOnlyList<ChainBreakTarget> candidates)
             => default;
 

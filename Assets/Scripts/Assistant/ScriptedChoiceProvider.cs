@@ -106,11 +106,11 @@ namespace FingerDiceDuel.Assistant
                 : base.AskWhichShieldToBlock(defender, shieldA, shieldB, context);
         }
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior,
+        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             return _chainBreaks.Count > 0
-                ? _chainBreaks.Dequeue()(warrior, candidates)
+                ? _chainBreaks.Dequeue()(fighter, candidates)
                 : default;
         }
 

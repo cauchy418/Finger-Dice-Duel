@@ -28,7 +28,7 @@ namespace FingerDiceDuel.UI
     {
         [Header("对局设置")]
         [Tooltip("玩家 A 使用的角色（默认白板）")]
-        public SpecialLogicType PlayerACharacter = SpecialLogicType.Warrior;
+        public SpecialLogicType PlayerACharacter = SpecialLogicType.Fighter;
 
         [Tooltip("玩家 B 使用的角色（默认白板）")]
         public SpecialLogicType PlayerBCharacter = SpecialLogicType.Curseweaver;
@@ -2482,7 +2482,7 @@ namespace FingerDiceDuel.UI
             //    一个没有意义的"就选它"按钮。
             bool pickingDamageType =
                 _controller.IsHumanChooser
-                && _controller.PendingEffect == HandEffect.MageDamageType;
+                && _controller.PendingEffect == HandEffect.WizardDamageType;
 
             _board.SetDamageTypePanelVisible(pickingDamageType);
             if (pickingDamageType)
@@ -2495,7 +2495,7 @@ namespace FingerDiceDuel.UI
             // 临时诊断：把面板显隐的真实状态打出来 ——
             // "点了放弃却看不到 10 选 1"这类问题只能靠它定位
             // （是没进这个分支、还是面板没显示出来）。
-            if (_controller.PendingEffect == HandEffect.MageDamageType
+            if (_controller.PendingEffect == HandEffect.WizardDamageType
                 || _board.IsDamageTypePanelVisible)
             {
                 Debug.Log($"[FDD伤害类型] phase={_controller.Phase} " +
@@ -2742,7 +2742,7 @@ namespace FingerDiceDuel.UI
                 case HandEffect.RangerDodge: return "不闪避";
                 case HandEffect.RangerPowerShot: return "不强化";
                 case HandEffect.BarbarianLockTarget: return "不锁手";
-                case HandEffect.WarriorChainBreak: return "不发动";
+                case HandEffect.FighterChainBreak: return "不发动";
                 case HandEffect.SwordsmanFollowUp: return "不追加";
                 // 猎人伏击（与剑客追加攻击同一条通道）
                 case HandEffect.HunterAmbush: return "不伏击";

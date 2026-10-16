@@ -60,7 +60,7 @@ namespace FingerDiceDuel.Core
         // ============================================================
 
         public const string BlankId = "blank";
-        public const string WarriorId = "warrior";
+        public const string FighterId = "fighter";
         public const string CurseweaverId = "curseweaver";
         public const string BarbarianId = "barbarian";
         public const string PriestId = "priest";
@@ -80,14 +80,14 @@ namespace FingerDiceDuel.Core
         public const string ThiefId = "thief";
         public const string HunterId = "hunter";
         public const string MagicianId = "magician";
-        public const string MageId = "mage";
+        public const string WizardId = "wizard";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
             description: "无特殊能力，用于教学与数值基准。");
 
-        public static CharacterDefinition Warrior { get; } = new CharacterDefinition(
-            WarriorId, "战士", SpecialLogicType.Warrior,
+        public static CharacterDefinition Fighter { get; } = new CharacterDefinition(
+            FighterId, "战士", SpecialLogicType.Fighter,
             attackBonus: 1,
             description: "连锁破盾：己方盾碎时可击碎场上任意一面成型的盾；新合盾时可修复另一只手的碎盾。攻击 +1。");
 
@@ -293,14 +293,14 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1，攻击距离 2。");
 
         /// <summary>
-        /// **法师（Mage）**：攻 0 / 防 −1，距离 1，**中立善良**。
+        /// **法师（Wizard）**：攻 0 / 防 −1，距离 1，**中立善良**。
         ///
         /// 运算出攻击数字（4/6/8）时可**放弃这次攻击**，
         /// 给**下一次**攻击指定一种**伤害类型**（10 选 1）；
         /// 命中后给目标挂上对应负面状态，持续目标自己的 2 个回合。
         /// </summary>
-        public static CharacterDefinition Mage { get; } = new CharacterDefinition(
-            MageId, "法师", SpecialLogicType.Mage,
+        public static CharacterDefinition Wizard { get; } = new CharacterDefinition(
+            WizardId, "法师", SpecialLogicType.Wizard,
             attackBonus: 0, defenseBonus: -1,
             description: "运算出攻击数字（4/6/8）时，可以选择放弃这次攻击，" +
                          "改为给下一次攻击指定一种伤害类型（10 选 1）：" +
@@ -317,9 +317,9 @@ namespace FingerDiceDuel.Core
         {
             // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
-            Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
+            Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief, Hunter, Magician, Mage
+            Monk, Giant, Thief, Hunter, Magician, Wizard
         };
     }
 }

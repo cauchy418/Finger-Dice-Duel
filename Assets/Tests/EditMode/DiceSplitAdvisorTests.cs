@@ -265,7 +265,7 @@ namespace FingerDiceDuel.Tests
             CharacterDefinition[] deniesTheirShield =
             {
                 CharacterDefinition.Knight, CharacterDefinition.Barbarian,
-                CharacterDefinition.Warrior,
+                CharacterDefinition.Fighter,
             };
             for (int i = 0; i < deniesTheirShield.Length; i++)
             {
@@ -450,15 +450,15 @@ namespace FingerDiceDuel.Tests
             var legal = DiceRollSetup.LegalSplits(11);
 
             HandValueProfile mine = HandValueProfiles.For(CharacterDefinition.Blank,
-                                                          CharacterDefinition.Warrior);
-            HandValueProfile warrior = HandValueProfiles.ValueToOpponent(CharacterDefinition.Warrior);
+                                                          CharacterDefinition.Fighter);
+            HandValueProfile fighter = HandValueProfiles.ValueToOpponent(CharacterDefinition.Fighter);
 
             int bestMine = int.MinValue;
             for (int i = 0; i < legal.Count; i++)
                 if (mine.Score(legal[i]) > bestMine) bestMine = mine.Score(legal[i]);
 
             HandSplit pick = advisor.Choose(CharacterDefinition.Blank,
-                                            CharacterDefinition.Warrior, legal);
+                                            CharacterDefinition.Fighter, legal);
 
             // ① 自己因素优先：选中的必须离自己的最好成绩很近
             Assert.True(mine.Score(pick) >= bestMine - advisor.InfoAdvantageBand,
@@ -469,7 +469,7 @@ namespace FingerDiceDuel.Tests
             bool pickHasFive = pick.Left == 5 || pick.Right == 5;
             Assert.False(pickHasFive,
                 $"对白板而言 5/6 与 6/5 自身价值相近，但把 5 送给战士对他很有用，" +
-                $"所以应避开。实际选了 {pick}（战士得 {warrior.Score(pick)} 分）。");
+                $"所以应避开。实际选了 {pick}（战士得 {fighter.Score(pick)} 分）。");
         }
 
         // ============================================================

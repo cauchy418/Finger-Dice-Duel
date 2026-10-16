@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Tests
         public void Card_stats_show_positive_bonuses_with_a_plus()
         {
             // 战士 攻 +1 —— 正数必须带 +，否则和 1 分不清
-            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Warrior);
+            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Fighter);
 
             Assert.True(stats.Contains("+1"), $"正加值应带 + 号，实际：{stats}");
         }

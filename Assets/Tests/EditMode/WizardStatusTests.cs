@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **法师（Mage）的状态体系**测试。
+    /// **法师（Wizard）的状态体系**测试。
     ///
     /// 覆盖玩家确认的每一条规则：
     ///   · 10 种伤害类型 -&gt; 9 种状态（力场不挂）
@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Tests
     ///   · 连续放弃只保留最新选择；没命中就作废
     /// </summary>
     [TestFixture]
-    public class MageStatusTests
+    public class WizardStatusTests
     {
         private static PlayerState Make(string name, CharacterDefinition def)
         {
@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Reset_match_clears_all_statuses()
         {
-            PlayerState a = Make("甲", CharacterDefinition.Mage);
+            PlayerState a = Make("甲", CharacterDefinition.Wizard);
             PlayerState b = Make("乙", CharacterDefinition.Soldier);
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Acid_reduces_defense_by_two()
         {
-            PlayerState p = Make("甲", CharacterDefinition.Warrior);   // 防 0
+            PlayerState p = Make("甲", CharacterDefinition.Fighter);   // 防 0
             int before = StatusRules.EffectiveDefenseBonus(p);
 
             p.ApplyStatus(StatusEffect.Acid);
@@ -148,7 +148,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Freeze_halves_the_result_rounding_down()
         {
-            PlayerState p = Make("甲", CharacterDefinition.Mage);
+            PlayerState p = Make("甲", CharacterDefinition.Wizard);
 
             // 玩家给的例子：9 变 4、5 变 2
             Assert.AreEqual(9, StatusRules.ApplyResultModifiers(p, 9),
@@ -210,7 +210,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Stun_blocks_attacking_the_source_only()
         {
-            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState other = Make("乙", CharacterDefinition.Soldier);
 
             PlayerState victim = Make("丙", CharacterDefinition.Soldier);
@@ -227,11 +227,11 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Mage_keeps_only_the_latest_damage_type()
+        public void Wizard_keeps_only_the_latest_damage_type()
         {
-            PlayerState p = Make("法", CharacterDefinition.Mage);
-            var mage = p.Character as MageLogic;
-            Assert.NotNull(mage, "法师应绑定 MageLogic。");
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = p.Character as WizardLogic;
+            Assert.NotNull(mage, "法师应绑定 WizardLogic。");
 
             mage.SetPendingDamageType(DamageType.Fire);
             mage.SetPendingDamageType(DamageType.Cold);
@@ -243,8 +243,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Consuming_the_type_clears_it()
         {
-            PlayerState p = Make("法", CharacterDefinition.Mage);
-            var mage = (MageLogic)p.Character;
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = (WizardLogic)p.Character;
 
             mage.SetPendingDamageType(DamageType.Psychic);
             Assert.AreEqual(DamageType.Psychic, mage.ConsumeDamageType());
@@ -255,8 +255,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Force_attack_pierces_shield_and_cannot_be_dodged()
         {
-            PlayerState p = Make("法", CharacterDefinition.Mage);
-            var mage = (MageLogic)p.Character;
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = (WizardLogic)p.Character;
 
             Assert.IsFalse(mage.PreventsDodge, "不是力场时可以闪避。");
 
@@ -268,8 +268,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Only_force_makes_the_mage_undodgeable()
         {
-            PlayerState p = Make("法", CharacterDefinition.Mage);
-            var mage = (MageLogic)p.Character;
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = (WizardLogic)p.Character;
 
             mage.SetPendingDamageType(DamageType.Fire);
             Assert.IsFalse(mage.PreventsDodge,
@@ -277,11 +277,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Mage_is_registered_as_a_built_in_character()
+        public void Wizard_is_registered_as_a_built_in_character()
         {
             CharacterDefinition def = null;
             for (int i = 0; i < CharacterDefinition.BuiltIn.Length; i++)
-                if (CharacterDefinition.BuiltIn[i].Id == CharacterDefinition.MageId)
+                if (CharacterDefinition.BuiltIn[i].Id == CharacterDefinition.WizardId)
                     def = CharacterDefinition.BuiltIn[i];
 
             Assert.NotNull(def, "法师应当在内置角色表里。");
@@ -294,12 +294,12 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Match_reset_clears_the_pending_type()
         {
-            PlayerState p = Make("法", CharacterDefinition.Mage);
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
             var game = new GameManager(p, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
-            var mage = (MageLogic)p.Character;
+            var mage = (WizardLogic)p.Character;
             mage.SetPendingDamageType(DamageType.Acid);
             game.ResetMatch();
 

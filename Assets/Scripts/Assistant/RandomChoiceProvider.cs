@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Assistant
                                                    AttackContext context)
             => _rng.Next(2) == 0 ? shieldA : shieldB;
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior,
+        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             if (candidates == null || candidates.Count == 0) return default;

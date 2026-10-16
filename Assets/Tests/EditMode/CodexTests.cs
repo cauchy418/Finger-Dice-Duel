@@ -131,7 +131,7 @@ namespace FingerDiceDuel.Tests
             new Dictionary<string, string[]>
             {
                 // 战士：碎盾换射程 -> 本次攻击距离无限
-                { CharacterDefinition.WarriorId, new[] { "无限" } },
+                { CharacterDefinition.FighterId, new[] { "无限" } },
                 // 游侠：强化射击 -> 本次攻击距离无限
                 { CharacterDefinition.RangerId, new[] { "无限" } },
                 // 盗贼：偷窃是无限距离
@@ -250,7 +250,7 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.KnightId, Alignment.LawfulGood },
                 // 守序中立：剑客 战士
                 { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
-                { CharacterDefinition.WarriorId, Alignment.LawfulNeutral },
+                { CharacterDefinition.FighterId, Alignment.LawfulNeutral },
                 // 守序邪恶：魔射手
                 { CharacterDefinition.ArcaneArcherId, Alignment.LawfulEvil },
                 // 中立善良：游侠 武僧

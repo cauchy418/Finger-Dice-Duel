@@ -541,23 +541,23 @@ namespace FingerDiceDuel.Tests
             //
             // 玩家要求的交互：选了回复 -> **点一只手就是选治疗目标** -> 结算。
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
-            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var game = new GameManager(priest, fighter, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetAllHands(priest, fighter, 1);
             TestSetup.SetHand(priest.LeftHand, 5);
             TestSetup.SetHand(priest.RightHand, 5);     // 另一只手（避免巧合）
-            TestSetup.SetHand(warrior.LeftHand, 8);
-            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHand(fighter.LeftHand, 8);
+            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
             TestSetup.SetHealth(priest, 10);
-            TestSetup.SetHealth(warrior, 10);
+            TestSetup.SetHealth(fighter, 10);
 
             board.BeginTurn();
             board.ClickHand(priest.LeftHand);           // ① 自己的手
-            board.ClickHand(warrior.RightHand);         // ② 对手的手 -> 5+1=6
+            board.ClickHand(fighter.RightHand);         // ② 对手的手 -> 5+1=6
 
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
             Assert.True(board.AcceptPendingChoice(), "选「回复 6」应被接受。");
@@ -572,35 +572,35 @@ namespace FingerDiceDuel.Tests
             // 点自己的手 -> 回自己；一次点击就完成
             Assert.True(board.ClickHand(priest.RightHand), "点自己的手应表示回自己。");
             Assert.AreEqual(16, priest.Health, "回复 6 点（10 + 6）。");
-            Assert.AreEqual(10, warrior.Health, "不该治疗对手。");
+            Assert.AreEqual(10, fighter.Health, "不该治疗对手。");
         }
 
         [Test]
         public void Priest_can_heal_the_opponent_after_four_six_eight()
         {
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
-            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var game = new GameManager(priest, fighter, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetAllHands(priest, fighter, 1);
             TestSetup.SetHand(priest.LeftHand, 5);
             TestSetup.SetHand(priest.RightHand, 5);
-            TestSetup.SetHand(warrior.LeftHand, 8);
-            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHand(fighter.LeftHand, 8);
+            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
             TestSetup.SetHealth(priest, 10);
-            TestSetup.SetHealth(warrior, 10);
+            TestSetup.SetHealth(fighter, 10);
 
             board.BeginTurn();
             board.ClickHand(priest.LeftHand);
-            board.ClickHand(warrior.RightHand);
+            board.ClickHand(fighter.RightHand);
             Assert.True(board.AcceptPendingChoice(), "选回复。");
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
-            Assert.True(board.ClickHand(warrior.LeftHand), "点对手的手应表示回给他。");
-            Assert.AreEqual(16, warrior.Health, "回复 6 点给对手（10 + 6）。");
+            Assert.True(board.ClickHand(fighter.LeftHand), "点对手的手应表示回给他。");
+            Assert.AreEqual(16, fighter.Health, "回复 6 点给对手（10 + 6）。");
             Assert.AreEqual(10, priest.Health, "自己不该被治疗。");
         }
 
@@ -611,22 +611,22 @@ namespace FingerDiceDuel.Tests
             //   「牧师 右手：8+6=4（攻击，造成0点伤害）」
             // 应写成"回复"，不该是"攻击"。
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
-            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var game = new GameManager(priest, fighter, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetAllHands(priest, fighter, 1);
             TestSetup.SetHand(priest.LeftHand, 5);
             TestSetup.SetHand(priest.RightHand, 5);
-            TestSetup.SetHand(warrior.LeftHand, 8);
-            TestSetup.SetHand(warrior.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHand(fighter.LeftHand, 8);
+            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
             TestSetup.SetHealth(priest, 10);
 
             board.BeginTurn();
             board.ClickHand(priest.LeftHand);
-            board.ClickHand(warrior.RightHand);
+            board.ClickHand(fighter.RightHand);
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
             Assert.True(board.AcceptPendingChoice(), "选回复。");
 
@@ -797,24 +797,24 @@ namespace FingerDiceDuel.Tests
             //   旧逻辑在"点自己的手"时就问了，只能用替身/候选第一个去猜，
             //   猜出的是 8+6=4 -> 提示写成「回复 4」（错）。
             var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
-            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(priest, warrior, sinkP, sinkW);
+            var game = new GameManager(priest, fighter, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(priest, warrior, 1);
+            TestSetup.SetAllHands(priest, fighter, 1);
             TestSetup.SetHand(priest.LeftHand, 5);
             TestSetup.SetHand(priest.RightHand, 8);     // 运算源
-            TestSetup.SetHand(warrior.LeftHand, 6);     // 8+6 = 4
-            TestSetup.SetHand(warrior.RightHand, 8);    // 8+8 = 6  <- 玩家点的是这个
+            TestSetup.SetHand(fighter.LeftHand, 6);     // 8+6 = 4
+            TestSetup.SetHand(fighter.RightHand, 8);    // 8+8 = 6  <- 玩家点的是这个
 
             board.BeginTurn();
             board.ClickHand(priest.RightHand);          // ① 自己的 8
             Assert.False(board.Phase == BoardPhase.ChoosingPreTargetChoice,
                 "第 ① 步之后运算源未定，不能提前问。");
 
-            board.ClickHand(warrior.RightHand);         // ② 战士的 8 -> 8+8=6
+            board.ClickHand(fighter.RightHand);         // ② 战士的 8 -> 8+8=6
 
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
                 "8+8=6 在 4/6/8 之列，应问攻击还是回复。");
@@ -1779,7 +1779,7 @@ namespace FingerDiceDuel.Tests
         public void Ai_plays_a_full_match_without_human_input()
         {
             var game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Warrior, CharacterDefinition.Barbarian);
+                CharacterDefinition.Fighter, CharacterDefinition.Barbarian);
             var ca = new SimpleChoiceProvider();
             var cb = new SimpleChoiceProvider();
             var board = new BoardController(game, ca, cb,

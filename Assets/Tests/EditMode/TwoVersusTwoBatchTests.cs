@@ -29,7 +29,7 @@ namespace FingerDiceDuel.Tests
         private static readonly CharacterDefinition[] Roster =
         {
             CharacterDefinition.Blank,
-            CharacterDefinition.Warrior,
+            CharacterDefinition.Fighter,
             CharacterDefinition.Barbarian,
             CharacterDefinition.Assassin,
             CharacterDefinition.Swordsman,
@@ -141,7 +141,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Four_ais_finish_a_two_versus_two_match()
         {
-            BatchResult r = PlayOne(CharacterDefinition.Warrior, CharacterDefinition.Priest,
+            BatchResult r = PlayOne(CharacterDefinition.Fighter, CharacterDefinition.Priest,
                                     CharacterDefinition.Barbarian, CharacterDefinition.Ninja,
                                     4000, out GameManager game);
 
@@ -176,7 +176,7 @@ namespace FingerDiceDuel.Tests
                     CharacterDefinition.Blank, CharacterDefinition.Blank,
                     CharacterDefinition.Blank, CharacterDefinition.Blank,
                 };
-                defs[seat] = CharacterDefinition.Warrior;
+                defs[seat] = CharacterDefinition.Fighter;
 
                 BatchResult r = PlayOne(defs[0], defs[1], defs[2], defs[3],
                                         4000, out GameManager game);

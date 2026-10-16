@@ -198,8 +198,8 @@ namespace FingerDiceDuel.Tests
             // 所以这条测试**必须走真实的 Roll() 路径**（真随机，扫多个种子）。
             for (int seed = 0; seed < 300; seed++)
             {
-                var a = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
-                var b = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+                var a = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
+                var b = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
                 var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
                 var start = new MatchStartController(game, new System.Random(seed));
@@ -365,22 +365,22 @@ namespace FingerDiceDuel.Tests
         {
             // 玩家明确要求："初始手值没有任何初始效果，
             // 如初始的 5 是一面破碎的盾牌，刺客初始出双 7 也不会进潜行"。
-            var warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
             var assassin = CharacterFactory.CreatePlayer("刺客", CharacterDefinition.Assassin);
 
-            Assert.True(warrior.Character is WarriorLogic, "前置：应是战士逻辑。");
+            Assert.True(fighter.Character is FighterLogic, "前置：应是战士逻辑。");
             Assert.True(assassin.Character is AssassinLogic, "前置：应是刺客逻辑。");
 
             // 直接摆成"开局掷骰就是这样"
-            TestSetup.SetHand(warrior.LeftHand, 5);        // 5 = 合盾的数字
+            TestSetup.SetHand(fighter.LeftHand, 5);        // 5 = 合盾的数字
             TestSetup.SetHand(assassin.LeftHand, 7);       // 7 = 潜行的数字
             TestSetup.SetHand(assassin.RightHand, 7);
 
             // ① 初始的 5 **不是**盾
-            Assert.AreEqual(ShieldState.None, warrior.LeftHand.State,
+            Assert.AreEqual(ShieldState.None, fighter.LeftHand.State,
                 "初始的 5 不是盾（既不是 Formed 也不是 Broken）。");
-            Assert.False(warrior.HasDoubleShield, "初始 5 不该算双盾。");
-            Assert.False(warrior.LeftHand.IsShield, "初始 5 不该是成型盾。");
+            Assert.False(fighter.HasDoubleShield, "初始 5 不该算双盾。");
+            Assert.False(fighter.LeftHand.IsShield, "初始 5 不该是成型盾。");
 
             // ② 初始的双 7 **不进潜行**
             Assert.True(AssassinLogic.HasDoubleSeven(assassin), "前置：双手数值是 7/7。");

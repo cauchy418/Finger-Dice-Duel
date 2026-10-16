@@ -25,13 +25,13 @@ namespace FingerDiceDuel.Tests
     /// 本测试把这两条钉在**控制器层**（界面层不好单测）。
     /// </summary>
     [TestFixture]
-    public class MageUiFlowTests
+    public class WizardUiFlowTests
     {
         private static BoardController MakeBoard(out PlayerState mage, out PlayerState foe,
                                                  out GameManager game)
         {
-            mage = CharacterFactory.CreatePlayer("法", CharacterDefinition.Mage);
-            foe = CharacterFactory.CreatePlayer("战", CharacterDefinition.Warrior);
+            mage = CharacterFactory.CreatePlayer("法", CharacterDefinition.Wizard);
+            foe = CharacterFactory.CreatePlayer("战", CharacterDefinition.Fighter);
 
             game = new GameManager(mage, foe, new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Tests
             board.ClickHand(foe.LeftHand);
 
             // 到了"是否放弃攻击"这一步
-            Assert.AreEqual(HandEffect.MageAbandonAttack, board.PendingEffect,
+            Assert.AreEqual(HandEffect.WizardAbandonAttack, board.PendingEffect,
                 "算出攻击数字后应当先问「是否放弃攻击」。");
             Assert.IsTrue(board.CanDeclinePendingChoice,
                 "这一步允许放弃（放弃 = 不放弃攻击 = 照常打）。");
@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Tests
                 + "（否则界面毫无反应 = 玩家看到的卡死）。");
 
             // ③ 下一步应当是"选伤害类型"
-            Assert.AreEqual(HandEffect.MageDamageType, board.PendingEffect,
+            Assert.AreEqual(HandEffect.WizardDamageType, board.PendingEffect,
                 "选了放弃之后，下一步应当是 10 选 1 的伤害类型。");
         }
 
@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Tests
             board.ClickHand(foe.LeftHand);
             board.AcceptPendingChoice();          // 放弃攻击
 
-            Assert.AreEqual(HandEffect.MageDamageType, board.PendingEffect);
+            Assert.AreEqual(HandEffect.WizardDamageType, board.PendingEffect);
 
             TurnResult before = board.LastTurn;
             bool ok = board.ChooseDamageType(DamageType.Fire);
@@ -102,13 +102,13 @@ namespace FingerDiceDuel.Tests
                 + $"actor={board.ActivePlayer?.Name}]");
 
             // 这一步不该还停在"选伤害类型"
-            Assert.AreNotEqual((int)HandEffect.MageDamageType, (int)board.PendingEffect,
+            Assert.AreNotEqual((int)HandEffect.WizardDamageType, (int)board.PendingEffect,
                 "回答完之后不该还停在「选伤害类型」。");
 
             // ⚠️ 类型**必须留下来**：玩家确认的机制是
             //    "放弃这次攻击，为**下一次**攻击指定伤害类型" ——
             //    所以被放弃的这一击不能把它吃掉。
-            var logic = (MageLogic)mage.Character;
+            var logic = (WizardLogic)mage.Character;
             Assert.AreEqual(DamageType.Fire, logic.PendingDamageType,
                 "被放弃的那一击不该消耗类型 —— 类型要留给下一次攻击。");
         }
@@ -131,7 +131,7 @@ namespace FingerDiceDuel.Tests
             board.ClickHand(foe.LeftHand);
             board.AcceptPendingChoice();
 
-            Assert.AreEqual(HandEffect.MageDamageType, board.PendingEffect,
+            Assert.AreEqual(HandEffect.WizardDamageType, board.PendingEffect,
                 "放弃之后应当进入「选伤害类型」。");
 
             bool ok = board.ChooseDamageType(DamageType.Psychic);
@@ -139,7 +139,7 @@ namespace FingerDiceDuel.Tests
 
             // ⚠️ 玩家确认的机制是"放弃这次攻击，为**下一次**攻击指定类型" ——
             //    所以放弃的这一击**不能消耗掉类型**，它必须留下来等下一次。
-            var logic = (MageLogic)mage.Character;
+            var logic = (WizardLogic)mage.Character;
             Assert.AreEqual(DamageType.Psychic, logic.PendingDamageType,
                 "被放弃的那一击不该消耗类型 —— 类型要留给下一次攻击"
                 + $"（现在={logic.PendingDamageType}）。");
@@ -163,7 +163,7 @@ namespace FingerDiceDuel.Tests
             // 点"不放弃" = 照常攻击
             Assert.IsTrue(board.DeclinePendingChoice());
 
-            var logic = (MageLogic)mage.Character;
+            var logic = (WizardLogic)mage.Character;
             Assert.IsFalse(logic.HasPendingType,
                 "没放弃就不该记下任何伤害类型。");
         }

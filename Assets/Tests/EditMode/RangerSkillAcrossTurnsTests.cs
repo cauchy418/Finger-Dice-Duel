@@ -31,17 +31,17 @@ namespace FingerDiceDuel.Tests
         public void SetUp()
         {
             _ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
-            _warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior);
+            _warrior = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
         }
 
         /// <summary>模拟"战士攻击游侠"，收集游侠这一侧提出的抉择。</summary>
         private List<ChoiceRequest> CollectDodgeChoices(int rangerLeft, int rangerRight,
-                                                        int warriorActed, int warriorTarget)
+                                                        int fighterActed, int fighterTarget)
         {
             TestSetup.SetHand(_ranger.LeftHand, rangerLeft);
             TestSetup.SetHand(_ranger.RightHand, rangerRight);
-            TestSetup.SetHand(_warrior.LeftHand, warriorActed);
-            TestSetup.SetHand(_warrior.RightHand, warriorTarget);
+            TestSetup.SetHand(_warrior.LeftHand, fighterActed);
+            TestSetup.SetHand(_warrior.RightHand, fighterTarget);
 
             // 运算：战士的左手 打 游侠的左手 -> 结果 = acted + target
             var context = new PreTurnChoiceContext(
@@ -56,11 +56,11 @@ namespace FingerDiceDuel.Tests
 
         /// <summary>模拟"游侠攻击"，收集游侠这一侧提出的抉择。</summary>
         private List<ChoiceRequest> CollectPowerShotChoices(int rangerActed, int rangerOther,
-                                                            int warriorTarget)
+                                                            int fighterTarget)
         {
             TestSetup.SetHand(_ranger.LeftHand, rangerActed);
             TestSetup.SetHand(_ranger.RightHand, rangerOther);
-            TestSetup.SetHand(_warrior.LeftHand, warriorTarget);
+            TestSetup.SetHand(_warrior.LeftHand, fighterTarget);
             TestSetup.SetHand(_warrior.RightHand, 1);
 
             // 注意：结果必须是攻击（4/6/8）才会问强化。

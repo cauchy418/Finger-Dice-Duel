@@ -41,14 +41,14 @@ namespace FingerDiceDuel.Tests
                                                       out PlayerState hunter)
         {
             hunter = Make("猎人", CharacterDefinition.Hunter);
-            var warrior = Make("战士", CharacterDefinition.Warrior);
+            var fighter = Make("战士", CharacterDefinition.Fighter);
 
             hunter.LeftHand.SetValue(2);
             hunter.RightHand.SetValue(2);
-            warrior.LeftHand.SetValue(1);
-            warrior.RightHand.SetValue(1);
+            fighter.LeftHand.SetValue(1);
+            fighter.RightHand.SetValue(1);
 
-            game = new GameManager(hunter, warrior,
+            game = new GameManager(hunter, fighter,
                                    new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
 
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Tests
             // ⚠️ 这一步必须**合法**：不能拿自己的两只手运算
             //    （"一只手不能加自己"那条校验会拒绝，我第一版就踩了这个）。
             //    所以让战士碰**猎人的右手** 2：1 + 2 = 3，无效果，猎人的手不变。
-            game.ExecuteTurn(warrior, warrior.LeftHand, hunter.RightHand);
+            game.ExecuteTurn(fighter, fighter.LeftHand, hunter.RightHand);
             Assert.AreSame(hunter, game.CurrentPlayer,
                 "前提：走完战士的回合后应由猎人行动。");
 
@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Tests
             // 现在它点不动，所以伏击**不会被自己破掉**。
             BoardController board = BuildAmbushing(out GameManager game,
                                                    out PlayerState hunter);
-            var warrior = game.PlayerB;
+            var fighter = game.PlayerB;
 
             // 尝试用暗置的手运算：应被拒绝，且伏击状态不受影响
             bool clicked = board.ClickHand(hunter.LeftHand);
@@ -136,7 +136,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(((HunterLogic)hunter.Character).IsAmbushing, "仍应处于伏击状态。");
 
             // 对手也不能拿它当被加数
-            Assert.False(game.IsLegalMove(warrior, warrior.LeftHand, hunter.LeftHand, out _),
+            Assert.False(game.IsLegalMove(fighter, fighter.LeftHand, hunter.LeftHand, out _),
                 "暗置的手不能被对手当成运算数字。");
         }
 

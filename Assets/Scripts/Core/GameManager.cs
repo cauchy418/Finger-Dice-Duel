@@ -1096,7 +1096,7 @@ namespace FingerDiceDuel.Core
         /// **法师：铺伤害类型的统一入口（界面与无头两条路都走它）。**
         ///
         /// 界面路径由 <c>BoardController</c> 在"收集完抉择"之后调用
-        /// <c>MageLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
+        /// <c>WizardLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
         /// 直接驱动 GameManager，**从不收集抉择** ——
         /// 于是 AI 法师的"选伤害类型"永远落不到自己身上，
         /// 表现为"AI 法师从不挂状态"（与之前魔术师计数那次同一类坑）。
@@ -1145,7 +1145,7 @@ namespace FingerDiceDuel.Core
                 AlivePlayerCount = AlivePlayerCount,
 
                 // ⚠️ **必须显式填结果值** —— 界面路径由 BoardController 填，
-                //    而无头路径没人填。`MageLogic.CollectPreTurnChoices`
+                //    而无头路径没人填。`WizardLogic.CollectPreTurnChoices`
                 //    正是用 `ResultValue` 判断"结果是不是 4/6/8"，
                 //    不填就永远问不出东西（AI 法师从不挂状态 —— 测试抓到过）。
                 //    此刻发起运算的那只手**已经是结果值**
@@ -1161,9 +1161,9 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < requests.Count; i++)
             {
-                if (requests[i].Effect == HandEffect.MageAbandonAttack)
+                if (requests[i].Effect == HandEffect.WizardAbandonAttack)
                     provider.ChooseHandFor(requests[i], actor);
-                else if (requests[i].Effect == HandEffect.MageDamageType
+                else if (requests[i].Effect == HandEffect.WizardDamageType
                          && sink.WantsToAbandonAttack)
                     provider.ChooseHandFor(requests[i], actor);
             }
@@ -1685,7 +1685,7 @@ namespace FingerDiceDuel.Core
                                           result?.ResultValue ?? 0);
             StatusEffect status = applier.StatusToApplyOnHit(probe);
 
-            if (actor.Character is Characters.SpecialLogics.MageLogic mage)
+            if (actor.Character is Characters.SpecialLogics.WizardLogic mage)
                 mage.ConsumeDamageType();
 
             if (status == StatusEffect.None) return;
@@ -1931,7 +1931,7 @@ namespace FingerDiceDuel.Core
             // 2d. **法师：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
             //
             //     ⚠️ 必须放在**这里**（结果已经算出来）：
-            //        `MageLogic.CollectPreTurnChoices` 用 `context.ResultValue`
+            //        `WizardLogic.CollectPreTurnChoices` 用 `context.ResultValue`
             //        判断"结果是不是 4/6/8"，而在 ExecuteTurn 入口处结果还没算出来。
             //        我第一版放在入口，于是**永远问不出东西**、
             //        AI 法师从不挂状态（新测试立刻抓到）。
@@ -1953,7 +1953,7 @@ namespace FingerDiceDuel.Core
             //    结算完再放回去（类型本来就是跨回合的，这样做语义一致）。
             DamageType unspent = DamageType.None;
 
-            if (actor?.Character is Characters.SpecialLogics.MageLogic mageForStash
+            if (actor?.Character is Characters.SpecialLogics.WizardLogic mageForStash
                 && mageForStash.WantsToAbandonThisTurn)
             {
                 unspent = mageForStash.ConsumeDamageType();
@@ -2212,7 +2212,7 @@ namespace FingerDiceDuel.Core
             //    玩家确认："放弃这次攻击，为下一次攻击指定伤害类型" ——
             //    所以类型必须跨过这次结算、留在法师身上等下一次攻击。
             if (unspent != DamageType.None
-                && actor?.Character is Characters.SpecialLogics.MageLogic mageRestore)
+                && actor?.Character is Characters.SpecialLogics.WizardLogic mageRestore)
             {
                 mageRestore.SetPendingDamageType(unspent);
             }

@@ -51,7 +51,7 @@ namespace FingerDiceDuel.Characters
                     "与巨人：巨人攻 +2 且两段，士兵的防 +1 吃不消。",
                 });
 
-            Add(CharacterDefinition.WarriorId, "Warrior", Alignment.LawfulNeutral,
+            Add(CharacterDefinition.FighterId, "Fighter", Alignment.LawfulNeutral,
                 shortSkill: "盾碎时可连锁打碎场上一面盾；"
                           + "攻击时碎盾可换本次攻击距离无限。",
                 playGuide: "核心是主动合盾。"
@@ -333,7 +333,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             // ---- 法师（中立善良）----
-            Add(CharacterDefinition.MageId, "Mage", Alignment.NeutralGood,
+            Add(CharacterDefinition.WizardId, "Wizard", Alignment.NeutralGood,
                 shortSkill: "运算出 4/6/8 时可放弃这次攻击，"
                           + "给下一次攻击指定一种伤害类型（10 选 1），命中后挂上负面状态。",
                 playGuide: "算出 4/6/8 时问是否放弃攻击。选放弃就挑一种伤害类型，"

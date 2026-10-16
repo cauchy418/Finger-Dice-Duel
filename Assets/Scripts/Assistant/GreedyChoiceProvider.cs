@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Assistant
         // 法师的伤害类型选择（IDamageTypeChoiceSink）
         // ============================================================
 
-        /// <summary>AI 选定的伤害类型（供 <see cref="MageLogic"/> 回读）。</summary>
+        /// <summary>AI 选定的伤害类型（供 <see cref="WizardLogic"/> 回读）。</summary>
         public DamageType ChosenDamageType { get; set; } = DamageType.None;
 
         /// <summary>本次是否会放弃攻击去铺状态。</summary>
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Assistant
         /// 能斩杀时就不该放弃攻击去挂状态 —— 立刻赢下比赛胜过铺一个状态。
         /// 未注入时按"不能斩杀"处理（保守：允许铺状态）。
         /// </summary>
-        public System.Func<bool> MageAbandonLethalGuard { get; set; }
+        public System.Func<bool> WizardAbandonLethalGuard { get; set; }
 
         /// <summary>
         /// 对手是否**有可能回血**（法师选"腐朽"的判据）。
@@ -74,7 +74,7 @@ namespace FingerDiceDuel.Assistant
         /// 用"角色自带回复能力"判断，而不是猜他的手牌 ——
         /// 牧师 / 巨人 / 狼人都有明确的回复机制。
         /// </summary>
-        private static bool MageCanHeal(PlayerState foe)
+        private static bool WizardCanHeal(PlayerState foe)
         {
             if (foe?.Character == null) return false;
 
@@ -949,14 +949,14 @@ namespace FingerDiceDuel.Assistant
                                                    AttackContext context)
             => shieldA.Value <= shieldB.Value ? shieldA : shieldB;
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior,
+        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             if (!UseChainBreak || candidates == null || candidates.Count == 0) return default;
 
             // 优先破对手的盾
             for (int i = 0; i < candidates.Count; i++)
-                if (candidates[i].Owner != warrior) return candidates[i];
+                if (candidates[i].Owner != fighter) return candidates[i];
 
             return default;
         }
@@ -1093,7 +1093,7 @@ namespace FingerDiceDuel.Assistant
                     }
 
                 // ---------- 法师 ----------
-                case HandEffect.MageAbandonAttack:
+                case HandEffect.WizardAbandonAttack:
                     {
                         // 玩家给的方向："放弃攻击去铺设伤害类型"。
                         //
@@ -1105,20 +1105,20 @@ namespace FingerDiceDuel.Assistant
                         // 收益高于这一次 4~8 点伤害。
                         if (decider == null || Game == null) return null;
 
-                        // ⚠️ 用 Core 的 IMageState 而不是 MageLogic ——
+                        // ⚠️ 用 Core 的 IMageState 而不是 WizardLogic ——
                         //    Assistant 层不能引用 Characters 层（架构铁律）。
                         var mage = decider.Character as IMageState;
                         if (mage == null) return null;
 
                         if (mage.HasPendingType) return null;      // 已经铺好了
 
-                        if (MageAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
+                        if (WizardAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
 
                         WantsToAbandonAttack = true;
                         return c[0];
                     }
 
-                case HandEffect.MageDamageType:
+                case HandEffect.WizardDamageType:
                     {
                         // 选哪一种伤害类型。按局面挑最有用的一种：
                         //   · 对手能回血（牧师 / 巨人 / 狼人）-> 腐朽，直接封掉回复
@@ -1132,7 +1132,7 @@ namespace FingerDiceDuel.Assistant
                             PlayerState foe = Game?.OpponentsOf(decider).Count > 0
                                 ? Game.OpponentsOf(decider)[0] : null;
 
-                            if (foe != null && MageCanHeal(foe)) pick = DamageType.Necrotic;
+                            if (foe != null && WizardCanHeal(foe)) pick = DamageType.Necrotic;
                             else if (decider.Health * 100 <= decider.MaximumHealth * 40)
                                 pick = DamageType.Psychic;
                             else if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
@@ -1143,7 +1143,7 @@ namespace FingerDiceDuel.Assistant
                         return c[0];
                     }
 
-                case HandEffect.WarriorChainBreak:
+                case HandEffect.FighterChainBreak:
                     {
                         if (!UseChainBreak || c.Count == 0) return null;   // 默认放弃
 

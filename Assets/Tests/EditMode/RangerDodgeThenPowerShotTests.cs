@@ -25,14 +25,14 @@ namespace FingerDiceDuel.Tests
     {
         /// <summary>A = 游侠（人类），B = 战士。返回时已把回合交给 A。</summary>
         private static (GameManager game, BoardController board,
-                        SimpleChoiceProvider choiceA, PlayerState ranger, PlayerState warrior) Arrange()
+                        SimpleChoiceProvider choiceA, PlayerState ranger, PlayerState fighter) Arrange()
         {
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger),
-                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior),
+                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter),
                 choiceA, choiceB);
 
             var board = new BoardController(game, choiceA, choiceB);
@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Tests
         /// 于是后续断言看到的已经不是测试设定的手值 —— 第一版就是这么错的。
         /// </summary>
         private static void AdvanceToWarriorTurn(BoardController board, PlayerState ranger,
-                                                 PlayerState warrior)
+                                                 PlayerState fighter)
         {
             board.BeginTurn();
             if (!ReferenceEquals(board.ActivePlayer, ranger)) return;
@@ -57,7 +57,7 @@ namespace FingerDiceDuel.Tests
 
             // 游侠先手 -> 随便走一步让出回合
             board.ClickHand(ranger.LeftHand);
-            board.ClickHand(warrior.RightHand);
+            board.ClickHand(fighter.RightHand);
             board.ConfirmTargetPlayer();
             while (board.Phase == BoardPhase.ChoosingPreTurnChoice)
                 if (!board.DeclinePendingChoice()) break;
@@ -77,17 +77,17 @@ namespace FingerDiceDuel.Tests
         public void A_single_hit_attack_asks_for_dodge_exactly_once()
         {
             // 这是本次 bug 的**直接断言**：修之前队列里有两条 RangerDodge。
-            var (game, board, _, ranger, warrior) = Arrange();
+            var (game, board, _, ranger, fighter) = Arrange();
 
             TestSetup.SetHand(ranger.LeftHand, 5);
             TestSetup.SetHand(ranger.RightHand, 1);      // 唯一一只 1
-            TestSetup.SetHand(warrior.LeftHand, 3);
-            TestSetup.SetHand(warrior.RightHand, 1);
+            TestSetup.SetHand(fighter.LeftHand, 3);
+            TestSetup.SetHand(fighter.RightHand, 1);
 
-            AdvanceToWarriorTurn(board, ranger, warrior);
+            AdvanceToWarriorTurn(board, ranger, fighter);
 
             // 战士用左手 3 打游侠的左手 5 -> 3 + 5 = 8 -> 攻击
-            board.ClickHand(warrior.LeftHand);
+            board.ClickHand(fighter.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(ranger.LeftHand);
             board.ConfirmTargetPlayer();
@@ -105,15 +105,15 @@ namespace FingerDiceDuel.Tests
         {
             // 只有一只可闪的手时，应提供明确的"发动"按钮，
             // 否则 AcceptPendingChoice() 永远失败（曾经就是如此）。
-            var (game, board, _, ranger, warrior) = Arrange();
+            var (game, board, _, ranger, fighter) = Arrange();
 
             TestSetup.SetHand(ranger.LeftHand, 5);
             TestSetup.SetHand(ranger.RightHand, 1);
-            TestSetup.SetHand(warrior.LeftHand, 3);
-            TestSetup.SetHand(warrior.RightHand, 1);
+            TestSetup.SetHand(fighter.LeftHand, 3);
+            TestSetup.SetHand(fighter.RightHand, 1);
 
-            AdvanceToWarriorTurn(board, ranger, warrior);
-            board.ClickHand(warrior.LeftHand);
+            AdvanceToWarriorTurn(board, ranger, fighter);
+            board.ClickHand(fighter.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(ranger.LeftHand);
             board.ConfirmTargetPlayer();
@@ -176,12 +176,12 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ranger_with_a_two_left_over_from_dodging_can_power_shot()
         {
-            var (game, board, _, ranger, warrior) = Arrange();
+            var (game, board, _, ranger, fighter) = Arrange();
 
             TestSetup.SetHand(ranger.LeftHand, 6);
             TestSetup.SetHand(ranger.RightHand, 2);      // 闪避留下的那只
-            TestSetup.SetHand(warrior.LeftHand, 8);
-            TestSetup.SetHand(warrior.RightHand, 1);
+            TestSetup.SetHand(fighter.LeftHand, 8);
+            TestSetup.SetHand(fighter.RightHand, 1);
 
             board.BeginTurn();
             Assert.True(ReferenceEquals(board.ActivePlayer, ranger),
@@ -189,7 +189,7 @@ namespace FingerDiceDuel.Tests
 
             board.ClickHand(ranger.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(warrior.LeftHand);
+            board.ClickHand(fighter.LeftHand);
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
@@ -211,17 +211,17 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void After_an_actual_dodge_the_two_left_over_can_power_shot()
         {
-            var (game, board, _, ranger, warrior) = Arrange();
+            var (game, board, _, ranger, fighter) = Arrange();
 
             TestSetup.SetHand(ranger.LeftHand, 5);
             TestSetup.SetHand(ranger.RightHand, 1);
-            TestSetup.SetHand(warrior.LeftHand, 3);
-            TestSetup.SetHand(warrior.RightHand, 1);
+            TestSetup.SetHand(fighter.LeftHand, 3);
+            TestSetup.SetHand(fighter.RightHand, 1);
 
-            AdvanceToWarriorTurn(board, ranger, warrior);
+            AdvanceToWarriorTurn(board, ranger, fighter);
 
             // ---- ① 战士 3 + 游侠左手 5 = 8 -> 攻击，游侠应被问翻滚 ----
-            board.ClickHand(warrior.LeftHand);
+            board.ClickHand(fighter.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(ranger.LeftHand);
             board.ConfirmTargetPlayer();
@@ -238,12 +238,12 @@ namespace FingerDiceDuel.Tests
                 "翻滚把右手 1 变成 2。\n" + Dump(board));
 
             // ---- ② 用另一局验证"那只 2 能强化"，避免回合推动带来的干扰 ----
-            var (game2, board2, _, ranger2, warrior2) = Arrange();
+            var (game2, board2, _, ranger2, fighter2) = Arrange();
 
             TestSetup.SetHand(ranger2.LeftHand, 6);
             TestSetup.SetHand(ranger2.RightHand, 2);     // = 上一步翻滚的结果
-            TestSetup.SetHand(warrior2.LeftHand, 8);
-            TestSetup.SetHand(warrior2.RightHand, 1);
+            TestSetup.SetHand(fighter2.LeftHand, 8);
+            TestSetup.SetHand(fighter2.RightHand, 1);
 
             board2.BeginTurn();
             Assert.True(ReferenceEquals(board2.ActivePlayer, ranger2),
@@ -251,7 +251,7 @@ namespace FingerDiceDuel.Tests
 
             board2.ClickHand(ranger2.LeftHand);
             board2.ConfirmTargetPlayer();
-            board2.ClickHand(warrior2.LeftHand);
+            board2.ClickHand(fighter2.LeftHand);
             board2.ConfirmTargetPlayer();
 
             Assert.AreEqual(HandEffect.RangerPowerShot, board2.PendingRequest?.Effect,

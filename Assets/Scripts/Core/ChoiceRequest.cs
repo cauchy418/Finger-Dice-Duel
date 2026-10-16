@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Core
         /// 结算一旦开始就一次跑完，没法中途问人类玩家
         /// （这正是本技能曾经对人类玩家"不生效"的原因）。
         /// </summary>
-        WarriorChainBreak,
+        FighterChainBreak,
 
         /// <summary>
         /// 战士：发起攻击时，若**另一只手是完整的盾牌**，可以让它破碎，
@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 这是**可选**的（"可以让它破碎"）——允许放弃（放弃 = 保留盾）。
         /// 与其它抉择一样必须**在运算前收集**。
         /// </summary>
-        WarriorRangeBreak,
+        FighterRangeBreak,
 
         // ---------- 圣武士 ----------
         /// <summary>
@@ -137,14 +137,14 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 每次算出攻击数字**都要问**（玩家明确要求）。
         /// </summary>
-        MageAbandonAttack,
+        WizardAbandonAttack,
 
         /// <summary>
         /// 法师：选择哪一种**伤害类型**（10 选 1）。
         ///
         /// 玩家确认：连打多次时**只保留最新的选择**（后选的覆盖先选的）。
         /// </summary>
-        MageDamageType,
+        WizardDamageType,
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ namespace FingerDiceDuel.Core
     /// 硬塞进 Hand 会变成"用值当前缀的假手牌"，语义脏且容易出错。
     ///
     /// 由 Assistant 层的抉择器实现（那个对象同时是 AI / 脚本 / 界面玩家的答案来源），
-    /// <see cref="Characters.SpecialLogics.MageLogic"/> 在结算时回读。
+    /// <see cref="Characters.SpecialLogics.WizardLogic"/> 在结算时回读。
     /// </summary>
     public interface IDamageTypeChoiceSink
     {

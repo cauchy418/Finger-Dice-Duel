@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
         public static void RegisterDefaults()
         {
             _registry[SpecialLogicType.None] = () => new DataDrivenCharacter();
-            _registry[SpecialLogicType.Warrior] = () => new WarriorLogic();
+            _registry[SpecialLogicType.Fighter] = () => new FighterLogic();
             _registry[SpecialLogicType.Curseweaver] = () => new CurseweaverLogic();
             _registry[SpecialLogicType.Barbarian] = () => new BarbarianLogic();
             _registry[SpecialLogicType.Priest] = () => new PriestLogic();
@@ -58,7 +58,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Thief] = () => new ThiefLogic();
             _registry[SpecialLogicType.Hunter] = () => new HunterLogic();
             _registry[SpecialLogicType.Magician] = () => new MagicianLogic();
-            _registry[SpecialLogicType.Mage] = () => new MageLogic();
+            _registry[SpecialLogicType.Wizard] = () => new WizardLogic();
         }
 
         /// <summary>

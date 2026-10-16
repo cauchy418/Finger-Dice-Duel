@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Tests
     ///   · 冰冻：真实运算出的结果被减半
     /// </summary>
     [TestFixture]
-    public class MageStatusFlowTests
+    public class WizardStatusFlowTests
     {
         private static PlayerState Make(string name, CharacterDefinition def)
             => CharacterFactory.CreatePlayer(name, def);
@@ -212,7 +212,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Freeze_halves_a_real_operation_result()
         {
-            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
             GameManager game = MakeGame(mage, foe);
 
@@ -235,7 +235,7 @@ namespace FingerDiceDuel.Tests
         public void Freeze_halves_but_the_mage_has_no_odd_result_to_worry_about()
         {
             // 1 + 1 = 2，减半后是 1（无效果）。只验证"减半确实发生了"。
-            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
             GameManager game = MakeGame(mage, foe);
 
@@ -280,7 +280,7 @@ namespace FingerDiceDuel.Tests
         /// **AI 法师在无头对局里真的会铺伤害类型 / 挂状态。**
         ///
         /// 这条测试曾经是"已知缺口"（只测量、不断言）。根因是两处：
-        ///   ① `MageLogic.CollectPreTurnChoices` 的签名写成 `List&lt;ChoiceRequest&gt;`
+        ///   ① `WizardLogic.CollectPreTurnChoices` 的签名写成 `List&lt;ChoiceRequest&gt;`
         ///      且没有 `override`，于是**没有覆盖基类方法**，
         ///      通过接口调用走的是基类空实现（C# 9 没有默认接口成员，不报错）；
         ///   ② `GreedyChoiceProvider.Game` 只在 `BoardController` 里被赋值，
@@ -296,7 +296,7 @@ namespace FingerDiceDuel.Tests
 
             for (int seed = 0; seed < 4; seed++)
             {
-                PlayerState mage = Make("法", CharacterDefinition.Mage);
+                PlayerState mage = Make("法", CharacterDefinition.Wizard);
                 PlayerState foe = Make("敌", CharacterDefinition.Soldier);
 
                 var game = new GameManager(mage, foe, new GreedyChoiceProvider(),
@@ -305,7 +305,7 @@ namespace FingerDiceDuel.Tests
                                                        new GreedyChoiceProvider(),
                                                        new GreedyChoiceProvider());
 
-                var logic = mage.Character as MageLogic;
+                var logic = mage.Character as WizardLogic;
                 Assert.NotNull(logic);
 
                 if (logic.HasPendingType || foe.Statuses.Count > 0) everApplied++;
@@ -321,15 +321,15 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Mage_records_the_type_and_applies_it_on_the_next_hit()
+        public void Wizard_records_the_type_and_applies_it_on_the_next_hit()
         {
             // 这条走**可直接驱动**的路径，证明"铺类型 -> 下一次命中挂状态"
             // 这条链在核心层是通的（不依赖界面收集抉择）。
-            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
             GameManager game = MakeGame(mage, foe);
 
-            var logic = (MageLogic)mage.Character;
+            var logic = (WizardLogic)mage.Character;
 
             // ① 铺类型
             logic.SetPendingDamageType(DamageType.Fire);
@@ -348,14 +348,14 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Mage_type_is_wasted_when_the_attack_misses()
+        public void Wizard_type_is_wasted_when_the_attack_misses()
         {
             // 玩家确认："没命中就作废，法师要重新放弃一次。"
-            PlayerState mage = Make("法", CharacterDefinition.Mage);
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
             GameManager game = MakeGame(mage, foe);
 
-            var logic = (MageLogic)mage.Character;
+            var logic = (WizardLogic)mage.Character;
             logic.SetPendingDamageType(DamageType.Poison);
 
             // 制造"完全没落地"：对手双手都是 7 -> 刺客式潜行？不适用。

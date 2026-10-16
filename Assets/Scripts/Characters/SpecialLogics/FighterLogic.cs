@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// 战士（Warrior）特殊逻辑：
+    /// 战士（Fighter）特殊逻辑：
     ///
     /// 【技能一 · 连锁破盾】
     ///   当战士自身的一面盾牌破碎时（无论是被攻击破碎，还是运算前主动破碎已有盾牌），
@@ -27,10 +27,10 @@ namespace FingerDiceDuel.Core
     ///   - `IPreTurnChoiceProvider`：运算前声明"要不要发动连锁破盾、打碎哪面盾"。
     ///   - `GameManager.BreakShieldAndNotify(...)`：统一破盾入口，保证连锁链正确触发。
     /// </summary>
-    public class WarriorLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter,
+    public class FighterLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter,
                                 IAiMoveAdvisor
     {
-        public override string DisplayName => "Warrior";
+        public override string DisplayName => "Fighter";
 
         /// <summary>
         /// 让 AI **主动去合盾**（玩家指出："武僧和战士一起做，因为两人都是 5 高价值"）。
@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Core
             if (candidates.Count == 0) return;              // 没有其他完好的盾 -> 不问
 
             requests.Add(new ChoiceRequest(
-                HandEffect.WarriorChainBreak,
+                HandEffect.FighterChainBreak,
                 $"战士的盾已碎：要连带打碎场上一面完好的盾吗？" +
                 $"（同意后点那面盾牌；被打碎的可能是自己的，也可能是对手的）",
                 ToHands(candidates),
@@ -147,7 +147,7 @@ namespace FingerDiceDuel.Core
         /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
         private static ChoiceRequest BuildRangeBreakRequest(PlayerState actor, Hand shield)
             => new ChoiceRequest(
-                HandEffect.WarriorRangeBreak,
+                HandEffect.FighterRangeBreak,
                 $"战士：另一只手是完整的盾牌。可以令它破碎，" +
                 $"使本次攻击距离无限（够到环上更远的对手）。要发动吗？",
                 new List<Hand>(1) { shield },
@@ -269,7 +269,7 @@ namespace FingerDiceDuel.Core
         /// <summary>回读答案用的请求（候选与收集阶段保持一致）。</summary>
         private static ChoiceRequest BuildReadRequest(PlayerState owner, List<ChainBreakTarget> candidates)
             => new ChoiceRequest(
-                HandEffect.WarriorChainBreak,
+                HandEffect.FighterChainBreak,
                 "战士：要连带打碎哪一面完好的盾？",
                 ToHands(candidates),
                 allowDecline: true,

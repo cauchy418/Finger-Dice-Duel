@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Tests
             bool threw = false;
             try
             {
-                DualGeneralFactory.Create("甲", CharacterDefinition.Warrior,
+                DualGeneralFactory.Create("甲", CharacterDefinition.Fighter,
                                           CharacterDefinition.Giant);
             }
             catch (System.ArgumentException) { threw = true; }
@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Tests
         public void Same_axis_pair_is_accepted()
         {
             // 守序：战士 + 剑客
-            PlayerState p = DualGeneralFactory.Create("甲", CharacterDefinition.Warrior,
+            PlayerState p = DualGeneralFactory.Create("甲", CharacterDefinition.Fighter,
                                                       CharacterDefinition.Swordsman);
             Assert.NotNull(p, "同阵营应能组成双将。");
         }
@@ -102,9 +102,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Display_name_is_the_primary()
         {
-            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Warrior,
+            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Fighter,
                                                          CharacterDefinition.Swordsman);
-            Assert.AreEqual(CharacterDefinition.Warrior.DisplayName,
+            Assert.AreEqual(CharacterDefinition.Fighter.DisplayName,
                 ((CharacterTemplate)dual.Character).DisplayName, "战报只显示主将名。");
         }
 
@@ -214,7 +214,7 @@ namespace FingerDiceDuel.Tests
             // 取各阵营一对代表性组合。
             var pairs = new[]
             {
-                new[] { CharacterDefinition.Warrior, CharacterDefinition.Swordsman },
+                new[] { CharacterDefinition.Fighter, CharacterDefinition.Swordsman },
                 new[] { CharacterDefinition.Monk, CharacterDefinition.Thief },
                 new[] { CharacterDefinition.Giant, CharacterDefinition.Assassin },
             };

@@ -947,7 +947,7 @@ namespace FingerDiceDuel.Assistant
             //    它的语义是"这一次行动放弃攻击"，
             //    留在身上会让下一回合的普通攻击也被静默抑制（打不出伤害）。
             if (ActivePlayer?.Character
-                is FingerDiceDuel.Characters.SpecialLogics.MageLogic mageReset)
+                is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mageReset)
             {
                 mageReset.WantsToAbandonThisTurn = false;
             }
@@ -1245,7 +1245,7 @@ namespace FingerDiceDuel.Assistant
         /// 这次攻击目前申请到的**距离覆盖**（-1 = 用角色基础距离）。
         ///
         /// 目前两个来源（都是"本次攻击距离无限"）：
-        ///   · 战士碎盾换射程（<see cref="HandEffect.WarriorRangeBreak"/>）
+        ///   · 战士碎盾换射程（<see cref="HandEffect.FighterRangeBreak"/>）
         ///   · 游侠强化射击（<see cref="HandEffect.RangerPowerShot"/>）
         ///
         /// 判定必须**同时看 sink 与控制器记录**：
@@ -1260,7 +1260,7 @@ namespace FingerDiceDuel.Assistant
             if (!_pendingIsAttack) return -1;
             if (ActivePlayer == null) return -1;
 
-            if (RangeBreakChosen(HandEffect.WarriorRangeBreak)) return int.MaxValue;
+            if (RangeBreakChosen(HandEffect.FighterRangeBreak)) return int.MaxValue;
             if (RangeBreakChosen(HandEffect.RangerPowerShot)) return int.MaxValue;
 
             return -1;
@@ -2272,7 +2272,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.MageLogic mage
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -2441,7 +2441,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.MageLogic mage
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -2774,7 +2774,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前待问的抉择**是哪一种**（UI 用来决定弹哪个面板）。
         ///
-        /// 目前主要给法师用：轮到 <see cref="HandEffect.MageDamageType"/> 时
+        /// 目前主要给法师用：轮到 <see cref="HandEffect.WizardDamageType"/> 时
         /// 要弹出"10 种伤害类型"的选择面板，而不是普通的"发动 / 不发动"。
         /// </summary>
         public HandEffect PendingEffect
@@ -2791,7 +2791,7 @@ namespace FingerDiceDuel.Assistant
         public bool ChooseDamageType(DamageType type)
         {
             if (type == DamageType.None) return false;
-            if (PendingEffect != HandEffect.MageDamageType) return false;
+            if (PendingEffect != HandEffect.WizardDamageType) return false;
 
             // ⚠️⚠️ **必须把类型记到法师身上，不能只写进抉择器。**
             //
@@ -2804,7 +2804,7 @@ namespace FingerDiceDuel.Assistant
             //
             //    正确的做法：**法师自己就是答案的归属者**，直接写给他。
             //    （抉择器那条路是给 AI 用的，两者互不冲突。）
-            var mage = ActivePlayer?.Character as Characters.SpecialLogics.MageLogic;
+            var mage = ActivePlayer?.Character as Characters.SpecialLogics.WizardLogic;
             if (mage == null) return false;
 
             mage.SetPendingDamageType(type);
@@ -2855,9 +2855,9 @@ namespace FingerDiceDuel.Assistant
             //    而结算时又因为没走"选类型"这一步而没有类型可选。
             //
             //    ⚠️ 只有**真的被接受**时才标记；被拒绝时不能留下脏标记。
-            if (request.Effect == HandEffect.MageAbandonAttack
+            if (request.Effect == HandEffect.WizardAbandonAttack
                 && ActivePlayer?.Character
-                   is Characters.SpecialLogics.MageLogic mage
+                   is Characters.SpecialLogics.WizardLogic mage
                 && mage.WantsToAbandonThisTurn == false)
             {
                 mage.WantsToAbandonThisTurn = true;

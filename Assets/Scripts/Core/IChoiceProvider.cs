@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Core
         /// 战士连锁破盾：从候选盾中选一面击碎。
         /// 返回 <c>default(ChainBreakTarget)</c>（其 Shield 为 null）表示放弃发动。
         /// </summary>
-        ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior, IReadOnlyList<ChainBreakTarget> candidates);
+        ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter, IReadOnlyList<ChainBreakTarget> candidates);
 
         /// <summary>
         /// 通用抉择入口：回答一个角色提出的 <see cref="ChoiceRequest"/>。

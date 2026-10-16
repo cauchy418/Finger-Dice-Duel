@@ -64,7 +64,7 @@ namespace FingerDiceDuel.Tests
         {
             // 1v1 不能因为"加了 2v2"而变样
             var game = CharacterFactory.CreateMatch(CharacterDefinition.Blank,
-                                                    CharacterDefinition.Warrior);
+                                                    CharacterDefinition.Fighter);
 
             Assert.AreEqual(2, game.Players.Count);
             Assert.True(game.TeamOf(game.PlayerA) != game.TeamOf(game.PlayerB));

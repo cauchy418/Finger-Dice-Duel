@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Assistant
             => shieldA;
 
         /// <summary>战士连锁破盾。默认放弃发动。</summary>
-        public virtual ChainBreakTarget AskWarriorChainBreakTarget(PlayerState warrior,
+        public virtual ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
                                                                    IReadOnlyList<ChainBreakTarget> candidates)
             => default;
 

@@ -1710,7 +1710,7 @@ namespace FingerDiceDuel.Tests
             foreach (CharacterDefinition attacker in new[]
                      {
                          CharacterDefinition.Blank,
-                         CharacterDefinition.Warrior,
+                         CharacterDefinition.Fighter,
                          CharacterDefinition.Barbarian,
                          CharacterDefinition.Priest,
                          CharacterDefinition.Werewolf,

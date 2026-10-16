@@ -4,7 +4,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     using FingerDiceDuel.Core;
 
     /// <summary>
-    /// **法师（Mage）**：攻 0 / 防 −1，攻击距离 **1**。
+    /// **法师（Wizard）**：攻 0 / 防 −1，攻击距离 **1**。
     ///
     /// 玩家设计的核心机制：
     ///   运算出**攻击数字（4/6/8）**时，可以选择**放弃这次攻击**，
@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 无视护盾、无视正向防御、不可被闪避。
     /// 玩家表示之后可以把咒术师的描述改成"伤害改为力场伤害"。
     /// </summary>
-    public sealed class MageLogic : CharacterTemplate,
+    public sealed class WizardLogic : CharacterTemplate,
         IStatusApplyingAttack, IDodgeBlocker, IMageState, IPreTurnChoiceProvider
     {
         /// <summary>法师能"放弃攻击"的数字（与其他角色一致，2 不是攻击）。</summary>
@@ -120,7 +120,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (HasPendingType) return;
 
             var abandon = new ChoiceRequest(
-                HandEffect.MageAbandonAttack,
+                HandEffect.WizardAbandonAttack,
                 "是否放弃这次攻击？放弃后可以为下一次攻击指定一种伤害类型。",
                 new List<Hand>(context.Actor.Hands),
                 allowDecline: true,
@@ -135,7 +135,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             //    ⚠️ `skipWhen`：玩家没选"放弃"时这一步自动跳过，
             //       不会出现"选了照常攻击却被追问类型"。
             var pick = new ChoiceRequest(
-                HandEffect.MageDamageType,
+                HandEffect.WizardDamageType,
                 "选择伤害类型（10 选 1）",
                 new List<Hand>(context.Actor.Hands),
                 allowDecline: true,

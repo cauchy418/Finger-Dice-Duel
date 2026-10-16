@@ -73,7 +73,7 @@ namespace FingerDiceDuel.Assistant
             // ---- 战士（攻 +1）----
             // 5 = 成盾（挡一次伤害）。盾还能当运算源，主动碎掉触发**连锁破盾**
             // （再击碎场上一面成型盾）—— 所以 5 对他的价值尤其高。
-            Own[CharacterDefinition.WarriorId] = new HandValueProfile()
+            Own[CharacterDefinition.FighterId] = new HandValueProfile()
                 .Set(5, 95)                       // 成盾
                 .Set(8, 60).Set(9, 58)            // 高伤攻击 / 回复
                 .Set(7, 55)                       // 攻击 +1 使 7 略亏（7 非效果）
@@ -467,7 +467,7 @@ namespace FingerDiceDuel.Assistant
             // 他的两个技能（碎盾换射程、连锁破盾）**都以盾为前提**。
             // ⚠️ 玩家补了一句"**咒术师除外**" —— 那是指"我选咒术师时盾本来就无效"
             //    （见上面"面对咒术师"那条），所以这一条只对"面对战士"生效。
-            OpponentAdjust[CharacterDefinition.WarriorId] = new List<ValueAdjust>
+            OpponentAdjust[CharacterDefinition.FighterId] = new List<ValueAdjust>
             {
                 new ValueAdjust(5, -35),
                 new ValueAdjust(1, -18), new ValueAdjust(2, -18),

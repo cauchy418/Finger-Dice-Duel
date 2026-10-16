@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Tests
         public void Factory_maps_logic_type_to_behavior()
         {
             Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.None) is DataDrivenCharacter);
-            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Warrior) is WarriorLogic);
+            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Fighter) is FighterLogic);
             Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Curseweaver) is CurseweaverLogic);
             Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Barbarian) is BarbarianLogic);
         }
@@ -46,9 +46,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Definition_stats_are_injected_into_the_behavior()
         {
-            var warrior = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Warrior);
-            Assert.AreEqual(1, warrior.AttackBonus, "战士攻击 +1");
-            Assert.AreEqual(0, warrior.DefenseBonus);
+            var fighter = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Fighter);
+            Assert.AreEqual(1, fighter.AttackBonus, "战士攻击 +1");
+            Assert.AreEqual(0, fighter.DefenseBonus);
 
             var curseweaver = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Curseweaver);
             Assert.AreEqual(-1, curseweaver.AttackBonus, "咒术师攻击 -1");
@@ -65,9 +65,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Definition_overrides_the_code_default()
         {
-            // 数据层可以把战士改成攻击 +3，而无需改 WarriorLogic
-            var tuned = new CharacterDefinition("warrior_plus3", "超级战士",
-                SpecialLogicType.Warrior, attackBonus: 3);
+            // 数据层可以把战士改成攻击 +3，而无需改 FighterLogic
+            var tuned = new CharacterDefinition("fighter_plus3", "超级战士",
+                SpecialLogicType.Fighter, attackBonus: 3);
 
             var behavior = (CharacterTemplate)CharacterFactory.CreateBehavior(tuned);
             Assert.AreEqual(3, behavior.AttackBonus, "数据层应覆盖代码里的默认值。");
@@ -77,7 +77,7 @@ namespace FingerDiceDuel.Tests
         public void Default_stats_are_used_when_no_definition_is_applied()
         {
             // 直接 new 出来的角色走代码默认值，方便单测角色逻辑
-            Assert.AreEqual(1, new WarriorLogic().AttackBonus);
+            Assert.AreEqual(1, new FighterLogic().AttackBonus);
             Assert.AreEqual(-1, new CurseweaverLogic().AttackBonus);
             Assert.AreEqual(1, new BarbarianLogic().DefenseBonus);
         }
@@ -112,11 +112,11 @@ namespace FingerDiceDuel.Tests
         public void CreateMatch_builds_a_ready_game()
         {
             GameManager game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Warrior, CharacterDefinition.Barbarian);
+                CharacterDefinition.Fighter, CharacterDefinition.Barbarian);
 
             Assert.AreEqual(20, game.PlayerA.Health);
             Assert.AreEqual(20, game.PlayerB.Health);
-            Assert.True(game.PlayerA.Character is WarriorLogic);
+            Assert.True(game.PlayerA.Character is FighterLogic);
             Assert.True(game.PlayerB.Character is BarbarianLogic);
             Assert.False(game.IsGameOver);
             Assert.AreEqual(4, game.GetLegalMoves(game.PlayerA).Count);

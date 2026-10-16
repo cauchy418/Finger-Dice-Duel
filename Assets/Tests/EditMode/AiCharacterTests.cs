@@ -241,7 +241,7 @@ namespace FingerDiceDuel.Tests
                 ai.ApplyDifficulty(difficulty);
 
                 var game = new GameManager(
-                    CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior),
+                    CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter),
                     CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                     ai, new SimpleChoiceProvider());
 
@@ -288,7 +288,7 @@ namespace FingerDiceDuel.Tests
             // 抖动是**随机源**驱动的：同一局面理论上可能给出不同结果。
             // 这里只验证"随机源确实在参与" —— 跑一次不抛异常且返回合法走法。
             var game = new GameManager(
-                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Warrior),
+                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter),
                 CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                 easy, new SimpleChoiceProvider());
 

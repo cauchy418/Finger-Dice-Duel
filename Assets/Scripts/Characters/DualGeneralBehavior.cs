@@ -56,7 +56,7 @@ namespace FingerDiceDuel.Characters
         /// **主将的显示名** —— 战报与 UI 只认这个（玩家确认）。
         ///
         /// ⚠️ 不能用 <c>CharacterTemplate.DisplayName</c>：它默认是 <c>GetType().Name</c>，
-        ///    对子角色来说就是英文类名（实测：期望“战士”、实际“Warrior”）。
+        ///    对子角色来说就是英文类名（实测：期望“战士”、实际“Fighter”）。
         ///    所以由工厂在创建时把名字传进来。
         /// </summary>
         public string PrimaryName { get; private set; }
