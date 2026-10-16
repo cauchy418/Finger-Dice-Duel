@@ -1375,8 +1375,45 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>已通过校验的实际结算流程。</summary>
+        /// <summary>
+        /// **重入守卫**：`ResolveTurn` 正常最多嵌套几层（多段 / 太极 / 追加攻击），
+        /// 但一旦失控就会变成无限递归 —— 而无限递归在原生层表现为
+        /// `AccessViolationException`（"内存访问违规"），堆栈还被截断，
+        /// 极难定位。加这个计数把它变成一条**可读的异常**。
+        ///
+        /// 阈值取 12：远高于任何正常嵌套，又远低于会把栈打爆的量。
+        /// </summary>
+        private int _resolveDepth;
+
+        private const int MaxResolveDepth = 12;
+
         private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue,
                                        Hand targetHand, int gambleResult)
+        {
+            _resolveDepth++;
+            if (_resolveDepth > MaxResolveDepth)
+            {
+                _resolveDepth = 0;
+                throw new InvalidOperationException(
+                    "结算重入过深（" + MaxResolveDepth + " 层）：疑似无限递归。" +
+                    " 角色=" + (actor?.Definition?.DisplayName ?? "?") +
+                    " 手=" + (actedHand?.Value.ToString() ?? "?") +
+                    " 目标值=" + targetValue +
+                    " 赌博=" + gambleResult);
+            }
+
+            try
+            {
+                return ResolveTurnCore(actor, actedHand, targetValue, targetHand, gambleResult);
+            }
+            finally
+            {
+                _resolveDepth--;
+            }
+        }
+
+        private TurnResult ResolveTurnCore(PlayerState actor, Hand actedHand, int targetValue,
+                                           Hand targetHand, int gambleResult)
         {
             var result = new TurnResult { Actor = actor, TargetHand = targetHand };
             _brokenThisTurn.Clear();
