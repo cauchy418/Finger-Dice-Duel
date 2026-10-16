@@ -91,6 +91,18 @@ namespace FingerDiceDuel.UI
             public Text ValueText;
             public Text StatusText;
 
+            /// <summary>
+            /// 这张牌**现在能不能点**（由 <see cref="SetInteractable"/> 写入）。
+            ///
+            /// ⚠️ 为什么不直接读 <see cref="Button"/>.interactable：
+            ///    高亮（<see cref="RefreshSide"/>）与可点性原来是**两次独立的计算**，
+            ///    而且刷新顺序上高亮先跑，于是**读到的是上一帧的可点性** ——
+            ///    "可点"与"亮不亮"于是常年不一致（玩家反复实测到：
+            ///    对手的手明明能点，却没有任何高光）。
+            ///    现在统一由这一个标记表达，高亮只依赖它。
+            /// </summary>
+            public bool IsClickable;
+
             /// <summary>受击闪烁用的白色覆盖层（默认全透明）。</summary>
             public Image Flash;
         }
@@ -1436,9 +1448,18 @@ namespace FingerDiceDuel.UI
 
                 // 只有"当前抉择的候选 / 已选中"才高亮；
                 // "可点"只是低调亮边 —— 否则整个回合都会亮着。
+                //
+                // ⚠️ 不要再把"候选（ChoiceCandidates）"当高亮依据 ——
+                //    候选只表达"当前抉择在问哪几只"，而**能点的手**通常是
+                //    候选之外的一大批（例如"选被加数"时对手的两只手）。
+                //    用它当依据的结果就是玩家反复实测到的
+                //    "对手的手明明能点、却没有任何高光"。
+                //
+                //    玩家要求的两条：**选中的手 = 金色**、**可以选的手 = 白色**。
                 HandVisual.OutlineState outline = HandVisual.OutlineState.Hidden;
-                if (selected || isChoice) outline = HandVisual.OutlineState.Highlighted;
-                else if (card.Button.interactable) outline = HandVisual.OutlineState.Available;
+                if (selected) outline = HandVisual.OutlineState.Highlighted;
+                else if (card.IsClickable) outline = HandVisual.OutlineState.Available;
+                else if (isChoice) outline = HandVisual.OutlineState.Highlighted;
 
                 card.ValueText.text = hand.Value.ToString();
                 card.StatusText.text = HandVisual.StatusText(hand, card.Owner);
@@ -1478,6 +1499,10 @@ namespace FingerDiceDuel.UI
             {
                 bool ok = predicate != null && card.Owner != null && predicate(card.Owner, card.Hand);
                 card.Button.interactable = ok;
+
+                // 同时写进显式标记 —— 高亮只读它，不再读按钮状态
+                // （读按钮状态会遇到"刷新顺序导致读到上一帧"的问题）。
+                card.IsClickable = ok;
             }
         }
 

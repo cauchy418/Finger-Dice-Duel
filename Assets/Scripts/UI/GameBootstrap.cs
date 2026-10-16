@@ -2264,6 +2264,14 @@ namespace FingerDiceDuel.UI
         {
             if (_controller == null || _board == null || _game == null) return;
 
+            // ⚠️ **必须先算可点性，再刷新高亮**。
+            //
+            //    高亮（RefreshSide）现在依赖 `HandCard.IsClickable`，
+            //    而这个标记由 SetInteractable 写入。原来 SetInteractable
+            //    在 Refresh 之后调用 —— 于是高亮读到的永远是**上一帧**的可点性，
+            //    表现成"对手的手明明能点却没有高光"（玩家反复实测到）。
+            _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
+
             IReadOnlyList<Hand> choices =
                 _controller.Phase == BoardPhase.ChoosingDefenseShield
                     ? (IReadOnlyList<Hand>)_controller.DefenseShieldChoices
@@ -2304,8 +2312,6 @@ namespace FingerDiceDuel.UI
                                turnLimit: _controller.RoundLimit,
                                extraHighlights: null);
             }
-
-            _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
 
             // 赌徒的「开赌」按钮：只在"等开赌"这一步显示
             _board.SetGambleButtonVisible(_controller.CanGamble);

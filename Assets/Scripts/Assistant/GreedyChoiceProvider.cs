@@ -511,7 +511,60 @@ namespace FingerDiceDuel.Assistant
             }
 
             // ⚠️ 负数（= 扣分），且**按比率缩放** —— 保证永不超过我方收益
-            return -(denyWeight * DenyRatioPercent) / 100;
+            int score = -(denyWeight * DenyRatioPercent) / 100;
+
+            // ---- 魔术师专属（玩家给的规则）----
+            //
+            // 规则原话：
+            //   "ai 应该是：避免送给比魔术师两手和价值更大的数字。
+            //    即魔术师两手和价值很低，则需要针对；
+            //    若魔术师两手和价值很高，针对就可以放缓 ——
+            //    因为针对了魔术师也可以合成高价值数字。"
+            //
+            // 直白说：他已经能自己凑出来的数字，送给他**没有额外价值**；
+            // 只有**超出他自造能力**的那个数字才值得挡。
+            score += MagicianExposurePenalty(victim, actedAfter);
+            score += MagicianExposurePenalty(victim, otherValue);
+
+            return score;
+        }
+
+        /// <summary>
+        /// **给魔术师留下的数字超出自造能力时的扣分**（玩家给的两条规则）。
+        ///
+        /// 魔术师可以拿自己的手当被加数，所以他**自己就能造出**
+        /// "两手之和（归一化）"以内的任何数字。因此：
+        ///   · 我留的数字 **≤ 他的自造上限** -> 他本来就能做，扣 0；
+        ///   · 超出越多越危险 -> 按超出量扣分。
+        ///
+        /// 这自然实现了玩家说的两句话：
+        ///   他两手和**很低** -> 自造上限低 -> 高数字都算"超出" -> **针对很强**；
+        ///   他两手和**很高** -> 自造上限高 -> 高数字也不再超出 -> **针对放缓**。
+        ///
+        /// 对非魔术师返回 0（这条只服务于魔术师）。
+        /// </summary>
+        private static int MagicianExposurePenalty(PlayerState victim, int value)
+        {
+            if (victim?.Hands == null || value <= 0) return 0;
+
+            // 只对魔术师算 —— 用能力接口判定，不硬编码角色类型
+            var self = victim.Character as ISelfAddendProvider;
+            if (self == null || !self.AllowsSelfAddend) return 0;
+
+            int left = victim.LeftHand?.Value ?? 0;
+            int right = victim.RightHand?.Value ?? 0;
+
+            // 他能自己造出的最大值：两手之和（按十进制归一化）
+            int selfMax = Hand.ComputeSum(left, right);
+
+            int over = value - selfMax;
+            if (over <= 0) return 0;
+
+            // 每超出 1 点扣 6 分 —— 与其它情景化阻挡同量级（约 9~16）。
+            const int PerPoint = 6;
+            const int MaxPenalty = 30;      // 封顶，避免盖过我方自身收益
+            int penalty = over * PerPoint;
+            return penalty > MaxPenalty ? MaxPenalty : penalty;
         }
 
         /// <summary>
