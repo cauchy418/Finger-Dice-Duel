@@ -225,6 +225,29 @@ namespace FingerDiceDuel.Core
         };
 
         /// <summary>
+        /// 状态对应的**主色**（0xRRGGBB）。
+        ///
+        /// ⚠️ 放在 Core、且是**唯一一份**：状态图标栏与图鉴指引都用它，
+        ///    两处各写一份必然会漂移（改了一处忘了另一处）。
+        /// </summary>
+        public static int StatusColorOf(StatusEffect s)
+        {
+            switch (s)
+            {
+                case StatusEffect.Resonance: return 0x33A6CC;   // 青蓝
+                case StatusEffect.Acid: return 0x8CBF26;        // 黄绿
+                case StatusEffect.Poison: return 0x7A3F9E;      // 紫
+                case StatusEffect.Blind: return 0xF2C72E;       // 亮金
+                case StatusEffect.Decay: return 0x526152;       // 暗灰绿
+                case StatusEffect.Burn: return 0xD9591A;        // 橙红
+                case StatusEffect.Freeze: return 0x4C9EE6;      // 冰蓝
+                case StatusEffect.Shock: return 0xFAE633;       // 明黄
+                case StatusEffect.Stun: return 0xD9338C;        // 品红
+                default: return 0x9AA0AC;                       // 中性灰
+            }
+        }
+
+        /// <summary>
         /// 状态的**图标符号**（基础几何字符，CJK 字体里基本都有）。
         ///
         /// ⚠️ 放在 Core 而不是 UI：图鉴的指南页与状态图标栏都要用它，
@@ -244,7 +267,11 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Decay: return "\u2716";       // ✖ 断掉的十字 = 不能治疗
                 case StatusEffect.Burn: return "\u25b2";        // ▲ 火苗 = 燃烧
                 case StatusEffect.Freeze: return "\u2744";      // ❄ 冰冻
-                case StatusEffect.Shock: return "\u26a1";       // ⚡ 感电
+                // ⚠️ U+26A1(⚡) 在 **Noto Sans CJK SC 里没有字形** —— 实测：
+                //    状态一览里"感电"那一行前面是**空白**。
+                //    换成 U+2A1C（4 道闪电）—— 同样是闪电语义，
+                //    且随 Noto Sans Symbols 2 一起回退（CJK 字体常带）。
+                case StatusEffect.Shock: return "\u2a1c";
                 case StatusEffect.Stun: return "\u2733";        // ✳ 星芒 = 震慑
                 default: return "\u25cb";                       // ○ 占位（无状态）
             }
@@ -265,7 +292,8 @@ namespace FingerDiceDuel.Core
                 return GlyphOf(StatusEffect.None) + " " + Of(type)
                      + "：穿盾、无视正向防御、不可闪避（不挂状态）";
 
-            return GlyphOf(st) + " " + Of(type) + " → " + Of(st) + "：" + Describe(st);
+            return Colorize(GlyphOf(st), st) + " " + Of(type)
+                 + " → " + Of(st) + "：" + Describe(st);
         }
 
         /// <summary>
@@ -273,6 +301,24 @@ namespace FingerDiceDuel.Core
         /// `◎ 残响：只能攻击与自己距离 1 的角色`。
         /// </summary>
         public static string StatusLine(StatusEffect st)
-            => GlyphOf(st) + " " + Of(st) + "：" + Describe(st);
+            => Colorize(GlyphOf(st), st) + " " + Of(st) + "：" + Describe(st);
+
+        /// <summary>
+        /// **给符号上色**（颜色与状态图标栏一致）。
+        ///
+        /// 用 uGUI 的富文本标签 —— `Text.supportRichText` 默认就是 true。
+        /// 颜色取自 <see cref="StatusColorOf"/>，与图标栏**共用一份**，
+        /// 所以图鉴里的符号与战场上的图标必然是同一个颜色。
+        ///
+        /// ⚠️ 没有状态（力场）时**不着色** —— 否则富文本标签会白白占宽度，
+        ///    那一行的对齐也会跟别人不一样。
+        /// </summary>
+        private static string Colorize(string glyph, StatusEffect st)
+        {
+            if (st == StatusEffect.None) return glyph;
+
+            return "<color=#" + StatusColorOf(st).ToString("X6") + ">"
+                 + glyph + "</color>";
+        }
     }
 }

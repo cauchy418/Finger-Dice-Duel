@@ -78,38 +78,85 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Every_guide_line_starts_with_its_status_glyph()
+        public void Every_guide_line_starts_with_its_coloured_status_glyph()
         {
-            // 玩家要求："状态一栏每一个状态的标记也放入" ——
-            // 图鉴的指南页要带**与状态图标栏同源**的符号。
+            // 玩家要求："状态一栏每一个状态的标记也放入"，且"图标要带上颜色"。
+            // 所以每一行都以 **<color=#RRGGBB>符号</color>** 开头。
             for (int i = 0; i < StatusNames.AllTypes.Length; i++)
             {
                 DamageType t = StatusNames.AllTypes[i];
                 string line = StatusNames.GuideLine(t);
-                string glyph = StatusNames.GlyphOf(StatusNames.StatusOf(t));
+                StatusEffect st = StatusNames.StatusOf(t);
 
                 Assert.IsFalse(string.IsNullOrEmpty(line), $"{t} 的指引文字空了。");
-                Assert.IsTrue(line.StartsWith(glyph),
-                    $"{t} 的指引应当以它对应状态的符号「{glyph}」开头（现在是「{line}」）。");
                 Assert.IsTrue(line.Contains(StatusNames.Of(t)),
                     $"{t} 的指引里应当出现类型名「{StatusNames.Of(t)}」。");
+
+                if (st == StatusEffect.None)
+                {
+                    // 力场没有状态 -> 不着色（否则标签白占宽度、对齐也不一样）
+                    Assert.IsTrue(line.StartsWith(StatusNames.GlyphOf(StatusEffect.None)),
+                        $"力场那一行不应当带颜色标签（现在是「{line}」）。");
+                    continue;
+                }
+
+                Assert.IsTrue(line.StartsWith(ColorTag(st)),
+                    $"{t} 的指引应当以带颜色的状态符号开头（现在是「{line}」）。");
             }
         }
 
         [Test]
-        public void Every_status_line_starts_with_its_glyph()
+        public void Every_status_line_starts_with_its_coloured_glyph()
         {
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
                 string line = StatusNames.StatusLine(st);
-                string glyph = StatusNames.GlyphOf(st);
 
-                Assert.IsTrue(line.StartsWith(glyph),
-                    $"状态「{StatusNames.Of(st)}」的一行应当以「{glyph}」开头（现在是「{line}」）。");
+                Assert.IsTrue(line.StartsWith(ColorTag(st)),
+                    $"状态「{StatusNames.Of(st)}」的一行应当以带颜色的符号开头（现在是「{line}」）。");
                 Assert.IsTrue(line.Contains(StatusNames.Describe(st)),
                     $"状态「{StatusNames.Of(st)}」的一行应当包含它的效果说明。");
             }
+        }
+
+        /// <summary>
+        /// 拼出期望的颜色标签（与 Core 的写法一致）。
+        ///
+        /// ⚠️ 这里刻意**不**从 Core 拿现成的字符串，而是自己按格式拼 ——
+        ///    否则"格式写错了"也会被测试一并接受（自我实现式断言）。
+        /// </summary>
+        private static string ColorTag(StatusEffect st)
+            => "<color=#" + StatusNames.StatusColorOf(st).ToString("X6") + ">"
+             + StatusNames.GlyphOf(st) + "</color>";
+
+        [Test]
+        public void Guide_colours_are_distinct_per_status()
+        {
+            // 颜色是"一眼分辨"的辅助手段，重复了就没意义
+            var seen = new List<int>();
+
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+            {
+                int c = StatusNames.StatusColorOf(StatusNames.AllStatuses[i]);
+
+                Assert.IsFalse(seen.Contains(c),
+                    $"颜色 0x{c:X6} 被两个状态共用了。");
+                seen.Add(c);
+            }
+        }
+
+        [Test]
+        public void Shock_glyph_is_not_the_emoji_lightning_bolt()
+        {
+            // ⚠️ 玩家实测：状态一览里"感电"那一行前面是**空白** ——
+            //    U+26A1(⚡) 在 Noto Sans CJK SC 里**没有字形**。
+            //    已换成 U+2A1C。这条测试防止有人"顺手改回去"。
+            string g = StatusNames.GlyphOf(StatusEffect.Shock);
+
+            Assert.IsFalse(string.IsNullOrEmpty(g), "感电必须有符号。");
+            Assert.AreNotEqual(0x26A1, (int)g[0],
+                "不能再用 U+26A1(⚡) —— 字体里没有字形，会显示成空白。");
         }
 
         [Test]

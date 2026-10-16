@@ -154,22 +154,18 @@ namespace FingerDiceDuel.UI
         /// </summary>
         public static string GlyphOf(StatusEffect s) => StatusNames.GlyphOf(s);
 
-        /// <summary>状态对应的主色（伤害类型的主色）。</summary>
+        /// <summary>
+        /// 状态对应的主色。
+        ///
+        /// ⚠️ 数值取自 <see cref="StatusNames.StatusColorOf"/> —— **只有一处真相**。
+        ///    图鉴的指南页也用同一份颜色，两处各写一份必然漂移。
+        /// </summary>
         public static Color ColorOf(StatusEffect s)
         {
-            switch (s)
-            {
-                case StatusEffect.Resonance: return new Color(0.20f, 0.65f, 0.80f);  // 青蓝
-                case StatusEffect.Acid: return new Color(0.55f, 0.75f, 0.15f);       // 黄绿
-                case StatusEffect.Poison: return new Color(0.48f, 0.25f, 0.62f);     // 紫
-                case StatusEffect.Blind: return new Color(0.95f, 0.78f, 0.18f);      // 亮金
-                case StatusEffect.Decay: return new Color(0.32f, 0.38f, 0.32f);      // 暗灰绿
-                case StatusEffect.Burn: return new Color(0.85f, 0.35f, 0.10f);       // 橙红
-                case StatusEffect.Freeze: return new Color(0.30f, 0.62f, 0.90f);     // 冰蓝
-                case StatusEffect.Shock: return new Color(0.98f, 0.90f, 0.20f);      // 明黄
-                case StatusEffect.Stun: return new Color(0.85f, 0.20f, 0.55f);       // 品红
-                default: return new Color(0.4f, 0.4f, 0.4f);
-            }
+            int rgb = StatusNames.StatusColorOf(s);
+            return new Color(((rgb >> 16) & 0xFF) / 255f,
+                             ((rgb >> 8) & 0xFF) / 255f,
+                             (rgb & 0xFF) / 255f);
         }
     }
 }

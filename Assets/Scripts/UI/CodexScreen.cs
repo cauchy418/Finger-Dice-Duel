@@ -266,7 +266,7 @@ namespace FingerDiceDuel.UI
             // 这样"属性行"与"技能"之间的间距是可算的，不会再压在一起。
             _body = MakeText(panelRect, "Body",
                              Vector2.zero, new Vector2(PanelW - 120f, 380f),
-                             18, TextAnchor.UpperLeft,
+                             (int)BodyFontSize, TextAnchor.UpperLeft,
                              new Color(0.88f, 0.90f, 0.94f));
 
             // 正文用**锚点拉伸**：左上 (60, -136)，右下 (-60, 96)
@@ -434,6 +434,8 @@ namespace FingerDiceDuel.UI
                 _stats.text = $"生命 {c.MaxHealth}　　攻 {Signed(c.Attack)}　　"
                             + $"防 {Signed(c.Defense)}　　距离 {RangeText(c.Range)}";
 
+            _measureFont = _font;
+
             if (_body != null)
             {
                 var sb = new StringBuilder();
@@ -458,22 +460,52 @@ namespace FingerDiceDuel.UI
 
                     if (c.TwoColumnItems)
                     {
-                        // 两列：每行放两条，左右对齐。
+                        // 两列：每行放两条，**左右严格对齐**。
                         //
-                        // ⚠️ 用**等宽空格补齐**左列 —— uGUI 的 Text 是单一文本块，
-                        //    没法像表格那样精确分栏；补空格是这里最稳的做法
-                        //    （同一字体下中文与全角空格等宽，能看出明显分栏）。
-                        const int LeftWidth = 26;
+                        // ⚠️ 必须**按像素**量（`TextGenerator` + 字体度量），
+                        //    不能按"字符个数"估：
+                        //      · 中文/符号是 ASCII 的两倍宽；
+                        //      · 而且我加了富文本颜色标签（`<color=#..>`），
+                        //        它的字符**不占宽度**，按字符数算必然错位。
+                        //    实测现象：右列起点参差、看着没对齐。
+                        float leftWidth = MeasureWidth(c.Interactions);
 
-                        for (int i = 0; i < c.Interactions.Count; i += 2)
+                        // ⚠️ **放不下就退回单列。**
+                        //
+                        //    切字是最难看的：右列一换行就另起一行，看起来就是"没对齐"。
+                        //    所以先量一下"最宽的左列 + 间隙 + 最宽的右列"是否塞得进正文宽度，
+                        //    塞不进就老老实实单列（宁可多占几行，也不要错位）。
+                        float widest = 0f;
+                        for (int i = 1; i < c.Interactions.Count; i += 2)
                         {
-                            string left = c.Interactions[i];
-                            string right = (i + 1 < c.Interactions.Count)
-                                ? c.Interactions[i + 1] : "";
+                            float w = MeasureWidth(c.Interactions[i]);
+                            if (w > widest) widest = w;
+                        }
 
-                            sb.Append(PadRight(left, LeftWidth));
-                            if (right.Length > 0) sb.Append("　").Append(right);
-                            sb.AppendLine();
+                        bool fits = _body != null
+                                    && leftWidth + ColumnGap + widest <= _body.rectTransform.rect.width - 4f;
+
+                        if (fits)
+                        {
+                            for (int i = 0; i < c.Interactions.Count; i += 2)
+                            {
+                                string left = c.Interactions[i];
+                                string right = (i + 1 < c.Interactions.Count)
+                                    ? c.Interactions[i + 1] : "";
+
+                                sb.Append(left);
+                                if (right.Length > 0)
+                                {
+                                    sb.Append(PadToWidth(left, leftWidth + ColumnGap));
+                                    sb.Append(right);
+                                }
+                                sb.AppendLine();
+                            }
+                        }
+                        else
+                        {
+                            for (int i = 0; i < c.Interactions.Count; i++)
+                                sb.AppendLine(c.Interactions[i]);
                         }
                     }
                     else
@@ -489,25 +521,104 @@ namespace FingerDiceDuel.UI
             if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
         }
 
+        /// <summary>两列排版时，左右两列之间的最小间隙（像素）。</summary>
+        private const float ColumnGap = 28f;
+
         /// <summary>
-        /// 按**显示宽度**右侧补全角空格（两列排版的左列用）。
+        /// 正文**字号**。
         ///
-        /// ⚠️ 为什么不用 <c>string.PadRight</c>：它按 **char 个数**补齐，
-        ///    而中文与符号的显示宽度是 ASCII 的两倍 ——
-        ///    直接用它会让含英文/数字的行（例如 "9 → 4"）**短一截、列错位**。
+        /// ⚠️ 量两列宽度时必须与实际渲染用**同一个值**，否则对齐是白做的。
+        ///    从 18 调到 17 是为了让"左列 46 字 + 长说明"能塞进一行、不换行
+        ///    （换行会让右列另起一行，看起来就是"没对齐"）。
         /// </summary>
-        private static string PadRight(string s, int displayWidth)
+        private const float BodyFontSize = 17f;
+
+        /// <summary>
+        /// **按像素**量出一段文字（含富文本标签）的渲染宽度。
+        ///
+        /// ⚠️ 富文本标签（`<color=#RRGGBB>` / `</color>`）本身**不显示**，
+        ///    所以要先剥掉再量 —— 否则会把标签的字符也算成宽度，右列被推远。
+        /// </summary>
+        private static float MeasureWidth(string s)
         {
-            if (s == null) s = "";
+            if (string.IsNullOrEmpty(s) || _measureFont == null) return 0f;
 
-            int width = 0;
+            // ⚠️ 用 **TextGenerator**（Unity 原生的排版器）而不是
+            //    `Font.GetCharacterInfo` —— 后者只认主字体，
+            //    中文/符号走的是**字体回退**，量出来会是 0（列宽全错）。
+            string plain = StripRichText(s);
+
+            var gen = new UnityEngine.TextGenerator();
+            gen.Invalidate();
+
+            var settings = new UnityEngine.TextGenerationSettings
+            {
+                font = _measureFont,
+                fontSize = (int)BodyFontSize,
+                fontStyle = UnityEngine.FontStyle.Normal,
+                richText = false,          // 已经剥掉标签了，不需要它再解析
+                lineSpacing = 1f,
+                scaleFactor = 1f,
+            };
+
+            gen.GetPreferredWidth(plain, settings);
+            float w = gen.GetPreferredWidth(plain, settings);
+
+            return w;
+        }
+
+        private static Font _measureFont;
+
+        /// <summary>取两列里**最宽**的那条（左列对齐宽度）。</summary>
+        private static float MeasureWidth(List<string> items)
+        {
+            float max = 0f;
+            for (int i = 0; i < items.Count; i++)
+            {
+                float w = MeasureWidth(items[i]);
+                if (w > max) max = w;
+            }
+            return max;
+        }
+
+        /// <summary>
+        /// 在 <paramref name="s"/> 后面补空格，直到渲染宽度达到
+        /// <paramref name="target"/>（像素）。多退少补到一个空格的精度。
+        /// </summary>
+        private static string PadToWidth(string s, float target)
+        {
+            float w = MeasureWidth(s);
+            if (w >= target || _measureFont == null) return s;
+
+            var sb = new StringBuilder(s);
+            float space = MeasureWidth(" ");
+
+            // space 为 0 时（字体没量出来）退回"补一个空格"，避免死循环
+            if (space <= 0.01f) { sb.Append(" "); return sb.ToString(); }
+
+            int count = (int)((target - w) / space);
+            for (int i = 0; i < count; i++) sb.Append(' ');
+
+            return sb.ToString();
+        }
+
+        /// <summary>剥掉富文本标签（只用于**量宽度**，不用于显示）。</summary>
+        private static string StripRichText(string s)
+        {
+            if (string.IsNullOrEmpty(s) || s.IndexOf('<') < 0) return s;
+
+            var sb = new StringBuilder(s.Length);
+            bool inTag = false;
+
             for (int i = 0; i < s.Length; i++)
-                width += s[i] < 0x2E80 ? 1 : 2;      // 中日韩 / 全角符号算两格
+            {
+                char ch = s[i];
+                if (ch == '<') { inTag = true; continue; }
+                if (ch == '>') { inTag = false; continue; }
+                if (!inTag) sb.Append(ch);
+            }
 
-            int pad = displayWidth - width;
-            if (pad <= 0) return s;
-
-            return s + new string('\u3000', pad / 2) + new string(' ', pad % 2);
+            return sb.ToString();
         }
 
         private static void Highlight(Dictionary<string, Image> buttons, string active)        {
@@ -582,6 +693,12 @@ namespace FingerDiceDuel.UI
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Overflow;
             text.raycastTarget = false;
+
+            // ⚠️ **显式打开富文本**（默认虽是 true，但写出来更安全）：
+            //    指南页的符号用 `<color=#RRGGBB>` 上色，
+            //    一旦这里被关掉，玩家会看到**标签原文**。
+            text.supportRichText = true;
+
             return text;
         }
 
