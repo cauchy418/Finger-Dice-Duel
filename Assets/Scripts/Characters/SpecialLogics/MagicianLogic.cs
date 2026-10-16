@@ -46,10 +46,19 @@ namespace FingerDiceDuel.Core
         {
             int result = actedHand?.Value ?? 0;
 
-            // 规则（玩家）："运算出 2 可以攻击" —— 不限定必须自加。
-            // 所以这里只看结果值。与 ResultNeedsTarget 的口径保持一致：
-            // 一个说"是攻击"，另一个说"要问打谁"，两者必须同时成立，
-            // 否则会出现"变红了却不问目标"或"问了目标却不红"。
+            // ⚠️⚠️ **先处理 2，其余一律交回引擎**。
+            //
+            //    我上一轮把"只看结果值"直接写成了
+            //      if (result == 2) return Attack4;
+            //      return Hand.GetEffectType(result);
+            //    看起来等价，其实**把魔术师的 4/6/8 也弄坏了**：
+            //    因为 `Hand.GetEffectType` 返回的 Attack4/Attack6/Attack8
+            //    在 `AttackContext` 里会被"按效果类型取数字"的路径处理，
+            //    而魔术师需要的是"伤害就是这只手的点数"。
+            //    玩家实测：7 + 9 = 6 变成了「攻击，造成 **0** 点伤害」。
+            //
+            //    所以这里必须**显式列出攻击牌**，与 `Hand.GetEffectType` 等价，
+            //    不能靠"原样返回"来兜底。
             if (result == MagicAttackValue)
                 return HandEffectType.Attack4;
 
@@ -81,20 +90,17 @@ namespace FingerDiceDuel.Core
         {
             if (context == null) return false;
 
-            // ⚠️ **只要结果是 2 就要问**，不要再加"必须自加"的条件。
+            // ⚠️⚠️ **只补 2，其余必须交回默认规则**。
             //
-            //    我第一版写成"自加且结果为 2"，结果玩家又测出：
-            //      "魔术师的 2 还是没有让我点目标，现在还是自动攻击了"
-            //      （日志：对方右(1) + 目标1 = 2，被当成不需要目标）。
-            //
-            //    根因：这个判定被调用的时机是 `ChoosingTargetHand` ——
-            //    **玩家还没点被加数**，而 `_selectedTarget` 此时指向的对象
-            //    并不保证是"被加数那只手"。所以从上下文里**推不出**
-            //    "这次是不是自加"，那个条件只会把能力挡掉。
-            //
-            //    而玩家给出的规则是"**运算出 2 可以攻击**"——
-            //    没有限定必须自加。所以无条件按结果值判。
-            return context.ResultValue == MagicAttackValue;
+            //    我上一轮写成 `return context.ResultValue == 2;` ——
+            //    那等于**替 4/6/8 返回了 false**，把它们的目标询问关掉了。
+            //    玩家实测："现在 4 也不选择目标了直接攻击了"。
+            //    正确做法是：**认得的自己答，认不得的交给兜底**
+            //    （兜底认得 Attack4/6/8）。所以这里只对 2 返回 true，
+            //    其余一律 `base`。
+            if (context.ResultValue == MagicAttackValue) return true;
+
+            return base.ResultNeedsTarget(context);
         }
 
         /// <summary>

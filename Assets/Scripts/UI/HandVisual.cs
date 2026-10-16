@@ -82,8 +82,13 @@ namespace FingerDiceDuel.UI
         {
             switch (state)
             {
-                case OutlineState.Highlighted: return new Color(1f, 0.85f, 0.25f);   // 金色
-                case OutlineState.Available: return new Color(0.62f, 0.70f, 0.82f);  // 低调亮边
+                // 玩家要求："选中的手是黄色高光，可以选的手是白色高光"。
+                // 原来"可点"用的是淡蓝灰（0.62/0.70/0.82），
+                // 玩家实测反馈："现在可点的高光变成黄色外框了" ——
+                // 那是因为我上一轮把"可点的手"也填进了候选，于是它们都走了金色分支。
+                // 现在把两层颜色明确分开：候选/选中 = 金、可点 = 白。
+                case OutlineState.Highlighted: return new Color(1f, 0.85f, 0.25f);   // 金色：选中 / 当前候选
+                case OutlineState.Available: return new Color(0.95f, 0.96f, 1f);      // 白色：可以点
                 default: return new Color(0f, 0f, 0f, 0.25f);
             }
         }

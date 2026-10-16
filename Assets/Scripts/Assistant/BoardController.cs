@@ -1649,39 +1649,20 @@ namespace FingerDiceDuel.Assistant
                     Hint = $"已选择 {SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
                            $"请选择要打 {Defender.Name} 的哪一只手（再点一次已选的手可取消）。";
 
-                    // ⚠️ **把"这一步能点的所有手"填进候选，让它们都亮起来**。
+                    // ⚠️ 这里**不填 `_pendingChoiceCandidates`**。
                     //
-                    //    原来这里不填，于是亮框（Highlighted）一个都没有 ——
-                    //    而 `RefreshSide` 里"可点"只是**低调亮边**（Available），
-                    //    玩家看不出该点哪里。玩家实测：
-                    //      "只有魔术师自己的手高亮，对手的手不高亮了，
-                    //       实际上也能点对面的手" ——
-                    //    正是这个原因：**可点 ≠ 高亮**，两套判据不一致。
+                    //    我曾经为了"让能点的手都亮起来"把这一步的所有可点手
+                    //    都填进候选，结果它们全走了**金色（Highlighted）**分支，
+                    //    与"选中"撞成同一个颜色。玩家实测反馈：
+                    //    "现在可点的高光变成黄色外框了，应该保持：
+                    //      选中的手是黄色高光、可以选的手是白色高光"。
                     //
-                    //    填法必须与 `CanClick` 的 ChoosingTargetHand 分支一致：
-                    //      · 别的玩家（含队友）的手都可以当被加数；
-                    //      · 自己是魔术师时，自己的另一只手也可以；
-                    //      · 已选的那只手不列（它是"取消选择"，另有交互）。
+                    //    正确做法是让**两层各自负责**：
+                    //      · 候选（金色）= 当前抉择真正在问的那批手；
+                    //      · 可点（白色）= `CanClick` 放行的手。
+                    //    而"选被加数"这一步的可点手是由 `CanClick` 算出来的，
+                    //    不需要候选来重复表达 —— 所以这里留空。
                     _pendingChoiceCandidates.Clear();
-                    for (int pi = 0; pi < _game.Players.Count; pi++)
-                    {
-                        PlayerState owner = _game.Players[pi];
-                        if (owner == null || !owner.IsAlive) continue;
-
-                        bool isSelf = ReferenceEquals(owner, ActivePlayer);
-                        if (isSelf && !(ActivePlayer.Character is ISelfAddendProvider sa
-                                        && sa.AllowsSelfAddend))
-                            continue;
-
-                        foreach (Hand h in owner.Hands)
-                        {
-                            if (h == null) continue;
-                            if (ReferenceEquals(h, SelectedHand)) continue;
-                            if (h.IsConcealed) continue;
-                            if (isSelf && !h.CanBeOperated) continue;
-                            _pendingChoiceCandidates.Add(h);
-                        }
-                    }
                     return true;
 
                 case BoardPhase.ChoosingTargetHand:
