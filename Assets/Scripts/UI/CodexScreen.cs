@@ -461,75 +461,119 @@ namespace FingerDiceDuel.UI
 
                 if (c.Interactions != null && c.Interactions.Count > 0)
                 {
-                    // ⚠️ **指南页（两列）不再加任何标题** ——
-                    //    玩家要求它是纯速查表；标题"【伤害类型 / 状态】（左 -> 右）"
-                    //    既啰嗦、也占了正文高度（正文越高越容易顶到翻页按钮）。
-                    //    角色卡的"【与其他角色的特殊交互】"仍然保留。
-                    if (!c.TwoColumnItems) sb.AppendLine();
-                    if (!c.TwoColumnItems)
-                        sb.AppendLine("【与其他角色的特殊交互】");
-
+                    // ⚠️ 指南页（两列）走**独立的两个 Text 列**，不走正文。
                     if (c.TwoColumnItems)
                     {
-                        // 两列：每行放两条，**左右严格对齐**。
-                        //
-                        // ⚠️ 必须**按像素**量（`TextGenerator` + 字体度量），
-                        //    不能按"字符个数"估：
-                        //      · 中文/符号是 ASCII 的两倍宽；
-                        //      · 而且我加了富文本颜色标签（`<color=#..>`），
-                        //        它的字符**不占宽度**，按字符数算必然错位。
-                        //    实测现象：右列起点参差、看着没对齐。
-                        float leftWidth = MeasureWidth(c.Interactions);
-
-                        // ⚠️ **放不下就退回单列。**
-                        //
-                        //    切字是最难看的：右列一换行就另起一行，看起来就是"没对齐"。
-                        //    所以先量一下"最宽的左列 + 间隙 + 最宽的右列"是否塞得进正文宽度，
-                        //    塞不进就老老实实单列（宁可多占几行，也不要错位）。
-                        float widest = 0f;
-                        for (int i = 1; i < c.Interactions.Count; i += 2)
-                        {
-                            float w = MeasureWidth(c.Interactions[i]);
-                            if (w > widest) widest = w;
-                        }
-
-                        bool fits = _body != null
-                                    && leftWidth + ColumnGap + widest <= _body.rectTransform.rect.width - 4f;
-
-                        if (fits)
-                        {
-                            for (int i = 0; i < c.Interactions.Count; i += 2)
-                            {
-                                string left = c.Interactions[i];
-                                string right = (i + 1 < c.Interactions.Count)
-                                    ? c.Interactions[i + 1] : "";
-
-                                sb.Append(left);
-                                if (right.Length > 0)
-                                {
-                                    sb.Append(PadToWidth(left, leftWidth + ColumnGap));
-                                    sb.Append(right);
-                                }
-                                sb.AppendLine();
-                            }
-                        }
-                        else
-                        {
-                            for (int i = 0; i < c.Interactions.Count; i++)
-                                sb.AppendLine(c.Interactions[i]);
-                        }
+                        RenderTwoColumns(c.Interactions);
+                        if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
+                        return;
                     }
-                    else
-                    {
-                        for (int i = 0; i < c.Interactions.Count; i++)
-                            sb.AppendLine("· " + c.Interactions[i]);
-                    }
+
+                    // 角色卡：仍然走正文（单列）
+                    sb.AppendLine();
+                    sb.AppendLine("【与其他角色的特殊交互】");
+
+                    for (int i = 0; i < c.Interactions.Count; i++)
+                        sb.AppendLine("· " + c.Interactions[i]);
                 }
 
                 _body.text = sb.ToString();
             }
 
+            // 单列卡片：把两列收起来（否则翻到角色卡时两列还留在屏幕上）
+            HideColumnTexts();
+
             if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
+        }
+
+        /// <summary>
+        /// **两列排版：左右各用一个 Text 组件。**
+        ///
+        /// ⚠️⚠️ 为什么不用"一个 Text + 补空格对齐"（我原来的做法）：
+        ///    补的空格是**离散**的 —— 凑到"左列宽 + 间隙"时实际宽度会略微超出，
+        ///    于是那一行**折行**，左列文字在新的一行又出现一次。
+        ///    玩家看到的正是这个："雷鸣显示了两次描述、毒素显示了两次描述"。
+        ///
+        ///    拆成两个 Text 之后，列宽由**布局**决定：
+        ///      · 左列一条、右列一条，各占自己的矩形；
+        ///      · 不可能把另一列挤到下一行；
+        ///      · 对齐由列宽保证，不依赖字体测量精度。
+        /// </summary>
+        private void RenderTwoColumns(IReadOnlyList<string> interactions)
+        {
+            EnsureColumnTexts();
+
+            var left = new StringBuilder();
+            var right = new StringBuilder();
+
+            for (int i = 0; i < interactions.Count; i += 2)
+            {
+                left.AppendLine(interactions[i]);
+                if (i + 1 < interactions.Count) right.AppendLine(interactions[i + 1]);
+            }
+
+            if (_colLeft != null)
+            {
+                _colLeft.gameObject.SetActive(true);
+                _colLeft.text = left.ToString();
+            }
+
+            if (_colRight != null)
+            {
+                _colRight.gameObject.SetActive(true);
+                _colRight.text = right.ToString();
+            }
+
+            // 单列正文在这一页要让位
+            if (_body != null) _body.text = "";
+        }
+
+        private Text _colLeft, _colRight;
+
+        /// <summary>收起两列（翻到单列的角色卡时用）。</summary>
+        private void HideColumnTexts()
+        {
+            if (_colLeft != null) _colLeft.gameObject.SetActive(false);
+            if (_colRight != null) _colRight.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// 建出两列 Text（只建一次，之后复用）。
+        ///
+        /// 位置与正文同区域（左上锚点、同 60/96 边距），再各分一半宽度。
+        /// </summary>
+        private void EnsureColumnTexts()
+        {
+            if (_colLeft != null && _colRight != null) return;
+            if (_root == null) return;
+
+            RectTransform panelRect = _root.childCount > 0
+                ? _root.GetChild(0) as RectTransform : _root;
+
+            _colLeft = MakeColumnText(panelRect, "ColLeft", 0f, 0.5f);
+            _colRight = MakeColumnText(panelRect, "ColRight", 0.5f, 1f);
+
+            _colLeft.gameObject.SetActive(false);
+            _colRight.gameObject.SetActive(false);
+        }
+
+        private Text MakeColumnText(RectTransform parent, string name,
+                                    float anchorMinX, float anchorMaxX)
+        {
+            Text t = MakeText(parent, name, Vector2.zero, Vector2.zero,
+                              (int)BodyFontSize, TextAnchor.UpperLeft,
+                              new Color(0.88f, 0.90f, 0.94f));
+
+            RectTransform r = t.rectTransform;
+            r.anchorMin = new Vector2(anchorMinX, 0f);
+            r.anchorMax = new Vector2(anchorMaxX, 1f);
+            r.pivot = new Vector2(0f, 1f);
+
+            // 与正文同样的上下边距；左右各留 60，中间再留半个 ColumnGap
+            r.offsetMin = new Vector2(anchorMinX > 0f ? ColumnGap * 0.5f : 60f, 96f);
+            r.offsetMax = new Vector2(anchorMaxX < 1f ? -ColumnGap * 0.5f : -60f, -136f);
+
+            return t;
         }
 
         /// <summary>两列排版时，左右两列之间的最小间隙（像素）。</summary>

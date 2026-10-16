@@ -63,6 +63,43 @@ namespace FingerDiceDuel.Core
 
         /// <summary>魔法球入口要显示的全部速查表（顺序即翻页顺序）。</summary>
         public static List<GuideSheet> All()
-            => new List<GuideSheet> { DamageTypes(), Statuses() };
+            => new List<GuideSheet> { DamageAndStatuses() };
+
+        /// <summary>
+        /// **合并表**：一行同时给出"伤害类型 + 它挂上的状态 + 状态效果"。
+        ///
+        /// ⚠️ 玩家反馈："第一排都显示了两次"。
+        ///    原因是原来分成两张表：
+        ///      伤害类型表第 1 行 = `◎ 雷鸣 → 残响：只能攻击与自己距离 1 的角色`
+        ///      状态表    第 1 行 = `◎ 残响：只能攻击与自己距离 1 的角色`
+        ///    信息**本来就是同一组**，翻页还会各出现一次，看起来就是重复。
+        ///
+        ///    合并成一张之后：
+        ///      · 9 种有状态的类型各占一行（类型 + 状态 + 效果，一次说完）
+        ///      · 力场单独一行（它不挂状态）
+        ///      · 不再有第二张表来重复
+        /// </summary>
+        public static GuideSheet DamageAndStatuses()
+        {
+            var lines = new List<string>(StatusNames.AllTypes.Length);
+
+            // 先列"有状态"的（顺序与 AllTypes 一致），力场放最后
+            for (int i = 0; i < StatusNames.AllTypes.Length; i++)
+            {
+                DamageType t = StatusNames.AllTypes[i];
+                if (StatusNames.StatusOf(t) == StatusEffect.None) continue;
+                lines.Add(StatusNames.GuideLine(t));
+            }
+
+            for (int i = 0; i < StatusNames.AllTypes.Length; i++)
+            {
+                DamageType t = StatusNames.AllTypes[i];
+                if (StatusNames.StatusOf(t) != StatusEffect.None) continue;
+                lines.Add(StatusNames.GuideLine(t));
+            }
+
+            return new GuideSheet("伤害类型 · 状态", "Damage & Status", lines,
+                                  twoColumn: true);
+        }
     }
 }
