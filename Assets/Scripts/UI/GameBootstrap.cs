@@ -973,6 +973,16 @@ namespace FingerDiceDuel.UI
                                               aiForB: aiB);
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
             _isDualGeneral = true;
+
+            // ⚠️ **必须清掉 2v2 的标志**。
+            //
+            //    `_isTwoOnTwo` 只在 BuildTwoOnTwoMatch 里被置 true，
+            //    **从来没有人复位**。于是"先打过一局 2v2、再玩双将"时，
+            //    双将（1v1 的对局）会一路走进 2v2 分支：
+            //    界面用环形布局、标题印四人信息。
+            //    玩家实测说的正是这个："娱乐模式的双将变成 2v2 了"。
+            _isTwoOnTwo = false;
+            _twoOnTwoSeated = null;
         }
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
@@ -1913,6 +1923,16 @@ namespace FingerDiceDuel.UI
 
             // AI 的"回合内抉择"（选盾 / 锁手）由 UI 注入解析器代做
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+
+            // ⚠️ 1v1 路径（含经典 / 入门 / 双将）必须清掉 2v2 标志。
+            //    `_isTwoOnTwo` 只在 BuildTwoOnTwoMatch 里被置 true、无人复位，
+            //    于是"先打 2v2 再玩 1v1"会残留成 2v2 的界面与标题。
+            //    在**建局**这一层统一清，比在每个入口各清一次更可靠。
+            _isTwoOnTwo = false;
+
+            // `_twoOnTwoSeated` 同样从不清理 —— 残留会让诊断里
+            // 打出一份"2v2 手值"，与当前这局完全不符。
+            _twoOnTwoSeated = null;
         }
 
         /// <summary>掷骰分配完成后真正进入对局。</summary>

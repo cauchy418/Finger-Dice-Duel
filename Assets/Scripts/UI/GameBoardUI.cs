@@ -500,6 +500,15 @@ namespace FingerDiceDuel.UI
         /// </summary>
         public void BindPlayers(PlayerState a, PlayerState b)
         {
+            // ⚠️ **必须把布局切回 1v1**。
+            //
+            //    `BindPlayersRing` 会把 1v1 的两块大面板 `SetActive(false)`、
+            //    并把环形面板点亮 —— 但**原来没有任何地方把它们切回来**。
+            //    后果（玩家实测）："打过一局 2v2 之后，
+            //    娱乐模式的双将变成 2v2 了、1v1 双将模式不见了" ——
+            //    其实对局是 1v1，只是**界面还是 2v2 的环形布局**。
+            RestoreTwoPlayerLayout();
+
             _nameTextA.text = a.Name;
             _nameTextB.text = b.Name;
 
@@ -511,6 +520,28 @@ namespace FingerDiceDuel.UI
             {
                 _presentation.RegisterNameRow(a, _nameTextA);
                 _presentation.RegisterNameRow(b, _nameTextB);
+            }
+        }
+
+        /// <summary>
+        /// 把界面切回 **1v1 布局**：重新显示两块大面板、隐藏全部环形面板。
+        ///
+        /// 与 <see cref="BindPlayersRing"/> 正好相反，两者必须成对使用 ——
+        /// 否则打过 2v2 之后 1v1 会残留成环形布局（玩家实测报告过）。
+        /// </summary>
+        private void RestoreTwoPlayerLayout()
+        {
+            if (_areaA != null) _areaA.gameObject.SetActive(true);
+            if (_areaB != null) _areaB.gameObject.SetActive(true);
+
+            for (int i = 0; i < _ringPanels.Count; i++)
+            {
+                RingPanel panel = _ringPanels[i];
+                if (panel?.Root == null) continue;
+
+                panel.Root.gameObject.SetActive(false);
+                panel.Owner = null;
+                panel.Relation = RingRelation.Self;
             }
         }
 
