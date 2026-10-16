@@ -2237,7 +2237,27 @@ namespace FingerDiceDuel.UI
             if (_controller == null) return;
             if (!_controller.IsHumanChooser) return;
 
-            if (_controller.AcceptPendingChoice()) RefreshView();
+            // ⚠️⚠️ **必须无条件刷新。**
+            //
+            //    原来是 `if (_controller.AcceptPendingChoice()) RefreshView();` ——
+            //    于是"发动"被拒绝时（例如法师的"放弃攻击"有 **2 个候选**，
+            //    而 AcceptPendingChoice 要求**唯一候选**），
+            //    界面**一点反应都没有**，玩家看到的就是**卡住**
+            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //
+            //    界面必须永远反映控制器的真实状态；失败也要给出可读的原因。
+            bool ok = _controller.AcceptPendingChoice();
+
+            if (!ok)
+            {
+                Debug.LogWarning("[FingerDiceDuel]「发动」被拒绝：" +
+                                 $"phase={_controller.Phase} " +
+                                 $"pending={_controller.PendingEffect} " +
+                                 $"acceptLabel='{_controller.PendingAcceptLabel}' " +
+                                 "—— 该抉择有多个候选时请直接点手牌；界面已刷新。");
+            }
+
+            RefreshView();
         }
 
         /// <summary>放弃当前的"角色抉择"（游侠的闪避 / 强化、野蛮人的锁手等）。</summary>
@@ -2250,11 +2270,21 @@ namespace FingerDiceDuel.UI
             // 放弃 = 算用掉本回合（换对方行动，手值不变）。
             if (_controller.CanGiveUpAttack)
             {
-                if (_controller.GiveUpAttack()) RefreshView();
+                _controller.GiveUpAttack();
+                RefreshView();
                 return;
             }
 
-            if (_controller.DeclinePendingChoice()) RefreshView();
+            // ⚠️ 同样必须无条件刷新（理由见 OnAcceptClicked）。
+            bool ok = _controller.DeclinePendingChoice();
+            if (!ok)
+            {
+                Debug.LogWarning("[FingerDiceDuel]「不发动 / 放弃」被拒绝：" +
+                                 $"phase={_controller.Phase} " +
+                                 $"pending={_controller.PendingEffect} —— 界面已刷新。");
+            }
+
+            RefreshView();
         }
 
         /// <summary>
@@ -2268,11 +2298,25 @@ namespace FingerDiceDuel.UI
             if (_controller == null) return;
             if (type == DamageType.None) return;
 
-            if (_controller.ChooseDamageType(type))
+            // ⚠️ **先关面板、再无条件刷新。**
+            //
+            //    我第一版写成"只有 `ChooseDamageType` 返回 true 才关面板 + 刷新"，
+            //    于是它一旦返回 false（状态不符 / 找不到 sink），
+            //    面板既不消失、界面也不刷新 —— 玩家看到的就是**卡住**
+            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //    界面必须**永远**反映控制器的真实状态，不能"失败就什么都不做"。
+            _board.SetDamageTypePanelVisible(false);
+
+            bool ok = _controller.ChooseDamageType(type);
+
+            if (!ok)
             {
-                _board.SetDamageTypePanelVisible(false);
-                RefreshView();
+                Debug.LogWarning($"[FingerDiceDuel] 选择伤害类型（{type}）被拒绝：" +
+                                 $"phase={_controller.Phase} " +
+                                 $"pending={_controller.PendingEffect} —— 界面已刷新，请再试一次。");
             }
+
+            RefreshView();
         }
 
         private void OnHandClicked(PlayerState owner, Hand hand)
@@ -2446,6 +2490,19 @@ namespace FingerDiceDuel.UI
                 // 面板已经替代了这两个按钮
                 _board.SetAcceptButtonVisible(false);
                 _board.SetDeclineButtonVisible(false);
+            }
+
+            // 临时诊断：把面板显隐的真实状态打出来 ——
+            // "点了放弃却看不到 10 选 1"这类问题只能靠它定位
+            // （是没进这个分支、还是面板没显示出来）。
+            if (_controller.PendingEffect == HandEffect.MageDamageType
+                || _board.IsDamageTypePanelVisible)
+            {
+                Debug.Log($"[FDD伤害类型] phase={_controller.Phase} " +
+                          $"pending={_controller.PendingEffect} " +
+                          $"isHuman={_controller.IsHumanChooser} " +
+                          $"picking={pickingDamageType} " +
+                          $"panelVisible={_board.IsDamageTypePanelVisible}");
             }
 
             if (_controller.Phase == BoardPhase.GameOver)

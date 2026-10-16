@@ -1663,11 +1663,26 @@ namespace FingerDiceDuel.Core
         private void ApplyMageStatusOnSuppressedAttack(PlayerState actor, PlayerState victim,
                                                         TurnResult result)
         {
-            
+            // ⚠️⚠️ **被放弃的这一击什么都不做。**
+            //
+            //    玩家确认的机制是"放弃这次攻击，为**下一次**攻击指定伤害类型" ——
+            //    所以放弃的这一击：
+            //      · 不造成伤害（已由 SuppressAttackDamage 保证）；
+            //      · **不消耗类型**（否则类型在这一回合就被吃掉，
+            //        永远轮不到"下一次攻击"）；
+            //      · **不挂状态**（状态是给下一次命中挂的）。
+            //
+            //    我第一版在这里 `ConsumeDamageType()` 并挂状态 ——
+            //    等于"放弃 = 白扔 + 状态挂在被放弃的这一击上"，
+            //    与"类型留给下一次"完全相反（界面流程测试抓到）。
+            //
+            //    所以这里**直接返回**；保留方法是为了留下这个结论，
+            //    并作为"将来若要给放弃的一击加别的副作用"的挂点。
+            if (SuppressAttackDamage) return;
             if (actor?.Character is not IStatusApplyingAttack applier) return;
 
-            // 用一个最小的 context 问"这次要挂什么"（法师只读自己的待用类型）
-            var probe = new AttackContext(actor, victim, actor.LeftHand, result.ResultValue);
+            var probe = new AttackContext(actor, victim, actor.LeftHand,
+                                          result?.ResultValue ?? 0);
             StatusEffect status = applier.StatusToApplyOnHit(probe);
 
             if (actor.Character is Characters.SpecialLogics.MageLogic mage)
@@ -1676,7 +1691,6 @@ namespace FingerDiceDuel.Core
             if (status == StatusEffect.None) return;
             if (victim == null || !victim.IsAlive) return;
 
-            
             victim.ApplyStatus(status, PlayerState.StatusDurationTurns, actor);
             result.AppliedStatus = status;
             result.StatusHit = true;
@@ -1926,6 +1940,25 @@ namespace FingerDiceDuel.Core
             //     本次要不要真的打伤害（放弃 = 不造成伤害）。
             ResolveMageStatusIntent(actor, actedHand, targetHand);
 
+            // ⚠️⚠️ **被放弃的那一击不能吃掉"为下一次准备"的伤害类型。**
+            //
+            //    玩家确认的机制是"放弃这次攻击，为**下一次**攻击指定伤害类型"。
+            //    但这一回合的结算会在攻击分派处走到
+            //    `AttackContext.ApplyAttackerStatus`（它无条件
+            //    `ConsumeDamageType()`，因为玩家确认"没命中就作废"）——
+            //    于是**刚选好的类型会被自己的放弃动作清掉**，
+            //    永远轮不到下一次攻击（界面流程测试抓到）。
+            //
+            //    修法：放弃的那一回合**先把类型取下来**，
+            //    结算完再放回去（类型本来就是跨回合的，这样做语义一致）。
+            DamageType unspent = DamageType.None;
+
+            if (actor?.Character is Characters.SpecialLogics.MageLogic mageForStash
+                && mageForStash.WantsToAbandonThisTurn)
+            {
+                unspent = mageForStash.ConsumeDamageType();
+            }
+
             // 3. 运算前碎掉的盾：只有**结果仍然是 5** 时才保留 Broken 标记。
             //
             //    Broken 的语义是"这面盾碎了，但它仍然是一面（值为 5 的）盾，可以被修复"。
@@ -2172,6 +2205,16 @@ namespace FingerDiceDuel.Core
                 CheckTurnLimit();
                 result.GameOver = IsGameOver;
                 result.Winner = Winner;
+            }
+
+            // ⚠️ **把"放弃攻击"暂存的伤害类型放回去**（见上面取下的地方）。
+            //
+            //    玩家确认："放弃这次攻击，为下一次攻击指定伤害类型" ——
+            //    所以类型必须跨过这次结算、留在法师身上等下一次攻击。
+            if (unspent != DamageType.None
+                && actor?.Character is Characters.SpecialLogics.MageLogic mageRestore)
+            {
+                mageRestore.SetPendingDamageType(unspent);
             }
 
             return result;

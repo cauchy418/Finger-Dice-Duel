@@ -2793,15 +2793,29 @@ namespace FingerDiceDuel.Assistant
             if (type == DamageType.None) return false;
             if (PendingEffect != HandEffect.MageDamageType) return false;
 
-            var sink = SinkFor(ActivePlayer) as IDamageTypeChoiceSink;
-            if (sink == null) return false;
+            // ⚠️⚠️ **必须把类型记到法师身上，不能只写进抉择器。**
+            //
+            //    我第一版写成"先从 `SinkFor(ActivePlayer)` 取 sink（要求实现
+            //    `IDamageTypeChoiceSink`），再 `mage.ReadFromSink(sink)`" ——
+            //    而**人类玩家的抉择器是 `SimpleChoiceProvider`，
+            //    它没有实现那个接口**（只有 AI 的 `GreedyChoiceProvider` 实现了）。
+            //    于是 `sink == null` -> 直接返回 false ->
+            //    **面板点了没反应（玩家实测的"卡住"）**。
+            //
+            //    正确的做法：**法师自己就是答案的归属者**，直接写给他。
+            //    （抉择器那条路是给 AI 用的，两者互不冲突。）
+            var mage = ActivePlayer?.Character as Characters.SpecialLogics.MageLogic;
+            if (mage == null) return false;
 
-            sink.ChosenDamageType = type;
-            sink.WantsToAbandonAttack = true;
+            mage.SetPendingDamageType(type);
+            mage.WantsToAbandonThisTurn = true;
 
-            // 把选择写进法师身上，并标这一步已答
-            if (ActivePlayer?.Character is Characters.SpecialLogics.MageLogic mage)
-                mage.ReadFromSink(sink);
+            // 顺手也写进抉择器（若它支持）—— 让 AI 侧的记录与玩家选择保持一致
+            if (SinkFor(ActivePlayer) is IDamageTypeChoiceSink sink)
+            {
+                sink.ChosenDamageType = type;
+                sink.WantsToAbandonAttack = true;
+            }
 
             ApplyPreTurnChoiceAndContinue(null);
             return true;
@@ -2830,8 +2844,46 @@ namespace FingerDiceDuel.Assistant
 
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];
             if (string.IsNullOrEmpty(request.AcceptLabel)) return false;
-            if (request.Candidates.Count != 1) return false;
 
+            // ⚠️⚠️ **法师：玩家在界面点了"放弃攻击"，要当场把标记落到法师身上。**
+            //
+            //    否则下一步「选伤害类型」会被 `skipWhen` 跳过 ——
+            //    那个条件是 `!WantsToAbandonThisTurn`，而这个标记
+            //    原本要等结算时（`ResolveMageStatusIntent`）才被设置，
+            //    所以在"选类型"这一刻它还是 false -> 整步被跳过 ->
+            //    **界面上什么都不发生（玩家看到的"卡住"）**，
+            //    而结算时又因为没走"选类型"这一步而没有类型可选。
+            //
+            //    ⚠️ 只有**真的被接受**时才标记；被拒绝时不能留下脏标记。
+            if (request.Effect == HandEffect.MageAbandonAttack
+                && ActivePlayer?.Character
+                   is Characters.SpecialLogics.MageLogic mage
+                && mage.WantsToAbandonThisTurn == false)
+            {
+                mage.WantsToAbandonThisTurn = true;
+            }
+
+            // ⚠️ 只有**一个候选**时，"发动"就是"就选它"，语义明确。
+            if (request.Candidates.Count == 1)
+            {
+                ApplyPreTurnChoiceAndContinue(request.Candidates[0]);
+                return true;
+            }
+
+            // ⚠️⚠️ **多个候选时也要能用。**
+            //
+            //    原来的写法是 `if (request.Candidates.Count != 1) return false;`，
+            //    于是法师的「放弃攻击」——它是**是非题**（候选是法师自己的两只手，
+            //    只用来占位）——点了"发动"按钮会被**静默拒绝**，
+            //    界面毫无反应，玩家看到的就是**卡住**
+            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //
+            //    对"是非题"来说，候选填什么都不重要（真正要选的是
+            //    "放弃 / 不放弃"，答案存在 sink 里）。所以取第一个候选即可。
+            //
+            //    ⚠️ 这不会破坏"多候选必须玩家自己挑"的既有抉择：
+            //       锁手 / 治疗目标 / 闪避那几种的 `AcceptLabel` 都是空的，
+            //       上一句 `string.IsNullOrEmpty(request.AcceptLabel)` 已经挡住了。
             ApplyPreTurnChoiceAndContinue(request.Candidates[0]);
             return true;
         }
