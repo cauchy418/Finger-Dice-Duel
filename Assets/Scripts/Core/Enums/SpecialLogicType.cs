@@ -92,6 +92,12 @@ namespace FingerDiceDuel.Core
         /// 双方点数与状态互换，**原先 ≥ 偷来的**才生效，
         /// 效果由**偷来的数字**决定。上回合偷过则本回合不能再偷。
         /// </summary>
-        Thief = 18
+        Thief = 18,
+
+        /// <summary>猎人：伏击（暗置 + 抵伤）。</summary>
+        Hunter = 19,
+
+        /// <summary>魔术师：自己的手当被加数，2 可攻击。</summary>
+        Magician = 20
     }
 }

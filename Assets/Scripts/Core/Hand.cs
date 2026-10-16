@@ -41,6 +41,33 @@ namespace FingerDiceDuel.Core
         public bool IsTaichi => State == ShieldState.Taichi;
 
         /// <summary>
+        /// 是否**暗置（伏击）**。
+        ///
+        /// 暗置的手两边都不能碰：
+        ///   · 不能当**运算源**（与 <see cref="IsLocked"/> 同效）；
+        ///   · 也不能当**被加数**（对手不能碰它）。
+        /// 但它的**数值依然可见**（玩家确认）。
+        /// </summary>
+        public bool IsConcealed => State == ShieldState.Concealed;
+
+        /// <summary>
+        /// 这只手**是否可以发起运算**（当运算源）。
+        ///
+        /// ⚠️ **被锁**与**暗置**都不行**，而已成型盾 / 太极**可以**
+        ///    （拿它运算会主动破盾）。
+        /// </summary>
+        public bool CanBeOperated => !IsLocked && !IsConcealed;
+
+        /// <summary>暗置这只手（进入伏击）。</summary>
+        public void Conceal() => State = ShieldState.Concealed;
+
+        /// <summary>解除暗置（恢复），回到普通状态。</summary>
+        public void Reveal()
+        {
+            if (State == ShieldState.Concealed) State = ShieldState.None;
+        }
+
+        /// <summary>
         /// 是否被锁定。被锁定的手**不能作为运算源**（RULES.md 5.3），
         /// 但仍可被对手选为运算目标。
         /// </summary>

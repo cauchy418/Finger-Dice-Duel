@@ -8,8 +8,19 @@ namespace FingerDiceDuel.Core
     /// 实现方式：在 OnResolveAttack 钩子中将 AttackContext.IgnoreShield 置为 true，
     /// 由 AttackContext.Resolve 在后续流程中据此跳过护盾抵挡判定。
     /// </summary>
-    public class CurseweaverLogic : CharacterTemplate, IDodgeBlocker
+    public class CurseweaverLogic : CharacterTemplate, IDodgeBlocker, IPiercesMitigation
     {
+        /// <summary>
+        /// 咒术师的攻击**穿透减免**（玩家确认）：
+        ///   · 武僧的太极对他无效（原有行为，不变）；
+        ///   · 猎人的伏击**不能抵挡**他的攻击，**也不会被解除**。
+        ///
+        /// 由 `MonkLogic` 与 `HunterLogic` 统一查询本接口 ——
+        /// 之前 MonkLogic 写的是 `is CurseweaverLogic`（硬编码角色类型），
+        /// 如今猎人也要判同一件事，再硬编码一次就是"两个角色各自认识咒术师"。
+        /// </summary>
+        public bool PiercesMitigation => true;
+
         public override string DisplayName => "Curseweaver";
 
         /// <summary>

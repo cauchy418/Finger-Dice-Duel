@@ -280,6 +280,41 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **可以把自己的手当被加数**的角色实现本接口（魔术师）。
+    ///
+    /// 玩家确认："可以选择自己的手当被加数"
+    /// （例：左手 3、右手 5 -> 拿左手 3 碰自己的 5 凑出 8）。
+    /// 两只手**任选一个方向**，变的是**先点的那只手**（即发起运算的手）。
+    ///
+    /// 用独立接口而不是硬编码角色类型：分层铁律下
+    /// 上层不能认识具体角色（见 <see cref="IPiercesMitigation"/> 同理）。
+    /// </summary>
+    public interface ISelfAddendProvider
+    {
+        /// <summary>这一次是否允许拿自己的另一只手当被加数。</summary>
+        bool AllowsSelfAddend { get; }
+    }
+
+    /// <summary>
+    /// 攻击**可以穿透减免**的角色实现本接口（咒术师）。
+    ///
+    /// 玩家确认：咒术师**可以直接穿透伏击**打出伤害，
+    /// 即伏击**无法抵挡咒术攻击**，且咒术攻击**不会解除伏击**。
+    ///
+    /// ⚠️ 为什么要单独一个接口：
+    ///    <c>MonkLogic</c> 原本写的是 <c>is CurseweaverLogic</c>（硬编码角色类型），
+    ///    而如今**猎人也要判同一件事** ——
+    ///    再硬编码一次就会出现"两个角色各自认识咒术师"，
+    ///    且以后每加一个“可穿透”角色都要改两处。
+    ///    改成接口后只有一个地方声明。
+    /// </summary>
+    public interface IPiercesMitigation
+    {
+        /// <summary>true 表示本角色发起的攻击**不受减免影响**。</summary>
+        bool PiercesMitigation { get; }
+    }
+
+    /// <summary>
     /// 自己要接管"回复效果"结算的角色实现本接口。
     ///
     /// 牧师的 9 可以回给对手，而 <see cref="GameManager"/> 的默认实现只会回给行动方自己。

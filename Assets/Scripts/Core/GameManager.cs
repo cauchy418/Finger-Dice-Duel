@@ -821,9 +821,26 @@ namespace FingerDiceDuel.Core
             // 玩家确认的规则是"A 可以选择 B/C/D 任何一个数字作为被加数"，
             // 别人的数字不会被改动，只有行动方自己的手变成结果值。
             // 所以这里枚举"除自己以外的全部玩家"，不过滤队友。
+            // 魔术师：**可以拿自己的另一只手当被加数**。
+            bool selfAddend = (actor.Character as ISelfAddendProvider)?.AllowsSelfAddend == true;
+
             foreach (Hand mine in actor.Hands)
             {
-                if (mine.IsLocked) continue;
+                // ⚠️ **被锁与被暗置都不能当运算源**；
+                //    而已成型盾 / 太极**可以**（拿它运算会主动破盾）。
+                if (!mine.CanBeOperated) continue;
+
+                // 魔术师：先把**自己的另一只手**加进来。
+                // 玩家确认：两只手任选一个方向，变的是**先点的那只手**。
+                if (selfAddend)
+                {
+                    foreach (Hand own in actor.Hands)
+                    {
+                        if (ReferenceEquals(own, mine)) continue;    // 一只手不能加自己
+                        if (own.IsConcealed) continue;               // 暗置手不能当被加数
+                        _legalMoves.Add(new LegalMove(actor, mine, own));
+                    }
+                }
 
                 for (int i = 0; i < _players.Count; i++)
                 {
@@ -840,7 +857,11 @@ namespace FingerDiceDuel.Core
                     if (!owner.IsAlive) continue;
 
                     foreach (Hand theirs in owner.Hands)
+                    {
+                        // 玩家确认：暗置的手**不能被当成运算数字**。
+                        if (theirs.IsConcealed) continue;
                         _legalMoves.Add(new LegalMove(actor, mine, theirs));
+                    }
                 }
             }
 
@@ -875,10 +896,30 @@ namespace FingerDiceDuel.Core
                 return false;
             }
 
+            // ⚠️ **一只手不能加自己**。
+            //
+            //    这条以前是**隐含**成立的：加数与被加数必须属于不同玩家，
+            //    而一个人只有两只手，所以"同一只手"根本不可能出现。
+            //    魔术师放开"可以拿自己的手当被加数"之后，这个隐含前提没了 ——
+            //    必须显式挡住（玩家原话："重复点一只手不会生效"）。
+            if (ReferenceEquals(actedHand, targetHand))
+            {
+                reason = "加数与被加数必须是不同的两只手。";
+                return false;
+            }
+
             if (ReferenceEquals(addendOwner, actor))
             {
-                reason = "被加数不能是自己的手（要用别人的数字来改变自己的手）。";
-                return false;
+                // ⚠️ 魔术师**例外**：玩家确认他可以拿自己的手当被加数
+                //    （左手 3 碰自己的右手 5 凑出 8）。
+                //    但仍然**不能一只手加自己**（加数与被加数必须是不同的两只手）——
+                //    那条由下面的一般检查挡住。
+                bool selfAddend = (actor.Character as ISelfAddendProvider)?.AllowsSelfAddend == true;
+                if (!selfAddend)
+                {
+                    reason = "被加数不能是自己的手（要用别人的数字来改变自己的手）。";
+                    return false;
+                }
             }
 
             // ⚠️ **这里故意不拒绝"目标已阵亡"。**

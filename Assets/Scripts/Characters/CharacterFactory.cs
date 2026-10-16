@@ -56,6 +56,8 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Monk] = () => new MonkLogic();
             _registry[SpecialLogicType.Giant] = () => new GiantLogic();
             _registry[SpecialLogicType.Thief] = () => new ThiefLogic();
+            _registry[SpecialLogicType.Hunter] = () => new HunterLogic();
+            _registry[SpecialLogicType.Magician] = () => new MagicianLogic();
         }
 
         /// <summary>

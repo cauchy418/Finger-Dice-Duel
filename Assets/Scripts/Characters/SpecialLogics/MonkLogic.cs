@@ -110,7 +110,12 @@ namespace FingerDiceDuel.Core
             if (segmentDamage <= 0) return false;
 
             // ⚠️ 咒术师的攻击：**不减半、不反弹、5 也不消耗**
-            if (context.Attacker?.Character is CurseweaverLogic) return false;
+            // 咒术师的攻击：**不减半、不反弹、5 也不消耗**。
+            //
+            // ⚠️ 改用接口而不是 `is CurseweaverLogic`：
+            //    现在**猎人也要判同一件事**（伏击同样挡不住咒术），
+            //    再硬编码一次就是“两个角色各自认识咒术师”。
+            if (PiercesMitigation(context)) return false;
 
             // ⚠⚠ **必须在改动任何手之前，把（手, variant）固定下来。**
             //
@@ -188,6 +193,17 @@ namespace FingerDiceDuel.Core
             _ = taken;
 
             return stages > 0;
+        }
+
+        /// <summary>
+        /// 攻击方是否**穿透减免**（咒术师）。
+        ///
+        /// 抽成共用判定：武僧的太极与猎人的伏击都走这里。
+        /// </summary>
+        internal static bool PiercesMitigation(AttackContext context)
+        {
+            var pierce = context?.Attacker?.Character as IPiercesMitigation;
+            return pierce != null && pierce.PiercesMitigation;
         }
 
         /// <summary>

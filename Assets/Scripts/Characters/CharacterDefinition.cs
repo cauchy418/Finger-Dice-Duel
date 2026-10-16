@@ -78,6 +78,8 @@ namespace FingerDiceDuel.Core
         public const string MonkId = "monk";
         public const string GiantId = "giant";
         public const string ThiefId = "thief";
+        public const string HunterId = "hunter";
+        public const string MagicianId = "magician";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -257,6 +259,38 @@ namespace FingerDiceDuel.Core
                          "上回合发起过偷窃则本回合不能再偷。无限距离，可以偷队友。" +
                          "攻 0 / 防 −1。");
 
+        /// <summary>
+        /// **猎人**：攻 0 / 防 −1，攻击距离 1。
+        ///
+        /// 运算后若**两只手同时是 1/2/3 且数字相同**，
+        /// 可以（主动选择）把**参与运算的那只手**暗置，进入**伏击**。
+        /// </summary>
+        public static CharacterDefinition Hunter { get; } = new CharacterDefinition(
+            HunterId, "猎人", SpecialLogicType.Hunter,
+            attackBonus: 0, defenseBonus: -1,
+            description: "运算后若两只手同时是 1/2/3 且数字相同，" +
+                         "可以把参与运算的那只手暗置（不能发起运算、" +
+                         "也不能被当成运算数字，但数值可见），进入伏击状态。" +
+                         "伏击时攻击 +1、攻击距离 3；" +
+                         "即将受到伤害时若在伏击，则恢复被暗置的手并抵挡此次伤害" +
+                         "（触发时机在武僧太极之后）。" +
+                         "咒术师可以穿透伏击打出伤害，咒术攻击也不会解除伏击。" +
+                         "攻 0 / 防 −1。");
+
+        /// <summary>
+        /// **魔术师**：攻 0 / 防 −1，攻击距离 2。
+        ///
+        /// 可以选择**自己的手**当被加数；运算出 **2** 可以攻击。
+        /// </summary>
+        public static CharacterDefinition Magician { get; } = new CharacterDefinition(
+            MagicianId, "魔术师", SpecialLogicType.Magician,
+            attackBonus: 0, defenseBonus: -1,
+            description: "可以选择自己的手当被加数" +
+                         "（例：左手 3、右手 5，拿左手 3 碰自己的 5 凑出 8）；" +
+                         "两只手任选一个方向，变的是先点的那只手，一只手不能加自己。" +
+                         "运算出 2 可以攻击，造成吃攻防加成的 2 点伤害。" +
+                         "攻 0 / 防 −1，攻击距离 2。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -264,7 +298,7 @@ namespace FingerDiceDuel.Core
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Warrior, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief
+            Monk, Giant, Thief, Hunter, Magician
         };
     }
 }
