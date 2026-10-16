@@ -427,36 +427,47 @@ namespace FingerDiceDuel.UI
             if (_title != null)
                 _title.text = $"{c.NameZh}　{c.NameEn}";
 
+            // ⚠️ **内容为空就不显示**（玩家要求；指南页是纯速查表）：
+            //    · 归属标签（"法师体系"）
+            //    · 属性行（生命 / 攻 / 防 / 距离）
+            //    · 【技能】【技能详细】【操作指导】【如何针对】四个小节
+            //    这样同一套卡片结构既能放角色卡、也能放中立速查表
+            //    （玩家原话："这不仅是法师要用，日后做 pve 冒险也很重要"）。
             if (_alignmentLabel != null)
-                _alignmentLabel.text = c.Alignment;
+                _alignmentLabel.text = c.Alignment ?? "";
+            if (_alignmentLabel != null)
+                _alignmentLabel.gameObject.SetActive(!string.IsNullOrEmpty(c.Alignment));
+
+            bool hasStats = c.MaxHealth > 0 || c.Attack != 0 || c.Defense != 0 || c.Range != 0;
 
             if (_stats != null)
-                _stats.text = $"生命 {c.MaxHealth}　　攻 {Signed(c.Attack)}　　"
-                            + $"防 {Signed(c.Defense)}　　距离 {RangeText(c.Range)}";
+            {
+                _stats.text = hasStats
+                    ? $"生命 {c.MaxHealth}　　攻 {Signed(c.Attack)}　　"
+                      + $"防 {Signed(c.Defense)}　　距离 {RangeText(c.Range)}"
+                    : "";
+            }
 
             _measureFont = _font;
 
             if (_body != null)
             {
                 var sb = new StringBuilder();
-                sb.AppendLine("【技能】");
-                sb.AppendLine(c.ShortSkill);
-                sb.AppendLine();
-                sb.AppendLine("【技能详细】");
-                sb.AppendLine(c.DetailSkill);
-                sb.AppendLine();
-                sb.AppendLine("【操作指导】");
-                sb.AppendLine(c.PlayGuide);
-                sb.AppendLine();
-                sb.AppendLine("【如何针对】");
-                sb.AppendLine(c.Counter);
+
+                AppendSection(sb, "【技能】", c.ShortSkill);
+                AppendSection(sb, "【技能详细】", c.DetailSkill);
+                AppendSection(sb, "【操作指导】", c.PlayGuide);
+                AppendSection(sb, "【如何针对】", c.Counter);
 
                 if (c.Interactions != null && c.Interactions.Count > 0)
                 {
-                    sb.AppendLine();
-                    sb.AppendLine(c.TwoColumnItems
-                        ? "【伤害类型 / 状态】（左 -> 右）"
-                        : "【与其他角色的特殊交互】");
+                    // ⚠️ **指南页（两列）不再加任何标题** ——
+                    //    玩家要求它是纯速查表；标题"【伤害类型 / 状态】（左 -> 右）"
+                    //    既啰嗦、也占了正文高度（正文越高越容易顶到翻页按钮）。
+                    //    角色卡的"【与其他角色的特殊交互】"仍然保留。
+                    if (!c.TwoColumnItems) sb.AppendLine();
+                    if (!c.TwoColumnItems)
+                        sb.AppendLine("【与其他角色的特殊交互】");
 
                     if (c.TwoColumnItems)
                     {
@@ -523,6 +534,23 @@ namespace FingerDiceDuel.UI
 
         /// <summary>两列排版时，左右两列之间的最小间隙（像素）。</summary>
         private const float ColumnGap = 28f;
+
+        /// <summary>
+        /// 追加一个【小节】：**内容为空就整段不写**（连标题也不写）。
+        ///
+        /// ⚠️ 玩家要求：指南页（伤害类型 / 状态一览）不要
+        ///    【技能】/【技能详细】/【操作指导】/【如何针对】这四节。
+        ///    与其在两张卡片上各自留空串、不如由这里统一判空 ——
+        ///    这样同一套卡片结构既能放角色卡、也能放中立速查表。
+        /// </summary>
+        private static void AppendSection(StringBuilder sb, string title, string body)
+        {
+            if (string.IsNullOrEmpty(body)) return;
+
+            sb.AppendLine(title);
+            sb.AppendLine(body);
+            sb.AppendLine();
+        }
 
         /// <summary>
         /// 正文**字号**。

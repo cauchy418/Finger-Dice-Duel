@@ -1147,99 +1147,51 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private static List<CodexCardData> BuildGuideCards()
         {
-            return new List<CodexCardData>
-            {
-                BuildDamageTypeCard(),
-                BuildStatusCard(),
-            };
+            List<GuideSheet> sheets = GuideSheets.All();
+            var list = new List<CodexCardData>(sheets.Count);
+
+            for (int i = 0; i < sheets.Count; i++)
+                list.Add(ToCard(sheets[i]));
+
+            return list;
         }
 
         /// <summary>
-        /// 图鉴的「伤害类型指引」卡：一次列出法师的 10 种伤害类型。
+        /// 把一份 **Core 的速查表**（<see cref="GuideSheet"/>）转成图鉴卡片。
         ///
-        /// 名称与说明取自 <see cref="StatusNames"/> —— **只有一处真相**。
+        /// ⚠️ 内容全部来自 Core —— 界面只负责排版：
+        ///    · 没有归属标签（"法师体系"）、没有属性行
+        ///    · 没有【技能】/【技能详细】/【操作指导】/【如何针对】四节
+        ///    （玩家要求：这两张表是**纯速查**，"不仅法师要用，日后做 pve 冒险也很重要"）
+        ///
+        /// ⚠️ 数据放在 Core 的另一个好处：**测试项目引用不到 UI**，
+        ///    写在这里就没法测；放进 Core 才能被断言。
         /// </summary>
-        private static CodexCardData BuildDamageTypeCard()
+        private static CodexCardData ToCard(GuideSheet sheet)
         {
             var card = new CodexCardData
             {
-                NameZh = "伤害类型指引",
-                NameEn = "Damage Types",
-                Alignment = "法师体系",
+                NameZh = sheet.TitleZh,
+                NameEn = sheet.TitleEn,
                 IsGuide = true,
+                TwoColumnItems = sheet.TwoColumn,
 
-                // 这张卡不描述角色
+                // 显式全部留空 —— CodexScreen 靠"内容为空"跳过那些小节与标签
+                Alignment = "",
                 MaxHealth = 0, Attack = 0, Defense = 0, Range = 0,
-
-                ShortSkill = "法师放弃攻击后可以选的 10 种伤害类型。",
-                DetailSkill = "顺序：算出 4/6/8 -> 问「是否放弃攻击」-> 选放弃 -> "
-                            + "选一种伤害类型（10 选 1）-> 再选攻击目标。"
-                            + "选完之后这一次白扔（不造成伤害），类型留到【下一次】攻击 ——"
-                            + "下一次命中谁，就给谁挂上对应状态。",
-                PlayGuide = "被盾抵挡 / 被太极减免【也算命中】，照样挂状态；"
-                          + "被闪避或被邪术师取消则【不算命中】，而且那次放弃作废，"
-                          + "法师必须重新放弃一次攻击才能再附加。"
-                          + "连续放弃时【只保留最新】选的那种。",
-                Counter = "法师必须先白扔一回合才能挂状态 —— 趁那一回合压血。"
-                        + "他攻 0 / 防 −1，身材很软，抢在他铺垫完之前解决掉。",
+                ShortSkill = "",
+                DetailSkill = "",
+                PlayGuide = "",
+                Counter = "",
                 LawAxis = null,
                 GoodAxis = null,
             };
 
-            // 清单文字**取自 Core**（`StatusNames.GuideLine`，已带状态符号）——
-            // 这样界面显示与规则、测试三边必然是同一份文案，不会漂移。
-            card.TwoColumnItems = true;      // 两列：否则会顶到翻页按钮上
-            for (int i = 0; i < StatusNames.AllTypes.Length; i++)
-                card.Interactions.Add(StatusNames.GuideLine(StatusNames.AllTypes[i]));
+            for (int i = 0; i < sheet.Lines.Count; i++)
+                card.Interactions.Add(sheet.Lines[i]);
 
             return card;
         }
-
-        /// <summary>
-        /// 图鉴的「状态一览」卡：一次列出法师体系的 9 种负面状态。
-        ///
-        /// 名称与说明都取自 <see cref="StatusNames"/> —— **只有一处真相**，
-        /// 界面上显示的与规则里生效的必然一致。
-        /// </summary>
-        private static CodexCardData BuildStatusCard()
-        {
-            var card = new CodexCardData
-            {
-                NameZh = "状态一览",
-                NameEn = "Status Effects",
-                Alignment = "法师体系",
-                IsGuide = true,
-
-                // 这张卡不描述角色，攻防 / 生命 / 距离无意义 —— 留 0 并在
-                // 技能里说明清楚，避免玩家误读成"某个人的属性"。
-                MaxHealth = 0,
-                Attack = 0,
-                Defense = 0,
-                Range = 0,
-
-                ShortSkill = "法师造成的 9 种负面状态，各自效果速查。",
-                DetailSkill = "被盾抵挡 / 被太极减免【也算命中】，照样挂上；"
-                            + "被闪避或被邪术师取消则【不算命中】，"
-                            + "而且那次放弃作废，法师要重新放弃一次攻击才能再附加。",
-                PlayGuide = "持续时间是【目标自己的 2 个完整回合】，"
-                          + "在目标自己的回合结束时递减，归零即消失。"
-                          + "同一种状态再次施加只【刷新时长】，不叠加强度。"
-                          + "中毒 / 燃烧 / 感电造成的伤害不会再挂回状态。",
-                Counter = "状态图标显示在玩家面板右侧，右下角小字是剩余回合数。"
-                        + "唯一能提前清掉的办法是【重开一局】（开局会清空全部状态）。",
-                LawAxis = null,
-                GoodAxis = null,
-            };
-
-            // 9 种状态各一行：**符号 + 名称 + 效果**（符号与状态图标栏同源）
-            card.TwoColumnItems = true;      // 两列：否则会顶到翻页按钮上
-            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
-                card.Interactions.Add(StatusNames.StatusLine(StatusNames.AllStatuses[i]));
-
-            return card;
-        }
-
-
         private void OnOneOnOneClicked() => ShowScreen(GameScreen.OneOnOneMenu);
 
         private void OnTwoOnTwoClicked() => ShowScreen(GameScreen.TwoOnTwoMenu);
