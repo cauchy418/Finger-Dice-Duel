@@ -282,12 +282,12 @@ namespace FingerDiceDuel.Core
             switch (s)
             {
                 case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心圆（声波）
-                case StatusEffect.Acid: return "\u25bd";        // ▽ 倒三角（滴落）
-                case StatusEffect.Poison: return "\u2660";      // ♠ 黑桃（骷髅牌的替代）
+                case StatusEffect.Acid: return "\u25bc";        // ▼ 倒三角（滴落）
+                case StatusEffect.Poison: return "\u2620";      // ☠ 骷髅
                 case StatusEffect.Blind: return "\u25c9";       // ◉ 鱼眼（眼睛）
-                case StatusEffect.Decay: return "\u271a";       // ✚ 十字（被斩断的治疗）
+                case StatusEffect.Decay: return "\u2716";       // ✖ 重叉（斩断治疗）
                 case StatusEffect.Burn: return "\u25c6";        // ◆ 实心菱形（热源）
-                case StatusEffect.Freeze: return "\u2603";      // ☃ 雪人
+                case StatusEffect.Freeze: return "\u2744";      // ❄ 雪花
                 case StatusEffect.Shock: return "\u26a0";       // ⚠ 警告（电压危险）
                 case StatusEffect.Stun: return "\u273d";        // ✽ 重花瓣星（精神冲击）
 

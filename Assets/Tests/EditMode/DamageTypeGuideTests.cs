@@ -158,25 +158,22 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Every_glyph_exists_in_the_bundled_font()
+        public void Every_glyph_is_known_to_render_in_this_project()
         {
-            // ⚠️ 这一条是血泪教训：闪电换了两次字形都还是空白，
-            //    最后直接读 NotoSansCJKsc 的 cmap 才发现 ——
-            //    这个字体**根本没有** ⚡(U+26A1) / ☇(U+2607) / ❄(U+2744) /
-            //    ❅(U+2745) / ❆(U+2746) / ☠(U+2620) / ✖(U+2716) / ✳(U+2733)。
+            // ⚠️ 血泪教训：闪电换了两次字形都还是空白，最后读
+            //    NotoSansCJKsc 的 cmap 才发现主字体里真的没有。
             //
-            //    所以把"已知缺字形"的码位列出来，防止有人凭直觉选一个更好看的符号。
-            var forbidden = new Dictionary<int, string>
+            //    ⚠️ 但**不能只看主字体** —— 玩家实测：☠ / ✖ / ❄ 在主字体里
+            //       同样是"没有字形"，可它们**实际能显示**（Unity 会回退到
+            //       内置字体）。我把这三个误判成缺字形、换掉之后玩家要求回退。
+            //
+            //    所以这份清单只放**实测确认渲染失败**的码位：
+            var broken = new Dictionary<int, string>
             {
-                { 0x26A1, "⚡ 闪电 —— 字体里没有" },
-                { 0x2607, "☇ 闪电 —— 字体里没有" },
-                { 0x2744, "❄ 雪花 —— 字体里没有" },
-                { 0x2745, "❅ 雪花 —— 字体里没有" },
-                { 0x2746, "❆ 雪花 —— 字体里没有" },
-                { 0x2620, "☠ 骷髅 —— 字体里没有" },
-                { 0x2716, "✖ 重叉 —— 字体里没有" },
-                { 0x2733, "✳ 星芒 —— 字体里没有" },
-                { 0x2A1C, "⧜ 闪电 —— 字体里没有" },
+                { 0x26A1, "⚡ 闪电 —— 实测空白" },
+                { 0x2607, "☇ 闪电 —— 主字体没有，且回退也没有" },
+                { 0x2A1C, "⧜ 闪电 —— 主字体没有，且回退也没有" },
+                { 0x2733, "✳ 星芒 —— 实测显示成方框" },
             };
 
             for (int i = 0; i <= 9; i++)
@@ -187,9 +184,9 @@ namespace FingerDiceDuel.Tests
 
                 int cp = g[0];
                 string why;
-                Assert.IsFalse(forbidden.TryGetValue(cp, out why),
+                Assert.IsFalse(broken.TryGetValue(cp, out why),
                     $"状态「{StatusNames.Of(st)}」用的是 {why}"
-                    + " —— 请从字体确实拥有的字符里选（见 NotoSansCJKsc 的 cmap）。");
+                    + " —— 请换一个实测能显示的字符。");
             }
         }
 
@@ -210,16 +207,18 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Shock_glyph_is_not_the_emoji_lightning_bolt()
+        public void Shock_glyph_is_not_a_broken_lightning_char()
         {
             // ⚠️ 玩家实测：状态一览里"感电"那一行前面是**空白** ——
-            //    U+26A1(⚡) 在 Noto Sans CJK SC 里**没有字形**。
-            //    已换成 U+2A1C。这条测试防止有人"顺手改回去"。
+            //    U+26A1(⚡) 与 U+2A1C 主字体都没有、回退也没有。
+            //    现在用 ⚠(U+26A0)。这条防止有人"顺手改回去"。
             string g = StatusNames.GlyphOf(StatusEffect.Shock);
 
             Assert.IsFalse(string.IsNullOrEmpty(g), "感电必须有符号。");
-            Assert.AreNotEqual(0x26A1, (int)g[0],
-                "不能再用 U+26A1(⚡) —— 字体里没有字形，会显示成空白。");
+
+            int cp = g[0];
+            Assert.IsTrue(cp != 0x26A1 && cp != 0x2A1C && cp != 0x2607,
+                $"不能再用 U+{cp:X4} —— 实测渲染成空白。");
         }
 
         [Test]
