@@ -862,17 +862,75 @@ namespace FingerDiceDuel.Assistant
                 return;
             }
 
+            // ⚠️ **法师的状态：先结算"上一位的回合结束"**（燃烧 + 状态计数递减）。
+            //
+            //    为什么放在这里：`BeginTurn` 是**每次换人行动**的唯一入口，
+            //    所以"上一位的回合结束"与"这一位的回合开始"天然相邻。
+            //
+            //    ⚠️ 用**独立哨兵字段**而不是读 `LastTurn` ——
+            //       `LastTurn` 的赋值时机在部分路径上是"先 BeginTurn 再赋值"
+            //       （盗贼偷窃那两处），读它会漏结算或重复结算。
+            //       哨兵保证：同一次行动只结算一次回合结束。
+            if (_statusTurnEndFor != null)
+            {
+                _game.ResolveStatusTurnEnd(_statusTurnEndFor);
+                _statusTurnEndFor = null;
+
+                if (_game.IsGameOver)
+                {
+                    Phase = BoardPhase.GameOver;
+                    Hint = WinMessage();
+                    return;
+                }
+            }
+
             ActivePlayer = _game.CurrentPlayer;
 
             // 诊断记录每回合清空 —— 它们是跨回合保留的，
             // 不清空会把"上一回合/上一局"的现场当成这一次的（我踩过两次）。
             ResetDiagnostics();
 
+            // ⚠️ **法师的状态：这一位的回合开始**（中毒 / 感电）。
+            //    玩家确认：中毒可能**直接把他打死、跳过其行动** ——
+            //    所以结算后要重新读一次当前行动者。
+            _game.ResolveStatusTurnStart(ActivePlayer);
+
+            if (_game.IsGameOver)
+            {
+                Phase = BoardPhase.GameOver;
+                Hint = WinMessage();
+                return;
+            }
+
+            if (!ReferenceEquals(_game.CurrentPlayer, ActivePlayer))
+            {
+                ActivePlayer = _game.CurrentPlayer;
+                _game.ResolveStatusTurnStart(ActivePlayer);
+
+                if (_game.IsGameOver)
+                {
+                    Phase = BoardPhase.GameOver;
+                    Hint = WinMessage();
+                    return;
+                }
+            }
+
             // 注意：这里**不**清空 LastTurn。它的语义是"最近一次已结算的回合"，
             // 要一直保留到下一次结算为止 —— 界面需要在玩家为新回合做选择时，
             // 仍然显示上一回合打出了什么。
             SetupFirstStep();
         }
+
+        /// <summary>
+        /// **待结算"回合结束"的那位玩家**（法师的状态体系用）。
+        ///
+        /// 由"某位玩家的行动刚结算完"的那几处写入，由 <see cref="BeginTurn"/>
+        /// 在下一次换人时消费并清空。
+        ///
+        /// 为什么用独立字段而不是读 <c>LastTurn</c>：
+        /// 后者在盗贼偷窃那两条路径上是"先 BeginTurn 再赋值"，读它会错。
+        /// </summary>
+        private PlayerState _statusTurnEndFor;
 
         private void SetupFirstStep()
         {
@@ -1341,6 +1399,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, SelectedHand, target);
+            _statusTurnEndFor = LastTurn?.Actor;       // 法师状态：换人时结算回合结束
 
                 // ⚠️ 偷出**攻击数字**时，伤害不能在这里结算 ——
                 //    玩家要求"要再次点击目标才可以攻击"，
@@ -1489,6 +1548,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
+                _statusTurnEndFor = LastTurn?.Actor;   // 法师状态：换人时结算回合结束
                 BeginTurn();          // 必须刷新 ActivePlayer（见 CompleteSteal 的注释）
                 ResolvePendingAiChoices();
                 _thiefAiTrace += " / 偷窃成功";
@@ -3366,6 +3426,9 @@ namespace FingerDiceDuel.Assistant
 
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
+
+            // 法师的状态体系：记下"这一位的回合该在换人时结算结束"
+            _statusTurnEndFor = result.Actor;
 
             // ⚠️ **赌徒的强制赌博状态**（玩家确认的规则）：
             //    "若赌徒上一个自己的回合进行了正常的运算（非赌博），

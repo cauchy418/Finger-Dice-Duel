@@ -1464,7 +1464,7 @@ namespace FingerDiceDuel.Core
                 actor.TakeDamage(poison);
                 LastStatusNote = $"{actor.Name} 中毒，受到 {poison} 点毒素伤害（不可抵挡）";
                 CheckGameOver();
-                if (IsGameOver) return;
+                if (IsGameOver) { SkipIfStatusKilled(actor); return; }
             }
 
             // ---- 感电：自己 + 相邻 ----
@@ -1482,12 +1482,37 @@ namespace FingerDiceDuel.Core
                 };
                 ctx.Resolve(GetChoiceProvider(victim), this);
 
-                if (LastStatusNote.Length == 0)
+                if (string.IsNullOrEmpty(LastStatusNote))
                     LastStatusNote = $"{victim.Name} 感电，受到 {StatusRules.ShockDamagePerTurn} 点闪电伤害";
 
                 CheckGameOver();
-                if (IsGameOver) return;
+                if (IsGameOver) { SkipIfStatusKilled(actor); return; }
             }
+
+            SkipIfStatusKilled(actor);
+        }
+
+        /// <summary>
+        /// 回合开始的状态伤害**把当前行动者打死了** -> 跳过他的行动，把回合交给下一位。
+        ///
+        /// 玩家确认的规则："中毒……且扣血可能直接把他打死（跳过其行动）"。
+        ///
+        /// ⚠️ 必须用 <see cref="NextPlayerAfter"/>（它只在活人里找），
+        ///    否则会把回合交给一个死人、对局再次卡住。
+        /// </summary>
+        private void SkipIfStatusKilled(PlayerState actor)
+        {
+            if (actor == null || IsGameOver) return;
+            if (actor.IsAlive) return;
+            if (!ReferenceEquals(CurrentPlayer, actor)) return;
+
+            PlayerState next = NextPlayerAfter(actor);
+            if (next == null) return;      // 所有人都没了 -> 交给 CheckGameOver
+
+            CurrentPlayer = next;
+            TurnCount++;
+            AdvanceRoundAfter(actor);
+            CheckTurnLimit();
         }
 
         /// <summary>

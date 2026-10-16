@@ -87,6 +87,21 @@ namespace FingerDiceDuel.Assistant
                 PlayerState actor = game.CurrentPlayer;
                 IMoveSelector selector = ReferenceEquals(actor, game.PlayerA) ? movesForA : movesForB;
 
+                // ⚠️ **法师的状态：轮到某人之前先结算他的"回合开始"**
+                //    （中毒 / 感电）。中毒可能直接把他打死、跳过其行动，
+                //    所以结算后要重新读一次当前行动者。
+                //
+                //    ⚠️ `ResolveStatusTurnEnd` 不在这里调 —— 无头路径没有"换人事件"，
+                //       所以**在调用 ExecuteTurn 之后**立刻结算（见下面的收尾段）。
+                game.ResolveStatusTurnStart(actor);
+                if (game.IsGameOver) break;
+
+                if (!ReferenceEquals(game.CurrentPlayer, actor))
+                {
+                    // 被中毒打死了 -> 行动权已经交给下一位，本圈重来
+                    continue;
+                }
+
                 LegalMove move = selector.ChooseMove(game, actor);
                 if (move.Actor == null)
                 {
@@ -128,6 +143,11 @@ namespace FingerDiceDuel.Assistant
 
                 if (RecordHistory) result.History.Add(turn);
                 OnTurnResolved?.Invoke(turn);
+
+                // ⚠️ **法师的状态：这一位的"回合结束"**（燃烧 + 状态计数递减）。
+                //    无头路径没有"换人事件"，所以在行动结算之后**立刻**结算 ——
+                //    下一次循环开头就会轮到下一位，时序与界面路径一致。
+                game.ResolveStatusTurnEnd(actor);
             }
 
             // ⚠️ `HitTurnLimit` **保持原义**：模拟器被 `MaxTurns` 强行中断
