@@ -308,8 +308,16 @@ namespace FingerDiceDuel.UI
             for (int i = 0; i < _all.Count; i++)
             {
                 CodexCardData c = _all[i];
-                if (_lawAxis != null && c.LawAxis != _lawAxis) continue;
-                if (_goodAxis != null && c.GoodAxis != _goodAxis) continue;
+
+                // ⚠️ **没有阵营的卡片（「状态一览」）永远保留** ——
+                //    它不是某个角色，不该被"守序 / 善良"这类筛选排除掉。
+                //    排除它会让玩家一旦点了筛选就再也找不到状态说明。
+                bool isCharacterCard = c.LawAxis != null || c.GoodAxis != null;
+                if (isCharacterCard)
+                {
+                    if (_lawAxis != null && c.LawAxis != _lawAxis) continue;
+                    if (_goodAxis != null && c.GoodAxis != _goodAxis) continue;
+                }
 
                 _filtered.Add(c);
             }
