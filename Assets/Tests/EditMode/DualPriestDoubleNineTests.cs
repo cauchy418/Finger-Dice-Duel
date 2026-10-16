@@ -60,7 +60,10 @@ namespace FingerDiceDuel.Tests
             ArrangeDoubleNineAfter(priest, foe);
 
             // 先掉血，才能看出回复量
-            priest.TakeDamage(15);
+            // ⚠️ 摆血量要**留够两次回复的空间**，否则会被上限截断、
+            //    看起来像"少回了一次"（我第一版掉 15 血就踩了这个）。
+            //    两次共 18 点、上限 20 -> 起点 2 时刚好 2+9+9 = 20，不会被截。
+            priest.TakeDamage(18);
             int before = priest.Health;
 
             var game = new GameManager(priest, foe,
@@ -75,19 +78,8 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(priest, priest.LeftHand, foe.LeftHand);
 
             // 双手都是 9 时：本次回复 9 + 额外回复 9 = 18
-            int healed = priest.Health - before;
-
-            // ⚠️ **待查**：玩家实测与这条测试都显示只回了 9 点（应 18）。
-            //    已排查并排除：
-            //      · 双 9 判定本身没问题（上面的 HasDoubleNineAfter 已断言通过）
-            //      · 收集阶段也确实发出了 PriestExtraHealTarget 请求
-            //        （玩家日志里能看到 AI 作答）
-            //      · GameManager 里 `actor.Character is IHealOverride`
-            //        已改成 FirstImplementer（双将时才认得部件）
-            //    仍未定位。这里先**把现象钉住**，不假装它是对的。
-            Assert.AreEqual(PriestLogic.HealAmount, healed,
-                "把当前现象钉住：双 9 目前只回一次 9 点（期望两次共 18）。" +
-                " 这是待查的缺陷，不是正确行为 —— 详见测试注释。");
+            Assert.AreEqual(PriestLogic.HealAmount * 2, priest.Health - before,
+                "双 9 应回复两次（本次 + 额外），共 " + (PriestLogic.HealAmount * 2) + " 点。");
         }
 
         [Test]
@@ -104,7 +96,10 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(1);
             foe.RightHand.SetValue(4);
 
-            priest.TakeDamage(15);
+            // ⚠️ 摆血量要**留够两次回复的空间**，否则会被上限截断、
+            //    看起来像"少回了一次"（我第一版掉 15 血就踩了这个）。
+            //    两次共 18 点、上限 20 -> 起点 2 时刚好 2+9+9 = 20，不会被截。
+            priest.TakeDamage(18);
             int before = priest.Health;
 
             var game = new GameManager(priest, foe,
@@ -113,13 +108,8 @@ namespace FingerDiceDuel.Tests
 
             game.ExecuteTurn(priest, priest.LeftHand, foe.LeftHand);
 
-            int healed = priest.Health - before;
-
-            // ⚠️ **待查**：实测 0（完全没有回复），期望 9。
-            //    连"单独牧师"也一样 —— 所以这不是双将特有的问题。
-            Assert.AreEqual(0, healed,
-                "把当前现象钉住：单 9 目前完全没有回复（期望 9）。" +
-                " 这是待查的缺陷，不是正确行为 —— 详见测试注释。");
+            Assert.AreEqual(PriestLogic.HealAmount, priest.Health - before,
+                "单 9 只应回复一次。");
         }
 
         [Test]
@@ -137,7 +127,10 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(1);
             foe.RightHand.SetValue(4);
 
-            priest.TakeDamage(15);
+            // ⚠️ 摆血量要**留够两次回复的空间**，否则会被上限截断、
+            //    看起来像"少回了一次"（我第一版掉 15 血就踩了这个）。
+            //    两次共 18 点、上限 20 -> 起点 2 时刚好 2+9+9 = 20，不会被截。
+            priest.TakeDamage(18);
             int before = priest.Health;
 
             var game = new GameManager(priest, foe,
@@ -146,9 +139,8 @@ namespace FingerDiceDuel.Tests
 
             game.ExecuteTurn(priest, priest.LeftHand, foe.LeftHand);
 
-            int healed = priest.Health - before;
-            Assert.AreEqual(PriestLogic.HealAmount, healed,
-                "把当前现象钉住：单独牧师的双 9 同样只回一次（期望两次共 18）。");
+            Assert.AreEqual(PriestLogic.HealAmount * 2, priest.Health - before,
+                "单独牧师的双 9 也应回复两次。");
         }
     }
 }

@@ -335,15 +335,30 @@ namespace FingerDiceDuel.Core
         public static T FirstImplementer<T>(PlayerState actor) where T : class
         {
             if (actor?.Character == null) return null;
-            if (actor.Character is T direct) return direct;
 
+            // ⚠️⚠️ **容器必须先往下找部件，不能把自己交出去**。
+            //
+            //    `DualGeneralBehavior` **自己也实现**了这些能力接口
+            //    （它把各部件的结果"取最大 / 取第一个"再暴露出去），
+            //    所以下面那句 `is T direct` 对容器**恒为真** ——
+            //    我第一版就是先写 direct、结果把容器自己返回了：
+            //      FirstImplementer<IHealOverride> = DualGeneralBehavior
+            //    于是 GameManager 调的是**容器那个泛型 ApplyHeal**，
+            //    而不是**牧师的** —— 牧师的分支永远进不去，
+            //    回复量落到默认值（实测 HealAmount=0、HP 完全不涨）。
+            //
+            //    所以顺序必须是：**先容器 -> 再 direct**。
             if (actor.Character is ICharacterBehaviorContainer c && c.Parts != null)
             {
                 for (int i = 0; i < c.Parts.Count; i++)
                     if (c.Parts[i] is T t) return t;
+
+                // 容器里的部件都不实现 -> 就当没有（**不要回退到容器自己**：
+                // 那是容器的聚合实现，语义与"某个角色真的能接管"不同）。
+                return null;
             }
 
-            return null;
+            return actor.Character as T;
         }
     }
 
