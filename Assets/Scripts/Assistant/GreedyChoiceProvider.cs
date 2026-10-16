@@ -238,6 +238,28 @@ namespace FingerDiceDuel.Assistant
                 default: score = 0; break;
             }
 
+            // ⚠️⚠️ **角色把自己某个结果值变成攻击时，评分必须跟着认。**
+            //
+            //    实测（探针）暴露的根因：魔术师的"自加凑出 2"是攻击，
+            //    但那是 `RewriteEffect` **借**来的 Attack4 ——
+            //    `Hand.GetEffectType(2)` 仍然是 `None`，
+            //    于是上面那个 switch 给它 **0 分**。
+            //    结果：碰对手凑出 4 得 44 分，自加凑出 2 得 0 分 ——
+            //    **AI 必然去碰对手的手，永远不自加**（招牌能力等于废掉）。
+            //
+            //    修法：用角色自己的 `IHandEffectDisplay.DisplayedEffectOf`
+            //    问它"这个结果值在你眼里是什么效果" ——
+            //    界面与评分走**同一个口径**，Assistant 层依旧不认识具体角色。
+            if (score == 0 && actor?.Character is IHandEffectDisplay display)
+            {
+                switch (display.DisplayedEffectOf(result))
+                {
+                    case HandEffectType.Attack4: score = 44; break;
+                    case HandEffectType.Attack6: score = 66; break;
+                    case HandEffectType.Attack8: score = 88; break;
+                }
+            }
+
             // ---- 角色特性加分 ----
             // 反转依赖：不是"AI 认识狼人"，而是"角色告诉 AI 这一手值多少"。
             // 这样 Assistant 层不必引用 Characters 层（项目约定）。
@@ -323,7 +345,41 @@ namespace FingerDiceDuel.Assistant
             score += SituationalDenyScore(move, actor, game);
 
             // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
-            score += TargetPriorityScore(move, actor, game);
+            //
+            // ⚠️⚠️ **必须按"实际会挨打的人"算，不能按"被加数的手主"算。**
+            //
+            //    魔术师可以拿**自己的手**当被加数 —— 这时被加数的手主是**自己**，
+            //    但攻击照样落在**对手**身上（借自己的手只是为了凑数字）。
+            //
+            //    原来的写法直接传 `move.TargetHand` 给 TargetPriorityScore，
+            //    而它对"手主是自己"直接返回 0 ——
+            //    于是自加凑出的攻击**拿不到任何目标优先级分**。
+            //    实测（探针）：自加 176 分 vs 碰对手 322 分，差 146 分，
+            //    全部来自这一项 -> **AI 永远选碰对手，魔术师的招牌能力废掉**。
+            //
+            //    预测挨打对象：结果是攻击时 = 默认攻击目标 = 第一位对手
+            //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
+            int resultForPriority = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+            bool priorityIsAttack =
+                Hand.GetEffectType(resultForPriority) == HandEffectType.Attack4
+                || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack6
+                || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack8
+                || (actor?.Character is IHandEffectDisplay dsp
+                    && dsp.DisplayedEffectOf(resultForPriority) != HandEffectType.None);
+
+            if (priorityIsAttack && actor != null && game != null
+                && game.OwnerOfHand(move.TargetHand) != null
+                && ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor))
+            {
+                // 自加：被加数是自己的手 -> 挨打的是对手，按对手算
+                PlayerState victim = game.OpponentsOf(actor).Count > 0
+                    ? game.OpponentsOf(actor)[0] : null;
+                score += TargetPriorityScoreFor(move, actor, game, victim);
+            }
+            else
+            {
+                score += TargetPriorityScore(move, actor, game);
+            }
 
             // ---- **斩杀优先**（玩家要求："在能斩杀对方时，要大幅优先决定攻击"）----
             //
@@ -631,7 +687,20 @@ namespace FingerDiceDuel.Assistant
             if (game == null || actor == null) return 0;
 
             PlayerState target = game.OwnerOfHand(move.TargetHand);
-            if (target == null) return 0;
+            return TargetPriorityScoreFor(move, actor, game, target);
+        }
+
+        /// <summary>
+        /// 目标优先级评分（<paramref name="target"/> 就是**实际会挨打的人**）。
+        ///
+        /// 与 <see cref="TargetPriorityScore"/> 分开是因为：魔术师自加时
+        /// "被加数的手主"是**自己**，而挨打的是**对手** ——
+        /// 需要允许显式传入真正的挨打对象。
+        /// </summary>
+        private int TargetPriorityScoreFor(LegalMove move, PlayerState actor,
+                                           GameManager game, PlayerState target)
+        {
+            if (game == null || actor == null || target == null) return 0;
 
             // 只对**对手**算这套优先级（打队友另有惩罚）
             if (ReferenceEquals(target, actor) || game.IsTeammate(actor, target)) return 0;
