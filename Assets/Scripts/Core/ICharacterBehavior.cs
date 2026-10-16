@@ -319,6 +319,29 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
+        /// **这一次运算是不是"拿自己的手当被加数"**（魔术师的特色）。
+        ///
+        /// 判据：这位角色允许自加，**且**被加数的那只手也是他自己的。
+        ///
+        /// \u26a0\ufe0f 为什么要这样一个统一助手：魔术师的"结果 2 变成攻击"与
+        ///    "2 也要问打谁"都依赖这个判断。我原来用了一个
+        ///    "上层在运算前告知"的标记（<c>MarkSelfAddend</c>），
+        ///    但那个方法**从来没有任何调用点** —— 标记恒为 false，
+        ///    于是判定写反、2 既没变成攻击、也没被追问目标。
+        ///    改成**直接从手牌归属推出来**，不依赖任何易漏的调用约定。
+        /// </summary>
+        public static bool ActorHasSelfAddend(PlayerState actor, Hand targetHand)
+        {
+            if (actor == null || targetHand == null) return false;
+
+            // 被加数必须是他自己的手（否则就是"碰别人的手"，不是自加）
+            if (!actor.Owns(targetHand)) return false;
+
+            var self = actor.Character as ISelfAddendProvider;
+            return self != null && self.AllowsSelfAddend;
+        }
+
+        /// <summary>
         /// **这位角色里第一个实现了 <typeparamref name="T"/> 的部件**（没有则 null）。
         ///
         /// \u26a0\ufe0f \u4e3a\u4ec0\u4e48\u5fc5\u987b\u8d70\u5b83\uff0c\u800c\u4e0d\u80fd\u5199

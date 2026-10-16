@@ -1029,7 +1029,22 @@ namespace FingerDiceDuel.Assistant
                     //    AI 选中一只被锁的手时 `ClickHand` 会被拒 ->
                     //    `MakeAutomaticMove` 返回 false -> **对局卡死**
                     //    （玩家实测"经典里战士攻击卡住了"，批量测试复现）。
-                    return !ActivePlayer.Owns(hand);
+                    if (!ActivePlayer.Owns(hand)) return true;
+
+                    // ⚠️ **魔术师例外：他可以碰自己的另一只手。**
+                    //
+                    //    玩家实测的 bug："魔术师的手选择后无法触碰自己的手运算"。
+                    //    上面那句 `!ActivePlayer.Owns(hand)` 把它一手挡住了 ——
+                    //    领域层（GetLegalMoves / IsLegalMove）早就放行，
+                    //    界面这层又漏了一处（与"暗置的手还能点"同一类错误）。
+                    //
+                    //    仍然不许点**已选的那只**（上面已单独返回），
+                    //    所以隐含地保证了"加数与被加数不是同一只手"。
+                    var selfAddend = ActivePlayer.Character as ISelfAddendProvider;
+                    if (selfAddend != null && selfAddend.AllowsSelfAddend)
+                        return hand.CanBeOperated;
+
+                    return false;
                 }
 
                 case BoardPhase.ChoosingTargetPlayer:

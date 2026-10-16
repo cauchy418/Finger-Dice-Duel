@@ -164,7 +164,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**785 项逻辑测试全部通过**。
+当前状态：**789 项逻辑测试全部通过**。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -181,7 +181,7 @@ Assets/
     Characters/   15 个角色逻辑 + 数据化定义
     Assistant/    棋盘状态机、AI 抉择、整局驱动、2v2 先攻、动画/音效的"纯数据计划"
     UI/           表现层（唯一允许引用 UnityEngine 的层）
-  Tests/EditMode/ 785 项无头测试
+  Tests/EditMode/ 789 项无头测试
   Resources/Fonts/ 思源黑体（Medium 正文 / Bold 标题）
 Tools/
   HeadlessTests/  无头测试运行器

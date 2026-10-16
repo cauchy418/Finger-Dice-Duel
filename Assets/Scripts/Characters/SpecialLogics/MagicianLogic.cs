@@ -15,7 +15,8 @@ namespace FingerDiceDuel.Core
     /// \u26a0\ufe0f 第 2 条是与他角色的**关键差别**：别人 2 是死牌，他是攻击。
     /// </summary>
     public sealed class MagicianLogic : CharacterTemplate,
-        ISelfAddendProvider, IHandEffectRewriter, IHandEffectDisplay
+        ISelfAddendProvider, IHandEffectRewriter, IHandEffectDisplay,
+        IResultTargetProvider
     {
         /// <summary>魔术师能把结果 2 当攻击打出的伤害（吃攻防加成）。</summary>
         public const int MagicAttackValue = 2;
@@ -44,7 +45,20 @@ namespace FingerDiceDuel.Core
                                             int targetValue, GameManager manager)
         {
             int result = actedHand?.Value ?? 0;
-            if (result == MagicAttackValue && !_isSelfAddend)
+
+            // ⚠️ 判定必须**直接从被加数手是不是自己的**得出，
+            //    不能依赖"上层在运算前告知"的标记：
+            //      · `MarkSelfAddend` **从来没有任何调用点**，
+            //        所以那个标记恒为 false，守卫 `!标记` 恒为真 ——
+            //        看起来像"2 会变攻击"，实际写反了；
+            //      · 而玩家实测的现象是"魔术师的 2 要再点一次目标"，
+            //        正是 2 **没有**被当成攻击、于是多走了一次选目标。
+            //
+            //    现在直接判：被加数手也是这位角色的手 -> 就是"拿自己的手当被加数"。
+            //    这样不依赖任何易漏的调用约定（我也把那个标记删掉了）。
+            bool selfAddend = CharacterBehaviors.ActorHasSelfAddend(actor, actedHand);
+
+            if (result == MagicAttackValue && selfAddend)
                 return HandEffectType.Attack4;
 
             return Hand.GetEffectType(result);
@@ -57,17 +71,30 @@ namespace FingerDiceDuel.Core
             return Hand.GetEffectType(resultValue);
         }
 
-        /// <summary>本次运算是不是"拿自己的手当被加数"（由上层在运算前告知）。</summary>
-        private bool _isSelfAddend;
-
         /// <summary>
-        /// 由上层在**运算前**调用，告知这一次是不是自己加自己。
+        /// **2 的攻击也要问"打谁"**（玩家要求：与 4/6/8 一样再选一次目标）。
         ///
-        /// \u26a0\ufe0f 为什么需要它：结果 2 只有在**自己加自己**时才当攻击。
-        ///    若把 2 无条件变成攻击，那么"和对手的 1 运算出 2"也变成攻击 ——
-        ///    那不是玩家说的规则（他指的是"自己的手互相凑"）。
+        /// \u26a0\ufe0f 为什么必须显式实现它：
+        ///    `BoardController.NeedsTargetAfterOperation` 先问角色的
+        ///    <see cref="IResultTargetProvider"/>，角色不实现时才走兜底 ——
+        ///    而兜底是**按 `context.Effect` 判断**的，
+        ///    2 的效果类型是 `None`（不是 Attack4/6/8），于是返回 false：
+        ///    **2 被当成"无效果"，直接自动挑了一个目标就打出去**。
+        ///    这正是玩家实测的"2 现在是自动攻击目标了"。
+        ///
+        ///    4/6/8 之所以没这个问题，是因为兜底认得它们；
+        ///    魔术师的 2 是**借** Attack4 的类型，兜底认不出来。
         /// </summary>
-        public void MarkSelfAddend(bool value) => _isSelfAddend = value;
+        public override bool ResultNeedsTarget(PreTurnChoiceContext context)
+        {
+            if (context == null) return false;
+
+            // 只有"拿自己的手当被加数"凑出的 2 才是攻击
+            if (!CharacterBehaviors.ActorHasSelfAddend(context.Actor, context.TargetHand))
+                return false;
+
+            return context.ResultValue == MagicAttackValue;
+        }
 
         /// <summary>
         /// 追加伤害设定：把这次的伤害固定成 <see cref="MagicAttackValue"/>（吃攻防加成）。
@@ -85,7 +112,8 @@ namespace FingerDiceDuel.Core
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
-            _isSelfAddend = false;
+            // 自加判定现在是**从手牌归属直接推出来的**，
+            // 不再有需要复位的标记（那个标记已删除）。
         }
     }
 }

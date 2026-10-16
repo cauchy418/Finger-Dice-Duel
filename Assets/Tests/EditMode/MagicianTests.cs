@@ -35,9 +35,104 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Magician_can_use_its_own_hand_as_an_addend()
+        public void UI_allows_clicking_own_other_hand_as_the_addend()
         {
+            // 玩家实测的 bug："魔术师的手选择后无法触碰自己的手运算"。
+            // 领域层早就放行，但 BoardController.CanClick 的
+            // ChoosingTargetHand 分支用的是 `!ActivePlayer.Owns(hand)` ——
+            // 把"碰自己的手"一手挡住了。这里把界面这一层也钉住。
             GameManager game = Match(out PlayerState magician, out _);
+            // 注意：BoardController 要求抉择器同时实现 IPlayerChoiceSink，
+            // 所以这里用 SimpleChoiceProvider（GreedyChoiceProvider 不行）。
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                            new SimpleChoiceProvider());
+            board.BeginTurn();
+
+            magician.LeftHand.SetValue(3);
+            magician.RightHand.SetValue(5);
+
+            // 第①步：选左手当运算源
+            Assert.True(board.ClickHand(magician.LeftHand), "应能选中自己的左手。");
+
+            // 第②步：碰自己的右手（这就是玩家点不动的那一步）
+            Assert.True(board.CanClick(magician.RightHand),
+                "魔术师必须能点自己的另一只手当被加数。");
+            Assert.True(board.ClickHand(magician.RightHand),
+                "点击自己的另一只手应当被接受。");
+        }
+
+        [Test]
+        public void Other_characters_still_cannot_click_their_own_hand_as_addend()
+        {
+            var soldier = Make("兵", CharacterDefinition.Soldier);
+            var foe = Make("敌", CharacterDefinition.Soldier);
+            var game = new GameManager(soldier, foe,
+                                       new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var board = new BoardController(game, new SimpleChoiceProvider(),
+                                            new SimpleChoiceProvider());
+            board.BeginTurn();
+
+            soldier.LeftHand.SetValue(3);
+            soldier.RightHand.SetValue(5);
+
+            board.ClickHand(soldier.LeftHand);
+            Assert.False(board.CanClick(soldier.RightHand),
+                "其他角色仍然不能点自己的手当被加数（规则只属于魔术师）。");
+        }
+
+        [Test]
+        public void Two_from_self_addend_needs_a_target_just_like_four_six_eight()
+        {
+            // 玩家要求："我需要让 2 和 4/6/8 一样再选择一次目标"。
+            // 根因：MagicianLogic 没实现 IResultTargetProvider，
+            // 于是 BoardController 走兜底 —— 兜底按 context.Effect 判断，
+            // 而 2 的效果类型是 None（不是 Attack4/6/8）-> 不追问目标 -> 自动打人。
+            GameManager game = Match(out PlayerState magician, out PlayerState foe);
+            magician.LeftHand.SetValue(1);
+            magician.RightHand.SetValue(1);
+            foe.LeftHand.SetValue(1);      // 1 + 1 = 2（前面写成 4 会得到 5）
+
+            var provider = magician.Character as IResultTargetProvider;
+            Assert.NotNull(provider, "魔术师必须实现 IResultTargetProvider。");
+
+            // 自加：1 碰自己的 1 -> 2 -> 是攻击 -> 需要问打谁
+            var selfCtx = new PreTurnChoiceContext(magician, foe,
+                                                   magician.LeftHand, magician.RightHand);
+            Assert.AreEqual(2, selfCtx.ResultValue, "前提：1 + 1 = 2。");
+            Assert.True(provider.ResultNeedsTarget(selfCtx),
+                "自加凑出的 2 是攻击，必须追问目标。");
+
+            // 非自加：1 碰**对手的** 1 -> 2 -> 不是攻击 -> 不追问
+            var foeCtx = new PreTurnChoiceContext(magician, foe,
+                                                  magician.LeftHand, foe.LeftHand);
+            Assert.AreEqual(2, foeCtx.ResultValue, "前提：1 + 1 = 2。");
+            Assert.False(provider.ResultNeedsTarget(foeCtx),
+                "碰对手的手凑出的 2 不是攻击，不该追问目标。");
+        }
+
+        [Test]
+        public void Two_from_self_addend_is_an_attack()
+        {
+            // 与上一条配套：自加的 2 要真的被改写成攻击
+            GameManager game = Match(out PlayerState magician, out _);
+            magician.LeftHand.SetValue(1);
+            magician.RightHand.SetValue(1);
+
+            var rewriter = magician.Character as IHandEffectRewriter;
+            Assert.NotNull(rewriter);
+
+            magician.LeftHand.SetValue(2);
+            HandEffectType effect = rewriter.RewriteEffect(
+                magician, magician.LeftHand, magician.RightHand.Value, game);
+
+            Assert.AreNotEqual((int)HandEffectType.None, (int)effect,
+                "自加的 2 应被改写成攻击。");
+        }
+
+        [Test]
+        public void Magician_can_use_its_own_hand_as_an_addend()
+        {            GameManager game = Match(out PlayerState magician, out _);
             magician.LeftHand.SetValue(3);
             magician.RightHand.SetValue(5);
 
