@@ -990,7 +990,28 @@ namespace FingerDiceDuel.Core
             if (!IsLegalMove(actor, actedHand, targetHand, out string reason))
                 throw new InvalidOperationException($"非法运算：{reason}");
 
+            MarkSelfAddendIfAny(actor, targetHand);
             return ResolveTurn(actor, actedHand, targetHand.Value, targetHand);
+        }
+
+        /// <summary>
+        /// 若这次是"拿自己的手当被加数"（魔术师的特色），把被加数那只手标给角色，
+        /// **仅供技能发动率统计**。
+        ///
+        /// \u26a0\ufe0f 规则的判定**不依赖**这个标记 —— 那一条一律从手牌归属直接推出
+        ///    （<see cref="CharacterBehaviors.ActorHasSelfAddend"/>）。
+        ///    这里只解决"统计要一个累计次数"的问题，
+        ///    而且刻意只标记、不参与任何规则分支，避免两处口径不一致。
+        /// </summary>
+        private static void MarkSelfAddendIfAny(PlayerState actor, Hand targetHand)
+        {
+            if (actor == null || targetHand == null) return;
+
+            var magician = CharacterBehaviors.FirstImplementer<ISelfAddendProvider>(actor)
+                as MagicianLogic;
+            if (magician == null) return;
+
+            magician.MarkSelfAddendHand(actor.Owns(targetHand) ? targetHand : null);
         }
 
         /// <summary>

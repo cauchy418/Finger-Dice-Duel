@@ -119,12 +119,22 @@ namespace FingerDiceDuel.Core
             return actedHand;
         }
 
+        /// <summary>
+        /// **本局进入伏击几次**（供"技能发动率"统计）。
+        ///
+        /// ⚠️ 为什么要计数器：伏击会被"抵伤"**消耗掉**，
+        ///    所以终局时看 <see cref="IsAmbushing"/> 常常已经是 false ——
+        ///    只有累计次数才反映"这一局到底用过没有"。
+        /// </summary>
+        public int AmbushCount { get; private set; }
+
         /// <summary>进入伏击：暗置这只手。</summary>
         public void EnterAmbush(Hand hand)
         {
             if (hand == null) return;
             hand.Conceal();
             _ambushHand = hand;
+            AmbushCount++;
         }
 
         /// <summary>解除伏击：恢复被暗置的手。返回被恢复的那只手（没在伏击则 null）。</summary>
@@ -376,6 +386,7 @@ namespace FingerDiceDuel.Core
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
             _ambushHand = null;
+            AmbushCount = 0;      // 计数也是"每局重置"的一部分
 
             // 重开一局必须把手上的暗置状态也清掉 ——
             // 否则第二局开局那只手仍然是"不能碰"的，而伏击状态已经没了。

@@ -367,7 +367,20 @@ namespace FingerDiceDuel.Tests
                     //    必须用"本局进入过几次"的计数器（走 Core 接口，
                     //    因为测试层不能引用 Characters 层）。
                     if (pA.Character is ISkillUseCounter a && a.SkillUseCount > 0) hit = true;
-                    break;            }
+                    break;
+
+                case CharacterDefinition.HunterId:
+                    // 伏击同样会被"抵伤"**消耗掉**，终局看 IsAmbushing 常常是 false
+                    // -> 用 HunterLogic 自己的累计次数（本局进入过伏击几次）。
+                    if (pA.Character is HunterLogic hu && hu.AmbushCount > 0) hit = true;
+                    break;
+
+                case CharacterDefinition.MagicianId:
+                    // 魔术师的招牌能力是"拿自己的手当被加数" ->
+                    // 用他自己的自加次数（终局状态看不出这个）。
+                    if (pA.Character is MagicianLogic mg && mg.SelfAddendCount > 0) hit = true;
+                    break;
+            }
 
             return hit;
         }

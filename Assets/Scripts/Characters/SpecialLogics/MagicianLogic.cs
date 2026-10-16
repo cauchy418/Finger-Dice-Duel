@@ -51,24 +51,34 @@ namespace FingerDiceDuel.Core
         {
             int result = actedHand?.Value ?? 0;
 
-            // ⚠️⚠️ **先处理 2，其余一律交回引擎**。
-            //
-            //    我上一轮把"只看结果值"直接写成了
-            //      if (result == 2) return Attack4;
-            //      return Hand.GetEffectType(result);
-            //    看起来等价，其实**把魔术师的 4/6/8 也弄坏了**：
-            //    因为 `Hand.GetEffectType` 返回的 Attack4/Attack6/Attack8
-            //    在 `AttackContext` 里会被"按效果类型取数字"的路径处理，
-            //    而魔术师需要的是"伤害就是这只手的点数"。
-            //    玩家实测：7 + 9 = 6 变成了「攻击，造成 **0** 点伤害」。
-            //
-            //    所以这里必须**显式列出攻击牌**，与 `Hand.GetEffectType` 等价，
-            //    不能靠"原样返回"来兜底。
+            // 统计"本局自加过几次"（供技能发动率）。
+            // 判据：被加数就是发起运算的那只手 —— 即"拿自己的手当被加数"。
+            if (actedHand != null && ReferenceEquals(actedHand, _selfAddendMark))
+                SelfAddendCount++;
+
             if (result == MagicAttackValue)
                 return HandEffectType.Attack4;
 
             return Hand.GetEffectType(result);
         }
+
+        /// <summary>
+        /// **本局自加几次**（供"技能发动率"统计）。
+        /// </summary>
+        public int SelfAddendCount { get; private set; }
+
+        /// <summary>
+        /// 由上层在施行自加时告知"被加数就是这一只手"，用于计数。
+        ///
+        /// \u26a0\ufe0f 只用于**计数**，不参与任何规则判定 ——
+        ///    规则的判定一律从手牌归属直接推出（见
+        ///    <see cref="CharacterBehaviors.ActorHasSelfAddend"/>），
+        ///    这里刻意不重复那条逻辑，免得又出现"两处口径不一致"。
+        /// </summary>
+        private Hand _selfAddendMark;
+
+        /// <summary>标记"这一次运算是拿自己的手当被加数"。</summary>
+        public void MarkSelfAddendHand(Hand targetHand) => _selfAddendMark = targetHand;
 
         /// <summary>显示：结果 2 也要显示成"攻击"（红），否则界面与真实结算不一致。</summary>
         public HandEffectType DisplayedEffectOf(int resultValue)
@@ -159,8 +169,8 @@ namespace FingerDiceDuel.Core
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
-            // 自加判定现在是**从手牌归属直接推出来的**，
-            // 不再有需要复位的标记（那个标记已删除）。
+            SelfAddendCount = 0;
+            _selfAddendMark = null;
         }
     }
 }
