@@ -40,8 +40,44 @@ namespace FingerDiceDuel.Assistant
     /// 牧师、游侠、狼人、剑客、忍者、刺客的 AI **完全不会用技能**。
     /// 现在每个角色都有对应的评分与抉择策略。
     /// </summary>
-    public sealed class GreedyChoiceProvider : AbstractChoiceProvider, IMoveSelector
+    public sealed class GreedyChoiceProvider : AbstractChoiceProvider, IMoveSelector,
+                                               IDamageTypeChoiceSink
     {
+        // ============================================================
+        // 法师的伤害类型选择（IDamageTypeChoiceSink）
+        // ============================================================
+
+        /// <summary>AI 选定的伤害类型（供 <see cref="MageLogic"/> 回读）。</summary>
+        public DamageType ChosenDamageType { get; set; } = DamageType.None;
+
+        /// <summary>本次是否会放弃攻击去铺状态。</summary>
+        public bool WantsToAbandonAttack { get; set; }
+
+        /// <summary>
+        /// 由调用方注入："**这一击能不能直接斩杀**"。
+        ///
+        /// 能斩杀时就不该放弃攻击去挂状态 —— 立刻赢下比赛胜过铺一个状态。
+        /// 未注入时按"不能斩杀"处理（保守：允许铺状态）。
+        /// </summary>
+        public System.Func<bool> MageAbandonLethalGuard { get; set; }
+
+        /// <summary>
+        /// 对手是否**有可能回血**（法师选"腐朽"的判据）。
+        ///
+        /// 用"角色自带回复能力"判断，而不是猜他的手牌 ——
+        /// 牧师 / 巨人 / 狼人都有明确的回复机制。
+        /// </summary>
+        private static bool MageCanHeal(PlayerState foe)
+        {
+            if (foe?.Character == null) return false;
+
+            // 有回复能力的角色都实现 IHealAmountProvider 或 IHealOverride
+            if (foe.Character is IHealAmountProvider) return true;
+            if (foe.Character is IHealOverride) return true;
+
+            return false;
+        }
+
         /// <summary>
         /// 生命低于等于该值时，回复的评分提高。
         ///
@@ -1047,6 +1083,57 @@ namespace FingerDiceDuel.Assistant
                     {
                         int damage = FollowUpDamageLookup?.Invoke() ?? int.MaxValue;
                         return damage >= SwordsmanFollowUpMinDamage ? c[0] : null;
+                    }
+
+                // ---------- 法师 ----------
+                case HandEffect.MageAbandonAttack:
+                    {
+                        // 玩家给的方向："放弃攻击去铺设伤害类型"。
+                        //
+                        // 什么时候**不该**放弃：
+                        //   · 已经有一个待用的类型了 —— 再放弃只是白扔一回合；
+                        //   · 这一击能**直接斩杀** —— 立刻结束比赛胜过挂状态。
+                        //
+                        // 其余情况都值得铺：状态持续对方 2 个回合，
+                        // 收益高于这一次 4~8 点伤害。
+                        if (decider == null || Game == null) return null;
+
+                        // ⚠️ 用 Core 的 IMageState 而不是 MageLogic ——
+                        //    Assistant 层不能引用 Characters 层（架构铁律）。
+                        var mage = decider.Character as IMageState;
+                        if (mage == null) return null;
+
+                        if (mage.HasPendingType) return null;      // 已经铺好了
+
+                        if (MageAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
+
+                        WantsToAbandonAttack = true;
+                        return c[0];
+                    }
+
+                case HandEffect.MageDamageType:
+                    {
+                        // 选哪一种伤害类型。按局面挑最有用的一种：
+                        //   · 对手能回血（牧师 / 巨人 / 狼人）-> 腐朽，直接封掉回复
+                        //   · 自己血少 -> 震慑（降他 2 攻、还打不到自己）
+                        //   · 对手靠护盾 -> 力场（穿盾且不可闪避）
+                        //   · 其余 -> 火焰（每回合 3 点，最稳的输出）
+                        DamageType pick = DamageType.Fire;
+
+                        if (decider != null)
+                        {
+                            PlayerState foe = Game?.OpponentsOf(decider).Count > 0
+                                ? Game.OpponentsOf(decider)[0] : null;
+
+                            if (foe != null && MageCanHeal(foe)) pick = DamageType.Necrotic;
+                            else if (decider.Health * 100 <= decider.MaximumHealth * 40)
+                                pick = DamageType.Psychic;
+                            else if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
+                                pick = DamageType.Force;
+                        }
+
+                        ChosenDamageType = pick;
+                        return c[0];
                     }
 
                 case HandEffect.WarriorChainBreak:

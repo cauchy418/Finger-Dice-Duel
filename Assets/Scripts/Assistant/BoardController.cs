@@ -2259,6 +2259,15 @@ namespace FingerDiceDuel.Assistant
             {
                 int before = _pendingRequests.Count;
                 provider.CollectPreTurnChoices(context, _pendingRequests);
+
+            // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
+            //    必须在这里做 —— 结算一旦开始就不再问玩家，
+            //    而"选了什么伤害类型"只有在结算时才知道要用。
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.MageLogic mage
+                && provider is IDamageTypeChoiceSink dmgSink)
+            {
+                mage.ReadFromSink(dmgSink);
+            }
                 _lastCollectInfo += $" added={_pendingRequests.Count - before}";
 
                 // 防御性：角色不该提出空候选的抉择，否则玩家永远点不下去
@@ -2419,6 +2428,15 @@ namespace FingerDiceDuel.Assistant
             if (_game != null) context.Manager = _game;
 
             provider.CollectPreTurnChoices(context, _pendingRequests);
+
+            // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
+            //    必须在这里做 —— 结算一旦开始就不再问玩家，
+            //    而"选了什么伤害类型"只有在结算时才知道要用。
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.MageLogic mage
+                && provider is IDamageTypeChoiceSink dmgSink)
+            {
+                mage.ReadFromSink(dmgSink);
+            }
 
             // 过滤空候选
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
@@ -2743,6 +2761,42 @@ namespace FingerDiceDuel.Assistant
             => IsInChoicePhase
                && _pendingRequestIndex < _pendingRequests.Count
                && _pendingRequests[_pendingRequestIndex].AllowDecline;
+
+        /// <summary>
+        /// 当前待问的抉择**是哪一种**（UI 用来决定弹哪个面板）。
+        ///
+        /// 目前主要给法师用：轮到 <see cref="HandEffect.MageDamageType"/> 时
+        /// 要弹出"10 种伤害类型"的选择面板，而不是普通的"发动 / 不发动"。
+        /// </summary>
+        public HandEffect PendingEffect
+            => IsInChoicePhase && _pendingRequestIndex < _pendingRequests.Count
+               ? _pendingRequests[_pendingRequestIndex].Effect
+               : HandEffect.None;
+
+        /// <summary>
+        /// **法师：为下一次攻击记下伤害类型。**
+        ///
+        /// 由界面在玩家点了类型面板之后调用。记完之后把这一步抉择标为已答，
+        /// 流程继续（下一步就是选攻击目标）。
+        /// </summary>
+        public bool ChooseDamageType(DamageType type)
+        {
+            if (type == DamageType.None) return false;
+            if (PendingEffect != HandEffect.MageDamageType) return false;
+
+            var sink = SinkFor(ActivePlayer) as IDamageTypeChoiceSink;
+            if (sink == null) return false;
+
+            sink.ChosenDamageType = type;
+            sink.WantsToAbandonAttack = true;
+
+            // 把选择写进法师身上，并标这一步已答
+            if (ActivePlayer?.Character is Characters.SpecialLogics.MageLogic mage)
+                mage.ReadFromSink(sink);
+
+            ApplyPreTurnChoiceAndContinue(null);
+            return true;
+        }
 
         /// <summary>
         /// "发动"按钮的文案（空 = 不显示）。

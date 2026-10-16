@@ -38,6 +38,33 @@ namespace FingerDiceDuel.UI
         private Text _statusTextA, _statusTextB;
         private Text _nameTextA, _nameTextB;
         private RectTransform _nameRowA, _nameRowB;
+
+        /// <summary>
+        /// **法师状态的图标栏**（玩家面板右侧）。
+        ///
+        /// 1v1 用 A/B 两栏；2v2 走四面板布局（见 <see cref="RefreshRing"/>），
+        /// 那四个面板各自建自己的图标栏。
+        /// </summary>
+        private StatusIconBar _statusIconsA, _statusIconsB;
+
+        /// <summary>法师的伤害类型选择面板（10 选 1）。</summary>
+        private DamageTypePanel _damageTypePanel;
+
+        /// <summary>玩家在伤害类型面板上选了某一种（由 GameBootstrap 接上）。</summary>
+        public event System.Action<DamageType> DamageTypePicked;
+
+        /// <summary>显示 / 隐藏伤害类型面板。</summary>
+        public void SetDamageTypePanelVisible(bool visible)
+        {
+            if (_damageTypePanel == null) return;
+            if (visible) _damageTypePanel.Show();
+            else _damageTypePanel.Hide();
+        }
+
+        /// <summary>伤害类型面板当前是否可见（供测试 / 诊断）。</summary>
+        public bool IsDamageTypePanelVisible
+            => _damageTypePanel != null && _damageTypePanel.IsVisible;
+
         private FloatingTextLayer _floats;
         private ScreenShaker _shaker;
         private GamePresentation _presentation;
@@ -164,11 +191,23 @@ namespace FingerDiceDuel.UI
             BuildTurnLabel();
             BuildFloatLayer();
             BuildRingPanels();
+            BuildDamageTypePanel();
 
             HideGameOver();
             SetSkipButtonVisible(false);
             SetDeclineButtonVisible(false);
             SetAcceptButtonVisible(false);
+        }
+
+        /// <summary>
+        /// **法师的伤害类型选择面板**。建好之后默认隐藏，
+        /// 只在"玩家选了放弃攻击"时由 <see cref="SetDamageTypePanelVisible"/> 弹出。
+        /// </summary>
+        private void BuildDamageTypePanel()
+        {
+            _damageTypePanel = new DamageTypePanel(_canvasRoot, _font);
+            _damageTypePanel.OnPicked = type => DamageTypePicked?.Invoke(type);
+            _damageTypePanel.Hide();
         }
 
         private static Font LoadFont() => UiFont.Get();
@@ -332,6 +371,10 @@ namespace FingerDiceDuel.UI
                 var pos = new Vector2(i == 0 ? -160f : 160f, anchorTop ? -200f : 200f);
                 cards[i] = CreateHandCard(area, pos);
             }
+
+            // 法师的状态图标栏（面板右侧）
+            if (anchorTop) _statusIconsB = new StatusIconBar(area, _font, true, "StatusIconsB");
+            else _statusIconsA = new StatusIconBar(area, _font, false, "StatusIconsA");
         }
 
         /// <summary>
@@ -1373,6 +1416,10 @@ namespace FingerDiceDuel.UI
             if (_nameTextB != null) _nameTextB.text = DescribeNameLine(b);
             _statusTextA.text = HandVisual.ShieldSummary(a);
             _statusTextB.text = HandVisual.ShieldSummary(b);
+
+            // 法师的状态图标（玩家面板右侧）
+            _statusIconsA?.Refresh(a);
+            _statusIconsB?.Refresh(b);
 
             if (turnLimit > 0) SetTurn(turnCount, turnLimit);
 

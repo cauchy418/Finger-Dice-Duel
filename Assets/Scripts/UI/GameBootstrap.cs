@@ -411,6 +411,9 @@ namespace FingerDiceDuel.UI
             _board.StealClicked += OnStealClicked;
             _board.DeclineClicked += OnDeclineClicked;
             _board.AcceptClicked += OnAcceptClicked;
+
+            // 法师：伤害类型面板上选了某一种
+            _board.DamageTypePicked += OnDamageTypePicked;
             _board.ExitClicked += OnExitClicked;
             _board.SetVisible(false);
 
@@ -2201,6 +2204,24 @@ namespace FingerDiceDuel.UI
             if (_controller.DeclinePendingChoice()) RefreshView();
         }
 
+        /// <summary>
+        /// **法师**：玩家在伤害类型面板上选了某一种。
+        ///
+        /// 玩家确认的顺序是"先问放弃 -> 选类型 -> 再选目标"，
+        /// 所以这里选完之后流程继续走到"选攻击目标"那一步。
+        /// </summary>
+        private void OnDamageTypePicked(DamageType type)
+        {
+            if (_controller == null) return;
+            if (type == DamageType.None) return;
+
+            if (_controller.ChooseDamageType(type))
+            {
+                _board.SetDamageTypePanelVisible(false);
+                RefreshView();
+            }
+        }
+
         private void OnHandClicked(PlayerState owner, Hand hand)
         {
             if (_controller == null) return;
@@ -2357,10 +2378,28 @@ namespace FingerDiceDuel.UI
             _board.SetAcceptButtonVisible(canAccept);
             if (canAccept) _board.SetAcceptButtonLabel(acceptLabel);
 
+            // ⚠️ **法师：轮到"选伤害类型"时弹 10 选 1 面板，而不是普通的发动/不发动。**
+            //
+            //    玩家确认的顺序：先问"是否放弃攻击" -> 选类型 -> 再选目标。
+            //    这一步必须**优先**于发动按钮处理，否则玩家会看到
+            //    一个没有意义的"就选它"按钮。
+            bool pickingDamageType =
+                _controller.IsHumanChooser
+                && _controller.PendingEffect == HandEffect.MageDamageType;
+
+            _board.SetDamageTypePanelVisible(pickingDamageType);
+            if (pickingDamageType)
+            {
+                // 面板已经替代了这两个按钮
+                _board.SetAcceptButtonVisible(false);
+                _board.SetDeclineButtonVisible(false);
+            }
+
             if (_controller.Phase == BoardPhase.GameOver)
             {
                 _board.ShowGameOver(WinMessage());
                 _board.SetSkipButtonVisible(false);
+                _board.SetDamageTypePanelVisible(false);
             }
 
             DiagnoseIfNeeded(canDecline, acceptLabel, canAccept);

@@ -1,0 +1,989 @@
+编译器   : C:\Users\29391\Finger Dice Duel\Tools\HeadlessTests\bin\csc\csc.dll
+引用目录 : C:\Program Files\Tuanjie\Hub\Editor\2022.3.62t15-x86_64\Editor\Data\MonoBleedingEdge\lib\mono\4.8-api
+源文件   : 128 个（产品 63 / 测试 64）
+输出     : C:\Users\29391\Finger Dice Duel\Tools\HeadlessTests\bin\HeadlessTests.dll
+
+编译成功，开始运行测试……
+
+── AiCharacterTests  (15 项)
+   PASS  All_new_characters_can_be_driven_by_the_ai_without_crashing
+   PASS  Easy_difficulty_has_noise_enabled_so_it_can_deviate
+   PASS  Hard_difficulty_always_picks_the_same_best_move
+   PASS  Normal_difficulty_sits_between_easy_and_hard
+   PASS  Priest_ai_heals_itself_and_never_the_opponent
+   PASS  Ranger_ai_always_takes_the_power_shot
+   PASS  Ranger_ai_uses_dodge
+   PASS  Ranger_keeps_its_only_one_instead_of_spending_it_on_damage
+   PASS  Ranger_prefers_keeping_a_one_even_when_the_effect_is_slightly_worse
+   PASS  Swordsman_ai_skips_a_feeble_follow_up
+   PASS  Swordsman_scores_a_double_handed_move
+   PASS  The_default_ai_stays_deterministic
+   PASS  Werewolf_ai_actually_picks_a_move_that_triggers_the_sum_seven
+   PASS  Werewolf_ai_triggers_the_skill_in_a_real_turn
+   PASS  Werewolf_scores_a_sum_seven_move_higher_than_a_plain_attack
+
+── AiChoiceProviderRoutingTests  (2 项)
+   PASS  Ai_attacker_uses_its_own_choice_provider_to_power_shot
+   PASS  Ai_defender_uses_its_own_choice_provider_to_dodge
+
+── AnimationDirectorTests  (19 项)
+   PASS  Blocked_hit_shows_the_word_block
+   PASS  Damage_shows_on_the_defender_as_a_minus_number
+   PASS  Describe_lists_the_plan_for_inspection
+   PASS  Empty_result_produces_no_floats
+   PASS  Heal_shows_on_the_healed_player_not_the_actor
+   PASS  Heavy_hit_produces_a_heavy_shake
+   PASS  Impact_tier_follows_the_per_hit_damage
+   PASS  Mixed_results_are_ordered_and_staggered
+   PASS  Multi_hit_attacks_shake_once_per_segment
+   PASS  Multiple_floats_are_staggered_by_a_quarter_second
+   PASS  No_impact_when_the_attack_was_blocked
+   PASS  No_impact_when_the_attack_was_dodged
+   PASS  Pause_is_dynamic_between_a_quarter_and_a_half_second
+   PASS  Plan_carries_pause_and_impacts_together
+   PASS  Ranger_dodge_shows_the_word_dodge
+   PASS  Shake_grows_with_the_tier
+   PASS  Stealth_immunity_does_not_show_the_word_dodge
+   PASS  Swordman_follow_up_shakes_separately_from_the_main_hit
+   PASS  Wasted_full_health_heal_shows_plus_zero
+
+── ArithmeticTests  (11 项)
+   PASS  Adding_1_leaves_the_value_unchanged
+   PASS  Addition_is_commutative
+   PASS  Every_value_can_be_reached_from_1_plus_x
+   PASS  Hand_value_is_clamped_into_range
+   PASS  New_hand_starts_at_1_with_no_shield
+   PASS  PerformOperation_writes_back_only_itself
+   PASS  Result_is_always_within_1_and_9
+   PASS  Result_is_never_zero
+   PASS  Sum_of_10_becomes_1
+   PASS  Sum_of_12_keeps_units_digit
+   PASS  Sum_of_13_keeps_units_digit
+
+── AttackRangeTests  (15 项)
+   PASS  A_teammate_is_never_an_attack_target
+   PASS  An_explicit_range_override_extends_reach_for_this_attack_only
+   PASS  Board_only_allows_in_range_opponents_as_attack_targets
+   PASS  CanReach_respects_the_ring_distance
+   PASS  Curseweaver_and_priest_have_infinite_range
+   PASS  In_range_attack_deals_damage
+   PASS  Infinite_range_can_reach_anyone_in_the_ring
+   PASS  Melee_characters_have_range_one
+   PASS  Melee_range_in_two_versus_two_reaches_only_the_adjacent_enemy
+   PASS  Out_of_range_attack_changes_hand_but_deals_no_damage
+   PASS  Warrior_range_break_breaks_the_shield_when_chosen
+   PASS  Warrior_range_break_is_not_offered_for_a_non_attack
+   PASS  Warrior_range_break_is_not_offered_without_a_formed_other_hand
+   PASS  Warrior_range_break_is_offered_on_an_attack_with_a_formed_other_hand
+   PASS  Warrior_range_break_keeps_the_shield_when_declined
+
+── BarbarianLockTests  (8 项)
+   PASS  Barbarian_forms_a_shield_and_locks_the_chosen_hand
+   PASS  Board_collection_fills_the_alive_count_from_the_game
+   PASS  Four_alive_players_do_not_trigger_the_one_hand_limit
+   PASS  Lock_choice_is_offered_when_nothing_is_controlled_yet
+   PASS  One_versus_one_blocks_a_second_lock_after_a_real_lock
+   PASS  Only_two_players_left_covers_one_player_too
+   PASS  Unknown_alive_count_is_treated_as_one_versus_one
+   PASS  When_multiplayer_drops_to_two_players_the_limit_returns
+
+── BoardControllerTests  (78 项)
+   PASS  A_plain_heal_does_not_ask_for_a_target
+   PASS  A_stealthed_assassin_removes_the_legal_target
+   PASS  After_deselect_only_own_hands_are_clickable_again
+   PASS  Ai_defender_does_not_interrupt_the_human_attacker
+   PASS  Ai_plays_a_full_match_without_human_input
+   PASS  An_attack_does_ask_for_a_target
+   PASS  An_operation_without_any_effect_does_not_ask_for_a_target
+   PASS  Attacker_clicking_its_own_hand_is_ignored_during_shield_choice
+   PASS  Automatic_move_is_rejected_for_human_players
+   PASS  Barbarian_forming_a_shield_prompts_for_lock_target
+   PASS  Barbarian_lock_can_target_the_left_hand_too
+   PASS  Barbarian_lock_choice_targets_the_chosen_hand
+   PASS  BeginTurn_starts_by_asking_for_the_actors_hand
+   PASS  Begin_turn_after_game_over_reports_game_over
+   PASS  Can_select_a_different_hand_after_deselecting
+   PASS  Can_skip_turn_with_double_shield
+   PASS  CancelSelection_returns_to_the_first_step
+   PASS  Cannot_click_opponent_hand_during_attacker_selection
+   PASS  Cannot_click_own_hand_during_target_selection
+   PASS  Cannot_skip_during_shield_choice_phase
+   PASS  Cannot_skip_turn_with_only_one_shield
+   PASS  Cannot_skip_turn_without_double_shield
+   PASS  Cannot_skip_twice_in_a_row
+   PASS  Choosing_the_opponent_hand_asks_to_confirm_the_target_player
+   PASS  Chosen_shield_is_consumed_and_passed_to_the_sink
+   PASS  Clicking_own_hand_then_opponent_hand_resolves_the_turn
+   PASS  Clicking_the_selected_hand_again_deselects_it
+   PASS  Clicking_the_target_hand_itself_also_confirms
+   PASS  Confirm_target_player_is_rejected_outside_the_target_phase
+   PASS  Confirming_the_target_player_resolves_the_turn
+   PASS  Constructor_rejects_null_game
+   PASS  Curseweaver_ignores_shields_so_the_choice_is_harmless
+   PASS  Describe_turn_mentions_shield_and_blocking
+   PASS  Describe_turn_mentions_wasted_heal_at_full_health
+   PASS  DisplayTurn_advances_by_one_after_each_resolved_turn
+   PASS  DisplayTurn_is_clamped_to_the_turn_limit
+   PASS  Every_player_is_a_legal_attack_target_by_default
+   PASS  Every_resolved_turn_is_appended_to_the_log
+   PASS  Forming_a_shield_does_not_ask_for_a_target
+   PASS  GameManager_skip_turn_validates_the_rule
+   PASS  Game_over_blocks_further_clicks
+   PASS  Give_up_attack_is_offered_only_against_a_stealthed_assassin
+   PASS  Give_up_attack_is_rejected_when_the_target_is_not_stealthed
+   PASS  Giving_up_an_attack_still_applies_the_operation
+   PASS  Human_defender_can_act_while_ai_is_attacking
+   PASS  Human_then_ai_alternates_correctly
+   PASS  Lock_prompt_is_skipped_when_already_controlling_a_hand
+   PASS  Locked_hand_cannot_be_selected
+   PASS  Locked_hand_cannot_be_used_as_source_next_turn
+   PASS  Non_barbarian_forming_a_shield_does_not_prompt_for_lock
+   PASS  Only_the_defender_can_pick_the_blocking_shield
+   PASS  Only_the_defenders_chosen_shield_breaks
+   PASS  Only_the_defenders_shields_are_clickable_in_choice_phase
+   PASS  Priest_attack_or_heal_flow_completes_on_the_hand_that_used_to_hide_the_prompt
+   PASS  Priest_can_heal_the_opponent_after_four_six_eight
+   PASS  Priest_does_not_prompt_on_the_exact_hands_the_player_reported
+   PASS  Priest_does_not_prompt_when_the_chosen_target_makes_no_effect
+   PASS  Priest_gets_the_attack_or_heal_prompt_after_the_target_hand_is_chosen
+   PASS  Priest_heal_after_four_six_eight_completes_on_the_single_target_click
+   PASS  Priest_heal_after_four_six_eight_is_logged_as_heal_not_attack
+   PASS  Priest_heal_target_is_mandatory
+   PASS  Priest_prompt_shows_the_real_value_on_the_hand_the_player_reported
+   PASS  Single_shield_does_not_prompt
+   PASS  Skipping_does_not_change_any_hand_or_health
+   PASS  Skipping_is_logged
+   PASS  Target_player_phase_only_accepts_the_target_players_hands
+   PASS  The_actor_decides_during_the_target_player_phase
+   PASS  The_assassins_hands_cannot_be_clicked_to_confirm_an_attack
+   PASS  The_first_turn_the_player_acts_is_displayed_as_turn_one
+   PASS  The_priest_asks_attack_or_heal_after_the_target_hand_is_chosen
+   PASS  The_priest_can_attack_after_choosing_attack
+   PASS  The_priest_can_heal_after_choosing_heal
+   PASS  The_priest_heal_on_a_nine_can_also_target_the_opponent
+   PASS  The_priest_still_asks_for_a_target_on_a_nine
+   PASS  The_priests_pre_target_answer_survives_the_mid_turn_reset
+   PASS  Turn_advances_to_the_other_player
+   PASS  Two_shields_prompts_the_defender_to_choose
+   PASS  Ui_flow_reaches_the_defense_choice_when_defender_has_two_shields
+
+── CharacterBalanceTests  (1 项)
+=== 全角色循环赛（每对 40 局）===
+角色        胜     负     平    胜率   平局率
+狼人         423    359     18   52.9%     2.2%
+魔术师        421    358     21   52.6%     2.6%
+游侠         411    385      4   51.4%     0.5%
+巨人         410    370     20   51.2%     2.5%
+猎人         401    368     31   50.1%     3.9%
+盗贼         401    382     17   50.1%     2.1%
+剑客         400    379     21   50.0%     2.6%
+忍者         399    377     24   49.9%     3.0%
+骑士         396    393     11   49.5%     1.4%
+士兵         395    384     21   49.4%     2.6%
+魔射手        393    391     16   49.1%     2.0%
+圣武士        388    395     17   48.5%     2.1%
+刺客         385    397     18   48.1%     2.2%
+法师         379    399     22   47.4%     2.8%
+赌徒         378    395     27   47.2%     3.4%
+咒术师        370    391     39   46.2%     4.9%
+战士         370    388     42   46.2%     5.2%
+野蛮人        363    387     50   45.4%     6.2%
+邪术师        359    414     27   44.9%     3.4%
+武僧         350    428     22   43.8%     2.8%
+牧师         340    392     68   42.5%     8.5%
+
+总对局 8400，平均回合数 17.3，达回合上限 0 局
+
+=== 最悬殊的配对（先手方胜率）===
+  游侠 打 邪术师：27/40 (68%)
+  骑士 打 武僧：25/40 (62%)
+  士兵 打 武僧：25/40 (62%)
+  战士 打 武僧：25/40 (62%)
+  魔术师 打 法师：24/40 (60%)
+  魔射手 打 法师：24/40 (60%)
+  …
+  战士 打 狼人：14/40 (35%)
+  魔射手 打 猎人：13/40 (32%)
+  咒术师 打 狼人：13/40 (32%)
+  牧师 打 盗贼：11/40 (28%)
+  牧师 打 狼人：10/40 (25%)
+  咒术师 打 牧师：10/40 (25%)
+
+   PASS  All_characters_round_robin_win_rates
+
+── CharacterFactoryTests  (10 项)
+   PASS  BuiltIn_definitions_all_map_to_a_real_behavior
+   PASS  CreateMatch_builds_a_ready_game
+   PASS  Default_max_health_is_twenty
+   PASS  Default_stats_are_used_when_no_definition_is_applied
+   PASS  Definition_overrides_the_code_default
+   PASS  Definition_stats_are_injected_into_the_behavior
+   PASS  Empty_definition_id_is_rejected
+   PASS  Every_registered_logic_type_is_covered
+   PASS  Factory_maps_logic_type_to_behavior
+   PASS  Max_health_comes_from_the_definition
+
+── CharacterLogicTests  (34 项)
+   PASS  Barbarian_can_decline_the_lock
+   PASS  Barbarian_defense_bonus_reduces_incoming_damage
+   PASS  Barbarian_does_not_lock_when_already_controlling_one_hand
+   PASS  Barbarian_lock_excludes_the_hand_from_legal_moves
+   PASS  Barbarian_lock_is_released_when_the_shield_breaks
+   PASS  Barbarian_lock_prevents_opponent_from_using_that_hand_as_source
+   PASS  Barbarian_lock_provider_may_decline_by_returning_an_out_of_range_hand
+   PASS  Blank_mirror_match_uses_raw_damage
+   PASS  Broken_shield_keeps_its_mark_only_while_it_is_still_five
+   PASS  Broken_shield_on_a_non_five_hand_does_not_persist
+   PASS  Broken_shield_persists_indefinitely_while_its_value_stays_five
+   PASS  Broken_shield_persists_through_the_opponents_turn
+   PASS  Broken_shield_survives_many_turns_and_stays_repairable
+   PASS  Curseweaver_attack_ignores_shield
+   PASS  Curseweaver_ignores_positive_defense_bonus
+   PASS  Damage_never_goes_negative
+   PASS  Non_warrior_gets_no_repair
+   PASS  Repair_does_not_change_hand_value
+   PASS  ResetMatch_clears_barbarian_locks
+   PASS  ResetMatch_makes_the_game_playable_again_after_game_over
+   PASS  ResetMatch_restores_health_hands_and_flags
+   PASS  Warrior_attack_bonus_adds_one_damage
+   PASS  Warrior_can_decline_the_chain_break
+   PASS  Warrior_can_repair_a_shield_broken_last_turn
+   PASS  Warrior_can_repair_a_shield_broken_several_turns_ago
+   PASS  Warrior_cannot_repair_the_shield_he_broke_himself_this_turn
+   PASS  Warrior_chain_break_destroys_a_chosen_shield
+   PASS  Warrior_chain_break_does_not_recurse_forever
+   PASS  Warrior_chain_break_prompts_only_when_other_shields_exist
+   PASS  Warrior_chain_break_triggers_when_attacked
+   PASS  Warrior_chain_break_with_no_targets_is_a_no_op
+   PASS  Warrior_repair_does_not_change_hand_value
+   PASS  Warrior_repair_does_nothing_when_other_hand_is_normal
+   PASS  Warrior_repairs_a_broken_shield_when_forming_a_new_one
+
+── CharacterRosterTests  (10 项)
+   PASS  Blank_card_shows_the_default_max_health
+   PASS  Card_stats_show_attack_and_defense_with_signs
+   PASS  Card_stats_show_positive_bonuses_with_a_plus
+   PASS  Every_built_in_character_produces_a_readable_card
+   PASS  MaxHealthOf_matches_what_a_real_player_gets
+   PASS  Shorten_keeps_a_short_description_intact
+   PASS  Shorten_prefers_the_first_sentence
+   PASS  Shorten_tolerates_null_and_empty
+   PASS  Shorten_truncates_a_long_description_with_an_ellipsis
+   PASS  Werewolf_card_shows_the_real_max_health_of_twenty_five
+
+── CodexTests  (10 项)
+   PASS  Alignments_cover_the_nine_grid
+   PASS  Alignments_match_the_players_assignment
+   PASS  Codex_entries_are_not_over_long
+   PASS  Codex_entries_have_all_required_fields
+   PASS  Codex_short_skill_is_short_enough_for_a_card
+   PASS  Every_built_in_character_has_a_codex_entry
+   PASS  Filtering_by_one_axis_returns_a_subset
+   PASS  Filtering_by_two_axes_stacks
+   PASS  Important_mechanics_are_never_dropped_from_the_codex
+   PASS  True_neutral_reads_as_absolute_neutral
+
+── ConcealedHandCannotOperateTests  (4 项)
+   PASS  Ambush_is_not_broken_by_its_own_rejected_click
+   PASS  Concealed_hand_is_not_clickable_as_the_operation_source
+   PASS  Concealed_hand_is_rejected_by_the_domain_layer_too
+   PASS  Concealed_hand_stays_concealed_because_it_cannot_be_used
+
+── DiceRollSetupTests  (38 项)
+   PASS  A_simultaneous_decision_still_shows_the_first_choice
+   PASS  An_illegal_split_is_rejected
+   PASS  An_unassigned_player_is_not_reported_as_a_previous_choice
+   PASS  Both_critical_failures_name_each_other
+   PASS  Critical_failure_lets_the_opponent_assign_your_hands
+   PASS  Critical_failure_still_has_legal_splits_for_the_opponent_to_pick
+   PASS  Decision_text_only_mentions_critical_failure_on_a_roll_of_one
+   PASS  Dice_animation_ends_on_the_real_roll
+   PASS  Dice_animation_face_is_deterministic_for_the_same_time
+   PASS  Dice_animation_frame_index_is_monotonic
+   PASS  Dice_animation_scale_settles_at_one
+   PASS  Dice_animation_slows_down_over_time
+   PASS  Distinct_splits_halve_the_major_success_list
+   PASS  Distinct_splits_keep_only_one_of_each_mirror_pair
+   PASS  Equal_rolls_decide_simultaneously
+   PASS  Equal_rolls_let_a_act_first
+   PASS  Every_legal_split_sums_to_the_roll_and_stays_in_range
+   PASS  First_to_act_is_unknown_before_rolling
+   PASS  Hands_cannot_exceed_nine_or_drop_below_one
+   PASS  Initial_hand_values_do_not_trigger_any_effect
+   PASS  Nineteen_requires_one_hand_to_be_nine
+   PASS  No_candidate_ever_contains_an_illegal_hand_value
+   PASS  Only_a_roll_of_one_is_a_critical_failure
+   PASS  Only_the_critical_failure_makes_the_opponent_decide
+   PASS  Order_text_names_the_lower_roller_as_going_first
+   PASS  Real_roll_path_never_names_the_opponent_unless_a_one_was_rolled
+   PASS  Reported_case_seven_vs_eleven_lets_the_lower_roller_choose_himself
+   PASS  Split_values_are_bounded_by_the_other_hands_maximum
+   PASS  The_controller_offers_only_distinct_splits
+   PASS  The_first_decider_sees_nothing
+   PASS  The_flow_completes_and_writes_the_chosen_values
+   PASS  The_higher_roller_acts_first_both_ways
+   PASS  The_lower_roll_decides_first
+   PASS  The_lower_roller_is_asked_first_and_then_the_higher_one
+   PASS  The_second_decider_sees_the_first_choice
+   PASS  The_second_decider_sees_the_first_choice_regardless_of_who_rolled_lower
+   PASS  Twenty_allows_any_legal_split
+   PASS  Two_critical_failures_do_not_grant_the_info_advantage
+
+── DiceSplitAdvisorTests  (26 项)
+   PASS  Configure_also_binds_the_definition
+   PASS  Every_created_player_carries_its_character_definition
+   PASS  Every_value_can_reach_four_of_the_five_useful_effects_at_least
+   PASS  Facing_the_assassin_my_seven_is_worth_less
+   PASS  Facing_the_curseweaver_a_rangers_one_is_worth_less
+   PASS  Facing_the_curseweaver_my_five_is_worth_less
+   PASS  Five_gets_a_small_edge_because_it_is_a_shield
+   PASS  My_own_value_dominates_the_opponents_preference
+   PASS  Nine_cannot_reach_nine_and_five_cannot_reach_five
+   PASS  One_two_three_seven_outrank_the_effect_values
+   PASS  Seven_is_the_worst_value_for_the_werewolf
+   PASS  Seven_plus_anything_never_returns_to_seven
+   PASS  The_advisor_always_returns_a_legal_split
+   PASS  The_advisor_returns_something_for_every_character_and_roll
+   PASS  The_assassin_values_sevens_because_they_are_the_stealth_seed
+   PASS  The_curseweaver_five_matches_the_soldier_but_attacks_rise
+   PASS  The_curseweaver_is_the_only_one_that_devalues_my_five
+   PASS  The_ninja_ranks_four_below_eight_but_not_below_baseline
+   PASS  The_ranger_loves_holding_both_one_and_two
+   PASS  The_ranger_picks_a_split_containing_both_one_and_two_when_available
+   PASS  The_rangers_one_is_worth_more_than_two
+   PASS  The_swordsman_wants_doubles_of_four_six_eight
+   PASS  The_werewolf_avoids_holding_a_seven_when_no_sum_to_seven_exists
+   PASS  The_werewolf_dislikes_holding_a_seven
+   PASS  The_werewolf_picks_the_sum_to_seven_split_when_one_exists
+   PASS  The_werewolf_prefers_splits_that_sum_to_seven
+
+── DodgeBeforeTaichiTests  (1 项)
+   PASS  Dodge_is_consumed_before_taichi_takes_over
+
+── DualGeneralTests  (13 项)
+   PASS  A_dual_general_match_runs_and_resolves
+   PASS  Attack_and_defense_bonuses_are_summed
+   PASS  Attack_range_takes_the_larger
+   PASS  Display_name_is_the_primary
+   PASS  Effect_rewrite_falls_back_to_the_original_when_no_part_rewrites
+   PASS  Every_same_axis_pair_can_be_built
+   PASS  Giant_partner_still_suppresses_its_own_numbers
+   PASS  Max_health_takes_the_larger_not_the_sum
+   PASS  Partners_exclude_self_and_stay_on_the_same_axis
+   PASS  Random_pair_always_shares_the_axis_and_differs
+   PASS  Same_axis_pair_is_accepted
+   PASS  Two_roles_must_differ
+   PASS  Two_roles_must_share_the_same_axis
+
+── DualPriestDoubleNineTests  (3 项)
+   PASS  Double_nine_heals_the_extra_amount_in_a_dual_general
+   PASS  Double_nine_still_works_for_a_solo_priest
+   PASS  Single_nine_heals_only_once_in_a_dual_general
+
+── DualVersusDualTests  (1 项)
+   PASS  All_dual_general_matchups_run_without_crashing
+
+── FloatAnchorTests  (5 项)
+   PASS  A_name_row_somewhere_high_maps_upward
+   PASS  Canvas_center_maps_to_origin
+   PASS  Canvas_corners_map_to_half_extents
+   PASS  Conversion_is_stable_across_repeated_calls
+   PASS  Stagger_constant_is_the_agreed_value
+
+── GamblerTests  (20 项)
+   PASS  Ai_gambler_gambles_when_no_operation_gives_a_useful_result
+   PASS  Ai_gambler_never_gets_stuck_on_the_gamble_phase
+   PASS  Ai_gambler_prefers_normal_operation_when_a_useful_result_exists
+   PASS  Battle_log_says_the_gambler_rolled_rather_than_computed
+   PASS  Forced_gamble_goes_straight_to_the_gamble_phase
+   PASS  Forced_gamble_rejects_clicking_someone_elses_hand
+   PASS  Forced_gamble_still_allows_picking_an_attack_target
+   PASS  Gamble_attack_waits_for_a_target_then_resolves
+   PASS  Gamble_effect_rules_match_normal_operations
+   PASS  Gamble_five_forms_a_shield
+   PASS  Gamble_four_six_eight_produce_attacks
+   PASS  Gamble_nine_heals_instead_of_attacking
+   PASS  Gamble_one_two_three_seven_have_no_effect
+   PASS  Gamble_roll_happens_once_not_again_at_resolution
+   PASS  Gamble_roll_is_cleared_at_the_start_of_each_turn
+   PASS  Gambler_stats_and_range
+   PASS  Must_gamble_flag_resets_on_a_new_match
+   PASS  Normal_operation_makes_the_next_turn_a_forced_gamble
+   PASS  Only_gamblers_can_gamble
+   PASS  Voluntary_gamble_lets_the_player_choose_a_normal_operation
+
+── HandEffectTests  (10 项)
+   PASS  Damage_cannot_make_health_negative
+   PASS  Five_is_shield
+   PASS  Four_six_eight_are_attacks_with_matching_damage
+   PASS  Heal_amount_constant_is_nine
+   PASS  Heal_is_capped_at_max_health
+   PASS  Nine_is_heal
+   PASS  One_two_three_seven_have_no_effect
+   PASS  PerformOperation_forming_shield_sets_state
+   PASS  PerformOperation_leaving_shield_value_clears_previous_shield
+   PASS  Zero_is_not_a_valid_effect_value
+
+── HealthBarTests  (12 项)
+   PASS  Entering_death_produces_a_lower_ratio_than_before
+   PASS  Fill_width_scales_with_ratio
+   PASS  Full_health_fills_exactly_the_usable_width
+   PASS  Full_health_is_ratio_one
+   PASS  Half_health_is_ratio_half
+   PASS  Health_above_max_clamps_to_one
+   PASS  Health_ratio_is_monotonic
+   PASS  Negative_health_clamps_to_zero
+   PASS  Werewolf_25_max_health_bar_uses_its_own_max
+   PASS  Zero_health_is_ratio_zero
+   PASS  Zero_health_means_zero_width_so_the_bar_is_actually_empty
+   PASS  Zero_max_health_does_not_divide_by_zero
+
+── HunterAmbushTriggerTests  (7 项)
+   PASS  Ambush_choice_is_collected_through_the_same_channel
+   PASS  Condition_requires_both_hands_one_to_three_and_equal
+   PASS  No_ambush_choice_on_an_attack
+   PASS  No_ambush_choice_when_the_result_is_not_two_to_three
+   PASS  Other_characters_never_offer_ambush
+   PASS  Player_example_does_not_apply_to_the_other_hand_by_mistake
+   PASS  Player_example_nine_plus_three_makes_two_and_triggers
+
+── HunterTests  (7 项)
+   PASS  Ambush_blocks_one_attack_and_is_consumed
+   PASS  Ambush_does_not_block_a_second_attack
+   PASS  Ambush_grants_attack_bonus_and_range_three
+   PASS  Ambush_is_released_on_match_reset
+   PASS  Ambush_requires_both_hands_equal_and_within_one_to_three
+   PASS  Concealed_hand_cannot_be_operated_nor_be_an_addend
+   PASS  Curseweaver_pierces_the_ambush_without_releasing_it
+
+── LayoutSpacingTests  (10 项)
+   PASS  Character_screen_fits_inside_the_canvas
+   PASS  Character_screen_has_no_overlapping_rows
+   PASS  Character_screen_labels_are_renamed_as_requested
+   PASS  Character_screen_title_does_not_touch_the_first_label
+   PASS  Every_row_has_a_visible_gap
+   PASS  Help_button_is_on_screen
+   PASS  Main_menu_rows_do_not_overlap
+   PASS  Mode_buttons_do_not_overlap_the_help_button
+   PASS  One_on_one_rows_do_not_overlap
+   PASS  Player_card_row_does_not_cover_its_own_label
+
+── LethalThresholdTests  (10 项)
+   PASS  Ai_prefers_a_lethal_attack_over_a_bigger_but_non_lethal_one
+   PASS  Assassin_lethal_rises_while_stealthed
+   PASS  Base_lethal_is_result_plus_attack_minus_defense
+   PASS  Denial_does_not_fire_when_nobody_is_in_danger
+   PASS  Denial_never_outweighs_my_own_gain
+   PASS  Denial_ratio_is_around_three_to_seven
+   PASS  Giant_lethal_is_zero_on_four_six_eight
+   PASS  Giant_lethal_uses_the_other_hand_not_the_result
+   PASS  Ranger_lethal_threshold_rises_when_holding_a_two
+   PASS  Swordsman_lethal_includes_the_follow_up_attack
+
+── MageStatusFlowTests  (11 项)
+   PASS  A_headless_match_with_poison_reduces_health
+   PASS  Burn_deals_three_at_turn_end_and_a_shield_can_block_it
+   PASS  Burn_deals_three_when_undefended
+   PASS  Decay_blocks_healing_during_a_turn
+   PASS  Freeze_halves_a_real_operation_result
+   PASS  Freeze_halves_but_the_mage_has_no_odd_result_to_worry_about
+   PASS  Poison_can_kill_and_then_the_turn_is_skipped
+   PASS  Poison_deals_two_unblockable_damage_at_turn_start
+   PASS  Poison_does_not_reapply_itself
+   PASS  Shock_hits_the_victim_and_adjacent_players
+   PASS  Status_expires_after_two_turns_of_its_own
+
+── MageStatusTests  (18 项)
+   PASS  Acid_reduces_defense_by_two
+   PASS  Applying_the_same_status_again_refreshes_instead_of_stacking
+   PASS  Consuming_the_type_clears_it
+   PASS  Decay_blocks_healing_entirely
+   PASS  Different_statuses_coexist
+   PASS  Every_damage_type_maps_to_its_status
+   PASS  Force_attack_pierces_shield_and_cannot_be_dodged
+   PASS  Force_does_not_apply_any_status
+   PASS  Freeze_halves_the_result_rounding_down
+   PASS  Mage_is_registered_as_a_built_in_character
+   PASS  Mage_keeps_only_the_latest_damage_type
+   PASS  Match_reset_clears_the_pending_type
+   PASS  Only_force_makes_the_mage_undodgeable
+   PASS  Reset_match_clears_all_statuses
+   PASS  Resonance_restricts_attacks_to_distance_one
+   PASS  Status_lasts_exactly_two_of_the_targets_own_turns
+   PASS  Stun_blocks_attacking_the_source_only
+   PASS  Stun_reduces_attack_by_two
+
+── MagicianTests  (12 项)
+   PASS  A_hand_cannot_be_added_to_itself
+   PASS  Base_game_still_treats_two_as_no_effect
+   PASS  Magician_attack_takes_stat_bonuses
+   PASS  Magician_attacks_deal_their_face_damage
+   PASS  Magician_can_use_its_own_hand_as_an_addend
+   PASS  Magician_has_range_two_and_soft_stats
+   PASS  Other_characters_still_cannot_add_themselves
+   PASS  Other_characters_still_cannot_click_their_own_hand_as_addend
+   PASS  Self_addend_changes_the_acting_hand_not_the_target
+   PASS  Two_from_self_addend_is_an_attack
+   PASS  Two_from_self_addend_needs_a_target_just_like_four_six_eight
+   PASS  UI_allows_clicking_own_other_hand_as_the_addend
+
+── MatchTests  (17 项)
+   PASS  Every_resolved_turn_respects_the_turn_contract
+   PASS  Full_character_matrix_can_all_be_played_to_completion
+   PASS  Greedy_ai_finishes_a_match
+   PASS  Greedy_move_is_legal
+   PASS  Heal_at_full_health_wastes_the_turn
+   PASS  Heal_below_full_health_restores_nine
+   PASS  History_can_be_disabled
+   PASS  Match_ends_as_a_draw_at_the_turn_limit
+   PASS  Match_runner_enforces_the_turn_limit
+   PASS  Match_runner_rejects_null_arguments
+   PASS  Move_selector_returns_no_move_after_game_over
+   PASS  OnTurnResolved_callback_fires_once_per_turn
+   PASS  Random_ai_blocks_with_one_of_its_own_shields
+   PASS  Random_ai_can_be_seeded_for_reproducible_runs
+   PASS  Random_ai_finishes_a_match_with_a_winner
+   PASS  Scripted_move_selector_reproduces_a_fixed_opening
+   PASS  Summary_reports_win_counts
+
+── MonkAndGiantTests  (22 项)
+   PASS  Giant_display_rules_are_inverted_from_the_base_ones
+   PASS  Giant_does_ask_for_a_target_on_five
+   PASS  Giant_does_not_ask_for_a_target_on_four_six_eight
+   PASS  Giant_five_does_not_form_a_shield
+   PASS  Giant_five_makes_two_attacks_using_the_other_hand
+   PASS  Giant_four_six_eight_have_no_effect
+   PASS  Giant_has_plus_five_max_health
+   PASS  Giant_nine_heals_twice_the_other_hand
+   PASS  Giant_stats_and_range
+   PASS  Monk_double_taichi_cannot_skip_the_turn
+   PASS  Monk_double_taichi_halves_and_reflects_not_blocks
+   PASS  Monk_five_becomes_taichi_instead_of_a_shield
+   PASS  Monk_initial_five_is_already_taichi
+   PASS  Monk_initial_taichi_does_not_overwrite_a_formed_shield
+   PASS  Monk_stats_and_range
+   PASS  Monk_taichi_does_not_fire_when_the_player_declines
+   PASS  Monk_taichi_does_not_work_against_the_curseweaver
+   PASS  Monk_taichi_halves_damage_and_reflects_when_activated
+   PASS  Monk_two_fives_from_an_operation_are_taichi_not_shields
+   PASS  Monk_zero_becomes_one_when_someone_else_uses_it_as_addend
+   PASS  Monk_zero_does_not_change_when_the_monk_uses_it_itself
+   PASS  Other_characters_keep_the_base_display_rules
+
+── NewCharacterBatchTests  (37 项)
+   PASS  Ai_warlock_does_not_skip_when_the_enemy_has_less_health
+   PASS  Ai_warlock_skips_the_swap_when_health_gap_is_too_small
+   PASS  Ai_warlock_still_cancels_automatically_without_being_asked
+   PASS  Ai_warlock_uses_the_skip_skill_on_its_own
+   PASS  Archer_eight_ignores_the_shield
+   PASS  Archer_eight_is_still_dodgeable
+   PASS  Archer_four_becomes_two_hits_of_four
+   PASS  Archer_six_gets_plus_two_damage
+   PASS  Archer_stats_and_range_three
+   PASS  Battle_log_says_the_attack_was_cancelled_by_the_warlock
+   PASS  Human_warlock_cancels_only_after_clicking_the_matching_hand
+   PASS  Paladin_asks_for_a_shock_target_when_forming_a_five_shield
+   PASS  Paladin_redirect_requires_the_intended_target_in_range
+   PASS  Paladin_shock_damage_is_a_fixed_two_regardless_of_bonuses
+   PASS  Paladin_shock_fires_when_its_five_shield_is_broken_by_an_attack
+   PASS  Paladin_shock_fires_when_the_formed_shield_value_is_five
+   PASS  Paladin_shock_hits_when_the_target_has_no_shield
+   PASS  Paladin_shock_is_blocked_by_a_shield
+   PASS  Paladin_shock_is_dodgeable_by_the_ranger
+   PASS  Paladin_shock_uses_a_different_variant_for_forming_and_breaking
+   PASS  Paladin_stats_and_range
+   PASS  Paladin_turns_four_and_six_into_shields
+   PASS  Paladin_turns_six_into_a_shield
+   PASS  Warlock_can_skip_only_when_hurt_and_health_differs
+   PASS  Warlock_cancel_is_permanent_and_updates_the_shield_state
+   PASS  Warlock_cancels_a_multi_hit_attack_entirely_not_per_hit
+   PASS  Warlock_cancels_an_attack_matching_one_of_its_hands
+   PASS  Warlock_cannot_cancel_special_attacks
+   PASS  Warlock_cannot_skip_when_everyone_has_the_same_health
+   PASS  Warlock_does_not_cancel_when_no_hand_matches
+   PASS  Warlock_health_swap_sets_exact_values
+   PASS  Warlock_never_cancels_a_teammates_attack
+   PASS  Warlock_never_cancels_its_own_attack
+   PASS  Warlock_skip_button_appears_in_two_versus_two
+   PASS  Warlock_skip_enters_target_selection_then_swaps_health
+   PASS  Warlock_skip_rejects_a_target_whose_health_already_matches
+   PASS  Warlock_stats_and_infinite_range
+
+── NewCharacterTests  (75 项)
+   PASS  All_built_in_characters_can_be_constructed
+   PASS  Assassin_attacking_breaks_stealth_because_hand_value_changes
+   PASS  Assassin_attacking_from_stealth_gets_plus_seven
+   PASS  Assassin_can_skip_once_per_stealth
+   PASS  Assassin_cannot_skip_outside_stealth
+   PASS  Assassin_has_plus_two_and_minus_one
+   PASS  Assassin_in_stealth_cannot_be_attacked
+   PASS  Assassin_is_stealthed_when_both_hands_are_seven
+   PASS  Assassin_stealth_dodge_reports_the_right_reason
+   PASS  Barbarian_lock_can_be_declined
+   PASS  Barbarian_lock_still_goes_through_the_declarative_pipeline
+   PASS  Curseweaver_blocks_dodge_regardless_of_damage_value
+   PASS  Declining_is_rejected_outside_a_pre_turn_choice
+   PASS  Declining_the_dodge_then_moves_on_to_the_shield_choice
+   PASS  Ninja_attack_log_describes_both_halves
+   PASS  Ninja_attack_log_mentions_the_blocked_half
+   PASS  Ninja_each_half_is_blocked_by_only_one_shield
+   PASS  Ninja_has_plus_one_and_minus_one
+   PASS  Ninja_one_hand_equal_to_one_only_dodges_one_half
+   PASS  Ninja_splits_attack_into_two_halves
+   PASS  Ninja_two_halves_need_two_ones_to_dodge_completely
+   PASS  Ninja_two_shields_can_block_both_halves
+   PASS  Non_curseweaver_attacks_can_be_dodged_even_at_eight_damage
+   PASS  Priest_can_heal_the_opponent_with_a_four_six_or_eight
+   PASS  Priest_can_redirect_heal_to_the_opponent
+   PASS  Priest_choosing_heal_on_a_four_heals_four_and_deals_no_damage
+   PASS  Priest_choosing_heal_on_a_six_heals_six
+   PASS  Priest_choosing_heal_on_an_eight_heals_eight
+   PASS  Priest_declining_heal_treats_it_as_a_normal_attack
+   PASS  Priest_declining_the_heal_question_does_not_ask_for_a_target
+   PASS  Priest_double_nine_after_operation_stacks_with_the_main_heal
+   PASS  Priest_double_nine_asks_for_two_heal_targets
+   PASS  Priest_double_nine_bonus_target_is_chosen_by_the_player
+   PASS  Priest_double_nine_extra_heal_defaults_to_self_when_not_chosen
+   PASS  Priest_gets_one_choice_per_stage_for_four_six_eight
+   PASS  Priest_has_minus_one_attack_and_minus_one_defense
+   PASS  Priest_heal_choice_is_offered_for_four_six_and_eight
+   PASS  Priest_heal_goes_to_self_by_default
+   PASS  Priest_heal_never_exceeds_max_health
+   PASS  Priest_heal_value_is_not_affected_by_attack_bonus
+   PASS  Priest_nine_does_not_offer_an_attack_or_heal_choice
+   PASS  Ranger_attacking_with_a_two_in_the_other_hand_prompts_to_strengthen
+   PASS  Ranger_attacking_without_a_two_is_not_prompted
+   PASS  Ranger_can_reach_9_damage_from_an_8
+   PASS  Ranger_can_still_dodge_a_base_four_attack
+   PASS  Ranger_can_strengthen_with_a_hand_that_became_two_from_dodging
+   PASS  Ranger_cannot_dodge_a_base_eight_attack
+   PASS  Ranger_declining_the_dodge_takes_damage
+   PASS  Ranger_dodge_choice_allows_declining_from_the_ui
+   PASS  Ranger_dodge_needs_a_hand_equal_to_one
+   PASS  Ranger_dodges_by_turning_a_one_into_a_two
+   PASS  Ranger_has_zero_attack_and_minus_two_defense
+   PASS  Ranger_is_asked_to_dodge_before_being_asked_which_shield
+   PASS  Ranger_is_not_asked_to_dodge_a_non_attack_operation
+   PASS  Ranger_power_shot_does_not_apply_when_declined
+   PASS  Ranger_power_shot_multiplies_base_damage_by_1_5
+   PASS  Ranger_power_shot_prompts_and_applies_in_a_real_turn
+   PASS  Ranger_stealth_free_dodge_has_no_reason_so_uses_default_text
+   PASS  Swordsman_extra_attack_can_be_dodged_by_a_one
+   PASS  Swordsman_extra_hit_value_matches_his_own_hand_value
+   PASS  Swordsman_follow_up_deals_fixed_damage_ignoring_stat_bonuses
+   PASS  Swordsman_follow_up_does_not_fire_when_hands_differ
+   PASS  Swordsman_follow_up_fires_end_to_end_when_both_hands_match
+   PASS  Swordsman_follow_up_is_logged_on_its_own_line
+   PASS  Swordsman_follow_up_offers_an_accept_button
+   PASS  Swordsman_has_plus_two_and_minus_one
+   PASS  Swordsman_main_attack_is_not_affected_by_follow_up_value
+   PASS  Swordsman_main_attack_still_applies_stat_bonuses
+   PASS  Swordsman_prompt_damage_matches_the_hand_value
+   PASS  Werewolf_growth_is_cleared_on_reset
+   PASS  Werewolf_growth_stacks_across_triggers
+   PASS  Werewolf_has_25_max_health_and_minus_two_minus_two
+   PASS  Werewolf_heal_is_capped_at_max_health
+   PASS  Werewolf_heals_and_grows_when_hand_sum_is_seven
+   PASS  Werewolf_triggers_when_sum_is_seven
+
+── PreTurnChoiceIndexResetTests  (2 项)
+   PASS  After_accepting_a_choice_the_next_turn_still_asks_its_own_choice
+   PASS  Starting_a_turn_resets_the_choice_queue_index
+
+── RangerDodgeThenPowerShotTests  (5 项)
+   PASS  A_dodge_request_for_a_single_candidate_offers_an_accept_button
+   PASS  A_single_hit_attack_asks_for_dodge_exactly_once
+   PASS  After_an_actual_dodge_the_two_left_over_can_power_shot
+   PASS  Multi_hit_attacks_still_ask_once_per_segment
+   PASS  Ranger_with_a_two_left_over_from_dodging_can_power_shot
+
+── RangerPowerShotUiSceneTests  (2 项)
+   PASS  Attacking_with_the_two_hand_does_not_prompt
+   PASS  Left_five_attacks_with_opponents_one_and_right_hand_two_should_prompt
+
+── RangerReuseTests  (8 项)
+   PASS  Dodge_can_be_used_again_after_the_hand_returns_to_one
+   PASS  Dodge_is_impossible_when_neither_hand_is_one
+   PASS  Dodging_does_not_consume_the_power_shot_charge
+   PASS  First_dodge_turns_a_one_into_a_two
+   PASS  Power_shot_can_be_used_again_after_the_hand_returns_to_two
+   PASS  Power_shot_is_impossible_when_the_other_hand_is_not_two
+   PASS  Power_shot_turns_a_two_into_a_three
+   PASS  The_other_hand_can_dodge_even_though_the_first_one_already_did
+
+── RangerSkillAcrossTurnsTests  (10 项)
+   PASS  All_attacks_with_a_two_in_the_other_hand_prompt
+   PASS  Dodge_is_generated_when_a_hand_is_one
+   PASS  Dodge_is_not_generated_when_neither_hand_is_one
+   PASS  Dodge_is_still_generated_after_a_previous_dodge_happened
+   PASS  Left_six_plus_two_equals_eight_with_right_two_also_prompts
+   PASS  Players_exact_scene_left_five_plus_one_equals_six_with_right_two
+   PASS  Power_shot_is_generated_when_the_other_hand_is_two
+   PASS  Power_shot_is_not_generated_when_the_other_hand_is_not_two
+   PASS  Power_shot_is_still_generated_after_a_previous_shot_happened
+   PASS  Ranger_logic_has_no_one_shot_state
+
+── RingLayoutTests  (12 项)
+   PASS  All_four_seats_are_placed_exactly_once
+   PASS  Opponents_follow_counterclockwise_around_the_screen
+   PASS  Opponents_order_flips_when_the_teammate_is_on_the_left
+   PASS  Panel_offsets_keep_every_panel_inside_the_screen
+   PASS  Self_is_always_at_the_bottom_centre
+   PASS  Self_is_lower_than_the_teammate_and_opponents
+   PASS  Self_panel_is_the_widest_because_it_holds_two_hand_cards
+   PASS  Teammate_is_always_a_neighbour_seat_of_the_main_view
+   PASS  Teammate_is_on_the_left_when_they_are_the_previous_seat
+   PASS  Teammate_is_on_the_right_when_they_are_the_next_seat
+   PASS  The_other_two_seats_match_the_walk_rule
+   PASS  There_are_exactly_two_opponents_and_one_teammate
+
+── RoundCountingTests  (5 项)
+   PASS  One_versus_one_round_is_two_turns
+   PASS  Round_anchor_skips_to_the_next_alive_seat
+   PASS  Round_limit_is_fifty_for_every_mode
+   PASS  Turn_counting_still_works_alongside_round_counting
+   PASS  Two_versus_two_round_is_four_turns
+
+── RuleBookTests  (15 项)
+   PASS  Attack_values_in_the_rules_match_the_engine
+   PASS  Basic_rules_cover_the_four_core_topics
+   PASS  Character_list_mentions_every_character_with_its_skill
+   PASS  Character_list_shows_the_real_max_health_for_the_werewolf
+   PASS  Coming_soon_text_names_the_feature_and_the_available_mode
+   PASS  Every_arithmetic_example_in_the_rules_is_correct
+   PASS  Every_character_description_is_the_same_text_the_card_shows
+   PASS  Full_rules_keep_the_basics_and_point_to_the_codex
+   PASS  Heal_value_in_the_rules_matches_the_engine
+   PASS  No_markdown_bold_in_player_visible_strings
+   PASS  Rule_stated_character_numbers_match_the_logic_classes
+   PASS  Rules_tolerate_an_empty_roster
+   PASS  Shield_value_in_the_rules_matches_the_engine
+   PASS  The_ten_becomes_one_claim_in_the_rules_is_true
+   PASS  The_turn_limit_in_the_rules_matches_the_engine
+
+── ScreenFlowTests  (9 项)
+   PASS  All_menu_screens_are_reachable_after_a_match
+   PASS  Dice_roll_screen_is_wired_into_the_screen_switch
+   PASS  Dice_roll_screen_only_uses_controller_candidates
+   PASS  Dice_roll_screen_uses_controller_provided_text
+   PASS  In_match_exit_does_not_quit_the_process
+   PASS  Mode_and_difficulty_screens_are_wired_into_the_screen_switch
+   PASS  Shared_canvas_is_never_deactivated_anywhere
+   PASS  ShowScreen_reactivates_the_shared_canvas_for_menu_screens
+   PASS  Two_versus_two_initiative_screen_is_wired_into_the_screen_switch
+
+── SeatLayoutTests  (7 项)
+   PASS  Every_teammate_is_either_previous_or_next_seat
+   PASS  Previous_and_next_seats_wrap_around_the_ring
+   PASS  Seat_numbers_are_normalized_into_the_ring
+   PASS  Teammate_relation_is_symmetric
+   PASS  Teammates_are_seats_one_and_four_and_seats_two_and_three
+   PASS  The_players_examples_both_hold
+   PASS  Two_opponents_fill_the_remaining_seats
+
+── ShieldTests  (13 项)
+   PASS  Broken_shield_can_still_receive_a_new_shield_state
+   PASS  Broken_shield_does_not_block_again
+   PASS  Defender_B_can_choose_which_shield_blocks
+   PASS  Defender_B_shield_choice_is_prompted_by_the_controller
+   PASS  Forming_a_shield_sets_the_state
+   PASS  Invalid_shield_choice_falls_back_to_the_first_shield
+   PASS  No_shield_means_full_damage
+   PASS  Repaired_broken_shield_can_block_again
+   PASS  Shield_blocks_one_attack_completely_and_breaks
+   PASS  Shield_formed_by_operation_is_ready_for_the_next_turn
+   PASS  TestSetup_produces_every_value_in_range
+   PASS  Using_a_shield_hand_as_the_source_breaks_it_before_the_operation
+   PASS  With_two_shields_the_provider_chooses_which_one_breaks
+
+── SkillActivationTests  (2 项)
+=== 技能发动率（每位角色 30 局）===
+角色        发动局数 / 总局数   发动率
+士兵           30 / 30          100%
+战士           28 / 30          93%
+咒术师          29 / 30          97%
+野蛮人          28 / 30          93%
+牧师           30 / 30          100%
+游侠           30 / 30          100%
+狼人           28 / 30          93%
+剑客           13 / 30          43%
+忍者           29 / 30          97%
+刺客           15 / 30          50%
+圣武士          29 / 30          97%
+邪术师           7 / 30          23%
+魔射手          30 / 30          100%
+赌徒           17 / 30          57%
+骑士           27 / 30          90%
+武僧           28 / 30          93%
+巨人           29 / 30          97%
+盗贼            0 / 30          0%
+猎人            0 / 30          0%
+魔术师          30 / 30          100%
+法师            0 / 30          0%
+
+尚未发动过招牌技能的角色（待补专属策略）：盗贼、猎人、法师
+   PASS  Ai_activates_signature_skills
+对 战士：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
+对 咒术师：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1]
+对 野蛮人：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+7->7/7][7+2->7/2][2+7->7/7][7+1->1/7]
+对 牧师：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+9->7/9][9+7->7/7][7+5->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+8->8/7][7+6->8/6]
+对 游侠：双 7 最多 2 只  [1+2->2/1][2+4->4/1][1+7->4/7][4+1->1/7][1+7->7/7][7+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+9->9/7][9+7->7/7][7+2->2/7][2+7->7/7][7+9->9/7][9+1->1/7][1+4->4/7][4+7->7/7]
+对 狼人：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+5->7/5][5+8->7/8][8+9->7/9][9+7->7/7][7+2->2/7][2+5->5/7][5+7->7/7][7+9->9/7][9+1->1/7][1+6->6/7][6+4->4/7][4+2->2/7]
+对 剑客：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+9->7/9][9+4->7/4]
+对 忍者：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][1+8->6/8]
+对 圣武士：双 7 最多 2 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+6->6/7]
+对 圣武士：双 7 最多 2 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+6->6/7]
+对 邪术师：双 7 最多 2 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+3->3/7][3+8->8/7][8+4->4/7][4+7->7/7][7+5->5/7][5+3->3/7][3+8->8/7]
+对 魔射手：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][1+8->6/8]
+
+出现过至少一只 7 的对局：10/12
+出现过双 7 的对局：7/12
+
+   PASS  Diagnose_assassin_double_seven
+
+── SkipTurnRuleTests  (3 项)
+   PASS  Both_hands_locked_allows_skipping_the_turn
+   PASS  Double_shield_still_allows_skipping
+   PASS  One_locked_hand_plus_a_whole_shield_does_not_allow_skipping
+
+── SoldierAndKnightTests  (7 项)
+   PASS  Knight_attack_bonus_always_equals_its_range
+   PASS  Knight_does_not_gain_from_a_teammates_broken_shield
+   PASS  Knight_gains_range_and_bonus_after_its_own_shield_breaks
+   PASS  Knight_resets_its_growth_on_a_new_match
+   PASS  Knight_starts_with_range_one_and_bonus_one
+   PASS  Soldier_has_plus_one_attack_and_defense
+   PASS  Soldier_replaces_the_blank_in_the_built_in_roster
+
+── SoundDirectorTests  (14 项)
+   PASS  A_blocked_hit_plays_the_block_sound
+   PASS  A_dodge_plays_the_dodge_sound
+   PASS  A_heal_plays_a_rising_note
+   PASS  A_heavy_hit_is_louder_than_a_light_hit
+   PASS  A_light_hit_plays_a_higher_note_than_a_heavy_hit
+   PASS  A_shield_turn_plays_the_shield_sound
+   PASS  Dodge_reason_from_stealth_does_not_play_the_dodge_sound
+   PASS  Every_spec_has_audible_parameters
+   PASS  Hit_volume_grows_with_the_tier
+   PASS  Multi_hit_attacks_play_one_sound_per_segment_staggered
+   PASS  No_damage_turn_stays_quiet
+   PASS  No_sound_is_loud_enough_to_clip
+   PASS  Sound_and_visual_stagger_use_the_same_rhythm
+   PASS  Swordsman_follow_up_sounds_separately_from_the_main_hit
+
+── TaichiDamageTests  (3 项)
+   PASS  One_taichi_halves_a_single_hit
+   PASS  Taichi_is_consumed_after_it_fires
+   PASS  Two_taichi_stack_on_the_same_segment
+
+── ThiefTests  (28 项)
+   PASS  A_zero_left_on_the_monks_hand_also_becomes_one
+   PASS  Ai_thief_does_not_steal_a_worthless_number
+   PASS  Ai_thief_prefers_stealing_the_best_high_value
+   PASS  Ai_thief_steals_when_it_can_trigger_a_high_value
+   PASS  Cannot_pick_own_hand_as_the_steal_target
+   PASS  Cannot_steal_twice_in_a_row
+   PASS  Ineffective_steal_hands_the_turn_to_the_opponent
+   PASS  Ineffective_steal_still_counts_as_initiated
+   PASS  Monk_receiving_a_five_gets_taichi
+   PASS  No_effect_when_the_stolen_number_is_blank
+   PASS  Steal_button_appears_only_after_picking_own_hand
+   PASS  Steal_flow_goes_through_the_three_steps
+   PASS  Steal_hands_the_turn_to_the_opponent
+   PASS  Steal_is_effective_when_original_is_not_smaller
+   PASS  Steal_is_ineffective_when_original_is_smaller
+   PASS  Steal_of_five_with_high_original_gives_a_whole_shield
+   PASS  Steal_of_five_with_low_original_gives_a_broken_shield
+   PASS  Steal_of_four_attacks_the_victim
+   PASS  Steal_states_swap_together_with_the_values
+   PASS  Steal_swaps_both_values
+   PASS  Steal_target_can_be_any_other_player
+   PASS  Steal_target_step_is_a_human_decision
+   PASS  Steal_through_the_board_asks_for_a_target_then_hands_over
+   PASS  Stealing_a_monks_zero_only_yields_one
+   PASS  The_victim_does_not_form_a_shield
+   PASS  Thief_never_inherits_taichi_from_a_monk
+   PASS  Thief_stats_and_range
+   PASS  Thief_value_table_ranks_eight_and_nine_highest
+
+── TurnFlowTests  (15 项)
+   PASS  Cannot_act_after_game_over
+   PASS  Cannot_use_locked_hand_as_source
+   PASS  Cannot_use_own_hand_as_target
+   PASS  Current_player_alternates_and_turn_count_increments
+   PASS  Dropping_to_zero_ends_the_game
+   PASS  First_to_die_loses_when_only_one_side_reaches_zero
+   PASS  Illegal_move_does_not_advance_the_turn
+   PASS  Legal_move_check_reports_reason
+   PASS  Locked_hand_can_still_be_used_as_target
+   PASS  Locked_hand_is_excluded_from_legal_moves
+   PASS  Mutual_death_is_a_draw
+   PASS  Only_actor_hand_changes_target_hand_is_untouched
+   PASS  TurnResult_records_before_and_after_values
+   PASS  Turn_count_does_not_increment_on_the_finishing_turn
+   PASS  Two_hands_each_side_yield_four_legal_moves
+
+── TwoOnTwoInitiativeTests  (19 项)
+   PASS  A_critical_failure_at_seat_four_is_decided_by_seat_three
+   PASS  A_critical_failure_at_seat_one_is_decided_by_seat_two
+   PASS  A_critical_failure_at_seat_three_is_decided_by_seat_four_first
+   PASS  All_four_critical_failures_are_handled_in_the_failure_phase
+   PASS  All_tied_values_are_broken_randomly_and_still_form_two_teams
+   PASS  Critical_failures_come_before_normal_and_major_success_comes_last
+   PASS  Every_seat_is_decided_exactly_once
+   PASS  Major_successes_are_all_decided_last
+   PASS  Mutual_critical_failures_at_one_and_two_are_both_handled_first
+   PASS  Mutual_critical_failures_at_three_and_four_are_both_handled_first
+   PASS  Opponent_pairs_are_the_adjacent_seats_and_teammates_are_the_other_pair
+   PASS  Seat_one_is_the_highest_of_the_team_that_takes_one_and_four
+   PASS  Seat_order_within_a_team_is_by_value
+   PASS  Seats_always_hold_the_four_distinct_players
+   PASS  The_bigger_team_takes_seats_one_and_four
+   PASS  The_other_team_takes_seats_too_when_its_small_number_is_bigger
+   PASS  The_players_example_seats_twelve_at_four_and_eight_at_three
+   PASS  When_the_big_numbers_tie_the_smaller_numbers_decide_the_team
+   PASS  Without_any_special_rolls_the_order_is_four_three_two_one
+
+── TwoOnTwoStartControllerTests  (20 项)
+   PASS  A_critical_failure_allows_completely_free_assignment
+   PASS  A_critical_failure_is_decided_by_the_opponent
+   PASS  A_critical_failure_is_decided_by_the_opponent_first
+   PASS  ApplyToPlayers_does_not_form_shields
+   PASS  ApplyToPlayers_writes_the_decided_values
+   PASS  Candidates_follow_the_assignees_roll
+   PASS  Every_seat_is_decided_exactly_once
+   PASS  Hint_says_when_the_opponent_decides
+   PASS  Illegal_splits_are_rejected
+   PASS  Later_deciders_can_see_the_numbers_decided_before_them
+   PASS  Major_success_is_decided_last
+   PASS  Nothing_is_visible_before_the_first_decision
+   PASS  RollAndBegin_produces_a_valid_full_flow_for_many_seeds
+   PASS  Seat_of_reports_the_players_seat
+   PASS  Seat_one_and_four_are_teammates_and_two_and_three_are_teammates
+   PASS  Seat_summary_lists_all_four_seats
+   PASS  Seats_follow_the_players_example
+   PASS  Submitting_after_finish_is_rejected
+   PASS  The_opponent_deciding_a_critical_failure_also_sees_prior_numbers
+   PASS  Without_specials_the_order_is_four_three_two_one
+
+── TwoVersusTwoAiTests  (6 项)
+   PASS  Ai_prefers_the_enemy_with_lower_health
+   PASS  Ai_prefers_the_enemy_without_defense
+   PASS  Priest_heals_itself_when_alone_in_one_versus_one
+   PASS  Priest_heals_itself_when_it_is_the_lowest_in_its_team
+   PASS  Priest_heals_the_lowest_health_teammate_in_two_versus_two
+   PASS  Priest_never_heals_an_enemy
+
+── TwoVersusTwoBalanceTests  (3 项)
+   PASS  Harness_dispatches_every_seat_to_its_own_ai
+   PASS  Two_versus_two_reaches_a_result_instead_of_stalling
+Fatal error. System.AccessViolationException: Attempted to read or write protected memory. This is often an indication that other memory is corrupt.
+   at FingerDiceDuel.Core.PlayerState.get_Character()
+   at FingerDiceDuel.Assistant.GreedyChoiceProvider.ScoreMove(FingerDiceDuel.Core.LegalMove, FingerDiceDuel.Core.PlayerState, FingerDiceDuel.Core.GameManager)
+   at FingerDiceDuel.Assistant.GreedyChoiceProvider.ChooseMove(FingerDiceDuel.Core.GameManager, FingerDiceDuel.Core.PlayerState)
+   at FingerDiceDuel.Tests.TwoVersusTwoHarness.Play(FingerDiceDuel.Core.CharacterDefinition, FingerDiceDuel.Core.CharacterDefinition, FingerDiceDuel.Core.CharacterDefinition, FingerDiceDuel.Core.CharacterDefinition, Int32, Int32, Int32 ByRef)
+   at FingerDiceDuel.Tests.TwoVersusTwoBalanceTests.Two_versus_two_round_robin_win_rates_and_seat_bias()
+   at System.RuntimeMethodHandle.InvokeMethod(System.Object, System.Span`1<System.Object> ByRef, System.Signature, Boolean, Boolean)
+   at System.Reflection.RuntimeMethodInfo.Invoke(System.Object, System.Reflection.BindingFlags, System.Reflection.Binder, System.Object[], System.Globalization.CultureInfo)
+   at System.Reflection.MethodBase.Invoke(System.Object, System.Object[])
+   at Program.Main(System.String[])

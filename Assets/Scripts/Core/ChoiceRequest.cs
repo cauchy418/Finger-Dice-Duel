@@ -179,6 +179,46 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **法师的伤害类型选择**结果的存放处。
+    ///
+    /// 为什么不复用 <see cref="IPreTurnChoiceSink"/>：
+    /// 那个接口的返回值是 <see cref="Hand"/>（"选哪只手"），
+    /// 而这里选的是 <see cref="DamageType"/>（10 选 1 的枚举）——
+    /// 硬塞进 Hand 会变成"用值当前缀的假手牌"，语义脏且容易出错。
+    ///
+    /// 由 Assistant 层的抉择器实现（那个对象同时是 AI / 脚本 / 界面玩家的答案来源），
+    /// <see cref="Characters.SpecialLogics.MageLogic"/> 在结算时回读。
+    /// </summary>
+    public interface IDamageTypeChoiceSink
+    {
+        /// <summary>玩家 / AI 选定的伤害类型（没选过时是 <see cref="DamageType.None"/>）。</summary>
+        DamageType ChosenDamageType { get; set; }
+
+        /// <summary>是否愿意**放弃这次攻击**来设定伤害类型。</summary>
+        bool WantsToAbandonAttack { get; set; }
+    }
+
+    /// <summary>
+    /// **法师的跨回合状态**（待用的伤害类型）。
+    ///
+    /// 为什么要这个接口：AI（Assistant 层）需要知道
+    /// "法师是不是已经铺好一个类型了" —— 铺好了就不该再放弃攻击。
+    /// 而 **Assistant 不能引用 Characters 层**（架构铁律），
+    /// 所以状态必须通过 Core 接口暴露。
+    /// </summary>
+    public interface IMageState
+    {
+        /// <summary>是否已经选定了一个待用的伤害类型。</summary>
+        bool HasPendingType { get; }
+
+        /// <summary>待用的伤害类型。</summary>
+        DamageType PendingDamageType { get; }
+
+        /// <summary>设定待用类型（覆盖旧的 —— 玩家确认只保留最新选择）。</summary>
+        void SetPendingDamageType(DamageType type);
+    }
+
+    /// <summary>
     /// "结算过程中还需要问玩家"的回调 —— 由上层（BoardController）实现。
     ///
     /// 为什么需要它：多段攻击（忍者两段、剑客追加）的每一段都要单独问一次闪避，

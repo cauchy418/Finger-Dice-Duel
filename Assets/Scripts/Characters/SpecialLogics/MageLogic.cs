@@ -1,5 +1,6 @@
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
+    using System.Collections.Generic;
     using FingerDiceDuel.Core;
 
     /// <summary>
@@ -30,7 +31,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 玩家表示之后可以把咒术师的描述改成"伤害改为力场伤害"。
     /// </summary>
     public sealed class MageLogic : CharacterTemplate,
-        IStatusApplyingAttack, IDodgeBlocker
+        IStatusApplyingAttack, IDodgeBlocker, IMageState, IPreTurnChoiceProvider
     {
         /// <summary>法师能"放弃攻击"的数字（与其他角色一致，2 不是攻击）。</summary>
         public const int MinAttackValue = 4;
@@ -71,6 +72,96 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             PendingDamageType = DamageType.None;
             return t;
         }
+
+        // ============================================================
+        // 抉择收集（玩家确认的顺序：先问放弃 -> 选类型 -> 再选目标）
+        // ============================================================
+
+        /// <summary>
+        /// 运算结果是攻击数字（4/6/8）时，登记两个抉择。
+        ///
+        /// 玩家确认的顺序：
+        ///   ① 先问"是否放弃攻击"
+        ///   ② 选"放弃" -> 弹 10 种伤害类型
+        ///   ③ 选完类型 -> 再选攻击目标
+        ///
+        /// ⚠️ 每次算出攻击数字**都要问**（玩家明确要求）。
+        ///    所以要放在"用结果值判断"的地方，而不是"每回合只问一次"。
+        ///
+        /// ⚠️ 与猎人/剑客同一模式：必须在**运算前收集**，
+        ///    结算一旦开始就一次跑完，没法中途问人类玩家。
+        /// </summary>
+        public void CollectPreTurnChoices(PreTurnChoiceContext context,
+                                          List<ChoiceRequest> requests)
+        {
+            if (context == null || requests == null) return;
+
+            // 归属校验：双将容器里可能挂着别的角色，别替别人登记
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
+
+            // 只有"结果落在攻击数字上"才问
+            if (!IsAttackResult(context.ResultValue)) return;
+
+            // 已经有待用类型时不再问"要不要放弃" ——
+            // 玩家确认："法师最少要两个回合才能完成一次带效果的攻击"，
+            // 所以铺一次就够，重复放弃只是白白浪费回合。
+            if (HasPendingType) return;
+
+            var abandon = new ChoiceRequest(
+                HandEffect.MageAbandonAttack,
+                "是否放弃这次攻击？放弃后可以为下一次攻击指定一种伤害类型。",
+                new List<Hand>(context.Actor.Hands),
+                allowDecline: true,
+                declineResult: null,                     // 放弃 = 放弃"放弃" = 照常攻击
+                decider: context.Actor,
+                acceptLabel: "放弃攻击");
+            requests.Add(abandon);
+
+            // ② 10 种伤害类型。候选先填好，玩家选了"放弃"才有意义 ——
+            //    但它必须**同时登记**，因为收集阶段只有这一次机会。
+            //
+            //    ⚠️ `skipWhen`：玩家没选"放弃"时这一步自动跳过，
+            //       不会出现"选了照常攻击却被追问类型"。
+            var pick = new ChoiceRequest(
+                HandEffect.MageDamageType,
+                "选择伤害类型（10 选 1）",
+                new List<Hand>(context.Actor.Hands),
+                allowDecline: true,
+                declineResult: null,
+                decider: context.Actor,
+                acceptLabel: "就选它",
+                skipWhen: () => !WantsToAbandonThisTurn);
+            requests.Add(pick);
+        }
+
+        /// <summary>
+        /// 本次是否已经决定"放弃攻击"（由 sink 回读，供 <c>skipWhen</c> 用）。
+        /// </summary>
+        public bool WantsToAbandonThisTurn { get; set; }
+
+        /// <summary>
+        /// 从抉择器（AI / 脚本 / 界面）**回读**这一次的选择并落到自己身上。
+        ///
+        /// 由上层在"收集完抉择之后、真正结算之前"调用。
+        ///
+        /// 规则：
+        ///   · 玩家选了"放弃攻击" -> 记下类型（**覆盖旧的**，只保留最新）
+        ///   · 玩家没放弃           -> 什么都不做（照常攻击）
+        /// </summary>
+        public void ReadFromSink(IDamageTypeChoiceSink sink)
+        {
+            if (sink == null) return;
+
+            WantsToAbandonThisTurn = sink.WantsToAbandonAttack;
+            if (!WantsToAbandonThisTurn) return;
+
+            if (sink.ChosenDamageType != DamageType.None)
+                SetPendingDamageType(sink.ChosenDamageType);
+        }
+
+        /// <summary>结果值是不是"攻击数字"（4/6/8）。</summary>
+        public static bool IsAttackResult(int value)
+            => value == 4 || value == 6 || value == 8;
 
         // ============================================================
         // 攻击命中 -> 挂状态
