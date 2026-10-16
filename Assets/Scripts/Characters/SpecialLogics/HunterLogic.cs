@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public sealed class HunterLogic : CharacterTemplate,
         IHandEffectRewriter, IHandEffectDisplay, IDamageMitigator,
-        IAttackRangeProvider, IPreTurnChoiceProvider
+        IAttackRangeProvider, ITwoStepGoal, IPreTurnChoiceProvider
     {
         /// <summary>伏击要求两只手都是 1/2/3 —— 上界（含）。</summary>
         public const int AmbushMaxValue = 3;
@@ -320,6 +320,58 @@ namespace FingerDiceDuel.Core
             => effect == HandEffectType.Attack4
                || effect == HandEffectType.Attack6
                || effect == HandEffectType.Attack8;
+
+        // ---------------------------------------------------------------
+        // AI：为"凑 1/2/3"铺路（玩家要求仿照刺客 / 剑客的两步凑数，但值低一点）
+        // ---------------------------------------------------------------
+
+        /// <summary>
+        /// 离"两手都是 1/2/3"还差几步：0 = 都就位；1 = 一只手就位；2 = 都要做。
+        ///
+        /// ⚠️ 与刺客的"双 7"不同：目标是**两手同值且都 &lt;= 3**，
+        ///    所以"就位"= 这只手落在 1..3 内。
+        ///    至于"两手还要相等"，交给价值表的同值对加成去抓 ——
+        ///    这里只负责把两只手都推进 1..3。
+        /// </summary>
+        public int StepsToGoal(int actedValueAfter, int otherHandValue)
+        {
+            int have = 0;
+            if (actedValueAfter >= 1 && actedValueAfter <= AmbushMaxValue) have++;
+            if (otherHandValue >= 1 && otherHandValue <= AmbushMaxValue) have++;
+
+            return 2 - have;
+        }
+
+        /// <summary>
+        /// 1/2/3 是达成伏击必需的值 —— **别拿它去做运算**（会把它改掉）。
+        ///
+        /// 与刺客同一个用途：已经有一只 1/2/3 时，应该用**另一只手**
+        /// 朝 1..3 走，而不是把就位的那只改掉。
+        /// </summary>
+        public bool IsGoalValue(int handValue)
+            => handValue >= 1 && handValue <= AmbushMaxValue;
+
+        /// <summary>
+        /// 给这一手加分，让 AI 愿意为伏击铺路。
+        ///
+        /// ⚠️ **分值比刺客低**（玩家明确要求："值要低一点"）：
+        ///    刺客是 90 / 15，这里用 60 / 10。
+        ///    理由：伏击的收益是"一次免伤 + 攻击 +1 / 距离 3"，
+        ///    比刺客的潜行（完全闪避）轻；而且它对**手值范围**有要求
+        ///    （必须都 <= 3），硬凑的代价比凑 7 更大 ——
+        ///    分值给太高会让 AI 为了伏击放弃明显更好的进攻。
+        /// </summary>
+        public override int ScoreMoveBonus(MoveValueContext context)
+        {
+            int steps = StepsToGoal(context.ActedValueAfter, context.OtherHandValue);
+
+            switch (steps)
+            {
+                case 1: return 60;      // 另一只手已就位，这一手把它补齐
+                case 2: return 10;      // 两只都要做：小幅奖励，别盖过眼前机会
+                default: return 0;      // 已成：交给价值表的同值对加成
+            }
+        }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
