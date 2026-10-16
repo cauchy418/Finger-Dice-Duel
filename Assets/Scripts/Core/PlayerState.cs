@@ -66,12 +66,20 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **两只手都不能作为运算源**。
         ///
-        /// 目前只有一种情况：两只手**都被锁定**（野蛮人锁手）。
-        /// 被锁的手不能当运算源，两只都被锁就无手可用 ——
-        /// 玩家确认的规则："两只手都被锁住，右侧出现跳过按钮让该玩家回合被跳过。"
+        /// 两种情况：
+        ///   ① 两只手**都被锁定**（野蛮人锁手）；
+        ///   ② **一只手被暗置**（猎人的伏击），另一只手又被锁
+        ///      —— 这正是玩家早就指出的场景：
+        ///      "若猎人处于潜伏状态，剩余的那只手被野蛮人控制住也要给出跳过回合按钮"。
+        ///
+        /// ⚠️ 判据必须与 `GetLegalMoves` 的过滤口径**一致**（那里用的是
+        ///    `Hand.CanBeOperated` = 未锁 **且** 未暗置）。
+        ///    我第一版这里只查 `IsLocked`，于是"一暗置 + 一被锁"时：
+        ///    **合法步为 0，但这个属性说 false -> 跳过按钮不出现 -> 对局卡死**
+        ///    （全角色循环赛实测 5 处卡死，双将与 2v2 也被连带）。
         /// </summary>
         public bool HasNoUsableHand =>
-            LeftHand.IsLocked && RightHand.IsLocked;
+            !LeftHand.CanBeOperated && !RightHand.CanBeOperated;
 
         // ============ 构造 ============
         public PlayerState(string name = "Player", ICharacterBehavior character = null,

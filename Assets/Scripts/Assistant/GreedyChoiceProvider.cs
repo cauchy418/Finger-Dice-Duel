@@ -967,6 +967,30 @@ namespace FingerDiceDuel.Assistant
                 case HandEffect.RangerPowerShot:
                     return c[0];       // 每次都给强化，白赚
 
+                // ⚠️ 猎人**伏击**：条件已满足（两手同为 1/2/3），纯赚 ——
+                //    暗置一只手换来"攻击 +1 / 距离 3 / 一次抵伤"，
+                //    而且另一只手照常行动。
+                //
+                //    \u26a0\ufe0f **暂缓开启**：
+                //    我上一轮加上这条后，AI 确实开始进伏击了（探针实测 ambush=1），
+                //    但随即暴露出一个**更深的既有问题**：
+                //      进伏击会**暗置一只手**；若另一只手随后被锁（野蛮人），
+                //      该玩家就**两只手都不能运算** -> 无合法步。
+                //      跳过回合的按钮只存在于界面层（BoardController），
+                //      而无头循环赛/矩阵测试直接驱动 GameManager -> **卡死**。
+                //      实测：全角色循环赛 5 处卡死、双将交叉对战失败、
+                //            "hunter vs barbarian 应在回合上限内结束" 失败。
+                //
+                //    我已经顺手修了一处相关的真 bug（`PlayerState.HasNoUsableHand`
+                //    原来只查 `IsLocked`、没算**暗置**，与 `GetLegalMoves` 的口径不一致），
+                //    但那还不足以让上面那些 harness 不卡。
+                //
+                //    所以先回到"不自动伏击"，**保证仓库是绿的**；
+                //    等把"暗置 + 被锁 -> 自动跳过"这条链路在**无头环境**里也打通，
+                //    再重新打开这里。玩家的手工操作不受影响（按钮仍然会给）。
+                // case HandEffect.HunterAmbush:
+                //     return c[0];
+
                 case HandEffect.RangerDodge:
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
 
