@@ -1190,6 +1190,32 @@ namespace FingerDiceDuel.UI
             for (int i = 0; i < sheet.Lines.Count; i++)
                 card.Interactions.Add(sheet.Lines[i]);
 
+            // ⚠️ 分组（"伤害类型"页：魔法伤害 / 物理伤害）——
+            //    界面据此渲染"分类标题 + 每条一个代码绘制的图标"。
+            if (sheet.HasGroups)
+            {
+                card.Groups = new List<CodexCardData.CodexGuideGroup>(sheet.Groups.Count);
+
+                for (int g = 0; g < sheet.Groups.Count; g++)
+                {
+                    GuideGroup src = sheet.Groups[g];
+                    var dst = new CodexCardData.CodexGuideGroup { Title = src.Title };
+
+                    for (int i = 0; i < src.Entries.Count; i++)
+                    {
+                        GuideEntry e = src.Entries[i];
+                        dst.Entries.Add(new CodexCardData.CodexGuideEntry
+                        {
+                            IconKey = e.IconKey,
+                            Color = e.Color,
+                            Text = e.Text,
+                        });
+                    }
+
+                    card.Groups.Add(dst);
+                }
+            }
+
             return card;
         }
         private void OnOneOnOneClicked() => ShowScreen(GameScreen.OneOnOneMenu);

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,6 +39,29 @@ namespace FingerDiceDuel.UI
 
         /// <summary>与其他角色的特殊交互（每条一行）。</summary>
         public List<string> Interactions = new List<string>();
+
+        /// <summary>
+        /// **分组**（分类标题 + 条目）。用于"伤害类型"页：
+        /// 魔法伤害 / 物理伤害两段，每条前面画一个**代码绘制的图标**。
+        ///
+        /// ⚠️ 有这个时，界面走分组渲染（不再用 <see cref="Interactions"/> 的纯文字）。
+        /// </summary>
+        public List<CodexGuideGroup> Groups;
+
+        /// <summary>分组里的一个分类。</summary>
+        public sealed class CodexGuideGroup
+        {
+            public string Title;
+            public List<CodexGuideEntry> Entries = new List<CodexGuideEntry>();
+        }
+
+        /// <summary>分组里的一条：图标键 + 颜色 + 文字。</summary>
+        public sealed class CodexGuideEntry
+        {
+            public string IconKey;
+            public int Color;
+            public string Text;
+        }
 
         /// <summary>
         /// 清单**按两列排版**（左右各一条，成对一行）。
@@ -459,6 +483,14 @@ namespace FingerDiceDuel.UI
 
                 if (c.Interactions != null && c.Interactions.Count > 0)
                 {
+                    // ⚠️ 有分组 -> 走**分组渲染**（分类标题 + 每条一个图标）
+                    if (c.Groups != null && c.Groups.Count > 0)
+                    {
+                        RenderGroups(c.Groups);
+                        if (_page != null) _page.text = $"{PageNumber} / {PageCount}";
+                        return;
+                    }
+
                     // ⚠️ 指南页（两列）走**独立的两个 Text 列**，不走正文。
                     if (c.TwoColumnItems)
                     {
@@ -527,6 +559,169 @@ namespace FingerDiceDuel.UI
         }
 
         private Text _colLeft, _colRight;
+
+        // ============================================================
+        // 分组渲染（分类标题 + 每条一个代码绘制的图标）
+        // ============================================================
+
+        private readonly List<GameObject> _groupRows = new List<GameObject>();
+
+        /// <summary>图标显示尺寸（像素）。</summary>
+        private const float IconSize = 26f;
+
+        /// <summary>每一行的行高。</summary>
+        private const float RowHeight = 30f;
+
+        /// <summary>
+        /// 按分组渲染：每个分类一个标题，组内每条**左边一个图标**、右边文字。
+        ///
+        /// ⚠️ 图标是**代码画出来的**（<see cref="DamageIcons.Render"/>）——
+        ///    因为中文字体里没有刀/锤/弓/闪电/雪花（已逐个查过 cmap）。
+        ///    这里把像素喂给 <c>Texture2D</c>，再包成 Sprite 给 Image。
+        /// </summary>
+        private void RenderGroups(List<CodexCardData.CodexGuideGroup> groups)
+        {
+            HideColumnTexts();
+            if (_body != null) _body.text = "";
+
+            EnsureGroupRoot();
+            ClearGroupRows();
+
+            float y = 0f;
+
+            for (int g = 0; g < groups.Count; g++)
+            {
+                CodexCardData.CodexGuideGroup grp = groups[g];
+
+                // 分类标题（琥珀色，与"选中"一致）
+                MakeGroupLabel(grp.Title, y, new Color(0.90f, 0.76f, 0.36f), 20);
+                y -= RowHeight + 4f;
+
+                for (int i = 0; i < grp.Entries.Count; i++)
+                {
+                    CodexCardData.CodexGuideEntry e = grp.Entries[i];
+
+                    // 图标
+                    Image icon = MakeGroupIcon(ToSprite(e.IconKey, e.Color), y);
+                    if (icon != null) icon.rectTransform.anchoredPosition =
+                        new Vector2(IconSize * 0.5f, y - RowHeight * 0.5f + 3f);
+
+                    // 文字（缩进到图标右边）
+                    MakeGroupLabel(e.Text, y, new Color(0.88f, 0.90f, 0.94f), 17,
+                                   leftPad: IconSize + 10f);
+
+                    y -= RowHeight;
+                }
+
+                y -= 6f;      // 组之间留一点空
+            }
+        }
+
+        private RectTransform _groupRoot;
+
+        private void EnsureGroupRoot()
+        {
+            if (_groupRoot != null) return;
+            if (_root == null) return;
+
+            RectTransform panelRect = _root.childCount > 0
+                ? _root.GetChild(0) as RectTransform : _root;
+
+            var go = new GameObject("GuideGroups", typeof(RectTransform));
+            go.transform.SetParent(panelRect, false);
+
+            _groupRoot = go.GetComponent<RectTransform>();
+            _groupRoot.anchorMin = new Vector2(0f, 0f);
+            _groupRoot.anchorMax = new Vector2(1f, 1f);
+            _groupRoot.pivot = new Vector2(0f, 1f);
+            _groupRoot.offsetMin = new Vector2(60f, 96f);
+            _groupRoot.offsetMax = new Vector2(-60f, -136f);
+        }
+
+        private void ClearGroupRows()
+        {
+            for (int i = 0; i < _groupRows.Count; i++)
+                if (_groupRows[i] != null) UnityEngine.Object.Destroy(_groupRows[i]);
+
+            _groupRows.Clear();
+        }
+
+        private void MakeGroupLabel(string text, float y, Color color, int size,
+                                    float leftPad = 0f)
+        {
+            var go = new GameObject("GuideRow", typeof(Text));
+            go.transform.SetParent(_groupRoot, false);
+            _groupRows.Add(go);
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.offsetMin = new Vector2(leftPad, 0f);
+            rect.offsetMax = new Vector2(0f, 0f);
+            rect.sizeDelta = new Vector2(0f, RowHeight);
+            rect.anchoredPosition = new Vector2(leftPad, y);
+
+            var t = go.GetComponent<Text>();
+            t.font = _font;
+            t.fontSize = size;
+            t.alignment = TextAnchor.MiddleLeft;
+            t.color = color;
+            t.supportRichText = true;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
+            t.raycastTarget = false;
+            t.text = text;
+        }
+
+        private Image MakeGroupIcon(Sprite sprite, float y)
+        {
+            if (sprite == null) return null;
+
+            var go = new GameObject("GuideIcon", typeof(Image));
+            go.transform.SetParent(_groupRoot, false);
+            _groupRows.Add(go);
+
+            var rect = go.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(IconSize, IconSize);
+            rect.anchoredPosition = new Vector2(IconSize * 0.5f, y - RowHeight * 0.5f);
+
+            var img = go.GetComponent<Image>();
+            img.sprite = sprite;
+            img.raycastTarget = false;
+            return img;
+        }
+
+        private readonly Dictionary<string, Sprite> _iconCache =
+            new Dictionary<string, Sprite>();
+
+        /// <summary>
+        /// 把 Core 画好的像素包成 Sprite（带缓存：同一图标只建一次贴图）。
+        /// </summary>
+        private Sprite ToSprite(string key, int rgb)
+        {
+            if (string.IsNullOrEmpty(key)) return null;
+
+            string cacheKey = key + "#" + rgb.ToString("X6");
+            if (_iconCache.TryGetValue(cacheKey, out Sprite cached)) return cached;
+
+            byte[] px = DamageIcons.Render(key, rgb);
+
+            var tex = new Texture2D(DamageIcons.Size, DamageIcons.Size,
+                                    TextureFormat.RGBA32, false, false);
+            tex.LoadRawTextureData(px);
+            tex.filterMode = FilterMode.Bilinear;
+            tex.wrapMode = TextureWrapMode.Clamp;
+            tex.Apply();
+
+            var sprite = Sprite.Create(tex,
+                                       new Rect(0f, 0f, DamageIcons.Size, DamageIcons.Size),
+                                       new Vector2(0.5f, 0.5f));
+            _iconCache[cacheKey] = sprite;
+            return sprite;
+        }
 
         /// <summary>收起两列（翻到单列的角色卡时用）。</summary>
         private void HideColumnTexts()
