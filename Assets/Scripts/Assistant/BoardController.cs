@@ -943,6 +943,15 @@ namespace FingerDiceDuel.Assistant
             // 盗贼的"想偷"标记也属于"本回合的一次行动"，同样在第一步清掉
             _thiefWantsSteal = false;
 
+            // ⚠️ **法师的"本回合放弃攻击"标记也必须清掉** ——
+            //    它的语义是"这一次行动放弃攻击"，
+            //    留在身上会让下一回合的普通攻击也被静默抑制（打不出伤害）。
+            if (ActivePlayer?.Character
+                is FingerDiceDuel.Characters.SpecialLogics.MageLogic mageReset)
+            {
+                mageReset.WantsToAbandonThisTurn = false;
+            }
+
             // ⚠️ 赌博点数属于"本回合的一次行动"，**回合第一步**就要清掉。
             //
             //    我第一版放在 BeginCharacterChoices（收集抉择时），
@@ -3405,7 +3414,17 @@ namespace FingerDiceDuel.Assistant
             // "放弃攻击"：运算照常发生（手值改变），但不造成伤害。
             // 用 GameManager 的开关在分派攻击时短路，而不是跳过整个回合 ——
             // 跳过整个回合会让手值回退（玩家实测报的 bug）。
-            _game.SuppressAttackDamage = _giveUpAttack;
+            //
+            // ⚠️ **法师的"放弃攻击"也走这条开关。**
+            //    玩家确认：放弃攻击 = "运算照常、手值照常改变，但不造成伤害"，
+            //    只是**多了一个副作用**：为下一次攻击记下伤害类型。
+            //    这样两条"放弃"就共用同一套伤害抑制逻辑，不会出现
+            //    "潜行时放弃会抑制、法师放弃却还在打人"这种不一致。
+            bool mageAbandoned = (ActivePlayer?.Character
+                                  as FingerDiceDuel.Characters.SpecialLogics.MageLogic)
+                                 ?.WantsToAbandonThisTurn == true;
+
+            _game.SuppressAttackDamage = _giveUpAttack || mageAbandoned;
 
             // 本次攻击的距离覆盖（战士碎盾换射程 / 游侠强化）。
             // 必须与 CanBeAttacked 看到的是同一个值，否则会出现
