@@ -580,6 +580,18 @@ namespace FingerDiceDuel.UI
             // 玩家要求：从"书"改成"图"（不再做书本状）。
             _screenMainMenu.Add(codex.gameObject);
 
+            // **魔法球入口**：伤害类型 / 状态指引（玩家要求做成一个魔法球图标）。
+            //
+            // 放在"图"的**正下方** —— 两个都是"查看资料"，竖排更好找。
+            // 图标用"✦"（四角星）而不是 Emoji：字体回退不一定带 Emoji，
+            // 缺字会显示成方框（本项目在 ∞ 上踩过同类问题）。
+            Button orb = MakeButton(_selectRoot, "MagicOrb",
+                                    new Vector2(880f, 316f),
+                                    new Vector2(64f, 64f), "✦");
+            orb.GetComponent<Image>().color = new Color(0.34f, 0.26f, 0.52f);
+            orb.onClick.AddListener(OnMagicOrbClicked);
+            _screenMainMenu.Add(orb.gameObject);
+
             // 真正结束进程的入口放在主菜单 —— 对局中那个按钮只负责"返回标题"
             Button quit = MakeButton(_selectRoot, "Quit", new Vector2(0f, -516f),
                                      new Vector2(240f, 58f), "退出游戏");
@@ -1029,6 +1041,23 @@ namespace FingerDiceDuel.UI
             ShowScreen(GameScreen.Codex);
         }
 
+        /// <summary>
+        /// **魔法球入口**：直接跳到「伤害类型指引」那一页。
+        ///
+        /// 复用图鉴的翻页器（不另做一套界面），只是**定位到不同的页**：
+        /// 魔法球 -> 伤害类型 / 状态指引；「图」-> 角色图鉴（第 0 页起）。
+        ///
+        /// ⚠️ 两张指南页被 `list.Insert(0, ...)` 放在最前面，
+        ///    顺序是「伤害类型指引」->「状态一览」-> 角色卡。
+        /// </summary>
+        private void OnMagicOrbClicked()
+        {
+            BuildCodexIfNeeded();
+            _codex.SetVisible(true);
+            _codex.GoTo(0);            // 第 0 页就是「伤害类型指引」
+            ShowScreen(GameScreen.Codex);
+        }
+
         private void BuildCodexIfNeeded()
         {
             if (_codex != null) return;
@@ -1093,15 +1122,57 @@ namespace FingerDiceDuel.UI
                 list.Add(card);
             }
 
-            // ⚠️ **「状态一览」放在第一张** —— 法师的 9 种负面状态
-            //    分散在"法师"那一张里，玩家翻到时已经记不住哪个是哪个了；
-            //    集中一张表才能对照着看。
+            // ⚠️ **两张指南页放在最前面** ——
+            //    ① 「伤害类型指引」：法师可以选的 10 种伤害类型
+            //    ② 「状态一览」：命中后挂上的 9 种负面状态
+            //    它们分散在"法师"那一张里，玩家翻到时已经记不住哪个是哪个了。
             //
             //    复用同一套 CodexCardData 字段（不新增卡片类型）：
-            //    技能 = 状态清单，指南 = 持续时间与命中口径，针对 = 怎么解除。
+            //    技能 = 清单，详细 = 命中口径，指南 = 持续时间，针对 = 怎么应对。
             list.Insert(0, BuildStatusCard());
+            list.Insert(0, BuildDamageTypeCard());
 
             return list;
+        }
+
+        /// <summary>
+        /// 图鉴的「伤害类型指引」卡：一次列出法师的 10 种伤害类型。
+        ///
+        /// 名称与说明取自 <see cref="StatusNames"/> —— **只有一处真相**。
+        /// </summary>
+        private static CodexCardData BuildDamageTypeCard()
+        {
+            var card = new CodexCardData
+            {
+                NameZh = "伤害类型指引",
+                NameEn = "Damage Types",
+                Alignment = "法师体系",
+                IsGuide = true,
+
+                // 这张卡不描述角色
+                MaxHealth = 0, Attack = 0, Defense = 0, Range = 0,
+
+                ShortSkill = "法师放弃攻击后可以选的 10 种伤害类型。",
+                DetailSkill = "顺序：算出 4/6/8 -> 问「是否放弃攻击」-> 选放弃 -> "
+                            + "选一种伤害类型（10 选 1）-> 再选攻击目标。"
+                            + "选完之后这一次白扔（不造成伤害），类型留到【下一次】攻击 ——"
+                            + "下一次命中谁，就给谁挂上对应状态。",
+                PlayGuide = "被盾抵挡 / 被太极减免【也算命中】，照样挂状态；"
+                          + "被闪避或被邪术师取消则【不算命中】，而且那次放弃作废，"
+                          + "法师必须重新放弃一次攻击才能再附加。"
+                          + "连续放弃时【只保留最新】选的那种。",
+                Counter = "法师必须先白扔一回合才能挂状态 —— 趁那一回合压血。"
+                        + "他攻 0 / 防 −1，身材很软，抢在他铺垫完之前解决掉。",
+                LawAxis = null,
+                GoodAxis = null,
+            };
+
+            // 清单文字**取自 Core**（`StatusNames.GuideLine`）——
+            // 这样界面显示与规则、测试三边必然是同一份文案，不会漂移。
+            for (int i = 0; i < StatusNames.AllTypes.Length; i++)
+                card.Interactions.Add(StatusNames.GuideLine(StatusNames.AllTypes[i]));
+
+            return card;
         }
 
         /// <summary>
@@ -1117,6 +1188,7 @@ namespace FingerDiceDuel.UI
                 NameZh = "状态一览",
                 NameEn = "Status Effects",
                 Alignment = "法师体系",
+                IsGuide = true,
 
                 // 这张卡不描述角色，攻防 / 生命 / 距离无意义 —— 留 0 并在
                 // 技能里说明清楚，避免玩家误读成"某个人的属性"。

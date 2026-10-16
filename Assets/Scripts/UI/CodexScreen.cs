@@ -44,6 +44,16 @@ namespace FingerDiceDuel.UI
 
         /// <summary>所属"善良 / 中立 / 邪恶"。</summary>
         public string GoodAxis;
+
+        /// <summary>
+        /// 这是**指南页**（不是角色卡）：状态一览 / 伤害类型指引。
+        ///
+        /// ⚠️ 用途：阵营筛选必须**保留**它 ——
+        ///    否则玩家一点"守序"，指南页就消失了，再也找不到。
+        ///    比"靠 LawAxis == null 判断"更明确，也不会被将来新增的
+        ///    无阵营角色卡误伤。
+        /// </summary>
+        public bool IsGuide;
     }
 
     /// <summary>
@@ -309,11 +319,10 @@ namespace FingerDiceDuel.UI
             {
                 CodexCardData c = _all[i];
 
-                // ⚠️ **没有阵营的卡片（「状态一览」）永远保留** ——
-                //    它不是某个角色，不该被"守序 / 善良"这类筛选排除掉。
-                //    排除它会让玩家一旦点了筛选就再也找不到状态说明。
-                bool isCharacterCard = c.LawAxis != null || c.GoodAxis != null;
-                if (isCharacterCard)
+                // ⚠️ **指南页（状态一览 / 伤害类型）永远保留** ——
+                //    它们不是某个角色，不该被"守序 / 善良"这类筛选排除掉。
+                //    排除它们会让玩家一旦点了筛选就再也找不到状态说明。
+                if (!c.IsGuide)
                 {
                     if (_lawAxis != null && c.LawAxis != _lawAxis) continue;
                     if (_goodAxis != null && c.GoodAxis != _goodAxis) continue;

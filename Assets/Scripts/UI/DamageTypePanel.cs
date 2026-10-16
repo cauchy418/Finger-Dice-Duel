@@ -20,13 +20,13 @@ namespace FingerDiceDuel.UI
     /// </summary>
     public sealed class DamageTypePanel
     {
-        /// <summary>面板里的 10 种类型（顺序固定，便于测试与肌肉记忆）。</summary>
-        public static readonly DamageType[] AllTypes =
-        {
-            DamageType.Thunder, DamageType.Acid, DamageType.Poison, DamageType.Radiant,
-            DamageType.Necrotic, DamageType.Fire, DamageType.Cold, DamageType.Lightning,
-            DamageType.Force, DamageType.Psychic,
-        };
+        /// <summary>
+        /// 面板里的 10 种类型（顺序固定，便于测试与肌肉记忆）。
+        ///
+        /// ⚠️ 直接引用 <see cref="StatusNames.AllTypes"/> —— **只有一处真相**。
+        ///    原来在这里另抄了一份数组，那种"两处各写一遍"迟早会漂移。
+        /// </summary>
+        public static DamageType[] AllTypes => StatusNames.AllTypes;
 
         private const float CellW = 132f;
         private const float CellH = 62f;

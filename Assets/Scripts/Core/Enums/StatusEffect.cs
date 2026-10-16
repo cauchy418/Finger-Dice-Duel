@@ -201,5 +201,44 @@ namespace FingerDiceDuel.Core
                 default: return StatusEffect.None;      // 力场
             }
         }
+
+        /// <summary>
+        /// **全部 10 种伤害类型**（固定顺序）。
+        ///
+        /// ⚠️ 放在 Core 而不是 UI：图鉴的「伤害类型指引」要用它，
+        ///    而 UI 是叶子层、**测试项目引用不到** —— 放在这里才能被共用、也才能被测到。
+        ///    界面只负责排版。
+        /// </summary>
+        public static readonly DamageType[] AllTypes =
+        {
+            DamageType.Thunder, DamageType.Acid, DamageType.Poison, DamageType.Radiant,
+            DamageType.Necrotic, DamageType.Fire, DamageType.Cold, DamageType.Lightning,
+            DamageType.Force, DamageType.Psychic,
+        };
+
+        /// <summary>**全部 9 种状态**（按枚举顺序，便于界面稳定显示）。</summary>
+        public static readonly StatusEffect[] AllStatuses =
+        {
+            StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
+            StatusEffect.Blind, StatusEffect.Decay, StatusEffect.Burn,
+            StatusEffect.Freeze, StatusEffect.Shock, StatusEffect.Stun,
+        };
+
+        /// <summary>
+        /// 图鉴「伤害类型指引」里那一行的文字：
+        /// `雷鸣 → 残响：只能攻击与自己距离 1 的角色`；
+        /// 力场没有状态，写成 `力场：穿盾、无视正向防御、不可闪避（不挂状态）`。
+        ///
+        /// 放在 Core 是为了让**界面与测试共用同一份文案**（只有一处真相）。
+        /// </summary>
+        public static string GuideLine(DamageType type)
+        {
+            StatusEffect st = StatusOf(type);
+
+            if (st == StatusEffect.None)
+                return Of(type) + "：穿盾、无视正向防御、不可闪避（不挂状态）";
+
+            return Of(type) + " → " + Of(st) + "：" + Describe(st);
+        }
     }
 }
