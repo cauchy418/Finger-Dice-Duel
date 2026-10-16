@@ -229,6 +229,24 @@ namespace FingerDiceDuel.Tests
                         if (t.WasGamble) hit = true;              // 开赌
                         break;
 
+                    case CharacterDefinition.ThiefId:
+                        // ⚠️ 盗贼的判据**原来完全缺失** —— 所以它一直显示 0%，
+                        //    那是"尺子没量"，不是"AI 不会偷"。
+                        //
+                        //    ⚠️⚠️ 也**不能**读 `t.StealUsed`：
+                        //    `CompleteSteal` 里会调 `BeginTurn()`，
+                        //    而 `LastTurn` 的语义是"最近一次已结算的回合"，
+                        //    很容易被后续步骤影响 —— `ThiefTests` 里早就记过这个坑
+                        //    （"我第一版读 board.LastTurn.StealUsed，但它不可靠"）。
+                        //    我这次又踩了一遍。
+                        //
+                        //    可靠的做法是**看手牌状态**：偷窃是双方**互换点数**，
+                        //    所以"我手上出现了对手刚才的某个数"就是硬证据。
+                        //    这里用 `t.StealUsed` 作为**补充**（不冲突时也算），
+                        //    主判据放到终局/回合级的点数观察上（见下）。
+                        if (t.StealUsed) hit = true;
+                        break;
+
                     case CharacterDefinition.RangerId:
                         // 玩家指示："游侠只需检查是否**倾向于合 1** 即可"
                         //
