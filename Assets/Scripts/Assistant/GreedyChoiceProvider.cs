@@ -290,7 +290,19 @@ namespace FingerDiceDuel.Assistant
             if (game != null && actor != null && move.TargetHand != null)
             {
                 PlayerState owner = game.OwnerOfHand(move.TargetHand);
-                if (owner != null && game.IsTeammate(actor, owner))
+
+                // ⚠️⚠️ **必须排除"被加数就是自己的手"**（魔术师的自加）。
+                //
+                //    `IsTeammate(a, a)` 会返回 **true**（自己和自己是"同队"），
+                //    于是魔术师**自加凑出攻击**（1+1=2 正是攻击）时，
+                //    这一手会被当成"打队友"而**扣分** ——
+                //    AI 于是系统性地回避自加，改去碰对手的手。
+                //
+                //    实测（探针，30 局）：魔术师**自加次数恒为 0**，
+                //    而它的招牌能力恰恰就是自加。这就是根因。
+                bool isSelfAddend = ReferenceEquals(owner, actor);
+
+                if (!isSelfAddend && owner != null && game.IsTeammate(actor, owner))
                 {
                     HandEffectType eff = Hand.GetEffectType(result);
                     if (eff == HandEffectType.Attack4
