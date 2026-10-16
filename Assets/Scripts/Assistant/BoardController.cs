@@ -976,7 +976,20 @@ namespace FingerDiceDuel.Assistant
                     return IsChoiceCandidate(hand);
 
                 case BoardPhase.ChoosingAttackerHand:
-                    return ActivePlayer.Owns(hand) && !hand.IsLocked;
+                    // ⚠️ 必须用 `Hand.CanBeOperated`（= 未锁 **且** 未暗置），
+                    //    不能只查 `!IsLocked`。
+                    //
+                    //    玩家实测的 bug：猎人**用已暗置（伏击）的手主动发起了运算**，
+                    //    于是伏击被破除、那只手随即变成合法的被加数，
+                    //    接着对手就能拿它当加数了。
+                    //
+                    //    根因是**两层口径不一致**：
+                    //      领域层（GetLegalMoves / IsLegalMove）用的是 `CanBeOperated`；
+                    //      界面这层还停在 `!IsLocked` —— 只认得"被锁"。
+                    //    所以暗置的手在领域层已被拒绝，**界面上却仍然点得动**。
+                    //
+                    //    玩家原话："伏击的手不能主动发起运算，看上去和被锁是一样的。"
+                    return ActivePlayer.Owns(hand) && hand.CanBeOperated;
 
                 case BoardPhase.ChoosingGamble:
                     // 赌博阶段**只等点「开赌」**，手牌本身不再接受点击。
