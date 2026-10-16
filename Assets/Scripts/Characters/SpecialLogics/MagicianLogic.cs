@@ -16,15 +16,10 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public sealed class MagicianLogic : CharacterTemplate,
         ISelfAddendProvider, IHandEffectRewriter, IHandEffectDisplay,
-        IResultTargetProvider, IAttackDamageRule
+        IResultTargetProvider
     {
         /// <summary>魔术师能把结果 2 当攻击打出的伤害（吃攻防加成）。</summary>
         public const int MagicAttackValue = 2;
-
-        /// <summary>
-        /// **魔术师攻击的固定伤害**（玩家改动：2/4/6/8 一律 4 点、不吃攻防加成）。
-        /// </summary>
-        public const int FixedAttackDamage = 4;
 
         public override string DisplayName => "魔术师";
 
@@ -125,52 +120,20 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **魔术师的攻击一律是固定 4 点伤害、且不吃攻防加成**（玩家改动）。
+        /// 追加伤害设定：把"结果 2"的攻击伤害定为 2 点（吃攻防加成）。
         ///
-        /// 玩家原话："把魔术师的攻击（2/4/6/8）均改成造成 4 点固定伤害（不吃攻防加成）"。
-        ///
-        /// ⚠️ 为什么必须走 <see cref="IAttackDamageRule"/> 而不是只改 FinalDamage：
-        ///    AttackContext.Resolve 在调用 OnResolveAttack 之后还有一句
-        ///      FinalDamage = ApplyBonuses(FinalDamage);
-        ///    —— 只设最终伤害的话，攻防加成会**在后面被加回去**，
-        ///    "不吃攻防加成"就落空了。所以必须
-        ///      · 用这个钩子（它拿到 attackValue，能判断是不是攻击）；
-        ///      · 并同时把 IgnoreStatBonuses 打开。
-        ///
-        /// 段数压成 1：攻击牌原本是 4/6/8，若不压，
-        /// 别的机制可能按 4/6/8 去分段（例如双将里配魔射手）。
-        /// </summary>
-        void IAttackDamageRule.ApplyAttackRule(AttackContext context, int attackValue,
-                                               GameManager manager)
-        {
-            if (context == null) return;
-            if (!IsAttackValue(attackValue)) return;
-
-            context.HitCount = 1;
-            context.FinalDamage = FixedAttackDamage;
-
-            // 不吃攻防加成（也顺带跳过"无视正向防御"那些分支）
-            context.IgnoreStatBonuses = true;
-        }
-
-        /// <summary>2 / 4 / 6 / 8 都算魔术师的攻击牌。</summary>
-        public static bool IsAttackValue(int value)
-            => value == MagicAttackValue || value == 4 || value == 6 || value == 8;
-
-        /// <summary>
-        /// 追加一道兜底：把伤害再次钉成固定值。
-        ///
-        /// 与 <see cref="IAttackDamageRule.ApplyAttackRule"/> 同时存在是**刻意**的：
-        /// 前者在攻防加成**之前**生效，这里在之后 —— 两道都钉，
-        /// 保证任何路径下魔术师的攻击都是固定 4 点。
+        /// \u26a0\ufe0f 这是**最初版本**的行为：只有 2 是特殊攻击，
+        ///    4/6/8 走引擎默认（伤害 = 牌面数字）。
         /// </summary>
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null) return;
-            if (!IsAttackValue(context.AttackValue)) return;
+            if (context.AttackValue != MagicAttackValue) return;
 
+            // 必须同时把段数压成 1：Attack4 只是借来的"攻击类型"，
+            // 若不压，别的机制可能按 4 去分段（例如双将里配魔射手）。
             context.HitCount = 1;
-            context.FinalDamage = FixedAttackDamage;
+            context.FinalDamage = MagicAttackValue;
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)

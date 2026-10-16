@@ -207,7 +207,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Magician_attacks_deal_a_fixed_four_damage()
+        public void Magician_attacks_deal_their_face_damage()
         {
             // 玩家改动（2026-02）：魔术师的攻击（2/4/6/8）
             // **一律固定 4 点伤害、且不吃攻防加成**。
@@ -223,6 +223,8 @@ namespace FingerDiceDuel.Tests
                 "运算出 2 对魔术师应是攻击，而不是无效果。");
 
             // 四种攻击牌都必须是**固定 4 点**
+            // **最初版本**：伤害就是"牌面数字"（2 是特殊攻击，打 2 点），
+            // 都吃攻防加成 —— 所以这里按引擎公式算期望值。
             int[] attacks = { 2, 4, 6, 8 };
             for (int i = 0; i < attacks.Length; i++)
             {
@@ -234,15 +236,19 @@ namespace FingerDiceDuel.Tests
                 var ctx = new AttackContext(me, target, me.LeftHand, attacks[i]);
                 ctx.Resolve(null, null);
 
-                Assert.AreEqual(MagicianLogic.FixedAttackDamage, before - target.Health,
-                    $"攻击值 {attacks[i]} 应造成固定 {MagicianLogic.FixedAttackDamage} 点伤害。");
+                int expected = attacks[i]
+                             + me.Character.AttackBonus
+                             - target.Character.DefenseBonus;
+
+                Assert.AreEqual(expected, before - target.Health,
+                    $"攻击值 {attacks[i]} 应造成 {expected} 点伤害（牌面数字 + 攻防）。");
             }
         }
 
         [Test]
-        public void Magician_attack_ignores_stat_bonuses()
+        public void Magician_attack_takes_stat_bonuses()
         {
-            // "不吃攻防加成"：给魔术师加攻、给对手加防，伤害都必须是 4
+            // **最初版本**：吃攻防加成 —— 对手防 +2 会把伤害压下去。
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
             PlayerState foe = Make("敌", CharacterDefinition.Giant);   // 防 +2
 
@@ -252,8 +258,9 @@ namespace FingerDiceDuel.Tests
             var ctx = new AttackContext(magician, foe, magician.LeftHand, 6);
             ctx.Resolve(null, null);
 
-            Assert.AreEqual(MagicianLogic.FixedAttackDamage, before - foe.Health,
-                "对手防 +2 也不应把伤害压下去（不吃攻防加成）。");
+            int expected = 6 + magician.Character.AttackBonus - foe.Character.DefenseBonus;
+            Assert.AreEqual(expected, before - foe.Health,
+                "最初版本吃攻防加成：对手防 +2 应让伤害减少。");
         }
 
         [Test]
