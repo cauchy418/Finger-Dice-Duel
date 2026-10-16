@@ -303,6 +303,9 @@ namespace FingerDiceDuel.Core
             if (chosen == null) return;
 
             EnterAmbush(candidate);
+
+            // 记到战报里 —— 否则玩家会看到"（无效果）"，而实际上他进了伏击。
+            if (manager.LastTurnResult != null) manager.LastTurnResult.EnteredAmbush = true;
         }
 
         private static bool IsAttackEffect(HandEffectType effect)

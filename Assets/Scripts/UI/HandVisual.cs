@@ -15,6 +15,14 @@ namespace FingerDiceDuel.UI
         private static readonly Color BrokenCard = new Color(0.30f, 0.30f, 0.36f);
         private static readonly Color LockedCard = new Color(0.16f, 0.15f, 0.15f);
 
+        /// <summary>
+        /// **暗置（猎人伏击）** 的牌面颜色。
+        ///
+        /// 与"被锁"不同：被锁是别人强加的（暗灰），
+        /// 暗置是猎人自己摆的姿态（深青），而且**数值仍然可见**。
+        /// </summary>
+        private static readonly Color ConcealedCard = new Color(0.13f, 0.24f, 0.26f);
+
         public static Color CardColor(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return NormalCard;
@@ -27,6 +35,8 @@ namespace FingerDiceDuel.UI
                 // 太极形态（武僧）：借"回复"的绿色系 —— 它既不是攻击也不是盾，
                 // 而是"以柔克刚"的防守姿态。用与护盾不同的颜色以示区分。
                 case Core.ShieldState.Taichi: return HealCard;
+                // 暗置（猎人伏击）：数值仍可见，但不能当运算源、也不能被对手碰
+                case Core.ShieldState.Concealed: return ConcealedCard;
             }
 
             switch (EffectOf(hand, owner))
@@ -84,6 +94,7 @@ namespace FingerDiceDuel.UI
             if (hand == null) return "";
 
             if (hand.IsLocked) return "已锁定";
+        if (hand.IsConcealed) return "伏击 · 已暗置";
 
             switch (hand.State)
             {

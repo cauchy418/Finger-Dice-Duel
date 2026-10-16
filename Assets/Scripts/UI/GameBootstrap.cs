@@ -2549,6 +2549,8 @@ namespace FingerDiceDuel.UI
                 case HandEffect.BarbarianLockTarget: return "不锁手";
                 case HandEffect.WarriorChainBreak: return "不发动";
                 case HandEffect.SwordsmanFollowUp: return "不追加";
+                // 猎人伏击（与剑客追加攻击同一条通道）
+                case HandEffect.HunterAmbush: return "不伏击";
                 // 回复目标是**必选**的（玩家要求：选了回复就必须回复、
                 // 运算出 9 必须回复、双 9 两段都必须回复），
                 // 所以这里不会走到 —— 按钮根本不会出现。

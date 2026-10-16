@@ -112,6 +112,14 @@ namespace FingerDiceDuel.Core
         /// <summary>本次运算**之前**发生的追加攻击（剑客）。没有则为 null，供战报单独显示一行。</summary>
         public ExtraAttackInfo? ExtraAttack;
 
+        /// <summary>
+        /// 这次运算之后猎人是否**进入了伏击**（暗置了一只手）。
+        ///
+        /// 供战报使用 —— 否则玩家会看到"（无效果）"，而实际上他进了伏击：
+        /// 伏击**不改变效果类型**，它改的是那只手的**状态**。
+        /// </summary>
+        public bool EnteredAmbush;
+
         /// <summary>本次攻击的段数（忍者 = 2，其余 = 1）。战报用它说明"两段攻击"。</summary>
         public int HitCount = 1;
 

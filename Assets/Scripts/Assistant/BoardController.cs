@@ -3516,6 +3516,9 @@ namespace FingerDiceDuel.Assistant
                     }
 
                 default:
+                    // 猎人伏击：效果类型本身没变（仍是无效果），
+                    // 但他把那只手**暗置**了 —— 战报必须说出来。
+                    if (t.EnteredAmbush) return head + "（进入伏击）";
                     return head + "（无效果）";
             }
         }
