@@ -166,7 +166,26 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (sink == null) return;
 
-            WantsToAbandonThisTurn = sink.WantsToAbandonAttack;
+            // ⚠️⚠️ **只有抉择器"确实表过态"时才覆盖本回合的标记。**
+            //
+            //    人类玩家的抉择器是 `SimpleChoiceProvider` —— 它**没有实现**
+            //    `IDamageTypeChoiceSink`，`WantsToAbandonAttack` 恒为 false。
+            //    而界面（`BoardController.AcceptPendingChoice` /
+            //    `ChooseDamageType`）已经把标记**直接写到法师身上**了，
+            //    这里若无条件覆盖，就会把它**读回 false** ——
+            //    表现为"玩家点了放弃攻击，却仍然造成伤害"（玩家实测报的 bug）。
+            //
+            //    所以：抉择器说"要放弃" -> 采纳；
+            //          抉择器说"不放弃"**但法师身上已经有待用类型** -> 保留法师的判断。
+            if (sink.WantsToAbandonAttack)
+            {
+                WantsToAbandonThisTurn = true;
+            }
+            else if (!HasPendingType)
+            {
+                WantsToAbandonThisTurn = false;
+            }
+
             if (!WantsToAbandonThisTurn) return;
 
             if (sink.ChosenDamageType != DamageType.None)

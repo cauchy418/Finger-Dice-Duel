@@ -56,7 +56,11 @@ namespace FingerDiceDuel.UI
             _root.pivot = new Vector2(0.5f, 0.5f);
             _root.sizeDelta = new Vector2(Columns * CellW + (Columns - 1) * Gap + 24f,
                                           (2 * CellH + Gap) + 56f);
-            _root.anchoredPosition = Vector2.zero;
+            // ⚠️ 玩家要求："选择整体右移"。
+            //    原来居中（Vector2.zero），正好压在下方自己的手牌上 ——
+            //    玩家要在"手牌"和"类型格"之间来回看，挡着就没法选。
+            //    右移 320px 之后与手牌错开（面板宽 ~924，居中时右边界 +462）。
+            _root.anchoredPosition = new Vector2(320f, 0f);
 
             go.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.12f, 0.94f);
 
@@ -137,12 +141,20 @@ namespace FingerDiceDuel.UI
         public static DamageType TypeAt(int index)
             => index >= 0 && index < AllTypes.Length ? AllTypes[index] : DamageType.None;
 
-        /// <summary>类型的主色（与状态图标栏同源，保证视觉一致）。</summary>
+        /// <summary>
+        /// 类型的主色（与状态图标栏 / 速查表**同源**，保证视觉一致）。
+        ///
+        /// ⚠️ 力场**没有状态**，原来这里硬编码了一个"中性灰蓝"，
+        ///    而速查表用的是 `StatusNames.ForceColor`（深红）——
+        ///    两处不一致，玩家实测报"力场没有同步成红色"。
+        ///    现在统一走 <see cref="StatusNames.GuideColorOf"/>（唯一一份）。
+        /// </summary>
         public static Color FillOf(DamageType type)
         {
-            StatusEffect st = StatusNames.StatusOf(type);
-            if (st != StatusEffect.None) return StatusIconBar.ColorOf(st);
-            return new Color(0.55f, 0.55f, 0.68f);      // 力场：中性灰蓝
+            int rgb = StatusNames.GuideColorOf(type);
+            return new Color(((rgb >> 16) & 0xFF) / 255f,
+                             ((rgb >> 8) & 0xFF) / 255f,
+                             (rgb & 0xFF) / 255f);
         }
 
         private Text MakeText(RectTransform parent, string name, Vector2 position,

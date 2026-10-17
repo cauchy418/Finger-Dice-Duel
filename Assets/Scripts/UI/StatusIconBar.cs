@@ -49,10 +49,21 @@ namespace FingerDiceDuel.UI
             go.transform.SetParent(parent, false);
 
             _root = go.GetComponent<RectTransform>();
-            _root.anchorMin = _root.anchorMax = new Vector2(1f, 0.5f);
-            _root.pivot = new Vector2(1f, 0.5f);
-            _root.sizeDelta = new Vector2(IconSize + 8f, IconSize * MaxIcons);
-            _root.anchoredPosition = new Vector2(-4f, anchorTop ? -30f : 30f);
+
+            // ⚠️ 玩家要求："异常状态挂得太远了，就挂在名字显示前"，
+            //    且"要做到挂 9 个不遮挡名字"。
+            //
+            //    所以改成**横排一行**、锚在**名字行的左端**：
+            //      · 名字文本宽 600、居中 -> 左边界在 -300
+            //      · 图标栏右端停在 -310，**向左展开**
+            //      · 9 个图标最多 9×26 + 8×3 = 258px -> 左边界到 -568，仍在面板内
+            //    这样无论挂几个都不会压住名字（名字本身不动）。
+            float nameY = anchorTop ? (0.5f - 18f / 340f) : (0.5f + 18f / 340f);
+
+            _root.anchorMin = _root.anchorMax = new Vector2(0.5f, nameY);
+            _root.pivot = new Vector2(1f, 0.5f);       // 右端对齐锚点 -> 往左排
+            _root.sizeDelta = new Vector2(MaxIcons * (IconSize + IconGap), IconSize);
+            _root.anchoredPosition = new Vector2(-310f, 0f);
 
             // 背景透明：这一栏只放图标，不要多一块底板
             go.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
@@ -98,23 +109,25 @@ namespace FingerDiceDuel.UI
                 var go = new GameObject("Status" + i, typeof(Image));
                 go.transform.SetParent(_root, false);
 
+                // ⚠️ **横排一行**（原来是竖排一列，所以"挂得太远"）。
+                //    pivot 在左端 -> 从锚点往右依次排开，第 0 个最靠左。
                 var rect = go.GetComponent<RectTransform>();
-                rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1f);
-                rect.pivot = new Vector2(0.5f, 1f);
+                rect.anchorMin = rect.anchorMax = new Vector2(0f, 0.5f);
+                rect.pivot = new Vector2(0f, 0.5f);
                 rect.sizeDelta = new Vector2(IconSize, IconSize);
-                rect.anchoredPosition = new Vector2(0f, -i * (IconSize + IconGap));
+                rect.anchoredPosition = new Vector2(i * (IconSize + IconGap), 0f);
 
                 var img = go.GetComponent<Image>();
                 img.raycastTarget = false;
                 _icons.Add(img);
 
                 _glyphs.Add(MakeText(rect, "Glyph", Vector2.zero,
-                                     new Vector2(IconSize, IconSize), 20,
+                                     new Vector2(IconSize, IconSize), 18,
                                      TextAnchor.MiddleCenter, Color.white));
 
                 _turns.Add(MakeText(rect, "Turns", new Vector2(IconSize / 2f - 3f,
                                                                -(IconSize / 2f - 3f)),
-                                    new Vector2(14f, 14f), 12, TextAnchor.MiddleCenter,
+                                    new Vector2(13f, 13f), 11, TextAnchor.MiddleCenter,
                                     new Color(1f, 1f, 1f, 0.9f)));
             }
         }

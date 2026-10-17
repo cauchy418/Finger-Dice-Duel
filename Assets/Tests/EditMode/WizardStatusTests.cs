@@ -306,5 +306,64 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(DamageType.None, mage.PendingDamageType,
                 "重开一局不能带着上一局选的伤害类型。");
         }
+
+        // ============================================================
+        // 回归：人类玩家点"放弃攻击"却仍造成伤害
+        // ============================================================
+
+        /// <summary>
+        /// 模拟**人类玩家的抉择器**：它没有实现 <see cref="IDamageTypeChoiceSink"/>，
+        /// 所以 `WantsToAbandonAttack` 恒为 false、`ChosenDamageType` 恒为 None。
+        ///
+        /// 界面（`BoardController`）会把"放弃"与"类型"**直接写到法师身上**。
+        /// </summary>
+        private sealed class HumanLikeSink : IDamageTypeChoiceSink
+        {
+            public DamageType ChosenDamageType { get; set; }
+            public bool WantsToAbandonAttack { get; set; }
+            public void SetGameForChoices(GameManager game) { }
+        }
+
+        [Test]
+        public void Human_abandon_is_not_undone_by_a_silent_sink()
+        {
+            // ⚠️⚠️ 玩家实测报的 bug："法师选择放弃攻击仍造成了伤害"。
+            //
+            //    根因：`WizardLogic.ReadFromSink` 原来**无条件**用
+            //    `sink.WantsToAbandonAttack` 覆盖本回合标记。而人类抉择器
+            //    恒报 false —— 于是界面刚写下的 true 被**读回 false**，
+            //    `SuppressAttackDamage` 永远不成立，伤害照打。
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = (WizardLogic)p.Character;
+
+            // 界面直接写到法师身上（BoardController 就是这么做的）
+            mage.SetPendingDamageType(DamageType.Thunder);
+            mage.WantsToAbandonThisTurn = true;
+
+            // 结算时 GameManager 会再读一次抉择器
+            mage.ReadFromSink(new HumanLikeSink());
+
+            Assert.IsTrue(mage.WantsToAbandonThisTurn,
+                "抉择器没表态时，不能把界面已确认的「放弃攻击」读回 false —— "
+                + "否则放弃的一击仍会造成伤害。");
+            Assert.AreEqual(DamageType.Thunder, mage.PendingDamageType,
+                "界面选的类型也不能被抹掉。");
+        }
+
+        [Test]
+        public void Abandon_flag_can_still_be_cleared_when_nothing_was_chosen()
+        {
+            // 反向保护：**什么都没选**时，抉择器的 false 仍应清掉残留标记，
+            // 否则上一回合的"放弃"会粘到下一回合（那样会白扔一击）。
+            PlayerState p = Make("法", CharacterDefinition.Wizard);
+            var mage = (WizardLogic)p.Character;
+
+            mage.WantsToAbandonThisTurn = true;      // 上一回合的残留
+
+            mage.ReadFromSink(new HumanLikeSink());
+
+            Assert.IsFalse(mage.WantsToAbandonThisTurn,
+                "没有待用类型时，残留的放弃标记应当被清掉。");
+        }
     }
 }
