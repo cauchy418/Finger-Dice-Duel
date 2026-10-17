@@ -140,24 +140,36 @@ namespace FingerDiceDuel.Assistant
         private DamageType WizardPickDamageType(PlayerState self)
         {
             if (self == null || Game == null) return DamageType.Fire;
-
             IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
             PlayerState foe = foes.Count > 0 ? foes[0] : null;
 
             bool multi = foes.Count > 1;
             bool meInDanger = self.Health * 100 <= self.MaximumHealth * 45;
-            bool foeNearDeath = foe != null && foe.Health * 100 <= foe.MaximumHealth * 40;
 
-            // ① 准备斩杀 -> 力场（穿盾且不可闪避）/ 暗蚀（封回复）/ 强酸（削防）
-            if (foeNearDeath)
+            // ⚠️⚠️ **"准备斩杀"必须是真条件，不能当兜底。**
+            //
+            //    我第一版把力场写成了兜底默认值（对手没盾没回复就返回力场），
+            //    结果 AI 几乎每次都选力场 —— 而**力场按设计不挂任何状态**
+            //    （玩家原话："力场 同咒术师方法，无法被任何方式抵挡/闪避"，
+            //      它的价值是穿透 + 必中，不是状态）。
+            //
+            //    表现（探针轨迹）：40 局里法师铺了 80 次类型、全部是力场，
+            //    对手**一次状态都没挂上**，`Ai_mage_applies_a_status` 一直红。
+            //    而且这个"铺了等于没铺"还白扔了一回合，反而拉低胜率。
+            //
+            //    现在只在"真的够得着斩杀"时才用力场。
+            bool canFinish = CanFinishWithOneHit(self, foe);
+
+            // ① 准备斩杀 -> 力场（穿盾且不可闪避，必中）/ 暗蚀（封回复）/ 强酸（削防）
+            if (canFinish)
             {
-                // 对手有盾或可能回血 -> 力场最稳（无法被任何方式抵挡/闪避）
                 if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
-                    return DamageType.Force;
+                    return DamageType.Force;          // 有盾 -> 穿透最稳
 
                 if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
 
-                return DamageType.Force;      // 斩杀优先"一定打中"
+                // 都没特殊之处 -> 强酸削防，让下一次打得更深
+                return DamageType.Acid;
             }
 
             // ② 自己危险 -> 控制对手：寒冷（结果减半）/ 心灵（降攻且打不到自己）
@@ -166,7 +178,6 @@ namespace FingerDiceDuel.Assistant
             // ③ 多人 -> 打伤害用闪电（感电会波及相邻），控制用光耀 / 雷鸣
             if (multi)
             {
-                // 自己血还够 -> 直接扩散伤害
                 if (!meInDanger) return DamageType.Lightning;
 
                 return DamageType.Radiant;    // 目盲：对手只能选距离 1 的手
@@ -177,6 +188,24 @@ namespace FingerDiceDuel.Assistant
             if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
 
             return DamageType.Poison;
+        }
+
+        /// <summary>
+        /// 自己**这一击真的够得着斩杀**吗（对手剩余血量在自己最大手之内）。
+        ///
+        /// ⚠️ 刻意保守：只有"自己最大的手已经 ≥ 对手血量"才算。
+        ///    判错了也不会太糟 —— 判成"不能斩"就只是多铺一个状态，
+        ///    而判成"能斩"却打不死，就白扔了一回合。
+        /// </summary>
+        private static bool CanFinishWithOneHit(PlayerState self, PlayerState foe)
+        {
+            if (self == null || foe == null || !foe.IsAlive) return false;
+
+            int myMax = 0;
+            if (self.LeftHand != null) myMax = System.Math.Max(myMax, self.LeftHand.Value);
+            if (self.RightHand != null) myMax = System.Math.Max(myMax, self.RightHand.Value);
+
+            return myMax > 0 && myMax >= foe.Health;
         }
 
         /// <summary>
