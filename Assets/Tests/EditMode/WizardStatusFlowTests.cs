@@ -511,6 +511,92 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
+        // 玩家要求："只要法师选择了放弃，他再消耗掉这次攻击前不会再选择放弃"
+        // ============================================================
+
+        /// <summary>
+        /// **待用类型存在时，不再问"要不要放弃"，也不再改类型。**
+        ///
+        /// 玩家原话：
+        ///   "只要法师选择了放弃，他再消耗掉这次攻击前不会再选择放弃。"
+        ///
+        /// 这正是"法师最少要两个回合才能完成一次带效果的攻击"的机制基础：
+        ///   第 1 回合放弃（铺类型，白扔）-> 第 2 回合真的攻击（用掉类型）。
+        /// 如果第 2 回合还能再放弃，法师就会**永远在铺垫、永远不出手**。
+        /// </summary>
+        [Test]
+        public void A_pending_type_blocks_further_abandon_choices()
+        {
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+
+            var game = new GameManager(mage, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var wiz = (WizardLogic)mage.Character;
+
+            // ① 先铺一个类型（模拟"上一回合已经放弃过"）
+            wiz.SetPendingDamageType(DamageType.Poison);
+            Assert.IsTrue(wiz.HasPendingType);
+
+            // ② 本次合出 4（正常会问"要不要放弃"）
+            mage.LeftHand.SetValue(3);
+            foe.LeftHand.SetValue(1);
+
+            var context = new PreTurnChoiceContext(mage, mage, mage.LeftHand,
+                                                   foe.LeftHand)
+            {
+                Manager = game,
+                ResultValue = 4,
+            };
+
+            var requests = new List<ChoiceRequest>();
+            wiz.CollectPreTurnChoices(context, requests);
+
+            for (int i = 0; i < requests.Count; i++)
+            {
+                Assert.IsFalse(requests[i].Effect == HandEffect.WizardAbandonAttack,
+                    "身上已有待用类型时，不该再问「要不要放弃」—— "
+                    + "否则法师会永远铺垫、永远不出手。");
+            }
+        }
+
+        /// <summary>
+        /// **类型一旦被消耗，就又能放弃了**（证明上一条的闸门是"待用类型"，
+        /// 而不是"整局只许放弃一次"）。
+        /// </summary>
+        [Test]
+        public void After_the_type_is_consumed_the_wizard_may_abandon_again()
+        {
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+
+            var game = new GameManager(mage, foe, new SimpleChoiceProvider(),
+                                       new SimpleChoiceProvider());
+            var wiz = (WizardLogic)mage.Character;
+
+            wiz.SetPendingDamageType(DamageType.Poison);
+            wiz.ConsumeDamageType();                 // 用掉了
+            Assert.IsFalse(wiz.HasPendingType);
+
+            var context = new PreTurnChoiceContext(mage, mage, mage.LeftHand,
+                                                   foe.LeftHand)
+            {
+                Manager = game,
+                ResultValue = 4,
+            };
+
+            var requests = new List<ChoiceRequest>();
+            wiz.CollectPreTurnChoices(context, requests);
+
+            bool asked = false;
+            for (int i = 0; i < requests.Count; i++)
+                if (requests[i].Effect == HandEffect.WizardAbandonAttack) asked = true;
+
+            Assert.IsTrue(asked,
+                "类型已经用掉了，就该能重新放弃一次（否则法师一辈子只能铺一次）。");
+        }
+
+        // ============================================================
         // 已验证的：走界面路径时，法师能铺上类型并挂上状态
         // ============================================================
 
