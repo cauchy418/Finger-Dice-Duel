@@ -117,9 +117,16 @@ namespace FingerDiceDuel.UI
                 for (int i = 0; i < plan.Floats.Count; i++)
                 {
                     FloatTextSpec spec = plan.Floats[i];
+
+                    // ⚠️ **必须把颜色一起传下去** —— 玩家要求
+                    //    "格挡弹的颜色也要和攻击属性一致"。
+                    //    漏传这一处时，`FloatSpawn.ColorRgb` 恒为 0，
+                    //    界面就退回 `Kind` 的默认色（格挡是灰白），
+                    //    等于"伤害变了、格挡没变"。
                     spawns.Add(new FloatSpawn(spec.Text, spec.Kind,
                                               AnchorOf(spec.Target, playerA, playerB),
-                                              spec.DelaySeconds));
+                                              spec.DelaySeconds,
+                                              spec.ColorRgb));
                 }
                 _floats.Play(spawns);
             }
