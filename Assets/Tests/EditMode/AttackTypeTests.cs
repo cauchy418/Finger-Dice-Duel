@@ -213,9 +213,55 @@ namespace FingerDiceDuel.Tests
 
         // ---------------- 颜色的唯一真相 ----------------
 
+        // ---------------- 太极反弹继承"打来那次攻击"的类型 ----------------
+
         [Test]
-        public void Physical_types_share_one_grey_and_magic_use_their_own_colours()
+        public void A_preset_attack_type_is_not_overridden_by_the_attacker()
         {
+            // 玩家原话：
+            //   "武僧的太极反弹根据反弹的攻击定，
+            //    比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害。"
+            //
+            // 实现要点：反弹是"内部再开一个 AttackContext"，
+            // 那一刻**武僧成了攻击方**。若弹回去时再问一次攻击方类型，
+            // 问到的是武僧自己的**钝击** —— 那就永远弹回去钝击了。
+            // 所以 `Resolve` 里加了「已经带了类型就不再推导」的守卫。
+            //
+            // 这条测试直接钉住那个守卫：把一个【寒冷】预置给
+            // **以武僧为攻击方**的上下文，结算后它必须还是寒冷。
+            PlayerState monk = CharacterFactory.CreatePlayer(
+                "僧", Find(CharacterDefinition.MonkId));
+            PlayerState foe = CharacterFactory.CreatePlayer(
+                "敌", Find(CharacterDefinition.SoldierId));
+
+            var game = new GameManager(monk, foe,
+                                       new FingerDiceDuel.Assistant.SimpleChoiceProvider(),
+                                       new FingerDiceDuel.Assistant.SimpleChoiceProvider());
+
+            var ctx = new AttackContext(monk, foe, monk.LeftHand, 4)
+            {
+                AttackType = AttackDamageType.Cold,     // 模拟"打来的那次是寒冷"
+            };
+
+            ctx.Resolve(game.GetChoiceProvider(foe), game);
+
+            Assert.AreEqual(AttackDamageType.Cold, ctx.AttackType,
+                "预置的攻击类型不能被攻击方覆盖 —— 否则太极反弹"
+                + "永远会变成武僧自己的钝击。");
+        }
+
+        [Test]
+        public void Monk_attacking_normally_is_still_bludgeoning()
+        {
+            // 反向保证：武僧**自己**出手时仍然是钝击
+            // （守卫只影响"已经预置类型"的那种上下文，不影响正常攻击）。
+            Assert.AreEqual(AttackDamageType.Bludgeoning,
+                TypeOf(CharacterDefinition.MonkId),
+                "武僧主动攻击 = 钝击");
+        }
+
+        [Test]
+        public void Physical_types_share_one_grey_and_magic_use_their_own_colours()        {
             Assert.AreEqual(AttackDamageTypes.PhysicalColor,
                 AttackDamageTypes.ColorOf(AttackDamageType.Slashing));
             Assert.AreEqual(AttackDamageTypes.PhysicalColor,

@@ -100,9 +100,12 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 玩家要求："把所有攻击都标记上攻击类型"，并让伤害飘字的颜色
         ///    （含被盾牌抵挡）由它决定、与攻击类型图标一致。
         ///    结算开始时填一次，`GameManager` 结算完再回填到
-        ///    <see cref="TurnResult.AttackType"/> 供界面使用。
+        ///    `TurnResult.AttackType` 供界面使用。
+        ///
+        /// ⚠️ 可写**仅**为太极反弹服务：反弹要在构造时**预置**原攻击的类型，
+        ///    从而跳过"问攻击方"那一步（那一刻攻击方是武僧，会得到钝击）。
         /// </summary>
-        public AttackDamageType AttackType { get; private set; } = AttackDamageType.None;
+        public AttackDamageType AttackType { get; set; } = AttackDamageType.None;
 
         /// <summary>
         /// 结算过程中询问玩家的回调。**由上层（BoardController）注入**。
@@ -182,8 +185,17 @@ namespace FingerDiceDuel.Core
             //     ⚠️ 必须在 `OnResolveAttack` **之后**取：
             //        游侠的"强化射击"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
             //        而"普通挥砍 / 强化穿刺"正是按这个区分（见 RangerLogic）。
-            if (Attacker.Character is IAttackTypeProvider typeProvider)
+            //
+            //     ⚠️⚠️ **已经带了类型就不再重新推导** ——
+            //        太极反弹是"内部再开一个上下文"，它必须**继承原攻击的类型**
+            //        （玩家："打来的攻击是寒冰伤害，反弹也就是寒冰伤害"）。
+            //        若在这里再问一次，问到的会是**武僧自己**的类型（钝击），
+            //        那就永远弹回去钝击了。
+            if (AttackType == AttackDamageType.None
+                && Attacker.Character is IAttackTypeProvider typeProvider)
+            {
                 AttackType = typeProvider.AttackTypeOf(this);
+            }
 
             // 1b. 攻击方的**伤害规则**改写（魔射手：6 伤害 +2、8 无视护盾）。
             //
@@ -338,10 +350,24 @@ namespace FingerDiceDuel.Core
                     // 玩家允许"可循环"：反弹仍可被对方的太极再弹回来
                     IsReflected = true,
                     ReflectDepth = ReflectDepth + 1,
+
+                    // ⚠️⚠️ **反弹继承"打来的那次攻击"的类型**。
+                    //
+                    //    玩家原话：
+                    //      "武僧的太极反弹根据反弹的攻击定，
+                    //       比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害"。
+                    //
+                    //    所以这里**直接把原类型传过去**，并且（见 Resolve 里
+                    //    `AttackType == None` 的判断）**不会**再去问武僧自己 ——
+                    //    因为此刻武僧是"攻击方"，问它会得到武僧自己的钝击，
+                    //    那正好是错的结果。
+                    AttackType = AttackType != AttackDamageType.None
+                        ? AttackType : AttackDamageType.Bludgeoning,
                 };
 
                 reflectCtx.Resolve(manager.GetChoiceProvider(Attacker), manager);
                 ReflectedDealt = reflectCtx.AppliedDamage;
+                ReflectedAttackType = reflectCtx.AttackType;
             }
 
             // 4. **法师：命中即挂状态**。
@@ -397,6 +423,16 @@ namespace FingerDiceDuel.Core
 
         /// <summary>反弹实际造成的伤害（0 = 被挡下 / 被闪避 / 没反弹）。</summary>
         public int ReflectedDealt { get; private set; }
+
+        /// <summary>
+        /// **太极反弹出去的那一击用的是什么伤害类型**。
+        ///
+        /// ⚠️ 玩家要求："武僧的太极反弹根据反弹的攻击定，
+        ///    比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害"。
+        ///    所以它必须等于**打来那次攻击**的类型，而不是武僧自己的钝击。
+        /// </summary>
+        public AttackDamageType ReflectedAttackType { get; private set; }
+            = AttackDamageType.None;
 
         /// <summary>
         /// 反弹的嵌套层数（最初那次攻击是 0）。
