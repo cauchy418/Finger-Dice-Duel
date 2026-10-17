@@ -161,6 +161,17 @@ namespace FingerDiceDuel.Assistant
             bool canFinish = CanFinishWithOneHit(self, foe);
 
             // ① 准备斩杀 -> 力场（穿盾且不可闪避，必中）/ 暗蚀（封回复）/ 强酸（削防）
+            //
+            //    ⚠️⚠️ **力场要克制地选**（玩家要求：
+            //       "提高其他属性被选择的比例，略微降低选力场的情况"）。
+            //
+            //    原因：**力场不挂任何状态**（设计如此）——
+            //    选了它就等于"白扔一回合、什么也没铺上"。
+            //    原来它在"能斩杀"这一档里是**默认值**，结果 AI 选了 120 次力场、
+            //    其他属性 0 次，对手**一次状态都没中过**。
+            //
+            //    现在只在"对手有盾"时才用它（那时穿透才真的值钱）；
+            //    其余斩杀场景改用有毒/有状态的类型 —— 既压血又铺状态。
             if (canFinish)
             {
                 if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
@@ -168,8 +179,8 @@ namespace FingerDiceDuel.Assistant
 
                 if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
 
-                // 都没特殊之处 -> 强酸削防，让下一次打得更深
-                return DamageType.Acid;
+                // 没盾、也不能回血 -> 用**带状态**的类型收尾（不强求必中，但铺得上状态）
+                return DamageType.Poison;
             }
 
             // ② 自己危险 -> 控制对手：寒冷（结果减半）/ 心灵（降攻且打不到自己）
