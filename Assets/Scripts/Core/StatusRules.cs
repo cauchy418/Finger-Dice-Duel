@@ -58,12 +58,20 @@ namespace FingerDiceDuel.Core
         /// **冰冻**：运算得到的结果**减半（向下取整）**（算出 9 变 4、算出 5 变 2）。
         ///
         /// ⚠️ 必须在"归一化之后、查效果表之前"应用 —— 否则 9 已经先被当成回复处理了。
+        ///
+        /// ⚠️⚠️ **下限是 1，不能是 0。**
+        ///    玩家实测报的 bug："战士被冰冻影响出现了 0，不行，最小是 1"。
+        ///    根因：算出 1 时 `1 / 2 == 0`，而 **0 在手牌里是"空手"的意思** ——
+        ///    于是那一格变成不能用的死格（界面上显示 `0` 与 `—`）。
+        ///    冰冻的正确语义是"削弱"，不是"把手废掉"，所以钳到 1。
         /// </summary>
         public static int ApplyResultModifiers(PlayerState actor, int result)
         {
             if (actor == null) return result;
-            if (actor.HasStatus(StatusEffect.Freeze)) return result / 2;
-            return result;
+            if (!actor.HasStatus(StatusEffect.Freeze)) return result;
+
+            int halved = result / 2;
+            return halved < 1 ? 1 : halved;
         }
 
         // ============================================================

@@ -210,6 +210,90 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Freeze_never_drops_the_result_below_one()
+        {
+            // ⚠️⚠️ 玩家实测报的 bug："战士被冰冻影响出现了 0，不行，最小是 1"。
+            //    根因：算出 1 时 `1 / 2 == 0`，而 **0 在手牌里是"空手"的意思** ——
+            //    那一格就变成不能用的死格（界面显示 `0` 与 `—`）。
+            PlayerState p = Make("甲", CharacterDefinition.Soldier);
+            PlayerState foe = Make("乙", CharacterDefinition.Soldier);
+            GameManager game = MakeGame(p, foe);
+
+            p.LeftHand.SetValue(1);
+            foe.LeftHand.SetValue(2);          // 1 + 2 = 3 -> 减半本该是 1
+            p.ApplyStatus(StatusEffect.Freeze);
+
+            // 直接测规则层：任何结果减半后都不得小于 1
+            for (int raw = 0; raw <= 9; raw++)
+            {
+                int mod = StatusRules.ApplyResultModifiers(p, raw);
+                Assert.IsTrue(mod >= 1,
+                    $"结果是 {raw} 时，冰冻减半后得到 {mod} —— 不能小于 1。");
+            }
+        }
+
+        [Test]
+        public void Freeze_on_one_still_leaves_a_usable_hand()
+        {
+            // 1 + 1 = 2 -> 减半 = 1（不是 0）
+            PlayerState p = Make("甲", CharacterDefinition.Soldier);
+            PlayerState foe = Make("乙", CharacterDefinition.Soldier);
+            GameManager game = MakeGame(p, foe);
+
+            p.LeftHand.SetValue(1);
+            foe.LeftHand.SetValue(1);
+            p.ApplyStatus(StatusEffect.Freeze);
+
+            TurnResult r = game.ExecuteTurn(p, p.LeftHand, foe.LeftHand);
+
+            Assert.AreEqual(2, r.FreezeHalvedFrom);
+            Assert.AreEqual(1, r.ResultValue, "2 减半是 1。");
+            Assert.IsTrue(p.LeftHand.Value >= 1,
+                "冰冻不能把手变成 0（0 是空手的意思）。");
+        }
+
+        // ============================================================
+        // 放弃攻击 -> 抑制伤害（回归）
+        // ============================================================
+
+        [Test]
+        public void Abandon_attack_suppresses_damage_even_when_a_type_is_pending()
+        {
+            // ⚠️⚠️ 玩家实测报的 bug："放弃攻击仍然造成了伤害，
+            //    且是不用选择就造成了伤害"。
+            //
+            //    根因：`ResolveMageStatusIntent` 开头有
+            //    `if (mage.HasPendingType) return;` —— **法师身上已经有待用类型**时
+            //    （前几轮铺下的）直接返回，于是后面那句抑制判定**永远执行不到**。
+            //    因为不再问类型，表现就是"不用选择就造成了伤害"。
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+            GameManager game = MakeGame(mage, foe);
+
+            mage.LeftHand.SetValue(2);         // 2 + 2 = 4 -> 攻击
+            foe.LeftHand.SetValue(2);
+            foe.RightHand.SetValue(1);
+
+            var wiz = (FingerDiceDuel.Characters.SpecialLogics.WizardLogic)mage.Character;
+
+            // ① 已经有一个"前几轮铺下的"待用类型
+            wiz.SetPendingDamageType(DamageType.Thunder);
+            Assert.IsTrue(wiz.HasPendingType);
+
+            // ② 这一回合选择放弃攻击
+            wiz.WantsToAbandonThisTurn = true;
+
+            int hpBefore = foe.Health;
+            TurnResult r = game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
+
+            Assert.IsTrue(game.SuppressAttackDamage || r.DamageDealt == 0,
+                "放弃攻击必须抑制伤害 —— 即使身上已有待用类型。");
+            Assert.AreEqual(hpBefore, foe.Health,
+                "放弃攻击这一击不造成伤害。");
+            Assert.AreEqual(0, r.DamageDealt, "伤害应当是 0。");
+        }
+
+        [Test]
         public void Freeze_halves_a_real_operation_result()
         {
             PlayerState mage = Make("法", CharacterDefinition.Wizard);

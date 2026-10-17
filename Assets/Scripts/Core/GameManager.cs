@@ -1112,6 +1112,19 @@ namespace FingerDiceDuel.Core
             var mage = actor.Character as IMageState;
             if (mage == null) return;
 
+            // ⚠️⚠️ **"放弃攻击"的伤害抑制必须在这里判 —— 在所有提前 return 之前。**
+            //
+            //    玩家实测报的 bug："放弃攻击仍然造成了伤害，且是不用选择就造成了伤害"。
+            //    根因就是下面那句 `if (mage.HasPendingType) return;`：
+            //    **法师身上已经有待用类型**时（前几轮铺下的）直接返回，
+            //    于是后面那句 `if (mage.WantsToAbandonThisTurn) Suppress...`
+            //    **永远执行不到** —— 抑制开关恒为 false，伤害照打；
+            //    而且因为不再问类型，表现就是"不用选择就造成了伤害"。
+            //
+            //    抑制与"要不要问类型"是**两件事**：前者只取决于标记，
+            //    所以必须放在最前面、不受任何提前返回影响。
+            if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
+
             // 已经有待用类型 -> 不用再问
             if (mage.HasPendingType) return;
 
