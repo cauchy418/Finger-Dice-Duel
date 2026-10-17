@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **790 项**无头测试，秒级 |
+| 测试 | **876 项**无头测试，秒级 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 ## 目录结构
@@ -46,6 +46,12 @@ UI  →  Assistant  →  Core
 - `Core` / `Characters` / `Assistant` / `Tests` **一律不得引用 `UnityEngine`**
 - `Assistant` **不得引用 `Characters`** —— 角色能力通过 `Core` 里的**接口**反向调用
   （`IDodgeCapability` / `IHealOverride` / `IAttackTargetRule` / `IResultTargetProvider` …）
+
+  > **伤害类型同理**：`Core/AttackDamageTypes.cs` 定义 `AttackDamageType`
+  > （物理 3 + 魔法 10）与接口 `IAttackTypeProvider`；
+  > 各角色在 `Characters/` 里实现它，`AttackContext` 只认接口。
+  > 颜色 / 图标键也只有 `AttackDamageTypes` 一份 ——
+  > 所以"伤害飘字颜色 = 攻击类型图标颜色"是**结构上**成立的。
 
 **这套约束是"全部游戏逻辑都能秒级无头测试"的前提。** 破坏它 = 失去测试能力。
 
