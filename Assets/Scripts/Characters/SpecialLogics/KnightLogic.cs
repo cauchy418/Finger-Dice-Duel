@@ -67,5 +67,10 @@ namespace FingerDiceDuel.Core
 
         /// <summary>供测试与界面读取：已经碎过几次盾。</summary>
         public int ShieldBreakCount => _shieldBreaks;
-    }
+    
+        /// <summary>骑士：**穿刺伤害**（玩家指定）。</summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Piercing;
+
+}
 }

@@ -249,5 +249,18 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
             => PendingDamageType = DamageType.None;
-    }
+    
+        /// <summary>
+        /// 法师：**有附加效果时由附加的类型决定**；
+        /// 没有附加时，距离 1 内是**钝击**、距离 1 以外是**穿刺**（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+        {
+            if (HasPendingType)
+                return AttackDamageTypes.FromDamageType(PendingDamageType);
+
+            return ByDistance(AttackDamageType.Bludgeoning, AttackDamageType.Piercing);
+        }
+
+}
 }

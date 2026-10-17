@@ -80,7 +80,11 @@ namespace FingerDiceDuel.UI
             text.verticalOverflow = VerticalWrapMode.Overflow;
             UiFont.ApplyBold(text);      // 飘字用粗体更容易看清
             text.fontSize = FloatFontSize;
-            text.color = ColorOf(spawn.Kind);
+
+            // ⚠️ 有颜色覆盖时用覆盖色（攻击类型色），否则按 Kind 取默认色
+            text.color = spawn.ColorRgb != 0
+                ? FromRgb(spawn.ColorRgb)
+                : ColorOf(spawn.Kind);
 
             var anim = go.AddComponent<FloatAnimator>();
             anim.Begin(rect, spawn.DelaySeconds, text);
@@ -98,6 +102,12 @@ namespace FingerDiceDuel.UI
                 default: return Color.white;
             }
         }
+
+        /// <summary>0xRRGGBB -> Color（攻击类型色传进来时用）。</summary>
+        public static Color FromRgb(int rgb)
+            => new Color(((rgb >> 16) & 0xFF) / 255f,
+                         ((rgb >> 8) & 0xFF) / 255f,
+                         (rgb & 0xFF) / 255f);
     }
 
     /// <summary>
@@ -114,12 +124,29 @@ namespace FingerDiceDuel.UI
         public Vector2 AnchoredPosition { get; }
         public float DelaySeconds { get; }
 
+        /// <summary>
+        /// **颜色覆盖**（0 = 按 <see cref="Kind"/> 取默认色）。
+        ///
+        /// ⚠️ 玩家要求："每次攻击造成的伤害的颜色（包括被盾牌抵挡）
+        ///    都由本次攻击的类型决定（和攻击类型图标一致）"。
+        ///    颜色来自 Core 的 `AttackDamageTypes.ColorOf`（唯一一份），
+        ///    所以飘字与图标必然同色。
+        /// </summary>
+        public int ColorRgb { get; }
+
         public FloatSpawn(string text, FloatKind kind, Vector2 anchoredPosition, float delaySeconds)
+            : this(text, kind, anchoredPosition, delaySeconds, 0)
+        {
+        }
+
+        public FloatSpawn(string text, FloatKind kind, Vector2 anchoredPosition,
+                          float delaySeconds, int colorRgb)
         {
             Text = text ?? "";
             Kind = kind;
             AnchoredPosition = anchoredPosition;
             DelaySeconds = delaySeconds;
+            ColorRgb = colorRgb;
         }
     }
 

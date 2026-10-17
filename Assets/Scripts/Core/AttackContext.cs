@@ -95,6 +95,16 @@ namespace FingerDiceDuel.Core
         public int HitCount { get; set; } = 1;
 
         /// <summary>
+        /// **本次攻击的伤害类型**（由攻击方角色声明）。
+        ///
+        /// ⚠️ 玩家要求："把所有攻击都标记上攻击类型"，并让伤害飘字的颜色
+        ///    （含被盾牌抵挡）由它决定、与攻击类型图标一致。
+        ///    结算开始时填一次，`GameManager` 结算完再回填到
+        ///    <see cref="TurnResult.AttackType"/> 供界面使用。
+        /// </summary>
+        public AttackDamageType AttackType { get; private set; } = AttackDamageType.None;
+
+        /// <summary>
         /// 结算过程中询问玩家的回调。**由上层（BoardController）注入**。
         ///
         /// 为 null 时角色会退化成"自动选第一个可用选项"（单元测试的直连场景）。
@@ -166,6 +176,14 @@ namespace FingerDiceDuel.Core
 
             // 1. 攻击方钩子介入（如咒术师设置 IgnoreShield / 修改 FinalDamage / 游侠设置倍率）
             Attacker.Character?.OnResolveAttack(this);
+
+            // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
+            //
+            //     ⚠️ 必须在 `OnResolveAttack` **之后**取：
+            //        游侠的"强化射击"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
+            //        而"普通挥砍 / 强化穿刺"正是按这个区分（见 RangerLogic）。
+            if (Attacker.Character is IAttackTypeProvider typeProvider)
+                AttackType = typeProvider.AttackTypeOf(this);
 
             // 1b. 攻击方的**伤害规则**改写（魔射手：6 伤害 +2、8 无视护盾）。
             //

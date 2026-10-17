@@ -487,5 +487,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             => ResolveTarget(owner, manager, sink, HandEffect.PriestHealTarget);
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    }
+    
+        /// <summary>
+        /// 牧师：对**攻击距离 1** 的是钝击，**距离 1 以外**的是穿刺（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => ByDistance(AttackDamageType.Bludgeoning, AttackDamageType.Piercing);
+
+}
 }

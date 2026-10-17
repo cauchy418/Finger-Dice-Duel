@@ -141,5 +141,10 @@ namespace FingerDiceDuel.Core
             SelfAddendCount = 0;
             _selfAddendMark = null;
         }
-    }
+    
+        /// <summary>魔术师：**穿刺伤害**（玩家指定）。</summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Piercing;
+
+}
 }

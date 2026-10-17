@@ -61,6 +61,15 @@ namespace FingerDiceDuel.Core
         public int DamageDealt;
         public bool WasBlocked;
 
+        /// <summary>
+        /// **本次攻击的伤害类型**（玩家要求："把所有攻击都标记上攻击类型"）。
+        ///
+        /// 由攻击方角色声明（<see cref="IAttackTypeProvider"/>），
+        /// 界面用它给伤害飘字（含"格挡"）上色 —— 颜色与攻击类型图标同源。
+        /// 非攻击回合保持 <see cref="AttackDamageType.None"/>。
+        /// </summary>
+        public AttackDamageType AttackType = AttackDamageType.None;
+
         /// <summary>本次攻击是否被闪避（游侠 / 刺客潜行）。</summary>
         public bool WasDodged;
 
@@ -2154,7 +2163,14 @@ namespace FingerDiceDuel.Core
                         ctx.AnsweredLookupFor = AnsweredLookupFor;
                         ctx.AskedCancelLookup = AskedCancelLookup;
 
+                        // ⚠️ **把本次攻击的距离交给攻击方角色** ——
+                        //    牧师 / 邪术师 / 法师按"距离 1 内 / 外"分型
+                        //    （玩家规则），而 AttackContext 刻意不持有对局引用。
+                        if (actor.Character is CharacterTemplate template)
+                            template.LastAttackDistance = DistanceBetween(actor, opponent);
+
                         ctx.Resolve(oppChoice, this);
+                        result.AttackType = ctx.AttackType;
                         result.WasBlocked = ctx.WasBlocked;
                         result.WasDodged = ctx.WasDodged;
                         result.DodgeReason = ctx.DodgeReason;

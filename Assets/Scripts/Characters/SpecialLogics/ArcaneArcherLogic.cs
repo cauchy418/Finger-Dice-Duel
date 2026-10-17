@@ -68,5 +68,10 @@ namespace FingerDiceDuel.Core
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    }
+    
+        /// <summary>魔射手：**穿刺伤害**（玩家指定）。</summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Piercing;
+
+}
 }

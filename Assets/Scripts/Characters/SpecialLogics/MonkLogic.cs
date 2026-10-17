@@ -368,5 +368,16 @@ namespace FingerDiceDuel.Core
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    }
+    
+        /// <summary>
+        /// 武僧：**钝击伤害**（玩家指定）。
+        ///
+        /// 太极反弹的伤害类型**由该次伤害决定** —— 反弹走的是
+        /// `AttackContext` 内部再开一个上下文，攻击方仍是同一个武僧，
+        /// 所以这里返回钝击，反弹自然也是钝击，符合玩家规则。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Bludgeoning;
+
+}
 }

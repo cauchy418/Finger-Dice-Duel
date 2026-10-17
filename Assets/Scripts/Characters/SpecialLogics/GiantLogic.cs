@@ -253,5 +253,10 @@ namespace FingerDiceDuel.Core
         {
             _otherHandValueOfThisOperation = 0;
         }
-    }
+    
+        /// <summary>巨人：**钝击伤害**（玩家指定）。</summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Bludgeoning;
+
+}
 }

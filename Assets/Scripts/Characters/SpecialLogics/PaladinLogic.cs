@@ -441,5 +441,12 @@ namespace FingerDiceDuel.Core
                 decider: owner,
                 variant: variant));              // 合盾 / 碎盾 各一份答案
         }
-    }
+    
+        /// <summary>
+        /// 圣武士：攻击与**盾牌冲击**都是**钝击**（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Bludgeoning;
+
+}
 }

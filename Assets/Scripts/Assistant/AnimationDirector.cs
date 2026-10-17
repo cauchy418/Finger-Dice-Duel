@@ -32,15 +32,33 @@ namespace FingerDiceDuel.Assistant
 
         public FloatKind Kind { get; }
 
+        /// <summary>
+        /// **本条飘字的颜色覆盖**（0 = 不覆盖，仍按 <see cref="Kind"/> 取默认色）。
+        ///
+        /// ⚠️ 玩家要求："每次攻击造成的伤害的颜色（包括被盾牌抵挡）
+        ///    都由本次攻击的类型决定（和攻击类型图标一致）"。
+        ///    所以伤害与格挡那几条会带上攻击类型的颜色 ——
+        ///    颜色只在 Core 的 <see cref="AttackDamageTypes.ColorOf"/> 里有一份，
+        ///    与图标同源，结构上保证一致。
+        /// </summary>
+        public int ColorRgb { get; }
+
         /// <summary>相对前一条飘字的延迟（秒）。同一次结算里的飘字会依次错开。</summary>
         public float DelaySeconds { get; }
 
         public FloatTextSpec(PlayerState target, string text, FloatKind kind, float delaySeconds)
+            : this(target, text, kind, delaySeconds, 0)
+        {
+        }
+
+        public FloatTextSpec(PlayerState target, string text, FloatKind kind,
+                             float delaySeconds, int colorRgb)
         {
             Target = target;
             Text = text ?? "";
             Kind = kind;
             DelaySeconds = delaySeconds;
+            ColorRgb = colorRgb;
         }
 
         public override string ToString()
@@ -178,7 +196,22 @@ namespace FingerDiceDuel.Assistant
         /// <param name="result">本次结算结果（可为 null，返回空计划）。</param>
         /// <param name="defender">受击方（用来确定飘字位置）。</param>
         public static AnimationPlan Build(TurnResult result, PlayerState defender)
+            => Build(result, defender, AttackDamageType.None);
+
+        /// <summary>
+        /// 同上，但带上**本次攻击的伤害类型** —— 伤害与"格挡"两条飘字
+        /// 会用该类型的颜色（与攻击类型图标一致）。
+        ///
+        /// ⚠️ 玩家要求："每次攻击造成的伤害的颜色（包括被盾牌抵挡）
+        ///    都由本次攻击的类型决定（和攻击类型图标一致）"。
+        /// </summary>
+        public static AnimationPlan Build(TurnResult result, PlayerState defender,
+                                          AttackDamageType attackType)
         {
+            // 0 = 不覆盖颜色（未知类型时保留旧的默认色，避免整片变灰）
+            int typeColor = attackType == AttackDamageType.None
+                ? 0 : AttackDamageTypes.ColorOf(attackType);
+
             var floats = new List<FloatTextSpec>(4);
             if (result == null || result.Actor == null) return new AnimationPlan(floats);
 
@@ -190,7 +223,8 @@ namespace FingerDiceDuel.Assistant
                 ExtraAttackInfo extra = result.ExtraAttack.Value;
                 Add(floats, defender,
                     extra.WasBlocked ? "格挡" : "-" + extra.Dealt,
-                    extra.WasBlocked ? FloatKind.Blocked : FloatKind.Damage);
+                    extra.WasBlocked ? FloatKind.Blocked : FloatKind.Damage,
+                    typeColor);
             }
 
             // ---- 闪避：每段各一条 ----
@@ -203,14 +237,14 @@ namespace FingerDiceDuel.Assistant
 
             // ---- 格挡：每段各一条 ----
             for (int i = 0; i < result.BlockedHits; i++)
-                Add(floats, defender, "格挡", FloatKind.Blocked);
+                Add(floats, defender, "格挡", FloatKind.Blocked, typeColor);
 
             // ---- 伤害：每段各一条，数值是**单段**伤害 ----
             if (result.LandedHits > 0 && result.DamageDealt > 0)
             {
                 int perHit = result.DamageDealt / result.LandedHits;
                 for (int i = 0; i < result.LandedHits; i++)
-                    Add(floats, defender, "-" + perHit, FloatKind.Damage);
+                    Add(floats, defender, "-" + perHit, FloatKind.Damage, typeColor);
             }
 
             // ---- 回复：飘在**被回复者**头上 ----
@@ -352,10 +386,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         private static void Add(List<FloatTextSpec> into, PlayerState target, string text, FloatKind kind)
+            => Add(into, target, text, kind, 0);
+
+        private static void Add(List<FloatTextSpec> into, PlayerState target, string text,
+                                FloatKind kind, int colorRgb)
         {
             // 第一条不延迟，之后每条再错开 StaggerSeconds
             float delay = into.Count == 0 ? 0f : StaggerSeconds;
-            into.Add(new FloatTextSpec(target, text, kind, delay));
+            into.Add(new FloatTextSpec(target, text, kind, delay, colorRgb));
         }
     }
 }

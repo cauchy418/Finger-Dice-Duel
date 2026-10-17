@@ -2788,7 +2788,9 @@ namespace FingerDiceDuel.UI
                 ? _game.PlayerB
                 : _game.PlayerA;
 
-            AnimationPlan plan = AnimationDirector.Build(result, defender);
+            // ⚠️ 带上本次攻击的伤害类型 —— 伤害与"格挡"飘字用它上色，
+            //    颜色与攻击类型图标同源（玩家要求）。
+            AnimationPlan plan = AnimationDirector.Build(result, defender, result.AttackType);
             _board.PlayAnimations(plan, _game.PlayerA, _game.PlayerB);
 
             // 回合间停顿：按伤害量动态 0.25~0.5 秒。

@@ -285,5 +285,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             _stealthEntered = false;    // 重开一局必须清空，否则带着上一局的潜行
             StealthEnterCount = 0;
         }
-    }
+    
+        /// <summary>刺客：**穿刺伤害**（玩家指定）。</summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Piercing;
+
+}
 }

@@ -31,7 +31,7 @@ namespace FingerDiceDuel.Core
     public abstract class CharacterTemplate : ICharacterBehavior, IPreTurnChoiceProvider,
                                               IResultTargetProvider, ITargetHandChoiceProvider,
                                               IAiMoveAdvisor, IAttackRangeProvider,
-                                              IRangeBreakEffect
+                                              IRangeBreakEffect, IAttackTypeProvider
     {
         // ============================================================
         // ITargetHandChoiceProvider 的默认实现
@@ -251,6 +251,36 @@ namespace FingerDiceDuel.Core
         /// 狼人（凑 7）与剑客（双持）会重写它。
         /// </summary>
         public virtual int ScoreMoveBonus(MoveValueContext context) => 0;
+
+        // ============================================================
+        // IAttackTypeProvider：**本次攻击的伤害类型**
+        // ============================================================
+
+        /// <summary>
+        /// 本次攻击的伤害类型。
+        ///
+        /// ⚠️ 玩家要求"把所有攻击都标记上攻击类型"，并给了每个角色的规则。
+        ///    默认给**挥砍**（刀剑类最普遍，也是玩家规则里出现最多的），
+        ///    只有规则特殊的角色才覆写它 —— 这样 21 个角色里
+        ///    需要写代码的只有十来个，其余自动正确。
+        /// </summary>
+        public virtual AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Slashing;
+
+        /// <summary>
+        /// **最近一次攻击的距离**（由 <see cref="GameManager"/> 在结算时设置）。
+        ///
+        /// ⚠️ 为什么要从外面设：`AttackContext` 刻意**不持有对局引用**
+        ///    （它只是"这一击"的数据），而"距离 1 内 / 外"是玩家规则里
+        ///    好几个角色的分型依据（牧师 / 邪术师 / 法师）。
+        ///    让 GameManager 在发起攻击时写一次距离，比给上下文塞
+        ///    GameManager 依赖干净得多。
+        /// </summary>
+        public int LastAttackDistance { get; set; } = 1;
+
+        /// <summary>按距离分型：距离 1 内用 <paramref name="near"/>，否则用 <paramref name="far"/>。</summary>
+        protected AttackDamageType ByDistance(AttackDamageType near, AttackDamageType far)
+            => LastAttackDistance <= 1 ? near : far;
 
         /// <summary>
         /// 本角色对应的**数据定义**（由 <see cref="CharacterFactory"/> 注入）。

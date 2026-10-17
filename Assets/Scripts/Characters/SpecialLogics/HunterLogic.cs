@@ -401,5 +401,12 @@ namespace FingerDiceDuel.Core
                 foreach (Hand h in owner.Hands) h?.Reveal();
             }
         }
-    }
+    
+        /// <summary>
+        /// 猎人：非伏击是**挥砍**，**伏击**是穿刺（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => IsAmbushing ? AttackDamageType.Piercing : AttackDamageType.Slashing;
+
+}
 }

@@ -59,5 +59,14 @@ namespace FingerDiceDuel.Core
 
         /// <summary>默认攻击 -1（可被 CharacterDefinition.AttackBonus 覆盖）。</summary>
         public override int DefaultAttackBonus => -1;
-    }
+    
+        /// <summary>
+        /// 咒术师：**力场伤害**（玩家指定）。
+        ///
+        /// 咒术的招牌是"无法被任何方式抵挡/闪避"，与力场同源。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => AttackDamageType.Force;
+
+}
 }

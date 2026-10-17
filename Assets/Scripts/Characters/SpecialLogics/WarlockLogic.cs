@@ -182,5 +182,12 @@ namespace FingerDiceDuel.Core
 
         /// <summary>同步"能否跳过"的内部状态 —— 邪术师没有需要同步的缓存。</summary>
         public void SyncSkipState(PlayerState owner) { }
-    }
+    
+        /// <summary>
+        /// 邪术师：对**距离 1** 的是钝击，**距离 1 以外**的是穿刺（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+            => ByDistance(AttackDamageType.Bludgeoning, AttackDamageType.Piercing);
+
+}
 }

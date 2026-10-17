@@ -387,5 +387,19 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// 提示永远不出现 —— 真实 bug。）
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    }
+    
+        /// <summary>
+        /// 游侠：普通是**挥砍**；用 2 强化的攻击是**穿刺**（玩家指定）。
+        ///
+        /// ⚠️ 判据用 `context.DamageMultiplier` —— 强化射击就是把它设成 1.5。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+        {
+            if (context != null && context.DamageMultiplier > 1f)
+                return AttackDamageType.Piercing;
+
+            return AttackDamageType.Slashing;
+        }
+
+}
 }
