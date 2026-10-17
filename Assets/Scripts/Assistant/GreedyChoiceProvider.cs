@@ -69,6 +69,126 @@ namespace FingerDiceDuel.Assistant
         public System.Func<bool> WizardAbandonLethalGuard { get; set; }
 
         /// <summary>
+        /// **法师要不要放弃这一次攻击**（玩家本轮给的策略）。
+        ///
+        /// 玩家原话：
+        ///   "法师在对方未进斩杀线前，若自己没有放弃过攻击，
+        ///     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
+        ///
+        /// 落到实现：
+        ///   · 结果 4 -> 倾向放弃（**高概率**）
+        ///   · 结果 6 -> 不一定（**一半左右**；局面好就不放弃）
+        ///   · 结果 8 -> 基本不放弃（**低概率**）
+        ///
+        /// ⚠️ 为什么用**概率**而不是硬规则：
+        ///    玩家说的是"倾向于 / 不一定 / 基本不"，这本来就不是确定性策略。
+        ///    而且纯确定性会让 21 人平衡测试的胜率变成一个"点"，
+        ///    无法反映"这套策略到底好不好"。
+        ///    这里的概率是**固定的种子随机**，所以胜率可复现。
+        /// </summary>
+        private bool WizardShouldAbandon(int result, PlayerState self)
+        {
+            // 只有 4 / 6 / 8 是"攻击数字"，其余（9 回复等）根本不进这个抉择
+            if (result != 4 && result != 6 && result != 8) return false;
+
+            if (WizardCanLethalNow(self)) return false;
+
+            int roll = WizardRoll();          // 0..99
+
+            switch (result)
+            {
+                case 4: return roll < 70;     // 倾向于放弃
+                case 6: return roll < 40;     // 不一定会放弃
+                default: return roll < 15;    // 8：基本不放弃
+            }
+        }
+
+        /// <summary>
+        /// 法师当前的掷点数（供"倾向 / 不一定 / 基本不"用）。
+        ///
+        /// ⚠️ 用一个**独立的确定性序列**而不是 <c>UnityEngine.Random</c>：
+        ///    无头平衡测试要可复现，两个 `Random` 混用会让胜率每次不同。
+        /// </summary>
+        private int WizardRoll()
+        {
+            _wizardSeed = _wizardSeed * 1103515245 + 12345;
+            return (_wizardSeed >> 16) & 0x7FFF % 100;
+        }
+
+        private int _wizardSeed = 20240816;
+
+        /// <summary>自己现在有没有能一击斩杀对手的手段（粗略）。</summary>
+        private bool WizardCanLethalNow(PlayerState self)
+        {
+            if (self == null || Game == null) return false;
+
+            IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
+            for (int i = 0; i < foes.Count; i++)
+            {
+                PlayerState foe = foes[i];
+
+                // 手上任一只手的值（含单手加成前的近似）能达到对手血量即视为能斩
+                if (self.LeftHand != null && self.LeftHand.Value >= foe.Health) return true;
+                if (self.RightHand != null && self.RightHand.Value >= foe.Health) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// **法师选哪一种伤害类型**（玩家本轮给的策略）。
+        ///
+        /// 玩家原话：
+        ///   "视情况选择各种技能：
+        ///     若要打伤害选择毒素/火焰，
+        ///     自己危险去控制对手选择寒冷/心灵，
+        ///     多人打伤害选择闪电，
+        ///     多人模式下控制对手选择光耀/雷鸣，
+        ///     准备斩杀对手选择力场/暗蚀/强酸"
+        /// </summary>
+        private DamageType WizardPickDamageType(PlayerState self)
+        {
+            if (self == null || Game == null) return DamageType.Fire;
+
+            IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
+            PlayerState foe = foes.Count > 0 ? foes[0] : null;
+
+            bool multi = foes.Count > 1;
+            bool meInDanger = self.Health * 100 <= self.MaximumHealth * 45;
+            bool foeNearDeath = foe != null && foe.Health * 100 <= foe.MaximumHealth * 40;
+
+            // ① 准备斩杀 -> 力场（穿盾且不可闪避）/ 暗蚀（封回复）/ 强酸（削防）
+            if (foeNearDeath)
+            {
+                // 对手有盾或可能回血 -> 力场最稳（无法被任何方式抵挡/闪避）
+                if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
+                    return DamageType.Force;
+
+                if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
+
+                return DamageType.Force;      // 斩杀优先"一定打中"
+            }
+
+            // ② 自己危险 -> 控制对手：寒冷（结果减半）/ 心灵（降攻且打不到自己）
+            if (meInDanger) return DamageType.Cold;
+
+            // ③ 多人 -> 打伤害用闪电（感电会波及相邻），控制用光耀 / 雷鸣
+            if (multi)
+            {
+                // 自己血还够 -> 直接扩散伤害
+                if (!meInDanger) return DamageType.Lightning;
+
+                return DamageType.Radiant;    // 目盲：对手只能选距离 1 的手
+            }
+
+            // ④ 常规打伤害 -> 毒素（不可被抵挡）/ 火焰（每回合 3 点）
+            //    对手能回血时优先封回复
+            if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
+
+            return DamageType.Poison;
+        }
+
+        /// <summary>
         /// 对手是否**有可能回血**（法师选"腐朽"的判据）。
         ///
         /// 用"角色自带回复能力"判断，而不是猜他的手牌 ——
@@ -1095,14 +1215,13 @@ namespace FingerDiceDuel.Assistant
                 // ---------- 法师 ----------
                 case HandEffect.WizardAbandonAttack:
                     {
-                        // 玩家给的方向："放弃攻击去铺设伤害类型"。
+                        // 玩家给的方向（本轮）：
+                        //   "法师在对方未进斩杀线前，若自己没有放弃过攻击，
+                        //     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
                         //
-                        // 什么时候**不该**放弃：
+                        // 什么时候**一定不**放弃：
                         //   · 已经有一个待用的类型了 —— 再放弃只是白扔一回合；
                         //   · 这一击能**直接斩杀** —— 立刻结束比赛胜过挂状态。
-                        //
-                        // 其余情况都值得铺：状态持续对方 2 个回合，
-                        // 收益高于这一次 4~8 点伤害。
                         if (decider == null || Game == null) return null;
 
                         // ⚠️ 用 Core 的 IMageState 而不是 WizardLogic ——
@@ -1111,8 +1230,12 @@ namespace FingerDiceDuel.Assistant
                         if (mage == null) return null;
 
                         if (mage.HasPendingType) return null;      // 已经铺好了
-
                         if (WizardAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
+
+                        // 本次合出的结果（4/6/8）—— 决定放弃的倾向
+                        int result = request.ResultValue;
+
+                        if (!WizardShouldAbandon(result, decider)) return null;
 
                         WantsToAbandonAttack = true;
                         return c[0];
@@ -1120,26 +1243,7 @@ namespace FingerDiceDuel.Assistant
 
                 case HandEffect.WizardDamageType:
                     {
-                        // 选哪一种伤害类型。按局面挑最有用的一种：
-                        //   · 对手能回血（牧师 / 巨人 / 狼人）-> 腐朽，直接封掉回复
-                        //   · 自己血少 -> 震慑（降他 2 攻、还打不到自己）
-                        //   · 对手靠护盾 -> 力场（穿盾且不可闪避）
-                        //   · 其余 -> 火焰（每回合 3 点，最稳的输出）
-                        DamageType pick = DamageType.Fire;
-
-                        if (decider != null)
-                        {
-                            PlayerState foe = Game?.OpponentsOf(decider).Count > 0
-                                ? Game.OpponentsOf(decider)[0] : null;
-
-                            if (foe != null && WizardCanHeal(foe)) pick = DamageType.Necrotic;
-                            else if (decider.Health * 100 <= decider.MaximumHealth * 40)
-                                pick = DamageType.Psychic;
-                            else if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
-                                pick = DamageType.Force;
-                        }
-
-                        ChosenDamageType = pick;
+                        ChosenDamageType = WizardPickDamageType(decider);
                         return c[0];
                     }
 

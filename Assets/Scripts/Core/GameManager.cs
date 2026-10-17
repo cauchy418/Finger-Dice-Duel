@@ -1112,17 +1112,22 @@ namespace FingerDiceDuel.Core
             var mage = actor.Character as IMageState;
             if (mage == null) return;
 
-            // ⚠️⚠️ **"放弃攻击"的伤害抑制必须在这里判 —— 在所有提前 return 之前。**
+            // ⚠️⚠️ **"放弃攻击"的伤害抑制必须在所有提前 return 之前判。**
             //
             //    玩家实测报的 bug："放弃攻击仍然造成了伤害，且是不用选择就造成了伤害"。
             //    根因就是下面那句 `if (mage.HasPendingType) return;`：
             //    **法师身上已经有待用类型**时（前几轮铺下的）直接返回，
             //    于是后面那句 `if (mage.WantsToAbandonThisTurn) Suppress...`
-            //    **永远执行不到** —— 抑制开关恒为 false，伤害照打；
-            //    而且因为不再问类型，表现就是"不用选择就造成了伤害"。
+            //    **永远执行不到** —— 抑制开关恒为 false，伤害照打。
             //
             //    抑制与"要不要问类型"是**两件事**：前者只取决于标记，
             //    所以必须放在最前面、不受任何提前返回影响。
+            //
+            //    ⚠️⚠️ 这个标记**不能在这里清零**：
+            //       界面路径是"玩家点完之后写标记 -> 结算时读"，
+            //       在这里清零会把玩家刚做的选择抹掉。
+            //       清零由**回合开始**负责（界面在 `BoardController.SetupFirstStep`、
+            //       无头在 `MatchRunner`），这样"每回合重置一次"与"玩家选择"不冲突。
             if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
 
             // 已经有待用类型 -> 不用再问
@@ -1174,11 +1179,32 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < requests.Count; i++)
             {
+                // ⚠️⚠️ **先问"要不要放弃攻击"，再决定要不要问"选哪种类型"。**
+                //
+                //    原来第二步的条件是 `sink.WantsToAbandonAttack` ——
+                //    但那个属性**只有在 `ChooseHandFor(WizardAbandonAttack)`
+                //    被调用之后才会被设置**（AI 与界面都是在那一刻写它的），
+                //    而循环的第一轮**正是**在问"要不要放弃"。
+                //
+                //    于是时序变成"先读答案、再问问题"：
+                //    第一步真的执行了、`WantsToAbandonAttack` 也置真了，
+                //    但请求列表里没有第二轮，`WizardDamageType` **从来没被问过** ——
+                //    表现就是"AI 问了 2000 多次要不要放弃，却一次类型都没选上"。
+                //
+                //    修法：按**请求的顺序**推进，每一步之后再让后续步骤的判断生效。
                 if (requests[i].Effect == HandEffect.WizardAbandonAttack)
+                {
                     provider.ChooseHandFor(requests[i], actor);
-                else if (requests[i].Effect == HandEffect.WizardDamageType
-                         && sink.WantsToAbandonAttack)
-                    provider.ChooseHandFor(requests[i], actor);
+                }
+                else if (requests[i].Effect == HandEffect.WizardDamageType)
+                {
+                    // 到这里"要不要放弃"已经有答案了（它在 requests 里排在前面）
+                    if (sink.WantsToAbandonAttack
+                        || (actor.Character as IMageState)?.WantsToAbandonThisTurn == true)
+                    {
+                        provider.ChooseHandFor(requests[i], actor);
+                    }
+                }
             }
 
             
@@ -1810,6 +1836,10 @@ namespace FingerDiceDuel.Core
         {
             var result = new TurnResult { Actor = actor, TargetHand = targetHand };
             _brokenThisTurn.Clear();
+
+            // ⚠️ "本回合放弃攻击"的标记在 `ResolveMageStatusIntent` 里清零 ——
+            //    见那里的详解（无头路径原来从不清零，法师第一次放弃后
+            //    标记永久为 true：伤害永久被抑制、类型永远被追问）。
 
             // 0. 说明：本方法**不**清理 ShieldState.Broken。
             //
@@ -2455,6 +2485,38 @@ namespace FingerDiceDuel.Core
         /// 只是这一击不落实到目标身上。调用方必须在结算后复位。
         /// </summary>
         public bool SuppressAttackDamage { get; set; }
+
+        /// <summary>
+        /// **回合开始**：清掉"只属于本回合"的标记。
+        ///
+        /// ⚠️⚠️ 为什么必须有一个统一入口：
+        ///
+        ///   `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
+        ///   与 `WizardLogic.WantsToAbandonThisTurn` 的语义都是
+        ///   **"本回合"** —— 但它们原来**都没有每回合重置**：
+        ///
+        ///     · `BoardController`（界面路径）自己清了；
+        ///     · **无头路径（MatchRunner / 测试）从不清**。
+        ///
+        ///   后果：法师**第一次**放弃攻击之后，`SuppressAttackDamage`
+        ///   永久为 true —— **他再也打不出任何伤害**。
+        ///   于是"放弃换来的类型"永远用不掉（消耗它的攻击永远不会落地），
+        ///   状态也就永远挂不上。表现就是
+        ///   "AI 法师问了 7000 多次要不要放弃、铺了 8 万次类型，
+        ///     一次状态都没挂上"，而且法师的胜率被人为压得极低。
+        ///
+        ///   界面路径也走这里 —— 两边一套逻辑，不会再漂移。
+        /// </summary>
+        public void BeginTurn()
+        {
+            SuppressAttackDamage = false;
+
+            if (CurrentPlayer?.Character
+                is Characters.SpecialLogics.WizardLogic wizard)
+            {
+                wizard.WantsToAbandonThisTurn = false;
+            }
+        }
 
         /// <summary>
         /// **本次结算的攻击目标玩家**（可覆盖"被加数的手主"）。

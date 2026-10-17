@@ -87,6 +87,17 @@ namespace FingerDiceDuel.Assistant
                 PlayerState actor = game.CurrentPlayer;
                 IMoveSelector selector = ReferenceEquals(actor, game.PlayerA) ? movesForA : movesForB;
 
+                // ⚠️⚠️ **回合开始：清掉"只属于本回合"的标记。**
+                //
+                //    `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
+                //    与 `WizardLogic.WantsToAbandonThisTurn` 原来都**没有每回合重置**：
+                //    界面路径自己清了，无头路径从不清 ——
+                //    后果是法师第一次放弃之后**永久**被抑制、再也打不出伤害，
+                //    于是"放弃换来的类型"永远用不掉，状态永远挂不上。
+                //
+                //    统一走 `GameManager.BeginTurn()`，界面与无头一套逻辑。
+                game.BeginTurn();
+
                 // ⚠️ **法师的状态：轮到某人之前先结算他的"回合开始"**
                 //    （中毒 / 感电）。中毒可能直接把他打死、跳过其行动，
                 //    所以结算后要重新读一次当前行动者。

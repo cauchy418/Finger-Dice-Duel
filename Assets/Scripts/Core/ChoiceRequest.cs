@@ -382,6 +382,19 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<bool> SkipWhen { get; }
 
+        /// <summary>
+        /// **触发这次抉择的运算结果**（0 = 未知）。
+        ///
+        /// ⚠️ 为什么需要它：法师的"要不要放弃攻击"取决于**合出了几**
+        ///    （玩家策略：4 倾向放弃、6 不一定、8 基本不放弃）。
+        ///    抉择本身发生在结算前，抉择器手上只有 <see cref="ChoiceRequest"/>，
+        ///    所以结果值必须随请求一起带过去。
+        ///
+        /// ⚠️ 本类型是 **readonly struct**，所以只能经构造函数赋值
+        ///    （写成 `{ get; set; }` 会报 CS8341）。
+        /// </summary>
+        public int ResultValue { get; }
+
         public ChoiceRequest(HandEffect effect, string prompt,
                              IReadOnlyList<Hand> candidates,
                              bool allowDecline = false,
@@ -390,7 +403,8 @@ namespace FingerDiceDuel.Core
                              string acceptLabel = null,
                              bool autoResolve = false,
                              int variant = 0,
-                             System.Func<bool> skipWhen = null)
+                             System.Func<bool> skipWhen = null,
+                             int resultValue = 0)
         {
             Effect = effect;
             Prompt = prompt ?? "";
@@ -402,6 +416,7 @@ namespace FingerDiceDuel.Core
             AutoResolve = autoResolve;
             Variant = variant;
             SkipWhen = skipWhen;
+            ResultValue = resultValue;
         }
 
         /// <summary>这一次是否应被自动跳过（不问玩家，直接按放弃值落地）。</summary>

@@ -55,7 +55,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>
         /// 设定伤害类型（覆盖旧的 —— 玩家确认"只保留最新的选择"）。
         /// </summary>
-        public void SetPendingDamageType(DamageType type) => PendingDamageType = type;
+        public void SetPendingDamageType(DamageType type)
+        {
+            PendingDamageType = type;
+        }
 
         /// <summary>清掉待用的伤害类型（没命中 / 已用掉）。</summary>
         public void ClearPendingDamageType() => PendingDamageType = DamageType.None;
@@ -126,7 +129,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 allowDecline: true,
                 declineResult: null,                     // 放弃 = 放弃"放弃" = 照常攻击
                 decider: context.Actor,
-                acceptLabel: "放弃攻击");
+                acceptLabel: "放弃攻击",
+                // ⚠️ 把结果带过去 —— AI 的"要不要放弃"取决于**合出了几**
+                //    （玩家策略：4 倾向放弃、6 不一定、8 基本不放弃）。
+                //    抉择器手上只有 ChoiceRequest，所以必须随请求一起带。
+                resultValue: context.ResultValue);
             requests.Add(abandon);
 
             // ② 10 种伤害类型。候选先填好，玩家选了"放弃"才有意义 ——

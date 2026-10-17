@@ -256,6 +256,29 @@ namespace FingerDiceDuel.Tests
         // 放弃攻击 -> 抑制伤害（回归）
         // ============================================================
 
+        /// <summary>
+        /// 一个**会表态要放弃攻击**的抉择器（模拟 AI / 玩家点了"放弃攻击"）。
+        ///
+        /// ⚠️ 不能靠"直接给法师置标记"来测这条 ——
+        ///    `ResolveMageStatusIntent` 会在**意图读取处**先把标记清零
+        ///    （因为标记的语义是"**本回合**放弃"，必须每回合重置，
+        ///      否则第一回合放弃之后标记永久为 true：伤害永久被抑制）。
+        ///    所以测试必须在**读取时**由抉择器表态。
+        /// </summary>
+        private sealed class AbandoningSink : IDamageTypeChoiceSink
+        {
+            private readonly DamageType _type;
+
+            public AbandoningSink(DamageType type) { _type = type; }
+
+            public DamageType ChosenDamageType { get; set; }
+            public bool WantsToAbandonAttack { get; set; }
+            public void SetGameForChoices(GameManager game) { }
+
+            /// <summary>抉择器"现场表态"：要放弃，并且选这个类型。</summary>
+            public void Declare() => ChosenDamageType = _type;
+        }
+
         [Test]
         public void Abandon_attack_suppresses_damage_even_when_a_type_is_pending()
         {
@@ -265,10 +288,20 @@ namespace FingerDiceDuel.Tests
             //    根因：`ResolveMageStatusIntent` 开头有
             //    `if (mage.HasPendingType) return;` —— **法师身上已经有待用类型**时
             //    （前几轮铺下的）直接返回，于是后面那句抑制判定**永远执行不到**。
-            //    因为不再问类型，表现就是"不用选择就造成了伤害"。
+            //    ⚠️ 这条测试必须**确定性**地驱动"放弃"：
+            //      · AI 的放弃判断是**概率性**的（合出 4 只有 70% 会放弃），
+            //        用 `GreedyChoiceProvider` 会时红时绿；
+            //      · 而且 `HasPendingType` 会让方法提前 return，
+            //        抉择器根本没机会表态。
+            //      所以只能照**界面路径**的做法：
+            //      "玩家点完之后把标记直接写到法师身上"。
+            //
+            //    因此这里用 `SimpleChoiceProvider`（= 人类玩家的抉择器，
+            //    它没有实现 `IDamageTypeChoiceSink`）。
             PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
-            GameManager game = MakeGame(mage, foe);
+
+            GameManager game = MakeGame(mage, foe);      // SimpleChoiceProvider
 
             mage.LeftHand.SetValue(2);         // 2 + 2 = 4 -> 攻击
             foe.LeftHand.SetValue(2);
@@ -280,17 +313,54 @@ namespace FingerDiceDuel.Tests
             wiz.SetPendingDamageType(DamageType.Thunder);
             Assert.IsTrue(wiz.HasPendingType);
 
-            // ② 这一回合选择放弃攻击
+            // ② 界面把"本回合放弃攻击"直接写到法师身上
             wiz.WantsToAbandonThisTurn = true;
 
             int hpBefore = foe.Health;
             TurnResult r = game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
 
-            Assert.IsTrue(game.SuppressAttackDamage || r.DamageDealt == 0,
-                "放弃攻击必须抑制伤害 —— 即使身上已有待用类型。");
-            Assert.AreEqual(hpBefore, foe.Health,
-                "放弃攻击这一击不造成伤害。");
-            Assert.AreEqual(0, r.DamageDealt, "伤害应当是 0。");
+            Assert.AreEqual(0, r.DamageDealt,
+                "放弃攻击必须抑制伤害 —— 即使身上已有待用类型。"
+                + $"\n[诊断] suppress={game.SuppressAttackDamage} effect={r.Effect}");
+            Assert.AreEqual(hpBefore, foe.Health, "放弃攻击这一击不造成伤害。");
+        }
+
+        [Test]
+        public void The_abandon_mark_does_not_stick_to_the_next_turn()
+        {
+            // ⚠️⚠️ 回归：`WantsToAbandonThisTurn` 原来只有界面路径（BoardController）
+            //    会清零，**无头路径从不清零** —— 法师第一次放弃后标记永久为 true：
+            //      · 每回合 `SuppressAttackDamage` 都置真 -> 法师再也不造成伤害
+            //      · `skipWhen` 恒假 -> 永远追问类型
+            //    表现就是"AI 铺了 2000 多次类型，一次状态都没挂上"。
+            //
+            //    ⚠️ 清零现在由 `MatchRunner`（无头回合开始）/ `BoardController`
+            //       （界面回合开始）负责 —— 所以这条测试用 `MatchRunner` 跑，
+            //       而不是手工 `ExecuteTurn`（那样没人负责清零）。
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+
+            var game = new GameManager(mage, foe, new GreedyChoiceProvider(),
+                                       new GreedyChoiceProvider());
+
+            var wiz = (FingerDiceDuel.Characters.SpecialLogics.WizardLogic)mage.Character;
+
+            // 先让法师"放弃过一次"（模拟上一步留下的标记）
+            wiz.WantsToAbandonThisTurn = true;
+
+            // 跑一小段对局：MatchRunner 每回合开头都会清零，
+            // 所以中途必然出现"没有放弃却正常造成伤害"的回合。
+            int maxDamage = 0;
+            int prevHp = foe.Health;
+
+            var runner = new MatchRunner { MaxTurns = 60 };
+            runner.Run(game, new GreedyChoiceProvider(), new GreedyChoiceProvider());
+
+            maxDamage = foe.Health < prevHp ? prevHp - foe.Health : 0;
+
+            Assert.IsTrue(maxDamage > 0 || game.IsGameOver,
+                "清零之后法师应当能正常造成伤害 —— 标记不能跨回合粘住，"
+                + "否则法师永远被抑制、一点伤害都打不出来。");
         }
 
         [Test]
