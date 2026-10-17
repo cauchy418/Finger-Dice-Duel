@@ -91,15 +91,24 @@ namespace FingerDiceDuel.Assistant
             // 只有 4 / 6 / 8 是"攻击数字"，其余（9 回复等）根本不进这个抉择
             if (result != 4 && result != 6 && result != 8) return false;
 
-            if (WizardCanLethalNow(self)) return false;
+            // ⚠️⚠️ **"能不能斩杀"只认调用方注入的判据**
+            //    （<see cref="WizardAbandonLethalGuard"/>，由 BoardController
+            //     用真实的这一击去算），**没有注入就按"不能斩杀"处理**。
+            //
+            //    我先前自己写了一个"看手值估斩杀"的启发式 —— 结果是**灾难**：
+            //    `myMax + foeMax >= foe.Health` 在开局就几乎恒真，
+            //    于是 4 次抉择里 3 次被它挡掉，法师**永远不铺状态**。
+            //    教训：**不要用粗估去替代真实判据**；
+            //    宁可"没判据时允许铺"（玩家策略本来就是"未进斩杀线前就该铺"）。
+            if (WizardAbandonLethalGuard?.Invoke() == true) return false;
 
             int roll = WizardRoll();          // 0..99
 
             switch (result)
             {
-                case 4: return roll < 70;     // 倾向于放弃
-                case 6: return roll < 40;     // 不一定会放弃
-                default: return roll < 15;    // 8：基本不放弃
+                case 4: return roll < 85;     // 倾向于放弃
+                case 6: return roll < 50;     // 不一定会放弃
+                default: return roll < 20;    // 8：基本不放弃
             }
         }
 
@@ -116,24 +125,6 @@ namespace FingerDiceDuel.Assistant
         }
 
         private int _wizardSeed = 20240816;
-
-        /// <summary>自己现在有没有能一击斩杀对手的手段（粗略）。</summary>
-        private bool WizardCanLethalNow(PlayerState self)
-        {
-            if (self == null || Game == null) return false;
-
-            IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
-            for (int i = 0; i < foes.Count; i++)
-            {
-                PlayerState foe = foes[i];
-
-                // 手上任一只手的值（含单手加成前的近似）能达到对手血量即视为能斩
-                if (self.LeftHand != null && self.LeftHand.Value >= foe.Health) return true;
-                if (self.RightHand != null && self.RightHand.Value >= foe.Health) return true;
-            }
-
-            return false;
-        }
 
         /// <summary>
         /// **法师选哪一种伤害类型**（玩家本轮给的策略）。
