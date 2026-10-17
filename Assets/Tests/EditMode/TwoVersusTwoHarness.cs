@@ -113,6 +113,20 @@ namespace FingerDiceDuel.Tests
                     PlayerState actor = game.CurrentPlayer;
                     if (actor == null) break;                     // 全部阵亡
 
+                    // ⚠️⚠️ **每个行动开始都要调 `BeginTurn()`。**
+                    //
+                    //    它是重置"只属于本回合"标记的**唯一**入口：
+                    //      · `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
+                    //      · `WizardLogic.WantsToAbandonThisTurn`
+                    //
+                    //    这个测试台原来**一次都没调** —— 后果是：
+                    //    法师第一次放弃之后抑制开关**永久为真**，
+                    //    之后每回合都在白扔，一局能"放弃" 47 次、自己 0 伤害。
+                    //    多人局里就表现为**谁都打不死谁、一直打到轮数上限**。
+                    //
+                    //    （1v1 的 `MatchRunner` 是调了的，所以 1v1 没这个现象。）
+                    game.BeginTurn();
+
                     IChoiceProvider choice = game.GetChoiceProvider(actor);
                     if (choice is not IMoveSelector selector)
                         return Fail($"座位 {game.SeatOf(actor)} 没有可用的出招选择器");
