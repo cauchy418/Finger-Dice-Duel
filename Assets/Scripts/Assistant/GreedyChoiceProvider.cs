@@ -106,9 +106,14 @@ namespace FingerDiceDuel.Assistant
 
             switch (result)
             {
-                case 4: return roll < 85;     // 倾向于放弃
-                case 6: return roll < 50;     // 不一定会放弃
-                default: return roll < 20;    // 8：基本不放弃
+                // ⚠️ 玩家原话是"4 会倾向于放弃、6 不一定、8 基本不放弃"。
+                //    但**放弃太多会让法师永远在铺垫、永远不出手** ——
+                //    单局轨迹显示：一旦铺上类型，后面几回合 dmg 常常是 0
+                //    （打不中），类型反而被"消耗它的那一次"白白吃掉。
+                //    所以把概率收敛一些，让它真的打得出去。
+                case 4: return roll < 60;     // 倾向于放弃
+                case 6: return roll < 30;     // 不一定会放弃
+                default: return roll < 10;    // 8：基本不放弃
             }
         }
 

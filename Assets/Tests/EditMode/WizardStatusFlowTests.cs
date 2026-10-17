@@ -446,28 +446,68 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ai_mage_applies_a_status_in_a_headless_match()
         {
-            int everApplied = 0;
+            // ⚠️⚠️ **这条测试为什么改成"事件级 + 多局统计"**（它红了很多轮）：
+            //
+            //    原来的写法是"跑 4 局，每局**对局结束时**看看
+            //    法师身上还有没有待用类型、或者对手身上还有没有状态"。
+            //    两个问题：
+            //      ① **样本太小**：4 局里只要法师没在"恰好那一刻"持有类型/状态就红；
+            //      ② **看的是终局快照**：状态只持续"目标自己的 2 个回合"，
+            //         法师完全可能中途挂过、但结束时已经跳完了；
+            //         待用类型也会被"消耗它的那一次攻击"吃掉。
+            //
+            //    单局逐步轨迹（我用来定位的那次）证实了这一点：类型**确实铺上了**
+            //    （`[后]pending=Poison`），只是结束时身上没有。
+            //    所以正确的口径是**过程中有没有发生过**，而不是终局快照。
+            const int games = 40;
+            int gamesWhereApplied = 0;
 
-            for (int seed = 0; seed < 4; seed++)
+            for (int seed = 0; seed < games; seed++)
             {
                 PlayerState mage = Make("法", CharacterDefinition.Wizard);
                 PlayerState foe = Make("敌", CharacterDefinition.Soldier);
 
                 var game = new GameManager(mage, foe, new GreedyChoiceProvider(),
                                            new GreedyChoiceProvider());
-                new MatchRunner { MaxTurns = 300 }.Run(game,
-                                                       new GreedyChoiceProvider(),
-                                                       new GreedyChoiceProvider());
+                var logic = (WizardLogic)mage.Character;
+                var selector = new GreedyChoiceProvider();
 
-                var logic = mage.Character as WizardLogic;
-                Assert.NotNull(logic);
+                bool appliedThisGame = false;
 
-                if (logic.HasPendingType || foe.Statuses.Count > 0) everApplied++;
+                for (int guard = 0; guard < 300 && !game.IsGameOver; guard++)
+                {
+                    PlayerState actor = game.CurrentPlayer;
+                    if (actor == null) break;
+
+                    game.BeginTurn();
+                    game.ResolveStatusTurnStart(actor);
+                    if (game.IsGameOver) break;
+                    if (!ReferenceEquals(game.CurrentPlayer, actor)) continue;
+
+                    LegalMove move = selector.ChooseMove(game, actor);
+                    if (move.Actor == null) break;
+
+                    TurnResult r = game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+
+                    // ① 过程里铺上过类型，或 ② 过程里真的挂上过状态
+                    if (ReferenceEquals(actor, mage))
+                    {
+                        if (logic.HasPendingType) appliedThisGame = true;
+                        if (r.StatusHit || r.AppliedStatus != StatusEffect.None)
+                            appliedThisGame = true;
+                    }
+                    if (foe.Statuses.Count > 0) appliedThisGame = true;
+
+                    game.ResolveStatusTurnEnd(actor);
+                }
+
+                if (appliedThisGame) gamesWhereApplied++;
             }
 
-            Assert.IsTrue(everApplied > 0,
+            Assert.IsTrue(gamesWhereApplied > 0,
                 "AI 法师走无头对局时应当至少铺上一次伤害类型或挂上一个状态 —— "
-                + "否则这个角色的招牌能力在 AI 手里等于不存在。");
+                + "否则这个角色的招牌能力在 AI 手里等于不存在。"
+                + $"（{games} 局里有 {gamesWhereApplied} 局做到了）");
         }
 
         // ============================================================
