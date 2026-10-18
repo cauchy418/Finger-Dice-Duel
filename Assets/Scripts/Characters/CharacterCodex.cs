@@ -382,6 +382,21 @@ namespace FingerDiceDuel.Characters
                     + "按规则此时他可以跳过回合。",
                     "与游侠 / 妖术师：被闪避或被取消不算命中，距离不会变。",
                 });
+
+            // ---- 吟游诗人（守序中立）----
+            Add(CharacterDefinition.BardId, "Bard", Alignment.LawfulNeutral,
+                shortSkill: "本回合受伤或实际回血后，可给攻击范围内 1~3 人"
+                          + "加/减攻防 ±(4-人数)。",
+                playGuide: "每次行动结算完，若本回合受过伤或回过血就会问你要不要发动。"
+                         + "先选增幅/削弱 攻击/防御，再选人数（1 人 ±3、2 人 ±2、3 人 ±1），"
+                         + "最后点角色。可以选自己，同一人点两只手只算一次。",
+                counter: "持续到你下次发动或你死，所以要盯住他给谁加了什么。"
+                       + "他攻 0 防 −1、射程 3，抢血就能逼他先给自己加防御。",
+                interactions: new[]
+                {
+                    "与法师体系：给目标削弱防御会与强酸 −2 叠加，等于双重破防。",
+                    "与邪术师：被推开到距离 3 时，他的技能范围也跟着够不到远处的人。",
+                });
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

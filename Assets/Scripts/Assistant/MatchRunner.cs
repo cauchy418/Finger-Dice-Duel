@@ -159,6 +159,15 @@ namespace FingerDiceDuel.Assistant
                 //    无头路径没有"换人事件"，所以在行动结算之后**立刻**结算 ——
                 //    下一次循环开头就会轮到下一位，时序与界面路径一致。
                 game.ResolveStatusTurnEnd(actor);
+
+                // ⚠️ **吟游诗人：本回合受过伤 / 实际回过血 -> 这一手结算完立刻发动。**
+                //
+                //    玩家确认的时机是"每次行动结算完检查"，所以放在
+                //    `ResolveStatusTurnEnd` **之后**（燃烧那种回合结束伤害也要算进"受过伤"）。
+                //    对**双方**都试一次 —— 受伤的往往不是行动者。
+                //    标记在 `GameManager.BeginTurn()` 里统一复位，所以不会重复触发。
+                Characters.SpecialLogics.BardAi.TryActivate(actor, game);
+                Characters.SpecialLogics.BardAi.TryActivate(game.GetOpponent(actor), game);
             }
 
             // ⚠️ `HitTurnLimit` **保持原义**：模拟器被 `MaxTurns` 强行中断

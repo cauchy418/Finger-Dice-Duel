@@ -2679,6 +2679,15 @@ namespace FingerDiceDuel.Core
             {
                 wizard.WantsToAbandonThisTurn = false;
             }
+
+            // ⚠️ **吟游诗人的"本回合受过伤 / 回过血"标记，每次行动开始全部复位。**
+            //
+            //    为什么是"所有人"而不是"当前行动者"：
+            //    触发条件是"本回合我受过伤"，而受伤的往往不是行动者
+            //    （对手打他）—— 只在行动者身上复位会让防守方的标记永远留着，
+            //    于是技能每回合都能发动。
+            for (int i = 0; i < _players.Count; i++)
+                _players[i]?.ResetTurnFlags();
         }
 
         /// <summary>
