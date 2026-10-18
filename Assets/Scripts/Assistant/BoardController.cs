@@ -160,6 +160,11 @@ namespace FingerDiceDuel.Assistant
         private readonly List<string> _log = new List<string>();
         private readonly List<Hand> _shieldChoices = new List<Hand>(2);
 
+        /// <summary>击杀奖励/惩罚待执行的额外行动（队首优先）。</summary>
+        private readonly List<PlayerState> _extraQueue = new List<PlayerState>();
+        private bool _extraActionActive;
+        private PlayerState _resumePlayer;
+
         // ---- 通用"运算前抉择"流水线 ----
         private readonly List<ChoiceRequest> _pendingRequests = new List<ChoiceRequest>();
         private readonly List<Hand> _pendingChoiceCandidates = new List<Hand>(4);
@@ -306,6 +311,12 @@ namespace FingerDiceDuel.Assistant
         public string Hint { get; private set; } = "";
 
         public IReadOnlyList<string> Log => _log;
+
+        /// <summary>当前是否正在执行击杀奖惩的额外行动。</summary>
+        public bool IsExtraAction => _extraActionActive;
+
+        /// <summary>额外行动队列中还剩几次。</summary>
+        public int ExtraActionsRemaining => _extraQueue.Count;
 
         /// <summary>需要防守方选盾时，可选的盾（最多 2 面）。</summary>
         public IReadOnlyList<Hand> DefenseShieldChoices => _shieldChoices;
@@ -1308,8 +1319,8 @@ namespace FingerDiceDuel.Assistant
             if (ActivePlayer == null) return false;
             if (ReferenceEquals(player, ActivePlayer)) return false;
 
-            // ① 只能打**对手**（队友可以当被加数，但不是攻击目标）
-            if (_game.IsTeammate(ActivePlayer, player)) return false;
+            // ① 玩家要求：**所有模式队友都是合法攻击目标**（可以打队友）。
+            //    1v1 没有队友；2v2 / 8 人阵营混战都可以主动打自己人。
 
             // ② 必须在**攻击距离**内（咒术师 / 牧师无限，其余 1）。
             //    距离按座位环算，阵亡者从环上摘掉 —— 都在 GameManager 里。
@@ -1353,9 +1364,8 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 界面是否应把**「放弃攻击」**作为出口。
         ///
-        /// 修正（玩家确认）：判据是"**有没有合法的攻击目标**" ——
-        /// 队友**不算**合法攻击目标（不能打队友），
-        /// 所以面对唯一在范围内的敌人被潜行时，"放弃攻击"才出现。
+        /// 修正（玩家确认）：判据是"**有没有任何合法攻击目标**"；
+        /// 队友也是合法目标，所以只有所有其他人都不可打时才出现放弃。
         /// 曾经这里只看当前的 <see cref="Defender"/>，2v2 里会因为
         /// "另一位对手在范围内"而漏判 -> 该放弃时不给按钮。
         ///
@@ -2294,9 +2304,15 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private PlayerState DefaultAttackTarget()
         {
+            // 队友虽然也是合法目标，但 AI / 默认目标仍**优先敌人**；
+            // 只有敌人全部不可打时，才回落到队友。
             IReadOnlyList<PlayerState> foes = _game.OpponentsOf(ActivePlayer);
             for (int i = 0; i < foes.Count; i++)
                 if (CanBeAttacked(foes[i])) return foes[i];
+
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+                if (CanBeAttacked(all[i])) return all[i];
 
             return null;
         }
@@ -3740,6 +3756,82 @@ namespace FingerDiceDuel.Assistant
         /// 被 catch 吞掉后只在战报里留一句话，极难排查），
         /// 不如在这里**明确记录并回到本回合第一步**。
         /// </summary>
+        /// <summary>
+        /// 把一次击杀折算成额外行动队列。
+        ///
+        ///   · 击杀不同阵营：行动方额外行动 X 次，X = 受害者阵营**击杀后**存活人数；
+        ///   · 击杀同阵营：从行动方下家开始，其他阵营每个存活角色各行动一次；
+        ///   · 只有直接攻击击杀算（宿主在 ExecuteResolvedTurn 里先做血量快照）。
+        /// </summary>
+        private void QueueKillRewards(TurnResult result,
+                                      Dictionary<PlayerState, int> healthBefore)
+        {
+            if (result?.Actor == null || result.Defender == null) return;
+            if (!healthBefore.TryGetValue(result.Defender, out int before) || before <= 0) return;
+            if (result.Defender.IsAlive) return;
+            if (result.DamageDealt <= 0
+                && !(result.ExtraAttack.HasValue && result.ExtraAttack.Value.Dealt > 0))
+                return;
+
+            PlayerState killer = result.Actor;
+            PlayerState victim = result.Defender;
+            if (ReferenceEquals(killer, victim) || !killer.IsAlive) return;
+
+            int killerTeam = _game.TeamOf(killer);
+            int victimTeam = _game.TeamOf(victim);
+            if (killerTeam < 0 || victimTeam < 0) return;
+
+            var rewards = new List<PlayerState>();
+            if (victimTeam != killerTeam)
+            {
+                int x = _game.AliveTeamCount(victimTeam);   // 击杀后的剩余人数
+                for (int i = 0; i < x; i++) rewards.Add(killer);
+            }
+            else
+            {
+                // 从击杀者下家开始，按座位号绕一圈；只列其他阵营的存活者。
+                int n = _game.Players.Count;
+                int start = _game.SeatOf(killer) - 1;
+                for (int step = 1; step <= n; step++)
+                {
+                    PlayerState p = _game.Players[(start + step) % n];
+                    if (p == null || !p.IsAlive) continue;
+                    if (_game.TeamOf(p) == killerTeam) continue;
+                    rewards.Add(p);
+                }
+            }
+
+            if (rewards.Count == 0) return;
+
+            // 嵌套奖励优先于当前队列剩余部分：立即插入队首。
+            _extraQueue.InsertRange(0, rewards);
+
+            _log.Add($"【击杀奖惩】{killer.Name} 击杀 {victim.Name}：" +
+                     (victimTeam == killerTeam
+                         ? $"其他阵营各行动一次（{rewards.Count} 次）"
+                         : $"额外行动 {rewards.Count} 次"));
+        }
+
+        /// <summary>开始队列里的下一次额外行动；队列空则恢复正常的下一回合。</summary>
+        private void BeginNextExtraActionOrResume()
+        {
+            while (_extraQueue.Count > 0)
+            {
+                PlayerState next = _extraQueue[0];
+                _extraQueue.RemoveAt(0);
+                if (next == null || !next.IsAlive) continue;
+
+                _extraActionActive = true;
+                _game.ForceActivePlayerForTest(next);
+                BeginTurn();          // 只重置本回合标记，不推进 TurnCount / RoundCount
+                return;
+            }
+
+            _extraActionActive = false;
+            if (_resumePlayer != null) _game.ForceActivePlayerForTest(_resumePlayer);
+            BeginTurn();
+        }
+
         private void ExecuteResolvedTurn()
         {
             // ⚠️ 用**本回合的副本**兜底。
@@ -3818,6 +3910,15 @@ namespace FingerDiceDuel.Assistant
             // 选目标阶段（还没确认）用被加数手主兜底，与 CanBeAttacked 的视角一致。
             _game.DamageTargetPlayer = TargetPlayer ?? OwnerOf(_selectedTarget);
 
+            // 击杀判定要比较行动前后的血量；先给全部玩家拍快照。
+            var healthBefore = new Dictionary<PlayerState, int>(_game.Players.Count);
+            for (int i = 0; i < _game.Players.Count; i++)
+            {
+                PlayerState p = _game.Players[i];
+                if (p != null) healthBefore[p] = p.Health;
+            }
+            bool wasExtra = _extraActionActive;
+
             TurnResult result;
             try
             {
@@ -3831,8 +3932,10 @@ namespace FingerDiceDuel.Assistant
                 //    （玩家实测："先说投出了 4，点战士时又说投出 2 无效果"）。
                 result = _pendingGambleRoll > 0
                     ? _game.ExecuteGambleWithRoll(ActivePlayer, acted,
-                                                  _pendingGambleRoll, _selectedTarget)
-                    : _game.ExecuteTurn(ActivePlayer, acted, target);
+                                                  _pendingGambleRoll, _selectedTarget,
+                                                  extraAction: wasExtra)
+                    : _game.ExecuteTurn(ActivePlayer, acted, target,
+                                        extraAction: wasExtra);
 
                 // ⚠️⚠️ **就在这一刻把"谁可以发动吟游诗人技能"记下来。**
                 //
@@ -3900,7 +4003,8 @@ namespace FingerDiceDuel.Assistant
             {
                 result.Actor.MustGamble = !result.WasGamble;
             }
-            foreach (string line in DescribeTurnLines(result)) _log.Add(line);
+            string extraPrefix = result.IsExtraAction ? "【额外行动】" : "";
+            foreach (string line in DescribeTurnLines(result)) _log.Add(extraPrefix + line);
 
             // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——
             // 单独把本回合的冲击记录补进战报（玩家要求能看见它是否发生）。
@@ -3917,9 +4021,31 @@ namespace FingerDiceDuel.Assistant
 
             if (_game.IsGameOver)
             {
+                _extraQueue.Clear();
+                _extraActionActive = false;
                 Phase = BoardPhase.GameOver;
                 Hint = WinMessage();
                 _log.Add(Hint);
+                return;
+            }
+
+            // 击杀奖惩：只有直接攻击击杀会进队列。
+            QueueKillRewards(result, healthBefore);
+
+            if (wasExtra)
+            {
+                // 额外行动结束：继续队列，或恢复正常的下一回合。
+                BeginNextExtraActionOrResume();
+                return;
+            }
+
+            // 普通行动：GameManager 已经把 CurrentPlayer 推到下一位；
+            // 先记下来，等额外行动队列跑完后恢复。
+            _resumePlayer = _game.CurrentPlayer;
+
+            if (_extraQueue.Count > 0)
+            {
+                BeginNextExtraActionOrResume();
                 return;
             }
 

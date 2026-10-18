@@ -12,7 +12,8 @@ namespace FingerDiceDuel.Tests
     /// <summary>
     /// **8 人阵营混战**的核心规则：
     ///   · 8 个座位、3 个阵营队伍（人数可为 3/3/2）；
-    ///   · 队友不能互打，但可以拿队友的手当被加数；
+    ///   · 队友也可以被攻击（所有模式队友都是合法目标）；
+    ///   · 队友的手也可以当被加数；
     ///   · 轮次上限按**阵营总血量**判定胜负。
     /// </summary>
     [TestFixture]
@@ -49,15 +50,23 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Teammates_are_not_attack_targets_but_enemy_teams_are()
+        public void Teammates_and_enemies_are_both_legal_attack_targets()
         {
             GameManager game = MatchEight(out List<PlayerState> seated);
+            var sink = new SimpleChoiceProvider();
+            var controller = new BoardController(game, sink);
+            for (int i = 0; i < seated.Count; i++)
+                controller.BindPlayer(seated[i], new GreedyChoiceProvider(), sink);
+
+            controller.SetFirstPlayer(seated[0]);
+            controller.BeginTurn();
 
             Assert.IsTrue(game.IsTeammate(seated[0], seated[1]));
-            Assert.IsFalse(game.IsTeammate(seated[0], seated[3]));
-
-            // OpponentsOf 只列不同队的存活者：3 + 2 = 5 人。
-            Assert.AreEqual(5, game.OpponentsOf(seated[0]).Count);
+            Assert.IsFalse(game.IsTeammate(seated[0], seated[7]));
+            Assert.IsTrue(controller.CanBeAttacked(seated[1]),
+                "2v2 / 8 人局队友应成为合法攻击目标。");
+            Assert.IsTrue(controller.CanBeAttacked(seated[7]),
+                "距离 1 的敌方阵营仍是合法目标。");
         }
 
         [Test]

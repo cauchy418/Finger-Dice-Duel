@@ -173,6 +173,9 @@ namespace FingerDiceDuel.Core
         public bool GameOver;
         public PlayerState Winner;
 
+        /// <summary>本次行动是击杀奖惩带来的额外行动（不推进轮次/总行动数）。</summary>
+        public bool IsExtraAction;
+
         /// <summary>便于日志：例如 "A: 3 + 6 = 9 (Heal)"。</summary>
         public override string ToString()
             => $"{Actor?.Name}: {ActedHandValueBefore} + {TargetHandValue} = {ResultValue} ({Effect})";
@@ -1246,13 +1249,15 @@ namespace FingerDiceDuel.Core
         /// 执行一次回合操作（推荐入口，参数不可混淆）。
         /// </summary>
         /// <exception cref="InvalidOperationException">运算不合法时抛出（不静默失败）。</exception>
-        public TurnResult ExecuteTurn(PlayerState actor, Hand actedHand, Hand targetHand)
+        public TurnResult ExecuteTurn(PlayerState actor, Hand actedHand, Hand targetHand,
+                                      bool extraAction = false)
         {
             if (!IsLegalMove(actor, actedHand, targetHand, out string reason))
                 throw new InvalidOperationException($"非法运算：{reason}");
 
             MarkSelfAddendIfAny(actor, targetHand);
-            return ResolveTurn(actor, actedHand, targetHand.Value, targetHand);
+            return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,
+                               extraAction: extraAction);
         }
 
         /// <summary>
@@ -1942,7 +1947,8 @@ namespace FingerDiceDuel.Core
         ///    所以点数只能由**开赌那一次**决定，之后一路传递。
         /// </summary>
         public TurnResult ExecuteGambleWithRoll(PlayerState actor, Hand actedHand,
-                                                int roll, Hand targetHand = null)
+                                                int roll, Hand targetHand = null,
+                                                bool extraAction = false)
         {
             if (IsGameOver)
                 throw new InvalidOperationException("非法赌博：比赛已结束。");
@@ -1956,7 +1962,7 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
             return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
-                               gambleResult: roll);
+                               gambleResult: roll, extraAction: extraAction);
         }
 
         /// <summary>已通过校验的实际结算流程。</summary>
@@ -1973,7 +1979,8 @@ namespace FingerDiceDuel.Core
         private const int MaxResolveDepth = 12;
 
         private TurnResult ResolveTurn(PlayerState actor, Hand actedHand, int targetValue,
-                                       Hand targetHand, int gambleResult)
+                                       Hand targetHand, int gambleResult = 0,
+                                       bool extraAction = false)
         {
             _resolveDepth++;
             if (_resolveDepth > MaxResolveDepth)
@@ -1989,7 +1996,8 @@ namespace FingerDiceDuel.Core
 
             try
             {
-                return ResolveTurnCore(actor, actedHand, targetValue, targetHand, gambleResult);
+                return ResolveTurnCore(actor, actedHand, targetValue, targetHand,
+                                       gambleResult, extraAction);
             }
             finally
             {
@@ -1998,9 +2006,14 @@ namespace FingerDiceDuel.Core
         }
 
         private TurnResult ResolveTurnCore(PlayerState actor, Hand actedHand, int targetValue,
-                                           Hand targetHand, int gambleResult)
+                                           Hand targetHand, int gambleResult, bool extraAction)
         {
-            var result = new TurnResult { Actor = actor, TargetHand = targetHand };
+            var result = new TurnResult
+            {
+                Actor = actor,
+                TargetHand = targetHand,
+                IsExtraAction = extraAction,
+            };
             _brokenThisTurn.Clear();
 
             // ⚠️ "本回合放弃攻击"的标记在 `ResolveMageStatusIntent` 里清零 ——
@@ -2402,7 +2415,8 @@ namespace FingerDiceDuel.Core
             result.Winner = Winner;
 
             // 5. 切换回合
-            if (!IsGameOver)
+            //    额外行动（击杀奖惩）**不推进轮次，也不增加总行动数**。
+            if (!IsGameOver && !extraAction)
             {
                 TurnCount++;
 

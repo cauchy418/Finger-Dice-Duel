@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void A_teammate_is_never_offered_as_the_attack_target()
+        public void A_teammate_is_offered_as_a_legal_attack_target()
         {
             BoardController board = Arrange(out GameManager game,
                                             out List<PlayerState> seated);
@@ -132,11 +132,11 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
 
-            // 队友的手**不该**可点（他不是攻击目标）
-            Assert.False(board.CanClick(mate.LeftHand),
-                "队友不该成为攻击目标。");
-            Assert.False(board.CanClick(mate.RightHand),
-                "队友不该成为攻击目标。");
+            // 队友的手现在**可以**点（他是合法攻击目标）
+            Assert.True(board.CanClick(mate.LeftHand),
+                "队友现在可以成为攻击目标。");
+            Assert.True(board.CanClick(mate.RightHand),
+                "队友现在可以成为攻击目标。");
         }
 
         [Test]

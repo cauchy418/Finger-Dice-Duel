@@ -3118,12 +3118,17 @@ namespace FingerDiceDuel.UI
 
             // 兜底：任何情况下都不要让提示条空着，否则玩家不知道能做什么
             if (string.IsNullOrEmpty(hint))
-                return _controller.IsHumanChooser
+                hint = _controller.IsHumanChooser
                     ? "请选择一张手牌。"
                     : "等待对手行动……";
+            else if (!_controller.IsHumanChooser)
+                hint = $"{_controller.Chooser?.Name}（AI）正在思考……";
 
-            if (!_controller.IsHumanChooser)
-                return $"{_controller.Chooser?.Name}（AI）正在思考……";
+            if (_controller.IsExtraAction)
+            {
+                int total = _controller.ExtraActionsRemaining + 1;
+                hint = $"【额外行动】剩余 {total} 次 · {hint}";
+            }
 
             return hint;
         }

@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Tests
     /// **攻击距离**与两个"换射程"技能（战士碎盾 / 游侠强化）。
     ///
     /// 玩家确认的规则：
-    ///   · 合法攻击目标 = 处于**攻击范围内**的其他角色（自己除外；队友不是攻击目标）
+    ///   · 合法攻击目标 = 处于**攻击范围内**的其他角色（自己除外；队友也是合法目标）
     ///   · 攻击距离 = 座位环上的最短距离（阵亡者从环上摘掉）
     ///   · 白板与战士/野蛮人/刺客/剑客/忍者/狼人/游侠 = 1；**咒术师 / 牧师 = 无限**
     ///   · 战士：发起攻击时若另一只手是完整盾牌，可令其破碎 -> 本次攻击距离无限
@@ -137,10 +137,10 @@ namespace FingerDiceDuel.Tests
 
             // ⚠️ 2v2 的座位环是 1-2-3-4、**首尾同队**：{A, D} 与 {B, C}。
             //    所以 A 的两名对手是 B(2) 与 C(3)，距离分别是 1 与 2。
-            //    => 距离 1 的白板**只能打到 B**；C 够不到；D 是队友不能打。
+            //    => 距离 1 的白板能打到 B；C 够不到；D 是队友，但现在是合法目标。
             Assert.True(board.CanBeAttacked(game.PlayerB), "B 距离 1 且是敌人 -> 可攻击。");
             Assert.False(board.CanBeAttacked(game.PlayerC), "C 距离 2 -> 够不到。");
-            Assert.False(board.CanBeAttacked(game.PlayerD), "D 是队友 -> 不是攻击目标。");
+            Assert.True(board.CanBeAttacked(game.PlayerD), "D 是队友，但队友也是合法目标。");
             Assert.False(board.CanBeAttacked(game.PlayerA), "自己不是攻击目标。");
         }
 
@@ -168,16 +168,16 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void A_teammate_is_never_an_attack_target()
+        public void A_teammate_is_a_legal_attack_target()
         {
             GameManager game = Match2v2();
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                             new SimpleChoiceProvider());
             board.BeginTurn();
 
-            // {A, D} 一队 -> D 虽然是队友，但不该成为 A 的攻击目标
-            Assert.False(board.CanBeAttacked(game.PlayerD),
-                "队友不是攻击目标（虽然是距离 1）。");
+            // {A, D} 一队 -> D 虽然是队友，但现在也是合法攻击目标。
+            Assert.True(board.CanBeAttacked(game.PlayerD),
+                "队友也是攻击目标（距离 1）。");
         }
 
         // ============================================================
