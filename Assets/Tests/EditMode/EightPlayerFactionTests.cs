@@ -34,7 +34,8 @@ namespace FingerDiceDuel.Tests
             return 1;
         }
 
-        private static List<CharacterDefinition> PickEight(Random rng, out List<int> teams)
+        private static List<CharacterDefinition[]> PickDualEight(Random rng,
+                                                                  out List<int> teams)
         {
             var byFaction = new List<CharacterDefinition>[3];
             for (int i = 0; i < 3; i++) byFaction[i] = new List<CharacterDefinition>();
@@ -45,13 +46,12 @@ namespace FingerDiceDuel.Tests
             int[] counts = { 3, 3, 3 };
             counts[weak] = 2;
 
-            var picked = new List<CharacterDefinition>(8);
+            var pairs = new List<CharacterDefinition[]>(8);
             teams = new List<int>(8);
 
             for (int f = 0; f < 3; f++)
             {
                 List<CharacterDefinition> pool = byFaction[f];
-                // Fisher-Yates
                 for (int i = pool.Count - 1; i > 0; i--)
                 {
                     int j = rng.Next(i + 1);
@@ -60,20 +60,20 @@ namespace FingerDiceDuel.Tests
 
                 for (int k = 0; k < counts[f]; k++)
                 {
-                    picked.Add(pool[k]);
+                    pairs.Add(new[] { pool[k * 2], pool[k * 2 + 1] });
                     teams.Add(f);
                 }
             }
 
-            // 打乱座位
-            for (int i = picked.Count - 1; i > 0; i--)
+            // 打乱座位（配对和阵营必须一起移动）
+            for (int i = pairs.Count - 1; i > 0; i--)
             {
                 int j = rng.Next(i + 1);
-                CharacterDefinition d = picked[i]; picked[i] = picked[j]; picked[j] = d;
+                CharacterDefinition[] p = pairs[i]; pairs[i] = pairs[j]; pairs[j] = p;
                 int t = teams[i]; teams[i] = teams[j]; teams[j] = t;
             }
 
-            return picked;
+            return pairs;
         }
 
         private static void ApplyOpeningHands(PlayerState player, Random rng)
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Eight_player_faction_battle_2000_games()
+        public void Eight_player_dual_faction_battle_2000_games()
         {
             var rng = new Random(20260213);
             var roleGames = new Dictionary<string, int>();
@@ -106,7 +106,7 @@ namespace FingerDiceDuel.Tests
 
             for (int g = 0; g < Games; g++)
             {
-                List<CharacterDefinition> defs = PickEight(rng, out List<int> teams);
+                List<CharacterDefinition[]> pairs = PickDualEight(rng, out List<int> teams);
 
                 var seated = new List<PlayerState>(8);
                 var providers = new List<IChoiceProvider>(8);
@@ -122,14 +122,19 @@ namespace FingerDiceDuel.Tests
 
                 for (int i = 0; i < 8; i++)
                 {
-                    PlayerState p = CharacterFactory.CreatePlayer(defs[i].DisplayName, defs[i]);
+                    CharacterDefinition[] pair = pairs[i];
+                    PlayerState p = DualGeneralFactory.Create(
+                        "P" + (i + 1), pair[0], pair[1]);
                     var ai = new GreedyChoiceProvider();
                     seated.Add(p);
                     providers.Add(ai);
                     selectors.Add(ai);
 
-                    roleGames.TryGetValue(defs[i].DisplayName, out int n);
-                    roleGames[defs[i].DisplayName] = n + 1;
+                    for (int j = 0; j < 2; j++)
+                    {
+                        roleGames.TryGetValue(pair[j].DisplayName, out int n);
+                        roleGames[pair[j].DisplayName] = n + 1;
+                    }
                     factionGames[teams[i]]++;
                     if (teams[i] == weakFaction) factionWeakGames[teams[i]]++;
                 }
@@ -165,13 +170,17 @@ namespace FingerDiceDuel.Tests
                 for (int i = 0; i < 8; i++)
                 {
                     if (teams[i] != winnerTeam) continue;
-                    roleWins.TryGetValue(defs[i].DisplayName, out int w);
-                    roleWins[defs[i].DisplayName] = w + 1;
+                    for (int j = 0; j < 2; j++)
+                    {
+                        string role = pairs[i][j].DisplayName;
+                        roleWins.TryGetValue(role, out int w);
+                        roleWins[role] = w + 1;
+                    }
                 }
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine("=== 8 人阵营混战抽样统计 ===");
+            sb.AppendLine("=== 8 人双将阵营混战抽样统计 ===");
             sb.AppendLine($"总对局 {Games}，平均行动 {totalTurns / (double)Games:F1}，平局 {draws}，异常 {errors}");
             if (firstError != null) sb.AppendLine("首个异常：" + firstError);
             sb.AppendLine();

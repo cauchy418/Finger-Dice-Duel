@@ -68,6 +68,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>8 人模式子菜单（阵营混战 / 身份对局）。</summary>
         EightPlayerMenu = 19,
+
+        /// <summary>娱乐 → 双将 → 双将阵营混战的 AI / 真人菜单。</summary>
+        DualFactionMenu = 20,
     }
 
     /// <summary>

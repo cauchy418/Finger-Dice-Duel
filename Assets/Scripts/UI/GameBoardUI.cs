@@ -1537,8 +1537,11 @@ namespace FingerDiceDuel.UI
             //    ⚠️ 角色名要走 `p.Definition`（`CharacterDefinition`），
             //    不能用 `p.Character` —— 后者是 `ICharacterBehavior`，
             //    **没有 DisplayName**，而且表现层不允许引用 Characters 层。
-            string who = p.Definition != null
-                ? $"{p.Definition.DisplayName}（{p.Name}）"
+            string display = !string.IsNullOrEmpty(p.DisplayNameOverride)
+                ? p.DisplayNameOverride
+                : p.Definition != null ? p.Definition.DisplayName : p.Name;
+            string who = p.Definition != null || !string.IsNullOrEmpty(p.DisplayNameOverride)
+                ? $"{display}（{p.Name}）"
                 : p.Name;
 
             int range = GameManager.BaseRangeOf(p);
@@ -1548,8 +1551,8 @@ namespace FingerDiceDuel.UI
             {
                 // 8 人 / 2v2 的外围面板只有 380 宽：去掉多余空格，
                 // 但距离和血量必须保留（玩家要求所有模式都显示攻击距离）。
-                string shortWho = p.Definition != null
-                    ? $"{p.Definition.DisplayName}({p.Name})"
+                string shortWho = p.Definition != null || !string.IsNullOrEmpty(p.DisplayNameOverride)
+                    ? $"{display}({p.Name})"
                     : p.Name;
                 return $"{shortWho} 攻{Signed(atk)} 防{Signed(def)} " +
                        $"距{rangeText} 血{p.Health}/{p.MaximumHealth}";

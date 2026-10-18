@@ -49,6 +49,7 @@ namespace FingerDiceDuel.Characters
 
             var player = new PlayerState(name, dual, maxHealth);
             player.BindDefinition(primary);
+            player.DisplayNameOverride = $"{primary.DisplayName} + {secondary.DisplayName}";
             return player;
         }
 

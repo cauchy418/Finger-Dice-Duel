@@ -164,6 +164,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public CharacterDefinition Definition { get; private set; }
 
+        /// <summary>
+        /// UI 显示名覆盖（双将用："主将 + 副将"）。
+        /// 战报仍只显示主将；这里只影响棋盘面板 / 标题。
+        /// </summary>
+        public string DisplayNameOverride { get; set; }
+
         // ============ 便捷查询 ============
         public bool HasAnyShield =>
             LeftHand.State == ShieldState.Formed || RightHand.State == ShieldState.Formed;

@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**959 项逻辑测试全部通过**。
+当前状态：**960 项逻辑测试全部通过**。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -361,9 +361,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ### 平衡实测（1v1 经典循环赛）
 
-> 统计口径：1v1 / 2v2 / 双将为无头 AI 直接驱动 `GameManager`，
-> **击杀奖惩只在 8 人阵营混战启用**；下方三段是规则接入前的基线。
-> 8 人抽样已接入击杀奖惩。
+> 统计口径：1v1 / 2v2 / 双将 1v1 为无头 AI 直接驱动 `GameManager`；
+> **击杀奖惩只在 8 人阵营混战启用**。下方前两段是规则接入前的基线，
+> 8 人双将抽样已接入击杀奖惩。
 
 **24 名角色**两两配对、每对 **80 局**、双方交替先手，共 **22,080 局**，
 平均 **18.9** 回合，**0 局模拟器强停**；**874 局**打满轮次上限。
@@ -448,9 +448,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 **真平局最高**：狼人+巨人 4.2%、野蛮人+妖术师 4.0%、猎人+吟游诗人 1.7%，
 其余均 ≤ 1.6%。
 
-## 8 人阵营混战（首版）
+## 8 人双将阵营混战（首版）
 
-**单将、8 个不重复角色、三个阵营各一队**，人数按 **3 / 3 / 2** 分队。
+**双将、8 名玩家各带两名同阵营角色（尽量 16 名角色不重复）、三个阵营各一队**，人数按 **3 / 3 / 2** 分队。
 1 名人类 + 7 名 AI；人类固定 1 号位，经典 1d20 自动分配初始手值。
 
 - 队友可以互相用对方的手当被加数，**也可以互相攻击**；
@@ -461,22 +461,24 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 | 阵营 | 胜率 |
 |---|---:|
-| 守序 | 40.6% |
-| 中立 | 15.3% |
-| 混乱 | 43.3% |
+| 守序 | 47.8% |
+| 中立 | 12.9% |
+| 混乱 | 38.9% |
 
-角色前三：圣武士 54.4%、咒术师 52.4%、术士 52.0%；
-后三：游侠 11.0%、法师 11.1%、武僧 13.6%。
+角色前三：圣武士 54.7%、战士 50.0%、魔射手 49.6%；
+后三：法师 12.3%、游侠 12.6%、盗贼 12.7%。
 完整报告见 [`Tools/8p-report.txt`](Tools/8p-report.txt)。
 
 > ⚠️ 这是**首版抽样**：中立阵营明显偏弱，后续需要单独做 8 人角色/阵营平衡。
-> UI 入口：竞技模式 → 8 人模式 → 阵营混战 → AI 练习。
+> UI 入口：
+> · 娱乐模式 → 双将模式 → 双将阵营混战 → AI 练习；
+> · 竞技模式 → 8 人模式 → 阵营混战 → AI 练习（同一套双将规则）。
 > 所有模式的面板名字行统一显示：**角色（标签） 攻X 防Y 距Z 血量N/M**。
 
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 959 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 960 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴
