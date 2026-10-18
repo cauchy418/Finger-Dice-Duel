@@ -256,9 +256,10 @@ namespace FingerDiceDuel.Tests
                 // 中立善良：游侠 武僧
                 { CharacterDefinition.RangerId, Alignment.NeutralGood },
                 { CharacterDefinition.MonkId, Alignment.NeutralGood },
-                // 绝对中立：忍者 士兵
+                // 绝对中立：忍者 士兵 魔术师（魔术师由混乱善良移来）
                 { CharacterDefinition.NinjaId, Alignment.TrueNeutral },
                 { CharacterDefinition.SoldierId, Alignment.TrueNeutral },
+                { CharacterDefinition.MagicianId, Alignment.TrueNeutral },
                 // 中立邪恶：盗贼
                 { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
                 // 混乱善良：野蛮人
@@ -273,8 +274,6 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.SorcererId, Alignment.ChaoticEvil },
                 // 守序邪恶：猎人（玩家指定）
                 { CharacterDefinition.HunterId, Alignment.LawfulEvil },
-                // 混乱善良：魔术师（玩家指定）
-                { CharacterDefinition.MagicianId, Alignment.ChaoticGood },
             };
 
             var wrong = new List<string>();

@@ -315,7 +315,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             // ---- 魔术师（混乱善良）----
-            Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticGood,
+            Add(CharacterDefinition.MagicianId, "Magician", Alignment.TrueNeutral,
                 shortSkill: "可以拿自己的手当被加数；"
                           + "运算出 2/4/6/8 都是攻击（伤害 = 牌面数字）。",
                 playGuide: "点自己的一只手当加数，再点自己的另一只手当被加数："
