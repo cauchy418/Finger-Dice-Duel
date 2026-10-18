@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Tests
             WriteReport(report);
 
             // 这里只断言"没有真异常"：模拟器被迫中断、或组合构建失败。
-            // ⚠️ 打满回合上限**不算异常** —— 那是规则内的平局（巨人系本来就拖）。
+            // ⚠️ 打满回合上限**不算异常** —— 按血量判定，只有血量相同才平局（巨人系本来就拖）。
             Assert.True(report.Contains("异常：无"),
                 "全部双将组合交叉对战都不应崩溃。\n\n" + report);
         }

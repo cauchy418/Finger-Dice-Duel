@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Tests
             var losses = new Dictionary<string, int>();
             var draws = new Dictionary<string, int>();
             var anomalies = new List<string>();
-            int totalGames = 0, totalTurns = 0, limitHits = 0;
+            int totalGames = 0, totalTurns = 0, limitHits = 0, reachedLimit = 0;
             var pairRows = new List<(string aName, string bName, int wins, int total, double rate)>();
 
             var sb = new StringBuilder();
@@ -85,6 +85,7 @@ namespace FingerDiceDuel.Tests
                         totalGames++;
                         totalTurns += r.Turns;
                         if (r.HitTurnLimit) limitHits++;
+                        if (r.ReachedTurnLimit) reachedLimit++;
 
                         CharacterDefinition winner =
                             r.WinnerIsPlayerA ? (aFirst ? defA : defB)
@@ -145,7 +146,8 @@ namespace FingerDiceDuel.Tests
             sb.AppendLine();
             sb.AppendLine($"总对局 {totalGames}，平均回合数 " +
                           $"{(totalGames == 0 ? 0 : totalTurns / (double)totalGames):F1}，" +
-                          $"达回合上限 {limitHits} 局");
+                          $"打满轮次上限 {reachedLimit} 局（按血量判定），"
+                          + $"模拟器强停 {limitHits} 局");
 
             // ---- 配对层面的极端值（可能是 bug，也可能是克制关系）----
             sb.AppendLine();

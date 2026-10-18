@@ -90,7 +90,7 @@ namespace FingerDiceDuel.Tests
             }
 
             var anomalies = new List<string>();
-            int totalGames = 0, totalActions = 0, limitHits = 0;
+            int totalGames = 0, totalActions = 0, limitHits = 0, reachedLimit = 0;
             int seat14Wins = 0, seat23Wins = 0, seatDraws = 0;
 
             // 玩家要求：加大轮数（尽量多）。
@@ -131,6 +131,7 @@ namespace FingerDiceDuel.Tests
                     totalGames++;
                     totalActions += actions;
                     if (r.HitLimit) limitHits++;
+                    if (r.ReachedLimit) reachedLimit++;
 
                     games[seat14.a.Id]++; games[seat14.b.Id]++;
                     games[seat23.a.Id]++; games[seat23.b.Id]++;
@@ -188,7 +189,8 @@ namespace FingerDiceDuel.Tests
 
             sb.AppendLine($"总对局 {totalGames}，平均行动数 "
                           + $"{(totalGames == 0 ? 0 : totalActions / (double)totalGames):F1}，"
-                          + $"达上限 {limitHits} 局");
+                          + $"打满轮次上限 {reachedLimit} 局（按队伍总血量判定），"
+                          + $"模拟器强停 {limitHits} 局");
 
             if (anomalies.Count > 0)
             {

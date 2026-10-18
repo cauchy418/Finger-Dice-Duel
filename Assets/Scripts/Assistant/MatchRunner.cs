@@ -23,19 +23,17 @@ namespace FingerDiceDuel.Assistant
         public bool HitTurnLimit { get; internal set; }
 
         /// <summary>
-        /// 是否**打满了对局的轮次上限**（<see cref="GameManager.RoundLimit"/>），
-        /// 即规则内的平局。
+        /// 是否**正常打满了对局的轮次上限**（<see cref="GameManager.RoundLimit"/>）。
         ///
         /// ⚠️ 玩家已把上限改成按**轮**算（一轮 = 所有角色都经过一次行动），
         ///    所以这里判的是 <see cref="GameManager.RoundCount"/> 而不是回合数。
         ///
+        /// ⚠️ **它不再等于平局**：打满 50 轮后 `GameManager` 会按血量判胜
+        ///    （1v1 比个人血量，2v2 比队伍总血量；相同才 `Winner == null`）。
+        ///
         /// ⚠️ 与 <see cref="HitTurnLimit"/> 的区别：
         ///    · <see cref="HitTurnLimit"/> = 模拟器被 <c>MaxTurns</c> **强行中断**（异常情况）；
-        ///    · 本字段 = 对局**正常打满**规则上限（规则内的平局）。
-        ///
-        /// 统计胜率时**必须**区分这两者：把打满上限的局当成"负"会严重误导 ——
-        /// 实测"狼人+巨人"在 50 回合上限下 96% 都是打满，被算成半负后排倒数第一；
-        /// 把上限放开到 300，它是 98.8% 胜。
+        ///    · 本字段 = 对局**正常打满**规则上限（可能已有胜者）。
         /// </summary>
         public bool ReachedTurnLimit { get; internal set; }
 
@@ -174,8 +172,8 @@ namespace FingerDiceDuel.Assistant
             //    （`IsGameOver` 仍为 false）。既有测试依赖它，不能改。
             if (!game.IsGameOver) result.HitTurnLimit = true;
 
-            // 另立一个字段表示"打满了 GameManager 的回合上限" ——
-            // 那是**规则内的平局**（`CheckTurnLimit` 置了 IsGameOver / Winner=null），
+            // 另立一个字段表示"打满了 GameManager 的轮次上限" ——
+            // 打满后 `CheckTurnLimit` 会按血量判胜（相同才 Winner=null），
             // 与"模拟器被迫中断"是两回事。
             //
             // 为什么需要区分：统计胜率时，把这种局当成"负"会严重误导 ——

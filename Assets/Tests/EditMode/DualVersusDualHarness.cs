@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Tests
             /// <summary>模拟器被 MaxTurns 强行中断（异常情况，应当为 0）。</summary>
             public bool HitLimit;
 
-            /// <summary>正常打满了对局的轮次上限（规则内的平局）。</summary>
+            /// <summary>正常打满了对局的轮次上限（按血量判定；血量相同才平局）。</summary>
             public bool ReachedLimit;
 
             public string Error;
@@ -175,10 +175,10 @@ namespace FingerDiceDuel.Tests
             public int Games;
             public int Wins;
 
-            /// <summary>**真正的**平局（双方都没死也没到上限就结束）。</summary>
+            /// <summary>真正的平局（轮次上限结算后两队/两人血量相同，或其他和平结束）。</summary>
             public int Draws;
 
-            /// <summary>打满回合上限（**不是**胜负，也不算真正的平局）。</summary>
+            /// <summary>打满轮次上限的局数（其中大多数会按血量判出胜负，只有相同才进 Draws）。</summary>
             public int LimitHits;
 
             /// <summary>胜率（分母包含平局，供参考）。</summary>
@@ -187,22 +187,26 @@ namespace FingerDiceDuel.Tests
             /// <summary>
             /// **决出胜负那些局里的胜率**。
             ///
-            /// 为何看这个：打满上限的局本来就是“没分出胜负”，
-            /// 把它当负会严重误导 ——
-            /// 实测：巨人系被截断成平局后，胜率从 98.8% 掉到 23.7%。
+            /// 为何看这个：真实平局只是少数；打满 50 轮的局已按血量判胜，
+            /// 不能再当成“没分出胜负”从分母里剔除。
             /// </summary>
             public double DecisiveRate
             {
                 get
                 {
-                    // 分母 = 真正分出胜负的局数 = 总局数 - 真实平局 - 打满上限
-                    int decisive = Games - Draws - LimitHits;
+                    // 分母 = 真正分出胜负的局数 = 总局数 - 平局。
+                    // ⚠️ 打满上限的局**已经按血量判出胜负**（除血量相同），
+                    //    不能再从分母里减掉 LimitHits。
+                    int decisive = Games - Draws;
                     return decisive <= 0 ? 0 : Wins / (double)decisive;
                 }
             }
 
             /// <summary>打满上限的比例（越高说明这组越拖）。</summary>
             public double LimitRate => Games == 0 ? 0 : LimitHits / (double)Games;
+
+            /// <summary>真实平局率（血量相同 / 其他和平结束）。</summary>
+            public double DrawRate => Games == 0 ? 0 : Draws / (double)Games;
         }
 
         /// <summary>
@@ -224,8 +228,8 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < duals.Count; i++) dualTally[duals[i].Name] = new Tally();
             for (int i = 0; i < duals.Count; i++)
             {
-                AddRole(roleTally, duals[i].Primary);
-                AddRole(roleTally, duals[i].Secondary);
+                RoleOf(roleTally, duals[i].Primary);
+                RoleOf(roleTally, duals[i].Secondary);
             }
             axisTally["守序"] = new Tally();
             axisTally["中立"] = new Tally();
@@ -266,39 +270,30 @@ namespace FingerDiceDuel.Tests
                                     anomalies.Add($"{first.Name} vs {second.Name} (seed={seed})：模拟器被迫中断");
                             }
 
-                            // ⚠️ **场次必须在所有分支之前记**。
-                            //    我第一版把 Games++ 放在下面，而打满上限的分支会 continue ——
-                            //    于是那些局根本没进场次统计，LimitRate 的分母偏小，
-                            //    决胜胜率甚至算出了 172.8% 这种不可能的值。
+                            // ⚠️ **场次必须在所有分支之前记** —— 所有分支都用同一份 Games。
                             dualTally[first.Name].Games++;
                             dualTally[second.Name].Games++;
+                            AddRoleGame(roleTally, first);
+                            AddRoleGame(roleTally, second);
+                            if (crossAxis)
+                            {
+                                axisTally[first.Axis].Games++;
+                                axisTally[second.Axis].Games++;
+                            }
 
+                            // 打满 50 轮：**按血量判定胜负**，只有血量相同才是平局。
+                            // LimitHits 仍记录"打满上限"的频率，但它不再等于平局。
                             if (o.ReachedLimit)
                             {
                                 dualTally[first.Name].LimitHits++;
                                 dualTally[second.Name].LimitHits++;
-
-                                // 角色口径也要记 —— 玩家要求指出"哪些角色特别容易平局"。
-                                //
-                                // ⚠️ 两个坑（都踩过）：
-                                //   ① 漏了这里 -> 角色表的"打满上限"全是 0.0%；
-                                //   ② 只记 LimitHits 而**不记 Games** -> 角色口径的场次偏小，
-                                //      而 LimitRate 的分母是 Games，于是平局率被严重放大
-                                //      （实测巨人显示 12.5% 而不是正确的 25.8%）。
                                 AddRoleLimit(roleTally, first);
                                 AddRoleLimit(roleTally, second);
-
                                 if (crossAxis)
                                 {
-                                    axisTally[first.Axis].Games++;
                                     axisTally[first.Axis].LimitHits++;
-                                    axisTally[second.Axis].Games++;
                                     axisTally[second.Axis].LimitHits++;
                                 }
-
-                                // 上限截断**不算异常**（它是玩法性质，不是 bug），
-                                // 所以不进 anomalies，只在报告里单独列一行。
-                                continue;
                             }
 
                             // a 就是先手方（firstIsA 已按需要交换过）
@@ -309,33 +304,20 @@ namespace FingerDiceDuel.Tests
                             {
                                 dualTally[first.Name].Draws++;
                                 dualTally[second.Name].Draws++;
-
+                                AddRoleDraw(roleTally, first);
+                                AddRoleDraw(roleTally, second);
                                 if (crossAxis)
                                 {
-                                    axisTally[first.Axis].Games++;
                                     axisTally[first.Axis].Draws++;
-                                    axisTally[second.Axis].Games++;
                                     axisTally[second.Axis].Draws++;
                                 }
                                 continue;
                             }
 
                             Dual winner = o.FirstWon.Value ? a : b;
-                            Dual loser = o.FirstWon.Value ? b : a;
-
                             dualTally[winner.Name].Wins++;
-
-                            AddRole(roleTally, winner.Primary, won: true);
-                            AddRole(roleTally, winner.Secondary, won: true);
-                            AddRole(roleTally, loser.Primary, won: false);
-                            AddRole(roleTally, loser.Secondary, won: false);
-
-                            if (crossAxis)
-                            {
-                                axisTally[winner.Axis].Games++;
-                                axisTally[winner.Axis].Wins++;
-                                axisTally[loser.Axis].Games++;
-                            }
+                            AddRoleWin(roleTally, winner);
+                            if (crossAxis) axisTally[winner.Axis].Wins++;
                         }
                     }
                 }
@@ -345,23 +327,35 @@ namespace FingerDiceDuel.Tests
             return Report(duals, dualTally, roleTally, axisTally, gamesPerPair, games, anomalies);
         }
 
-        /// <summary>给某个双将里的两名角色记一次"打满上限"（**同时记场次**）。</summary>
-        private static void AddRoleLimit(Dictionary<string, Tally> map, Dual dual)
+        /// <summary>给某个双将里的两名角色各记一次场次。</summary>
+        private static void AddRoleGame(Dictionary<string, Tally> map, Dual dual)
         {
-            foreach (string key in new[] { dual.Primary.DisplayName, dual.Secondary.DisplayName })
-            {
-                if (!map.TryGetValue(key, out Tally t))
-                {
-                    t = new Tally();
-                    map[key] = t;
-                }
-                t.Games++;
-                t.LimitHits++;
-            }
+            RoleOf(map, dual.Primary).Games++;
+            RoleOf(map, dual.Secondary).Games++;
         }
 
-        private static void AddRole(Dictionary<string, Tally> map, CharacterDefinition def,
-                                    bool? won = null)
+        /// <summary>给某个双将里的两名角色各记一次"打满上限"（不重复记场次）。</summary>
+        private static void AddRoleLimit(Dictionary<string, Tally> map, Dual dual)
+        {
+            RoleOf(map, dual.Primary).LimitHits++;
+            RoleOf(map, dual.Secondary).LimitHits++;
+        }
+
+        /// <summary>给某个双将里的两名角色各记一次真实平局。</summary>
+        private static void AddRoleDraw(Dictionary<string, Tally> map, Dual dual)
+        {
+            RoleOf(map, dual.Primary).Draws++;
+            RoleOf(map, dual.Secondary).Draws++;
+        }
+
+        /// <summary>给某个双将里的两名角色各记一次胜场。</summary>
+        private static void AddRoleWin(Dictionary<string, Tally> map, Dual dual)
+        {
+            RoleOf(map, dual.Primary).Wins++;
+            RoleOf(map, dual.Secondary).Wins++;
+        }
+
+        private static Tally RoleOf(Dictionary<string, Tally> map, CharacterDefinition def)
         {
             string key = def.DisplayName;
             if (!map.TryGetValue(key, out Tally t))
@@ -370,9 +364,7 @@ namespace FingerDiceDuel.Tests
                 map[key] = t;
             }
 
-            if (won == null) return;
-            t.Games++;
-            if (won.Value) t.Wins++;
+            return t;
         }
 
         private static string Report(List<Dual> duals,
@@ -433,19 +425,19 @@ namespace FingerDiceDuel.Tests
                             + $"  打满 {byDecisive[i].Value.LimitRate * 100,5:F1}%"
                             + $"  （{byDecisive[i].Value.Wins}/{byDecisive[i].Value.Games}）");
 
-            var byLimit = new List<KeyValuePair<string, Tally>>(dualTally);
-            byLimit.Sort((x, y) => y.Value.LimitRate.CompareTo(x.Value.LimitRate));
+            var byDraw = new List<KeyValuePair<string, Tally>>(dualTally);
+            byDraw.Sort((x, y) => y.Value.DrawRate.CompareTo(x.Value.DrawRate));
 
-            sb.AppendLine("  最容易平局的 10 组（打满 50 轮上限 = 平局）：");
-            for (int i = 0; i < byLimit.Count && i < 10; i++)
-                sb.AppendLine($"    {i + 1,2}. {byLimit[i].Key,-16}"
-                            + $"平局率 {byLimit[i].Value.LimitRate * 100,5:F1}%");
+            sb.AppendLine("  最容易平局的 10 组（真实平局：血量相同 / 其他和平结束）：");
+            for (int i = 0; i < byDraw.Count && i < 10; i++)
+                sb.AppendLine($"    {i + 1,2}. {byDraw[i].Key,-16}"
+                            + $"平局率 {byDraw[i].Value.DrawRate * 100,5:F1}%");
 
             int limitTotal = 0;
             foreach (var kv in dualTally) limitTotal += kv.Value.LimitHits;
 
             sb.AppendLine();
-            sb.AppendLine($"僵局（达回合上限）合计 {limitTotal / 2} 局");
+            sb.AppendLine($"打满轮次上限合计 {limitTotal / 2} 局（其中大部分按血量判出胜负）");
 
             if (anomalies.Count > 0)
             {

@@ -293,8 +293,8 @@ namespace FingerDiceDuel.Tests
         public void Full_character_matrix_can_all_be_played_to_completion()
         {
             // 4 个内置角色两两对局（含内斗），确认没有任何组合会崩溃或卡死。
-            // 注意：回合数有上限（GameManager.DefaultTurnLimit），打满上限会**按平局**结束，
-            // 所以这里只断言"对局一定在有限回合内结束"，不再要求必须有胜者。
+            // 注意：回合数有上限（GameManager.DefaultTurnLimit），打满上限会**按血量判定**，
+            // 血量相同才平局；这里只断言"对局一定在有限回合内结束"。
             foreach (CharacterDefinition a in CharacterDefinition.BuiltIn)
             {
                 foreach (CharacterDefinition b in CharacterDefinition.BuiltIn)
@@ -320,7 +320,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Match_ends_as_a_draw_at_the_turn_limit()
         {
-            // 打满回合上限仍未分胜负 -> 平局（Winner == null）。
+            // 打满回合上限且双方血量相同 -> 平局（Winner == null）。
             var game = CharacterFactory.CreateMatch(
                 CharacterDefinition.Blank, CharacterDefinition.Blank);
             var runner = new MatchRunner { MaxTurns = 1000, RecordHistory = false };
@@ -333,10 +333,121 @@ namespace FingerDiceDuel.Tests
             //    1v1 里一轮 = 2 个回合，所以恰好打满 = 100 个回合。
             Assert.AreEqual(GameManager.DefaultRoundLimit * 2, result.Turns,
                 "1v1 打满 50 轮 = 100 个回合。");
-            Assert.Null(result.Winner, "打满上限应按平局记录（无胜者）。");
+            Assert.Null(result.Winner, "双方血量相同才按平局记录（无胜者）。");
             Assert.Null(game.Winner);
             Assert.False(result.HitTurnLimit,
                 "这是规则内的平局，不是'模拟器被迫中断'。");
+        }
+
+        [Test]
+        public void Turn_limit_gives_the_win_to_the_player_with_more_health()
+        {
+            var game = CharacterFactory.CreateMatch(
+                CharacterDefinition.Blank, CharacterDefinition.Blank);
+            game.PlayerA.SetHealthExact(10);
+            game.PlayerB.SetHealthExact(5);
+            game.RoundLimit = 0;
+
+            var runner = new MatchRunner { MaxTurns = 10, RecordHistory = false };
+            MatchResult result = runner.Run(game, new NoOpSelector(), new NoOpSelector());
+
+            Assert.True(result.ReachedTurnLimit, "应走轮次上限结算。");
+            Assert.AreSame(game.PlayerA, result.Winner,
+                "血量更多的一方（A）应获胜。");
+        }
+
+        [Test]
+        public void Turn_limit_is_a_draw_when_health_is_equal()
+        {
+            var game = CharacterFactory.CreateMatch(
+                CharacterDefinition.Blank, CharacterDefinition.Blank);
+            game.PlayerA.SetHealthExact(10);
+            game.PlayerB.SetHealthExact(10);
+            game.RoundLimit = 0;
+
+            var runner = new MatchRunner { MaxTurns = 10, RecordHistory = false };
+            MatchResult result = runner.Run(game, new NoOpSelector(), new NoOpSelector());
+
+            Assert.True(result.ReachedTurnLimit, "应走轮次上限结算。");
+            Assert.Null(result.Winner, "血量相同才平局。");
+        }
+
+        [Test]
+        public void Two_versus_two_turn_limit_uses_the_team_health_sum()
+        {
+            var seated = new List<PlayerState>
+            {
+                CharacterFactory.CreatePlayer("P1", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P2", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P3", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P4", CharacterDefinition.Blank),
+            };
+            var providers = new List<IChoiceProvider>
+            {
+                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
+                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
+            };
+            var game = GameManager.Create2v2(seated, providers);
+            game.RoundLimit = 0;
+
+            // 1&4 一队：10 + 8 = 18；2&3 一队：9 + 5 = 14
+            seated[0].SetHealthExact(10);
+            seated[1].SetHealthExact(9);
+            seated[2].SetHealthExact(5);
+            seated[3].SetHealthExact(8);
+
+            game.BeginTurn();
+            PlayerState actor = game.CurrentPlayer;
+            LegalMove move = game.GetLegalMoves(actor)[0];
+            game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+
+            Assert.True(game.IsGameOver, "第一轮后应触发轮次上限结算。");
+            Assert.AreSame(seated[0], game.Winner,
+                "队伍总血量更高的 1&4 队应获胜；代表取队内血量最高的 P1。");
+        }
+
+        [Test]
+        public void Two_versus_two_turn_limit_is_a_draw_when_team_sums_are_equal()
+        {
+            var seated = new List<PlayerState>
+            {
+                CharacterFactory.CreatePlayer("P1", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P2", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P3", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("P4", CharacterDefinition.Blank),
+            };
+            var providers = new List<IChoiceProvider>
+            {
+                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
+                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
+            };
+            var game = GameManager.Create2v2(seated, providers);
+            game.RoundLimit = 0;
+
+            seated[0].SetHealthExact(10);
+            seated[1].SetHealthExact(9);
+            seated[2].SetHealthExact(5);
+            seated[3].SetHealthExact(4);   // 两队都是 14
+
+            game.BeginTurn();
+            PlayerState actor = game.CurrentPlayer;
+            LegalMove move = game.GetLegalMoves(actor)[0];
+            game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+
+            Assert.True(game.IsGameOver);
+            Assert.Null(game.Winner, "队伍总血量相同才平局。");
+        }
+
+        /// <summary>选第一手合法移动（Blank 的 1+1=2 无效果），用来精确控制血量。</summary>
+        private sealed class NoOpSelector : Assistant.IMoveSelector
+        {
+            public string Describe => "no-op";
+
+            public LegalMove ChooseMove(GameManager game, PlayerState actor)
+            {
+                IReadOnlyList<LegalMove> moves = game.GetLegalMoves(actor);
+                return moves.Count > 0 ? moves[0] : default;
+            }
         }
 
         /// <summary>只求活命的策略：不够血就回复。用来制造"打不死"的极端对局。</summary>

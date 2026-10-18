@@ -2376,7 +2376,10 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 打满**轮次上限**（<see cref="RoundLimit"/> = 50 轮）仍未分出胜负时，按平局结束对局。
+        /// 打满**轮次上限**（<see cref="RoundLimit"/> = 50 轮）仍未分出胜负时结算：
+        ///
+        ///   · **1v1**：血量更多的一方获胜；血量相同才平局。
+        ///   · **2v2**：**一队血量相加**更多的一方获胜；两队总和相同才平局。
         ///
         /// ⚠️ 玩家要求：所有模式的上限都按**轮**算，统一 50 轮。
         ///    一轮 = 所有角色都经过一次行动，所以 50 轮在 1v1 里等于 100 个回合、
@@ -2391,7 +2394,64 @@ namespace FingerDiceDuel.Core
             if (RoundCount < RoundLimit) return;
 
             IsGameOver = true;
-            Winner = null;   // 平局
+            Winner = DecideWinnerByHealth();
+        }
+
+        /// <summary>
+        /// 轮次上限后的**血量判定**：返回获胜队伍的代表（同队血量最高的存活者），
+        /// 血量相同 / 无法判定时返回 null（平局）。
+        ///
+        /// 2v2 用**队伍总血量**（含已阵亡成员的 0）；1v1 就是两个人的血量。
+        /// </summary>
+        private PlayerState DecideWinnerByHealth()
+        {
+            var teams = new List<int>(2);
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null) continue;
+                int team = TeamOf(p);
+                if (team < 0 || teams.Contains(team)) continue;
+                teams.Add(team);
+            }
+
+            // 只有 1v1 / 2v2 的"两队"有明确规则；其他编成不做判定（保持平局）。
+            if (teams.Count != 2) return null;
+
+            int healthA = TeamHealth(teams[0]);
+            int healthB = TeamHealth(teams[1]);
+            if (healthA == healthB) return null;
+
+            int winningTeam = healthA > healthB ? teams[0] : teams[1];
+            return BestAliveInTeam(winningTeam);
+        }
+
+        /// <summary>某队**所有成员**的血量总和（阵亡者按 0 计）。</summary>
+        private int TeamHealth(int team)
+        {
+            int total = 0;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || TeamOf(p) != team) continue;
+                total += p.Health;
+            }
+
+            return total;
+        }
+
+        /// <summary>某队里血量最高的存活者（同血量取座位靠前的；都阵亡则返回 null）。</summary>
+        private PlayerState BestAliveInTeam(int team)
+        {
+            PlayerState best = null;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || !p.IsAlive || TeamOf(p) != team) continue;
+                if (best == null || p.Health > best.Health) best = p;
+            }
+
+            return best;
         }
 
         // ============================================================

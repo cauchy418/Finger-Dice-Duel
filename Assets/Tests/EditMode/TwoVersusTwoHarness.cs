@@ -39,18 +39,23 @@ namespace FingerDiceDuel.Tests
             /// <summary>这次尝试里 count 递增了几次（每次 = 一个玩家的一次行动）。</summary>
             public readonly int Actions;
 
-            /// <summary>是否因为达到回合上限而结束（平局）。</summary>
+            /// <summary>模拟器被 MaxTurns 强行中断（异常情况，应当为 0）。</summary>
             public readonly bool HitLimit;
+
+            /// <summary>正常打满轮次上限（按队伍总血量判定；相同才平局）。</summary>
+            public readonly bool ReachedLimit;
 
             /// <summary>非空表示这一局出错了（异常信息），其余字段无意义。</summary>
             public readonly string Error;
 
-            public Outcome(bool s14, bool s23, int actions, bool hitLimit, string error)
+            public Outcome(bool s14, bool s23, int actions, bool hitLimit,
+                           bool reachedLimit, string error)
             {
                 Seat14Won = s14;
                 Seat23Won = s23;
                 Actions = actions;
                 HitLimit = hitLimit;
+                ReachedLimit = reachedLimit;
                 Error = error;
             }
 
@@ -210,7 +215,8 @@ namespace FingerDiceDuel.Tests
                     s23 = seat == 2 || seat == 3;
                 }
 
-                return new Outcome(s14, s23, actions, !game.IsGameOver, null);
+                return new Outcome(s14, s23, actions, !game.IsGameOver,
+                                   game.RoundCount >= game.RoundLimit, null);
             }
             catch (System.Exception ex)
             {
@@ -219,7 +225,7 @@ namespace FingerDiceDuel.Tests
         }
 
         private static Outcome Fail(string message)
-            => new Outcome(false, false, 0, false, message);
+            => new Outcome(false, false, 0, false, false, message);
 
         /// <summary>
         /// 按 1d20 的点数给某玩家分配初始手值 —— 与 1v1 循环赛**同一套逻辑**，
