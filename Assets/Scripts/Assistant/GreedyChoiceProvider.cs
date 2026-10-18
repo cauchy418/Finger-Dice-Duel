@@ -1010,8 +1010,86 @@ namespace FingerDiceDuel.Assistant
                     score += profile.Combos[i].Bonus;
             }
 
+            // ③ **邪术师距离修正的"情境权重"**（玩家要求）
+            score += WarlockDistanceAdjust(actor, actedAfter);
+
             return score;
         }
+
+        /// <summary>
+        /// **邪术师把对手推开的那两个回合里，双方的手牌价值观要变。**
+        ///
+        /// 玩家要求（原话）：
+        ///   "把近距离角色推开的两个回合内，大幅增加攻击数字权重，
+        ///    大幅降低 5 的权重（但要比无意义数字大）"；
+        ///   "增加的是邪术师自己的数值，
+        ///    被邪术师影响的角色在那两个回合里应该降低攻击数字的价值"。
+        ///
+        /// 为什么放这里而不是改静态权重表：
+        ///   同一张手牌，在"对手被推开（打不到我）"和"没被推开"两种局面下价值不同，
+        ///   静态表表达不了，只能按实时局面加/减分。
+        ///
+        /// 判据用**距离修正层**（`DistancePenaltyBetween > 0`）——
+        ///   它就是"被邪术师推开的两个回合"这个状态本身。
+        /// </summary>
+        private int WarlockDistanceAdjust(PlayerState actor, int actedAfter)
+        {
+            if (Game == null || actor == null) return 0;
+
+            bool isAttackNumber = actedAfter == 4 || actedAfter == 6 || actedAfter == 8;
+            bool isFive = actedAfter == 5;
+
+            // ---- ① 邪术师自己：对手被推开 -> 猛攻 ----
+            if (actor.Character is Characters.SpecialLogics.WarlockLogic)
+            {
+                if (!AnyOpponentPushedBy(actor)) return 0;
+
+                if (isAttackNumber) return AggressiveAttackBonus;   // 大幅增加
+                if (isFive) return -CalmFivePenalty;                // 大幅降低
+                return 0;                                            // 1/2/3/7 不动，于是 5 仍高于它们
+            }
+
+            // ---- ② 被推开的人：这两回合打不到人 -> 攻击数字贬值 ----
+            if (IsPushedByWarlock(actor) && isAttackNumber) return -PushedAttackPenalty;
+
+            return 0;
+        }
+
+        /// <summary>邪术师自己：是否有对手正被自己的距离修正推开。</summary>
+        private bool AnyOpponentPushedBy(PlayerState warlock)
+        {
+            System.Collections.Generic.IReadOnlyList<PlayerState> all = Game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || ReferenceEquals(p, warlock) || !p.IsAlive) continue;
+                if (Game.DistancePenaltyBetween(warlock, p) > 0) return true;
+            }
+            return false;
+        }
+
+        /// <summary>我自己是否正被某位邪术师推开（距离修正 &gt; 0）。</summary>
+        private bool IsPushedByWarlock(PlayerState me)
+        {
+            System.Collections.Generic.IReadOnlyList<PlayerState> all = Game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || ReferenceEquals(p, me) || !p.IsAlive) continue;
+                if (!(p.Character is Characters.SpecialLogics.WarlockLogic)) continue;
+                if (Game.DistancePenaltyBetween(p, me) > 0) return true;
+            }
+            return false;
+        }
+
+        /// <summary>邪术师"猛攻"时给攻击数字的额外分（大幅）。</summary>
+        private const int AggressiveAttackBonus = 260;
+
+        /// <summary>邪术师"猛攻"时给 5 的减分（降到有意义数字之下、无意义数字之上）。</summary>
+        private const int CalmFivePenalty = 180;
+
+        /// <summary>被推开时攻击数字的贬值幅度。</summary>
+        private const int PushedAttackPenalty = 200;
 
         private static Hand GetOtherHand(PlayerState actor, Hand acted)
             => ReferenceEquals(acted, actor.LeftHand) ? actor.RightHand : actor.LeftHand;
