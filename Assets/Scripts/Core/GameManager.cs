@@ -554,7 +554,100 @@ namespace FingerDiceDuel.Core
 
             int diff = ia > ib ? ia - ib : ib - ia;
             int wrap = n - diff;
-            return diff < wrap ? diff : wrap;
+            int baseDistance = diff < wrap ? diff : wrap;
+
+            // ⚠️ **邪术师的距离修正**：只影响"他与他命中过的那个人"这一对，
+            //    其他玩家之间的距离完全不变（玩家明确要求）。
+            return baseDistance + DistancePenaltyBetween(a, b);
+        }
+
+        // ============================================================
+        // 距离修正层（邪术师）
+        // ============================================================
+
+        /// <summary>一条"成对距离修正"。</summary>
+        private sealed class DistancePenalty
+        {
+            public PlayerState A;
+            public PlayerState B;
+            public int Amount;
+
+            /// <summary>还剩几个"目标自己的回合"。</summary>
+            public int TurnsLeft;
+        }
+
+        private readonly List<DistancePenalty> _distancePenalties = new List<DistancePenalty>();
+
+        /// <summary>
+        /// **邪术师**：令 <paramref name="owner"/> 与 <paramref name="target"/> 之间的距离 +<paramref name="amount"/>。
+        ///
+        /// 玩家确认的口径：
+        ///   · 持续到**目标自己的 2 个回合**结束（与法师状态同一套计时）
+        ///   · 再次命中**只刷新时长，不叠加**（+2 封顶）
+        ///   · **不封顶**：8 人环距离最大 4，+2 之后就是 6
+        /// </summary>
+        public void ApplyDistancePenalty(PlayerState owner, PlayerState target, int amount)
+        {
+            if (owner == null || target == null) return;
+            if (ReferenceEquals(owner, target)) return;
+            if (amount <= 0) return;
+
+            for (int i = 0; i < _distancePenalties.Count; i++)
+            {
+                DistancePenalty p = _distancePenalties[i];
+                if (!SamePair(p, owner, target)) continue;
+
+                // 刷新：**不叠加**
+                p.Amount = amount;
+                p.TurnsLeft = PlayerState.StatusDurationTurns;
+                return;
+            }
+
+            _distancePenalties.Add(new DistancePenalty
+            {
+                A = owner,
+                B = target,
+                Amount = amount,
+                TurnsLeft = PlayerState.StatusDurationTurns,
+            });
+        }
+
+        /// <summary>这一对当前的距离修正（没有则为 0）。</summary>
+        public int DistancePenaltyBetween(PlayerState a, PlayerState b)
+        {
+            if (a == null || b == null) return 0;
+            for (int i = 0; i < _distancePenalties.Count; i++)
+                if (SamePair(_distancePenalties[i], a, b)) return _distancePenalties[i].Amount;
+            return 0;
+        }
+
+        private static bool SamePair(DistancePenalty p, PlayerState a, PlayerState b)
+            => (ReferenceEquals(p.A, a) && ReferenceEquals(p.B, b))
+               || (ReferenceEquals(p.A, b) && ReferenceEquals(p.B, a));
+
+        /// <summary>
+        /// 递减**属于 <paramref name="owner"/> 这个人的**修正（在他自己的回合结束时调）。
+        /// 归零即移除。
+        /// </summary>
+        private void TickDistancePenalties(PlayerState owner)
+        {
+            if (owner == null) return;
+            for (int i = _distancePenalties.Count - 1; i >= 0; i--)
+            {
+                DistancePenalty p = _distancePenalties[i];
+
+                // 人已经死了 -> 直接清掉
+                if (p.A == null || p.B == null || !p.A.IsAlive || !p.B.IsAlive)
+                {
+                    _distancePenalties.RemoveAt(i);
+                    continue;
+                }
+
+                if (!ReferenceEquals(p.B, owner)) continue;      // 记在**目标**身上
+
+                p.TurnsLeft--;
+                if (p.TurnsLeft <= 0) _distancePenalties.RemoveAt(i);
+            }
         }
 
         /// <summary>
@@ -1692,6 +1785,9 @@ namespace FingerDiceDuel.Core
 
             // ---- 状态计数递减（归零即移除）----
             actor.TickStatuses();
+
+            // ---- 距离修正递减（邪术师）：记在**目标**身上，用的也是他自己的回合 ----
+            TickDistancePenalties(actor);
         }
 
         /// <summary>最近一次状态结算的说明（供战报 / 测试；空字符串 = 本次没有）。</summary>

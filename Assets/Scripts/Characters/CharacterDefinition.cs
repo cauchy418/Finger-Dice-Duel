@@ -335,6 +335,35 @@ namespace FingerDiceDuel.Core
 
 
 
+        /// <summary>
+        /// 邪术师：攻 0 / 防 -1，攻击距离无限，中立邪恶。
+        /// 命中（闪避 / 取消除外）令自己与该目标的距离 +2，持续目标自己的 2 个回合。
+        /// </summary>
+        public static CharacterDefinition Warlock { get; } = new CharacterDefinition(
+            WarlockId, "邪术师", SpecialLogicType.Warlock,
+            attackBonus: 0, defenseBonus: -1,
+            description: "你命中的攻击（除闪避 / 取消外）令你与目标之间的距离 +2，" +
+                         "直到目标下下个回合结束 —— 他射程不足时这两个回合都打不到你。" +
+                         "距离只影响你与他之间，不改变其他玩家之间的距离；" +
+                         "重复命中只刷新时长、不叠加，且不封顶。" +
+                         "攻击对距离 1 以内为挥砍伤害、1 以外为穿刺伤害。" +
+                         "攻 0 / 防 -1，攻击距离无限。");
+
+        /// <summary>
+        /// 吟游诗人：攻 0 / 防 -1，攻击距离 3，守序中立，伤害类型穿刺。
+        /// 每次行动结算完，若本回合受过伤害或实际回复过体力即可发动。
+        /// </summary>
+        public static CharacterDefinition Bard { get; } = new CharacterDefinition(
+            BardId, "吟游诗人", SpecialLogicType.Bard,
+            attackBonus: 0, defenseBonus: -1,
+            description: "每次行动结算完，若本回合受过伤害或回复过体力" +
+                         "（实际回 0 不算，状态伤害也算），可发动技能：" +
+                         "先选增幅攻击 / 增幅防御 / 削弱攻击 / 削弱防御之一，" +
+                         "再选攻击范围内 1~3 名角色（含自己，同一人点两只手只算一次），" +
+                         "给他们对应的攻防加成 ±(4-目标数)：1 人 ±3、2 人 ±2、3 人 ±1。" +
+                         "持续到你下一次发动技能（旧的立即移除），或你死亡时立即清除。" +
+                         "攻 0 / 防 -1，攻击距离 3，伤害类型穿刺。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -343,6 +372,9 @@ namespace FingerDiceDuel.Core
             Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Hexer, ArcaneArcher, Gambler, Knight,
             Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer
+            // ⚠️ Warlock / Bard 已实现但「还没有 AI 策略」——
+            //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
+            //    补齐 AI 后再接入可选列表。
         };
     }
 }

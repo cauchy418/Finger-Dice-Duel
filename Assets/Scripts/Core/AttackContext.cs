@@ -396,6 +396,32 @@ namespace FingerDiceDuel.Core
             //    ⚠️ 挂状态的是**攻击方**的角色（法师），挂到**被实际承受伤害的人**身上
             //       （圣武士可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
             ApplyAttackerStatus(manager);
+
+            // 5. **命中后的通用钩子**（邪术师的距离修正走这里）。
+            //    与挂状态同一个位置 —— 那一刻"算不算命中"已经确定
+            //    （盾抵挡 / 太极减免算命中，闪避 / 取消不算）。
+            ApplyAttackerHitEffect(manager);
+        }
+
+        /// <summary>
+        /// 把"已经命中"这件事通知攻击方角色（<see cref="IOnHitLanded"/>）。
+        ///
+        /// 与 <see cref="ApplyAttackerStatus"/> 的区别：那个专门管"挂负面状态"，
+        /// 这个给"命中后想做别的事"的角色用（邪术师加距离）。
+        /// </summary>
+        private void ApplyAttackerHitEffect(GameManager manager)
+        {
+            if (Attacker == null) return;
+            if (!(Attacker.Character is IOnHitLanded hook)) return;
+
+            // 取消 / 一段都没落地 -> 不算命中（与挂状态同一口径）
+            if (HitCount == 0) return;
+            if (LandedHits == 0 && BlockedHits == 0) return;
+
+            PlayerState victim = Defender;
+            if (victim == null || !victim.IsAlive) return;
+
+            hook.OnHitLanded(this, manager);
         }
 
         /// <summary>

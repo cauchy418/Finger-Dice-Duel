@@ -232,6 +232,7 @@ namespace FingerDiceDuel.Core
         {
             if (amount <= 0) return;
             Health = Math.Max(0, Health - amount);
+            TookDamageThisTurn = true;
         }
 
         /// <summary>
@@ -248,7 +249,62 @@ namespace FingerDiceDuel.Core
         {
             if (amount <= 0) return;
             if (HasStatus(StatusEffect.Decay)) return;      // 腐朽：禁止回血
+
+            int before = Health;
             Health = Math.Min(MaximumHealth, Health + amount);
+
+            // ⚠️ 吟游诗人的触发条件是"**实际**回过体力" —— 满血回复不算，
+            //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。
+            if (Health > before) HealedThisTurn = true;
+        }
+
+        // ============ 吟游诗人：本回合的"是否受过伤 / 回过血" ============
+
+        /// <summary>
+        /// 本回合是否**受过伤害**（吟游诗人的触发条件之一）。
+        /// 每次行动开始时由 `GameManager.BeginTurn` 复位。
+        /// </summary>
+        public bool TookDamageThisTurn { get; set; }
+
+        /// <summary>
+        /// 本回合是否**实际回复过体力**（满血回复不算 —— 见 <see cref="Heal"/>）。
+        /// 每次行动开始时由 `GameManager.BeginTurn` 复位。
+        /// </summary>
+        public bool HealedThisTurn { get; set; }
+
+        /// <summary>
+        /// **吟游诗人给的攻防加成**（正数 = 增幅、负数 = 削弱）。
+        ///
+        /// 与"角色自身的攻防加成"相加（见 `StatusRules.EffectiveAttackBonus`），
+        /// 所以和强酸的 −2 防御是同一层，会一起被算进去。
+        /// </summary>
+        public int BardAttackOffset { get; private set; }
+        public int BardDefenseOffset { get; private set; }
+
+        /// <summary>这些加成是哪位吟游诗人给的（用于"下次发动时清除旧的"与"死亡清除"）。</summary>
+        public PlayerState BardOffsetSource { get; private set; }
+
+        /// <summary>设置/覆盖吟游诗人的加成（<paramref name="source"/> 为 null 时等于清除）。</summary>
+        public void SetBardOffset(PlayerState source, int attackOffset, int defenseOffset)
+        {
+            BardOffsetSource = source;
+            BardAttackOffset = attackOffset;
+            BardDefenseOffset = defenseOffset;
+        }
+
+        /// <summary>清除由某位吟游诗人给的加成（他再次发动 / 他死亡时调用）。</summary>
+        public void ClearBardOffsetFrom(PlayerState source)
+        {
+            if (source == null) return;
+            if (!ReferenceEquals(BardOffsetSource, source)) return;
+            SetBardOffset(null, 0, 0);
+        }
+
+        /// <summary>复位"本回合"标记（每次行动开始时调用）。</summary>
+        public void ResetTurnFlags()
+        {
+            TookDamageThisTurn = false;
+            HealedThisTurn = false;
         }
 
         /// <summary>

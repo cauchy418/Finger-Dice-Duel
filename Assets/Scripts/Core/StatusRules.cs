@@ -24,6 +24,9 @@ namespace FingerDiceDuel.Core
         {
             int bonus = p?.Character?.AttackBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.Stun)) bonus -= StunAttackPenalty;
+
+            // 吟游诗人的加成与"角色自身加成"**同层相加**（可正可负）
+            if (p != null) bonus += p.BardAttackOffset;
             return bonus;
         }
 
@@ -32,6 +35,9 @@ namespace FingerDiceDuel.Core
         {
             int bonus = p?.Character?.DefenseBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
+
+            // 吟游诗人的加成（与强酸同层相加）
+            if (p != null) bonus += p.BardDefenseOffset;
             return bonus;
         }
 

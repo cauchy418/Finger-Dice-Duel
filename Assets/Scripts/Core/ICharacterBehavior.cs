@@ -92,6 +92,20 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **命中后想做别的事**的角色实现本接口（邪术师：加距离）。
+    ///
+    /// 调用时机与 <see cref="IStatusApplyingAttack"/> 完全相同 ——
+    /// 闪避 / 取消 / 盾 / 太极都判完了，确认**算命中**之后。
+    /// 命中口径沿用同一套：被盾抵挡、被太极减免仍算命中；
+    /// 被闪避或被取消不算。
+    /// </summary>
+    public interface IOnHitLanded
+    {
+        /// <summary>确认命中后调用。</summary>
+        void OnHitLanded(AttackContext context, GameManager manager);
+    }
+
+    /// <summary>
     /// 攻击**不可被闪避**的角色实现本接口（咒术师）。
     ///
     /// 为什么要单独一个接口，而不是让游侠去判断 `is CurseweaverLogic`：
