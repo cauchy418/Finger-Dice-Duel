@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void The_penalty_survives_the_first_turn_of_the_target()
+        public void The_penalty_expires_after_two_of_the_targets_turns()
         {
             PlayerState w = Make("邪", CharacterDefinition.Warlock);
             PlayerState foe = Make("战", CharacterDefinition.Soldier);
@@ -90,16 +90,27 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(w, w.LeftHand, foe.LeftHand);
             Assert.AreEqual(3, game.DistanceBetween(w, foe));
 
-            // 目标自己的回合 ①：还应当有效（规则是"他自己的 2 个回合"）
+            // ⚠️ 回合边界要**显式**推进：`ExecuteTurn` 只跑运算，
+            //    状态 / 距离的计时由 `ResolveStatusTurnEnd` 在"换人"时推进
+            //    （界面路径由 BoardController 调，无头路径由 MatchRunner 调）。
+            //    这里直连 `ExecuteTurn`，所以必须自己调 —— 之前漏了这一步，
+            //    看起来像"计时不生效"，其实是测试没走真实路径。
+
+            // 目标自己的回合 ①
             foe.LeftHand.SetValue(1);
             w.LeftHand.SetValue(1);
             game.ExecuteTurn(foe, foe.LeftHand, w.LeftHand);
+            game.ResolveStatusTurnEnd(foe);
             Assert.AreEqual(3, game.DistanceBetween(w, foe), "第 1 个回合后还在。");
 
-            // ⚠️ 已知问题（实测）：**第 2 个回合结束后仍未清除**。
-            //    规则要求"到目标自己的 2 个回合结束"，所以这里本应恢复成 1。
-            //    计时口径还有一回合偏差，待修 —— 修好后把下面这条断言打开：
-            //    Assert.AreEqual(1, game.DistanceBetween(w, foe));
+            // 目标自己的回合 ②
+            game.ExecuteTurn(foe, foe.LeftHand, w.LeftHand);
+            game.ResolveStatusTurnEnd(foe);
+
+            Assert.AreEqual(0, game.DistancePenaltyBetween(w, foe),
+                "第 2 个回合结束后修正应当清零。");
+            Assert.AreEqual(1, game.DistanceBetween(w, foe),
+                "第 2 个回合结束后距离恢复成 1。");
         }
 
         [Test]
