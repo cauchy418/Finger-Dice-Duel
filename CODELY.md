@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **937 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
+| 测试 | **942 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局。
@@ -257,6 +257,14 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师 / 猎人 / 狼人 / 魔术师）。邪术师 2v2 61.6% / 8.7% 平局，先处理平局，暂不叠加集火 |
 | `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
 | `Tests/EditMode/FocusPolicyExperimentTests.cs` | 24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局，写 `Tools/focus-report.txt` |
+
+### 新角色触发测试
+
+| 文件 | 职责 |
+|---|---|
+| `Tests/EditMode/BardTriggerTests.cs` | 吟游诗人**真实行动**触发链：受伤 / 9 回血 / 满血回复不触发 / 中毒触发 / 2v2 队友受伤不触发；并验证 `BardAi.TryActivate` 接上触发 |
+| `Tests/EditMode/BardTests.cs` + `BardChoiceFlowTests.cs` | 四步选择、强度、目标数、替换与死亡清除 |
+| `Tests/EditMode/SorcererTests.cs` / `WarlockDistanceTests.cs` | 术士 / 邪术师的被动触发与距离结算（无触发窗口，不另做自动触发测试） |
 
 ```powershell
 # 只跑集火实验（约 20 秒）
