@@ -466,6 +466,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 > ⚠️ 这是**首版抽样**：中立阵营明显偏弱，后续需要单独做 8 人角色/阵营平衡。
 > UI 入口：竞技模式 → 8 人模式 → 阵营混战 → AI 练习。
+> 所有模式的面板名字行统一显示：**角色（标签） 攻X 防Y 距Z 血量N/M**。
 
 ## 工程结构
 

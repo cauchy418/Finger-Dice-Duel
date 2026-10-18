@@ -796,7 +796,8 @@ namespace FingerDiceDuel.UI
                 RingPanel panel = _ringPanels[i];
                 if (panel.Owner == null) continue;
 
-                panel.NameText.text = DescribeNameLine(panel.Owner);
+                panel.NameText.text = DescribeNameLine(panel.Owner,
+                    compact: panel.Position != RingPosition.SelfBottom);
                 UpdateHealthBar(panel.HpFill, panel.Owner);
                 panel.StatusText.text = HandVisual.ShieldSummary(panel.Owner);
 
@@ -1507,7 +1508,7 @@ namespace FingerDiceDuel.UI
         /// 攻防是**动态**的（狼人会永久成长），所以每次刷新都要重算，
         /// 不能只在开局写一次。负的防御表示"受到的伤害 +2"（见 RULES.md §6）。
         /// </summary>
-        private static string DescribeNameLine(PlayerState p)
+        private static string DescribeNameLine(PlayerState p, bool compact = false)
         {
             // ⚠️⚠️ **必须用"有效加成"，不能用角色自身加成。**
             //
@@ -1536,8 +1537,22 @@ namespace FingerDiceDuel.UI
                 ? $"{p.Definition.DisplayName}（{p.Name}）"
                 : p.Name;
 
+            int range = GameManager.BaseRangeOf(p);
+            string rangeText = range >= int.MaxValue ? "∞" : range.ToString();
+
+            if (compact)
+            {
+                // 8 人 / 2v2 的外围面板只有 380 宽：去掉多余空格，
+                // 但距离和血量必须保留（玩家要求所有模式都显示攻击距离）。
+                string shortWho = p.Definition != null
+                    ? $"{p.Definition.DisplayName}({p.Name})"
+                    : p.Name;
+                return $"{shortWho} 攻{Signed(atk)} 防{Signed(def)} " +
+                       $"距{rangeText} 血{p.Health}/{p.MaximumHealth}";
+            }
+
             return $"{who}    攻 {Signed(atk)}    防 {Signed(def)}    " +
-                   $"{p.Health}/{p.MaximumHealth}";
+                   $"距 {rangeText}    血量 {p.Health}/{p.MaximumHealth}";
         }
 
         /// <summary>按当前血量刷新血条（宽度比例 + 颜色）。</summary>

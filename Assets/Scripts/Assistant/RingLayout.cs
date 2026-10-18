@@ -263,8 +263,9 @@ namespace FingerDiceDuel.Assistant
                             || position == RingPosition.LowerLeft
                             || position == RingPosition.LowerRight;
 
+            // 玩家要求：8 人局只有主操作面板最大；
+            // 顶部五号位与其他外围面板**同尺寸**。
             if (isSelf) { width = 640f; height = 230f; }
-            else if (position == RingPosition.TopCenter) { width = 460f; height = 220f; }
             else if (isEightSlot) { width = 380f; height = 210f; }
             else { width = 560f; height = 240f; }
         }
