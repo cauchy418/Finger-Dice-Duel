@@ -2537,11 +2537,18 @@ namespace FingerDiceDuel.Assistant
                         Phase = BoardPhase.ChoosingTargetPlayer;
                         if (SelectedHand == null) SelectedHand = _turnActedHand;
                         bool hasTarget = BeginTargetPlayerChoice();
+
+                        // ⚠️ 没有合法目标时 `TargetPlayer` 仍是 null ——
+                        //    直接拼提示会空引用（1v1 循环赛抓到过 NullReferenceException）。
+                        string targetName = TargetPlayer != null
+                            ? TargetPlayer.Name
+                            : (Defender?.Name ?? "目标");
+
                         Hint = !hasTarget
                             ? $"运算出 {LastResultValueForHint()}，但没有可攻击的目标。" +
                               $"请点右侧「放弃攻击」。"
                             : $"运算出 {LastResultValueForHint()}。" +
-                              $"请确认这次要指向 {TargetPlayer.Name}。";
+                              $"请确认这次要指向 {targetName}。";
                         return;
                     }
 
@@ -2744,6 +2751,21 @@ namespace FingerDiceDuel.Assistant
             // 让角色按"刚收到的答案"追加后续问题（例如牧师选了回复才问给谁）。
             // 必须**先记答案再追加** —— 后一步的 SkipWhen 要读得到前一步的答案。
             _pendingRequestIndex++;
+
+            // ⚠️⚠️ **法师在「是否放弃攻击」上点了「不发动」= 照常攻击。**
+            //
+            //    这时必须重新立起"本次抉择属于选目标手之前"，
+            //    让它走 ①-b（`NeedsTargetAfterOperation` -> 确认目标玩家）。
+            //    否则会一路走到 `ExecuteResolvedTurn()` ——
+            //    **没让玩家确认攻击目标就直接打了**
+            //    （玩家实测："法师点击不发动后没有选择攻击目标就自动攻击了"）。
+            //
+            //    ⚠️ 为什么不能靠原生的 `_preTargetChoiceActive`：
+            //       进 `AdvanceCharacterChoice` 的中间步骤会把它清掉，
+            //       实测到那一刻它已经是 false，于是走了结算。
+            if (request.Effect == HandEffect.WizardAbandonAttack && hand == null)
+                _preTargetChoiceActive = true;
+
             AppendFollowUpChoices(request, hand);
 
             AdvanceCharacterChoice();
