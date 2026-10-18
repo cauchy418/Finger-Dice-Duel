@@ -43,7 +43,9 @@ namespace FingerDiceDuel.Tests
             PlayerState p = Make("圣", CharacterDefinition.Paladin);
 
             Assert.AreEqual(0, p.Character.AttackBonus);
-            Assert.AreEqual(1, p.Character.DefenseBonus);
+            // 玩家调整：防御从 +1 下调为 0（压一压圣武士在 2v2 的强度）
+            Assert.AreEqual(0, p.Character.DefenseBonus,
+                "圣武士现在是 0 / 0（玩家要求从 0 / +1 下调）。");
             Assert.AreEqual(1, GameManager.BaseRangeOf(p), "圣武士攻击距离 1。");
         }
 

@@ -146,14 +146,14 @@ namespace FingerDiceDuel.Core
         /// 圣武士：4/6 不再攻击，改为合盾；合盾与碎盾时对范围内一名角色
         /// 造成 2 点真实伤害（强制发动、玩家选目标）；
         /// 范围内有人被攻击时可以把目标改成自己。
-        /// 攻防 0 / +1。
+        /// 攻防 **0 / 0**（玩家要求从 0 / +1 下调，压一压它在 2v2 的强度）。
         /// </summary>
         public static CharacterDefinition Paladin { get; } = new CharacterDefinition(
             PaladinId, "圣武士", SpecialLogicType.Paladin,
-            defenseBonus: 1,
+            attackBonus: 0, defenseBonus: 0,
             description: "4 与 6 不再攻击，改为合成盾牌；合出盾、主动碎盾、被打碎盾时，" +
                          "对攻击范围内一名角色造成 2 点真实伤害（强制发动，目标自选）；" +
-                         "攻击范围内的角色被攻击时，可以把目标改成自己。攻防 0 / +1。");
+                         "攻击范围内的角色被攻击时，可以把目标改成自己。攻防 0 / 0。");
 
         /// <summary>
         /// 邪术师：有人发起攻击时，若攻击数字与自己某只手相同，
