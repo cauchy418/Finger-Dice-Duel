@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**960 项逻辑测试全部通过**。
+当前状态：**961 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -472,12 +472,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 | 阵营 | 胜率 |
 |---|---:|
-| 守序 | 47.8% |
+| 守序 | 48.0% |
 | 中立 | 12.9% |
-| 混乱 | 38.9% |
+| 混乱 | 38.5% |
 
-角色前三：圣武士 54.7%、战士 50.0%、魔射手 49.6%；
-后三：法师 12.3%、游侠 12.6%、盗贼 12.7%。
+角色前三：圣武士 55.1%、战士 50.3%、魔射手 50.1%；
+后三：法师 12.1%、游侠 12.5%、盗贼 12.6%。
 完整报告见 [`Tools/8p-report.txt`](Tools/8p-report.txt)。
 
 > ⚠️ 这是**首版抽样**：中立阵营明显偏弱，后续需要单独做 8 人角色/阵营平衡。
@@ -489,7 +489,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 960 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 961 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

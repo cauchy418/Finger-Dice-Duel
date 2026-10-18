@@ -1125,7 +1125,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**960 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**961 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
@@ -1412,9 +1412,9 @@ UI  →  Assistant  →  Core
 
 | 阵营 | 胜率（按局） | 作为 2 人阵营时 |
 |---|---:|---:|
-| 守序 | 47.8% | 17.8% |
-| 中立 | 12.9% | 5.2% |
-| 混乱 | 38.9% | 13.7% |
+| 守序 | 48.0% | 17.8% |
+| 中立 | 12.9% | 5.5% |
+| 混乱 | 38.5% | 13.3% |
 
 > ⚠️ 首版样本里中立明显偏弱，这是角色池 / AI 在 8 人局的综合结果，
 > 后续需要单独做 8 人平衡；不要用这张表反推 1v1 / 2v2 的强弱。

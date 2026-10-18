@@ -35,6 +35,40 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Swordsman_main_attack_and_follow_up_need_a_target_in_eight_player()
+        {
+            var seated = new List<PlayerState>(8);
+            var providers = new List<IChoiceProvider>(8);
+            seated.Add(CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman));
+            for (int i = 1; i < 8; i++)
+                seated.Add(CharacterFactory.CreatePlayer("P" + (i + 1),
+                                                         CharacterDefinition.Blank));
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+
+            GameManager game = GameManager.CreateEight(seated, providers,
+                new List<int> { 0, 0, 0, 1, 1, 1, 2, 2 });
+            var sink = new SimpleChoiceProvider();
+            var controller = new BoardController(game, sink);
+            for (int i = 1; i < 8; i++)
+                controller.BindPlayer(seated[i], new GreedyChoiceProvider(), sink);
+            controller.SetFirstPlayer(seated[0]);
+            controller.BeginTurn();
+
+            seated[0].LeftHand.SetValue(5);
+            seated[0].RightHand.SetValue(6);
+            seated[7].RightHand.SetValue(1);
+
+            Assert.IsTrue(controller.ClickHand(seated[0].LeftHand));
+            Assert.IsTrue(controller.ClickHand(seated[7].RightHand));
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, controller.Phase,
+                "8 人局有多个目标时，点加数后必须先让玩家确认攻击目标。");
+
+            Assert.IsTrue(controller.ConfirmTargetPlayer());
+            Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, controller.Phase,
+                "确认目标后才问剑客是否追加。");
+        }
+
+        [Test]
         public void Eight_players_and_three_faction_teams_are_registered()
         {
             GameManager game = MatchEight(out List<PlayerState> seated);

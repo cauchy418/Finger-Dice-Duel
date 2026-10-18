@@ -659,6 +659,7 @@ namespace FingerDiceDuel.Assistant
             _chosenDefenseShield = null;
             _shieldChoices.Clear();
             _preTargetChoiceActive = false;
+            _returnToTargetAfterChoice = false;
 
             BeginTurn();
             return true;
@@ -1205,9 +1206,10 @@ namespace FingerDiceDuel.Assistant
 
             provider.CollectPreTargetChoices(context, _pendingRequests);
 
-            // 过滤空候选
+            // 过滤空候选（牧师 4/6/8 的"攻击还是回复"等）。
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
-                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+                if (_pendingRequests[i].Candidates == null
+                    || _pendingRequests[i].Candidates.Count == 0)
                     _pendingRequests.RemoveAt(i);
 
             if (_pendingRequests.Count == 0) return false;
@@ -1219,6 +1221,13 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>当前是否停在"选目标手之前的抉择"。</summary>
         private bool _preTargetChoiceActive;
+
+        /// <summary>
+        /// 回答完游侠强化 / 战士换射程后，仍需回到"确认攻击目标"。
+        /// 与 `_preTargetChoiceActive` 分开：这些抉择本身仍属于普通
+        /// `ChoosingPreTurnChoice`（阶段名不改成 PreTarget）。
+        /// </summary>
+        private bool _returnToTargetAfterChoice;
 
         /// <summary>
         /// 盗贼已经按过「偷窃」按钮（本回合）。
@@ -2565,7 +2574,6 @@ namespace FingerDiceDuel.Assistant
             {
                 int before = _pendingRequests.Count;
                 provider.CollectPreTurnChoices(context, _pendingRequests);
-
             // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
@@ -2735,6 +2743,7 @@ namespace FingerDiceDuel.Assistant
 
             provider.CollectPreTurnChoices(context, _pendingRequests);
 
+
             // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
@@ -2744,18 +2753,53 @@ namespace FingerDiceDuel.Assistant
                 mage.ReadFromSink(dmgSink);
             }
 
-            // 过滤空候选
+            // ⚠️⚠️ **这里只能收"确认目标之前就必须回答"的抉择。**
+            //
+            //    以前这里不过滤：剑客的追加、游侠的强化、野蛮人的锁手……
+            //    全被当成"回复目标"在**确认攻击目标之前**问掉了。
+            //    1v1 只有一个目标，所以看不出来；8 人局有多个目标时，
+            //    玩家点完加数就直接进这些抉择，目标被默认成"加数手主"，
+            //    表现为"剑客主攻击和追加都不让我选目标"（玩家实测）。
+            //
+            //    保留在这里的只有：
+            //      · 回血目标（9 / 牧师）；
+            //      · 会改变本次攻击射程的游侠强化 / 战士碎盾换射程；
+            //      · 法师放弃攻击 / 选伤害类型；
+            //      · 防守方游侠闪避（必须在结算前收集）。
+            //    其余（剑客追加、野蛮人锁手、猎人伏击……）留到目标确认后。
+            bool hasNonHeal = false;
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
-                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+            {
+                ChoiceRequest r = _pendingRequests[i];
+                bool keep = r.Effect == HandEffect.PriestHealTarget
+                         || r.Effect == HandEffect.PriestExtraHealTarget
+                         || r.Effect == HandEffect.RangerPowerShot
+                         || r.Effect == HandEffect.RangerDodge
+                         || r.Effect == HandEffect.WizardAbandonAttack
+                         || r.Effect == HandEffect.WizardDamageType
+                         || r.Effect == HandEffect.FighterRangeBreak;
+                if (!keep || r.Candidates == null || r.Candidates.Count == 0)
                     _pendingRequests.RemoveAt(i);
+                else if (r.Effect == HandEffect.RangerPowerShot
+                      || r.Effect == HandEffect.RangerDodge
+                      || r.Effect == HandEffect.FighterRangeBreak)
+                    hasNonHeal = true;
+            }
 
             if (_pendingRequests.Count == 0) return false;
 
-            // ⚠️ 这里**不设** `_preTargetChoiceActive`。
-            // 治疗目标发生在"运算源已定"之后，不属于"选目标手之前"的抉择 ——
-            // 借用那个标志会让阶段被报成 ChoosingPreTargetChoice（真实 bug）。
+            // 攻击距离类抉择回答完以后仍要回到"确认目标"；
+            // 纯回复目标则直接进入治疗结算。
+            // 1v1 只有一个目标，旧交互不再多问一次；多人局必须回到确认目标。
+            if (hasNonHeal && _game.Players.Count > 2)
+                _returnToTargetAfterChoice = true;
+
+            // 纯回复目标不设 `_preTargetChoiceActive`（答完直接结算）；
+            // 攻击距离 / 法师类抉择已在上面的 hasNonHeal 分支置位，
+            // 答完后会回到"确认目标"。
             AdvanceCharacterChoice();
-            return Phase == BoardPhase.ChoosingPreTurnChoice;
+            return Phase == BoardPhase.ChoosingPreTurnChoice
+                || Phase == BoardPhase.ChoosingPreTargetChoice;
         }
 
         /// <summary>
@@ -2799,6 +2843,29 @@ namespace FingerDiceDuel.Assistant
                     _preTargetChoiceActive = false;
                     SetupFirstStep();
                     return;
+                }
+
+                // ①-0 游侠强化 / 战士换射程：回答完先回到"确认目标玩家"。
+                if (_returnToTargetAfterChoice)
+                {
+                    _returnToTargetAfterChoice = false;
+
+                    if (NeedsTargetAfterOperation())
+                    {
+                        Phase = BoardPhase.ChoosingTargetPlayer;
+                        if (SelectedHand == null) SelectedHand = _turnActedHand;
+                        bool hasTarget = BeginTargetPlayerChoice();
+
+                        string targetName = TargetPlayer != null
+                            ? TargetPlayer.Name
+                            : (Defender?.Name ?? "目标");
+                        Hint = !hasTarget
+                            ? $"运算出 {LastResultValueForHint()}，但没有可攻击的目标。" +
+                              $"请点右侧「放弃攻击」。"
+                            : $"运算出 {LastResultValueForHint()}。" +
+                              $"请确认这次要指向 {targetName}。";
+                        return;
+                    }
                 }
 
                 // ① 这次抉择是"选定运算源之后、确认目标玩家之前"问的。
