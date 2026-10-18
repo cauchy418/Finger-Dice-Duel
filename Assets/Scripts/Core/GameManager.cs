@@ -610,8 +610,6 @@ namespace FingerDiceDuel.Core
                 Amount = amount,
                 TurnsLeft = PlayerState.StatusDurationTurns,
             });
-
-            RefreshHealHalved();
         }
 
         /// <summary>这一对当前的距离修正（没有则为 0）。</summary>
@@ -649,27 +647,6 @@ namespace FingerDiceDuel.Core
 
                 p.TurnsLeft--;
                 if (p.TurnsLeft <= 0) _distancePenalties.RemoveAt(i);
-            }
-
-            RefreshHealHalved();
-        }
-
-        /// <summary>
-        /// 把"被推开 -> 回复减半"的标记与距离修正层**同步**。
-        ///
-        /// 进：只要还有一条以他为目标的修正，就置位；
-        /// 出：修正全部到期/移除后自动清除。
-        /// 这样"同样的两个回合"不需要另写一套计时。
-        /// </summary>
-        private void RefreshHealHalved()
-        {
-            for (int i = 0; i < _players.Count; i++)
-                if (_players[i] != null) _players[i].HealHalved = false;
-
-            for (int i = 0; i < _distancePenalties.Count; i++)
-            {
-                PlayerState t = _distancePenalties[i].B;
-                if (t != null) t.HealHalved = true;
             }
         }
 

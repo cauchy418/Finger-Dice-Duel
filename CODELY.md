@@ -254,7 +254,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | 文件 | 职责 |
 |---|---|
 | `Assistant/GreedyChoiceProvider.cs` | `FocusPolicy`（None / Self / Mate）、`FocusBonus = 25000`、`IntendedVictim`；集火分**只加在攻击**上，且目标必须真的可达 |
-| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师 / 猎人 / 狼人 / 魔术师）。邪术师是 2v2 第一，开了会到 83.7%，暂不给它开 |
+| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师 / 猎人 / 狼人 / 魔术师）。邪术师 2v2 57.7% / 16.5% 平局，先处理平局，暂不叠加集火 |
 | `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
 | `Tests/EditMode/FocusPolicyExperimentTests.cs` | 24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局，写 `Tools/focus-report.txt` |
 

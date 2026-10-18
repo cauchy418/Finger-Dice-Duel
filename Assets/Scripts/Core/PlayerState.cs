@@ -250,13 +250,6 @@ namespace FingerDiceDuel.Core
             if (amount <= 0) return;
             if (HasStatus(StatusEffect.Decay)) return;      // 腐朽：禁止回血
 
-            // ⚠️ **被邪术师推开期间，回复量减半（向下取整）。**
-            //    玩家要求："给邪术师增加被推开时回复减半的机制，
-            //    同样持续两回合，被推开角色回复量向下取整。"
-            //    放在这个**唯一的回复出口**里，牧师/狼人/巨人那些回血路径自动生效。
-            if (HealHalved) amount /= 2;
-            if (amount <= 0) return;
-
             int before = Health;
             Health = Math.Min(MaximumHealth, Health + amount);
 
@@ -316,12 +309,6 @@ namespace FingerDiceDuel.Core
         /// 一次行动只能发动一次，所以答完（含"不发动"）就置位。
         /// </summary>
         public bool BardActivatedThisTurn { get; set; }
-
-        /// <summary>
-        /// **是否正处于"被邪术师推开"的减回复状态。**
-        /// 由 `GameManager` 的距离修正层维护（同生同灭），不要在别处手改。
-        /// </summary>
-        public bool HealHalved { get; set; }
 
         /// <summary>复位"本回合"标记（每次行动开始时调用）。</summary>
         public void ResetTurnFlags()
