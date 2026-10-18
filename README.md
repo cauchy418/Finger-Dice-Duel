@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**966 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
+当前状态：**967 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -504,10 +504,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人对战（占位）。
 
+**2,000 局抽测（全部 AI，公开信息 AI）**：
+- 主公 1.2%（25/2000）、忠臣 1.2%（50/4000）、反贼 58.0%（4636/8000）、内奸 0.2%（5/2000）；
+- 其中已分出胜负 1,189 局：主忠方 2.1%、反贼 97.5%、内奸 0.4%；
+- 模拟器强停 447 局、未分出胜负 811 局（50 轮上限）。
+- 反贼优势极大，主忠/内奸 AI 在公开信息下缺乏有效集火，当前数据只能作为首版基线。
+完整报告见 [`Tools/identity-report.txt`](Tools/identity-report.txt)。
+
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 966 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 967 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴
