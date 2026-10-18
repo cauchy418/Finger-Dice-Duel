@@ -2454,6 +2454,19 @@ namespace FingerDiceDuel.UI
             if (_controller.Phase == BoardPhase.GameOver) return;
             if (IsPausing) return;              // 回合间停顿：暂停 AI 推进
 
+            // ⚠️⚠️ **吟游诗人的抉择没答完之前，AI 一律不许行动。**
+            //
+            //    玩家实测："1 号吟游诗人受到 2 号伤害，玩家还没选完，
+            //    3 号 4 号已经行动完了。"
+            //    因为 `BardChoicePending` 不是 `BoardPhase`，AI 的推进只看了
+            //    `IsHumanChooser` —— 那时"该谁决定"已经交回 AI，于是它继续打。
+            //    这个面板是**半途插进来**的，所以必须单独挡一道。
+            if (_controller.BardChoicePending)
+            {
+                _aiDelayTimer = 0f;
+                return;
+            }
+
             // 注意：判断依据是"现在该谁做决定"（IsHumanChooser），不是"轮到谁行动"。
             // 否则"AI 攻击、人类防守"时会停在这里等一个永远不会来的 AI 动作，
             // 而人类的选盾点击又已经放行了 —— 流程就会卡住。
