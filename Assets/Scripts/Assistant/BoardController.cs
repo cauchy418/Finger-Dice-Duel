@@ -2102,6 +2102,7 @@ namespace FingerDiceDuel.Assistant
             {
                 PlayerState p = all[i];
                 if (p == null || !(p.Character is Characters.SpecialLogics.BardLogic)) continue;
+                if (p.BardActivatedThisTurn) continue;          // 本回合已经答过了
                 if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
                 found = p;
                 break;
@@ -2148,6 +2149,8 @@ namespace FingerDiceDuel.Assistant
                 var logic = _bardActor.Character as Characters.SpecialLogics.BardLogic;
                 if (logic != null) applied = logic.Activate(_bardActor, _game, kind, targets);
 
+                _bardActor.BardActivatedThisTurn = true;      // 本回合不再问
+
                 if (applied > 0)
                 {
                     var sb = new System.Text.StringBuilder();
@@ -2162,7 +2165,11 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>放弃这次发动（等同于①选"不发动"）。</summary>
-        public void DeclineBardChoice() => ClearBardChoice();
+        public void DeclineBardChoice()
+        {
+            if (_bardActor != null) _bardActor.BardActivatedThisTurn = true;   // 答过"不发动"也算
+            ClearBardChoice();
+        }
 
         private void ClearBardChoice()
         {

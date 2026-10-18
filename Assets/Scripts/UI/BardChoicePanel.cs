@@ -72,8 +72,9 @@ namespace FingerDiceDuel.UI
             _root.anchorMin = _root.anchorMax = new Vector2(0.5f, 0.5f);
             _root.pivot = new Vector2(0.5f, 0.5f);
             _root.sizeDelta = new Vector2(PanelW, PanelH);
-            // 放**左侧**：右侧是"发动/不发动"按钮的位置，底部是自己的手牌
-            _root.anchoredPosition = new Vector2(-360f, 0f);
+            // ⚠️ 玩家要求：放在**右侧**，与"发动 / 不发动"按钮同一处。
+            //    原来放左侧，正好压住对手的手牌与战场信息。
+            _root.anchoredPosition = new Vector2(640f, 0f);
             go.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.12f, 0.94f);
 
             _title = MakeText(_root, "Title", new Vector2(0f, 165f),

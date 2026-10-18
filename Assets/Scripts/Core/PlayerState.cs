@@ -300,11 +300,22 @@ namespace FingerDiceDuel.Core
             SetBardOffset(null, 0, 0);
         }
 
+        /// <summary>
+        /// 本回合**是否已经发动过**吟游诗人的技能。
+        ///
+        /// ⚠️ 没有这个标记时：确认之后 `TookDamageThisTurn` 仍是 true
+        ///    （要到下一次行动才复位），于是界面刷新时又满足"可以发动"
+        ///    -> **面板重新弹出、反复询问**（玩家实测）。
+        /// 一次行动只能发动一次，所以答完（含"不发动"）就置位。
+        /// </summary>
+        public bool BardActivatedThisTurn { get; set; }
+
         /// <summary>复位"本回合"标记（每次行动开始时调用）。</summary>
         public void ResetTurnFlags()
         {
             TookDamageThisTurn = false;
             HealedThisTurn = false;
+            BardActivatedThisTurn = false;
         }
 
         /// <summary>

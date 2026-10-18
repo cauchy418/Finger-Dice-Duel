@@ -108,5 +108,36 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(0, foe.BardAttackOffset);
             Assert.AreEqual(0, foe.BardDefenseOffset);
         }
+
+        /// <summary>
+        /// **回归：答完之后，同一回合不能再问第二遍。**
+        ///
+        /// 玩家实测："按确认了之后重复询问"。
+        /// 根因：`TookDamageThisTurn` 要到下一次行动才复位，
+        /// 所以界面每次刷新都仍满足"可以发动" -> 面板重新弹出。
+        /// 修法：答完（含"不发动"）就置 `BardActivatedThisTurn`。
+        /// </summary>
+        [Test]
+        public void After_answering_the_same_turn_never_asks_again()
+        {
+            BoardController board = MakeBoard(out PlayerState bard, out PlayerState foe,
+                                              out _);
+            bard.TakeDamage(3);
+            Assert.IsTrue(board.OfferBardChoiceIfAny());
+
+            board.ApplyBardChoice(BardLogic.BuffKind.BoostAttack,
+                                  new List<PlayerState> { foe });
+
+            // 受伤标记还在（本回合），但**不该**再问
+            Assert.IsTrue(bard.TookDamageThisTurn, "本回合的受伤标记仍然在。");
+            Assert.IsFalse(board.OfferBardChoiceIfAny(),
+                "同一回合答完就不该再弹面板（否则会反复询问）。");
+
+            // 下一次行动开始就能再发动了
+            bard.ResetTurnFlags();
+            bard.TakeDamage(1);
+            Assert.IsTrue(board.OfferBardChoiceIfAny(),
+                "新的回合、又受伤 -> 可以再次发动。");
+        }
     }
 }
