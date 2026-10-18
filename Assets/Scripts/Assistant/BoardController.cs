@@ -2280,6 +2280,30 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
+        /// AI 的"目标意图"：如果这位是 AI，且
+        /// <see cref="GreedyChoiceProvider.IntendedVictim"/> 是当前可攻击的敌人，
+        /// 就用它，而不是无脑取第一个对手。
+        ///
+        /// ⚠️ 这是"集火 / 六级目标优先级"在实机生效的**必要条件**：
+        ///    AI 的 <c>ChooseMove</c> 已经按目标打分了，但第 ③ 步如果永远回落到
+        ///    <c>OpponentsOf[0]</c>，算出来的目标就被丢掉，等于没选。
+        ///    （人类玩家没有 AI，仍走下面的默认目标。）
+        /// </summary>
+        private PlayerState AiIntendedTarget()
+        {
+            if (ActivePlayer == null) return null;
+
+            IMoveSelector ai = GetAi(ActivePlayer);
+            if (ai is not GreedyChoiceProvider greedy) return null;
+
+            PlayerState intended = greedy.IntendedVictim;
+            if (intended == null || ReferenceEquals(intended, ActivePlayer)) return null;
+            if (!CanBeAttacked(intended)) return null;
+
+            return intended;
+        }
+
+        /// <summary>
         /// 进入第 ③ 步（确认攻击目标）时，把 <see cref="TargetPlayer"/> 设成一个
         /// **点得动的人**。
         ///
@@ -2287,7 +2311,9 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool BeginTargetPlayerChoice()
         {
-            PlayerState target = DefaultAttackTarget() ?? OwnerOf(_selectedTarget);
+            PlayerState target = AiIntendedTarget()
+                                 ?? DefaultAttackTarget()
+                                 ?? OwnerOf(_selectedTarget);
             TargetPlayer = target;
 
             return target != null && CanBeAttacked(target);

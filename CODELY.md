@@ -11,14 +11,14 @@
 
 支持 **1v1**、**2v2**（环形四座、1&4 一队 / 2&3 一队、攻击距离、先攻掷骰）
 与 **双将对决（娱乐模式，1v1）**。
-**21 名角色**，每个都有独立技能。
+**24 名角色**，每个都有独立技能。
 
 | 项 | 值 |
 |---|---|
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **876 项**无头测试，秒级 |
+| 测试 | **933 项**无头测试，约 40 秒（含 86,400 局集火实验） |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 ## 目录结构
@@ -247,6 +247,24 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | **AI 赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
 | **诊断字段曾多次跨回合残留** | `LastIllegalOperation` / `_advanceTrace` / `_pendingGambleRoll` 都踩过，统一在回合边界清空（`ResetDiagnostics` / `SetupFirstStep`） |
 
+## 2v2 集火策略（AI）
+
+| 文件 | 职责 |
+|---|---|
+| `Assistant/GreedyChoiceProvider.cs` | `FocusPolicy`（None / Self / Mate）、`FocusBonus = 25000`、`IntendedVictim`；集火分**只加在攻击**上，且目标必须真的可达 |
+| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师 / 猎人 / 狼人 / 魔术师）。邪术师是 2v2 第一，开了会到 83.7%，暂不给它开 |
+| `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
+| `Tests/EditMode/FocusPolicyExperimentTests.cs` | 24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局，写 `Tools/focus-report.txt` |
+
+```powershell
+# 只跑集火实验（约 20 秒）
+dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
+```
+
+> 实验口径：同一局的三组共享**完全相同**的阵容 / 初始手值 / 术士骰子，
+> 只有受试角色的 AI 切换策略；队友与对手始终 baseline。
+> 这样得到的是"**我**用集火，队伍是否更常赢"的配对比较。
+
 ## 双将模式（实现说明）
 
 | 文件 | 职责 |
@@ -254,7 +272,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | `Characters/DualGeneralBehavior.cs` | **能力容器**：实现全部组合接口，按规则合并并转发给子角色 |
 | `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
 | `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
-| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：45 个双将、990 对 |
+| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：84 个双将、3486 对 |
 | `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
 | `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
 

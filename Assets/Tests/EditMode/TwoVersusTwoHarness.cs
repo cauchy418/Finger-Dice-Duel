@@ -73,6 +73,22 @@ namespace FingerDiceDuel.Tests
         internal static Outcome Play(CharacterDefinition seat1, CharacterDefinition seat2,
                                      CharacterDefinition seat3, CharacterDefinition seat4,
                                      int seed, int turnLimit, out int actions)
+            => PlayWith(seat1, seat2, seat3, seat4, seed, turnLimit,
+                        null, null, out actions);
+
+        /// <summary>
+        /// 可注入抉择器 / 座位初始化钩子的版本（集火对照实验用）。
+        ///
+        /// 传 <paramref name="providers"/> = null 时与 <see cref="Play"/> 完全相同。
+        /// <paramref name="onSeated"/> 在四名玩家创建后、开局的初始手值分配前调用，
+        /// 用来注入确定性随机源（术士的骰子）—— 这样三组实验共享同一批骰子。
+        /// </summary>
+        internal static Outcome PlayWith(CharacterDefinition seat1, CharacterDefinition seat2,
+                                         CharacterDefinition seat3, CharacterDefinition seat4,
+                                         int seed, int turnLimit,
+                                         IReadOnlyList<IChoiceProvider> providers,
+                                         System.Action<IReadOnlyList<PlayerState>> onSeated,
+                                         out int actions)
         {
             actions = 0;
 
@@ -84,17 +100,32 @@ namespace FingerDiceDuel.Tests
                 CharacterFactory.CreatePlayer("P4", seat4),
             };
 
+            onSeated?.Invoke(seated);
+
             // ⚠️ 每个座位一个**自己的**抉择器 —— 这是本测试台的核心。
-            var providers = new List<IChoiceProvider>(4)
+            if (providers == null)
             {
-                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
-                new GreedyChoiceProvider(), new GreedyChoiceProvider(),
-            };
+                providers = new List<IChoiceProvider>(4)
+                {
+                    new GreedyChoiceProvider { UseLearnedFocus = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true },
+                };
+            }
+
+            if (providers.Count != 4)
+                return Fail($"2v2 必须提供 4 个抉择器（实际 {providers.Count} 个）");
 
             try
             {
                 GameManager game = GameManager.Create2v2(seated, providers);
                 game.RoundLimit = turnLimit;
+
+                // 与实机 BoardController 对齐：AI 的 GreedyChoiceProvider 需要拿到对局，
+                // 法师等角色才会按局面做抉择（原来测试台漏了这一步）。
+                for (int i = 0; i < providers.Count; i++)
+                    if (providers[i] is GreedyChoiceProvider greedy) greedy.Game = game;
 
                 // 循环上限必须**明显大于**"轮次上限折算成行动数"，
                 // 否则循环会先退出、把对局当成"未决"（2v2 一轮 = 4 次行动）。
@@ -158,7 +189,14 @@ namespace FingerDiceDuel.Tests
                         return Fail(detail.ToString());
                     }
 
+                    // ⚠️ 让"AI 想打谁"真正落到结算上（与 BoardController 第 ③ 步一致）。
+                    //    不传的话结算会回退到"被加数手主"—— 魔术师自加会打自己，
+                    //    而集火/目标优先级算出来的目标也会被丢掉。
+                    if (choice is GreedyChoiceProvider greedyChoice)
+                        game.DamageTargetPlayer = greedyChoice.IntendedVictim;
+
                     game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+                    game.DamageTargetPlayer = null;
                     actions++;
                 }
 

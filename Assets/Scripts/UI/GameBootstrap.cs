@@ -2201,6 +2201,10 @@ namespace FingerDiceDuel.UI
                 var ai = new GreedyChoiceProvider
                 {
                     UseChainBreak = false,   // P1：AI 暂不发动连锁破盾
+
+                    // 2v2 集火策略（按角色查表，见 FocusPolicies / Tools/focus-report.txt）：
+                    // 只对实验证明有效的 8 个角色启用 focusSelf；1v1 里天然无副作用。
+                    UseLearnedFocus = true,
                 };
 
                 // 难度**只在入门玩法**生效（玩家要求：经典保持不变）。

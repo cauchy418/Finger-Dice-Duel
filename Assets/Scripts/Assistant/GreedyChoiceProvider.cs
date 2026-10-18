@@ -44,26 +44,167 @@ namespace FingerDiceDuel.Assistant
                                                IDamageTypeChoiceSink
     {
         // ============================================================
-        // **集火旋钮**（2v2 针对性实验 / 策略用）
+        // **集火策略**（2v2 针对性实验 / 策略用）
         // ============================================================
 
         /// <summary>
-        /// 想优先集火的那位玩家（null = 不集火）。
+        /// 2v2 的集火口径。
         ///
-        /// ⚠️ 只在"**打得到**"时加分（可达判定之后才加），
-        ///    避免 AI 硬要打一个射程外的人而卡住。
+        /// 环上队友永远相邻（1&amp;4 / 2&amp;3），所以每位玩家身边有两位对手：
+        ///   · **自己车道**的敌人 = 离自己最近的那位（通常就是相邻座位）；
+        ///   · **队友车道**的敌人 = 离队友最近的那位。
+        ///
+        /// 近战（射程 1）天然只能打自己车道；远程（射程 ≥ 2）才跨得过去。
+        /// 所以"集火 Mate"在近战身上**不该偷偷退化成打自己车道** ——
+        /// 打不到就等价于不集火，否则对照组会被污染。
+        /// </summary>
+        public enum FocusPolicy
+        {
+            /// <summary>不集火：完全沿用原来的六级目标优先级。</summary>
+            None = 0,
+
+            /// <summary>集火**自己车道**的敌人（离自己最近的对手）。</summary>
+            Self = 1,
+
+            /// <summary>集火**队友车道**的敌人（离队友最近的对手；打不到则不生效）。</summary>
+            Mate = 2,
+        }
+
+        /// <summary>集火策略。默认 <see cref="FocusPolicy.None"/> = 与旧行为一致。</summary>
+        public FocusPolicy Focus { get; set; } = FocusPolicy.None;
+
+        /// <summary>
+        /// 是否启用**按角色查表**的默认集火策略（见 <see cref="FocusPolicies"/>）。
+        ///
+        /// 默认 <c>false</c>：GreedyChoiceProvider 本身保持"实验基线"语义。
+        /// 生产 UI（<c>GameBootstrap.MakeAI</c>）与 2v2 统计测试台会显式打开；
+        /// 集火实验的 baseline 组必须保持 false，否则对照会被生产策略污染。
+        /// </summary>
+        public bool UseLearnedFocus { get; set; }
+
+        /// <summary>
+        /// 显式指定的集火目标（优先级高于 <see cref="Focus"/>；null = 按策略动态解析）。
+        ///
+        /// 只在"**打得到**"时加分（落在目标优先级里，只有合法走法能拿到），
+        /// 所以不会让 AI 硬打射程外的人。
         /// </summary>
         public PlayerState FocusTarget { get; set; }
 
-        /// <summary>集火时给该目标增加的分值（"倾向"而非"强制"，默认略高）。</summary>
-        public int FocusBonus { get; set; } = 40;
+        /// <summary>
+        /// 集火给"攻击该目标"增加的分值。
+        ///
+        /// ⚠️⚠️ **必须是 25000 这个量级，不能是 40。**
+        ///
+        ///    `ScoreMove` 里的"六级目标优先级"基数是 10000：
+        ///    单是"双方都能打到"就 +10000，血量差最高再 +10000 ——
+        ///    40 分在 20000 分的目标优先级面前**完全不会改变选择**。
+        ///    （这是上一版留下的真实问题：三组实验会得到一张全相同的表，
+        ///      看起来像"集火无效"，其实旋钮根本没接到决策上。）
+        ///
+        ///    25000 &gt; 目标优先级最大可能值（≈20210），又 &lt; 斩杀 100000：
+        ///    集火压过"打谁更好"，但压不过"这一下能赢"。
+        /// </summary>
+        public int FocusBonus { get; set; } = 25000;
 
-        /// <summary>这一手是不是"打在集火目标身上"（按其被加数手的主人判定）。</summary>
-        private bool IsFocusMove(LegalMove move, PlayerState actor, GameManager game)
+        /// <summary>
+        /// 本次 <see cref="ChooseMove"/> 实际想打的人（供界面层确认目标用）。
+        ///
+        /// 规则允许"被加数手主"与"实际挨打的人"不同；无头测试台与
+        /// <c>BoardController</c> 都靠这个值把"AI 的目标意图"传下去。
+        /// 没有它时，实机 AI 会永远打 <c>OpponentsOf[0]</c>（第一个对手），
+        /// 集火与六级目标优先级都白算。
+        /// </summary>
+        public PlayerState IntendedVictim { get; private set; }
+
+        /// <summary>
+        /// **一次 ChooseMove 内**解析出来的集火目标（缓存）。
+        ///
+        /// 为什么必须缓存：<see cref="ScoreMove"/> 会为每一手棋算目标优先级，
+        /// 如果每次都重新解析，就会为**每一手**分配两个 List
+        /// （`OpponentsOf` / `TeammatesOf`）—— 86,400 局的实验里这是
+        /// 上千万次分配，既慢又会把 GC 压到异常（实测出现过原生层崩溃）。
+        /// </summary>
+        private PlayerState _focusTargetForScoring;
+
+        /// <summary>当前评分用的集火目标；不在 ChooseMove 内时按需解析。</summary>
+        private PlayerState FocusTargetForScoring(GameManager game, PlayerState actor)
+            => _focusTargetForScoring ?? ResolveFocusTarget(game, actor);
+
+        /// <summary>
+        /// 解析本回合的集火目标（只返回存活对手；没有则 null）。
+        ///
+        /// 口径（与 <c>Tools/focus-report.txt</c> 的实验定义一致）：
+        ///   · Self = 离自己最近的对手（同距离取血少的，再取座位号小的）；
+        ///   · Mate = 离队友最近的对手；队友已阵亡 / 不存在时退回 Self；
+        ///   · Mate 目标打不到时不退回 Self（否则近战会"假装集火"）。
+        /// </summary>
+        public PlayerState ResolveFocusTarget(GameManager game, PlayerState actor)
         {
-            if (FocusTarget == null || move.TargetHand == null || game == null) return false;
-            PlayerState owner = game.OwnerOfHand(move.TargetHand);
-            return owner != null && ReferenceEquals(owner, FocusTarget);
+            if (game == null || actor == null) return null;
+
+            // 1v1（或只剩一位可攻击对手）：集火没有"选谁"的余地。
+            // 直接返回 null，避免给所有攻击加一个常数、改变攻/盾取舍。
+            if (game.OpponentsOf(actor).Count < 2) return null;
+
+            // 显式指定优先（实验 / 测试可直接钉死目标）
+            if (FocusTarget != null && FocusTarget.IsAlive) return FocusTarget;
+
+            FocusPolicy policy = Focus;
+            if (policy == FocusPolicy.None && UseLearnedFocus)
+                policy = FocusPolicies.For(actor.Definition);
+
+            if (policy == FocusPolicy.None) return null;
+
+            PlayerState selfTarget = NearestOpponent(game, actor);
+            if (policy == FocusPolicy.Self) return selfTarget;
+
+            PlayerState mate = null;
+            IReadOnlyList<PlayerState> mates = game.TeammatesOf(actor);
+            for (int i = 0; i < mates.Count; i++)
+            {
+                if (mates[i] != null && mates[i].IsAlive) { mate = mates[i]; break; }
+            }
+
+            if (mate == null) return selfTarget;
+
+            PlayerState mateTarget = NearestOpponent(game, mate);
+            return mateTarget ?? selfTarget;
+        }
+
+        /// <summary>离 <paramref name="player"/> 最近的存活对手（含当前打不到的人）。</summary>
+        private static PlayerState NearestOpponent(GameManager game, PlayerState player)
+        {
+            IReadOnlyList<PlayerState> foes = game.OpponentsOf(player);
+            PlayerState best = null;
+            int bestDistance = int.MaxValue;
+            int bestHealth = int.MaxValue;
+            int bestSeat = int.MaxValue;
+
+            for (int i = 0; i < foes.Count; i++)
+            {
+                PlayerState foe = foes[i];
+                if (foe == null || !foe.IsAlive) continue;
+
+                int distance = game.DistanceBetween(player, foe);
+                if (distance < 0) continue;
+
+                int health = foe.Health;
+                int seat = game.SeatOf(foe);
+
+                bool better = distance < bestDistance
+                    || (distance == bestDistance && health < bestHealth)
+                    || (distance == bestDistance && health == bestHealth && seat < bestSeat);
+
+                if (better)
+                {
+                    best = foe;
+                    bestDistance = distance;
+                    bestHealth = health;
+                    bestSeat = seat;
+                }
+            }
+
+            return best;
         }
 
         // ============================================================
@@ -326,32 +467,97 @@ namespace FingerDiceDuel.Assistant
             IReadOnlyList<LegalMove> moves = game.GetLegalMoves(actor);
             if (moves.Count == 0) return default;
 
-            LegalMove best = moves[0];
-            int bestScore = int.MinValue;
+            // 集火目标**每回合只解析一次**（阵亡后环会收缩，所以不能跨回合缓存）。
+            _focusTargetForScoring = ResolveFocusTarget(game, actor);
 
-            for (int i = 0; i < moves.Count; i++)
+            try
             {
-                // 难度噪声：简单档会随机抖动，于是偶尔选次优解
-                // （否则同一个局面永远走同一步，连打两局完全可预判）。
-                int noise = _noisy ? _rng.Next(-NoiseAmplitude, NoiseAmplitude + 1) : 0;
-                int score = ScoreMove(moves[i], actor, game) + noise;
+                LegalMove best = moves[0];
+                int bestScore = int.MinValue;
 
-                // ⚠️ **集火旋钮**：这一手打的是"指定的集火目标"就加分。
-                //
-                //    安全性：`GetLegalMoves` **已经**把不可达的走法滤掉了，
-                //    所以走到这里的每一手都"打得到"——
-                //    天然满足"仅可达时生效"，不会让 AI 硬打射程外的人。
-                if (FocusTarget != null && IsFocusMove(moves[i], actor, game))
-                    score += FocusBonus;
-
-                if (score > bestScore)
+                for (int i = 0; i < moves.Count; i++)
                 {
-                    bestScore = score;
-                    best = moves[i];
+                    // 难度噪声：简单档会随机抖动，于是偶尔选次优解
+                    // （否则同一个局面永远走同一步，连打两局完全可预判）。
+                    int noise = _noisy ? _rng.Next(-NoiseAmplitude, NoiseAmplitude + 1) : 0;
+                    int score = ScoreMove(moves[i], actor, game) + noise;
+
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        best = moves[i];
+                    }
                 }
+
+                // 把"AI 想打谁"留给界面层 / 测试台。
+                // ⚠️ 集火奖励已经放进 ScoreMove 的目标优先级里（只对攻击生效），
+                //    这里不再重复加分 —— 否则"用集火目标的手合盾 / 回血"
+                //    也会被当成集火，AI 会为了贪分去做防守动作。
+                IntendedVictim = ResolveIntendedVictim(best, actor, game);
+                return best;
             }
-            return best;
+            finally
+            {
+                _focusTargetForScoring = null;
+            }
         }
+
+        /// <summary>
+        /// 这一手**实际该打谁**：优先取被加数的手主（对手）；
+        /// 用队友的手 / 魔术师自加时，退回"第一位对手"（或本回合的集火目标）。
+        ///
+        /// 攻击目标本来就能与被加数手主不同（玩家确认的第 ③ 步），
+        /// 所以这个值必须显式传给结算层，不能靠"手主"猜。
+        /// </summary>
+        private PlayerState ResolveIntendedVictim(LegalMove move, PlayerState actor,
+                                                  GameManager game)
+        {
+            if (game == null || actor == null) return null;
+            if (move.Actor == null || move.TargetHand == null) return null;
+
+            bool isAttack = IsAttackResult(move, actor);
+
+            // ① 被加数是**敌人的手**：这一手本来就打在TA身上（也是评分时的目标）。
+            //
+            //    ⚠️ 必须先看这个，不能无条件用集火目标：
+            //       集火分只压过普通目标，压不过"斩杀 100000"。
+            //       如果这一手是斩杀另一名敌人，却把实际目标改成集火目标，
+            //       就会**把到手的胜利送掉**（测试抓到过）。
+            PlayerState owner = game.OwnerOfHand(move.TargetHand);
+            if (owner != null && !ReferenceEquals(owner, actor)
+                && !game.IsTeammate(actor, owner) && owner.IsAlive)
+                return owner;
+
+            // ② 被加数是自己的手（魔术师自加）/ 队友的手：攻击目标本来就能单独选，
+            //    此时才用集火目标（含"打不到就回到第一位对手"）。
+            if (isAttack)
+            {
+                PlayerState focus = FocusTargetForScoring(game, actor);
+                if (focus != null && game.CanReach(actor, focus)) return focus;
+            }
+
+            IReadOnlyList<PlayerState> foes = game.OpponentsOf(actor);
+            return foes.Count > 0 ? foes[0] : null;
+        }
+
+        /// <summary>这一手的结果在 AI 眼里是不是攻击（含魔术师借来的攻击）。</summary>
+        private static bool IsAttackResult(LegalMove move, PlayerState actor)
+        {
+            if (move.ActedHand == null || move.TargetHand == null) return false;
+
+            int result = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+            HandEffectType effect = Hand.GetEffectType(result);
+
+            if (IsAttackEffect(effect)) return true;
+
+            return actor?.Character is IHandEffectDisplay display
+                && IsAttackEffect(display.DisplayedEffectOf(result));
+        }
+
+        private static bool IsAttackEffect(HandEffectType effect)
+            => effect == HandEffectType.Attack4
+               || effect == HandEffectType.Attack6
+               || effect == HandEffectType.Attack8;
 
         /// <summary>
         /// "留下的手值"在评分里占多大比重。
@@ -595,7 +801,7 @@ namespace FingerDiceDuel.Assistant
                 || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack6
                 || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack8
                 || (actor?.Character is IHandEffectDisplay dsp
-                    && dsp.DisplayedEffectOf(resultForPriority) != HandEffectType.None);
+                    && IsAttackEffect(dsp.DisplayedEffectOf(resultForPriority)));
 
             if (priorityIsAttack && actor != null && game != null
                 && game.OwnerOfHand(move.TargetHand) != null
@@ -609,6 +815,29 @@ namespace FingerDiceDuel.Assistant
             else
             {
                 score += TargetPriorityScore(move, actor, game);
+            }
+
+            // ---- **集火**（在原目标优先级之上加一层，只影响"攻击集火目标"）----
+            //
+            // 为什么放在这里、而不是 `TargetPriorityScoreFor` 里：
+            //   那个函数也被合盾 / 回血调用（历史路径），放进去会让
+            //   "用集火目标的手合盾"白拿 25000 分（测试抓到过）。
+            //   也**不能**改成"所有攻击减去最优目标分"的归一化写法：
+            //   那会把合盾 / 回血相对抬高，1v1 胜率整体漂移（实验过）。
+            //
+            // 1v1 里 `ResolveFocusTarget` 直接返回 null（只有一位对手），
+            // 所以 baseline 行为与旧版完全一致。
+            if (priorityIsAttack && actor != null && game != null
+                && IsAttackResult(move, actor))
+            {
+                PlayerState victim = ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor)
+                    ? (game.OpponentsOf(actor).Count > 0 ? game.OpponentsOf(actor)[0] : null)
+                    : game.OwnerOfHand(move.TargetHand);
+
+                PlayerState focus = FocusTargetForScoring(game, actor);
+                if (focus != null && ReferenceEquals(focus, victim)
+                    && game.CanReach(actor, victim))
+                    score += FocusBonus;
             }
 
             // ---- **斩杀优先**（玩家要求："在能斩杀对方时，要大幅优先决定攻击"）----
@@ -907,7 +1136,7 @@ namespace FingerDiceDuel.Assistant
             => hand != null && (hand.IsShield || hand.IsTaichi);
 
         /// <summary>
-        /// 把"该打谁"按玩家给的顺序打分。
+        /// 把"该打谁"按玩家给的顺序打分（按**被加数的手主**）。
         ///
         /// 量级远大于效果档位（44~88），所以目标选择**压过**
         /// "这一手打多少" —— 这是刻意的：选错目标比少打两点严重得多。
@@ -923,7 +1152,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 目标优先级评分（<paramref name="target"/> 就是**实际会挨打的人**）。
         ///
-        /// 与 <see cref="TargetPriorityScore"/> 分开是因为：魔术师自加时
+        /// 与"被加数手主"分开是因为：魔术师自加时
         /// "被加数的手主"是**自己**，而挨打的是**对手** ——
         /// 需要允许显式传入真正的挨打对象。
         /// </summary>
