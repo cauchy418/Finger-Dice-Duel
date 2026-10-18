@@ -365,6 +365,23 @@ namespace FingerDiceDuel.Characters
                     "与游侠 / 妖术师：被闪避或被取消的那一段不算命中，属性一起作废。",
                     "与武僧：太极减免仍算命中；掷到力场时穿盾也照样穿透。",
                 });
+
+            // ---- 邪术师（中立邪恶）----
+            Add(CharacterDefinition.WarlockId, "Warlock", Alignment.NeutralEvil,
+                shortSkill: "命中的攻击令你与目标之间的距离 +2，持续他两个回合；"
+                          + "射程无限。",
+                playGuide: "射程无限，站位不用管。打中就把他推开两格，"
+                         + "他射程不够时这两个回合根本打不到你。"
+                         + "类型按距离：1 内挥砍、1 外穿刺。",
+                counter: "攻 0 防 −1，很软，抢血就行。"
+                       + "闪避与取消能让这一击连带距离一起作废。"
+                       + "被推开后先合盾或回复，别硬打。",
+                interactions: new[]
+                {
+                    "与目盲：被推开到距离 3 时，目盲会让他一手都走不出来 —— "
+                    + "按规则此时他可以跳过回合。",
+                    "与游侠 / 妖术师：被闪避或被取消不算命中，距离不会变。",
+                });
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

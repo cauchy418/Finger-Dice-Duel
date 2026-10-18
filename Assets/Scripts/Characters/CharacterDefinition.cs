@@ -371,7 +371,7 @@ namespace FingerDiceDuel.Core
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Hexer, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer
+            Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer, Warlock
             // ⚠️ Warlock / Bard 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

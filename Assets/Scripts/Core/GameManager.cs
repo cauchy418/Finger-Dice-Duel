@@ -2547,6 +2547,18 @@ namespace FingerDiceDuel.Core
             //    2v2 循环赛里这种局面会出现「无合法步」（实测 589 局中有 23 处）。
             if (player.HasNoUsableHand) return true;
 
+            // ⚠️⚠️ **玩家确认（本轮）："无法合步"也正式算作可以跳过回合。**
+            //
+            //    触发场景：**目盲 + 邪术师的距离修正**。
+            //      · 目盲只允许用"与自己距离正好 1"的人的手当被加数；
+            //      · 邪术师命中后把这一对的距离推到 3；
+            //      · 于是对方没有任何可用的被加数（自己的手不许自己加）——
+            //        一手都走不出来。
+            //
+            //    玩家选择"保留现状、把无合法步正式定义为可以跳过"，
+            //    而不是去改目盲 / 距离的判定。
+            if (!HasAnyLegalOperation(player)) return true;
+
             if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
             {
                 rule.SyncSkipState(player);
@@ -2554,6 +2566,45 @@ namespace FingerDiceDuel.Core
             }
 
             return player.HasDoubleShield;
+        }
+
+        /// <summary>
+        /// 这个人**是否存在任何一步合法运算**（自己的手 + 别人的手）。
+        ///
+        /// 判据与真实运算一致：自己的手要 `CanBeOperated`，
+        /// 被加数要过 <see cref="StatusRules.CanUseHandAsAddend"/>
+        /// （目盲 / 锁手 / 暗置 / 阵亡都在那里面判）。
+        /// </summary>
+        public bool HasAnyLegalOperation(PlayerState actor)
+        {
+            if (actor == null || !actor.IsAlive) return false;
+
+            Hand[] mine = { actor.LeftHand, actor.RightHand };
+
+            for (int i = 0; i < mine.Length; i++)
+            {
+                Hand own = mine[i];
+                if (own == null || !own.CanBeOperated) continue;
+
+                for (int j = 0; j < _players.Count; j++)
+                {
+                    PlayerState other = _players[j];
+                    if (other == null || ReferenceEquals(other, actor)) continue;
+                    if (!other.IsAlive) continue;
+
+                    Hand[] theirs = { other.LeftHand, other.RightHand };
+                    for (int k = 0; k < theirs.Length; k++)
+                    {
+                        Hand h = theirs[k];
+                        if (h == null || !h.CanBeOperated) continue;
+                        if (!StatusRules.CanUseHandAsAddend(actor, h, this)) continue;
+
+                        return true;      // 找到一步就够
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
