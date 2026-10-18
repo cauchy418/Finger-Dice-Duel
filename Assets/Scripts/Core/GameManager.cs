@@ -2740,6 +2740,9 @@ namespace FingerDiceDuel.Core
         {
             if (owner?.Character == null) return true;
 
+            // ⚠️ 武僧的 5 是「太极」，不是盾。
+            if (owner.Character is MonkLogic) return false;
+
             if (!(CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(owner)
                   is IHandEffectRewriter rewriter))
             {
