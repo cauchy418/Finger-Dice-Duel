@@ -195,7 +195,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 IgnoreStatBonuses = true,
 
                 // ⚠️ 追加攻击的"攻击数字视为 0"（玩家确认）——
-                //    因此**邪术师无法取消它**（任何手值都不可能等于 0）。
+                //    因此**妖术师无法取消它**（任何手值都不可能等于 0）。
                 IsSpecialAttack = true,
             };
             // 追加攻击发生在主攻击之前，玩家还没来得及做闪避选择，

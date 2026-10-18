@@ -2755,7 +2755,7 @@ namespace FingerDiceDuel.UI
         /// ⚠️ 曾经写死 `ActivePlayer == _game.PlayerA` ——
         ///    1v1 里勉强对（人类就是 A），但 **2v2 里完全错**：
         ///    人类可能是 2/3/4 号位，于是按钮永远不显示
-        ///    （玩家实测："2v2 中邪术师没有跳过回合按钮"）。
+        ///    （玩家实测："2v2 中妖术师没有跳过回合按钮"）。
         ///
         /// 正确的判据是"**当前行动方是不是人类**"，与座位无关。
         /// </summary>
@@ -2770,7 +2770,7 @@ namespace FingerDiceDuel.UI
             // 这类"界面没画"的问题光看截图分不清是规则判错还是漏传参数。
             if (VerboseLogging && !show && _controller != null
                 && _controller.ActivePlayer != null
-                && _controller.ActivePlayer.Character is WarlockLogic)
+                && _controller.ActivePlayer.Character is SorcererLogic)
             {
                 string line =
                     $"[FDD跳过按钮] 不显示 -> isHumanTurn={_controller.IsHumanTurn}" +

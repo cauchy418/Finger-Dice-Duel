@@ -50,9 +50,9 @@ namespace FingerDiceDuel.Assistant
         GameOver = 4,
 
         /// <summary>
-        /// 等待**邪术师**点一个人的手，把那人的体力改成与自己一致。
+        /// 等待**妖术师**点一个人的手，把那人的体力改成与自己一致。
         ///
-        /// 这是邪术师"跳过回合"技能的目标选择步骤：
+        /// 这是妖术师"跳过回合"技能的目标选择步骤：
         /// 点右侧「跳过回合」进入本相位，再点目标的手发动。
         /// </summary>
         ChoosingHealthSwapTarget = 7,
@@ -245,13 +245,13 @@ namespace FingerDiceDuel.Assistant
             // 牧师选了回复却按攻击结算）。
             _game.AnsweredLookup = GetAnsweredChoice;
 
-            // 带**玩家参数**的版本：邪术师是场上的第三方，
-            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectWarlockCancelChoices）。
+            // 带**玩家参数**的版本：妖术师是场上的第三方，
+            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectSorcererCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
-            _game.AskedCancelLookup = WasAskedWarlockCancel;
+            _game.AskedCancelLookup = WasAskedSorcererCancel;
         }
 
         /// <summary>方便测试：双方共用同一个抉择器对象。</summary>
@@ -395,7 +395,7 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingGamble:
                         return ActivePlayer;
 
-                    // 邪术师改体力的目标由**行动方自己**点（他发动技能）
+                    // 妖术师改体力的目标由**行动方自己**点（他发动技能）
                     case BoardPhase.ChoosingHealthSwapTarget:
                         return ActivePlayer;
 
@@ -553,7 +553,7 @@ namespace FingerDiceDuel.Assistant
                && Phase != BoardPhase.ChoosingLockTarget
                && Phase != BoardPhase.ChoosingHealthSwapTarget
                && Phase != BoardPhase.GameOver
-               // ⚠️ 用带 GameManager 的重载：邪术师的跳过条件要查**别人**的体力，
+               // ⚠️ 用带 GameManager 的重载：妖术师的跳过条件要查**别人**的体力，
                //    静态版传 null 会让它永远返回 false（按钮不显示）。
                && _game.CanSkipTurnFor(ActivePlayer);
 
@@ -563,7 +563,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// ⚠️ 两种角色共用这个按钮，但**流程不同**：
         ///   · 刺客（潜行）/ 双盾在手 -> 直接跳过
-        ///   · **邪术师** -> 先进入"选一个人的手"，把那人**体力改成与自己一致**，
+        ///   · **妖术师** -> 先进入"选一个人的手"，把那人**体力改成与自己一致**，
         ///     选完才真正跳过（玩家要求的交互：
         ///     "在右侧显示跳过回合，然后点击一个人的手发动技能"）
         /// </summary>
@@ -571,15 +571,15 @@ namespace FingerDiceDuel.Assistant
         {
             if (!CanSkipTurn) return false;
 
-            // 邪术师：先选目标，不立刻结束回合
-            var warlock = ActivePlayer.Character as WarlockLogic;
-            if (warlock != null)
+            // 妖术师：先选目标，不立刻结束回合
+            var sorcerer = ActivePlayer.Character as SorcererLogic;
+            if (sorcerer != null)
             {
                 PlayerState victim = FindHealthSwapTarget();
                 if (victim != null)
                 {
                     Phase = BoardPhase.ChoosingHealthSwapTarget;
-                    Hint = $"{ActivePlayer.Name}（邪术师）：点一个人的手，" +
+                    Hint = $"{ActivePlayer.Name}（妖术师）：点一个人的手，" +
                            $"把那个人的体力改成与自己一致（{ActivePlayer.Health}）。";
                     return true;
                 }
@@ -599,7 +599,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 邪术师改体力的目标：**场上任意一名体力与自己不同的存活角色**。
+        /// 妖术师改体力的目标：**场上任意一名体力与自己不同的存活角色**。
         ///
         /// 返回 null 表示没有可改的人（此时技能无意义）。
         /// </summary>
@@ -621,7 +621,7 @@ namespace FingerDiceDuel.Assistant
             return null;
         }
 
-        /// <summary>落实"把某人体力改成与自己一致"并结束本回合（邪术师）。</summary>
+        /// <summary>落实"把某人体力改成与自己一致"并结束本回合（妖术师）。</summary>
         public bool ApplyHealthSwapAndEndTurn(PlayerState target)
         {
             if (target == null || ActivePlayer == null) return false;
@@ -629,14 +629,14 @@ namespace FingerDiceDuel.Assistant
 
             int before = target.Health;
 
-            if (!WarlockLogic.ApplyHealthSwap(ActivePlayer, target))
+            if (!SorcererLogic.ApplyHealthSwap(ActivePlayer, target))
             {
                 // 目标体力本来就一样（或已阵亡）-> 退回选择，不浪费回合
                 Hint = "那个人的体力已经与你一致，请另选一个人。";
                 return false;
             }
 
-            _log.Add($"{ActivePlayer.Name}（邪术师）跳过回合，" +
+            _log.Add($"{ActivePlayer.Name}（妖术师）跳过回合，" +
                      $"把 {target.Name} 的体力从 {before} 改成 {ActivePlayer.Health}。");
 
             // ⚠️ 用"已校验"的版本：改完体力后"有人体力与我不同"这个条件
@@ -778,16 +778,16 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 读回"**某位玩家**对某抉择的作答"（带玩家参数）。
         ///
-        /// 邪术师是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
+        /// 妖术师是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
         /// （那个按"行动方 / 防守方"找）。
         ///
-        /// ⚠️ 用 <c>_askedWarlockCancel</c> 的**键是否存在**表达"问过"，
+        /// ⚠️ 用 <c>_askedSorcererCancel</c> 的**键是否存在**表达"问过"，
         ///    这样"问过但选了不发动"（值为 null）与"没问过"能区分开。
         /// </summary>
         private Hand GetAnsweredChoiceFor(PlayerState player, HandEffect effect, int variant)
         {
-            if (player != null && effect == HandEffect.WarlockCancel
-                && _askedWarlockCancel.TryGetValue(player, out Hand answer))
+            if (player != null && effect == HandEffect.SorcererCancel
+                && _askedSorcererCancel.TryGetValue(player, out Hand answer))
             {
                 return answer;      // 可能是 null（玩家选了不发动）
             }
@@ -801,20 +801,20 @@ namespace FingerDiceDuel.Assistant
         /// 与 <see cref="GetAnsweredChoiceFor"/> 配套：
         /// 返回 true 表示"问过"，此时 null 答案意味着"玩家选了不发动"。
         /// </summary>
-        public bool WasAskedWarlockCancel(PlayerState player)
-            => player != null && _askedWarlockCancel.ContainsKey(player);
+        public bool WasAskedSorcererCancel(PlayerState player)
+            => player != null && _askedSorcererCancel.ContainsKey(player);
 
         /// <summary>
         /// 本回合"**问过谁是否取消攻击**"（键 = 玩家）。
         ///
-        /// 为什么需要单独记一份：邪术师的取消是**第三方**的抉择，
+        /// 为什么需要单独记一份：妖术师的取消是**第三方**的抉择，
         /// 而且必须区分两种"没选"：
         ///   · **没问过**（AI，或条件不成立）-> 走自动取消
         ///   · **问过但选了「不发动」** -> 放行这次攻击
         /// `_answeredThisTurn` 在答案为 null 时是"删除键"，分不出这两者；
         /// 这里用"键是否存在"表达"问过"，值为答案（可为 null）。
         /// </summary>
-        private readonly Dictionary<PlayerState, Hand> _askedWarlockCancel =
+        private readonly Dictionary<PlayerState, Hand> _askedSorcererCancel =
             new Dictionary<PlayerState, Hand>();
 
         private static string AnswerKey(HandEffect effect, int variant)
@@ -1077,7 +1077,7 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
-                    // 邪术师：可以点**任何其他人**的手（体力与自己不同的才有意义）。
+                    // 妖术师：可以点**任何其他人**的手（体力与自己不同的才有意义）。
                     // 自己除外 —— "把场上一人的体力改成与自己一致"，自己不在"场上"。
                     PlayerState owner = OwnerOf(hand);
                     if (owner == null) return false;
@@ -1700,7 +1700,7 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
-                    // 邪术师：点谁的手就把谁的体力改成与自己一致，然后结束回合
+                    // 妖术师：点谁的手就把谁的体力改成与自己一致，然后结束回合
                     PlayerState owner = OwnerOf(hand);
                     return ApplyHealthSwapAndEndTurn(owner);
                 }
@@ -2159,7 +2159,7 @@ namespace FingerDiceDuel.Assistant
             //
             //    ⚠️ 闸门刻意做得**很窄**（只认"法师放弃攻击已答"）：
             //       正常流程里"确认目标"发生在**收集之前**，所以不能一概跳过收集
-            //       —— 那样会把闪避 / 太极 / 邪术师取消全部问不到（我试过，
+            //       —— 那样会把闪避 / 太极 / 妖术师取消全部问不到（我试过，
             //       一次红 17 条测试）。
             if (_wizardDeclineAnswered)
             {
@@ -2270,14 +2270,14 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 每回合清空"问过谁取消攻击" ——
             //    残留会让下一回合变成"问过但没答"，于是玩家的意图被误读
             //    （选了发动却被当成不发动）。我踩过同类坑（诊断字段跨回合残留）。
-            _askedWarlockCancel.Clear();
+            _askedSorcererCancel.Clear();
 
             CollectFrom(context.Actor, context);
             CollectFrom(context.Defender, context);
 
-            // 邪术师的"是否取消这次攻击"：取消者是**场上的第三方**，
+            // 妖术师的"是否取消这次攻击"：取消者是**场上的第三方**，
             // 不属于上面的行动方/防守方，所以单独收集。
-            CollectWarlockCancelChoices();
+            CollectSorcererCancelChoices();
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
             // 注意：不能用会被回合边界清空的容器 —— 上一个回合的作答
@@ -2363,7 +2363,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 收集"**人类**邪术师是否要取消这次攻击"的抉择。
+        /// 收集"**人类**妖术师是否要取消这次攻击"的抉择。
         ///
         /// 玩家要求的交互：右侧给按钮询问是否发动，然后**点对应数字**触发。
         /// 所以候选就是"与攻击数字相同的那只手" —— 点它即发动。
@@ -2371,14 +2371,14 @@ namespace FingerDiceDuel.Assistant
         /// ⚠️ 为什么要在**攻击结算之前**问：
         ///    整个回合是一次性跑完的（`ExecuteResolvedTurn` 里同步结算），
         ///    没法在结算中途停下来等玩家点击。所以抉择必须提前收集。
-        ///    AI 的邪术师不走这里 —— 它在结算时自动取消（见 AttackContext）。
+        ///    AI 的妖术师不走这里 —— 它在结算时自动取消（见 AttackContext）。
         ///
         /// ⚠️ 三条限制（都已由玩家确认）：
         ///    · 不能取消**自己**发起的攻击
         ///    · 多人模式里不能取消**队友**发起的攻击
         ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
         /// </summary>
-        private void CollectWarlockCancelChoices()
+        private void CollectSorcererCancelChoices()
         {
             int attackValue = PredictedAttackValue();
             if (attackValue <= 0) return;
@@ -2390,8 +2390,8 @@ namespace FingerDiceDuel.Assistant
                 PlayerState p = all[i];
                 if (p == null || !p.IsAlive) continue;
 
-                // 只有人类邪术师才问 —— AI 在结算时自动取消
-                if (!(p.Character is WarlockLogic)) continue;
+                // 只有人类妖术师才问 —— AI 在结算时自动取消
+                if (!(p.Character is SorcererLogic)) continue;
                 if (GetAi(p) != null) continue;
 
                 if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
@@ -2408,10 +2408,10 @@ namespace FingerDiceDuel.Assistant
 
                 // 先登记"**问过这个人**"（值为 null 表示"还没答/答了不发动"）——
                 // 结算时靠它区分"问过但选了不发动"与"根本没问过（AI）"。
-                _askedWarlockCancel[p] = null;
+                _askedSorcererCancel[p] = null;
 
                 _pendingRequests.Add(new ChoiceRequest(
-                    HandEffect.WarlockCancel,
+                    HandEffect.SorcererCancel,
                     $"{ActivePlayer.Name} 发起 {attackValue} 的攻击：" +
                     $"要用手上那个 {attackValue}（+1，永久）取消它吗？",
                     candidates,
@@ -2419,7 +2419,7 @@ namespace FingerDiceDuel.Assistant
                     declineResult: null,
                     decider: p));
 
-                _lastCollectInfo += $" +邪术师取消({p.Name}, 攻击值{attackValue})";
+                _lastCollectInfo += $" +妖术师取消({p.Name}, 攻击值{attackValue})";
             }
         }
 
@@ -2790,12 +2790,12 @@ namespace FingerDiceDuel.Assistant
 
             SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand);
 
-            // 邪术师的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
-            // `_askedWarlockCancel` —— 结算时靠它决定放行还是取消。
-            if (request.Effect == HandEffect.WarlockCancel && _pendingChoiceDecider != null
+            // 妖术师的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
+            // `_askedSorcererCancel` —— 结算时靠它决定放行还是取消。
+            if (request.Effect == HandEffect.SorcererCancel && _pendingChoiceDecider != null
                 && hand != null && _pendingChoiceDecider.Owns(hand))
             {
-                _askedWarlockCancel[_pendingChoiceDecider] = hand;
+                _askedSorcererCancel[_pendingChoiceDecider] = hand;
             }
 
             // 统一定点：控制器自己保存一份本回合的答案。
@@ -3090,13 +3090,13 @@ namespace FingerDiceDuel.Assistant
             if (ai == null) return false;
             if (_game.IsGameOver) return false;
 
-            // ⚠️ AI 的邪术师要用"跳过回合改体力"这个技能。
+            // ⚠️ AI 的妖术师要用"跳过回合改体力"这个技能。
             //
             // 人类玩家是"点跳过回合 -> 点一个人的手"，AI 没有点击，
             // 所以要在这里自己走完 —— 否则 AI 永远不用这个技能。
             //
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
-            if (TryAiWarlockSkip()) return true;
+            if (TryAiSorcererSkip()) return true;
 
             // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
             //
@@ -3219,10 +3219,10 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// AI 的邪术师：**安全**且对手体力比自己高 **8 以上**时跳过回合，
+        /// AI 的妖术师：**安全**且对手体力比自己高 **8 以上**时跳过回合，
         /// 把对手的体力拉低到与自己一致。
         ///
-        /// 玩家给的策略："邪术师会在安全的情况下，和对手血量相差 8 以上时
+        /// 玩家给的策略："妖术师会在安全的情况下，和对手血量相差 8 以上时
         /// 跳过回合（让对手血量减少）"。
         ///
         /// 三条判据：
@@ -3231,9 +3231,9 @@ namespace FingerDiceDuel.Assistant
         ///     的危险区间 —— 低于 <see cref="AiDangerHealth"/> 时不跳
         ///   · 对手必须比自己血多（否则这一改是**帮对方回血**，见下一个注释）
         /// </summary>
-        private bool TryAiWarlockSkip()
+        private bool TryAiSorcererSkip()
         {
-            if (!(ActivePlayer?.Character is WarlockLogic)) return false;
+            if (!(ActivePlayer?.Character is SorcererLogic)) return false;
             if (!CanSkipTurn) return false;
 
             // ⚠️ **安全性**：跳过 = 白送一个回合给对方。
@@ -3247,7 +3247,7 @@ namespace FingerDiceDuel.Assistant
             // ① 优先把**危险的队友**拉上来（玩家要求）：
             //    "队友血量若处于危险值且自己体力比队友多大于 9 则大幅度倾向于拉队友"
             PlayerState teammate = FindDangerousTeammate(ActivePlayer);
-            if (teammate != null) return DoWarlockSkip(teammate);
+            if (teammate != null) return DoSorcererSkip(teammate);
 
             // ② 否则拉一个"血量比自己多至少 maxDamage"的对手
             PlayerState best = null;
@@ -3266,11 +3266,11 @@ namespace FingerDiceDuel.Assistant
 
             if (best == null) return false;
 
-            return DoWarlockSkip(best);
+            return DoSorcererSkip(best);
         }
 
         /// <summary>进入相位并发动跳过（复用人类那条路径，避免两套逻辑漂移）。</summary>
-        private bool DoWarlockSkip(PlayerState target)
+        private bool DoSorcererSkip(PlayerState target)
         {
             if (target == null) return false;
             if (!SkipTurn()) return false;
@@ -3278,7 +3278,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **我这一手能打出的最大伤害**（邪术师的跳过判据用它）。
+        /// **我这一手能打出的最大伤害**（妖术师的跳过判据用它）。
         ///
         /// 估算方式：手值里最高的那个直接当攻击数字（4/6/8 才是攻击，
         /// 所以取"能凑到的最好的攻击值"），再加攻防。
@@ -3320,7 +3320,7 @@ namespace FingerDiceDuel.Assistant
                 if (p.Health > AiDangerHealth) continue;
 
                 // 自己比队友多 9 以上（否则拉上来等于把自己拉下去，不划算）
-                if (me.Health - p.Health <= WarlockTeammatePullGap) continue;
+                if (me.Health - p.Health <= SorcererTeammatePullGap) continue;
 
                 if (best == null || p.Health < best.Health) best = p;
             }
@@ -3329,14 +3329,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>拉队友的血量差门槛（玩家给的数：9）。</summary>
-        public int WarlockTeammatePullGap { get; set; } = 9;
+        public int SorcererTeammatePullGap { get; set; } = 9;
 
         /// <summary>
-        /// 邪术师 AI 跳过的**血量差阈值**（玩家给的数：8）。
+        /// 妖术师 AI 跳过的**血量差阈值**（玩家给的数：8）。
         ///
         /// 调平衡改这里 —— 调大 = 更保守（更少跳），调小 = 更激进。
         /// </summary>
-        public int WarlockSkipHealthGap { get; set; } = 8;
+        public int SorcererSkipHealthGap { get; set; } = 8;
 
         /// <summary>
         /// AI 认为"自己血太少、不该白送回合"的血量线。
@@ -3847,13 +3847,13 @@ namespace FingerDiceDuel.Assistant
                 case HandEffectType.Attack4:
                 case HandEffectType.Attack6:
                 case HandEffectType.Attack8:
-                    // ⚠️ **被邪术师取消**要最先说 —— 玩家要求：
-                    //    "可以写被邪术师取消，造成 0 点伤害"。
+                    // ⚠️ **被妖术师取消**要最先说 —— 玩家要求：
+                    //    "可以写被妖术师取消，造成 0 点伤害"。
                     //    放在最前面，否则会被"造成 0 点伤害"那类分支抢先描述。
                     if (t.WasCancelled)
                     {
                         string by = string.IsNullOrEmpty(t.CancelledBy)
-                            ? "邪术师"
+                            ? "妖术师"
                             : t.CancelledBy;
                         return head + $"（攻击，被{by}取消，造成 0 点伤害）";
                     }

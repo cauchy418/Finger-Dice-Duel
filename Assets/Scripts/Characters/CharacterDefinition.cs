@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         public const string NinjaId = "ninja";
         public const string AssassinId = "assassin";
         public const string PaladinId = "paladin";
-        public const string WarlockId = "warlock";
+        public const string SorcererId = "sorcerer";
         public const string ArcaneArcherId = "arcane_archer";
         public const string SoldierId = "soldier";
         public const string GamblerId = "gambler";
@@ -156,14 +156,14 @@ namespace FingerDiceDuel.Core
                          "攻击范围内的角色被攻击时，可以把目标改成自己。攻防 0 / 0。");
 
         /// <summary>
-        /// 邪术师：有人发起攻击时，若攻击数字与自己某只手相同，
+        /// 妖术师：有人发起攻击时，若攻击数字与自己某只手相同，
         /// 可把那只手 +1（永久）来取消这次攻击 —— 取消最早结算，能取消咒术师。
         /// 剑客追加攻击与圣武士冲击的"攻击数字视为 0"，无法被取消。
         /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
         /// 攻防 0 / -1，攻击距离无限。
         /// </summary>
-        public static CharacterDefinition Warlock { get; } = new CharacterDefinition(
-            WarlockId, "邪术师", SpecialLogicType.Warlock,
+        public static CharacterDefinition Sorcerer { get; } = new CharacterDefinition(
+            SorcererId, "妖术师", SpecialLogicType.Sorcerer,
             attackBonus: 0, defenseBonus: -1,
             description: "有人发起攻击时，若该攻击数字与自己某只手相同，可把那只手 +1（永久）" +
                          "以取消这次攻击（最早结算，可取消咒术师）；追加攻击与冲击不可被取消。" +
@@ -225,7 +225,7 @@ namespace FingerDiceDuel.Core
             attackBonus: 0, defenseBonus: 0,
             description: "5 不合成盾牌，而是进入太极形态：被攻击时可以把那张 5 变成 0，" +
                          "只受本次攻击应有伤害的一半，并把剩余的一半反弹给攻击方" +
-                         "（反弹无视距离、可被盾挡下、可被游侠闪避，但无法被邪术师取消）。" +
+                         "（反弹无视距离、可被盾挡下、可被游侠闪避，但无法被妖术师取消）。" +
                          "对咒术师的攻击无减半也不反弹。自己的 0 被他人当加数触碰后立即变成 1。" +
                          "攻防 0 / 0，攻击距离 1。");
 
@@ -318,7 +318,7 @@ namespace FingerDiceDuel.Core
             // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
-            Swordsman, Ninja, Assassin, Paladin, Warlock, ArcaneArcher, Gambler, Knight,
+            Swordsman, Ninja, Assassin, Paladin, Sorcerer, ArcaneArcher, Gambler, Knight,
             Monk, Giant, Thief, Hunter, Magician, Wizard
         };
     }

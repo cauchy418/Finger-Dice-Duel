@@ -134,14 +134,14 @@ namespace FingerDiceDuel.Tests
         ///   （巨人的 4/6/8 正是这么用的），而不是“没改写”。
         ///
         ///   我第一版在“两名子角色都不实现改写器”时返回了 None，
-        ///   于是**游侠 + 邪术师的 8 变成了无效果**（玩家实测：8 不攻击）。
+        ///   于是**游侠 + 妖术师的 8 变成了无效果**（玩家实测：8 不攻击）。
         /// </summary>
         [Test]
         public void Effect_rewrite_falls_back_to_the_original_when_no_part_rewrites()
         {
-            // 游侠与邪术师**都不实现** IHandEffectRewriter
+            // 游侠与法师**都不实现** IHandEffectRewriter
             PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Ranger,
-                                                       CharacterDefinition.Warlock);
+                                                       CharacterDefinition.Wizard);
 
             var rewriter = me.Character as IHandEffectRewriter;
             Assert.NotNull(rewriter, "容器必须实现 IHandEffectRewriter。");

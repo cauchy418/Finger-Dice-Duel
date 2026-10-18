@@ -974,7 +974,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_built_in_characters_can_be_constructed()
         {
-            // 角色数量随版本增长（现在 13 个：白板 + 9 个旧角色 + 圣武士/邪术师/魔射手）。
+            // 角色数量随版本增长（现在 13 个：白板 + 9 个旧角色 + 圣武士/妖术师/魔射手）。
             // 这里只断言"至少 10 个且每个都能构造"，不锁死具体数字 ——
             // 否则每加一个角色都要改这条测试。
             Assert.True(CharacterDefinition.BuiltIn.Length >= 10,

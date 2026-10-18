@@ -18,7 +18,7 @@ namespace FingerDiceDuel.Tests
     ///    野蛮人是钝击伤害，牧师对攻击距离为1的是钝击伤害，对攻击距离1以外的是穿刺伤害，
     ///    游侠普通情况是挥砍，用2强化的攻击是穿刺伤害，狼人是挥砍，
     ///    剑客攻击和追加攻击都是挥砍，忍者是挥砍，刺客是穿刺，
-    ///    圣武士攻击和盾牌冲击都是钝击，邪术师对距离为1是钝击，1以外是穿刺，
+    ///    圣武士攻击和盾牌冲击都是钝击，妖术师对距离为1是钝击，1以外是穿刺，
     ///    魔射手是穿刺，赌徒是挥砍，骑士是穿刺，武僧是钝击，
     ///    太极反弹的伤害类型由该伤害决定，巨人是钝击，盗贼是挥砍，
     ///    猎人非伏击是挥砍，伏击是穿刺，魔术师是穿刺，
@@ -124,12 +124,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Warlock_is_bludgeoning_near_and_piercing_far()
+        public void Sorcerer_is_bludgeoning_near_and_piercing_far()
         {
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.WarlockId, 1), "邪术师 距离 1 = 钝击");
+                TypeOf(CharacterDefinition.SorcererId, 1), "妖术师 距离 1 = 钝击");
             Assert.AreEqual(AttackDamageType.Piercing,
-                TypeOf(CharacterDefinition.WarlockId, 2), "邪术师 距离 2 = 穿刺");
+                TypeOf(CharacterDefinition.SorcererId, 2), "妖术师 距离 2 = 穿刺");
         }
 
         [Test]

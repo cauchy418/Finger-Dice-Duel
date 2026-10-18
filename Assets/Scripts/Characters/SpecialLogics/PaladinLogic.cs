@@ -202,7 +202,7 @@ namespace FingerDiceDuel.Core
         ///  不然圣武士冲击强度太高了"。
         ///
         /// 但仍然标记为 <see cref="AttackContext.IsSpecialAttack"/>：
-        /// 它的"攻击数字视为 0"，所以**邪术师无法取消它**（玩家此前确认过）。
+        /// 它的"攻击数字视为 0"，所以**妖术师无法取消它**（玩家此前确认过）。
         /// </summary>
         private void ResolveShockDamage(PlayerState owner, Hand sourceHand,
                                         PlayerState target, GameManager manager)

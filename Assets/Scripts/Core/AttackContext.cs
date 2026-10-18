@@ -160,7 +160,7 @@ namespace FingerDiceDuel.Core
         public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
         {
             Manager = manager;
-            // 0. **最早结算：取消攻击**（邪术师）。
+            // 0. **最早结算：取消攻击**（妖术师）。
             //
             //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
             //    所以能取消掉咒术师那种"在钩子里改写伤害"的攻击。
@@ -327,7 +327,7 @@ namespace FingerDiceDuel.Core
             //    玩家确认的规则：
             //      · **无视距离**（不走 CanReach）
             //      · **可以被盾挡下、可以被游侠闪避**
-            //      · **无法被邪术师取消**
+            //      · **无法被妖术师取消**
             //
             //    所以这里发起的是**一次新的攻击**（同一套结算），
             //    但它是**由挨打方发起、目标是攻击方**，而且用
@@ -340,7 +340,7 @@ namespace FingerDiceDuel.Core
                                                    Defender.LeftHand ?? Defender.RightHand,
                                                    reflectTotal)
                 {
-                    // "攻击数字视为 0" -> 邪术师取消不了（玩家明确要求）。
+                    // "攻击数字视为 0" -> 妖术师取消不了（玩家明确要求）。
                     // 用反射产生的攻击，只能取消真正的攻击，不能取消反弹。
                     IsSpecialAttack = true,
 
@@ -557,7 +557,7 @@ namespace FingerDiceDuel.Core
         /// <summary>本次攻击是否被"代挡"改过目标。</summary>
         public bool WasRedirected { get; private set; }
 
-        /// <summary>本次攻击是否被**取消**（邪术师）。</summary>
+        /// <summary>本次攻击是否被**取消**（妖术师）。</summary>
         public bool WasCancelled { get; private set; }
 
         /// <summary>取消者的名字（供战报显示）。</summary>
@@ -570,7 +570,7 @@ namespace FingerDiceDuel.Core
         ///    直接用当前值会把数字算错（本项目在"游侠闪避"上踩过同类坑）。
         ///
         /// ⚠️ **剑客的追加攻击与圣武士的冲击视为 0** —— 它们不是"发起攻击"，
-        ///    所以邪术师无法取消（任何手值都不会等于 0，因此天然拦不住）。
+        ///    所以妖术师无法取消（任何手值都不会等于 0，因此天然拦不住）。
         /// </summary>
         public int AttackValue
         {
@@ -600,10 +600,10 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 查询"**某位玩家**对某个抉择的作答"（由 <see cref="GameManager"/> 注入）。
         ///
-        /// 邪术师的"是否取消"要在**结算时**读回玩家在收集阶段的回答 ——
+        /// 妖术师的"是否取消"要在**结算时**读回玩家在收集阶段的回答 ——
         /// 没有它就只能自动取消（那是 AI 的行为）。
         ///
-        /// ⚠️ 用带玩家参数的版本：邪术师是**场上的第三方**，
+        /// ⚠️ 用带玩家参数的版本：妖术师是**场上的第三方**，
         ///    既不是行动方也不是防守方。
         /// </summary>
         public Func<PlayerState, HandEffect, int, Hand> AnsweredLookupFor { get; set; }
@@ -619,7 +619,7 @@ namespace FingerDiceDuel.Core
         public Func<PlayerState, bool> AskedCancelLookup { get; set; }
 
         /// <summary>
-        /// 询问场上有没有角色能**取消**这次攻击（邪术师）。
+        /// 询问场上有没有角色能**取消**这次攻击（妖术师）。
         ///
         /// 遍历全部参战玩家（取消者是第三方，不是挨打的人）。
         /// 第一个答应的就取消成功。
@@ -638,21 +638,21 @@ namespace FingerDiceDuel.Core
                 if (p == null || !p.IsAlive) continue;
 
                 // ⚠️ **不能取消自己发起的攻击**（玩家实测抓到：
-                //    邪术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
+                //    妖术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
                 if (ReferenceEquals(p, Attacker)) continue;
 
                 // ⚠️ 多人模式里**不能取消队友的攻击**。
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
 
-                if (p.Character is WarlockLogic warlock)
+                if (p.Character is SorcererLogic sorcerer)
                 {
-                    // 人类的邪术师走"询问式"：按玩家在收集阶段的回答决定。
-                    // AI 的邪术师没被问过 -> wasAsked = false -> 自动取消。
+                    // 人类的妖术师走"询问式"：按玩家在收集阶段的回答决定。
+                    // AI 的妖术师没被问过 -> wasAsked = false -> 自动取消。
                     bool wasAsked = AskedCancelLookup != null && AskedCancelLookup(p);
-                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.WarlockCancel, 0);
+                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.SorcererCancel, 0);
 
-                    if (warlock.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
+                    if (sorcerer.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;

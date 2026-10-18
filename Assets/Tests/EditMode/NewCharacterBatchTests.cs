@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **三个新角色的核心行为**：圣武士 / 邪术师 / 魔射手。
+    /// **三个新角色的核心行为**：圣武士 / 妖术师 / 魔射手。
     ///
     /// 规则都由玩家逐条确认过，这里把"每条规则"钉成断言 ——
     /// 尤其是容易写反的地方（代挡判据、攻击数字的取值、两段伤害怎么分）。
@@ -361,35 +361,35 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 邪术师
+        // 妖术师
         // ============================================================
 
         [Test]
-        public void Warlock_stats_and_infinite_range()
+        public void Sorcerer_stats_and_infinite_range()
         {
-            PlayerState w = Make("邪", CharacterDefinition.Warlock);
+            PlayerState w = Make("邪", CharacterDefinition.Sorcerer);
 
             Assert.AreEqual(0, w.Character.AttackBonus);
             Assert.AreEqual(-1, w.Character.DefenseBonus);
             Assert.AreEqual(int.MaxValue, GameManager.BaseRangeOf(w),
-                "邪术师攻击距离无限。");
+                "妖术师攻击距离无限。");
         }
 
         [Test]
-        public void Warlock_cancels_an_attack_matching_one_of_its_hands()
+        public void Sorcerer_cancels_an_attack_matching_one_of_its_hands()
         {
             // 玩家确认：攻击数字与自己某只手相同 -> 把那只手 +1 取消这次攻击
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            // 邪术师手上有一个 4
-            TestSetup.SetHand(warlock.LeftHand, 4);
-            TestSetup.SetHand(warlock.RightHand, 1);
+            // 妖术师手上有一个 4
+            TestSetup.SetHand(sorcerer.LeftHand, 4);
+            TestSetup.SetHand(sorcerer.RightHand, 1);
 
             // 直接构造一次 4 的攻击，验证取消
-            var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, sorcerer, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,      // 1 + 3 = 4 -> 攻击数字 4
@@ -397,24 +397,24 @@ namespace FingerDiceDuel.Tests
 
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
-            Assert.True(ctx.WasCancelled, "邪术师应取消这次攻击。");
-            Assert.AreEqual(5, warlock.LeftHand.Value,
+            Assert.True(ctx.WasCancelled, "妖术师应取消这次攻击。");
+            Assert.AreEqual(5, sorcerer.LeftHand.Value,
                 "取消的代价是那只手 +1（永久）。");
         }
 
         [Test]
-        public void Warlock_cancel_is_permanent_and_updates_the_shield_state()
+        public void Sorcerer_cancel_is_permanent_and_updates_the_shield_state()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
             // 手里是一个"成型的 5"，而攻击数字也是 5 -> 取消后变成 6
-            TestSetup.SetHand(warlock.LeftHand, 5);
-            warlock.LeftHand.SetShieldState(ShieldState.Formed);
+            TestSetup.SetHand(sorcerer.LeftHand, 5);
+            sorcerer.LeftHand.SetShieldState(ShieldState.Formed);
 
-            var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, sorcerer, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 2,
                 TargetHandValueBefore = 3,      // 2 + 3 = 5
@@ -422,23 +422,23 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.True(ctx.WasCancelled);
-            Assert.AreEqual(6, warlock.LeftHand.Value);
-            Assert.AreEqual(ShieldState.None, warlock.LeftHand.State,
+            Assert.AreEqual(6, sorcerer.LeftHand.Value);
+            Assert.AreEqual(ShieldState.None, sorcerer.LeftHand.State,
                 "手值不再是 5 就不该继续挂着护盾状态。");
         }
 
         [Test]
-        public void Warlock_does_not_cancel_when_no_hand_matches()
+        public void Sorcerer_does_not_cancel_when_no_hand_matches()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            TestSetup.SetHand(warlock.LeftHand, 2);
-            TestSetup.SetHand(warlock.RightHand, 3);
+            TestSetup.SetHand(sorcerer.LeftHand, 2);
+            TestSetup.SetHand(sorcerer.RightHand, 3);
 
-            var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, sorcerer, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,      // 攻击数字 4，手上没有 4
@@ -446,21 +446,21 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "没有匹配的手 -> 不取消。");
-            Assert.AreEqual(2, warlock.LeftHand.Value, "不取消就不该改手值。");
+            Assert.AreEqual(2, sorcerer.LeftHand.Value, "不取消就不该改手值。");
         }
 
         [Test]
-        public void Warlock_cannot_cancel_special_attacks()
+        public void Sorcerer_cannot_cancel_special_attacks()
         {
             // 玩家确认：剑客追加攻击与圣武士冲击的"攻击数字视为 0" -> 不可被取消
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            TestSetup.SetHand(warlock.LeftHand, 4);
+            TestSetup.SetHand(sorcerer.LeftHand, 4);
 
-            var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, sorcerer, attacker.LeftHand, 4)
             {
                 IsSpecialAttack = true,         // 追加攻击 / 冲击
             };
@@ -472,59 +472,59 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Warlock_cannot_skip_when_everyone_has_the_same_health()
+        public void Sorcerer_cannot_skip_when_everyone_has_the_same_health()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            var logic = warlock.Character as ITurnSkipRule;
+            var logic = sorcerer.Character as ITurnSkipRule;
             Assert.NotNull(logic);
 
             // 双方都满血 = 体力一致 -> 无法发动（改了也没变化）
-            Assert.False(logic.CanSkip(warlock, game),
+            Assert.False(logic.CanSkip(sorcerer, game),
                 "所有人血量一致时无法发动（改了也不会有变化）。");
         }
 
         [Test]
-        public void Warlock_can_skip_only_when_hurt_and_health_differs()
+        public void Sorcerer_can_skip_only_when_hurt_and_health_differs()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            var logic = warlock.Character as ITurnSkipRule;
-            Assert.NotNull(logic, "邪术师应实现跳过回合接口。");
+            var logic = sorcerer.Character as ITurnSkipRule;
+            Assert.NotNull(logic, "妖术师应实现跳过回合接口。");
 
             // 满血 -> 不能发动（限制保留；玩家确认过）
-            Assert.False(logic.CanSkip(warlock, game), "满血不能发动。");
+            Assert.False(logic.CanSkip(sorcerer, game), "满血不能发动。");
 
             // 受伤，且对手体力不同 -> 可以发动
-            warlock.TakeDamage(5);
-            Assert.True(logic.CanSkip(warlock, game),
+            sorcerer.TakeDamage(5);
+            Assert.True(logic.CanSkip(sorcerer, game),
                 "体力不满且有人体力与自己不同 -> 可以发动。");
         }
 
         [Test]
-        public void Warlock_health_swap_sets_exact_values()
+        public void Sorcerer_health_swap_sets_exact_values()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState foe = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            warlock.TakeDamage(7);              // 邪术师 13
-            Assert.AreEqual(13, warlock.Health);
+            sorcerer.TakeDamage(7);              // 妖术师 13
+            Assert.AreEqual(13, sorcerer.Health);
 
-            Assert.True(WarlockLogic.ApplyHealthSwap(warlock, foe),
+            Assert.True(SorcererLogic.ApplyHealthSwap(sorcerer, foe),
                 "应能把对手的体力改成与自己一致。");
-            Assert.AreEqual(13, foe.Health, "对手体力应被改成与邪术师一致。");
+            Assert.AreEqual(13, foe.Health, "对手体力应被改成与妖术师一致。");
         }
 
         [Test]
-        public void Warlock_cancels_a_multi_hit_attack_entirely_not_per_hit()
+        public void Sorcerer_cancels_a_multi_hit_attack_entirely_not_per_hit()
         {
-            // 玩家要求："忍者和魔射手的二段攻击，邪术师需要可以一次性全部抵消"
+            // 玩家要求："忍者和魔射手的二段攻击，妖术师需要可以一次性全部抵消"
             //
             // 实现上这件事是**天然成立**的：取消发生在 AttackContext.Resolve
             // 的最开头，段数（HitCount = 2）此时还没进入循环 ——
@@ -536,17 +536,17 @@ namespace FingerDiceDuel.Tests
                          CharacterDefinition.ArcaneArcher,   // 4 -> 两段各 4
                      })
             {
-                GameManager game = Match(attackerDef, CharacterDefinition.Warlock,
+                GameManager game = Match(attackerDef, CharacterDefinition.Sorcerer,
                                          out _, out _);
                 PlayerState attacker = game.PlayerA;
-                PlayerState warlock = game.PlayerB;
+                PlayerState sorcerer = game.PlayerB;
 
-                TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4 -> 能取消
-                TestSetup.SetHand(warlock.RightHand, 1);
+                TestSetup.SetHand(sorcerer.LeftHand, 4);      // 手上有 4 -> 能取消
+                TestSetup.SetHand(sorcerer.RightHand, 1);
 
-                int before = warlock.Health;
+                int before = sorcerer.Health;
 
-                var ctx = new AttackContext(attacker, warlock, attacker.LeftHand, 4)
+                var ctx = new AttackContext(attacker, sorcerer, attacker.LeftHand, 4)
                 {
                     SourceHandValueBefore = 1,
                     TargetHandValueBefore = 3,               // 攻击数字 4
@@ -559,21 +559,21 @@ namespace FingerDiceDuel.Tests
                     $"{attackerDef.DisplayName}：取消后**一段都不该打**。");
                 Assert.AreEqual(0, ctx.LandedHits, "不应有任何一段命中。");
                 Assert.AreEqual(0, ctx.AppliedDamage, "两段合计应为 0 伤害。");
-                Assert.AreEqual(before, warlock.Health,
+                Assert.AreEqual(before, sorcerer.Health,
                     "被完全取消的攻击不该扣血。");
 
                 // 只能 +1 一次（一只手的数字只匹配一次）
-                Assert.AreEqual(5, warlock.LeftHand.Value,
+                Assert.AreEqual(5, sorcerer.LeftHand.Value,
                     "取消的代价只付一次（+1），不是每段各付一次。");
             }
         }
 
         // ============================================================
-        // 邪术师的交互（跳过回合 -> 点一个人的手改体力）
+        // 妖术师的交互（跳过回合 -> 点一个人的手改体力）
         // ============================================================
 
         [Test]
-        public void Warlock_skip_enters_target_selection_then_swaps_health()
+        public void Sorcerer_skip_enters_target_selection_then_swaps_health()
         {
             // 玩家要求的交互："在右侧显示跳过回合，然后点击一个人的手发动技能"
             var providers = new List<IChoiceProvider>
@@ -581,12 +581,12 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var a = Make("A", CharacterDefinition.Blank);
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
 
-            // ⚠️ 邪术师必须是**当前行动方** —— 第一个参数是先手。
-            //    （我第一次写成 (a, warlock)，于是 CanSkipTurn 检查的是 A，
+            // ⚠️ 妖术师必须是**当前行动方** —— 第一个参数是先手。
+            //    （我第一次写成 (a, sorcerer)，于是 CanSkipTurn 检查的是 A，
             //      诊断为 active=A hp=20 才看出来。）
-            var game = new GameManager(warlock, a, providers[0], providers[1]);
+            var game = new GameManager(sorcerer, a, providers[0], providers[1]);
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
             board.BeginTurn();
@@ -594,7 +594,7 @@ namespace FingerDiceDuel.Tests
             // 满血 -> 不能跳过（技能要求体力不满）
             Assert.False(board.CanSkipTurn, "满血时不该出现跳过回合按钮。");
 
-            warlock.TakeDamage(7);
+            sorcerer.TakeDamage(7);
             Assert.True(board.CanSkipTurn,
                 "体力不满且对手体力不同 -> 应出现跳过回合按钮。");
 
@@ -603,38 +603,38 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingHealthSwapTarget, board.Phase,
                 "应停在'选一个人改体力'这一步。");
 
-            int warlockHealth = warlock.Health;
+            int sorcererHealth = sorcerer.Health;
 
-            // 点对手的手 -> 那人体力被改成与邪术师一致，回合结束
+            // 点对手的手 -> 那人体力被改成与妖术师一致，回合结束
             Assert.True(board.ClickHand(a.LeftHand), "点目标的手应成功发动。");
 
-            Assert.AreEqual(warlockHealth, a.Health,
-                "对手体力应被改成与邪术师一致。");
+            Assert.AreEqual(sorcererHealth, a.Health,
+                "对手体力应被改成与妖术师一致。");
             Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
                 "发动后应离开选目标相位。");
         }
 
         [Test]
-        public void Warlock_skip_rejects_a_target_whose_health_already_matches()
+        public void Sorcerer_skip_rejects_a_target_whose_health_already_matches()
         {
             // 体力本来就一样的人不是合法目标 —— 点头上不该让它浪费回合
             var providers = new List<IChoiceProvider>
             {
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var a = Make("A", CharacterDefinition.Blank);
 
-            var game = new GameManager(warlock, a, providers[0], providers[1]);
+            var game = new GameManager(sorcerer, a, providers[0], providers[1]);
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
             board.BeginTurn();
 
-            warlock.TakeDamage(7);
+            sorcerer.TakeDamage(7);
             Assert.True(board.SkipTurn());
 
-            // 强行把对手体力设成与邪术师一致 -> 该目标变非法
-            a.SetHealthExact(warlock.Health);
+            // 强行把对手体力设成与妖术师一致 -> 该目标变非法
+            a.SetHealthExact(sorcerer.Health);
 
             Assert.False(board.ClickHand(a.LeftHand),
                 "体力已一致的人不该是合法目标。");
@@ -643,22 +643,22 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Human_warlock_cancels_only_after_clicking_the_matching_hand()
+        public void Human_sorcerer_cancels_only_after_clicking_the_matching_hand()
         {
-            // 玩家要求：人类的邪术师改成"右侧给按钮询问是否发动，
+            // 玩家要求：人类的妖术师改成"右侧给按钮询问是否发动，
             //            然后点击对应数字触发"。
             // 所以"点了那只手 = 取消"，"没点（选了不发动）= 放行"。
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(foe, warlock, new SimpleChoiceProvider(),
+            var game = new GameManager(foe, sorcerer, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
 
-            // 邪术师手上有一个 4；对手发起 3 + 1 = 4 的攻击
-            TestSetup.SetHand(warlock.LeftHand, 4);
-            TestSetup.SetHand(warlock.RightHand, 1);
+            // 妖术师手上有一个 4；对手发起 3 + 1 = 4 的攻击
+            TestSetup.SetHand(sorcerer.LeftHand, 4);
+            TestSetup.SetHand(sorcerer.RightHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
 
             board.BeginTurn();
@@ -666,54 +666,54 @@ namespace FingerDiceDuel.Tests
             // 第 ① 步：对手选自己的手
             Assert.True(board.ClickHand(foe.LeftHand));
 
-            // 第 ② 步：对手选目标手（邪术师的右手 1）-> 进入"确认目标玩家"
-            Assert.True(board.ClickHand(warlock.RightHand));
+            // 第 ② 步：对手选目标手（妖术师的右手 1）-> 进入"确认目标玩家"
+            Assert.True(board.ClickHand(sorcerer.RightHand));
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
 
             // 第 ③ 步：确认目标 -> 这时才收集"是否取消"的抉择
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "应停下来问邪术师是否取消这次攻击。");
+                "应停下来问妖术师是否取消这次攻击。");
 
             // 候选就是那只与攻击数字相同的手（"点对应数字触发"）
-            Assert.True(board.IsChoiceCandidate(warlock.LeftHand),
+            Assert.True(board.IsChoiceCandidate(sorcerer.LeftHand),
                 "与攻击数字相同的那只手应可点。");
 
             // 玩家点它 -> 取消成立
-            Assert.True(board.ClickHand(warlock.LeftHand), "点对应数字应能发动。");
+            Assert.True(board.ClickHand(sorcerer.LeftHand), "点对应数字应能发动。");
 
             Assert.True(board.LastTurn?.WasCancelled == true,
                 "点了对应数字后，这次攻击应被取消。");
-            Assert.AreEqual(5, warlock.LeftHand.Value,
+            Assert.AreEqual(5, sorcerer.LeftHand.Value,
                 "取消的代价是那只手 +1（永久）。");
         }
 
         [Test]
-        public void Ai_warlock_still_cancels_automatically_without_being_asked()
+        public void Ai_sorcerer_still_cancels_automatically_without_being_asked()
         {
-            // AI 的邪术师不该被"询问"流程挡住 —— 它没被问过，
+            // AI 的妖术师不该被"询问"流程挡住 —— 它没被问过，
             // 应当仍然自动取消（否则技能在 AI 手里失效）。
             var ai = new GreedyChoiceProvider();
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var foe = Make("敌", CharacterDefinition.Blank);
 
             var sinks = new SimpleChoiceProvider[] { new SimpleChoiceProvider(),
                                                      new SimpleChoiceProvider() };
-            var game = new GameManager(foe, warlock, sinks[0], sinks[1]);
+            var game = new GameManager(foe, sorcerer, sinks[0], sinks[1]);
             var board = new BoardController(game, sinks[0], sinks[1],
-                                           aiForB: ai);   // 邪术师是 B = AI
-            board.BindPlayer(warlock, ai, sinks[1]);
+                                           aiForB: ai);   // 妖术师是 B = AI
+            board.BindPlayer(sorcerer, ai, sinks[1]);
 
-            TestSetup.SetHand(warlock.LeftHand, 4);
-            TestSetup.SetHand(warlock.RightHand, 1);
+            TestSetup.SetHand(sorcerer.LeftHand, 4);
+            TestSetup.SetHand(sorcerer.RightHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
 
             board.BeginTurn();
             board.MakeAutomaticMove();     // AI 走完自己的回合
 
-            // 换对手行动：AI 邪术师没有被问过，应仍能自动取消
-            var ctx = new AttackContext(foe, warlock, foe.LeftHand, 4)
+            // 换对手行动：AI 妖术师没有被问过，应仍能自动取消
+            var ctx = new AttackContext(foe, sorcerer, foe.LeftHand, 4)
             {
                 SourceHandValueBefore = 3,
                 TargetHandValueBefore = 1,      // 3 + 1 = 4
@@ -721,21 +721,21 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.True(ctx.WasCancelled,
-                "没被问过的 AI 邪术师应仍自动取消。");
+                "没被问过的 AI 妖术师应仍自动取消。");
         }
 
         [Test]
-        public void Warlock_never_cancels_its_own_attack()
+        public void Sorcerer_never_cancels_its_own_attack()
         {
-            // 玩家实测抓到：邪术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
-            GameManager game = Match(CharacterDefinition.Warlock, CharacterDefinition.Blank,
+            // 玩家实测抓到：妖术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
+            GameManager game = Match(CharacterDefinition.Sorcerer, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState warlock = game.PlayerA;
+            PlayerState sorcerer = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4，攻击数字也是 4
+            TestSetup.SetHand(sorcerer.LeftHand, 4);      // 手上有 4，攻击数字也是 4
 
-            var ctx = new AttackContext(warlock, foe, warlock.LeftHand, 4)
+            var ctx = new AttackContext(sorcerer, foe, sorcerer.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,               // 攻击数字 4
@@ -743,15 +743,15 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "不能取消自己发起的攻击。");
-            Assert.AreEqual(4, warlock.LeftHand.Value,
+            Assert.AreEqual(4, sorcerer.LeftHand.Value,
                 "不取消就不该改自己的手值。");
         }
 
         [Test]
-        public void Warlock_never_cancels_a_teammates_attack()
+        public void Sorcerer_never_cancels_a_teammates_attack()
         {
-            // 玩家要求：多人游戏里邪术师不要取消队友发起的攻击
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            // 玩家要求：多人游戏里妖术师不要取消队友发起的攻击
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var mate = Make("友", CharacterDefinition.Blank);
             var foe1 = Make("敌1", CharacterDefinition.Blank);
             var foe2 = Make("敌2", CharacterDefinition.Blank);
@@ -761,14 +761,14 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var seated = new List<PlayerState> { warlock, mate, foe1, foe2 };
+            var seated = new List<PlayerState> { sorcerer, mate, foe1, foe2 };
             GameManager game = GameManager.Create2v2(seated, providers);
 
-            // 座位 1&4 一队、2&3 一队 -> 邪术师(1) 与 foe2(4) 是队友
-            Assert.True(game.IsTeammate(warlock, foe2),
+            // 座位 1&4 一队、2&3 一队 -> 妖术师(1) 与 foe2(4) 是队友
+            Assert.True(game.IsTeammate(sorcerer, foe2),
                 "前置：1 号位与 4 号位应是队友。");
 
-            TestSetup.SetHand(warlock.LeftHand, 4);
+            TestSetup.SetHand(sorcerer.LeftHand, 4);
 
             // 队友 foe2 发起攻击数字 4
             var ctx = new AttackContext(foe2, foe1, foe2.LeftHand, 4)
@@ -779,20 +779,20 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "不能取消队友发起的攻击。");
-            Assert.AreEqual(4, warlock.LeftHand.Value,
+            Assert.AreEqual(4, sorcerer.LeftHand.Value,
                 "不取消就不该改手值。");
         }
 
         [Test]
-        public void Ai_warlock_does_not_skip_when_the_enemy_has_less_health()
+        public void Ai_sorcerer_does_not_skip_when_the_enemy_has_less_health()
         {
             // 玩家要求：敌人血量更少时也不要跳过回合
             // （否则是"把对方血量改高"= 帮对方回血）
             var ai = new GreedyChoiceProvider();
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(sorcerer, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -800,8 +800,8 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            // 邪术师受伤到 13，敌人也被打到 5（**比邪术师少**）
-            warlock.TakeDamage(7);
+            // 妖术师受伤到 13，敌人也被打到 5（**比妖术师少**）
+            sorcerer.TakeDamage(7);
             foe.SetHealthExact(5);
 
             // 人可以选（条件只是"有人体力不同"），但 AI **不该**用
@@ -813,12 +813,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Warlock_skip_button_appears_in_two_versus_two()
+        public void Sorcerer_skip_button_appears_in_two_versus_two()
         {
-            // 玩家实测：2v2 里邪术师**没有**跳过回合按钮。
+            // 玩家实测：2v2 里妖术师**没有**跳过回合按钮。
             // 这条测试先把"控制器层到底给不给按钮"钉住，
             // 好区分是规则判错还是界面没画。
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var mate = Make("友", CharacterDefinition.Blank);
             var foe1 = Make("敌1", CharacterDefinition.Blank);
             var foe2 = Make("敌2", CharacterDefinition.Blank);
@@ -828,8 +828,8 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var seated = new List<PlayerState> { warlock, mate, foe1, foe2 };
-            // 邪术师坐 1 号位 -> 先手就是他
+            var seated = new List<PlayerState> { sorcerer, mate, foe1, foe2 };
+            // 妖术师坐 1 号位 -> 先手就是他
             GameManager game = GameManager.Create2v2(
                 seated, new List<IChoiceProvider>(sinks));
 
@@ -840,12 +840,12 @@ namespace FingerDiceDuel.Tests
             board.BindPlayer(foe2, null, sinks[3]);
 
             board.BeginTurn();
-            Assert.AreEqual(warlock, board.ActivePlayer, "前置：邪术师应是当前行动方。");
+            Assert.AreEqual(sorcerer, board.ActivePlayer, "前置：妖术师应是当前行动方。");
 
             // 满血 -> 没有按钮
             Assert.False(board.CanSkipTurn, "满血时不该有跳过回合按钮。");
 
-            warlock.TakeDamage(10);
+            sorcerer.TakeDamage(10);
             Assert.True(board.CanSkipTurn,
                 $"2v2 里体力不满且别人体力不同，应有跳过回合按钮。" +
                 $"[诊断 active={board.ActivePlayer?.Name}" +
@@ -855,50 +855,50 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Battle_log_says_the_attack_was_cancelled_by_the_warlock()
+        public void Battle_log_says_the_attack_was_cancelled_by_the_sorcerer()
         {
-            // 玩家要求："把邪术师取消攻击也写到战报里，
-            //            可以写被邪术师取消，造成 0 点伤害"
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Warlock,
+            // 玩家要求："把妖术师取消攻击也写到战报里，
+            //            可以写被妖术师取消，造成 0 点伤害"
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Sorcerer,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState warlock = game.PlayerB;
+            PlayerState sorcerer = game.PlayerB;
 
-            TestSetup.SetHand(warlock.LeftHand, 4);      // 手上有 4 -> 能取消
-            TestSetup.SetHand(warlock.RightHand, 1);
+            TestSetup.SetHand(sorcerer.LeftHand, 4);      // 手上有 4 -> 能取消
+            TestSetup.SetHand(sorcerer.RightHand, 1);
             TestSetup.SetHand(attacker.LeftHand, 3);     // 3 + 1 = 4 -> 攻击数字 4
 
             // 用真实的回合流程产出 TurnResult（战报由它渲染）
-            TurnResult r = game.ExecuteTurn(attacker, attacker.LeftHand, warlock.RightHand);
+            TurnResult r = game.ExecuteTurn(attacker, attacker.LeftHand, sorcerer.RightHand);
 
             // ⚠️ 必须**无条件**断言取消发生了 ——
             //    写成"如果被取消才检查文案"会让测试在没取消时静默通过（假绿）。
-            Assert.True(r.WasCancelled, "这次攻击应被邪术师取消（手上有一个 4）。");
+            Assert.True(r.WasCancelled, "这次攻击应被妖术师取消（手上有一个 4）。");
             Assert.AreEqual(0, r.DamageDealt, "被取消的攻击造成 0 点伤害。");
 
             string line = BoardController.DescribeTurn(r);
 
-            // 战报用**取消者的名字**（这里邪术师叫 "B"），
+            // 战报用**取消者的名字**（这里妖术师叫 "B"），
             // 所以断言"含取消 + 含 0 点伤害 + 含取消者名字"，
-            // 而不是写死"被邪术师取消"。
+            // 而不是写死"被妖术师取消"。
             Assert.True(line.Contains("取消"),
                 $"战报应写明被取消。实际：{line}");
-            Assert.True(line.Contains(warlock.Name),
-                $"战报应写明是谁取消的（{warlock.Name}）。实际：{line}");
+            Assert.True(line.Contains(sorcerer.Name),
+                $"战报应写明是谁取消的（{sorcerer.Name}）。实际：{line}");
             Assert.True(line.Contains("0 点伤害"),
                 $"战报应写明造成 0 点伤害。实际：{line}");
         }
 
         [Test]
-        public void Ai_warlock_uses_the_skip_skill_on_its_own()
+        public void Ai_sorcerer_uses_the_skip_skill_on_its_own()
         {
             // AI 没有"点击"，必须自己在 MakeAutomaticMove 里走完这个技能 ——
-            // 否则 AI 的邪术师永远不会用它（等于技能在 AI 手里不存在）。
+            // 否则 AI 的妖术师永远不会用它（等于技能在 AI 手里不存在）。
             var ai = new GreedyChoiceProvider();
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(sorcerer, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -906,7 +906,7 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            // ⚠️ 按玩家给的 AI 策略，邪术师只在
+            // ⚠️ 按玩家给的 AI 策略，妖术师只在
             //    "**安全**（自己血够多）**且**与对手血量相差 **8 以上**"时才跳。
             //
             //    场面要同时满足：
@@ -914,28 +914,28 @@ namespace FingerDiceDuel.Tests
             //      · 对手 20（10 + 8 = 18 <= 20，差值够）
             //    ⚠️ 我第一版让自己 13，那要求对手 >= 21 —— 超过生命上限 20，
             //       永远摆不出来（测试当场抓到）。
-            warlock.TakeDamage(10);                    // 邪术师 10 / 20
-            Assert.AreEqual(10, warlock.Health);
+            sorcerer.TakeDamage(10);                    // 妖术师 10 / 20
+            Assert.AreEqual(10, sorcerer.Health);
             Assert.AreEqual(20, foe.Health);
 
-            int warlockHealth = warlock.Health;
+            int sorcererHealth = sorcerer.Health;
 
             Assert.True(board.MakeAutomaticMove(), "AI 应该自己走完这一步。");
-            Assert.AreEqual(warlockHealth, foe.Health,
+            Assert.AreEqual(sorcererHealth, foe.Health,
                 "AI 应把对手体力改成与自己一致。");
             Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
                 "AI 不该停在需要点击的相位上（否则对局会卡死）。");
         }
 
         [Test]
-        public void Ai_warlock_skips_the_swap_when_health_gap_is_too_small()
+        public void Ai_sorcerer_skips_the_swap_when_health_gap_is_too_small()
         {
             // 玩家给的阈值是 8：差值不够时**不跳**（宁可正常打）。
             var ai = new GreedyChoiceProvider();
-            var warlock = Make("邪", CharacterDefinition.Warlock);
+            var sorcerer = Make("邪", CharacterDefinition.Sorcerer);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(warlock, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(sorcerer, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -943,7 +943,7 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            warlock.TakeDamage(7);                     // 邪术师 13，对手 20 -> 差 7 < 8
+            sorcerer.TakeDamage(7);                     // 妖术师 13，对手 20 -> 差 7 < 8
 
             Assert.True(board.MakeAutomaticMove(), "AI 应能正常行动。");
             Assert.AreEqual(20, foe.Health,

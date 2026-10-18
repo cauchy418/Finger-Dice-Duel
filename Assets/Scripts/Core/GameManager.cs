@@ -77,8 +77,8 @@ namespace FingerDiceDuel.Core
         public string DodgeReason;
 
         /// <summary>
-        /// 本次攻击是否被**邪术师取消**（玩家要求写进战报：
-        /// "可以写被邪术师取消，造成 0 点伤害"）。
+        /// 本次攻击是否被**妖术师取消**（玩家要求写进战报：
+        /// "可以写被妖术师取消，造成 0 点伤害"）。
         /// </summary>
         public bool WasCancelled;
 
@@ -778,7 +778,7 @@ namespace FingerDiceDuel.Core
         /// "**某位玩家**对某个抉择的作答"（带玩家参数）。
         ///
         /// 与 <see cref="AnsweredLookup"/> 的区别：那个已经绑定到"当前记录者"
-        /// （行动方 / 防守方），而**邪术师是场上的第三方** ——
+        /// （行动方 / 防守方），而**妖术师是场上的第三方** ——
         /// 取消攻击的抉择不属于行动方也不属于防守方，所以要按人查。
         ///
         /// 由 <see cref="Assistant.BoardController"/> 注入。
@@ -2158,13 +2158,13 @@ namespace FingerDiceDuel.Core
                         ctx.AiDecisionLookup = AiDecisionLookup;
                         ctx.ChoiceGatherer = ChoiceGatherer;
 
-                        // 邪术师的"是否取消"要回读玩家在收集阶段的回答 ——
+                        // 妖术师的"是否取消"要回读玩家在收集阶段的回答 ——
                         // 与游侠闪避走的是同一条通路。
                         ctx.AnsweredLookupFor = AnsweredLookupFor;
                         ctx.AskedCancelLookup = AskedCancelLookup;
 
                         // ⚠️ **把本次攻击的距离交给攻击方角色** ——
-                        //    牧师 / 邪术师 / 法师按"距离 1 内 / 外"分型
+                        //    牧师 / 妖术师 / 法师按"距离 1 内 / 外"分型
                         //    （玩家规则），而 AttackContext 刻意不持有对局引用。
                         if (actor.Character is CharacterTemplate template)
                             template.LastAttackDistance = DistanceBetween(actor, opponent);
@@ -2316,7 +2316,7 @@ namespace FingerDiceDuel.Core
             if (IsGameOver)
                 throw new InvalidOperationException("非法跳过：比赛已结束。");
 
-            // ⚠️ 必须用**实例版**：邪术师的跳过条件要看别人的体力，
+            // ⚠️ 必须用**实例版**：妖术师的跳过条件要看别人的体力，
             //    静态版传 null 会让它永远判非法（测试抓到：
             //    "非法跳过：当前不满足跳过回合的条件"）。
             if (!CanSkipTurnFor(CurrentPlayer))
@@ -2338,7 +2338,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **已经校验过条件**的跳过（供"先做副作用、再结束回合"的技能使用）。
         ///
-        /// 为什么需要它：邪术师的流程是
+        /// 为什么需要它：妖术师的流程是
         /// "校验可发动 -> 改某人体力 -> 结束回合"，
         /// 而**改完体力之后条件就不成立了**（所有人血量被改成一致），
         /// 再走一次校验会抛"非法跳过"（测试抓到）。
@@ -2436,7 +2436,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 该玩家当前是否可以跳过回合（**带 GameManager** 的版本）。
         ///
-        /// ⚠️ 有些角色的跳过条件要**看别人**（邪术师：场上必须有人体力与自己不同），
+        /// ⚠️ 有些角色的跳过条件要**看别人**（妖术师：场上必须有人体力与自己不同），
         ///    没有 manager 就查不到 —— 所以调用方应优先用这个重载。
         ///    静态版保留给无法拿到 manager 的老调用点。
         /// </summary>

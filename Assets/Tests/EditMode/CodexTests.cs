@@ -101,7 +101,7 @@ namespace FingerDiceDuel.Tests
         ///   如何针对    ~19~40          ~20~40       80
         ///
         /// **机制简单** = 一句能说完（士兵、游侠、骑士、狼人、魔射手、巨人…）
-        /// **有机制**   = 需要说清触发条件与代价（武僧、盗贼、邪术师、猎人、魔术师…）
+        /// **有机制**   = 需要说清触发条件与代价（武僧、盗贼、妖术师、猎人、魔术师…）
         ///
         /// \u26a0\ufe0f 上限只挡"长篇大论"，不追求人人等长 ——
         ///    因为"把简单角色也写长"和"把有机制的角色写短"都是错的方向。
@@ -259,8 +259,7 @@ namespace FingerDiceDuel.Tests
                 // 绝对中立：忍者 士兵
                 { CharacterDefinition.NinjaId, Alignment.TrueNeutral },
                 { CharacterDefinition.SoldierId, Alignment.TrueNeutral },
-                // 中立邪恶：邪术师 盗贼
-                { CharacterDefinition.WarlockId, Alignment.NeutralEvil },
+                // 中立邪恶：盗贼
                 { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
                 // 混乱善良：野蛮人
                 { CharacterDefinition.BarbarianId, Alignment.ChaoticGood },
@@ -268,9 +267,10 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.CurseweaverId, Alignment.ChaoticNeutral },
-                // 混乱邪恶：狼人 巨人
+                // 混乱邪恶：狼人 巨人 妖术师（妖术师由中立邪恶移来）
                 { CharacterDefinition.WerewolfId, Alignment.ChaoticEvil },
                 { CharacterDefinition.GiantId, Alignment.ChaoticEvil },
+                { CharacterDefinition.SorcererId, Alignment.ChaoticEvil },
                 // 守序邪恶：猎人（玩家指定）
                 { CharacterDefinition.HunterId, Alignment.LawfulEvil },
                 // 混乱善良：魔术师（玩家指定）

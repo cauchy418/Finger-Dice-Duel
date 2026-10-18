@@ -36,7 +36,7 @@ namespace FingerDiceDuel.Tests
             //      · 已发动：野蛮人 100%、忍者 100%、巨人 100%、骑士 100%、
             //                狼人 93%、剑客 77%
             //      · 未发动：刺客（凑不出双 7）、战士、牧师、赌徒、武僧、
-            //                圣武士、邪术师、魔射手、游侠、咒术师、士兵
+            //                圣武士、妖术师、魔射手、游侠、咒术师、士兵
             //
             //    前一组是**用价值表 Combos 就能驱动**的技能；
             //    后一组需要**专属策略**（多回合计划），那是下一步的工作。
@@ -186,7 +186,7 @@ namespace FingerDiceDuel.Tests
             //
             //    有几条策略只存在于**控制器**里，直连时永远不会触发：
             //      · 赌徒的开赌判断（ShouldAiGamble）
-            //      · 邪术师的主动跳过（TryAiWarlockSkip）
+            //      · 妖术师的主动跳过（TryAiSorcererSkip）
             //    我第一版用 MatchRunner，于是赌徒 30 局全 0% ——
             //    而它其实在真实对局里是会开赌的（循环赛胜率正常）。
             //    这是"尺子量错了地方"的第三次，所以这次写进注释里。
@@ -201,7 +201,7 @@ namespace FingerDiceDuel.Tests
                                            aiForB: new GreedyChoiceProvider());
 
             // ⚠️ 不能用 MatchRunner（直连 GameManager）—— 有几条策略只存在于
-            //    **控制器**里，直连时永远不触发：赌徒的开赌判断、邪术师的主动跳过。
+            //    **控制器**里，直连时永远不触发：赌徒的开赌判断、妖术师的主动跳过。
             //    我第一版就是这么写的，结果赌徒 30 局全 0%，
             //    而它在真实对局里其实会开赌。这是"尺子量错地方"的第三次。
             //
@@ -343,7 +343,7 @@ namespace FingerDiceDuel.Tests
                     //    （在回合内记录：攻击 / 回复 / 合盾 都算）
                     break;
 
-                case CharacterDefinition.WarlockId:
+                case CharacterDefinition.SorcererId:
                     // "只要能取消敌人的攻击就取消" —— 取消在场上没有痕迹，
                     // 只能靠角色自己的计数器
                     if (pA.Character is ISkillUseCounter wk && wk.SkillUseCount > 0)

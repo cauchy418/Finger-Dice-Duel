@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **邪术师**（攻 0 / 防 −1，**攻击距离无限**）。
+    /// **妖术师**（攻 0 / 防 −1，**攻击距离无限**）。
     ///
     /// 玩家确认的规则：
     ///   · 有人**发起攻击**时，若**攻击数字**与自己某只手的数字相同，
@@ -19,11 +19,11 @@ namespace FingerDiceDuel.Core
     /// 弹一次确认只会增加点击负担。想改成可选时把
     /// <see cref="AutoCancel"/> 设为 false 即可（届时需要接上抉择 UI）。
     /// </summary>
-    public sealed class WarlockLogic : CharacterTemplate, IAttackCanceller,
+    public sealed class SorcererLogic : CharacterTemplate, IAttackCanceller,
                                        FingerDiceDuel.Core.ISkillUseCounter,
                                        IAttackRangeProvider, ITurnSkipRule
     {
-        public override string DisplayName => "邪术师";
+        public override string DisplayName => "妖术师";
 
         public override int DefaultAttackBonus => 0;
         public override int DefaultDefenseBonus => -1;
@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **带玩家回答**的取消判定（人类邪术师的"询问式"路径）。
+        /// **带玩家回答**的取消判定（人类妖术师的"询问式"路径）。
         ///
         /// <paramref name="wasAsked"/> 为 true 表示这次攻击**确实问过**该玩家，
         /// 此时 <paramref name="answer"/> 为 null 就意味着"玩家选了不发动"。
@@ -110,7 +110,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 本局**取消过几次攻击**。
         ///
-        /// ⚠️ 为什么要计数器："只要能取消敌人的攻击就取消"是邪术师的主动策略，
+        /// ⚠️ 为什么要计数器："只要能取消敌人的攻击就取消"是妖术师的主动策略，
         ///    但取消的**效果只体现在敌人没掉血上** —— 场上没有任何痕迹，
         ///    所以"AI 从不取消"这种问题根本测不出来。
         /// </summary>
@@ -180,11 +180,11 @@ namespace FingerDiceDuel.Core
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
 
-        /// <summary>同步"能否跳过"的内部状态 —— 邪术师没有需要同步的缓存。</summary>
+        /// <summary>同步"能否跳过"的内部状态 —— 妖术师没有需要同步的缓存。</summary>
         public void SyncSkipState(PlayerState owner) { }
     
         /// <summary>
-        /// 邪术师：对**距离 1** 的是钝击，**距离 1 以外**的是穿刺（玩家指定）。
+        /// 妖术师：对**距离 1** 的是钝击，**距离 1 以外**的是穿刺（玩家指定）。
         /// </summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => ByDistance(AttackDamageType.Bludgeoning, AttackDamageType.Piercing);

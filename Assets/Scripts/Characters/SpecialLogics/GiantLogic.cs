@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Core
     ///     实现上直接用那只手的当前值即可
     ///   · "**其余结算和忍者类似**" —— 即两段各自独立判盾 / 判闪避、
     ///     各自结算攻防加成（复用 <see cref="AttackContext.HitCount"/> 那条通路）
-    ///   · "邪术师可以通过 5 来一次性取消巨人的两段攻击" ——
+    ///   · "妖术师可以通过 5 来一次性取消巨人的两段攻击" ——
     ///     因为攻击数字就是 5，取消发生在逐段循环之前，所以天然一次抵消两段
     /// </summary>
     public sealed class GiantLogic : CharacterTemplate, IHandEffectRewriter,
