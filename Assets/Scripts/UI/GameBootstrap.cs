@@ -134,6 +134,18 @@ namespace FingerDiceDuel.UI
         /// <summary>双将选将界面。</summary>
         private ScreenGroup _screenDualSelect;
 
+        /// <summary>8 人阵营混战的单将选角界面。</summary>
+        private ScreenGroup _screenFactionSelect;
+
+        // ---- 8 人阵营混战的状态 ----
+        private CharacterRosterView _fbRoster;
+        private Text _fbDetail;
+        private Text _fbPicked;
+        private Button _fbStart;
+        private int _fbIndex;
+        private bool _isEightPlayer;
+        private List<PlayerState> _eightSeated;
+
         // ---- 双将选将的状态 ----
         /// <summary>已选的**主将**（null = 还没选）。</summary>
         private CharacterDefinition _dgPrimary;
@@ -393,6 +405,7 @@ namespace FingerDiceDuel.UI
             BuildDualGeneralMenuScreen();
             BuildFactionBattleMenuScreen();
             BuildDualSelectScreen();
+            BuildFactionSelectScreen();
             BuildModeScreen();
             BuildDifficultyScreen();
             // 双将的"同阵营副将" 过滤：由本类注入（UI 层不能引用 Characters）。
@@ -718,16 +731,20 @@ namespace FingerDiceDuel.UI
             Button two = MakeSubModeButton(_selectRoot, "Comp2v2", new Vector2(0f, -66f),
                                            "2 v 2", "双人组队", OnTwoOnTwoClicked);
             Button eight = MakeSubModeButton(_selectRoot, "Comp8p", new Vector2(0f, -222f),
-                                             "8 人身份局", "身份阵营对抗（待开放）",
-                                             () => ShowComingSoon("8 人身份局"));
+                                             "8 人阵营混战", "单将 · 三阵营 · 8 人",
+                                             OnFactionBattleClicked);
+            Button identity = MakeSubModeButton(_selectRoot, "CompIdentity", new Vector2(0f, -378f),
+                                                "8 人身份对局", "身份阵营对抗（待开放）",
+                                                () => ShowComingSoon("8 人身份对局"));
 
             _screenCompetition.Add(one.gameObject);
             _screenCompetition.Add(two.gameObject);
             _screenCompetition.Add(eight.gameObject);
+            _screenCompetition.Add(identity.gameObject);
 
-            // 三个按钮（-222 为最下一个）—— 返回必须放到它下面。
+            // 四个按钮（-378 为最下）—— 返回必须放到它下面。
             _screenCompetition.Add(
-                MakeBackButton(_selectRoot, GameScreen.MainMenu, y: -370f).gameObject);
+                MakeBackButton(_selectRoot, GameScreen.MainMenu, y: -510f).gameObject);
         }
 
         /// <summary>娱乐模式：目前只有双将。</summary>
@@ -754,7 +771,7 @@ namespace FingerDiceDuel.UI
                                             "双将对决", "1 v 1：各自两名同阵营角色",
                                             () => ShowScreen(GameScreen.DualGeneralMenu));
             Button faction = MakeSubModeButton(_selectRoot, "DualFaction", new Vector2(0f, -96f),
-                                               "阵营混战", "8 人：待 8 人模式完成后开放",
+                                               "双将阵营混战", "8 人双将（后续版本）",
                                                () => ShowScreen(GameScreen.FactionBattleMenu));
 
             _screenDualGeneral.Add(duel.gameObject);
@@ -780,11 +797,193 @@ namespace FingerDiceDuel.UI
             _screenDualGeneralMenu.Add(MakeBackButton(_selectRoot, GameScreen.DualGeneral).gameObject);
         }
 
+        // ============================================================
+        // 8 人阵营混战（单将）
+        // ============================================================
+
+        private void OnFactionBattleClicked() => ShowScreen(GameScreen.FactionSelect);
+
+        private void BuildFactionSelectScreen()
+        {
+            _screenFactionSelect = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "FbTitle", new Vector2(0f, 272f),
+                                  new Vector2(1200f, 64f), 44, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "8 人阵营混战 · 选将";
+            _screenFactionSelect.Add(title.gameObject);
+
+            Text status = MakeText(_selectRoot, "FbStatus", new Vector2(0f, 208f),
+                                   new Vector2(1120f, 36f), 24, TextAnchor.MiddleCenter,
+                                   new Color(0.86f, 0.90f, 0.96f));
+            status.text = "选一名角色；AI 补齐 8 个不重复角色，三个阵营按 3 / 3 / 2 分队";
+            _screenFactionSelect.Add(status.gameObject);
+
+            _fbRoster = new CharacterRosterView();
+            _fbRoster.Build(_selectRoot, "FbRoster", new Vector2(0f, 132f),
+                            _roster, UiFont.Regular, 0, SkillHintText);
+            _fbRoster.SelectionChanged += OnFactionSelectionChanged;
+            _screenFactionSelect.Add(_fbRoster.Root.gameObject);
+
+            _fbDetail = MakeDetailPanel("FbDetail", new Vector2(0f, 62f));
+            _screenFactionSelect.Add(_fbDetail.transform.parent.gameObject);
+
+            _fbPicked = MakeText(_selectRoot, "FbPicked", new Vector2(0f, 8f),
+                                 new Vector2(1120f, 32f), 21, TextAnchor.MiddleCenter,
+                                 new Color(0.72f, 0.80f, 0.90f));
+            _screenFactionSelect.Add(_fbPicked.gameObject);
+
+            _fbStart = MakeButton(_selectRoot, "FbStart", new Vector2(150f, -52f),
+                                  new Vector2(300f, 68f), "开始对局");
+            _fbStart.onClick.AddListener(OnFactionStartClicked);
+            _screenFactionSelect.Add(_fbStart.gameObject);
+
+            Button back = MakeButton(_selectRoot, "FbBack", new Vector2(-460f, -52f),
+                                     new Vector2(220f, 68f), "返回");
+            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            back.onClick.AddListener(() => ShowScreen(GameScreen.Competition));
+            _screenFactionSelect.Add(back.gameObject);
+
+            _screenFactionSelect.Add(MakeHelpButton(_selectRoot).gameObject);
+
+            RefreshFactionSelect();
+        }
+
+        private void OnFactionSelectionChanged(int index)
+        {
+            _fbIndex = index;
+            RefreshFactionSelect();
+        }
+
+        private void RefreshFactionSelect()
+        {
+            if (_roster == null || _roster.Count == 0) return;
+            _fbIndex = Mathf.Clamp(_fbIndex, 0, _roster.Count - 1);
+            CharacterDefinition def = _roster[_fbIndex];
+
+            if (_fbDetail != null) RefreshDetail(_fbDetail, def);
+            if (_fbPicked != null)
+                _fbPicked.text = $"已选：{def.DisplayName}（{FactionNameOf(def)}）";
+            if (_fbStart != null) _fbStart.interactable = true;
+        }
+
+        private static int FactionOf(CharacterDefinition def)
+        {
+            CodexEntry entry = CharacterCodex.For(def);
+            string axis = entry == null ? "中立" : Alignments.LawAxisOf(entry.Alignment);
+            if (axis == "守序") return 0;
+            if (axis == "混乱") return 2;
+            return 1;
+        }
+
+        private static string FactionNameOf(CharacterDefinition def)
+        {
+            int f = FactionOf(def);
+            return f == 0 ? "守序" : f == 2 ? "混乱" : "中立";
+        }
+
+        private static void Shuffle<T>(List<T> list, System.Random rng)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                T tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+            }
+        }
+
+        private static void ApplyEightOpeningHands(PlayerState player, System.Random rng)
+        {
+            int roll = DiceRollSetup.Roll(rng);
+            IReadOnlyList<HandSplit> splits = DiceRollSetup.DistinctSplits(roll);
+            if (splits.Count == 0) return;
+
+            HandSplit split = new DiceSplitAdvisor().Choose(player.Definition, null, splits);
+            player.LeftHand.SetValue(split.Left);
+            player.RightHand.SetValue(split.Right);
+            MonkLogic.ApplyTaichiToFives(player);
+        }
+
+        private void OnFactionStartClicked()
+        {
+            if (_roster == null || _roster.Count == 0) return;
+            CharacterDefinition human = _roster[Mathf.Clamp(_fbIndex, 0, _roster.Count - 1)];
+            var rng = new System.Random();
+
+            int humanFaction = FactionOf(human);
+            int weak = rng.Next(3);                 // 2 人的阵营
+            int[] counts = { 3, 3, 3 };
+            counts[weak] = 2;
+
+            var pools = new List<CharacterDefinition>[3];
+            for (int f = 0; f < 3; f++) pools[f] = new List<CharacterDefinition>();
+            foreach (CharacterDefinition d in _roster)
+            {
+                int f = FactionOf(d);
+                if (ReferenceEquals(d, human)) continue;
+                pools[f].Add(d);
+            }
+
+            var aiDefs = new List<CharacterDefinition>(7);
+            for (int f = 0; f < 3; f++)
+            {
+                Shuffle(pools[f], rng);
+                int need = counts[f] - (f == humanFaction ? 1 : 0);
+                for (int k = 0; k < need && k < pools[f].Count; k++)
+                    aiDefs.Add(pools[f][k]);
+            }
+            Shuffle(aiDefs, rng);
+
+            var seated = new List<PlayerState>(8);
+            var providers = new List<IChoiceProvider>(8);
+            var teams = new List<int>(8);
+
+            seated.Add(CharacterFactory.CreatePlayer("我", human));
+            providers.Add(new SimpleChoiceProvider());
+            teams.Add(humanFaction);
+            _sinkByPlayer[seated[0]] = (SimpleChoiceProvider)providers[0];
+
+            for (int i = 0; i < aiDefs.Count; i++)
+            {
+                PlayerState p = CharacterFactory.CreatePlayer("AI" + (i + 1), aiDefs[i]);
+                var sink = new SimpleChoiceProvider();
+                seated.Add(p);
+                providers.Add(sink);
+                teams.Add(FactionOf(aiDefs[i]));
+                _sinkByPlayer[p] = sink;
+            }
+
+            for (int i = 0; i < 8; i++) ApplyEightOpeningHands(seated[i], rng);
+
+            _game = GameManager.CreateEight(seated, providers, teams);
+            _game.RoundLimit = GameManager.DefaultRoundLimit;
+
+            _choiceA = (SimpleChoiceProvider)providers[0];
+            _choiceB = (SimpleChoiceProvider)providers[1];
+            _controller = new BoardController(_game, _choiceA, _choiceB,
+                aiForA: null, aiForB: MakeAI());
+
+            for (int i = 2; i < 8; i++)
+                _controller.BindPlayer(seated[i], MakeAI(), (SimpleChoiceProvider)providers[i]);
+
+            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+            _controller.SetFirstPlayer(seated[0]);
+
+            _isEightPlayer = true;
+            _isTwoOnTwo = false;
+            _isDualGeneral = false;
+            _eightSeated = seated;
+            _pendingDefA = human;
+            _pendingDefB = seated[1].Definition;
+
+            StartPreparedMatch();
+        }
+
         /// <summary>阵营混战（8 人）：人机 / 真人。⚠️ 等 8 人模式完成后再套用。</summary>
         private void BuildFactionBattleMenuScreen()
         {
             _screenFactionBattleMenu = new ScreenGroup();
-            _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle", "阵营混战").gameObject);
+            _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle", "双将阵营混战").gameObject);
 
             Button ai = MakeSubModeButton(_selectRoot, "FactionAi", new Vector2(0f, 60f),
                                           "人机对战", "与 AI 对战",
@@ -1040,6 +1239,8 @@ namespace FingerDiceDuel.UI
             //    玩家实测说的正是这个："娱乐模式的双将变成 2v2 了"。
             _isTwoOnTwo = false;
             _twoOnTwoSeated = null;
+            _isEightPlayer = false;
+            _eightSeated = null;
         }
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
@@ -1646,6 +1847,8 @@ namespace FingerDiceDuel.UI
         private void OnTwoOnTwoPracticeClicked()
         {
             _isTwoOnTwo = true;
+            _isEightPlayer = false;
+            _eightSeated = null;
             ShowScreen(GameScreen.ModeMenu);
         }
 
@@ -1794,6 +1997,7 @@ namespace FingerDiceDuel.UI
             _screenDualGeneralMenu?.SetVisible(screen == GameScreen.DualGeneralMenu);
             _screenFactionBattleMenu?.SetVisible(screen == GameScreen.FactionBattleMenu);
             _screenDualSelect?.SetVisible(screen == GameScreen.DualGeneralSelect);
+            _screenFactionSelect?.SetVisible(screen == GameScreen.FactionSelect);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
@@ -1816,7 +2020,8 @@ namespace FingerDiceDuel.UI
                 || screen == GameScreen.ModeMenu || screen == GameScreen.DifficultyMenu
                 || screen == GameScreen.CharacterSelect
                 || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll
-                || screen == GameScreen.TwoOnTwoInitiative)
+                || screen == GameScreen.TwoOnTwoInitiative
+                || screen == GameScreen.FactionSelect)
             {
                 // 让弹窗保持在最上层
                 if (_modal?.Root != null) _modal.Root.transform.SetAsLastSibling();
@@ -2099,6 +2304,8 @@ namespace FingerDiceDuel.UI
             // `_twoOnTwoSeated` 同样从不清理 —— 残留会让诊断里
             // 打出一份"2v2 手值"，与当前这局完全不符。
             _twoOnTwoSeated = null;
+            _isEightPlayer = false;
+            _eightSeated = null;
         }
 
         /// <summary>掷骰分配完成后真正进入对局。</summary>
@@ -2141,8 +2348,22 @@ namespace FingerDiceDuel.UI
             //    入门与经典**共用同一处**，不会漏掉某条路。
             _game.ApplyInitialTaichiForm();
 
-            // 2v2：四个人绑到环形位置，标题用队伍说明。
-            if (_isTwoOnTwo && _twoOnTwoSeated != null)
+            // 8 人阵营混战：8 个座位，关系按阵营计算（自己 / 队友 / 对手）。
+            if (_isEightPlayer && _eightSeated != null && _eightSeated.Count == 8)
+            {
+                var relations = new List<RingRelation>(8);
+                for (int i = 0; i < 8; i++)
+                    relations.Add(ReferenceEquals(_eightSeated[i], _eightSeated[0])
+                        ? RingRelation.Self
+                        : _game.IsTeammate(_eightSeated[0], _eightSeated[i])
+                            ? RingRelation.Teammate : RingRelation.Opponent);
+
+                _board.BindPlayersRing(_eightSeated[0], _eightSeated, 1, relations);
+                _board.SetTitle($"8 人阵营混战　我（{_eightSeated[0].Name}）" +
+                                $"　队友 {relations.FindAll(r => r == RingRelation.Teammate).Count} 人" +
+                                $"　对手 {relations.FindAll(r => r == RingRelation.Opponent).Count} 人");
+            }
+            else if (_isTwoOnTwo && _twoOnTwoSeated != null)
             {
                 _board.BindPlayersRing(_twoOnTwoSeated[0], _twoOnTwoSeated, _twoOnTwoMySeat);
                 _board.SetTitle($"2 v 2　我（{_twoOnTwoSeated[0].Name}）" +
@@ -2284,6 +2505,8 @@ namespace FingerDiceDuel.UI
             //    **退出**与**重开**都经过这里，一处即覆盖所有路径。
             _isTwoOnTwo = false;
             _twoOnTwoSeated = null;
+            _isEightPlayer = false;
+            _eightSeated = null;
 
             // 双将标志同理：它决定标题栏的写法
             _isDualGeneral = false;
@@ -2524,7 +2747,20 @@ namespace FingerDiceDuel.UI
 
             // 2v2：四个人绑在环形位置上；下方那组手牌永远是"我"的（可点），
             // 上方那组跟随**当前行动方**（这样能看见 AI 在打哪只手）。
-            if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
+            if (_isEightPlayer && _eightSeated != null && _eightSeated.Count == 8)
+            {
+                _board.SetRingActive(_controller.ActivePlayer, _eightSeated[0]);
+
+                _board.RefreshRing(_eightSeated, _controller.SelectedHand, choices,
+                                   turnCount: _controller.DisplayRound,
+                                   turnLimit: _controller.RoundLimit,
+                                   showSkipButton: ShowSkipButton(),
+                                   skipButtonInteractable: _controller.CanSkipTurn);
+
+                if (_controller.Chooser != null)
+                    _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
+            }
+            else if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
             {
                 PlayerState me = _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, 3)];
                 _board.SetRingActive(_controller.ActivePlayer, me);

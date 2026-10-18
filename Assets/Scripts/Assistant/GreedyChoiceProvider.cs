@@ -1166,6 +1166,13 @@ namespace FingerDiceDuel.Assistant
 
             int score = 0;
 
+            // ⓪ **8 人阵营混战：先打人多的敌方阵营**。
+            //    这是玩家定的第一优先级；每多一名存活成员 +40000，
+            //    比 2v2 六级目标优先级（最高约 20210）和集火分 25000 都高。
+            //    1v1 / 2v2 的队伍数 ≤ 4，不进入这条分支。
+            if (game.Players.Count > 4)
+                score += game.AliveTeamCount(game.TeamOf(target)) * (TargetPriorityBase * 4);
+
             // ① 自己和队友都能打到 -> 最高优先
             if (BothTeamCanReachActor(actor, target, game))
                 score += TargetPriorityBase;

@@ -297,9 +297,10 @@ namespace FingerDiceDuel.UI
 
         private void BuildRingPanels()
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 8; i++)
             {
                 var position = (RingPosition)i;
+                bool compact = position != RingPosition.SelfBottom;
 
                 RingLayout.NormalizedOffset(position, out float nx, out float ny);
 
@@ -314,29 +315,38 @@ namespace FingerDiceDuel.UI
                     new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), size, PanelColor, offset);
 
                 // 名字 + 座位（玩家要求：每个人整体下方加位次）
-                Text name = CreateText(root, "Name", new Vector2(0f, size.y * 0.5f - 30f),
-                                       new Vector2(size.x - 20f, 36f), 26,
+                float nameY = compact ? size.y * 0.5f - 22f : size.y * 0.5f - 30f;
+                float nameH = compact ? 28f : 36f;
+                Text name = CreateText(root, "Name", new Vector2(0f, nameY),
+                                       new Vector2(size.x - 16f, nameH),
+                                       compact ? 20 : 26,
                                        TextAnchor.MiddleCenter, TextColor);
                 UiFont.ApplyBold(name);
 
-                Text seat = CreateText(root, "Seat", new Vector2(0f, size.y * 0.5f - 62f),
-                                       new Vector2(size.x - 20f, 28f), 22,
+                float seatY = compact ? size.y * 0.5f - 44f : size.y * 0.5f - 62f;
+                Text seat = CreateText(root, "Seat", new Vector2(0f, seatY),
+                                       new Vector2(size.x - 16f, compact ? 22f : 28f),
+                                       compact ? 17 : 22,
                                        TextAnchor.MiddleCenter, new Color(1f, 0.88f, 0.45f));
 
-                Image hp = BuildHealthBar(root, new Vector2(0f, size.y * 0.5f - 96f));
+                float hpY = compact ? size.y * 0.5f - 66f : size.y * 0.5f - 96f;
+                Image hp = BuildHealthBar(root, new Vector2(0f, hpY));
 
-                Text status = CreateText(root, "Status", new Vector2(0f, size.y * 0.5f - 126f),
-                                         new Vector2(size.x - 20f, 26f), 19,
+                float statusY = compact ? size.y * 0.5f - 88f : size.y * 0.5f - 126f;
+                Text status = CreateText(root, "Status", new Vector2(0f, statusY),
+                                         new Vector2(size.x - 16f, compact ? 20f : 26f),
+                                         compact ? 15 : 19,
                                          TextAnchor.MiddleCenter, new Color(0.60f, 0.80f, 1f));
 
                 // 两只手牌：并排放在面板下方正中。
-                // 260x130 的牌放这儿会超出面板宽度，所以用统一缩放压到 0.62。
                 var cards = new HandCard[2];
-                float cardScale = 0.62f;
+                float cardScale = compact ? 0.45f : 0.62f;
+                float cardX = compact ? 72f : 86f;
+                float cardY = compact ? -size.y * 0.5f + 38f : -size.y * 0.5f + 50f;
                 for (int k = 0; k < 2; k++)
                 {
-                    float cx = (k == 0 ? -1f : 1f) * 86f;
-                    cards[k] = CreateHandCard(root, new Vector2(cx, -size.y * 0.5f + 50f));
+                    float cx = (k == 0 ? -1f : 1f) * cardX;
+                    cards[k] = CreateHandCard(root, new Vector2(cx, cardY));
                     cards[k].Button.GetComponent<RectTransform>().localScale =
                         new Vector3(cardScale, cardScale, 1f);
                 }
@@ -642,7 +652,8 @@ namespace FingerDiceDuel.UI
         /// **当前行动方在上方**（看 AI 出牌）。这样不必新增八张牌。
         /// </summary>
         public void BindPlayersRing(PlayerState me, IReadOnlyList<PlayerState> playersBySeat,
-                                    int mySeat)
+                                    int mySeat,
+                                    IReadOnlyList<RingRelation> relationBySeat = null)
         {
             if (me == null || playersBySeat == null) return;
 
@@ -650,7 +661,9 @@ namespace FingerDiceDuel.UI
             if (_areaA != null) _areaA.gameObject.SetActive(false);
             if (_areaB != null) _areaB.gameObject.SetActive(false);
 
-            IReadOnlyList<RingSlot> slots = RingLayout.Build(mySeat);
+            IReadOnlyList<RingSlot> slots = playersBySeat.Count == 8
+                ? RingLayout.BuildEight(mySeat, relationBySeat)
+                : RingLayout.Build(mySeat);
 
             for (int i = 0; i < _ringPanels.Count; i++)
             {

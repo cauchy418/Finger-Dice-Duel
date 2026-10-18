@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Assistant
     /// 生产策略因此改成**黑名单**：
     ///   · 默认所有角色都用 `Self`；
     ///   · 猎人 / 狼人 / 魔术师保持 baseline（实验里它们用 Self 更差）；
-    ///   · **邪术师也保持 baseline**：它自己用 Self 是 +17.7，但 2v2 已经是 **62.3% 胜率 / 8.7% 平局**；
+    ///   · **邪术师也保持 baseline**：它自己用 Self 是 +17.7，但 2v2 已经是 **62.2% 胜率 / 8.7% 平局**；
     ///     先把平局问题单独处理，暂不叠加集火。
     ///
     /// 1v1 只有一位对手，`ResolveFocusTarget` 直接返回 null，
@@ -39,7 +39,7 @@ namespace FingerDiceDuel.Assistant
         private static readonly HashSet<string> NoFocusRoleIds =
             new HashSet<string>(StringComparer.Ordinal)
             {
-                CharacterDefinition.WarlockId,     // 2v2 62.3% / 8.7% 平局，先处理平局
+                CharacterDefinition.WarlockId,     // 2v2 62.2% / 8.7% 平局，先处理平局
                 CharacterDefinition.HunterId,      // Self -2.7（显著变差）
                 CharacterDefinition.WerewolfId,    // Self -4.1（显著）
                 CharacterDefinition.MagicianId,    // Self -3.3（显著变差）

@@ -35,6 +35,15 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>偏右下：队友（当队友是下家时）。</summary>
         LowerRight = 4,
+
+        /// <summary>正上方：8 人局的最远席位。</summary>
+        TopCenter = 5,
+
+        /// <summary>左侧中部：8 人局。</summary>
+        MiddleLeft = 6,
+
+        /// <summary>右侧中部：8 人局。</summary>
+        MiddleRight = 7,
     }
 
     /// <summary>一个位置上放谁（按座位号 + 相对关系）。</summary>
@@ -138,6 +147,49 @@ namespace FingerDiceDuel.Assistant
             };
         }
 
+        /// <summary>
+        /// **8 人局**：主视角在下方，其余 7 人沿两侧围成 U 形。
+        ///
+        /// 座位顺序按**逆时针**（与 4 人局同一方向）：下右 → 右 → 上右 →
+        /// 上中 → 上左 → 左 → 下左。关系由调用方给出（自己 / 队友 / 对手），
+        /// 因为 Assistant 层不知道"阵营"的具体定义。
+        /// </summary>
+        public static IReadOnlyList<RingSlot> BuildEight(
+            int mySeat, IReadOnlyList<RingRelation> relationBySeat)
+        {
+            int me = ((mySeat - 1) % 8 + 8) % 8 + 1;
+            var slots = new List<RingSlot>(8)
+            {
+                new RingSlot { Seat = me, Relation = RingRelation.Self,
+                               Position = RingPosition.SelfBottom },
+            };
+
+            RingPosition[] order =
+            {
+                RingPosition.LowerRight, RingPosition.MiddleRight,
+                RingPosition.UpperRight, RingPosition.TopCenter,
+                RingPosition.UpperLeft, RingPosition.MiddleLeft,
+                RingPosition.LowerLeft,
+            };
+
+            for (int k = 0; k < order.Length; k++)
+            {
+                int seat = ((me - 1 + k + 1) % 8) + 1;
+                RingRelation relation = RingRelation.Opponent;
+                if (relationBySeat != null && seat >= 1 && seat <= relationBySeat.Count)
+                    relation = relationBySeat[seat - 1];
+
+                slots.Add(new RingSlot
+                {
+                    Seat = seat,
+                    Relation = relation,
+                    Position = order[k],
+                });
+            }
+
+            return slots;
+        }
+
         /// <summary>取"某个方位"上的座位号（没有则 −1）。</summary>
         public static int SeatAt(IReadOnlyList<RingSlot> slots, RingPosition position)
         {
@@ -180,11 +232,14 @@ namespace FingerDiceDuel.Assistant
             // 仍在屏幕内。
             switch (position)
             {
-                case RingPosition.SelfBottom: x = 0f; y = -0.56f; break;
-                case RingPosition.UpperLeft: x = -0.42f; y = 0.62f; break;
-                case RingPosition.UpperRight: x = 0.42f; y = 0.62f; break;
-                case RingPosition.LowerLeft: x = -0.66f; y = -0.20f; break;
-                case RingPosition.LowerRight: x = 0.66f; y = -0.20f; break;
+                case RingPosition.SelfBottom: x = 0f; y = -0.62f; break;
+                case RingPosition.UpperLeft: x = -0.55f; y = 0.48f; break;
+                case RingPosition.UpperRight: x = 0.55f; y = 0.48f; break;
+                case RingPosition.LowerLeft: x = -0.55f; y = -0.27f; break;
+                case RingPosition.LowerRight: x = 0.55f; y = -0.27f; break;
+                case RingPosition.TopCenter: x = 0f; y = 0.74f; break;
+                case RingPosition.MiddleLeft: x = -0.78f; y = 0.10f; break;
+                case RingPosition.MiddleRight: x = 0.78f; y = 0.10f; break;
                 default: x = 0f; y = 0f; break;
             }
         }
@@ -196,11 +251,19 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public static void PanelSize(RingPosition position, out float width, out float height)
         {
-            // 自己那块要放下名字+座位+血条+状态+两只手牌，所以最宽
+            // 自己那块要放下名字+座位+血条+状态+两只手牌，所以最宽；
+            // 8 人局其余 7 块必须缩到 330x200，否则会互相压住。
             bool isSelf = position == RingPosition.SelfBottom;
 
-            width = isSelf ? 700f : 560f;
-            height = isSelf ? 250f : 240f;
+            width = isSelf ? 640f : (position == RingPosition.TopCenter
+                                    || position == RingPosition.MiddleLeft
+                                    || position == RingPosition.MiddleRight
+                                    || position == RingPosition.UpperLeft
+                                    || position == RingPosition.UpperRight
+                                    || position == RingPosition.LowerLeft
+                                    || position == RingPosition.LowerRight
+                                        ? 330f : 560f);
+            height = isSelf ? 230f : (width <= 330f ? 200f : 240f);
         }
 
         /// <summary>设计分辨率（界面与测试共用，避免两处各写一个数）。</summary>

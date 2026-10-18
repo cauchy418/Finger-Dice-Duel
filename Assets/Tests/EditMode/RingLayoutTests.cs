@@ -233,5 +233,47 @@ namespace FingerDiceDuel.Tests
                     $"自己（y={selfY}）应低于位置 {p}（y={y}）。");
             }
         }
+
+        // ============================================================
+        // 8 人阵营混战：8 个位置
+        // ============================================================
+
+        [Test]
+        public void Eight_player_layout_places_all_eight_seats_once()
+        {
+            var relations = new List<RingRelation>
+            {
+                RingRelation.Self, RingRelation.Teammate, RingRelation.Opponent,
+                RingRelation.Opponent, RingRelation.Teammate, RingRelation.Opponent,
+                RingRelation.Opponent, RingRelation.Opponent,
+            };
+
+            IReadOnlyList<RingSlot> slots = RingLayout.BuildEight(1, relations);
+
+            Assert.AreEqual(8, slots.Count);
+            var seats = new HashSet<int>();
+            var positions = new HashSet<RingPosition>();
+            foreach (RingSlot slot in slots)
+            {
+                Assert.True(seats.Add(slot.Seat), "座位不能重复。");
+                Assert.True(positions.Add(slot.Position), "屏幕位置不能重复。");
+            }
+
+            Assert.AreEqual(1, RingLayout.SeatAt(slots, RingPosition.SelfBottom));
+            Assert.AreEqual(RingRelation.Teammate,
+                RingLayout.RelationAt(slots, RingPosition.LowerRight));
+        }
+
+        [Test]
+        public void Eight_player_layout_keeps_self_at_the_bottom_for_any_seat()
+        {
+            for (int me = 1; me <= 8; me++)
+            {
+                IReadOnlyList<RingSlot> slots = RingLayout.BuildEight(me, null);
+                Assert.AreEqual(me, RingLayout.SeatAt(slots, RingPosition.SelfBottom),
+                    $"主视角坐 {me} 号位时应落在下方正中。");
+                Assert.AreEqual(8, slots.Count);
+            }
+        }
     }
 }

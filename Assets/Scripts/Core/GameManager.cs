@@ -407,6 +407,19 @@ namespace FingerDiceDuel.Core
             return any;
         }
 
+        /// <summary>某队还活着的人数（8 人阵营混战 AI 用）。</summary>
+        public int AliveTeamCount(int team)
+        {
+            int count = 0;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p != null && p.IsAlive && TeamOf(p) == team) count++;
+            }
+
+            return count;
+        }
+
         private readonly List<PlayerState> _players = new List<PlayerState>(4);
         private readonly Dictionary<PlayerState, int> _team =
             new Dictionary<PlayerState, int>();
@@ -781,6 +794,50 @@ namespace FingerDiceDuel.Core
 
             var game = new GameManager(seated[0], seated[1], providers[0], providers[1]);
             game.AddPlayersFor2v2(seated[2], providers[2], seated[3], providers[3]);
+            return game;
+        }
+
+        /// <summary>
+        /// **8 人阵营混战**：按座位 1..8 建局，队伍号由调用方给出
+        /// （3 个阵营 = 3 个队伍；具体哪个角色属于哪个阵营由表现层/测试层决定）。
+        ///
+        /// ⚠️ Core 不认识"阵营"（那是 Characters 层的图鉴数据），
+        ///    所以只接收抽象的队伍号；同一队的人可以互相用对方的手当被加数，
+        ///    但不能互相攻击（`IsTeammate` 负责）。
+        /// </summary>
+        public static GameManager CreateEight(IReadOnlyList<PlayerState> seated,
+                                              IReadOnlyList<IChoiceProvider> providers,
+                                              IReadOnlyList<int> teamIds)
+        {
+            if (seated == null || seated.Count != 8)
+                throw new ArgumentException("8 人局必须正好 8 名玩家（按座位 1..8 排列）。",
+                                            nameof(seated));
+            if (providers == null || providers.Count != 8)
+                throw new ArgumentException("8 人局必须为 8 个座位各提供一个抉择器。",
+                                            nameof(providers));
+            if (teamIds == null || teamIds.Count != 8)
+                throw new ArgumentException("8 人局必须为 8 个座位各提供一个队伍号。",
+                                            nameof(teamIds));
+
+            var game = new GameManager(seated[0], seated[1], providers[0], providers[1]);
+
+            // 构造器默认把 A/B 登记成 0/1；8 人局要覆盖成调用方给的阵营号。
+            game._team[seated[0]] = teamIds[0];
+            game._team[seated[1]] = teamIds[1];
+
+            game.PlayerC = seated[2]; game.ChoiceProviderC = providers[2];
+            game.PlayerD = seated[3]; game.ChoiceProviderD = providers[3];
+            game.PlayerE = seated[4]; game.ChoiceProviderE = providers[4];
+            game.PlayerF = seated[5]; game.ChoiceProviderF = providers[5];
+            game.PlayerG = seated[6]; game.ChoiceProviderG = providers[6];
+            game.PlayerH = seated[7]; game.ChoiceProviderH = providers[7];
+
+            for (int i = 2; i < 8; i++) game.Register(seated[i], teamIds[i]);
+
+            for (int i = 2; i < 8; i++)
+                seated[i].Character?.OnMatchReset(seated[i], game);
+
+            game.NotifyMatchReset();
             return game;
         }
 
@@ -2401,7 +2458,8 @@ namespace FingerDiceDuel.Core
         /// 轮次上限后的**血量判定**：返回获胜队伍的代表（同队血量最高的存活者），
         /// 血量相同 / 无法判定时返回 null（平局）。
         ///
-        /// 2v2 用**队伍总血量**（含已阵亡成员的 0）；1v1 就是两个人的血量。
+        /// 2v2 / 8 人阵营混战用**队伍总血量**（含已阵亡成员的 0）；
+        /// 1v1 就是两个人的血量。
         /// </summary>
         private PlayerState DecideWinnerByHealth()
         {
@@ -2415,14 +2473,29 @@ namespace FingerDiceDuel.Core
                 teams.Add(team);
             }
 
-            // 只有 1v1 / 2v2 的"两队"有明确规则；其他编成不做判定（保持平局）。
-            if (teams.Count != 2) return null;
+            // 1v1（2 队）、2v2（2 队）、8 人阵营混战（3 队）都按队伍总血量判定。
+            if (teams.Count < 2) return null;
 
-            int healthA = TeamHealth(teams[0]);
-            int healthB = TeamHealth(teams[1]);
-            if (healthA == healthB) return null;
+            int bestHealth = int.MinValue;
+            int winningTeam = -1;
+            bool tied = false;
 
-            int winningTeam = healthA > healthB ? teams[0] : teams[1];
+            for (int i = 0; i < teams.Count; i++)
+            {
+                int health = TeamHealth(teams[i]);
+                if (health > bestHealth)
+                {
+                    bestHealth = health;
+                    winningTeam = teams[i];
+                    tied = false;
+                }
+                else if (health == bestHealth)
+                {
+                    tied = true;
+                }
+            }
+
+            if (tied || winningTeam < 0) return null;
             return BestAliveInTeam(winningTeam);
         }
 
