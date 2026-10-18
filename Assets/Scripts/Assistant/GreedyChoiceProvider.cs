@@ -58,6 +58,14 @@ namespace FingerDiceDuel.Assistant
         /// <summary>集火时给该目标增加的分值（"倾向"而非"强制"，默认略高）。</summary>
         public int FocusBonus { get; set; } = 40;
 
+        /// <summary>这一手是不是"打在集火目标身上"（按其被加数手的主人判定）。</summary>
+        private bool IsFocusMove(LegalMove move, PlayerState actor, GameManager game)
+        {
+            if (FocusTarget == null || move.TargetHand == null || game == null) return false;
+            PlayerState owner = game.OwnerOfHand(move.TargetHand);
+            return owner != null && ReferenceEquals(owner, FocusTarget);
+        }
+
         // ============================================================
         // 法师的伤害类型选择（IDamageTypeChoiceSink）
         // ============================================================
@@ -327,6 +335,14 @@ namespace FingerDiceDuel.Assistant
                 // （否则同一个局面永远走同一步，连打两局完全可预判）。
                 int noise = _noisy ? _rng.Next(-NoiseAmplitude, NoiseAmplitude + 1) : 0;
                 int score = ScoreMove(moves[i], actor, game) + noise;
+
+                // ⚠️ **集火旋钮**：这一手打的是"指定的集火目标"就加分。
+                //
+                //    安全性：`GetLegalMoves` **已经**把不可达的走法滤掉了，
+                //    所以走到这里的每一手都"打得到"——
+                //    天然满足"仅可达时生效"，不会让 AI 硬打射程外的人。
+                if (FocusTarget != null && IsFocusMove(moves[i], actor, game))
+                    score += FocusBonus;
 
                 if (score > bestScore)
                 {
