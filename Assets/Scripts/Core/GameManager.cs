@@ -198,6 +198,9 @@ namespace FingerDiceDuel.Core
         public IChoiceProvider ChoiceProviderB { get; set; }
 
         public bool IsGameOver { get; private set; }
+
+        /// <summary>是否是 8 人阵营混战（只有这个模式启用击杀奖惩）。</summary>
+        public bool IsEightPlayerFactionMode { get; private set; }
         public PlayerState Winner { get; private set; }
         public PlayerState CurrentPlayer { get; private set; }
         /// <summary>
@@ -845,6 +848,7 @@ namespace FingerDiceDuel.Core
                 seated[i].Character?.OnMatchReset(seated[i], game);
 
             game.NotifyMatchReset();
+            game.IsEightPlayerFactionMode = true;
             return game;
         }
 

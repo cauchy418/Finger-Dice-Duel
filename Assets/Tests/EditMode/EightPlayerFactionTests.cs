@@ -205,6 +205,52 @@ namespace FingerDiceDuel.Tests
         }
 
         /// <summary>8 人局的整局驱动：与 MatchRunner 同职责，但支持任意人数。</summary>
+        private static Dictionary<PlayerState, int> SnapshotHealth(GameManager game)
+        {
+            var hp = new Dictionary<PlayerState, int>(game.Players.Count);
+            for (int i = 0; i < game.Players.Count; i++)
+                if (game.Players[i] != null) hp[game.Players[i]] = game.Players[i].Health;
+            return hp;
+        }
+
+        /// <summary>执行一次击杀奖惩队列；额外行动不推进 TurnCount / RoundCount。</summary>
+        private static void RunKillRewards(GameManager game,
+                                           List<IMoveSelector> selectors,
+                                           List<PlayerState> queue)
+        {
+            int safety = 64;
+            while (queue.Count > 0 && !game.IsGameOver && safety-- > 0)
+            {
+                PlayerState actor = queue[0];
+                queue.RemoveAt(0);
+                if (actor == null || !actor.IsAlive) continue;
+
+                game.ForceActivePlayerForTest(actor);
+                game.BeginTurn();
+                game.ResolveStatusTurnStart(actor);
+                if (game.IsGameOver) break;
+                if (!ReferenceEquals(game.CurrentPlayer, actor)) continue;
+
+                IMoveSelector selector = selectors[game.SeatOf(actor) - 1];
+                LegalMove move = selector.ChooseMove(game, actor);
+                if (move.Actor == null)
+                {
+                    if (game.CanSkipTurnFor(actor)) game.SkipTurn();
+                    continue;
+                }
+
+                Dictionary<PlayerState, int> before = SnapshotHealth(game);
+                TurnResult turn = game.ExecuteTurn(actor, move.ActedHand, move.TargetHand,
+                                                   extraAction: true);
+                List<PlayerState> nested = KillRewardPlanner.Build(game, turn, before);
+                if (nested.Count > 0) queue.InsertRange(0, nested);
+
+                game.ResolveStatusTurnEnd(actor);
+                for (int i = 0; i < game.Players.Count; i++)
+                    BardAi.TryActivate(game.Players[i], game);
+            }
+        }
+
         private static void RunEight(GameManager game, List<IMoveSelector> selectors)
         {
             int safety = 2000;
@@ -230,7 +276,21 @@ namespace FingerDiceDuel.Tests
                     break;
                 }
 
-                game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+                Dictionary<PlayerState, int> before = SnapshotHealth(game);
+                TurnResult turn = game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+                PlayerState resume = game.CurrentPlayer;
+
+                if (KillRewardPlanner.IsEnabled(game))
+                {
+                    List<PlayerState> rewards = KillRewardPlanner.Build(game, turn, before);
+                    if (rewards.Count > 0 && !game.IsGameOver)
+                    {
+                        RunKillRewards(game, selectors, rewards);
+                        if (!game.IsGameOver && resume != null)
+                            game.ForceActivePlayerForTest(resume);
+                    }
+                }
+
                 game.ResolveStatusTurnEnd(actor);
                 for (int i = 0; i < game.Players.Count; i++)
                     BardAi.TryActivate(game.Players[i], game);

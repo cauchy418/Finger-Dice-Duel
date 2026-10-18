@@ -1125,7 +1125,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**958 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**959 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
@@ -1400,13 +1400,13 @@ UI  →  Assistant  →  Core
 - 任何时刻分出胜负立即停止剩余奖惩；奖惩行动可以嵌套触发新的奖惩。
 - 人类玩家的奖惩行动由操作界面正常提示；AI 自动执行。
 
-**首版 2,000 局抽样**（全部 AI）：
+**2,000 局抽样（已接入击杀奖惩，全部 AI）**：
 
 | 阵营 | 胜率（按局） | 作为 2 人阵营时 |
 |---|---:|---:|
-| 守序 | 42.0% | 13.7% |
-| 中立 | 14.9% | 4.5% |
-| 混乱 | 42.6% | 14.5% |
+| 守序 | 40.6% | 15.5% |
+| 中立 | 15.3% | 6.9% |
+| 混乱 | 43.3% | 14.9% |
 
 > ⚠️ 首版样本里中立明显偏弱，这是角色池 / AI 在 8 人局的综合结果，
 > 后续需要单独做 8 人平衡；不要用这张表反推 1v1 / 2v2 的强弱。

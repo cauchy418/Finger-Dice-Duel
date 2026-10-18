@@ -133,5 +133,42 @@ namespace FingerDiceDuel.Tests
                           + (controller.IsExtraAction ? 1 : 0);
             Assert.AreEqual(5, pending, "中立 3 人 + 混乱 2 人，各行动一次。");
         }
+
+        [Test]
+        public void Kill_rewards_are_disabled_outside_eight_player_mode()
+        {
+            var seated = new List<PlayerState>
+            {
+                CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("C", CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("D", CharacterDefinition.Blank),
+            };
+            var providers = new List<IChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            GameManager game = GameManager.Create2v2(seated, providers);
+            var sink = new SimpleChoiceProvider();
+            var controller = new BoardController(game, sink);
+            for (int i = 0; i < seated.Count; i++)
+                controller.BindPlayer(seated[i], new GreedyChoiceProvider(), sink);
+            controller.SetFirstPlayer(seated[0]);
+            controller.BeginTurn();
+
+            seated[0].LeftHand.SetValue(3);
+            seated[3].LeftHand.SetValue(1);   // D 是 A 的队友（首尾相邻）
+            seated[3].SetHealthExact(1);
+
+            Assert.IsTrue(controller.ClickHand(seated[0].LeftHand));
+            Assert.IsTrue(controller.ClickHand(seated[3].LeftHand));
+            Assert.IsTrue(controller.ClickHand(seated[3].LeftHand));
+
+            Assert.IsFalse(seated[3].IsAlive);
+            Assert.IsFalse(controller.IsExtraAction,
+                "击杀奖惩只在 8 人阵营混战启用。");
+            Assert.AreEqual(0, controller.ExtraActionsRemaining);
+        }
     }
 }

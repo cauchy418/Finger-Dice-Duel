@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**958 项逻辑测试全部通过**。
+当前状态：**959 项逻辑测试全部通过**。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -361,8 +361,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ### 平衡实测（1v1 经典循环赛）
 
-> 统计口径：无头 AI 直接驱动 `GameManager`，**尚未计入击杀奖惩的额外行动**；
-> 下方数值作为规则接入前的平衡基线保留。实机规则已接入。
+> 统计口径：1v1 / 2v2 / 双将为无头 AI 直接驱动 `GameManager`，
+> **击杀奖惩只在 8 人阵营混战启用**；下方三段是规则接入前的基线。
+> 8 人抽样已接入击杀奖惩。
 
 **24 名角色**两两配对、每对 **80 局**、双方交替先手，共 **22,080 局**，
 平均 **18.9** 回合，**0 局模拟器强停**；**874 局**打满轮次上限。
@@ -460,12 +461,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 | 阵营 | 胜率 |
 |---|---:|
-| 守序 | 42.0% |
-| 中立 | 14.9% |
-| 混乱 | 42.6% |
+| 守序 | 40.6% |
+| 中立 | 15.3% |
+| 混乱 | 43.3% |
 
-角色前三：圣武士 59.7%、术士 51.0%、咒术师 50.9%；
-后三：游侠 10.5%、法师 11.7%、魔术师 13.8%。
+角色前三：圣武士 54.4%、咒术师 52.4%、术士 52.0%；
+后三：游侠 11.0%、法师 11.1%、武僧 13.6%。
 完整报告见 [`Tools/8p-report.txt`](Tools/8p-report.txt)。
 
 > ⚠️ 这是**首版抽样**：中立阵营明显偏弱，后续需要单独做 8 人角色/阵营平衡。
@@ -475,7 +476,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 958 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 959 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

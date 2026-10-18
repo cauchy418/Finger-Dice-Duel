@@ -3766,42 +3766,15 @@ namespace FingerDiceDuel.Assistant
         private void QueueKillRewards(TurnResult result,
                                       Dictionary<PlayerState, int> healthBefore)
         {
-            if (result?.Actor == null || result.Defender == null) return;
-            if (!healthBefore.TryGetValue(result.Defender, out int before) || before <= 0) return;
-            if (result.Defender.IsAlive) return;
-            if (result.DamageDealt <= 0
-                && !(result.ExtraAttack.HasValue && result.ExtraAttack.Value.Dealt > 0))
-                return;
+            if (!KillRewardPlanner.IsEnabled(_game)) return;
+
+            List<PlayerState> rewards = KillRewardPlanner.Build(_game, result, healthBefore);
+            if (rewards.Count == 0) return;
 
             PlayerState killer = result.Actor;
             PlayerState victim = result.Defender;
-            if (ReferenceEquals(killer, victim) || !killer.IsAlive) return;
-
             int killerTeam = _game.TeamOf(killer);
             int victimTeam = _game.TeamOf(victim);
-            if (killerTeam < 0 || victimTeam < 0) return;
-
-            var rewards = new List<PlayerState>();
-            if (victimTeam != killerTeam)
-            {
-                int x = _game.AliveTeamCount(victimTeam);   // 击杀后的剩余人数
-                for (int i = 0; i < x; i++) rewards.Add(killer);
-            }
-            else
-            {
-                // 从击杀者下家开始，按座位号绕一圈；只列其他阵营的存活者。
-                int n = _game.Players.Count;
-                int start = _game.SeatOf(killer) - 1;
-                for (int step = 1; step <= n; step++)
-                {
-                    PlayerState p = _game.Players[(start + step) % n];
-                    if (p == null || !p.IsAlive) continue;
-                    if (_game.TeamOf(p) == killerTeam) continue;
-                    rewards.Add(p);
-                }
-            }
-
-            if (rewards.Count == 0) return;
 
             // 嵌套奖励优先于当前队列剩余部分：立即插入队首。
             _extraQueue.InsertRange(0, rewards);
