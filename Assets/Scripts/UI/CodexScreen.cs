@@ -172,7 +172,14 @@ namespace FingerDiceDuel.UI
             }
 
             _allowFilter = allowFilter;
-            if (_filterPanel != null) _filterPanel.SetActive(allowFilter);
+
+            // ⚠️⚠️ **按钮本身也要一起隐藏，不能只隐藏面板。**
+            //
+            //    原来只做了 `_filterPanel.SetActive(allowFilter)` ——
+            //    于是指南页（魔法球入口）右上角**仍然留着一个「阵营筛选」按钮**
+            //    （玩家实测截图里就是这样）。对指南页做阵营筛选毫无意义。
+            if (_filterPanel != null) _filterPanel.SetActive(false);
+            if (_filterToggle != null) _filterToggle.gameObject.SetActive(allowFilter);
 
             _lawAxis = null;
             _goodAxis = null;

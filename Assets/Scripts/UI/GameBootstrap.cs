@@ -570,14 +570,56 @@ namespace FingerDiceDuel.UI
             Button help = MakeHelpButton(_selectRoot);
             _screenMainMenu.Add(help.gameObject);
 
-            // 图鉴入口：玩家要求放在**右上角问号的下面**（图标字为「图」）
+            // 图鉴入口：玩家要求放在**右上角问号的下面**。
+            //
+            // ⚠️ 玩家要求：入口做成**棕色书皮封面**的样子（不再是方块 + "图"字）。
+            //    做法：棕色底 + 一条更深的书脊 + 靠上留一条浅色"书签/标题带"，
+            //    这样即使不用美术资源也能一眼看出是"一本书"。
+            //    （界面全部运行时用代码构建，没有预制体/贴图可用 —— 见 CODELY.md。）
             Button codex = MakeButton(_selectRoot, "Codex",
                                       new Vector2(880f, 388f),
                                       new Vector2(64f, 64f), "图");
-            codex.GetComponent<Image>().color = new Color(0.30f, 0.34f, 0.44f);
+
+            // 棕色书皮
+            codex.GetComponent<Image>().color = new Color(0.42f, 0.26f, 0.15f);
+
+            // 书脊（左侧一条更深的竖条）
+            var spine = new GameObject("CodexSpine", typeof(Image));
+            spine.transform.SetParent(codex.transform, false);
+            var spineRect = spine.GetComponent<RectTransform>();
+            spineRect.anchorMin = new Vector2(0f, 0f);
+            spineRect.anchorMax = new Vector2(0f, 1f);
+            spineRect.pivot = new Vector2(0f, 0.5f);
+            spineRect.sizeDelta = new Vector2(7f, 0f);
+            spineRect.anchoredPosition = Vector2.zero;
+            var spineImg = spine.GetComponent<Image>();
+            spineImg.color = new Color(0.26f, 0.15f, 0.09f);
+            spineImg.raycastTarget = false;
+
+            // 封面上的浅色标题带（像书皮上的烫金条）
+            var band = new GameObject("CodexBand", typeof(Image));
+            band.transform.SetParent(codex.transform, false);
+            var bandRect = band.GetComponent<RectTransform>();
+            bandRect.anchorMin = new Vector2(0f, 1f);
+            bandRect.anchorMax = new Vector2(1f, 1f);
+            bandRect.pivot = new Vector2(0.5f, 1f);
+            bandRect.sizeDelta = new Vector2(0f, 7f);
+            bandRect.anchoredPosition = new Vector2(0f, -9f);
+            var bandImg = band.GetComponent<Image>();
+            bandImg.color = new Color(0.78f, 0.64f, 0.36f);
+            bandImg.raycastTarget = false;
+
+            // 「图」字挪到封面**中间偏右**（避让左侧书脊）
+            Text label = codex.GetComponentInChildren<Text>();
+            if (label != null)
+            {
+                var lr = label.rectTransform;
+                lr.anchorMin = lr.anchorMax = new Vector2(0.5f, 0.5f);
+                lr.anchoredPosition = new Vector2(4f, -2f);
+            }
+
             codex.onClick.AddListener(OnCodexClicked);
 
-            // 玩家要求：从"书"改成"图"（不再做书本状）。
             _screenMainMenu.Add(codex.gameObject);
 
             // **魔法球入口**：伤害类型 / 状态指引（玩家要求做成一个魔法球图标）。
