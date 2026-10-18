@@ -432,6 +432,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 > 所以**旧版 2v2 的任何结论都不可信**，本表是干净基线。
 
 角色的**队伍胜率**（该角色出场时所在队伍的胜率）：
+**队伍获胜时，两名队员各记一胜**（`Winner` 只是队伍代表，不改变计胜口径）。
 
 | 角色 | 队伍胜率 | 平局率 | | 角色 | 队伍胜率 | 平局率 |
 | --- | ---: | ---: | --- | --- | ---: | ---: |

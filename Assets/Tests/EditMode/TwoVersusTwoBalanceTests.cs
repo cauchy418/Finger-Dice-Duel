@@ -138,6 +138,8 @@ namespace FingerDiceDuel.Tests
 
                     if (r.Seat14Won)
                     {
+                        // ⚠️ 2v2 胜者是一整队：队伍获胜 -> 两名队员各记一胜，
+                        //    不能只记 GameManager.Winner 那个"队伍代表"。
                         wins[seat14.a.Id]++; wins[seat14.b.Id]++;
                         seat14Wins++;
                     }
