@@ -108,6 +108,21 @@ namespace FingerDiceDuel.Core
         public AttackDamageType AttackType { get; set; } = AttackDamageType.None;
 
         /// <summary>
+        /// **术士专用**：本次攻击被掷骰改写成哪种元素（`DamageType.None` = 没改写）。
+        ///
+        /// ⚠️ 为什么需要一个独立字段，而不是让术士自己存一个"上次掷到什么"：
+        ///    同一次结算里要**用两次**这个结果 ——
+        ///    ① 决定伤害类型（飘字颜色 / 力场穿透）
+        ///    ② 决定挂哪个负面状态
+        ///    而两次调用之间可能夹着别的攻击（太极反弹会**内部再开一次结算**），
+        ///    存在角色身上会被后一次覆盖，写在上下文里才和"这一次攻击"绑定。
+        /// </summary>
+        public DamageType ElementOverride { get; set; } = DamageType.None;
+
+        /// <summary>本次攻击是否被改写成「力场」（术士掷到力场时用）。</summary>
+        public bool IsForceElement => ElementOverride == DamageType.Force;
+
+        /// <summary>
         /// 结算过程中询问玩家的回调。**由上层（BoardController）注入**。
         ///
         /// 为 null 时角色会退化成"自动选第一个可用选项"（单元测试的直连场景）。

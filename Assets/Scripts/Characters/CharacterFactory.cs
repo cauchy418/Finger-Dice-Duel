@@ -59,6 +59,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Hunter] = () => new HunterLogic();
             _registry[SpecialLogicType.Magician] = () => new MagicianLogic();
             _registry[SpecialLogicType.Wizard] = () => new WizardLogic();
+            _registry[SpecialLogicType.Sorcerer] = () => new SorcererLogic();
         }
 
         /// <summary>

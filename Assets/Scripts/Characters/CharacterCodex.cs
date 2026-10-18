@@ -351,6 +351,20 @@ namespace FingerDiceDuel.Characters
                     "与妖术师：攻击数字是 4/6/8，要用相同数字的牌取消；取消同样让这次放弃作废。",
                     "与武僧：太极减免仍算命中 —— 状态照样挂上。",
                 });
+
+            // ---- 术士（混乱善良）----
+            Add(CharacterDefinition.SorcererId, "Sorcerer", Alignment.ChaoticGood,
+                shortSkill: "每次攻击各 8% 变成 10 种元素之一（共 80%），"
+                          + "改写后挂对应状态；余 20% 普攻。",
+                playGuide: "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。"
+                         + "普攻距离 1 内是钝击、1 外是穿刺；多段攻击每段各掷一次。",
+                counter: "攻 0 防 −1 但射程无限，躲不掉只能硬扛。"
+                       + "闪避或取消能让那一段连属性一起作废；盾与太极挡不住状态。",
+                interactions: new[]
+                {
+                    "与游侠 / 妖术师：被闪避或被取消的那一段不算命中，属性一起作废。",
+                    "与武僧：太极减免仍算命中；掷到力场时穿盾也照样穿透。",
+                });
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

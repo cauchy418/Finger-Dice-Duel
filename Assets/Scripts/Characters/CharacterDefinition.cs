@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Core
         public string DisplayName { get; }
 
         /// <summary>
-        /// **英文名**（图鉴用）。
+        /// 英文名（图鉴用）。
         ///
         /// 为什么单独存一个字段：图鉴要显示"名称（中英文）"，
         /// 而 <see cref="DisplayName"/> 是中文、且被战报与界面广泛引用，
@@ -81,6 +81,9 @@ namespace FingerDiceDuel.Core
         public const string HunterId = "hunter";
         public const string MagicianId = "magician";
         public const string WizardId = "wizard";
+        public const string SorcererId = "sorcerer";
+        public const string WarlockId = "warlock";
+        public const string BardId = "bard";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -146,7 +149,7 @@ namespace FingerDiceDuel.Core
         /// 圣武士：4/6 不再攻击，改为合盾；合盾与碎盾时对范围内一名角色
         /// 造成 2 点真实伤害（强制发动、玩家选目标）；
         /// 范围内有人被攻击时可以把目标改成自己。
-        /// 攻防 **0 / 0**（玩家要求从 0 / +1 下调，压一压它在 2v2 的强度）。
+        /// 攻防 0 / 0（玩家要求从 0 / +1 下调，压一压它在 2v2 的强度）。
         /// </summary>
         public static CharacterDefinition Paladin { get; } = new CharacterDefinition(
             PaladinId, "圣武士", SpecialLogicType.Paladin,
@@ -180,9 +183,9 @@ namespace FingerDiceDuel.Core
                          "攻防 0 / -1，攻击距离 3。");
 
         /// <summary>
-        /// **士兵**：攻 +1 / 防 +1，攻击距离 1，没有特殊能力。
+        /// 士兵：攻 +1 / 防 +1，攻击距离 1，没有特殊能力。
         ///
-        /// 玩家要求用它**取代白板**进入角色选择 ——
+        /// 玩家要求用它取代白板进入角色选择 ——
         /// 白板没有强度，作为可选角色没有意义。
         /// </summary>
         public static CharacterDefinition Soldier { get; } = new CharacterDefinition(
@@ -191,10 +194,10 @@ namespace FingerDiceDuel.Core
             description: "没有特殊能力，但攻防各 +1、攻击距离 1 —— 扎实的基础角色。");
 
         /// <summary>
-        /// **赌徒**：攻 0 / 防 0，攻击距离 1。
+        /// 赌徒：攻 0 / 防 0，攻击距离 1。
         ///
         /// 可以赌博（1d9 的结果直接当作本次行动结果）；
-        /// 上一回合做过正常运算的话，本回合**必须**赌博。
+        /// 上一回合做过正常运算的话，本回合必须赌博。
         /// </summary>
         public static CharacterDefinition Gambler { get; } = new CharacterDefinition(
             GamblerId, "赌徒", SpecialLogicType.Gambler,
@@ -204,9 +207,9 @@ namespace FingerDiceDuel.Core
                          "攻防 0 / 0，攻击距离 1。");
 
         /// <summary>
-        /// **骑士**：攻 0 / 防 −1，攻击距离 1。
+        /// 骑士：攻 0 / 防 −1，攻击距离 1。
         ///
-        /// 自己的盾碎后距离永久 +1，且**攻击加成恒等于距离**。
+        /// 自己的盾碎后距离永久 +1，且攻击加成恒等于距离。
         /// </summary>
         public static CharacterDefinition Knight { get; } = new CharacterDefinition(
             KnightId, "骑士", SpecialLogicType.Knight,
@@ -215,7 +218,7 @@ namespace FingerDiceDuel.Core
                          "（初始都是 1；碎一次后都变 2，以此类推）。攻防 0 / −1。");
 
         /// <summary>
-        /// **武僧**：攻 0 / 防 0，攻击距离 1。
+        /// 武僧：攻 0 / 防 0，攻击距离 1。
         ///
         /// 5 不合盾而进入太极形态；被攻击时把 5 变 0、
         /// 受一半伤害并把剩余反弹给攻击方。
@@ -230,7 +233,7 @@ namespace FingerDiceDuel.Core
                          "攻防 0 / 0，攻击距离 1。");
 
         /// <summary>
-        /// **巨人**：攻 +2 / 防 +2，攻击距离 1。
+        /// 巨人：攻 +2 / 防 +2，攻击距离 1。
         ///
         /// 4/6/8 不攻击、5 不合盾；打出 5 发起两段攻击（伤害 = 另一只手点数）；
         /// 打出 9 进行两段回复。
@@ -244,9 +247,9 @@ namespace FingerDiceDuel.Core
                          "生命上限 +5（25）。攻防 +2 / +2。");
 
         /// <summary>
-        /// **盗贼**：攻 0 / 防 −1，攻击距离 1。
+        /// 盗贼：攻 0 / 防 −1，攻击距离 1。
         ///
-        /// 可以放弃运算改为**偷窃**别人的数字。
+        /// 可以放弃运算改为偷窃别人的数字。
         /// </summary>
         public static CharacterDefinition Thief { get; } = new CharacterDefinition(
             ThiefId, "盗贼", SpecialLogicType.Thief,
@@ -261,10 +264,10 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1。");
 
         /// <summary>
-        /// **猎人**：攻 0 / 防 −1，攻击距离 1。
+        /// 猎人：攻 0 / 防 −1，攻击距离 1。
         ///
-        /// 运算后若**两只手同时是 1/2/3 且数字相同**，
-        /// 可以（主动选择）把**参与运算的那只手**暗置，进入**伏击**。
+        /// 运算后若两只手同时是 1/2/3 且数字相同，
+        /// 可以（主动选择）把参与运算的那只手暗置，进入伏击。
         /// </summary>
         public static CharacterDefinition Hunter { get; } = new CharacterDefinition(
             HunterId, "猎人", SpecialLogicType.Hunter,
@@ -279,9 +282,9 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1。");
 
         /// <summary>
-        /// **魔术师**：攻 0 / 防 −1，攻击距离 2。
+        /// 魔术师：攻 0 / 防 −1，攻击距离 2。
         ///
-        /// 可以选择**自己的手**当被加数；运算出 **2** 可以攻击。
+        /// 可以选择自己的手当被加数；运算出 2 可以攻击。
         /// </summary>
         public static CharacterDefinition Magician { get; } = new CharacterDefinition(
             MagicianId, "魔术师", SpecialLogicType.Magician,
@@ -293,10 +296,10 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1，攻击距离 2。");
 
         /// <summary>
-        /// **法师（Wizard）**：攻 0 / 防 −1，距离 1，**中立善良**。
+        /// 法师（Wizard）：攻 0 / 防 −1，距离 1，中立善良。
         ///
-        /// 运算出攻击数字（4/6/8）时可**放弃这次攻击**，
-        /// 给**下一次**攻击指定一种**伤害类型**（10 选 1）；
+        /// 运算出攻击数字（4/6/8）时可放弃这次攻击，
+        /// 给下一次攻击指定一种伤害类型（10 选 1）；
         /// 命中后给目标挂上对应负面状态，持续目标自己的 2 个回合。
         /// </summary>
         public static CharacterDefinition Wizard { get; } = new CharacterDefinition(
@@ -312,14 +315,34 @@ namespace FingerDiceDuel.Core
                          "连续放弃时只保留最新的选择。" +
                          "攻 0 / 防 −1，攻击距离 1。");
 
+        /// <summary>
+        /// 术士（Sorcerer）：攻 0 / 防 −1，攻击距离无限，混乱善良。
+        ///
+        /// 每次攻击各 8% 概率改写成 10 种元素之一（合计 80%），余 20% 普攻；
+        /// 改写时按该元素挂状态（力场不挂，走穿盾）。
+        /// 普攻：距离 1 以内钝击、1 以外穿刺。
+        /// </summary>
+        public static CharacterDefinition Sorcerer { get; } = new CharacterDefinition(
+            SorcererId, "术士", SpecialLogicType.Sorcerer,
+            attackBonus: 0, defenseBonus: -1,
+            description: "每次攻击各有 8% 概率改写成 10 种元素之一" +
+                         "（雷鸣 / 强酸 / 毒素 / 光耀 / 暗蚀 / 火焰 / 寒冷 / 闪电 / 心灵 / 力场），" +
+                         "合计 80%；剩下 20% 为普通攻击。" +
+                         "改写后按该元素挂对应的负面状态（力场不挂状态，改为穿盾、无视正向防御、不可闪避）。" +
+                         "被盾抵挡 / 太极减免仍算命中，被闪避或被取消仍作废。" +
+                         "普通攻击对距离 1 以内为钝击伤害、1 以外为穿刺伤害。" +
+                         "攻 0 / 防 −1，攻击距离无限。");
+
+
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
-            // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
+            // ⚠️ 白板已被士兵取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Hexer, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief, Hunter, Magician, Wizard
+            Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer
         };
     }
 }
