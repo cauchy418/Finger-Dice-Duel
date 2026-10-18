@@ -97,6 +97,18 @@ namespace FingerDiceDuel.Assistant
                 .Set(9, 58)                       // 回复：不是他的主战场
                 .AddCombo(ComboRule.ContainsAll(70, "有高攻击数字就能直接打穿对手", 8, 6));
 
+            // ---- 邪术师（攻 0 / 防 −1，射程无限）----
+            // 核心：**射程无限** -> 站位从来不是问题，问题只是"手上打得出 4/6/8 吗"。
+            //       命中还能把双方距离 +2（对手射程不足就两回合打不到他），
+            //       所以攻击数字的价值比一般角色更高。
+            // ⚠️ 防御 −1 很软 -> 5（合盾）也要给足权重，别一味追求输出。
+            Own[CharacterDefinition.WarlockId] = new HandValueProfile()
+                .Set(5, 78)                       // 防 −1，合盾的价值高于一般角色
+                .Set(8, 82).Set(6, 74).Set(4, 70) // 打出去就能锁人，攻击数字最高
+                .Set(9, 50)                       // 回复：能回但优先级低
+                .AddCombo(ComboRule.ContainsAll(70,
+                    "有 4/6/8 就该打出去：命中即把对手推开两个回合", 8, 6, 4));
+
             // ---- 野蛮人（防 +1）----
             // 5 = 成盾时**锁住对手一只手**（不能当运算源），强控制。
             Own[CharacterDefinition.BarbarianId] = new HandValueProfile()
