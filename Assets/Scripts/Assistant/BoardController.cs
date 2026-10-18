@@ -2058,6 +2058,119 @@ namespace FingerDiceDuel.Assistant
             return false;
         }
 
+        // ============================================================
+        // 吟游诗人：**回合结束后的四步抉择**
+        // ============================================================
+        //
+        // 玩家确认的流程：
+        //   ① 是否发动（本回合受过伤害 或 实际回复过体力）
+        //   ② 增幅攻击 / 增幅防御 / 削弱攻击 / 削弱防御
+        //   ③ 目标数 1~3（上限 = 范围内实际人数）-> 强度 ±(4−人数)
+        //   ④ 选目标（按**角色**选，同一个人点两只手只算一次；可含自己）
+        //
+        // ⚠️ 这是**第一个"运算之后才问"**的技能，所以它不走
+        //    `CollectPreTurnChoices`（那套是"运算前收集齐"）。
+        //    这里只暴露一个**不依赖 BoardPhase** 的小流程：
+        //    界面在每次刷新后调 `OfferBardChoiceIfAny()`，
+        //    拿到 true 就按 ②③④ 把答案交给 `ApplyBardChoice(...)`。
+        //    这样不会碰既有的阶段机（阶段机有四处必须同步登记，改它风险高）。
+
+        /// <summary>当前是否有待答的吟游诗人抉择。</summary>
+        public bool BardChoicePending { get; private set; }
+
+        /// <summary>此刻可选的**角色**候选（含自己；受攻击距离限制）。</summary>
+        public IReadOnlyList<PlayerState> BardCandidates
+            => _bardCandidates ?? (IReadOnlyList<PlayerState>)System.Array.Empty<PlayerState>();
+
+        private List<PlayerState> _bardCandidates;
+        private PlayerState _bardActor;
+
+        /// <summary>
+        /// 若有吟游诗人可以发动，就开出这个抉择；返回 true 表示**界面该弹面板**了。
+        ///
+        /// 故意不自动应用 —— 人类要自己选，AI 走 `BardAi.TryActivate`。
+        /// </summary>
+        public bool OfferBardChoiceIfAny()
+        {
+            if (BardChoicePending) return true;          // 已经在问了
+            if (_game == null || _game.IsGameOver) return false;
+
+            // ① 谁可以发动：本回合受过伤 / 实际回过血的吟游诗人
+            PlayerState found = null;
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !(p.Character is Characters.SpecialLogics.BardLogic)) continue;
+                if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
+                found = p;
+                break;
+            }
+
+            if (found == null) return false;
+
+            var logic = (Characters.SpecialLogics.BardLogic)found.Character;
+            List<PlayerState> cands = logic.EligibleTargets(found, _game);
+            if (cands.Count == 0) return false;
+
+            _bardActor = found;
+            _bardCandidates = cands;
+            BardChoicePending = true;
+            return true;
+        }
+
+        /// <summary>最多能选几个目标（1~3，且不超过候选人数）。</summary>
+        public int BardMaxTargetCount
+        {
+            get
+            {
+                int n = _bardCandidates?.Count ?? 0;
+                if (n > Characters.SpecialLogics.BardLogic.MaxTargets)
+                    n = Characters.SpecialLogics.BardLogic.MaxTargets;
+                return n;
+            }
+        }
+
+        /// <summary>按目标数算出的强度（界面上显示 ±N 用）。</summary>
+        public static int BardStrengthFor(int targetCount)
+            => Characters.SpecialLogics.BardLogic.StrengthFor(targetCount);
+
+        /// <summary>
+        /// 落实一次吟游诗人抉择（②③④ 的答案一起交上来）。
+        /// </summary>
+        /// <returns>实际生效的目标数；0 表示没有合法目标。</returns>
+        public int ApplyBardChoice(Characters.SpecialLogics.BardLogic.BuffKind kind,
+                                   IReadOnlyList<PlayerState> targets)
+        {
+            int applied = 0;
+            if (_bardActor != null)
+            {
+                var logic = _bardActor.Character as Characters.SpecialLogics.BardLogic;
+                if (logic != null) applied = logic.Activate(_bardActor, _game, kind, targets);
+
+                if (applied > 0)
+                {
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append(_bardActor.Name).Append(" 发动技能：").Append(kind);
+                    sb.Append("（").Append(targets != null ? targets.Count : 0).Append(" 个目标）");
+                    _log.Add(sb.ToString());
+                }
+            }
+
+            ClearBardChoice();
+            return applied;
+        }
+
+        /// <summary>放弃这次发动（等同于①选"不发动"）。</summary>
+        public void DeclineBardChoice() => ClearBardChoice();
+
+        private void ClearBardChoice()
+        {
+            BardChoicePending = false;
+            _bardActor = null;
+            _bardCandidates = null;
+        }
+
         /// <summary>本回合是否"放弃攻击"（运算照常、不造成伤害）。</summary>
         private bool _giveUpAttack;
 
