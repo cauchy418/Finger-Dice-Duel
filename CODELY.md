@@ -265,6 +265,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | `Tests/EditMode/BardTriggerTests.cs` | 吟游诗人**真实行动**触发链：受伤 / 9 回血 / 满血回复不触发 / 中毒触发 / 2v2 队友受伤不触发；并验证 `BardAi.TryActivate` 接上触发 |
 | `Tests/EditMode/BardTests.cs` + `BardChoiceFlowTests.cs` | 四步选择、强度、目标数、替换与死亡清除 |
 | `Tests/EditMode/SorcererTests.cs` / `WarlockDistanceTests.cs` | 术士 / 邪术师的被动触发与距离结算（无触发窗口，不另做自动触发测试） |
+| `Tests/EditMode/AiCharacterTests.cs` | AI 驱动冒烟：已覆盖术士 / 邪术师 / 吟游诗人；另有旧角色技能使用回归 |
 
 ```powershell
 # 只跑集火实验（约 20 秒）

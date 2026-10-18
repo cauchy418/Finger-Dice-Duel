@@ -402,7 +402,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 六个新角色都能被 AI 正常操作（不会崩、能打完）
+        // 新角色都能被 AI 正常操作（不会崩、能打完）
         // ============================================================
 
         [Test]
@@ -416,6 +416,9 @@ namespace FingerDiceDuel.Tests
                 { "剑客", CharacterDefinition.Swordsman },
                 { "忍者", CharacterDefinition.Ninja },
                 { "刺客", CharacterDefinition.Assassin },
+                { "术士", CharacterDefinition.Sorcerer },
+                { "邪术师", CharacterDefinition.Warlock },
+                { "吟游诗人", CharacterDefinition.Bard },
             };
 
             foreach (var pair in defs)
