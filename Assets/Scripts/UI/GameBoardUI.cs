@@ -982,9 +982,21 @@ namespace FingerDiceDuel.UI
         {
             RectTransform row = null;
 
-            // 1v1：直接用专用的两个名字行字段
-            if (player != null && ReferenceEquals(player, playerA)) row = _nameRowA;
-            else if (player != null && ReferenceEquals(player, playerB)) row = _nameRowB;
+            // ⚠️⚠️ **只有 1v1 才用 `_nameRowA/_nameRowB`。**
+            //
+            //    玩家实测："2v2 飘血仍旧位于原先 1v1 飘血的位置，没有和角色绑定。"
+            //    根因：2v2 里 `playerA/playerB` **也是非空的**（是 1、2 号位），
+            //    于是 1/2 号位的飘字命中了这两个**按 1v1 布局摆放**的旧名字行，
+            //    3/4 号位才走到环形面板 —— 四个人里两个错位，
+            //    表现就是"飘字跑到 1v1 的位置去了"。
+            //    现在：只要存在环形面板（= 2v2），一律按**自己的面板**取锚点。
+            bool ringLayout = _ringPanels != null && _ringPanels.Count > 0;
+
+            if (!ringLayout)
+            {
+                if (player != null && ReferenceEquals(player, playerA)) row = _nameRowA;
+                else if (player != null && ReferenceEquals(player, playerB)) row = _nameRowB;
+            }
 
             // ⚠️ **2v2 走这里**：四个人没有 `_nameRowA/B` 这两个字段，
             //    但每块环形面板都有自己的名字行 —— 用面板查出来。

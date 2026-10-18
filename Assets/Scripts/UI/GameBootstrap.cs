@@ -2932,7 +2932,29 @@ namespace FingerDiceDuel.UI
         {
             if (_game == null || !_game.IsGameOver) return "";
             if (_game.Winner == null) return "平局！";
-            return $"{_game.Winner.Name} 获胜！";
+
+            // ⚠️ 玩家要求：**2v2 要把一整队的人全列出来**。
+            //    原来只写 `_game.Winner.Name` —— 那是"最终活着的那个玩家"，
+            //    队友（哪怕一起打赢了、只是先倒下了）完全没被提到。
+            System.Collections.Generic.IReadOnlyList<PlayerState> all = _game.Players;
+            if (all == null || all.Count <= 2) return $"{_game.Winner.Name} 获胜！";
+
+            var names = new System.Text.StringBuilder();
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null) continue;
+                if (!_game.IsTeammate(_game.Winner, p) && !ReferenceEquals(p, _game.Winner))
+                    continue;
+
+                if (names.Length > 0) names.Append("、");
+                names.Append(p.Name);
+
+                // 先倒下的队友标出来，玩家看得出"是谁扛下来的"
+                if (!p.IsAlive) names.Append("（已倒下）");
+            }
+
+            return $"{names} 的队伍获胜！";
         }
 
         // ============================================================
