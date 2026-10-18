@@ -2688,6 +2688,73 @@ namespace FingerDiceDuel.Core
             //    于是技能每回合都能发动。
             for (int i = 0; i < _players.Count; i++)
                 _players[i]?.ResetTurnFlags();
+
+            SeedBrokenShields();
+        }
+
+        /// <summary>
+        /// **开局掷出的 5 要带上"破碎的盾"的状态。**
+        ///
+        /// 玩家实测 bug："初始的 5 没有盾的词条，导致在这只手没运算过的情况下，
+        /// 另一只手生成 5 时战士不会修复这个没有词条的盾。"
+        ///
+        /// 规则口径（玩家确认）：
+        ///   · **5 本身就是盾**的角色 -> 开局那只 5 的手算"**破碎的盾**"
+        ///     （所以战士合出新盾时能把它修好）；
+        ///   · **5 不是盾**的角色（巨人把 5 变成两段攻击、武僧把 5 变成太极 …）
+        ///     -> 不加任何盾状态。
+        ///
+        /// ⚠️ 只补 `State == None` 的 5 —— 正常运算生成的盾是 `Formed`，
+        ///    不能覆盖。所以本方法是**幂等**的，可以每次行动开始都跑一遍。
+        /// </summary>
+        private void SeedBrokenShields()
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null) continue;
+
+                SeedBrokenShield(p, p.LeftHand);
+                SeedBrokenShield(p, p.RightHand);
+            }
+        }
+
+        private void SeedBrokenShield(PlayerState owner, Hand hand)
+        {
+            if (hand == null) return;
+            if (hand.Value != 5) return;
+            if (hand.State != ShieldState.None) return;      // 已经成型的盾不动
+            if (!FiveIsShield(owner, hand)) return;
+
+            hand.SetShieldState(ShieldState.Broken);
+        }
+
+        /// <summary>
+        /// 这个角色的「5」是不是**盾**。
+        ///
+        /// 判据交给角色自己（`IHandEffectRewriter`）：巨人的 5 是两段攻击、
+        /// 武僧的 5 是太极 —— 它们都会把 5 改写成别的东西。
+        /// 没有改写者的角色，5 就是标准的合盾。
+        /// </summary>
+        private bool FiveIsShield(PlayerState owner, Hand hand)
+        {
+            if (owner?.Character == null) return true;
+
+            if (!(CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(owner)
+                  is IHandEffectRewriter rewriter))
+            {
+                return true;                                 // 没有改写者 -> 5 就是盾
+            }
+
+            try
+            {
+                HandEffectType effect = rewriter.RewriteEffect(owner, hand, 5, this);
+                return effect == HandEffectType.Shield;
+            }
+            catch
+            {
+                return true;                                 // 判不出来就按"是盾"处理
+            }
         }
 
         /// <summary>
