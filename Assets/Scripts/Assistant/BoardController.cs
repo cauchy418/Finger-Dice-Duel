@@ -246,12 +246,12 @@ namespace FingerDiceDuel.Assistant
             _game.AnsweredLookup = GetAnsweredChoice;
 
             // 带**玩家参数**的版本：妖术师是场上的第三方，
-            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectSorcererCancelChoices）。
+            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectHexerCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
-            _game.AskedCancelLookup = WasAskedSorcererCancel;
+            _game.AskedCancelLookup = WasAskedHexerCancel;
         }
 
         /// <summary>方便测试：双方共用同一个抉择器对象。</summary>
@@ -572,8 +572,8 @@ namespace FingerDiceDuel.Assistant
             if (!CanSkipTurn) return false;
 
             // 妖术师：先选目标，不立刻结束回合
-            var sorcerer = ActivePlayer.Character as SorcererLogic;
-            if (sorcerer != null)
+            var hexer = ActivePlayer.Character as HexerLogic;
+            if (hexer != null)
             {
                 PlayerState victim = FindHealthSwapTarget();
                 if (victim != null)
@@ -629,7 +629,7 @@ namespace FingerDiceDuel.Assistant
 
             int before = target.Health;
 
-            if (!SorcererLogic.ApplyHealthSwap(ActivePlayer, target))
+            if (!HexerLogic.ApplyHealthSwap(ActivePlayer, target))
             {
                 // 目标体力本来就一样（或已阵亡）-> 退回选择，不浪费回合
                 Hint = "那个人的体力已经与你一致，请另选一个人。";
@@ -781,13 +781,13 @@ namespace FingerDiceDuel.Assistant
         /// 妖术师是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
         /// （那个按"行动方 / 防守方"找）。
         ///
-        /// ⚠️ 用 <c>_askedSorcererCancel</c> 的**键是否存在**表达"问过"，
+        /// ⚠️ 用 <c>_askedHexerCancel</c> 的**键是否存在**表达"问过"，
         ///    这样"问过但选了不发动"（值为 null）与"没问过"能区分开。
         /// </summary>
         private Hand GetAnsweredChoiceFor(PlayerState player, HandEffect effect, int variant)
         {
-            if (player != null && effect == HandEffect.SorcererCancel
-                && _askedSorcererCancel.TryGetValue(player, out Hand answer))
+            if (player != null && effect == HandEffect.HexerCancel
+                && _askedHexerCancel.TryGetValue(player, out Hand answer))
             {
                 return answer;      // 可能是 null（玩家选了不发动）
             }
@@ -801,8 +801,8 @@ namespace FingerDiceDuel.Assistant
         /// 与 <see cref="GetAnsweredChoiceFor"/> 配套：
         /// 返回 true 表示"问过"，此时 null 答案意味着"玩家选了不发动"。
         /// </summary>
-        public bool WasAskedSorcererCancel(PlayerState player)
-            => player != null && _askedSorcererCancel.ContainsKey(player);
+        public bool WasAskedHexerCancel(PlayerState player)
+            => player != null && _askedHexerCancel.ContainsKey(player);
 
         /// <summary>
         /// 本回合"**问过谁是否取消攻击**"（键 = 玩家）。
@@ -814,7 +814,7 @@ namespace FingerDiceDuel.Assistant
         /// `_answeredThisTurn` 在答案为 null 时是"删除键"，分不出这两者；
         /// 这里用"键是否存在"表达"问过"，值为答案（可为 null）。
         /// </summary>
-        private readonly Dictionary<PlayerState, Hand> _askedSorcererCancel =
+        private readonly Dictionary<PlayerState, Hand> _askedHexerCancel =
             new Dictionary<PlayerState, Hand>();
 
         private static string AnswerKey(HandEffect effect, int variant)
@@ -2270,14 +2270,14 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 每回合清空"问过谁取消攻击" ——
             //    残留会让下一回合变成"问过但没答"，于是玩家的意图被误读
             //    （选了发动却被当成不发动）。我踩过同类坑（诊断字段跨回合残留）。
-            _askedSorcererCancel.Clear();
+            _askedHexerCancel.Clear();
 
             CollectFrom(context.Actor, context);
             CollectFrom(context.Defender, context);
 
             // 妖术师的"是否取消这次攻击"：取消者是**场上的第三方**，
             // 不属于上面的行动方/防守方，所以单独收集。
-            CollectSorcererCancelChoices();
+            CollectHexerCancelChoices();
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
             // 注意：不能用会被回合边界清空的容器 —— 上一个回合的作答
@@ -2378,7 +2378,7 @@ namespace FingerDiceDuel.Assistant
         ///    · 多人模式里不能取消**队友**发起的攻击
         ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
         /// </summary>
-        private void CollectSorcererCancelChoices()
+        private void CollectHexerCancelChoices()
         {
             int attackValue = PredictedAttackValue();
             if (attackValue <= 0) return;
@@ -2391,7 +2391,7 @@ namespace FingerDiceDuel.Assistant
                 if (p == null || !p.IsAlive) continue;
 
                 // 只有人类妖术师才问 —— AI 在结算时自动取消
-                if (!(p.Character is SorcererLogic)) continue;
+                if (!(p.Character is HexerLogic)) continue;
                 if (GetAi(p) != null) continue;
 
                 if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
@@ -2408,10 +2408,10 @@ namespace FingerDiceDuel.Assistant
 
                 // 先登记"**问过这个人**"（值为 null 表示"还没答/答了不发动"）——
                 // 结算时靠它区分"问过但选了不发动"与"根本没问过（AI）"。
-                _askedSorcererCancel[p] = null;
+                _askedHexerCancel[p] = null;
 
                 _pendingRequests.Add(new ChoiceRequest(
-                    HandEffect.SorcererCancel,
+                    HandEffect.HexerCancel,
                     $"{ActivePlayer.Name} 发起 {attackValue} 的攻击：" +
                     $"要用手上那个 {attackValue}（+1，永久）取消它吗？",
                     candidates,
@@ -2791,11 +2791,11 @@ namespace FingerDiceDuel.Assistant
             SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand);
 
             // 妖术师的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
-            // `_askedSorcererCancel` —— 结算时靠它决定放行还是取消。
-            if (request.Effect == HandEffect.SorcererCancel && _pendingChoiceDecider != null
+            // `_askedHexerCancel` —— 结算时靠它决定放行还是取消。
+            if (request.Effect == HandEffect.HexerCancel && _pendingChoiceDecider != null
                 && hand != null && _pendingChoiceDecider.Owns(hand))
             {
-                _askedSorcererCancel[_pendingChoiceDecider] = hand;
+                _askedHexerCancel[_pendingChoiceDecider] = hand;
             }
 
             // 统一定点：控制器自己保存一份本回合的答案。
@@ -3096,7 +3096,7 @@ namespace FingerDiceDuel.Assistant
             // 所以要在这里自己走完 —— 否则 AI 永远不用这个技能。
             //
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
-            if (TryAiSorcererSkip()) return true;
+            if (TryAiHexerSkip()) return true;
 
             // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
             //
@@ -3231,9 +3231,9 @@ namespace FingerDiceDuel.Assistant
         ///     的危险区间 —— 低于 <see cref="AiDangerHealth"/> 时不跳
         ///   · 对手必须比自己血多（否则这一改是**帮对方回血**，见下一个注释）
         /// </summary>
-        private bool TryAiSorcererSkip()
+        private bool TryAiHexerSkip()
         {
-            if (!(ActivePlayer?.Character is SorcererLogic)) return false;
+            if (!(ActivePlayer?.Character is HexerLogic)) return false;
             if (!CanSkipTurn) return false;
 
             // ⚠️ **安全性**：跳过 = 白送一个回合给对方。
@@ -3247,7 +3247,7 @@ namespace FingerDiceDuel.Assistant
             // ① 优先把**危险的队友**拉上来（玩家要求）：
             //    "队友血量若处于危险值且自己体力比队友多大于 9 则大幅度倾向于拉队友"
             PlayerState teammate = FindDangerousTeammate(ActivePlayer);
-            if (teammate != null) return DoSorcererSkip(teammate);
+            if (teammate != null) return DoHexerSkip(teammate);
 
             // ② 否则拉一个"血量比自己多至少 maxDamage"的对手
             PlayerState best = null;
@@ -3266,11 +3266,11 @@ namespace FingerDiceDuel.Assistant
 
             if (best == null) return false;
 
-            return DoSorcererSkip(best);
+            return DoHexerSkip(best);
         }
 
         /// <summary>进入相位并发动跳过（复用人类那条路径，避免两套逻辑漂移）。</summary>
-        private bool DoSorcererSkip(PlayerState target)
+        private bool DoHexerSkip(PlayerState target)
         {
             if (target == null) return false;
             if (!SkipTurn()) return false;
@@ -3320,7 +3320,7 @@ namespace FingerDiceDuel.Assistant
                 if (p.Health > AiDangerHealth) continue;
 
                 // 自己比队友多 9 以上（否则拉上来等于把自己拉下去，不划算）
-                if (me.Health - p.Health <= SorcererTeammatePullGap) continue;
+                if (me.Health - p.Health <= HexerTeammatePullGap) continue;
 
                 if (best == null || p.Health < best.Health) best = p;
             }
@@ -3329,14 +3329,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>拉队友的血量差门槛（玩家给的数：9）。</summary>
-        public int SorcererTeammatePullGap { get; set; } = 9;
+        public int HexerTeammatePullGap { get; set; } = 9;
 
         /// <summary>
         /// 妖术师 AI 跳过的**血量差阈值**（玩家给的数：8）。
         ///
         /// 调平衡改这里 —— 调大 = 更保守（更少跳），调小 = 更激进。
         /// </summary>
-        public int SorcererSkipHealthGap { get; set; } = 8;
+        public int HexerSkipHealthGap { get; set; } = 8;
 
         /// <summary>
         /// AI 认为"自己血太少、不该白送回合"的血量线。

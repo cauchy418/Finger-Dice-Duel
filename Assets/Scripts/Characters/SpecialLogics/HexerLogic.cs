@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Core
     /// 弹一次确认只会增加点击负担。想改成可选时把
     /// <see cref="AutoCancel"/> 设为 false 即可（届时需要接上抉择 UI）。
     /// </summary>
-    public sealed class SorcererLogic : CharacterTemplate, IAttackCanceller,
+    public sealed class HexerLogic : CharacterTemplate, IAttackCanceller,
                                        FingerDiceDuel.Core.ISkillUseCounter,
                                        IAttackRangeProvider, ITurnSkipRule
     {

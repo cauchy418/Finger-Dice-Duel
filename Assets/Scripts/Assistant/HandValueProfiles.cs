@@ -186,7 +186,7 @@ namespace FingerDiceDuel.Assistant
             // 他的核心不是"打出什么"，而是**手上留着什么**：
             // 留着的数字与对手的攻击数字相同时可以取消攻击（并把那只手 +1）。
             // 所以价值**接近基线、略偏"覆盖面广"的低值**（1/2/3/7 能凑出更多种攻击数字）。
-            Own[CharacterDefinition.SorcererId] = new HandValueProfile()
+            Own[CharacterDefinition.HexerId] = new HandValueProfile()
                 .Set(1, 66).Set(2, 66).Set(3, 64).Set(7, 64)
                 .Set(4, 58).Set(6, 58).Set(8, 58).Set(9, 58)
                 .Set(5, 52);                            // 5 当盾的价值一般（防 −1）
@@ -423,7 +423,7 @@ namespace FingerDiceDuel.Assistant
             // 我打出的攻击数字若正好是他手上的数字，就会被取消 ——
             // 所以**我自己的攻击数字**要避开他手上的值（这条在走子评分里没法表达，
             // 因为那取决于他手上有什么）；这里只把"送他覆盖面广的低值"压一点。
-            OpponentAdjust[CharacterDefinition.SorcererId] = new List<ValueAdjust>
+            OpponentAdjust[CharacterDefinition.HexerId] = new List<ValueAdjust>
             {
                 new ValueAdjust(1, -8), new ValueAdjust(2, -8), new ValueAdjust(7, -8),
             };

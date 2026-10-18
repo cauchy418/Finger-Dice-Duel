@@ -248,7 +248,7 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 | 忍者 Ninja | +1 / −1 | 1 | 攻击改为**两段伤害减半**（4→2+2、6→3+3、8→4+4），每段各自结算攻防 |
 | 刺客 Assassin | +2 / −1 | 1 | 双手均为 7（**并经运算达成**）时**潜行**：不能被攻击；每次潜行可跳过一回合（仅一次）；出潜行的攻击 +7 |
 | 圣武士 Paladin | 0 / 0 | 1 | 见 §8.11 |
-| 妖术师 Sorcerer | 0 / −1 | **∞** | 见 §8.12 |
+| 妖术师 Hexer | 0 / −1 | **∞** | 见 §8.12 |
 | 魔射手 Arcane Archer | 0 / −1 | **3** | 见 §8.13 |
 | 赌徒 Gambler | 0 / 0 | 1 | 见 §8.14 |
 | 骑士 Knight | 0→+ / −1 | 1→+ | 见 §8.15 |
@@ -435,7 +435,7 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
   - 判据是"**挨打的人**在自己的攻击距离内"，**不是**"攻击者在距离内"。
   - 这是"要不要发动"的抉择，**允许放弃**。
 
-### 8.12 妖术师 Sorcerer
+### 8.12 妖术师 Hexer
 
 攻 **0** / 防 **−1**，攻击距离**无限**。
 

@@ -271,7 +271,7 @@ namespace FingerDiceDuel.Tests
                 // 混乱邪恶：狼人 巨人 妖术师（妖术师由中立邪恶移来）
                 { CharacterDefinition.WerewolfId, Alignment.ChaoticEvil },
                 { CharacterDefinition.GiantId, Alignment.ChaoticEvil },
-                { CharacterDefinition.SorcererId, Alignment.ChaoticEvil },
+                { CharacterDefinition.HexerId, Alignment.ChaoticEvil },
                 // 守序邪恶：猎人（玩家指定）
                 { CharacterDefinition.HunterId, Alignment.LawfulEvil },
             };

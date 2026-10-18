@@ -124,12 +124,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Sorcerer_is_bludgeoning_near_and_piercing_far()
+        public void Hexer_is_bludgeoning_near_and_piercing_far()
         {
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.SorcererId, 1), "妖术师 距离 1 = 钝击");
+                TypeOf(CharacterDefinition.HexerId, 1), "妖术师 距离 1 = 钝击");
             Assert.AreEqual(AttackDamageType.Piercing,
-                TypeOf(CharacterDefinition.SorcererId, 2), "妖术师 距离 2 = 穿刺");
+                TypeOf(CharacterDefinition.HexerId, 2), "妖术师 距离 2 = 穿刺");
         }
 
         [Test]

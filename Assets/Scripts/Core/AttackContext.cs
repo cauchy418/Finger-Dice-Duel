@@ -645,14 +645,14 @@ namespace FingerDiceDuel.Core
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
 
-                if (p.Character is SorcererLogic sorcerer)
+                if (p.Character is HexerLogic hexer)
                 {
                     // 人类的妖术师走"询问式"：按玩家在收集阶段的回答决定。
                     // AI 的妖术师没被问过 -> wasAsked = false -> 自动取消。
                     bool wasAsked = AskedCancelLookup != null && AskedCancelLookup(p);
-                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.SorcererCancel, 0);
+                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.HexerCancel, 0);
 
-                    if (sorcerer.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
+                    if (hexer.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;

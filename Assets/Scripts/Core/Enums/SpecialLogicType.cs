@@ -49,7 +49,7 @@ namespace FingerDiceDuel.Core
         /// 可把那只手 +1 来取消这次攻击（最早结算）。
         /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
         /// </summary>
-        Sorcerer = 11,
+        Hexer = 11,
 
         /// <summary>
         /// 魔射手：4 改为两段各 4；6 伤害 +2；8 无视盾牌。

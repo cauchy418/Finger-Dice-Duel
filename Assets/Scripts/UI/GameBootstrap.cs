@@ -2770,7 +2770,7 @@ namespace FingerDiceDuel.UI
             // 这类"界面没画"的问题光看截图分不清是规则判错还是漏传参数。
             if (VerboseLogging && !show && _controller != null
                 && _controller.ActivePlayer != null
-                && _controller.ActivePlayer.Character is SorcererLogic)
+                && _controller.ActivePlayer.Character is HexerLogic)
             {
                 string line =
                     $"[FDD跳过按钮] 不显示 -> isHumanTurn={_controller.IsHumanTurn}" +

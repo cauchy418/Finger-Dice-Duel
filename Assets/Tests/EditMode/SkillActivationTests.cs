@@ -186,7 +186,7 @@ namespace FingerDiceDuel.Tests
             //
             //    有几条策略只存在于**控制器**里，直连时永远不会触发：
             //      · 赌徒的开赌判断（ShouldAiGamble）
-            //      · 妖术师的主动跳过（TryAiSorcererSkip）
+            //      · 妖术师的主动跳过（TryAiHexerSkip）
             //    我第一版用 MatchRunner，于是赌徒 30 局全 0% ——
             //    而它其实在真实对局里是会开赌的（循环赛胜率正常）。
             //    这是"尺子量错了地方"的第三次，所以这次写进注释里。
@@ -343,7 +343,7 @@ namespace FingerDiceDuel.Tests
                     //    （在回合内记录：攻击 / 回复 / 合盾 都算）
                     break;
 
-                case CharacterDefinition.SorcererId:
+                case CharacterDefinition.HexerId:
                     // "只要能取消敌人的攻击就取消" —— 取消在场上没有痕迹，
                     // 只能靠角色自己的计数器
                     if (pA.Character is ISkillUseCounter wk && wk.SkillUseCount > 0)

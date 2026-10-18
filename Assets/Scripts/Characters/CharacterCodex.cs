@@ -194,7 +194,7 @@ namespace FingerDiceDuel.Characters
                     "与战士 / 野蛮人 / 骑士：他们也会合盾，场上盾多时双方技能都更活跃。",
                 });
 
-            Add(CharacterDefinition.SorcererId, "Sorcerer", Alignment.ChaoticEvil,
+            Add(CharacterDefinition.HexerId, "Hexer", Alignment.ChaoticEvil,
                 shortSkill: "手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "

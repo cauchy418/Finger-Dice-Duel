@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         public const string NinjaId = "ninja";
         public const string AssassinId = "assassin";
         public const string PaladinId = "paladin";
-        public const string SorcererId = "sorcerer";
+        public const string HexerId = "hexer";
         public const string ArcaneArcherId = "arcane_archer";
         public const string SoldierId = "soldier";
         public const string GamblerId = "gambler";
@@ -162,8 +162,8 @@ namespace FingerDiceDuel.Core
         /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
         /// 攻防 0 / -1，攻击距离无限。
         /// </summary>
-        public static CharacterDefinition Sorcerer { get; } = new CharacterDefinition(
-            SorcererId, "妖术师", SpecialLogicType.Sorcerer,
+        public static CharacterDefinition Hexer { get; } = new CharacterDefinition(
+            HexerId, "妖术师", SpecialLogicType.Hexer,
             attackBonus: 0, defenseBonus: -1,
             description: "有人发起攻击时，若该攻击数字与自己某只手相同，可把那只手 +1（永久）" +
                          "以取消这次攻击（最早结算，可取消咒术师）；追加攻击与冲击不可被取消。" +
@@ -318,7 +318,7 @@ namespace FingerDiceDuel.Core
             // ⚠️ 白板已被**士兵**取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
-            Swordsman, Ninja, Assassin, Paladin, Sorcerer, ArcaneArcher, Gambler, Knight,
+            Swordsman, Ninja, Assassin, Paladin, Hexer, ArcaneArcher, Gambler, Knight,
             Monk, Giant, Thief, Hunter, Magician, Wizard
         };
     }

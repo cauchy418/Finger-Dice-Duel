@@ -74,7 +74,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 只在妖术师是**人类**时创建；AI 走自动取消（见 AttackContext）。
         /// </summary>
-        SorcererCancel,
+        HexerCancel,
 
         // ---------- 牧师 ----------
         /// <summary>牧师：9 的回复要回给谁。</summary>

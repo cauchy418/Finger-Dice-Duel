@@ -45,7 +45,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Ninja] = () => new NinjaLogic();
             _registry[SpecialLogicType.Assassin] = () => new AssassinLogic();
             _registry[SpecialLogicType.Paladin] = () => new PaladinLogic();
-            _registry[SpecialLogicType.Sorcerer] = () => new SorcererLogic();
+            _registry[SpecialLogicType.Hexer] = () => new HexerLogic();
             _registry[SpecialLogicType.ArcaneArcher] = () => new ArcaneArcherLogic();
 
             // 白板已从角色选择里移除，但这个映射要保留 ——
