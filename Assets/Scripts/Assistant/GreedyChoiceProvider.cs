@@ -1265,7 +1265,17 @@ namespace FingerDiceDuel.Assistant
                         var mage = decider.Character as IMageState;
                         if (mage == null) return null;
 
+                        // ⚠️⚠️ **"不重复放弃"是 AI 的策略，不是规则。**
+                        //
+                        //    玩家澄清："在消耗前应该要是可以弹是否放弃的，
+                        //    只是让 AI 算法不要重复选，
+                        //    玩家实操可以自己决定是否要重复放弃。"
+                        //
+                        //    所以引擎（`WizardLogic.CollectPreTurnChoices`）
+                        //    **永远都问**；克制放在这里 —— 已经铺好了就不要再铺，
+                        //    否则只是白发一回合（AI 自己算得清这笔账）。
                         if (mage.HasPendingType) return null;      // 已经铺好了
+
                         if (WizardAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
 
                         // 本次合出的结果（4/6/8）—— 决定放弃的倾向

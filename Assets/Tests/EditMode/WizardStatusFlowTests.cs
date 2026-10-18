@@ -511,21 +511,23 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 玩家要求："只要法师选择了放弃，他再消耗掉这次攻击前不会再选择放弃"
+        // 玩家要求："是否放弃"**永远可以选**（AI 自己克制）
         // ============================================================
 
         /// <summary>
-        /// **待用类型存在时，不再问"要不要放弃"，也不再改类型。**
-        ///
-        /// 玩家原话：
-        ///   "只要法师选择了放弃，他再消耗掉这次攻击前不会再选择放弃。"
-        ///
-        /// 这正是"法师最少要两个回合才能完成一次带效果的攻击"的机制基础：
-        ///   第 1 回合放弃（铺类型，白扔）-> 第 2 回合真的攻击（用掉类型）。
-        /// 如果第 2 回合还能再放弃，法师就会**永远在铺垫、永远不出手**。
+        /// **身上已有待用类型时，仍然要问"要不要放弃"。**
+
+        /// 玩家澄清（重要，我之前做错了）：
+        ///   "在消耗前应该要是可以弹是否放弃的，
+        ///    只是让 AI 算法不要重复选，
+        ///    玩家实操可以自己决定是否要重复放弃。"
+
+        /// 所以"不重复放弃"是 **AI 的策略**，不是规则 ——
+        /// 引擎必须把选择权交给玩家（否则等于替玩家做决定、少一个可选操作）。
+        /// 我曾在这里写过 `if (HasPendingType) return;`，那是把策略写进了规则。
         /// </summary>
         [Test]
-        public void A_pending_type_blocks_further_abandon_choices()
+        public void A_pending_type_still_offers_the_abandon_choice()
         {
             PlayerState mage = Make("法", CharacterDefinition.Wizard);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
@@ -538,7 +540,7 @@ namespace FingerDiceDuel.Tests
             wiz.SetPendingDamageType(DamageType.Poison);
             Assert.IsTrue(wiz.HasPendingType);
 
-            // ② 本次合出 4（正常会问"要不要放弃"）
+            // ② 本次合出 4
             mage.LeftHand.SetValue(3);
             foe.LeftHand.SetValue(1);
 
@@ -552,12 +554,43 @@ namespace FingerDiceDuel.Tests
             var requests = new List<ChoiceRequest>();
             wiz.CollectPreTurnChoices(context, requests);
 
+            bool asked = false;
             for (int i = 0; i < requests.Count; i++)
-            {
-                Assert.IsFalse(requests[i].Effect == HandEffect.WizardAbandonAttack,
-                    "身上已有待用类型时，不该再问「要不要放弃」—— "
-                    + "否则法师会永远铺垫、永远不出手。");
-            }
+                if (requests[i].Effect == HandEffect.WizardAbandonAttack) asked = true;
+
+            Assert.IsTrue(asked,
+                "身上已有待用类型时，**仍然**要问「要不要放弃」—— "
+                + "玩家可以选择重复放弃（只保留最新的类型）。"
+                + "「AI 不要重复放弃」是 AI 的策略，不该写进规则。");
+        }
+
+        /// <summary>
+        /// **AI 自己不会重复放弃**（这才是"克制"该待的地方）。
+        /// </summary>
+        [Test]
+        public void The_ai_does_not_abandon_again_when_a_type_is_already_pending()
+        {
+            PlayerState mage = Make("法", CharacterDefinition.Wizard);
+            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+
+            var ai = new GreedyChoiceProvider();
+            var game = new GameManager(mage, foe, ai, new GreedyChoiceProvider());
+
+            var wiz = (WizardLogic)mage.Character;
+            wiz.SetPendingDamageType(DamageType.Poison);
+
+            var request = new ChoiceRequest(
+                HandEffect.WizardAbandonAttack, "是否放弃？",
+                new List<Hand>(mage.Hands),
+                allowDecline: true, declineResult: null,
+                decider: mage, acceptLabel: "放弃攻击",
+                resultValue: 4);
+
+            Hand answer = ai.ChooseHandFor(request, mage);
+
+            Assert.IsTrue(answer == null,
+                "AI 身上已经有待用类型时**不应该**再放弃 —— "
+                + "再铺一次只是白发一回合（类型只保留最新的）。");
         }
 
         /// <summary>

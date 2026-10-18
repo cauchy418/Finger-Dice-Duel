@@ -117,11 +117,19 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             // 只有"结果落在攻击数字上"才问
             if (!IsAttackResult(context.ResultValue)) return;
 
-            // 已经有待用类型时不再问"要不要放弃" ——
-            // 玩家确认："法师最少要两个回合才能完成一次带效果的攻击"，
-            // 所以铺一次就够，重复放弃只是白白浪费回合。
-            if (HasPendingType) return;
-
+            // ⚠️⚠️ **引擎永远都问"要不要放弃"，不因"已有待用类型"而拦截。**
+            //
+            //    玩家澄清（重要）：
+            //      "在消耗前应该要是可以弹是否放弃的，
+            //       只是让 AI 算法不要重复选，
+            //       玩家实操可以自己决定是否要重复放弃。"
+            //
+            //    所以"不重复放弃"是 **AI 的策略**，不是规则。
+            //    我原来在这里写了 `if (HasPendingType) return;`，
+            //    那等于**替玩家做决定**（会少一个可选操作），是错的。
+            //
+            //    AI 的克制放在 `GreedyChoiceProvider.WizardShouldAbandon`
+            //    里（那里已经会把"已有待用类型"判成不放弃）。
             var abandon = new ChoiceRequest(
                 HandEffect.WizardAbandonAttack,
                 "是否放弃这次攻击？放弃后可以为下一次攻击指定一种伤害类型。",
