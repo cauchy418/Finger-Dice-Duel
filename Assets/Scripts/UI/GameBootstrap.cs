@@ -3144,10 +3144,16 @@ namespace FingerDiceDuel.UI
             _animatedTurn = result;
             if (result == null) return;
 
-            // 受击方 = 行动方的对手
-            PlayerState defender = ReferenceEquals(result.Actor, _game.PlayerA)
-                ? _game.PlayerB
-                : _game.PlayerA;
+            // 受击方优先用结算里记录的**真实挨打者**（8 人局不是 A/B 对偶）；
+            // 旧数据没有该字段时退回被加数手主 / 1v1 对偶。
+            PlayerState defender = result.Defender
+                ?? _game.OwnerOfHand(result.TargetHand);
+            if (defender == null)
+            {
+                defender = ReferenceEquals(result.Actor, _game.PlayerA)
+                    ? _game.PlayerB
+                    : _game.PlayerA;
+            }
 
             // ⚠️ 带上本次攻击的伤害类型 —— 伤害与"格挡"飘字用它上色，
             //    颜色与攻击类型图标同源（玩家要求）。

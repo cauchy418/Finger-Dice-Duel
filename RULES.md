@@ -1125,7 +1125,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**954 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**955 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |

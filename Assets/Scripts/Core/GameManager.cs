@@ -43,6 +43,10 @@ namespace FingerDiceDuel.Core
     public class TurnResult
     {
         public PlayerState Actor;
+
+        /// <summary>本次攻击**实际挨打的人**（8 人局可能与被加数手主不同）。</summary>
+        public PlayerState Defender;
+
         public Hand ActedHand;
         public Hand TargetHand;
 
@@ -2016,6 +2020,7 @@ namespace FingerDiceDuel.Core
             // 但 <see cref="DamageTargetPlayer"/> 可以覆盖它。
             PlayerState addendOwner = OwnerOfHand(targetHand);
             PlayerState opponent = DamageTargetPlayer ?? addendOwner ?? GetOpponent(actor);
+            result.Defender = opponent;
 
             // ⚠️ **武僧的 0 被他人触碰 -> 立即变 1**（玩家确认的规则）。
             //

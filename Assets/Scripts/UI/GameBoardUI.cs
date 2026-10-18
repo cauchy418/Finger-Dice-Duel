@@ -217,6 +217,10 @@ namespace FingerDiceDuel.UI
             BuildRingPanels();
             BuildDamageTypePanel();
 
+            // 飘字层必须最后置顶：8 人面板是后建的，后建 sibling 会盖住飘字，
+            // 血条中心锚点正好落在面板内部 -> 看起来像"飘血/格挡没显示"。
+            if (_floats != null) _floats.transform.SetAsLastSibling();
+
             HideGameOver();
             SetSkipButtonVisible(false);
             SetDeclineButtonVisible(false);

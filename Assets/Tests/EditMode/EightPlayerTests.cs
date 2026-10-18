@@ -122,5 +122,21 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, game.RoundCount, "8 人各行动一次 = 1 轮。");
             Assert.AreEqual(8, game.TurnCount);
         }
+
+        [Test]
+        public void Attack_records_the_actual_defender_in_turn_result()
+        {
+            GameManager game = MatchEight(out List<PlayerState> seated);
+            game.BeginTurn();
+
+            seated[0].LeftHand.SetValue(3);
+            seated[7].LeftHand.SetValue(1);   // 座位 8 是混乱阵营，距离 1，可攻击
+
+            TurnResult r = game.ExecuteTurn(seated[0], seated[0].LeftHand,
+                                            seated[7].LeftHand);
+
+            Assert.AreSame(seated[7], r.Defender,
+                "8 人局必须记录真实挨打者，不能再用 A/B 对偶猜测。");
+        }
     }
 }
