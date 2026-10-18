@@ -626,6 +626,7 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void RestoreTwoPlayerLayout()
         {
+            _ringActive = null;
             if (_areaA != null) _areaA.gameObject.SetActive(true);
             if (_areaB != null) _areaB.gameObject.SetActive(true);
 
@@ -659,6 +660,7 @@ namespace FingerDiceDuel.UI
         {
             if (me == null || playersBySeat == null) return;
 
+            _ringActive = null;
             // 隐藏 1v1 的两人布局
             if (_areaA != null) _areaA.gameObject.SetActive(false);
             if (_areaB != null) _areaB.gameObject.SetActive(false);
@@ -1005,7 +1007,9 @@ namespace FingerDiceDuel.UI
             //    3/4 号位才走到环形面板 —— 四个人里两个错位，
             //    表现就是"飘字跑到 1v1 的位置去了"。
             //    现在：只要存在环形面板（= 2v2），一律按**自己的面板**取锚点。
-            bool ringLayout = _ringPanels != null && _ringPanels.Count > 0;
+            // ⚠️ 不能只看 `_ringPanels.Count` —— 8 个环形面板在 1v1 也**已经建好**，
+            //    但 Owner 全是 null；只有本轮真的走过 SetRingActive 才用环形锚点。
+            bool ringLayout = _ringActive != null;
 
             if (!ringLayout)
             {
@@ -1029,7 +1033,11 @@ namespace FingerDiceDuel.UI
                     //    玩家实测："队友位置的飘血有点偏上" —— 名字行是面板**最顶上**那一行，
                     //    而玩家期望飘字落在"角色身上"。血条紧跟在名字下面，
                     //    四个座位统一用它，相对位置就天然一致。
-                    if (panel.HpFill != null) row = panel.HpFill.rectTransform;
+                    // ⚠️ 用血条的**轨道中心**，不能用填充图：
+                    //    填充图是左对齐、宽度随血量变化，位置会落在血条左端；
+                    //    8 人局里这会让飘字整体偏左，看起来没有落在角色身上。
+                    if (panel.HpFill != null && panel.HpFill.rectTransform.parent != null)
+                        row = panel.HpFill.rectTransform.parent as RectTransform;
                     else if (panel.NameText != null) row = panel.NameText.rectTransform;
                 }
             }
