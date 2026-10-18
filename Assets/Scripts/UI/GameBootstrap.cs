@@ -2576,6 +2576,14 @@ namespace FingerDiceDuel.UI
             bool giveUp = _controller.IsHumanChooser && _controller.CanGiveUpAttack;
             bool canDecline = giveUp
                               || (_controller.IsHumanChooser && _controller.CanDeclinePendingChoice);
+
+            // ⚠️ 确认目标阶段**不显示**"不发动" —— 那一步只有"点目标的手确认"
+            //    与（没有合法目标时的）"放弃攻击"。
+            //    留着它会让玩家点出一个无效操作，甚至触发死循环
+            //    （玩家的死循环就是这么点出来的）。
+            if (_controller.Phase == BoardPhase.ChoosingTargetPlayer && !giveUp)
+                canDecline = false;
+
             _board.SetDeclineButtonVisible(canDecline);
             if (canDecline) _board.SetDeclineButtonLabel(giveUp ? "放弃攻击" : DeclineLabel());
 

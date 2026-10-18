@@ -2778,6 +2778,21 @@ namespace FingerDiceDuel.Assistant
         public bool DeclinePendingChoice()
         {
             if (!IsInChoicePhase) return false;
+
+            // ⚠️⚠️ **阶段守卫：只有"角色抉择"阶段才能用「不发动」。**
+            //
+            //    玩家实测的死循环：法师「不发动」之后进入 `ChoosingTargetPlayer`
+            //    （该点哪位目标），此时界面上**仍留着「放弃攻击」按钮**；
+            //    再点一次 -> 走到这里 -> `ApplyPreTurnChoiceAndContinue`
+            //    按一个**过期**的 `_pendingRequestIndex` 推进，
+            //    结果 `idx` 被弄回 0 -> **重新问「是否放弃攻击」** -> 无限循环。
+            //
+            //    所以这里必须挡住：确认目标阶段**没有**"不发动"这个操作，
+            //    要么点目标的手确认，要么（真的没有合法目标时）用 `GiveUpAttack`。
+            if (Phase == BoardPhase.ChoosingTargetPlayer) return false;
+            if (Phase == BoardPhase.ChoosingTargetHand) return false;
+            if (Phase == BoardPhase.ChoosingAttackerHand) return false;
+
             if (_pendingRequestIndex >= _pendingRequests.Count) return false;
 
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];

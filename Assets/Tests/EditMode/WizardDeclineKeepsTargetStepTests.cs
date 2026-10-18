@@ -80,5 +80,53 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(foe.MaximumHealth, foe.Health,
                 "还没确认目标，就不该已经造成伤害。[" + log + "]");
         }
+
+        /// <summary>
+        /// **回归：在"确认目标"阶段再点「不发动」，不能把流程打回"是否放弃攻击"。**
+        ///
+        /// 玩家实测的死循环：
+        ///   法师「不发动」-> 进入 `ChoosingTargetPlayer`（界面上还留着「放弃攻击」按钮）
+        ///   -> 再点 -> `DeclinePendingChoice` 按**过期**的 idx 推进
+        ///   -> idx 被弄回 0 -> **重新问「是否放弃攻击」** -> 无限循环。
+        /// </summary>
+        [Test]
+        public void Declining_at_the_target_step_does_not_loop_back()
+        {
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("法", CharacterDefinition.Wizard),
+                                       Make("战", CharacterDefinition.Fighter),
+                                       providers[0], providers[1]);
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.BeginTurn();
+
+            PlayerState mage = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            mage.LeftHand.SetValue(1);
+            mage.RightHand.SetValue(9);
+            foe.LeftHand.SetValue(5);
+            foe.RightHand.SetValue(1);
+
+            board.ClickHand(mage.LeftHand);
+            board.ClickHand(foe.LeftHand);          // 1 + 5 = 6 -> 攻击
+
+            Assert.AreEqual(HandEffect.WizardAbandonAttack, board.PendingEffect);
+
+            // 「不发动」-> 停在确认目标
+            Assert.IsTrue(board.DeclinePendingChoice());
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                "「不发动」之后应当停在确认目标。");
+
+            // 这一步**不该**允许再「不发动」（否则会打回上一步造成死循环）
+            Assert.IsFalse(board.DeclinePendingChoice(),
+                "确认目标阶段不能再「不发动」—— 那会把流程打回"
+                + "「是否放弃攻击」，玩家实测会无限循环。");
+
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
+                "被拒绝后阶段必须保持不变（仍等玩家确认目标）。");
+        }
     }
 }
