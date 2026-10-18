@@ -96,8 +96,8 @@ namespace FingerDiceDuel.Tests
             // 玩家要求：加大轮数（尽量多）。
             // 每对队伍打 16 局（种子 0..15），共约 153 x 16 = 2448 局。
             // 玩家要求：加大轮数（尽量多）。
-            // 每对队伍打 64 局，共约 153 x 64 = 9792 局。
-            const int gamesPerMatchup = 64;
+            // 每对队伍打 128 局，共约 276 x 128 = 35328 局。
+            const int gamesPerMatchup = 128;
             int offset = teams.Count / 2;
 
             var sb = new StringBuilder();

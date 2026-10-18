@@ -6,8 +6,9 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通 .NET 可执行文件跑测试 —— 一次完整回归约 **40 秒**
-（含 86,400 局集火实验；其余测试约 5 秒），而启动编辑器通常要几分钟。
+一个普通 .NET 可执行文件跑测试 —— 一次完整回归约 **60 秒**
+（含 1v1 22,080 局、2v2 35,328 局、双将 83,664 局、集火实验 86,400 局），
+而启动编辑器通常要几分钟。
 
 ```
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1

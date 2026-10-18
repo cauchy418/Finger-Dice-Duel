@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Tests
     public class DualVersusDualTests
     {
         /// <summary>每个配对跑多少轮（每轮含交换座位，即 2 局）。</summary>
-        private const int GamesPerPair = 8;
+        private const int GamesPerPair = 12;
 
         [Test]
         public void All_dual_general_matchups_run_without_crashing()

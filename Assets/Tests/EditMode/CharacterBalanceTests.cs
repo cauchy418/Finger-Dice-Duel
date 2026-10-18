@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Tests
     public class CharacterBalanceTests
     {
         /// <summary>每对角色打多少局（双方各占一半先手）。</summary>
-        private const int GamesPerPair = 40;
+        private const int GamesPerPair = 80;
 
         private static CharacterDefinition[] Roster()
             => CharacterDefinition.BuiltIn;

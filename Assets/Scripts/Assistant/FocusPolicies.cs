@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Assistant
     ///   · **邪术师也保持 baseline**：它自己用 Self 确实 +20.7，但它本来就是
     ///     2v2 第一（无集火基线 73.4%）；全场都开集火时再给它开，
     ///     2v2 会到 **83.7%**。只给其他人开、不给它开，2v2 反而从
-    ///     73.4% 压到 **67.5%**，全表区间从 44.2 点收到 **37.4 点** ——
+    ///     73.4% 压到 **66.9%**，全表区间从 44.2 点收到 **35.9 点** ——
     ///     这是目前代价最小的平衡手段。等它的数值被单独调下来再启用。
     ///
     /// 1v1 只有一位对手，`ResolveFocusTarget` 直接返回 null，
@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Assistant
         private static readonly HashSet<string> NoFocusRoleIds =
             new HashSet<string>(StringComparer.Ordinal)
             {
-                CharacterDefinition.WarlockId,     // 2v2 第一，开了会到 83.7%
+                CharacterDefinition.WarlockId,     // 2v2 第一，开了会到 80% 以上
                 CharacterDefinition.HunterId,      // Self -2.6（两段都为负）
                 CharacterDefinition.WerewolfId,    // Self -3.3（两段都为负）
                 CharacterDefinition.MagicianId,    // Self -2.6（两段都为负，未达显著）
