@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Tests
         {
             PlayerState p = Make("邪", CharacterDefinition.Warlock);
             Assert.AreEqual(0, p.Character.AttackBonus);
-            Assert.AreEqual(-1, p.Character.DefenseBonus);
+            Assert.AreEqual(-2, p.Character.DefenseBonus);
             Assert.AreEqual(CharacterTemplate.InfiniteAttackRange,
                 GameManager.BaseRangeOf(p));
         }

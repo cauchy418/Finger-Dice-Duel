@@ -341,7 +341,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static CharacterDefinition Warlock { get; } = new CharacterDefinition(
             WarlockId, "邪术师", SpecialLogicType.Warlock,
-            attackBonus: 0, defenseBonus: -1,
+            attackBonus: 0, defenseBonus: -2,
             description: "你命中的攻击（除闪避 / 取消外）令你与目标之间的距离 +2，" +
                          "直到目标下下个回合结束 —— 他射程不足时这两个回合都打不到你。" +
                          "距离只影响你与他之间，不改变其他玩家之间的距离；" +

@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override string DisplayName => "邪术师";
 
         public override int DefaultAttackBonus => 0;
-        public override int DefaultDefenseBonus => -1;
+        public override int DefaultDefenseBonus => -2;
 
         /// <summary>攻击距离**无限**（玩家确认）。</summary>
         public override int BaseAttackRange => InfiniteAttackRange;
