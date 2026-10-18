@@ -1545,6 +1545,7 @@ namespace FingerDiceDuel.Assistant
                 {
                     PlayerState owner = all[p];
                     if (owner == null || !owner.IsAlive) continue;
+                    if (ReferenceEquals(owner, ActivePlayer)) continue;   // 偷自己非法
 
                     IReadOnlyList<Hand> theirs = owner.Hands;
                     for (int t = 0; t < theirs.Count; t++)
@@ -3453,7 +3454,12 @@ namespace FingerDiceDuel.Assistant
                 if (Phase == BoardPhase.ChoosingTargetPlayer)
                 {
                     if (DefenderCannotBeAttacked) GiveUpAttack();
-                    else ConfirmTargetPlayer();
+                    else
+                    {
+                        if (_selectedTarget == null)
+                            _selectedTarget = TargetPlayer?.LeftHand ?? Defender?.LeftHand;
+                        ConfirmTargetPlayer();
+                    }
                 }
 
                 ResolvePendingAiChoices();
@@ -3488,7 +3494,12 @@ namespace FingerDiceDuel.Assistant
                 if (Phase == BoardPhase.ChoosingTargetPlayer)
                 {
                     if (DefenderCannotBeAttacked) GiveUpAttack();
-                    else ConfirmTargetPlayer();
+                    else
+                    {
+                        if (_selectedTarget == null)
+                            _selectedTarget = TargetPlayer?.LeftHand ?? Defender?.LeftHand;
+                        ConfirmTargetPlayer();
+                    }
                 }
 
                 ResolvePendingAiChoices();
@@ -3510,7 +3521,16 @@ namespace FingerDiceDuel.Assistant
                 $" ownsTarget={ActivePlayer?.Owns(move.TargetHand)}" +
                 $" isGameOver={_game.IsGameOver}";
 
-            if (!ClickHand(move.TargetHand)) return false;
+            if (!ClickHand(move.TargetHand))
+            {
+                // 没有合法目标时 AI 不应静默卡死；有「放弃攻击」出口就直接用。
+                if (CanGiveUpAttack)
+                {
+                    GiveUpAttack();
+                    return true;
+                }
+                return false;
+            }
 
             // 第 ③ 步：AI 也要走完"确认目标玩家"。
             // 没有合法目标（刺客潜行）时直接放弃本回合。

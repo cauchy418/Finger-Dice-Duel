@@ -70,6 +70,8 @@ namespace FingerDiceDuel.Tests
 
             int draws = 0, stalls = 0, errors = 0;
             string firstError = null;
+            string firstStall = null;
+            var stallReasons = new Dictionary<string, int>();
             int lordSurvived = 0;
 
             for (int g = 0; g < Games; g++)
@@ -108,6 +110,7 @@ namespace FingerDiceDuel.Tests
                     {
                         if (controller.BardChoicePending)
                             controller.AutoResolveAiBardChoice();
+                        if (controller.Phase == BoardPhase.GameOver) break;
                         if (!controller.MakeAutomaticMove())
                         {
                             if (controller.CanSkipTurn && controller.SkipTurn())
@@ -116,6 +119,18 @@ namespace FingerDiceDuel.Tests
                                 continue;
                             }
                             stalls++;
+                            string reason = $"{controller.Phase}|skip={controller.CanSkipTurn}" +
+                                            $"|round={game.RoundCount}|" +
+                                            $"probe={controller.ChoiceStateProbe}";
+                            stallReasons.TryGetValue(reason, out int sc);
+                            stallReasons[reason] = sc + 1;
+                            if (firstStall == null)
+                                firstStall = $"phase={controller.Phase} actor={controller.ActivePlayer?.Name}" +
+                                             $" activeHP={controller.ActivePlayer?.Health}" +
+                                             $" hands={controller.ActivePlayer?.LeftHand.Value}/{controller.ActivePlayer?.RightHand.Value}" +
+                                             $" probe={controller.ChoiceStateProbe}" +
+                                             $" ai={controller.LastAiMoveDiagnostic}" +
+                                             $" thief={controller.ThiefAiTrace}";
                             break;
                         }
                         steps++;
@@ -160,6 +175,9 @@ namespace FingerDiceDuel.Tests
             sb.AppendLine($"总对局 {Games}，异常 {errors}，模拟器强停 {stalls}，未分出胜负 {draws}");
             if (firstError != null) sb.AppendLine("首个异常：" + firstError);
             sb.AppendLine($"主公存活结束 {lordSurvived} 局");
+            if (firstStall != null) sb.AppendLine("首个强停现场：" + firstStall);
+            sb.AppendLine("强停原因：");
+            foreach (var kv in stallReasons) sb.AppendLine($"  {kv.Value,4}  {kv.Key}");
             sb.AppendLine();
 
             sb.AppendLine("身份        胜 / 场次    身份胜率");
