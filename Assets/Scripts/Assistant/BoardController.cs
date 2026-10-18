@@ -862,6 +862,20 @@ namespace FingerDiceDuel.Assistant
                 return;
             }
 
+            // ⚠️⚠️ **必须调一次 Core 的 `BeginTurn()`。**
+            //
+            //    它是"只属于本回合的标记"的**唯一复位点**：
+            //      · `SuppressAttackDamage`（法师放弃攻击）
+            //      · 法师的 `WantsToAbandonThisTurn`
+            //      · 吟游诗人的 `TookDamageThisTurn` / `HealedThisTurn`
+            //        / **`BardActivatedThisTurn`**
+            //
+            //    玩家实测 bug："吟游诗人在发动技能后再受伤没有触发面板" ——
+            //    因为界面路径一直没调它，`BardActivatedThisTurn` 永远是 true，
+            //    发动过一次之后就再也不弹面板。
+            //    （无头路径由 `MatchRunner` 每次循环调，所以测试发现不了。）
+            _game.BeginTurn();
+
             // ⚠️ **法师的状态：先结算"上一位的回合结束"**（燃烧 + 状态计数递减）。
             //
             //    为什么放在这里：`BeginTurn` 是**每次换人行动**的唯一入口，

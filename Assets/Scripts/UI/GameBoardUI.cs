@@ -1468,8 +1468,15 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private static string DescribeNameLine(PlayerState p)
         {
-            int atk = p.Character?.AttackBonus ?? 0;
-            int def = p.Character?.DefenseBonus ?? 0;
+            // ⚠️⚠️ **必须用"有效加成"，不能用角色自身加成。**
+            //
+            //    玩家实测："吟游诗人和强酸、震慑等加成要实时反映在面板上"。
+            //    `Character.AttackBonus` 只是**角色自身**那一份，
+            //    震慑（攻 −2）、强酸（防 −2）、吟游诗人的 ±N 都在
+            //    `StatusRules.EffectiveAttackBonus/EffectiveDefenseBonus` 里叠加 ——
+            //    直接读 `Character.*` 会让面板永远显示"原始值"，玩家人为没生效。
+            int atk = FingerDiceDuel.Core.StatusRules.EffectiveAttackBonus(p);
+            int def = FingerDiceDuel.Core.StatusRules.EffectiveDefenseBonus(p);
 
             // ⚠️ **必须带上角色名**。
             //
