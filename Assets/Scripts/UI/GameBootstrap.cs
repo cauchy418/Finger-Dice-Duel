@@ -134,6 +134,9 @@ namespace FingerDiceDuel.UI
         /// <summary>双将选将界面。</summary>
         private ScreenGroup _screenDualSelect;
 
+        /// <summary>8 人模式子菜单。</summary>
+        private ScreenGroup _screenEightPlayerMenu;
+
         /// <summary>8 人阵营混战的单将选角界面。</summary>
         private ScreenGroup _screenFactionSelect;
 
@@ -369,6 +372,21 @@ namespace FingerDiceDuel.UI
         /// ⚠️ 2v2 有 4 个人，不能再用"A 就是 _choiceA、其余都是 _choiceB" ——
         /// 那会让 C/D 的答案写到 B 的 sink 里。
         /// </summary>
+        /// <summary>这个玩家是不是本地人类主视角（8 人 / 2v2 / 1v1）。</summary>
+        private bool IsHumanPlayer(PlayerState p)
+        {
+            if (p == null) return false;
+
+            if (_isEightPlayer && _eightSeated != null && _eightSeated.Count > 0)
+                return ReferenceEquals(p, _eightSeated[0]);
+
+            if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count > 0)
+                return ReferenceEquals(p,
+                    _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, _twoOnTwoSeated.Count - 1)]);
+
+            return ReferenceEquals(p, _game?.PlayerA);
+        }
+
         private SimpleChoiceProvider ProviderFor(PlayerState p)
         {
             if (p != null && _sinkByPlayer.TryGetValue(p, out SimpleChoiceProvider found))
@@ -403,6 +421,7 @@ namespace FingerDiceDuel.UI
             BuildCasualScreen();
             BuildDualGeneralScreen();
             BuildDualGeneralMenuScreen();
+            BuildEightPlayerMenuScreen();
             BuildFactionBattleMenuScreen();
             BuildDualSelectScreen();
             BuildFactionSelectScreen();
@@ -731,20 +750,16 @@ namespace FingerDiceDuel.UI
             Button two = MakeSubModeButton(_selectRoot, "Comp2v2", new Vector2(0f, -66f),
                                            "2 v 2", "双人组队", OnTwoOnTwoClicked);
             Button eight = MakeSubModeButton(_selectRoot, "Comp8p", new Vector2(0f, -222f),
-                                             "8 人阵营混战", "单将 · 三阵营 · 8 人",
-                                             OnFactionBattleClicked);
-            Button identity = MakeSubModeButton(_selectRoot, "CompIdentity", new Vector2(0f, -378f),
-                                                "8 人身份对局", "身份阵营对抗（待开放）",
-                                                () => ShowComingSoon("8 人身份对局"));
+                                             "8 人模式", "阵营混战 / 身份对局",
+                                             () => ShowScreen(GameScreen.EightPlayerMenu));
 
             _screenCompetition.Add(one.gameObject);
             _screenCompetition.Add(two.gameObject);
             _screenCompetition.Add(eight.gameObject);
-            _screenCompetition.Add(identity.gameObject);
 
-            // 四个按钮（-378 为最下）—— 返回必须放到它下面。
+            // 三个按钮（-222 为最下）—— 返回必须放到它下面。
             _screenCompetition.Add(
-                MakeBackButton(_selectRoot, GameScreen.MainMenu, y: -510f).gameObject);
+                MakeBackButton(_selectRoot, GameScreen.MainMenu, y: -370f).gameObject);
         }
 
         /// <summary>娱乐模式：目前只有双将。</summary>
@@ -772,7 +787,7 @@ namespace FingerDiceDuel.UI
                                             () => ShowScreen(GameScreen.DualGeneralMenu));
             Button faction = MakeSubModeButton(_selectRoot, "DualFaction", new Vector2(0f, -96f),
                                                "双将阵营混战", "8 人双将（后续版本）",
-                                               () => ShowScreen(GameScreen.FactionBattleMenu));
+                                               () => ShowComingSoon("双将阵营混战"));
 
             _screenDualGeneral.Add(duel.gameObject);
             _screenDualGeneral.Add(faction.gameObject);
@@ -980,21 +995,40 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>阵营混战（8 人）：人机 / 真人。⚠️ 等 8 人模式完成后再套用。</summary>
+        /// <summary>8 人模式子菜单：阵营混战 / 身份对局。</summary>
+        private void BuildEightPlayerMenuScreen()
+        {
+            _screenEightPlayerMenu = new ScreenGroup();
+            _screenEightPlayerMenu.Add(MakeSubTitle(_selectRoot, "EightTitle", "8 人模式").gameObject);
+
+            Button faction = MakeSubModeButton(_selectRoot, "EightFaction", new Vector2(0f, 60f),
+                                               "阵营混战", "单将 · 三阵营 · 8 人",
+                                               () => ShowScreen(GameScreen.FactionBattleMenu));
+            Button identity = MakeSubModeButton(_selectRoot, "EightIdentity", new Vector2(0f, -96f),
+                                                "身份对局", "身份阵营对抗（待开放）",
+                                                () => ShowComingSoon("8 人身份对局"));
+
+            _screenEightPlayerMenu.Add(faction.gameObject);
+            _screenEightPlayerMenu.Add(identity.gameObject);
+            _screenEightPlayerMenu.Add(MakeBackButton(_selectRoot, GameScreen.Competition).gameObject);
+        }
+
+        /// <summary>阵营混战：AI 练习 / 真人对战。</summary>
         private void BuildFactionBattleMenuScreen()
         {
             _screenFactionBattleMenu = new ScreenGroup();
-            _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle", "双将阵营混战").gameObject);
+            _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle", "阵营混战").gameObject);
 
             Button ai = MakeSubModeButton(_selectRoot, "FactionAi", new Vector2(0f, 60f),
-                                          "人机对战", "与 AI 对战",
-                                          () => ShowComingSoon("阵营混战（人机）"));
+                                          "AI 练习", "1 名人类 + 7 名 AI",
+                                          () => ShowScreen(GameScreen.FactionSelect));
             Button pvp = MakeSubModeButton(_selectRoot, "FactionPvp", new Vector2(0f, -96f),
-                                           "真人对战", "联网对战玩家",
+                                           "真人对战", "联网对战玩家（待开放）",
                                            () => ShowComingSoon("阵营混战（真人）"));
 
             _screenFactionBattleMenu.Add(ai.gameObject);
             _screenFactionBattleMenu.Add(pvp.gameObject);
-            _screenFactionBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.DualGeneral).gameObject);
+            _screenFactionBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.EightPlayerMenu).gameObject);
         }
 
         // ============================================================
@@ -1997,6 +2031,7 @@ namespace FingerDiceDuel.UI
             _screenDualGeneralMenu?.SetVisible(screen == GameScreen.DualGeneralMenu);
             _screenFactionBattleMenu?.SetVisible(screen == GameScreen.FactionBattleMenu);
             _screenDualSelect?.SetVisible(screen == GameScreen.DualGeneralSelect);
+            _screenEightPlayerMenu?.SetVisible(screen == GameScreen.EightPlayerMenu);
             _screenFactionSelect?.SetVisible(screen == GameScreen.FactionSelect);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
@@ -2021,6 +2056,7 @@ namespace FingerDiceDuel.UI
                 || screen == GameScreen.CharacterSelect
                 || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll
                 || screen == GameScreen.TwoOnTwoInitiative
+                || screen == GameScreen.EightPlayerMenu
                 || screen == GameScreen.FactionSelect)
             {
                 // 让弹窗保持在最上层
@@ -2893,7 +2929,13 @@ namespace FingerDiceDuel.UI
                 //    ⚠️ 只在"从没弹变成该弹"时调 `Show` —— `Show` 会把步骤重置回第 ② 步，
                 //       每次刷新都调会把玩家已经点过的进度清掉。
                 bool offer = _controller.OfferBardChoiceIfAny();
-                if (offer && !_board.IsBardChoicePanelVisible)
+                if (offer && !IsHumanPlayer(_controller.BardActor))
+                {
+                    // AI 的吟游诗人自己选完，不弹玩家面板。
+                    _controller.AutoResolveAiBardChoice();
+                    if (_board.IsBardChoicePanelVisible) _board.HideBardChoicePanel();
+                }
+                else if (offer && !_board.IsBardChoicePanelVisible)
                     _board.ShowBardChoicePanel(_controller, RefreshView);
                 else if (!offer && _board.IsBardChoicePanelVisible)
                     _board.HideBardChoicePanel();

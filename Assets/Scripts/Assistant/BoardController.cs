@@ -2092,6 +2092,9 @@ namespace FingerDiceDuel.Assistant
         /// <summary>当前是否有待答的吟游诗人抉择。</summary>
         public bool BardChoicePending { get; private set; }
 
+        /// <summary>正在等谁做吟游诗人抉择（没有则为 null）。</summary>
+        public PlayerState BardActor => _bardActor;
+
         /// <summary>此刻可选的**角色**候选（含自己；受攻击距离限制）。</summary>
         public IReadOnlyList<PlayerState> BardCandidates
             => _bardCandidates ?? (IReadOnlyList<PlayerState>)System.Array.Empty<PlayerState>();
@@ -2174,6 +2177,25 @@ namespace FingerDiceDuel.Assistant
             _bardCandidates = cands;
             BardChoicePending = true;
             return true;
+        }
+
+        /// <summary>
+        /// **AI 的吟游诗人由 AI 自己选完**，不要弹玩家面板。
+        ///
+        /// 界面在 `OfferBardChoiceIfAny()` 返回 true 后先判断归属者：
+        /// 人类 -> 弹面板；AI -> 调本方法，让 `BardAi` 直接决策。
+        /// 无论 AI 是否真的发动，本回合都标记为"已答"，避免反复询问。
+        /// </summary>
+        public bool AutoResolveAiBardChoice()
+        {
+            if (!BardChoicePending) return false;
+            PlayerState bard = _bardActor;
+            if (bard == null) { ClearBardChoice(); return false; }
+
+            bool activated = Characters.SpecialLogics.BardAi.TryActivate(bard, _game);
+            bard.BardActivatedThisTurn = true;
+            ClearBardChoice();
+            return activated;
         }
 
         /// <summary>最多能选几个目标（1~3，且不超过候选人数）。</summary>

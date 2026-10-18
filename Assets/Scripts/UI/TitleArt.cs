@@ -65,6 +65,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>8 人阵营混战的**单将选角界面**。</summary>
         FactionSelect = 18,
+
+        /// <summary>8 人模式子菜单（阵营混战 / 身份对局）。</summary>
+        EightPlayerMenu = 19,
     }
 
     /// <summary>

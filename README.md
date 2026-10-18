@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**953 项逻辑测试全部通过**。
+当前状态：**954 项逻辑测试全部通过**。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -465,12 +465,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 完整报告见 [`Tools/8p-report.txt`](Tools/8p-report.txt)。
 
 > ⚠️ 这是**首版抽样**：中立阵营明显偏弱，后续需要单独做 8 人角色/阵营平衡。
-> UI 入口在「竞技模式 → 8 人阵营混战」。
+> UI 入口：竞技模式 → 8 人模式 → 阵营混战 → AI 练习。
 
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 953 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 954 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

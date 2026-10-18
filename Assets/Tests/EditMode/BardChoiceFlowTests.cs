@@ -139,5 +139,22 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(board.OfferBardChoiceIfAny(),
                 "新的回合、又受伤 -> 可以再次发动。");
         }
+
+        [Test]
+        public void Ai_bard_choice_is_resolved_without_the_panel()
+        {
+            BoardController board = MakeBoard(out PlayerState bard, out PlayerState foe,
+                                              out _);
+            bard.TakeDamage(3);
+            Assert.IsTrue(board.OfferBardChoiceIfAny());
+
+            bool activated = board.AutoResolveAiBardChoice();
+
+            Assert.IsTrue(activated, "AI 应能自己完成这次抉择。");
+            Assert.IsFalse(board.BardChoicePending);
+            Assert.IsTrue(bard.BardActivatedThisTurn, "答完要标记，避免同一回合反复触发。");
+            Assert.AreEqual(-3, foe.BardDefenseOffset,
+                "1v1 里 AI 默认削弱唯一对手的防御。");
+        }
     }
 }

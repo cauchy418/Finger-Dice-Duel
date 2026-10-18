@@ -318,9 +318,11 @@ namespace FingerDiceDuel.UI
                 float nameY = compact ? size.y * 0.5f - 22f : size.y * 0.5f - 30f;
                 float nameH = compact ? 28f : 36f;
                 Text name = CreateText(root, "Name", new Vector2(0f, nameY),
-                                       new Vector2(size.x - 16f, nameH),
-                                       compact ? 20 : 26,
+                                       new Vector2(size.x - 12f, nameH),
+                                       compact ? 18 : 26,
                                        TextAnchor.MiddleCenter, TextColor);
+                name.horizontalOverflow = compact
+                    ? HorizontalWrapMode.Overflow : HorizontalWrapMode.Wrap;
                 UiFont.ApplyBold(name);
 
                 float seatY = compact ? size.y * 0.5f - 44f : size.y * 0.5f - 62f;

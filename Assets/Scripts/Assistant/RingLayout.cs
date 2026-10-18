@@ -233,11 +233,11 @@ namespace FingerDiceDuel.Assistant
             switch (position)
             {
                 case RingPosition.SelfBottom: x = 0f; y = -0.62f; break;
-                case RingPosition.UpperLeft: x = -0.55f; y = 0.48f; break;
-                case RingPosition.UpperRight: x = 0.55f; y = 0.48f; break;
+                case RingPosition.UpperLeft: x = -0.55f; y = 0.47f; break;
+                case RingPosition.UpperRight: x = 0.55f; y = 0.47f; break;
                 case RingPosition.LowerLeft: x = -0.55f; y = -0.27f; break;
                 case RingPosition.LowerRight: x = 0.55f; y = -0.27f; break;
-                case RingPosition.TopCenter: x = 0f; y = 0.74f; break;
+                case RingPosition.TopCenter: x = 0f; y = 0.68f; break;
                 case RingPosition.MiddleLeft: x = -0.78f; y = 0.10f; break;
                 case RingPosition.MiddleRight: x = 0.78f; y = 0.10f; break;
                 default: x = 0f; y = 0f; break;
@@ -255,15 +255,18 @@ namespace FingerDiceDuel.Assistant
             // 8 人局其余 7 块必须缩到 330x200，否则会互相压住。
             bool isSelf = position == RingPosition.SelfBottom;
 
-            width = isSelf ? 640f : (position == RingPosition.TopCenter
-                                    || position == RingPosition.MiddleLeft
-                                    || position == RingPosition.MiddleRight
-                                    || position == RingPosition.UpperLeft
-                                    || position == RingPosition.UpperRight
-                                    || position == RingPosition.LowerLeft
-                                    || position == RingPosition.LowerRight
-                                        ? 330f : 560f);
-            height = isSelf ? 230f : (width <= 330f ? 200f : 240f);
+            bool isEightSlot = position == RingPosition.TopCenter
+                            || position == RingPosition.MiddleLeft
+                            || position == RingPosition.MiddleRight
+                            || position == RingPosition.UpperLeft
+                            || position == RingPosition.UpperRight
+                            || position == RingPosition.LowerLeft
+                            || position == RingPosition.LowerRight;
+
+            if (isSelf) { width = 640f; height = 230f; }
+            else if (position == RingPosition.TopCenter) { width = 460f; height = 220f; }
+            else if (isEightSlot) { width = 380f; height = 210f; }
+            else { width = 560f; height = 240f; }
         }
 
         /// <summary>设计分辨率（界面与测试共用，避免两处各写一个数）。</summary>
