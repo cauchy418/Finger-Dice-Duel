@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Assistant
     public static class KillRewardPlanner
     {
         public static bool IsEnabled(GameManager game)
-            => game != null && game.IsEightPlayerFactionMode;
+            => game != null && (game.IsEightPlayerFactionMode || game.IsIdentityMode);
 
         /// <summary>
         /// 根据本次结算和行动前血量快照，生成奖惩行动。
@@ -24,6 +24,9 @@ namespace FingerDiceDuel.Assistant
             var rewards = new List<PlayerState>();
             if (!IsEnabled(game) || game.IsGameOver)
                 return rewards;
+
+            if (game.IsIdentityMode)
+                return BuildIdentity(game, result, healthBefore);
             if (result?.Actor == null || result.Defender == null)
                 return rewards;
             if (healthBefore == null
@@ -65,6 +68,48 @@ namespace FingerDiceDuel.Assistant
                     if (p == null || !p.IsAlive) continue;
                     if (game.TeamOf(p) == killerTeam) continue;
                     rewards.Add(p);
+                }
+            }
+
+            return rewards;
+        }
+
+        /// <summary>
+        /// 身份局奖惩：
+        ///   · 任何玩家击杀反贼 -> 额外行动 1 次；
+        ///   · 主公击杀忠臣 -> 从主公下家开始，所有存活反贼各行动一次。
+        /// </summary>
+        private static List<PlayerState> BuildIdentity(
+            GameManager game, TurnResult result,
+            IReadOnlyDictionary<PlayerState, int> healthBefore)
+        {
+            var rewards = new List<PlayerState>();
+            if (result?.Actor == null || result.Defender == null) return rewards;
+            if (!healthBefore.TryGetValue(result.Defender, out int before) || before <= 0)
+                return rewards;
+            if (result.Defender.IsAlive) return rewards;
+            if (result.DamageDealt <= 0
+                && !(result.ExtraAttack.HasValue && result.ExtraAttack.Value.Dealt > 0))
+                return rewards;
+
+            IdentityRole killerRole = game.IdentityOf(result.Actor);
+            IdentityRole victimRole = game.IdentityOf(result.Defender);
+
+            if (victimRole == IdentityRole.Rebel)
+            {
+                rewards.Add(result.Actor);
+                return rewards;
+            }
+
+            if (killerRole == IdentityRole.Lord && victimRole == IdentityRole.Loyalist)
+            {
+                int n = game.Players.Count;
+                int start = game.SeatOf(result.Actor) - 1;
+                for (int step = 1; step <= n; step++)
+                {
+                    PlayerState p = game.Players[(start + step) % n];
+                    if (p == null || !p.IsAlive) continue;
+                    if (game.IdentityOf(p) == IdentityRole.Rebel) rewards.Add(p);
                 }
             }
 

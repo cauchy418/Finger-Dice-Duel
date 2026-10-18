@@ -3846,10 +3846,20 @@ namespace FingerDiceDuel.Assistant
             // 嵌套奖励优先于当前队列剩余部分：立即插入队首。
             _extraQueue.InsertRange(0, rewards);
 
-            _log.Add($"【击杀奖惩】{killer.Name} 击杀 {victim.Name}：" +
-                     (victimTeam == killerTeam
-                         ? $"其他阵营各行动一次（{rewards.Count} 次）"
-                         : $"额外行动 {rewards.Count} 次"));
+            string why;
+            if (_game.IsIdentityMode)
+            {
+                why = _game.IdentityOf(victim) == IdentityRole.Rebel
+                    ? "击杀反贼，额外行动一次"
+                    : "主公击杀忠臣，所有反贼各行动一次";
+            }
+            else
+            {
+                why = victimTeam == killerTeam
+                    ? $"其他阵营各行动一次（{rewards.Count} 次）"
+                    : $"额外行动 {rewards.Count} 次";
+            }
+            _log.Add($"【击杀奖惩】{killer.Name} 击杀 {victim.Name}：{why}");
         }
 
         /// <summary>开始队列里的下一次额外行动；队列空则恢复正常的下一回合。</summary>

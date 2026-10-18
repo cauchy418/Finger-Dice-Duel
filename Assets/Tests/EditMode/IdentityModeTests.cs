@@ -1,0 +1,122 @@
+using System.Collections.Generic;
+using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Characters;
+using FingerDiceDuel.Core;
+
+#if FDD_UNITY_TESTS
+using NUnit.Framework;
+#endif
+
+namespace FingerDiceDuel.Tests
+{
+    /// <summary>8 人身份局：身份分配、主公 +5、四类胜负边界。</summary>
+    [TestFixture]
+    public class IdentityModeTests
+    {
+        private static GameManager Match(out List<PlayerState> p, out List<IdentityRole> roles)
+        {
+            p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+
+            roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Loyalist, IdentityRole.Loyalist,
+                IdentityRole.Rebel, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            return GameManager.CreateIdentityEight(p, providers, roles);
+        }
+
+        [Test]
+        public void Lord_is_seat_one_and_has_five_extra_health()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            Assert.AreEqual(IdentityRole.Lord, game.IdentityOf(p[0]));
+            Assert.AreEqual(25, p[0].MaximumHealth, "白板 20 + 主公 5。");
+            Assert.AreEqual(25, p[0].Health);
+            Assert.IsTrue(game.IsIdentityPublic(p[0]));
+            Assert.IsFalse(game.IsIdentityPublic(p[1]));
+        }
+
+        [Test]
+        public void Rebels_win_when_lord_dies_even_if_all_rebels_are_dead()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+
+            // 反贼全灭；只留主公 + 忠臣。
+            for (int i = 3; i <= 6; i++) p[i].SetHealthExact(0);
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity,
+                "主公死时有忠臣存活 -> 反贼胜，即使反贼全灭。");
+            Assert.True(game.Winner == null);
+        }
+
+        [Test]
+        public void Lord_side_wins_when_rebels_and_traitor_are_all_dead()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            for (int i = 3; i <= 7; i++) p[i].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Lord, game.WinningIdentity);
+            Assert.AreSame(p[0], game.Winner);
+        }
+
+        [Test]
+        public void Traitor_wins_when_only_traitor_remains_after_lord_dies()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            for (int i = 1; i <= 6; i++) p[i].SetHealthExact(0);
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Traitor, game.WinningIdentity);
+            Assert.AreSame(p[7], game.Winner);
+        }
+
+        [Test]
+        public void Lord_killing_a_rebel_queues_one_extra_action()
+        {
+            var p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Loyalist, IdentityRole.Loyalist, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            GameManager game = GameManager.CreateIdentityEight(p, providers, roles);
+            var sink = new SimpleChoiceProvider();
+            var board = new BoardController(game, sink);
+            for (int i = 1; i < 8; i++)
+                board.BindPlayer(p[i], new GreedyChoiceProvider(), sink);
+            board.SetFirstPlayer(p[0]);
+            board.BeginTurn();
+
+            p[0].LeftHand.SetValue(3);
+            p[1].LeftHand.SetValue(1);
+            p[1].SetHealthExact(1);
+
+            Assert.IsTrue(board.ClickHand(p[0].LeftHand));
+            Assert.IsTrue(board.ClickHand(p[1].LeftHand));
+            Assert.IsTrue(board.ClickHand(p[1].LeftHand));
+
+            Assert.IsFalse(p[1].IsAlive);
+            Assert.IsTrue(board.IsExtraAction);
+            Assert.AreEqual(1, board.ExtraActionsRemaining + 1,
+                "击杀反贼应立即额外行动一次。");
+        }
+    }
+}

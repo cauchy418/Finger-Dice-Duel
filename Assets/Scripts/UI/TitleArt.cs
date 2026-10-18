@@ -71,6 +71,12 @@ namespace FingerDiceDuel.UI
 
         /// <summary>娱乐 → 双将 → 双将阵营混战的 AI / 真人菜单。</summary>
         DualFactionMenu = 20,
+
+        /// <summary>8 人身份局：人机 / 真人菜单。</summary>
+        IdentityBattleMenu = 21,
+
+        /// <summary>8 人身份局选将。</summary>
+        IdentitySelect = 22,
     }
 
     /// <summary>

@@ -199,8 +199,45 @@ namespace FingerDiceDuel.Core
 
         public bool IsGameOver { get; private set; }
 
-        /// <summary>是否是 8 人阵营混战（只有这个模式启用击杀奖惩）。</summary>
+        /// <summary>是否是 8 人阵营混战。</summary>
         public bool IsEightPlayerFactionMode { get; private set; }
+
+        /// <summary>是否是 8 人身份局。</summary>
+        public bool IsIdentityMode { get; private set; }
+
+        /// <summary>本局最终获胜的身份阵营；平局 / 未结束为 None。</summary>
+        public IdentityRole WinningIdentity { get; private set; }
+
+        private readonly Dictionary<PlayerState, IdentityRole> _identity
+            = new Dictionary<PlayerState, IdentityRole>();
+
+        public IdentityRole IdentityOf(PlayerState player)
+            => player != null && _identity.TryGetValue(player, out IdentityRole r)
+                ? r : IdentityRole.None;
+
+        /// <summary>身份是否公开：主公、已阵亡者、对局结束后公开。</summary>
+        public bool IsIdentityPublic(PlayerState player)
+        {
+            if (player == null) return false;
+            IdentityRole r = IdentityOf(player);
+            return r == IdentityRole.Lord || !player.IsAlive || IsGameOver;
+        }
+
+        public string IdentityResultText
+        {
+            get
+            {
+                switch (WinningIdentity)
+                {
+                    case IdentityRole.Lord:
+                    case IdentityRole.Loyalist:
+                        return "主公 / 忠臣阵营获胜！";
+                    case IdentityRole.Rebel: return "反贼获胜！";
+                    case IdentityRole.Traitor: return "内奸获胜！";
+                    default: return "平局。";
+                }
+            }
+        }
         public PlayerState Winner { get; private set; }
         public PlayerState CurrentPlayer { get; private set; }
         /// <summary>
@@ -849,6 +886,41 @@ namespace FingerDiceDuel.Core
 
             game.NotifyMatchReset();
             game.IsEightPlayerFactionMode = true;
+            return game;
+        }
+
+        /// <summary>
+        /// **8 人身份局**：主公固定 1 号位，其余身份由调用方按座位给出。
+        /// 队伍号设为 8 个不同值，胜负完全走身份判定。
+        /// </summary>
+        public static GameManager CreateIdentityEight(
+            IReadOnlyList<PlayerState> seated,
+            IReadOnlyList<IChoiceProvider> providers,
+            IReadOnlyList<IdentityRole> roles)
+        {
+            if (seated == null || seated.Count != 8)
+                throw new ArgumentException("8 人身份局必须正好 8 名玩家。", nameof(seated));
+            if (providers == null || providers.Count != 8)
+                throw new ArgumentException("8 人身份局必须为 8 个座位各提供一个抉择器。", nameof(providers));
+            if (roles == null || roles.Count != 8)
+                throw new ArgumentException("8 人身份局必须为 8 个座位各提供一个身份。", nameof(roles));
+            if (roles[0] != IdentityRole.Lord)
+                throw new ArgumentException("主公必须坐在 1 号位。", nameof(roles));
+
+            var teams = new List<int>(8);
+            for (int i = 0; i < 8; i++) teams.Add(i);
+
+            GameManager game = CreateEight(seated, providers, teams);
+            game.IsEightPlayerFactionMode = false;
+            game.IsIdentityMode = true;
+            game.WinningIdentity = IdentityRole.None;
+
+            for (int i = 0; i < 8; i++)
+                game._identity[seated[i]] = roles[i];
+
+            // 主公体力上限 +5。
+            seated[0].SetMaxHealth(seated[0].MaximumHealth + 5);
+            seated[0].SetHealthExact(seated[0].MaximumHealth);
             return game;
         }
 
@@ -2474,6 +2546,12 @@ namespace FingerDiceDuel.Core
             if (RoundCount < RoundLimit) return;
 
             IsGameOver = true;
+            if (IsIdentityMode)
+            {
+                WinningIdentity = IdentityRole.None;
+                Winner = null;
+                return;
+            }
             Winner = DecideWinnerByHealth();
         }
 
@@ -2944,8 +3022,17 @@ namespace FingerDiceDuel.Core
                || effect == HandEffectType.Attack6
                || effect == HandEffectType.Attack8;
 
+        /// <summary>界面/测试用：立即重新判定一次胜负。</summary>
+        public void RefreshGameOver() => CheckGameOver();
+
         private void CheckGameOver()
         {
+            if (IsIdentityMode)
+            {
+                CheckIdentityGameOver();
+                return;
+            }
+
             // 只要**还有两个以上队伍**活着，对局就继续。
             //
             // 用"存活队伍数"而不是"A/B 对偶" —— 这样 1v1（2 队）、
@@ -2984,6 +3071,70 @@ namespace FingerDiceDuel.Core
             foreach (int t in aliveTeams) { winningTeam = t; break; }
 
             Winner = FirstAliveInTeam(winningTeam);
+        }
+
+        private void CheckIdentityGameOver()
+        {
+            if (IsGameOver) return;
+
+            PlayerState lord = null;
+            bool lordAlive = false, loyalAlive = false, rebelAlive = false, traitorAlive = false;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null) continue;
+                IdentityRole r = IdentityOf(p);
+                if (r == IdentityRole.Lord) lord = p;
+                if (!p.IsAlive) continue;
+                if (r == IdentityRole.Lord) lordAlive = true;
+                else if (r == IdentityRole.Loyalist) loyalAlive = true;
+                else if (r == IdentityRole.Rebel) rebelAlive = true;
+                else if (r == IdentityRole.Traitor) traitorAlive = true;
+            }
+
+            if (lordAlive)
+            {
+                // 反贼 + 内奸全部阵亡 -> 主忠胜。
+                if (!rebelAlive && !traitorAlive)
+                    EndIdentity(IdentityRole.Lord);
+                return;
+            }
+
+            // 主公已死。
+            // 只要还有忠臣或反贼存活 -> 反贼胜（即使反贼已全灭）。
+            if (loyalAlive || rebelAlive)
+            {
+                EndIdentity(IdentityRole.Rebel);
+                return;
+            }
+
+            // 忠臣 / 反贼全灭，只剩内奸 -> 内奸胜。
+            if (traitorAlive) EndIdentity(IdentityRole.Traitor);
+            else EndIdentity(IdentityRole.None);
+        }
+
+        private void EndIdentity(IdentityRole side)
+        {
+            IsGameOver = true;
+            WinningIdentity = side;
+            if (side == IdentityRole.Rebel)
+                Winner = FirstAliveByIdentity(IdentityRole.Rebel);
+            else if (side == IdentityRole.Traitor)
+                Winner = FirstAliveByIdentity(IdentityRole.Traitor);
+            else if (side == IdentityRole.Lord || side == IdentityRole.Loyalist)
+                Winner = FirstAliveByIdentity(IdentityRole.Lord)
+                         ?? FirstAliveByIdentity(IdentityRole.Loyalist);
+            else
+                Winner = null;
+        }
+
+        private PlayerState FirstAliveByIdentity(IdentityRole role)
+        {
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i] != null && _players[i].IsAlive
+                    && IdentityOf(_players[i]) == role)
+                    return _players[i];
+            return null;
         }
 
         /// <summary>某队里第一个还活着的人；都阵亡则返回 null。</summary>

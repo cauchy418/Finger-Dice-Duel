@@ -288,6 +288,7 @@ namespace FingerDiceDuel.UI
             public Text NameText;
             public Text SeatText;
             public Text StatusText;
+            public Text IdentityText;
             public Image HpFill;
 
             /// <summary>这个位置上的两只手牌（左 / 右）。</summary>
@@ -329,6 +330,13 @@ namespace FingerDiceDuel.UI
                     ? HorizontalWrapMode.Overflow : HorizontalWrapMode.Wrap;
                 UiFont.ApplyBold(name);
 
+                Text identity = CreateText(root, "Identity",
+                    new Vector2(8f, 8f), new Vector2(size.x * 0.6f, 24f),
+                    compact ? 15 : 19, TextAnchor.MiddleLeft,
+                    new Color(1f, 0.82f, 0.36f), anchorTopLeft: true);
+                UiFont.ApplyBold(identity);
+                identity.gameObject.SetActive(false);
+
                 float seatY = compact ? size.y * 0.5f - 44f : size.y * 0.5f - 62f;
                 Text seat = CreateText(root, "Seat", new Vector2(0f, seatY),
                                        new Vector2(size.x - 16f, compact ? 22f : 28f),
@@ -365,6 +373,7 @@ namespace FingerDiceDuel.UI
                     SeatText = seat,
                     HpFill = hp,
                     StatusText = status,
+                    IdentityText = identity,
                     Cards = cards,
                 };
 
@@ -752,6 +761,15 @@ namespace FingerDiceDuel.UI
             // 用他自己的面板名字行作为飘字锚点
             RingPanel panel = FindPanelOf(active);
             if (panel != null) _presentation.RegisterNameRow(active, panel.NameText);
+        }
+
+        /// <summary>设置某块面板左上角的身份标签（主公/反贼/已阵亡公开）。</summary>
+        public void SetRingIdentity(PlayerState owner, string label, bool visible)
+        {
+            RingPanel panel = FindPanelOf(owner);
+            if (panel == null || panel.IdentityText == null) return;
+            panel.IdentityText.text = label;
+            panel.IdentityText.gameObject.SetActive(visible);
         }
 
         private RingPanel FindPanelOf(PlayerState owner)

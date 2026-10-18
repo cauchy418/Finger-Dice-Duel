@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**961 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
+当前状态：**966 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -486,10 +486,28 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 > · 竞技模式 → 8 人模式 → 阵营混战 → AI 练习（单将）。
 > 所有模式的面板名字行统一显示：**角色（标签） 攻X 防Y 距Z 血量N/M**。
 
+## 8 人身份对局
+
+**身份**：主公 1、忠臣 2、反贼 4、内奸 1；主公固定 1 号位，其余身份随机分到 2–8 号位，
+所有座位在选角阶段就可见。主公体力上限 **+5**。
+
+- 主公先选角色，其他玩家可以看到主公选角；其余角色由 AI 从剩余角色中随机补齐。
+- 人类玩家的身份随机（AI 练习），因此既可能当主公，也可能当忠臣 / 反贼 / 内奸。
+- **身份可见性**：主公身份始终显示在座位左上角；其他身份隐藏，玩家阵亡后公开；
+  人类自己的身份对自己可见。
+- **胜负**：
+  - 主公 / 忠臣：反贼和内奸全部阵亡；
+  - 反贼：主公阵亡（主公死时只要还有忠臣，反贼即胜，即使反贼已全灭）；
+  - 内奸：忠臣与反贼全部阵亡后，主公阵亡。
+- **击杀奖惩**：任何玩家击杀反贼 -> 额外行动 1 次；主公击杀忠臣 ->
+  从主公下家开始，所有存活反贼按座位各行动 1 次；不推进轮次，可嵌套，战报记录。
+
+UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人对战（占位）。
+
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 961 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 966 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

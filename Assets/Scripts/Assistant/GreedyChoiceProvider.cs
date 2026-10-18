@@ -1166,6 +1166,33 @@ namespace FingerDiceDuel.Assistant
 
             int score = 0;
 
+            // ⓪ **8 人身份局：只使用公开信息 + 自己的身份。**
+            //    反贼知道主公是谁；内奸在只剩自己与主公时才动主公；
+            //    主公/忠臣没有公开的反贼目标，沿用普通优先级。
+            if (game.IsIdentityMode)
+            {
+                IdentityRole actorRole = game.IdentityOf(actor);
+                IdentityRole targetRole = game.IdentityOf(target);
+                bool targetIsLord = targetRole == IdentityRole.Lord;
+
+                if (actorRole == IdentityRole.Rebel && targetIsLord)
+                {
+                    score += 1000000;
+                }
+                else if (actorRole == IdentityRole.Traitor)
+                {
+                    int aliveNonLord = 0;
+                    IReadOnlyList<PlayerState> all = game.Players;
+                    for (int i = 0; i < all.Count; i++)
+                        if (all[i] != null && all[i].IsAlive
+                            && game.IdentityOf(all[i]) != IdentityRole.Lord)
+                            aliveNonLord++;
+
+                    if (targetIsLord && aliveNonLord <= 1) score += 1000000;
+                    else if (targetIsLord) score -= 500000;
+                }
+            }
+
             // ⓪ **8 人阵营混战：先打人多的敌方阵营**。
             //    这是玩家定的第一优先级；每多一名存活成员 +40000，
             //    比 2v2 六级目标优先级（最高约 20210）和集火分 25000 都高。

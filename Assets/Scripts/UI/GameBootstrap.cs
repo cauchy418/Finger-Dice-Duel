@@ -134,6 +134,28 @@ namespace FingerDiceDuel.UI
         /// <summary>娱乐 → 双将 → 双将阵营混战菜单。</summary>
         private ScreenGroup _screenDualFactionMenu;
 
+        /// <summary>8 人身份局：人机 / 真人菜单。</summary>
+        private ScreenGroup _screenIdentityBattleMenu;
+
+        /// <summary>8 人身份局选将。</summary>
+        private ScreenGroup _screenIdentitySelect;
+
+        // ---- 8 人身份局状态 ----
+        private bool _isIdentity;
+        private PlayerState _eightHumanPlayer;
+        private CharacterRosterView _idRoster;
+        private Text _idStatus;
+        private Text _idSeats;
+        private Text _idPicked;
+        private Button _idStart;
+        private int _idIndex;
+        private IdentityRole[] _idRoles;
+        private string[] _idNames;
+        private int _idHumanSeat;
+        private CharacterDefinition _idLordPick;
+        private CharacterDefinition _idHumanPick;
+        private System.Random _idRng;
+
         /// <summary>双将选将界面。</summary>
         private ScreenGroup _screenDualSelect;
 
@@ -389,6 +411,8 @@ namespace FingerDiceDuel.UI
         {
             if (p == null) return false;
 
+            if (_isEightPlayer && _eightHumanPlayer != null)
+                return ReferenceEquals(p, _eightHumanPlayer);
             if (_isEightPlayer && _eightSeated != null && _eightSeated.Count > 0)
                 return ReferenceEquals(p, _eightSeated[0]);
 
@@ -436,6 +460,8 @@ namespace FingerDiceDuel.UI
             BuildDualFactionMenuScreen();
             BuildEightPlayerMenuScreen();
             BuildFactionBattleMenuScreen();
+            BuildIdentityBattleMenuScreen();
+            BuildIdentitySelectScreen();
             BuildDualSelectScreen();
             BuildFactionSelectScreen();
             BuildModeScreen();
@@ -1029,7 +1055,9 @@ namespace FingerDiceDuel.UI
             _isEightPlayer = true;
             _isTwoOnTwo = false;
             _isDualGeneral = false;
+            _isIdentity = false;
             _eightSeated = seated;
+            _eightHumanPlayer = seated[0];
             _pendingDefA = human;
             _pendingDefB = seated[1].Definition;
 
@@ -1047,8 +1075,8 @@ namespace FingerDiceDuel.UI
                                                "阵营混战", "单将 · 三阵营 · 8 人",
                                                () => ShowScreen(GameScreen.FactionBattleMenu));
             Button identity = MakeSubModeButton(_selectRoot, "EightIdentity", new Vector2(0f, -96f),
-                                                "身份对局", "身份阵营对抗（待开放）",
-                                                () => ShowComingSoon("8 人身份对局"));
+                                                "身份对局", "主公 / 忠臣 / 反贼 / 内奸",
+                                                () => ShowScreen(GameScreen.IdentityBattleMenu));
 
             _screenEightPlayerMenu.Add(faction.gameObject);
             _screenEightPlayerMenu.Add(identity.gameObject);
@@ -1076,6 +1104,232 @@ namespace FingerDiceDuel.UI
             _screenFactionBattleMenu.Add(ai.gameObject);
             _screenFactionBattleMenu.Add(pvp.gameObject);
             _screenFactionBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.EightPlayerMenu).gameObject);
+        }
+
+        // ============================================================
+        // 8 人身份局
+        // ============================================================
+
+        private void BuildIdentityBattleMenuScreen()
+        {
+            _screenIdentityBattleMenu = new ScreenGroup();
+            _screenIdentityBattleMenu.Add(MakeSubTitle(_selectRoot, "IdentityMenuTitle",
+                                                        "8 人身份对局").gameObject);
+
+            Button ai = MakeSubModeButton(_selectRoot, "IdentityAi", new Vector2(0f, 60f),
+                                          "AI 练习", "随机身份 · 1 名人类 + 7 名 AI",
+                                          () =>
+                                          {
+                                              StartIdentityLobby();
+                                              ShowScreen(GameScreen.IdentitySelect);
+                                          });
+            Button pvp = MakeSubModeButton(_selectRoot, "IdentityPvp", new Vector2(0f, -96f),
+                                           "真人对战", "联网对战玩家（待开放）",
+                                           () => ShowComingSoon("8 人身份对局（真人）"));
+
+            _screenIdentityBattleMenu.Add(ai.gameObject);
+            _screenIdentityBattleMenu.Add(pvp.gameObject);
+            _screenIdentityBattleMenu.Add(MakeBackButton(_selectRoot, GameScreen.EightPlayerMenu).gameObject);
+        }
+
+        private void BuildIdentitySelectScreen()
+        {
+            _screenIdentitySelect = new ScreenGroup();
+
+            Text title = MakeText(_selectRoot, "IdTitle", new Vector2(0f, 272f),
+                                  new Vector2(1200f, 64f), 42, TextAnchor.MiddleCenter,
+                                  new Color(0.98f, 0.90f, 0.62f));
+            UiFont.ApplyBold(title);
+            title.text = "8 人身份局 · 选将";
+            _screenIdentitySelect.Add(title.gameObject);
+
+            _idStatus = MakeText(_selectRoot, "IdStatus", new Vector2(0f, 214f),
+                                 new Vector2(1500f, 34f), 22, TextAnchor.MiddleCenter,
+                                 new Color(0.86f, 0.90f, 0.96f));
+            _screenIdentitySelect.Add(_idStatus.gameObject);
+
+            _idSeats = MakeText(_selectRoot, "IdSeats", new Vector2(0f, 166f),
+                                new Vector2(1650f, 34f), 18, TextAnchor.MiddleCenter,
+                                new Color(0.78f, 0.84f, 0.92f));
+            _screenIdentitySelect.Add(_idSeats.gameObject);
+
+            _idRoster = new CharacterRosterView();
+            _idRoster.Build(_selectRoot, "IdRoster", new Vector2(0f, 52f),
+                            _roster, UiFont.Regular, 0, SkillHintText);
+            _idRoster.SelectionChanged += index =>
+            {
+                IReadOnlyList<CharacterDefinition> list = CurrentIdentityList();
+                if (index < 0 || index >= list.Count) return;
+                _idIndex = index;
+                _idHumanPick = list[index];
+                RefreshIdentitySelect();
+            };
+            _screenIdentitySelect.Add(_idRoster.Root.gameObject);
+
+            _idPicked = MakeText(_selectRoot, "IdPicked", new Vector2(0f, -118f),
+                                 new Vector2(1200f, 32f), 21, TextAnchor.MiddleCenter,
+                                 new Color(0.72f, 0.80f, 0.90f));
+            _screenIdentitySelect.Add(_idPicked.gameObject);
+
+            _idStart = MakeButton(_selectRoot, "IdStart", new Vector2(150f, -176f),
+                                  new Vector2(300f, 64f), "开始对局");
+            _idStart.onClick.AddListener(StartIdentityGame);
+            _screenIdentitySelect.Add(_idStart.gameObject);
+
+            Button back = MakeButton(_selectRoot, "IdBack", new Vector2(-460f, -176f),
+                                     new Vector2(220f, 64f), "返回");
+            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
+            back.onClick.AddListener(() => ShowScreen(GameScreen.IdentityBattleMenu));
+            _screenIdentitySelect.Add(back.gameObject);
+            _screenIdentitySelect.Add(MakeHelpButton(_selectRoot).gameObject);
+        }
+
+        private static void ShuffleRoles(List<IdentityRole> roles, System.Random rng)
+        {
+            for (int i = roles.Count - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                IdentityRole t = roles[i]; roles[i] = roles[j]; roles[j] = t;
+            }
+        }
+
+        private void StartIdentityLobby()
+        {
+            _idRng = new System.Random();
+            _idRoles = new IdentityRole[8];
+            _idRoles[0] = IdentityRole.Lord;
+            var rest = new List<IdentityRole>(7)
+            {
+                IdentityRole.Loyalist, IdentityRole.Loyalist,
+                IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Traitor,
+            };
+            ShuffleRoles(rest, _idRng);
+            for (int i = 0; i < 7; i++) _idRoles[i + 1] = rest[i];
+
+            _idHumanSeat = _idRng.Next(8);
+            _idNames = new string[8];
+            for (int i = 0; i < 8; i++)
+                _idNames[i] = i == _idHumanSeat ? "我" : "AI" + (i + 1);
+
+            _idLordPick = null;
+            _idHumanPick = null;
+            _idIndex = 0;
+
+            if (_idHumanSeat != 0)
+            {
+                var pool = new List<CharacterDefinition>(_roster);
+                _idLordPick = pool[_idRng.Next(pool.Count)];
+            }
+
+            RefreshIdentitySelect();
+        }
+
+        private IReadOnlyList<CharacterDefinition> CurrentIdentityList()
+        {
+            var list = new List<CharacterDefinition>(8);
+            if (_idRng == null) return list;
+            foreach (CharacterDefinition d in _roster)
+            {
+                if (_idHumanSeat != 0 && ReferenceEquals(d, _idLordPick)) continue;
+                list.Add(d);
+            }
+            return list;
+        }
+
+        private void RefreshIdentitySelect()
+        {
+            if (_idRoster == null || _idRoles == null) return;
+            IReadOnlyList<CharacterDefinition> list = CurrentIdentityList();
+            _idRoster.SetRoster(list, list.Count > 0 ? Mathf.Clamp(_idIndex, 0, list.Count - 1) : -1);
+            _idRoster.ScrollToSelected();
+
+            bool humanLord = _idHumanSeat == 0;
+            IdentityRole myRole = _idRoles[_idHumanSeat];
+            _idStatus.text = humanLord
+                ? "你是主公（1 号位），请先选将。体力上限 +5。"
+                : $"你是{IdentityRoleInfo.DisplayName(myRole)}（{_idHumanSeat + 1} 号位）；" +
+                  $"主公 AI 已选 {_idLordPick.DisplayName}，请选择你的角色。";
+
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < 8; i++)
+            {
+                if (i > 0) sb.Append("　");
+                string role = i == 0
+                    ? "主公"
+                    : (i == _idHumanSeat ? IdentityRoleInfo.DisplayName(_idRoles[i]) : "？");
+                sb.Append($"{i + 1}号 {_idNames[i]}（{role}）");
+            }
+            _idSeats.text = sb.ToString();
+
+            _idPicked.text = _idHumanPick == null
+                ? "尚未选择角色"
+                : $"已选：{_idHumanPick.DisplayName}";
+            _idStart.interactable = _idHumanPick != null;
+        }
+
+        private void StartIdentityGame()
+        {
+            if (_idHumanPick == null || _idRoles == null) return;
+
+            var used = new HashSet<CharacterDefinition>();
+            used.Add(_idHumanPick);
+            if (_idHumanSeat != 0 && _idLordPick != null) used.Add(_idLordPick);
+
+            var defs = new CharacterDefinition[8];
+            defs[_idHumanSeat] = _idHumanPick;
+            defs[0] = _idHumanSeat == 0 ? _idHumanPick : _idLordPick;
+
+            var pool = new List<CharacterDefinition>(_roster.Count);
+            foreach (CharacterDefinition d in _roster)
+                if (!used.Contains(d)) pool.Add(d);
+            Shuffle(pool, _idRng);
+            int cursor = 0;
+            for (int i = 1; i < 8; i++)
+            {
+                if (i == _idHumanSeat) continue;
+                defs[i] = pool[cursor++];
+            }
+
+            var seated = new List<PlayerState>(8);
+            var providers = new List<IChoiceProvider>(8);
+            var selectors = new List<IMoveSelector>(8);
+            var sinks = new List<SimpleChoiceProvider>(8);
+            for (int i = 0; i < 8; i++)
+            {
+                PlayerState p = CharacterFactory.CreatePlayer(_idNames[i], defs[i]);
+                var sink = new SimpleChoiceProvider();
+                var ai = i == _idHumanSeat ? null : new GreedyChoiceProvider();
+                seated.Add(p);
+                providers.Add(ai != null ? (IChoiceProvider)ai : sink);
+                selectors.Add(ai);
+                sinks.Add(sink);
+                _sinkByPlayer[p] = sink;
+            }
+
+            _game = GameManager.CreateIdentityEight(seated, providers, _idRoles);
+            _game.RoundLimit = GameManager.DefaultRoundLimit;
+            for (int i = 0; i < 8; i++) ApplyEightOpeningHands(seated[i], _idRng);
+
+            var sinkA = new SimpleChoiceProvider();
+            var sinkB = new SimpleChoiceProvider();
+            _controller = new BoardController(_game, sinkA, sinkB);
+            for (int i = 0; i < 8; i++)
+                _controller.BindPlayer(seated[i], selectors[i], sinks[i]);
+
+            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+            _controller.SetFirstPlayer(seated[0]);
+
+            _isIdentity = true;
+            _isEightPlayer = true;
+            _isTwoOnTwo = false;
+            _isDualGeneral = false;
+            _eightSeated = seated;
+            _eightHumanPlayer = seated[_idHumanSeat];
+            _pendingDefA = defs[0];
+            _pendingDefB = defs[1];
+            StartPreparedMatch();
         }
 
         // ============================================================
@@ -1369,7 +1623,9 @@ namespace FingerDiceDuel.UI
             _isEightPlayer = true;
             _isTwoOnTwo = false;
             _isDualGeneral = true;
+            _isIdentity = false;
             _eightSeated = seated;
+            _eightHumanPlayer = human;
             _pendingDefA = primary;
             _pendingDefB = aiPairs[0][0];
 
@@ -1440,6 +1696,8 @@ namespace FingerDiceDuel.UI
             _isTwoOnTwo = false;
             _twoOnTwoSeated = null;
             _isEightPlayer = false;
+            _isIdentity = false;
+            _eightHumanPlayer = null;
             _eightSeated = null;
         }
 
@@ -2048,6 +2306,8 @@ namespace FingerDiceDuel.UI
         {
             _isTwoOnTwo = true;
             _isEightPlayer = false;
+            _isIdentity = false;
+            _eightHumanPlayer = null;
             _eightSeated = null;
             ShowScreen(GameScreen.ModeMenu);
         }
@@ -2197,6 +2457,8 @@ namespace FingerDiceDuel.UI
             _screenDualGeneralMenu?.SetVisible(screen == GameScreen.DualGeneralMenu);
             _screenFactionBattleMenu?.SetVisible(screen == GameScreen.FactionBattleMenu);
             _screenDualFactionMenu?.SetVisible(screen == GameScreen.DualFactionMenu);
+            _screenIdentityBattleMenu?.SetVisible(screen == GameScreen.IdentityBattleMenu);
+            _screenIdentitySelect?.SetVisible(screen == GameScreen.IdentitySelect);
             _screenDualSelect?.SetVisible(screen == GameScreen.DualGeneralSelect);
             _screenEightPlayerMenu?.SetVisible(screen == GameScreen.EightPlayerMenu);
             _screenFactionSelect?.SetVisible(screen == GameScreen.FactionSelect);
@@ -2533,6 +2795,25 @@ namespace FingerDiceDuel.UI
             StartPreparedMatch();
         }
 
+        private void RefreshIdentityLabels()
+        {
+            if (!_isIdentity || _game == null || !_game.IsIdentityMode
+                || _eightSeated == null) return;
+
+            for (int i = 0; i < _eightSeated.Count; i++)
+            {
+                PlayerState p = _eightSeated[i];
+                if (p == null) continue;
+                IdentityRole role = _game.IdentityOf(p);
+                bool reveal = role == IdentityRole.Lord
+                              || !p.IsAlive
+                              || _game.IsGameOver
+                              || ReferenceEquals(p, _eightHumanPlayer);
+                _board.SetRingIdentity(p,
+                    reveal ? IdentityRoleInfo.DisplayName(role) : "？", true);
+            }
+        }
+
         /// <summary>
         /// 把已经 PrepareMatch 好的对局推到界面上并开始第一回合。
         /// </summary>
@@ -2554,21 +2835,25 @@ namespace FingerDiceDuel.UI
             // 8 人阵营混战：8 个座位，关系按阵营计算（自己 / 队友 / 对手）。
             if (_isEightPlayer && _eightSeated != null && _eightSeated.Count == 8)
             {
+                PlayerState me = _eightHumanPlayer ?? _eightSeated[0];
+                int mySeat = _eightSeated.IndexOf(me) + 1;
                 var relations = new List<RingRelation>(8);
                 for (int i = 0; i < 8; i++)
-                    relations.Add(ReferenceEquals(_eightSeated[i], _eightSeated[0])
+                    relations.Add(ReferenceEquals(_eightSeated[i], me)
                         ? RingRelation.Self
-                        : _game.IsTeammate(_eightSeated[0], _eightSeated[i])
+                        : _game.IsTeammate(me, _eightSeated[i])
                             ? RingRelation.Teammate : RingRelation.Opponent);
 
-                _board.BindPlayersRing(_eightSeated[0], _eightSeated, 1, relations);
-                string meName = !string.IsNullOrEmpty(_eightSeated[0].DisplayNameOverride)
-                    ? _eightSeated[0].DisplayNameOverride
-                    : _eightSeated[0].Definition?.DisplayName ?? _eightSeated[0].Name;
-                string modeName = _isDualGeneral ? "双将阵营混战" : "8 人阵营混战";
+                _board.BindPlayersRing(me, _eightSeated, mySeat, relations);
+                string meName = !string.IsNullOrEmpty(me.DisplayNameOverride)
+                    ? me.DisplayNameOverride
+                    : me.Definition?.DisplayName ?? me.Name;
+                string modeName = _isIdentity ? "8 人身份局"
+                    : _isDualGeneral ? "双将阵营混战" : "8 人阵营混战";
                 _board.SetTitle($"{modeName}　我（{meName}）" +
                                 $"　队友 {relations.FindAll(r => r == RingRelation.Teammate).Count} 人" +
                                 $"　对手 {relations.FindAll(r => r == RingRelation.Opponent).Count} 人");
+                RefreshIdentityLabels();
             }
             else if (_isTwoOnTwo && _twoOnTwoSeated != null)
             {
@@ -2713,6 +2998,8 @@ namespace FingerDiceDuel.UI
             _isTwoOnTwo = false;
             _twoOnTwoSeated = null;
             _isEightPlayer = false;
+            _isIdentity = false;
+            _eightHumanPlayer = null;
             _eightSeated = null;
 
             // 双将标志同理：它决定标题栏的写法
@@ -2956,13 +3243,16 @@ namespace FingerDiceDuel.UI
             // 上方那组跟随**当前行动方**（这样能看见 AI 在打哪只手）。
             if (_isEightPlayer && _eightSeated != null && _eightSeated.Count == 8)
             {
-                _board.SetRingActive(_controller.ActivePlayer, _eightSeated[0]);
+                _board.SetRingActive(_controller.ActivePlayer,
+                                     _eightHumanPlayer ?? _eightSeated[0]);
 
                 _board.RefreshRing(_eightSeated, _controller.SelectedHand, choices,
                                    turnCount: _controller.DisplayRound,
                                    turnLimit: _controller.RoundLimit,
                                    showSkipButton: ShowSkipButton(),
                                    skipButtonInteractable: _controller.CanSkipTurn);
+
+                RefreshIdentityLabels();
 
                 if (_controller.Chooser != null)
                     _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
@@ -3275,6 +3565,7 @@ namespace FingerDiceDuel.UI
         /// <summary>本局里"人类控制的那位玩家"（1v1 是 A；2v2 按我的座位取）。</summary>
         private PlayerState HumanPlayer()
         {
+            if (_isEightPlayer && _eightHumanPlayer != null) return _eightHumanPlayer;
             if (_isTwoOnTwo && _twoOnTwoSeated != null && _twoOnTwoSeated.Count == 4)
                 return _twoOnTwoSeated[Mathf.Clamp(_twoOnTwoMeIndex, 0, 3)];
 
