@@ -510,5 +510,52 @@ namespace FingerDiceDuel.Tests
             Assert.True(HandValueProfiles.For(p.Definition).WeightOf(7) > Base.WeightOf(7),
                 "刺客的 7 应高于基线（说明查表命中了刺客档案）。");
         }
+
+        // ============================================================
+        // 2026 补的三个新角色：法师 / 术士 / 吟游诗人
+        // ============================================================
+
+        [Test]
+        public void Wizard_values_attack_numbers_and_shield_above_baseline()
+        {
+            HandValueProfile wizard = HandValueProfiles.For(CharacterDefinition.Wizard);
+
+            Assert.True(wizard.WeightOf(8) > wizard.WeightOf(6), "法师的 8 应高于 6。");
+            Assert.True(wizard.WeightOf(6) > wizard.WeightOf(4), "法师的 6 应高于 4。");
+            Assert.True(wizard.WeightOf(4) > Base.WeightOf(4), "法师的 4 应高于基线。");
+            Assert.True(wizard.WeightOf(5) > Base.WeightOf(5),
+                "法师防 −1，5 应高于基线。");
+        }
+
+        [Test]
+        public void Sorcerer_values_attacks_and_keeps_nine_above_low_values()
+        {
+            HandValueProfile sorcerer = HandValueProfiles.For(CharacterDefinition.Sorcerer);
+
+            Assert.True(sorcerer.WeightOf(8) > sorcerer.WeightOf(6), "术士的 8 应高于 6。");
+            Assert.True(sorcerer.WeightOf(6) > sorcerer.WeightOf(4), "术士的 6 应高于 4。");
+            Assert.True(sorcerer.WeightOf(5) > Base.WeightOf(5),
+                "术士防 −1，5 应高于基线。");
+
+            // 玩家明确要求：9 是有效保命手段，不能比 1/2/3/7 低。
+            foreach (int low in new[] { 1, 2, 3, 7 })
+                Assert.True(sorcerer.WeightOf(9) >= sorcerer.WeightOf(low),
+                    $"术士的 9 不应低于 {low}（{sorcerer.WeightOf(9)} vs {sorcerer.WeightOf(low)}）。");
+        }
+
+        [Test]
+        public void Bard_values_nine_as_heal_and_trigger()
+        {
+            HandValueProfile bard = HandValueProfiles.For(CharacterDefinition.Bard);
+
+            Assert.True(bard.WeightOf(9) > Base.WeightOf(9),
+                "吟游诗人的 9 是回血 + 触发窗口，应高于基线。");
+            Assert.True(bard.WeightOf(9) >= bard.WeightOf(8),
+                "9 至少不应低于 8（回血同时也触发增益）。");
+            Assert.True(bard.WeightOf(5) > Base.WeightOf(5),
+                "吟游诗人防 −1，5 应高于基线。");
+            Assert.True(bard.WeightOf(8) > Base.WeightOf(8),
+                "吟游诗人的 8 应高于基线。");
+        }
     }
 }

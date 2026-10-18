@@ -322,6 +322,39 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.ContainsAll(60, "有 2 就能自己凑出攻击", 2))
                 .AddCombo(ComboRule.ContainsAll(50, "自己的两只手都能当原料，组合面更宽",
                                                 2, 4, 6));
+
+            // ---- 法师（攻 0 / 防 −1，距离 1）----
+            // 4/6/8 既是攻击，也是"放弃攻击换伤害类型"的原料；
+            // 防 −1 让 5（合盾）比基线更重要；9 只回血，不推进铺类型。
+            Own[CharacterDefinition.WizardId] = new HandValueProfile()
+                .Set(8, 80).Set(6, 76).Set(4, 72)     // 攻击 / 铺类型双用途
+                .Set(5, 72)                            // 防 −1，合盾重要
+                .Set(9, 58)                            // 回血，不铺类型
+                .Set(1, 58).Set(2, 58).Set(3, 58)     // 保留覆盖能力
+                .Set(7, 50);                           // 7 无直接效果
+
+            // ---- 术士（攻 0 / 防 −1，射程无限）----
+            // 每段攻击掷 1d100：80% 元素、20% 普攻；射程无限，
+            // 所以"能不能打出攻击数字"比站位更重要。防 −1 也让 5 很值钱。
+            // ⚠️ 玩家明确要求：**9 不能比 1/2/3/7 低**（回 9 仍是有效保命手段）。
+            Own[CharacterDefinition.SorcererId] = new HandValueProfile()
+                .Set(8, 82).Set(6, 74).Set(4, 68)     // 远程元素攻击主力
+                .Set(5, 76)                            // 防 −1，合盾
+                .Set(9, 62)                            // 回血；必须高于 1/2/3/7
+                .Set(1, 58).Set(2, 58).Set(3, 58)     // 覆盖 / 组合
+                .Set(7, 54)                            // 无直接效果
+                .AddCombo(ComboRule.ContainsAll(60, "有 8/6 可远程打元素", 8, 6));
+
+            // ---- 吟游诗人（攻 0 / 防 −1，距离 3）----
+            // 9 既回血，又触发"实际回血 -> 可发动增益"的窗口；
+            // 5 在防 −1 下价值高；4/6/8 是攻击主力。距离 3 让他不缺出手位置。
+            Own[CharacterDefinition.BardId] = new HandValueProfile()
+                .Set(9, 76)                            // 回血 + 触发增益窗口
+                .Set(5, 74)                            // 防 −1，合盾
+                .Set(8, 72).Set(6, 66).Set(4, 62)     // 攻击主力
+                .Set(1, 58).Set(2, 58).Set(3, 58)
+                .Set(7, 50)
+                .AddCombo(ComboRule.ContainsAll(60, "有 9 就能回血并触发增益", 9));
         }
 
         // ============================================================
