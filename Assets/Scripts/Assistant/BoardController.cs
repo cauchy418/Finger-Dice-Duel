@@ -960,6 +960,13 @@ namespace FingerDiceDuel.Assistant
             //    放在这里才能保证每个回合开局就干净（诊断字段跨回合残留我踩过多次）。
             _pendingGambleRoll = 0;
 
+            // ⚠️ **法师"放弃攻击"已作答**的标记也必须每回合复位。
+            //
+            //    它只用来防止"确认目标"时把已经答完的「是否放弃攻击」
+            //    再问一遍（玩家实测的无限循环）。跨回合残留会让下一回合
+            //    跳过角色抉择，所以这里必须清干净。
+            _wizardDeclineAnswered = false;
+
             // ⚠️ 必须把**抉择队列也复位**。
             //
             // 曾经这里只清了 _shieldChoices，留下 _pendingRequestIndex 不管。
@@ -2130,6 +2137,36 @@ namespace FingerDiceDuel.Assistant
             _pendingActedHand = SelectedHand;
             _pendingTargetHand = target;
 
+            // ⚠️⚠️ **本回合的角色抉择只收集一次。**
+            //
+            //    玩家实测的死循环（法师）：
+            //      点自己的手 -> 点对手的手 -> 收集到「是否放弃攻击」(idx=0/2)
+            //      -> 点「不发动」-> 进入"确认目标" (idx=2/2)
+            //      -> 点目标的手 -> 又回到这里 -> **重新收集** -> idx 归 0
+            //      -> **又弹「是否放弃攻击」** -> 无限循环。
+            //
+            // ⚠️⚠️ **法师在「是否放弃攻击」上答过之后，确认目标时不能再收集一遍。**
+            //
+            //    玩家实测的死循环：
+            //      点自己的手 -> 点对手的手 -> 收集到「是否放弃攻击」(idx=0/2)
+            //      -> 点「不发动」-> 进入"确认目标" (idx=2/2)
+            //      -> 点目标的手 -> 又回到这里 -> **重新收集** -> idx 归 0
+            //      -> **又弹「是否放弃攻击」** -> 无限循环。
+            //
+            //    根因：`BeginCharacterChoices` 会把 `_pendingRequests` 与
+            //    `_pendingRequestIndex` **一起复位**，于是"已经把抉择答完"
+            //    这个事实被抹掉了，玩家被问了第二遍。
+            //
+            //    ⚠️ 闸门刻意做得**很窄**（只认"法师放弃攻击已答"）：
+            //       正常流程里"确认目标"发生在**收集之前**，所以不能一概跳过收集
+            //       —— 那样会把闪避 / 太极 / 邪术师取消全部问不到（我试过，
+            //       一次红 17 条测试）。
+            if (_wizardDeclineAnswered)
+            {
+                AdvanceCharacterChoice();
+                return;
+            }
+
             // 顺序很重要：**先角色抉择（闪避等），再问选盾**。
             //
             // 因为闪避在结算里优先于护盾（`AttackContext.Resolve` 先判闪避再判盾），
@@ -2137,6 +2174,26 @@ namespace FingerDiceDuel.Assistant
             // 结果"有盾的游侠"根本问不到闪避 —— 表现为"优先碎盾而不是询问是否闪避"。
             BeginCharacterChoices(BuildChoiceContext());
         }
+
+        /// <summary>
+        /// **法师的「是否放弃攻击」本回合已经答过**（每回合在 <see cref="SetupFirstStep"/> 复位）。
+        ///
+        /// ⚠️ 存在的唯一理由：防止"确认目标"时把已经答完的这个问题**再收集一遍**，
+        ///    那会让玩家被同一个问题问第二次（玩家实测的无限循环）。
+        /// </summary>
+        private bool _wizardDeclineAnswered;
+
+        /// <summary>
+        /// 诊断用：把"抉择收集状态"打印成一行，便于定位"问题被问了两遍"。
+        /// 与 `Phase` / `PendingEffect` 一起看就能判断是不是被重新收集了。
+        /// </summary>
+        public string ChoiceStateProbe
+            => $"wizardDeclineAnswered={_wizardDeclineAnswered}"
+               + $" idx={_pendingRequestIndex}/{_pendingRequests.Count}"
+               + $" preTarget={_preTargetChoiceActive}"
+               + $" phase={Phase}"
+               + $" sel={SelectedHand != null}"
+               + $" tgt={_selectedTarget != null}";
 
         /// <summary>
         /// 角色抉择都问完之后，进入"用哪面盾抵挡"阶段（若确实需要）。
@@ -2764,7 +2821,13 @@ namespace FingerDiceDuel.Assistant
             //       进 `AdvanceCharacterChoice` 的中间步骤会把它清掉，
             //       实测到那一刻它已经是 false，于是走了结算。
             if (request.Effect == HandEffect.WizardAbandonAttack && hand == null)
+            {
                 _preTargetChoiceActive = true;
+
+                // 记下"这个问题本回合已经答过" —— 确认目标时
+                // `CommitMove` 靠它**不再收集一遍**（否则又弹一次 -> 死循环）。
+                _wizardDeclineAnswered = true;
+            }
 
             AppendFollowUpChoices(request, hand);
 

@@ -128,5 +128,70 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
                 "被拒绝后阶段必须保持不变（仍等玩家确认目标）。");
         }
+
+        /// <summary>
+        /// **回归：确认目标之后，不能把「是否放弃攻击」再问一遍。**
+        ///
+        /// 玩家实测的循环（第二次）：
+        ///   「不发动」-> 停在确认目标 -> 点目标的手 ->
+        ///   `CommitMove` -> `BeginCharacterChoices` **重新收集** ->
+        ///   `idx` 归 0 -> **又弹「是否放弃攻击」** -> 无限循环。
+        ///
+        /// 修法：`CommitMove` 在"本回合抉择已收集过"时**不再收集**。
+        /// </summary>
+        [Test]
+        public void Confirming_the_target_does_not_ask_the_abandon_again()
+        {
+            var providers = new List<SimpleChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            var game = new GameManager(Make("法", CharacterDefinition.Wizard),
+                                       Make("战", CharacterDefinition.Fighter),
+                                       providers[0], providers[1]);
+            var board = new BoardController(game, providers[0], providers[1]);
+            board.BeginTurn();
+
+            PlayerState mage = game.PlayerA;
+            PlayerState foe = game.PlayerB;
+
+            mage.LeftHand.SetValue(2);
+            mage.RightHand.SetValue(5);
+            foe.LeftHand.SetValue(5);
+            foe.RightHand.SetValue(6);
+
+            int foeHpBefore = foe.Health;
+
+            board.ClickHand(mage.LeftHand);        // 2
+            board.ClickHand(foe.RightHand);        // 2 + 6 = 8 -> 攻击
+
+            Assert.AreEqual(HandEffect.WizardAbandonAttack, board.PendingEffect);
+
+            // 「不发动」-> 停在确认目标
+            Assert.IsTrue(board.DeclinePendingChoice());
+            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+
+            string afterDeclineProbe = board.ChoiceStateProbe;
+
+            // 点目标的手确认 —— **不该**又回到「是否放弃攻击」
+            Assert.IsTrue(board.ConfirmTargetPlayer(),
+                "确认目标应当被接受。");
+
+            string trace = $"afterConfirm={board.Phase} idxPending={board.PendingEffect} "
+                + $"hint={board.Hint}\n      afterDecline[{afterDeclineProbe}]"
+                + $"\n      afterConfirm[{board.ChoiceStateProbe}]";
+
+            Assert.IsFalse(board.Phase == BoardPhase.ChoosingPreTurnChoice,
+                "确认目标之后**不能**又回到「选目标前的抉择」—— "
+                + "那会把已经答完的「是否放弃攻击」再问一遍（玩家实测的无限循环）。"
+                + trace);
+
+            Assert.IsFalse(board.PendingEffect == HandEffect.WizardAbandonAttack,
+                "确认目标之后不该再问「是否放弃攻击」。");
+
+            // 而且这一击应当真的打出去了
+            Assert.IsTrue(foe.Health < foeHpBefore,
+                $"确认目标后应当造成伤害（{foeHpBefore} -> {foe.Health}）。");
+        }
     }
 }
