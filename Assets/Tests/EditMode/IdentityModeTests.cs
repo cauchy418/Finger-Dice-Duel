@@ -118,5 +118,30 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, board.ExtraActionsRemaining + 1,
                 "击杀反贼应立即额外行动一次。");
         }
+
+        [Test]
+        public void Attacking_the_lord_marks_the_attacker_for_lord_side_ai()
+        {
+            var p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Loyalist, IdentityRole.Loyalist, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            GameManager game = GameManager.CreateIdentityEight(p, providers, roles);
+
+            p[1].LeftHand.SetValue(3);   // 座位 2，反贼
+            p[0].LeftHand.SetValue(1);   // 主公
+            game.ExecuteTurn(p[1], p[1].LeftHand, p[0].LeftHand);
+
+            Assert.IsTrue(game.HasAttackedLord(p[1]),
+                "攻击过主公的玩家应被主忠方标记。");
+            Assert.IsFalse(game.HasAttackedLord(p[2]));
+        }
     }
 }

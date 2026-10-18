@@ -1179,6 +1179,12 @@ namespace FingerDiceDuel.Assistant
                 {
                     score += 1000000;
                 }
+                else if (IdentityRoleInfo.IsLordSide(actorRole)
+                         && game.HasAttackedLord(target))
+                {
+                    // 主忠方：攻击过主公的人按“反贼嫌疑”优先处理。
+                    score += 900000;
+                }
                 else if (actorRole == IdentityRole.Traitor)
                 {
                     int aliveNonLord = 0;

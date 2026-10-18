@@ -211,6 +211,20 @@ namespace FingerDiceDuel.Core
         private readonly Dictionary<PlayerState, IdentityRole> _identity
             = new Dictionary<PlayerState, IdentityRole>();
 
+        private readonly HashSet<PlayerState> _attackedLord = new HashSet<PlayerState>();
+
+        /// <summary>该玩家是否攻击过主公（主忠方 AI 据此标记为反贼优先目标）。</summary>
+        public bool HasAttackedLord(PlayerState player) => player != null && _attackedLord.Contains(player);
+
+        public void MarkAttackedLord(PlayerState actor, PlayerState defender)
+        {
+            if (!IsIdentityMode || actor == null || defender == null) return;
+            if (ReferenceEquals(actor, defender)) return;
+            if (IdentityOf(defender) != IdentityRole.Lord) return;
+            if (IdentityOf(actor) == IdentityRole.Lord) return;
+            _attackedLord.Add(actor);
+        }
+
         public IdentityRole IdentityOf(PlayerState player)
             => player != null && _identity.TryGetValue(player, out IdentityRole r)
                 ? r : IdentityRole.None;
@@ -1795,6 +1809,8 @@ namespace FingerDiceDuel.Core
             result.TargetHand = PendingStealAttackHand;
             LastTurnResult = result;
 
+            MarkAttackedLord(actor, victim);
+
             PendingStealAttackHand = null;
             PendingStealAttackValue = 0;
 
@@ -2484,6 +2500,12 @@ namespace FingerDiceDuel.Core
             // 3d. 收下角色在结算中登记的"追加攻击"（剑客），供战报单独显示一行。
             result.ExtraAttack = PendingExtraAttack;
             PendingExtraAttack = null;
+
+            // 3e. 身份局：记录"谁攻击过主公"。
+            if (effect == HandEffectType.Attack4
+                || effect == HandEffectType.Attack6
+                || effect == HandEffectType.Attack8)
+                MarkAttackedLord(actor, opponent);
 
             // 4. 胜负判定
             CheckGameOver();
