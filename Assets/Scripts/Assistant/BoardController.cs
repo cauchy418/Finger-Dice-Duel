@@ -2100,6 +2100,31 @@ namespace FingerDiceDuel.Assistant
         private PlayerState _bardActor;
 
         /// <summary>
+        /// **结算那一刻**快照下来的"可以发动的吟游诗人"。
+        /// 不能等到刷新时再读标记 —— 那时已经被下一次 `BeginTurn()` 清零了。
+        /// </summary>
+        private readonly List<PlayerState> _bardEligible = new List<PlayerState>();
+
+        /// <summary>结算完立刻调用：记下这一刻谁满足吟游诗人的发动条件。</summary>
+        private void SnapshotBardEligibility()
+        {
+            _bardEligible.Clear();
+            if (_game == null) return;
+
+            IReadOnlyList<PlayerState> all = _game.Players;
+            for (int i = 0; i < all.Count; i++)
+            {
+                PlayerState p = all[i];
+                if (p == null || !p.IsAlive) continue;
+                if (!(p.Character is Characters.SpecialLogics.BardLogic)) continue;
+                if (p.BardActivatedThisTurn) continue;
+                if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
+
+                _bardEligible.Add(p);
+            }
+        }
+
+        /// <summary>
         /// 若有吟游诗人可以发动，就开出这个抉择；返回 true 表示**界面该弹面板**了。
         ///
         /// 故意不自动应用 —— 人类要自己选，AI 走 `BardAi.TryActivate`。
@@ -2109,17 +2134,34 @@ namespace FingerDiceDuel.Assistant
             if (BardChoicePending) return true;          // 已经在问了
             if (_game == null || _game.IsGameOver) return false;
 
-            // ① 谁可以发动：本回合受过伤 / 实际回过血的吟游诗人
+            // ① 谁可以发动：用**结算那一刻的快照**
             PlayerState found = null;
-            IReadOnlyList<PlayerState> all = _game.Players;
-            for (int i = 0; i < all.Count; i++)
+            for (int i = 0; i < _bardEligible.Count; i++)
             {
-                PlayerState p = all[i];
-                if (p == null || !(p.Character is Characters.SpecialLogics.BardLogic)) continue;
+                PlayerState p = _bardEligible[i];
+                if (p == null || !p.IsAlive) continue;
                 if (p.BardActivatedThisTurn) continue;          // 本回合已经答过了
-                if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
                 found = p;
                 break;
+            }
+
+            // ⚠️ 回落：快照为空时**实时扫一遍**。
+            //    正常界面路径一定有快照（结算那一刻记的）；
+            //    但单元测试、以及少数不经过 ExecuteResolvedTurn 的路径没有，
+            //    那时按当前标记判断即可。
+            if (found == null && _bardEligible.Count == 0)
+            {
+                IReadOnlyList<PlayerState> all = _game.Players;
+                for (int i = 0; i < all.Count; i++)
+                {
+                    PlayerState p = all[i];
+                    if (p == null || !p.IsAlive) continue;
+                    if (!(p.Character is Characters.SpecialLogics.BardLogic)) continue;
+                    if (p.BardActivatedThisTurn) continue;
+                    if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
+                    found = p;
+                    break;
+                }
             }
 
             if (found == null) return false;
@@ -3743,6 +3785,15 @@ namespace FingerDiceDuel.Assistant
                     ? _game.ExecuteGambleWithRoll(ActivePlayer, acted,
                                                   _pendingGambleRoll, _selectedTarget)
                     : _game.ExecuteTurn(ActivePlayer, acted, target);
+
+                // ⚠️⚠️ **就在这一刻把"谁可以发动吟游诗人技能"记下来。**
+                //
+                //    `TookDamageThisTurn` / `HealedThisTurn` 会在**下一次
+                //    `BeginTurn()`**（换人时）被清掉，而换人发生在
+                //    `ExecuteResolvedTurn` 的收尾 —— 早于界面的 `RefreshView`。
+                //    所以刷新时再去读标记，伤害早就被清干净了
+                //    （玩家实测："第一次受伤也没跳出提示"）。
+                SnapshotBardEligibility();
             }
             catch (InvalidOperationException ex)
             {
