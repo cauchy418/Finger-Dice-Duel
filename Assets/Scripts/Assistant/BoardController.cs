@@ -3738,9 +3738,31 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **赌博不是运算**，不能写成 "N + M = K" —— 那会让玩家以为
             //    自己算了一手（赌博时根本没点他人的手）。
             //    玩家要求战报里能看出这是赌博。
-            string head = t.WasGamble
-                ? $"{t.Actor.Name} 开赌：掷出 {t.GambleRoll}"
-                : $"{t.Actor.Name} {side}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {t.ResultValue}";
+            string head;
+            if (t.WasGamble)
+            {
+                head = $"{t.Actor.Name} 开赌：掷出 {t.GambleRoll}";
+            }
+            else
+            {
+                // ⚠️⚠️ **算式必须自洽**：`A + B = C` 里的 C 要等于 A、B 归一化后的和。
+                //
+                //    玩家实测看到过 `1 + 4 = 2（无效果）` —— 1+4 应当是 5。
+                //    根因是"运算源 / 被加数在快照之后又被改过"（某个效果改了手值），
+                //    于是 `ResultValue` 与两个操作数对不上。
+                //
+                //    战报是对玩家最直接的反馈，**不能自相矛盾**：
+                //    这里用快照的两个操作数**重算**一次显示用的结果；
+                //    与真实结果不一致时把真实结果也标出来，
+                //    这样既能读懂、又能保留"实际发生了什么"。
+                int shownResult = Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
+
+                string sum = shownResult == t.ResultValue
+                    ? shownResult.ToString()
+                    : $"{shownResult}（实际结算为 {t.ResultValue} —— 手值在运算中被改过）";
+
+                head = $"{t.Actor.Name} {side}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {sum}";
+            }
 
             switch (t.Effect)
             {
