@@ -1008,9 +1008,15 @@ namespace FingerDiceDuel.UI
             if (row == null)
             {
                 RingPanel panel = FindPanelOf(player);
-                if (panel != null) row = panel.NameText != null
-                    ? panel.NameText.rectTransform
-                    : null;
+                if (panel != null)
+                {
+                    // ⚠️ 用**血条**当锚点，不用名字行。
+                    //    玩家实测："队友位置的飘血有点偏上" —— 名字行是面板**最顶上**那一行，
+                    //    而玩家期望飘字落在"角色身上"。血条紧跟在名字下面，
+                    //    四个座位统一用它，相对位置就天然一致。
+                    if (panel.HpFill != null) row = panel.HpFill.rectTransform;
+                    else if (panel.NameText != null) row = panel.NameText.rectTransform;
+                }
             }
 
             if (row == null || _canvasRoot == null) return Vector2.zero;
