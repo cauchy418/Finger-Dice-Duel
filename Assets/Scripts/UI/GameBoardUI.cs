@@ -65,6 +65,30 @@ namespace FingerDiceDuel.UI
         public bool IsDamageTypePanelVisible
             => _damageTypePanel != null && _damageTypePanel.IsVisible;
 
+        /// <summary>吟游诗人的四步抉择面板。</summary>
+        private BardChoicePanel _bardChoicePanel;
+
+        /// <summary>显示吟游诗人面板（由 GameBootstrap 在每次刷新后按需调用）。</summary>
+        public void ShowBardChoicePanel(Assistant.BoardController board, System.Action onDone)
+        {
+            if (_bardChoicePanel == null) return;
+            _bardChoicePanel.Show(board, onDone);
+        }
+
+        /// <summary>隐藏吟游诗人面板。</summary>
+        public void HideBardChoicePanel()
+        {
+            if (_bardChoicePanel != null) _bardChoicePanel.Hide();
+        }
+
+        /// <summary>吟游诗人面板当前是否可见（供测试 / 诊断）。</summary>
+        public bool IsBardChoicePanelVisible
+            => _bardChoicePanel != null && _bardChoicePanel.IsVisible;
+
+        /// <summary>吟游诗人面板当前步骤（0 = 未显示；2/3/4 = 四项 / 目标数 / 选目标）。</summary>
+        public int BardChoicePanelStep
+            => _bardChoicePanel != null ? _bardChoicePanel.CurrentStep : 0;
+
         private FloatingTextLayer _floats;
         private ScreenShaker _shaker;
         private GamePresentation _presentation;
@@ -208,6 +232,10 @@ namespace FingerDiceDuel.UI
             _damageTypePanel = new DamageTypePanel(_canvasRoot, _font);
             _damageTypePanel.OnPicked = type => DamageTypePicked?.Invoke(type);
             _damageTypePanel.Hide();
+
+            // 吟游诗人的四步抉择面板（① 是否发动由 GameBootstrap 判断）
+            _bardChoicePanel = new BardChoicePanel(_canvasRoot, _font);
+            _bardChoicePanel.Hide();
         }
 
         private static Font LoadFont() => UiFont.Get();

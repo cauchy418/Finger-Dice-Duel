@@ -2628,6 +2628,22 @@ namespace FingerDiceDuel.UI
                 _board.ShowGameOver(WinMessage());
                 _board.SetSkipButtonVisible(false);
                 _board.SetDamageTypePanelVisible(false);
+                _board.HideBardChoicePanel();
+            }
+            else
+            {
+                // ⚠️ **吟游诗人：本回合受过伤 / 实际回过血 -> 弹四步面板。**
+                //
+                //    这是第一个"运算之后才问"的技能，所以不接阶段机，
+                //    只在这里按需开面板（① 是否发动由玩家在面板里选）。
+                //
+                //    ⚠️ 只在"从没弹变成该弹"时调 `Show` —— `Show` 会把步骤重置回第 ② 步，
+                //       每次刷新都调会把玩家已经点过的进度清掉。
+                bool offer = _controller.OfferBardChoiceIfAny();
+                if (offer && !_board.IsBardChoicePanelVisible)
+                    _board.ShowBardChoicePanel(_controller, RefreshView);
+                else if (!offer && _board.IsBardChoicePanelVisible)
+                    _board.HideBardChoicePanel();
             }
 
             DiagnoseIfNeeded(canDecline, acceptLabel, canAccept);
