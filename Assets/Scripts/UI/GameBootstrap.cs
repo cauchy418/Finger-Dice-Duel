@@ -1044,7 +1044,7 @@ namespace FingerDiceDuel.UI
             _screenEightPlayerMenu.Add(MakeSubTitle(_selectRoot, "EightTitle", "8 人模式").gameObject);
 
             Button faction = MakeSubModeButton(_selectRoot, "EightFaction", new Vector2(0f, 60f),
-                                               "阵营混战", "双将 · 三阵营 · 8 人",
+                                               "阵营混战", "单将 · 三阵营 · 8 人",
                                                () => ShowScreen(GameScreen.FactionBattleMenu));
             Button identity = MakeSubModeButton(_selectRoot, "EightIdentity", new Vector2(0f, -96f),
                                                 "身份对局", "身份阵营对抗（待开放）",
@@ -1060,16 +1060,14 @@ namespace FingerDiceDuel.UI
         {
             _screenFactionBattleMenu = new ScreenGroup();
             _screenFactionBattleMenu.Add(MakeSubTitle(_selectRoot, "FactionTitle",
-                                                       "双将阵营混战").gameObject);
+                                                       "阵营混战").gameObject);
 
             Button ai = MakeSubModeButton(_selectRoot, "FactionAi", new Vector2(0f, 60f),
-                                          "AI 练习", "1 名人类 + 7 名 AI，8 人双将",
+                                          "AI 练习", "1 名人类 + 7 名 AI，8 人单将",
                                           () =>
                                           {
-                                              _dualFactionMode = true;
-                                              _dualFactionReturnScreen = GameScreen.FactionBattleMenu;
-                                              ResetDualSelection();
-                                              ShowScreen(GameScreen.DualGeneralSelect);
+                                              _dualFactionMode = false;
+                                              ShowScreen(GameScreen.FactionSelect);
                                           });
             Button pvp = MakeSubModeButton(_selectRoot, "FactionPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家（待开放）",
