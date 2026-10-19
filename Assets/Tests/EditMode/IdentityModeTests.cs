@@ -38,6 +38,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(IdentityRole.Lord, game.IdentityOf(p[0]));
             Assert.AreEqual(30, p[0].MaximumHealth, "白板 20 + 主公 10。");
             Assert.AreEqual(30, p[0].Health);
+            Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(p[0]));
+            Assert.AreEqual(1, StatusRules.EffectiveDefenseBonus(p[0]));
             Assert.IsTrue(game.IsIdentityPublic(p[0]));
             Assert.IsFalse(game.IsIdentityPublic(p[1]));
         }
@@ -214,6 +216,64 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(effect == HandEffectType.Shield || effect == HandEffectType.Heal,
                 "反贼死亡不足 2 且无法斩杀时，主公应大幅提高合盾/回血权重。");
+        }
+
+        [Test]
+        public void Traitor_reveals_at_five_alive_and_gets_bonuses()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            // 先让 3 名反贼阵亡，场上剩 5 人。
+            p[3].SetHealthExact(0);
+            p[4].SetHealthExact(0);
+            p[5].SetHealthExact(0);
+            p[7].SetHealthExact(10);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.TraitorRevealed);
+            Assert.AreEqual(25, p[7].MaximumHealth, "内奸上限 +5。");
+            Assert.AreEqual(15, p[7].Health, "10 + 5，且不超过 25。");
+            Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(p[7]));
+            Assert.AreEqual(1, StatusRules.EffectiveDefenseBonus(p[7]));
+            Assert.IsTrue(game.IsIdentityPublic(p[7]));
+        }
+
+        [Test]
+        public void After_reveal_lord_death_with_loyal_alive_is_rebel_win()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            p[3].SetHealthExact(0); p[4].SetHealthExact(0); p[5].SetHealthExact(0);
+            game.RefreshGameOver();   // 存活 5 人，内奸亮身份
+
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity,
+                "主公死时仍有忠臣 -> 反贼胜，即使反贼已全灭。");
+            Assert.False(p[1].IsAlive);
+            Assert.False(p[2].IsAlive);
+        }
+
+        [Test]
+        public void After_reveal_lord_death_without_loyalists_enters_traitor_vs_rebel_duel()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            // 亮身份：存活 5 人。
+            p[3].SetHealthExact(0); p[4].SetHealthExact(0); p[5].SetHealthExact(0);
+            game.RefreshGameOver();
+            // 主公死时无忠臣；保留 1 反贼与内奸。
+            p[1].SetHealthExact(0); p[2].SetHealthExact(0);
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.False(game.IsGameOver, "内奸未死时进入内奸 vs 反贼单挑。");
+            Assert.IsTrue(p[6].IsAlive);
+            Assert.IsTrue(p[7].IsAlive);
+
+            p[6].SetHealthExact(0);
+            game.RefreshGameOver();
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Traitor, game.WinningIdentity);
         }
     }
 }

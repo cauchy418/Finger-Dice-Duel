@@ -2805,9 +2805,7 @@ namespace FingerDiceDuel.UI
                 PlayerState p = _eightSeated[i];
                 if (p == null) continue;
                 IdentityRole role = _game.IdentityOf(p);
-                bool reveal = role == IdentityRole.Lord
-                              || !p.IsAlive
-                              || _game.IsGameOver
+                bool reveal = _game.IsIdentityPublic(p)
                               || ReferenceEquals(p, _eightHumanPlayer);
                 _board.SetRingIdentity(p,
                     reveal ? IdentityRoleInfo.DisplayName(role) : "？", true);

@@ -27,6 +27,7 @@ namespace FingerDiceDuel.Core
 
             // 吟游诗人的加成与"角色自身加成"**同层相加**（可正可负）
             if (p != null) bonus += p.BardAttackOffset;
+            if (p != null) bonus += p.IdentityAttackBonus;
             return bonus;
         }
 
@@ -38,6 +39,7 @@ namespace FingerDiceDuel.Core
 
             // 吟游诗人的加成（与强酸同层相加）
             if (p != null) bonus += p.BardDefenseOffset;
+            if (p != null) bonus += p.IdentityDefenseBonus;
             return bonus;
         }
 

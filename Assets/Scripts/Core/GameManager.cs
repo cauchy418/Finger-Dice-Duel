@@ -208,6 +208,9 @@ namespace FingerDiceDuel.Core
         /// <summary>本局最终获胜的身份阵营；平局 / 未结束为 None。</summary>
         public IdentityRole WinningIdentity { get; private set; }
 
+        /// <summary>内奸是否已经亮明身份。</summary>
+        public bool TraitorRevealed { get; private set; }
+
         private readonly Dictionary<PlayerState, IdentityRole> _identity
             = new Dictionary<PlayerState, IdentityRole>();
 
@@ -320,6 +323,7 @@ namespace FingerDiceDuel.Core
         {
             if (player == null) return false;
             IdentityRole r = IdentityOf(player);
+            if (r == IdentityRole.Traitor && TraitorRevealed) return true;
             return r == IdentityRole.Lord || !player.IsAlive || IsGameOver;
         }
 
@@ -1018,9 +1022,10 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < 8; i++)
                 game._identity[seated[i]] = roles[i];
 
-            // 主公体力上限 +10。
+            // 主公：体力上限 +10、初始满血、攻防 +1/+1。
             seated[0].SetMaxHealth(seated[0].MaximumHealth + 10);
             seated[0].SetHealthExact(seated[0].MaximumHealth);
+            seated[0].AddIdentityBonus(1, 1);
             return game;
         }
 
@@ -3187,6 +3192,9 @@ namespace FingerDiceDuel.Core
         {
             if (IsGameOver) return;
 
+            // 先处理“仅剩 5 人”的内奸亮身份；即使同一刻主公死亡也先亮。
+            RevealTraitorIfNeeded();
+
             PlayerState lord = null;
             bool lordAlive = false, loyalAlive = false, rebelAlive = false, traitorAlive = false;
             for (int i = 0; i < _players.Count; i++)
@@ -3204,23 +3212,70 @@ namespace FingerDiceDuel.Core
 
             if (lordAlive)
             {
-                // 反贼 + 内奸全部阵亡 -> 主忠胜。
                 if (!rebelAlive && !traitorAlive)
                     EndIdentity(IdentityRole.Lord);
                 return;
             }
 
             // 主公已死。
-            // 只要还有忠臣或反贼存活 -> 反贼胜（即使反贼已全灭）。
+            if (TraitorRevealed)
+            {
+                // 有忠臣存活 -> 反贼胜；随后忠臣立即阵亡（不再触发击杀奖励）。
+                if (loyalAlive)
+                {
+                    KillAllLoyalists();
+                    EndIdentity(IdentityRole.Rebel);
+                    return;
+                }
+
+                // 忠臣已无：内奸与反贼进入单挑；若一方已全灭立即结束。
+                if (traitorAlive && rebelAlive) return;
+                if (traitorAlive) { EndIdentity(IdentityRole.Traitor); return; }
+                EndIdentity(IdentityRole.Rebel);
+                return;
+            }
+
+            // 未亮身份时沿用原规则。
             if (loyalAlive || rebelAlive)
             {
                 EndIdentity(IdentityRole.Rebel);
                 return;
             }
-
-            // 忠臣 / 反贼全灭，只剩内奸 -> 内奸胜。
             if (traitorAlive) EndIdentity(IdentityRole.Traitor);
             else EndIdentity(IdentityRole.None);
+        }
+
+        private void KillAllLoyalists()
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p != null && p.IsAlive
+                    && IdentityOf(p) == IdentityRole.Loyalist)
+                    p.SetHealthExact(0);
+            }
+        }
+
+        private void RevealTraitorIfNeeded()
+        {
+            if (!IsIdentityMode || TraitorRevealed) return;
+
+            PlayerState traitor = null;
+            int alive = 0;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || !p.IsAlive) continue;
+                alive++;
+                if (IdentityOf(p) == IdentityRole.Traitor) traitor = p;
+            }
+
+            if (alive > 5 || traitor == null) return;
+
+            TraitorRevealed = true;
+            traitor.SetMaxHealth(traitor.MaximumHealth + 5);
+            traitor.Heal(5);
+            traitor.AddIdentityBonus(1, 1);
         }
 
         private void EndIdentity(IdentityRole side)

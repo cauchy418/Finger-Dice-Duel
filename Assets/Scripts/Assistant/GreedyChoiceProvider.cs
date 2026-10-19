@@ -1222,8 +1222,16 @@ namespace FingerDiceDuel.Assistant
                 {
                     score += 1000000;
                 }
+                else if (actorRole == IdentityRole.Rebel
+                         && game.TraitorRevealed
+                         && targetRole == IdentityRole.Traitor)
+                {
+                    score += 950000;
+                }
                 else if (IdentityRoleInfo.IsLordSide(actorRole))
                 {
+                    if (game.TraitorRevealed && targetRole == IdentityRole.Traitor)
+                        score += 950000;
                     // 主忠方：优先攻击范围内最被怀疑是反贼的人。
                     score += suspicion * 200000;
                     if (suspicion >= GameManager.MajorRebelSuspicion)
@@ -1254,7 +1262,8 @@ namespace FingerDiceDuel.Assistant
                     }
                     else if (targetRole == IdentityRole.Rebel)
                     {
-                        score -= 300000;
+                        // 亮身份后进入反贼/内奸单挑，优先清反贼。
+                        score += game.TraitorRevealed ? 950000 : -300000;
                     }
                 }
             }

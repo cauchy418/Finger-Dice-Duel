@@ -170,6 +170,16 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public string DisplayNameOverride { get; set; }
 
+        /// <summary>身份局附加攻击 / 防御（主公、亮身份内奸）。</summary>
+        public int IdentityAttackBonus { get; private set; }
+        public int IdentityDefenseBonus { get; private set; }
+
+        public void AddIdentityBonus(int attack, int defense)
+        {
+            IdentityAttackBonus += attack;
+            IdentityDefenseBonus += defense;
+        }
+
         // ============ 便捷查询 ============
         public bool HasAnyShield =>
             LeftHand.State == ShieldState.Formed || RightHand.State == ShieldState.Formed;
