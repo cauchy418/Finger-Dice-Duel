@@ -105,6 +105,7 @@ namespace FingerDiceDuel.UI
 
         /// <summary>盗贼的「偷窃」按钮（按需创建）。</summary>
         private Button _stealButton;
+        private Button _sacrificeButton;
         private Button _exitButton;
         private Button _declineButton;
         private Button _acceptButton;
@@ -1210,6 +1211,30 @@ namespace FingerDiceDuel.UI
             target.anchoredPosition = new Vector2(local.x, local.y);
         }
 
+        /// <summary>显示/更新身份局忠臣的「替死待命」按钮。</summary>
+        public void SetSacrificeButtonVisible(bool visible, bool armed)
+        {
+            if (!visible)
+            {
+                if (_sacrificeButton != null) _sacrificeButton.gameObject.SetActive(false);
+                return;
+            }
+
+            if (_sacrificeButton == null)
+            {
+                _sacrificeButton = CreateButton(_canvasRoot, "SacrificeButton",
+                    new Vector2(-36f, -100f), new Vector2(280f, 56f), "替死待命", true);
+                _sacrificeButton.GetComponent<Image>().color =
+                    new Color(0.45f, 0.22f, 0.22f);
+                _sacrificeButton.onClick.AddListener(() => SacrificeClicked?.Invoke());
+            }
+
+            _sacrificeButton.gameObject.SetActive(true);
+            Text label = _sacrificeButton.GetComponentInChildren<Text>();
+            if (label != null)
+                label.text = armed ? "替死：已准备（点击取消）" : "替死待命";
+        }
+
         /// <summary>显示/隐藏「开赌」按钮（赌徒专用）。</summary>
         public void SetGambleButtonVisible(bool visible)
         {
@@ -1278,6 +1303,9 @@ namespace FingerDiceDuel.UI
 
         /// <summary>「偷窃」按钮被点击。</summary>
         public event Action StealClicked;
+
+        /// <summary>点击「替死待命」（身份局人类忠臣）。</summary>
+        public event Action SacrificeClicked;
 
         /// <summary>
         /// 创建「偷窃」按钮，放在**手牌区右侧**（与开赌 / 跳过同一套定位规则）。

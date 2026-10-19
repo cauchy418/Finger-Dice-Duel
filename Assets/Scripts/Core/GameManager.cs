@@ -211,6 +211,9 @@ namespace FingerDiceDuel.Core
         /// <summary>内奸是否已经亮明身份。</summary>
         public bool TraitorRevealed { get; private set; }
 
+        /// <summary>人类忠臣是否已按下“替死待命”；为空表示不指定。</summary>
+        public PlayerState HumanSacrificeCandidate { get; set; }
+
         private readonly Dictionary<PlayerState, IdentityRole> _identity
             = new Dictionary<PlayerState, IdentityRole>();
 
@@ -3290,6 +3293,14 @@ namespace FingerDiceDuel.Core
             if (!IsIdentityMode || lord == null || !lord.IsAlive) return null;
             if (IdentityOf(lord) != IdentityRole.Lord) return null;
             if (incomingDamage <= 0 || incomingDamage < lord.Health) return null;
+
+            if (HumanSacrificeCandidate != null
+                && HumanSacrificeCandidate.IsAlive
+                && IdentityOf(HumanSacrificeCandidate) == IdentityRole.Loyalist)
+            {
+                HumanSacrificeCandidate.SetHealthExact(0);
+                return HumanSacrificeCandidate;
+            }
 
             for (int i = 0; i < _players.Count; i++)
             {

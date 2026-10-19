@@ -341,12 +341,13 @@ namespace FingerDiceDuel.Tests
             p[0].SetHealthExact(1);
             p[1].LeftHand.SetValue(3);   // 与主公的 1 相加 = 4，攻击
             p[0].LeftHand.SetValue(1);
+            game.HumanSacrificeCandidate = p[3];   // 玩家选择后位忠臣替死
             TurnResult result = game.ExecuteTurn(p[1], p[1].LeftHand, p[0].LeftHand);
 
             Assert.IsTrue(result.WasCancelled);
             Assert.AreEqual(1, p[0].Health, "替死后主公不应受到这次攻击伤害。");
-            Assert.False(p[2].IsAlive, "两名忠臣中只有一名替死。");
-            Assert.IsTrue(p[3].IsAlive);
+            Assert.IsTrue(p[2].IsAlive, "玩家指定后，前位忠臣不应替死。");
+            Assert.False(p[3].IsAlive, "指定的忠臣替死。");
         }
     }
 }

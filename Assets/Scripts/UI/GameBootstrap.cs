@@ -143,6 +143,7 @@ namespace FingerDiceDuel.UI
         // ---- 8 人身份局状态 ----
         private bool _isIdentity;
         private PlayerState _eightHumanPlayer;
+        private bool _humanSacrificeArmed;
         private CharacterRosterView _idRoster;
         private Text _idStatus;
         private Text _idSeats;
@@ -482,6 +483,7 @@ namespace FingerDiceDuel.UI
             _board.StealClicked += OnStealClicked;
             _board.DeclineClicked += OnDeclineClicked;
             _board.AcceptClicked += OnAcceptClicked;
+            _board.SacrificeClicked += OnSacrificeClicked;
 
             // 法师：伤害类型面板上选了某一种
             _board.DamageTypePicked += OnDamageTypePicked;
@@ -1322,6 +1324,7 @@ namespace FingerDiceDuel.UI
             _controller.SetFirstPlayer(seated[0]);
 
             _isIdentity = true;
+            _humanSacrificeArmed = false;
             _isEightPlayer = true;
             _isTwoOnTwo = false;
             _isDualGeneral = false;
@@ -3220,6 +3223,40 @@ namespace FingerDiceDuel.UI
         // 刷新
         // ============================================================
 
+        private void RefreshSacrificeButton()
+        {
+            if (!_isIdentity || _game == null || _eightHumanPlayer == null)
+            {
+                _board.SetSacrificeButtonVisible(false, false);
+                return;
+            }
+
+            PlayerState lord = null;
+            for (int i = 0; i < _game.Players.Count; i++)
+            {
+                PlayerState p = _game.Players[i];
+                if (p != null && _game.IdentityOf(p) == IdentityRole.Lord) { lord = p; break; }
+            }
+
+            bool show = lord != null && lord.IsAlive
+                        && _eightHumanPlayer.IsAlive
+                        && _game.IdentityOf(_eightHumanPlayer) == IdentityRole.Loyalist;
+            if (!show) _humanSacrificeArmed = false;
+            _board.SetSacrificeButtonVisible(show, _humanSacrificeArmed);
+            if (_game != null)
+                _game.HumanSacrificeCandidate = _humanSacrificeArmed ? _eightHumanPlayer : null;
+        }
+
+        private void OnSacrificeClicked()
+        {
+            if (!_isIdentity || _game == null || _eightHumanPlayer == null) return;
+            if (!_eightHumanPlayer.IsAlive
+                || _game.IdentityOf(_eightHumanPlayer) != IdentityRole.Loyalist) return;
+
+            _humanSacrificeArmed = !_humanSacrificeArmed;
+            RefreshView();
+        }
+
         private void RefreshView()
         {
             if (_controller == null || _board == null || _game == null) return;
@@ -3294,6 +3331,7 @@ namespace FingerDiceDuel.UI
 
             // 盗贼的「偷窃」按钮：只在"点了自己的手、且本回合没偷过"时显示
             _board.SetStealButtonVisible(_controller.CanSteal);
+            RefreshSacrificeButton();
 
             _board.SetLog(_controller.Log);
             _board.SetHint(DescribeHint(), DescribeLastTurn());

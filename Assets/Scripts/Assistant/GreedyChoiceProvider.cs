@@ -1218,7 +1218,20 @@ namespace FingerDiceDuel.Assistant
 
                 int suspicion = game.RebelSuspicionOf(target);
 
-                if (actorRole == IdentityRole.Rebel && targetIsLord)
+                bool lethalLowSuspicion = false;
+                if (actorRole == IdentityRole.Rebel && !targetIsLord
+                    && game.RebelSuspicionOf(target) < GameManager.MajorRebelSuspicion)
+                {
+                    int result = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+                    lethalLowSuspicion = IsLethal(move, actor, game, result);
+                }
+
+                if (lethalLowSuspicion)
+                {
+                    // 反贼共享怀疑表：能直接斩杀低怀疑目标时，优先于攻击主公。
+                    score += 1500000;
+                }
+                else if (actorRole == IdentityRole.Rebel && targetIsLord)
                 {
                     score += 1000000;
                 }
