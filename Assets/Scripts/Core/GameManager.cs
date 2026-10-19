@@ -245,6 +245,17 @@ namespace FingerDiceDuel.Core
             }
         }
 
+        public int DeadPlayerCount
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < _players.Count; i++)
+                    if (_players[i] != null && !_players[i].IsAlive) n++;
+                return n;
+            }
+        }
+
         public int AliveCountOf(IdentityRole role)
         {
             int n = 0;
@@ -3192,6 +3203,17 @@ namespace FingerDiceDuel.Core
         {
             if (IsGameOver) return;
 
+            // 主公是第 1/2/3 个阵亡者 -> 反贼立即胜，内奸来不及亮身份。
+            PlayerState earlyLord = null;
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i] != null && IdentityOf(_players[i]) == IdentityRole.Lord)
+                    earlyLord = _players[i];
+            if (earlyLord != null && !earlyLord.IsAlive && DeadPlayerCount <= 3)
+            {
+                EndIdentity(IdentityRole.Rebel);
+                return;
+            }
+
             // 先处理“仅剩 5 人”的内奸亮身份；即使同一刻主公死亡也先亮。
             RevealTraitorIfNeeded();
 
@@ -3220,18 +3242,19 @@ namespace FingerDiceDuel.Core
             // 主公已死。
             if (TraitorRevealed)
             {
-                // 有忠臣存活 -> 反贼胜；随后忠臣立即阵亡（不再触发击杀奖励）。
-                if (loyalAlive)
+                // 还有反贼：忠臣全部立即死亡，内奸与反贼进入对战。
+                if (rebelAlive)
                 {
                     KillAllLoyalists();
+                    if (traitorAlive) return;      // 单挑继续
                     EndIdentity(IdentityRole.Rebel);
                     return;
                 }
 
-                // 忠臣已无：内奸与反贼进入单挑；若一方已全灭立即结束。
-                if (traitorAlive && rebelAlive) return;
+                // 无反贼：有忠臣则反贼胜；无忠臣则内奸胜。
+                if (loyalAlive) { EndIdentity(IdentityRole.Rebel); return; }
                 if (traitorAlive) { EndIdentity(IdentityRole.Traitor); return; }
-                EndIdentity(IdentityRole.Rebel);
+                EndIdentity(IdentityRole.None);
                 return;
             }
 

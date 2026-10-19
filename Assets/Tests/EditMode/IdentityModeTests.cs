@@ -238,7 +238,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void After_reveal_lord_death_with_loyal_alive_is_rebel_win()
+        public void After_reveal_lord_death_with_rebels_alive_kills_loyalists_and_enters_duel()
         {
             GameManager game = Match(out List<PlayerState> p, out _);
             p[3].SetHealthExact(0); p[4].SetHealthExact(0); p[5].SetHealthExact(0);
@@ -247,11 +247,12 @@ namespace FingerDiceDuel.Tests
             p[0].SetHealthExact(0);
             game.RefreshGameOver();
 
-            Assert.IsTrue(game.IsGameOver);
-            Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity,
-                "主公死时仍有忠臣 -> 反贼胜，即使反贼已全灭。");
+            Assert.False(game.IsGameOver,
+                "仍有反贼时，内奸与反贼进入对战。");
             Assert.False(p[1].IsAlive);
             Assert.False(p[2].IsAlive);
+            Assert.IsTrue(p[6].IsAlive);
+            Assert.IsTrue(p[7].IsAlive);
         }
 
         [Test]
@@ -274,6 +275,51 @@ namespace FingerDiceDuel.Tests
             game.RefreshGameOver();
             Assert.IsTrue(game.IsGameOver);
             Assert.AreEqual(IdentityRole.Traitor, game.WinningIdentity);
+        }
+
+        [Test]
+        public void After_reveal_lord_death_with_no_rebels_and_loyalists_is_rebel_win()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            // 先让所有反贼阵亡；存活 4 人 -> 内奸亮身份。
+            for (int i = 3; i <= 6; i++) p[i].SetHealthExact(0);
+            game.RefreshGameOver();
+            Assert.IsTrue(game.TraitorRevealed);
+
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity,
+                "无反贼但有忠臣 -> 反贼胜。");
+        }
+
+        [Test]
+        public void After_reveal_lord_death_with_no_rebels_and_no_loyalists_is_traitor_win()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            for (int i = 1; i <= 6; i++) p[i].SetHealthExact(0);
+            game.RefreshGameOver();
+            Assert.IsTrue(game.TraitorRevealed);
+
+            p[0].SetHealthExact(0);
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Traitor, game.WinningIdentity);
+        }
+
+        [Test]
+        public void Lord_dying_as_first_second_or_third_casualty_is_immediate_rebel_win()
+        {
+            GameManager game = Match(out List<PlayerState> p, out _);
+            p[0].SetHealthExact(0);   // 第 1 个阵亡
+            game.RefreshGameOver();
+
+            Assert.IsTrue(game.IsGameOver);
+            Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity);
+            Assert.False(game.TraitorRevealed,
+                "主公前三个阵亡时，内奸来不及亮身份。");
         }
     }
 }
