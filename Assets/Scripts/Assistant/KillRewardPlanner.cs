@@ -97,7 +97,9 @@ namespace FingerDiceDuel.Assistant
 
             if (victimRole == IdentityRole.Rebel)
             {
-                rewards.Add(result.Actor);
+                // 玩家确认：击杀反贼后额外行动 X 次，X = 场上剩余反贼数。
+                int x = game.AliveCountOf(IdentityRole.Rebel);
+                for (int i = 0; i < x; i++) rewards.Add(result.Actor);
                 return rewards;
             }
 

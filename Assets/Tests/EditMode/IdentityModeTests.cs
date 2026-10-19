@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Lord_killing_a_rebel_queues_one_extra_action()
+        public void Lord_killing_a_rebel_queues_extra_actions_equal_to_remaining_rebels()
         {
             var p = new List<PlayerState>(8);
             for (int i = 0; i < 8; i++)
@@ -115,8 +115,8 @@ namespace FingerDiceDuel.Tests
 
             Assert.IsFalse(p[1].IsAlive);
             Assert.IsTrue(board.IsExtraAction);
-            Assert.AreEqual(1, board.ExtraActionsRemaining + 1,
-                "击杀反贼应立即额外行动一次。");
+            Assert.AreEqual(3, board.ExtraActionsRemaining + 1,
+                "击杀后场上还剩 3 名反贼，应额外行动 3 次。");
         }
 
         [Test]
@@ -181,6 +181,39 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(p[2], p[2].LeftHand, p[1].LeftHand);
             Assert.AreEqual(0, game.RebelSuspicionOf(p[2]),
                 "攻击被怀疑对象应降低自身嫌疑。");
+        }
+
+        [Test]
+        public void Lord_values_shield_and_heal_before_two_rebels_die()
+        {
+            var p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Rebel, IdentityRole.Loyalist,
+                IdentityRole.Loyalist, IdentityRole.Traitor,
+            };
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            GameManager game = GameManager.CreateIdentityEight(p, providers, roles);
+            for (int i = 0; i < 8; i++)
+                for (int h = 0; h < 2; h++)
+                    p[i].Hands[h].SetValue(1);
+            p[0].LeftHand.SetValue(3);
+            p[0].RightHand.SetValue(8);
+            p[2].LeftHand.SetValue(2);   // 3 + 2 = 5，可合盾
+            for (int i = 1; i < 8; i++) p[i].SetHealthExact(20);
+            p[0].SetHealthExact(10);
+
+            var ai = new GreedyChoiceProvider();
+            LegalMove move = ai.ChooseMove(game, p[0]);
+            int result = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+            HandEffectType effect = Hand.GetEffectType(result);
+
+            Assert.True(effect == HandEffectType.Shield || effect == HandEffectType.Heal,
+                "反贼死亡不足 2 且无法斩杀时，主公应大幅提高合盾/回血权重。");
         }
     }
 }

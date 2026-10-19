@@ -126,6 +126,9 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private PlayerState _focusTargetForScoring;
 
+        /// <summary>身份局：主公在反贼死亡不足 2 人、且无法斩杀反贼时，提高合盾/回复评分。</summary>
+        private bool _identityLordDefenseBonus;
+
         /// <summary>当前评分用的集火目标；不在 ChooseMove 内时按需解析。</summary>
         private PlayerState FocusTargetForScoring(GameManager game, PlayerState actor)
             => _focusTargetForScoring ?? ResolveFocusTarget(game, actor);
@@ -469,6 +472,7 @@ namespace FingerDiceDuel.Assistant
 
             // 集火目标**每回合只解析一次**（阵亡后环会收缩，所以不能跨回合缓存）。
             _focusTargetForScoring = ResolveFocusTarget(game, actor);
+            _identityLordDefenseBonus = ShouldBoostLordDefense(game, actor, moves);
 
             try
             {
@@ -499,6 +503,7 @@ namespace FingerDiceDuel.Assistant
             finally
             {
                 _focusTargetForScoring = null;
+                _identityLordDefenseBonus = false;
             }
         }
 
@@ -650,6 +655,30 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public int TeammateAttackPenalty { get; set; } = 10000;
 
+        private bool ShouldBoostLordDefense(GameManager game, PlayerState actor,
+                                            IReadOnlyList<LegalMove> moves)
+        {
+            if (game == null || actor == null || !game.IsIdentityMode) return false;
+            if (game.IdentityOf(actor) != IdentityRole.Lord) return false;
+            if (game.DeadRebelCount >= 2) return false;
+
+            for (int i = 0; i < moves.Count; i++)
+            {
+                LegalMove m = moves[i];
+                if (m.Actor == null || m.ActedHand == null || m.TargetHand == null) continue;
+                int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
+                if (!IsAttackResult(m, actor)) continue;
+
+                PlayerState victim = game.OwnerOfHand(m.TargetHand);
+                if (victim == null) continue;
+                bool rebel = game.IdentityOf(victim) == IdentityRole.Rebel
+                             || game.IsMajorRebelSuspect(victim);
+                if (rebel && IsLethal(m, actor, game, result)) return false;
+            }
+
+            return true;
+        }
+
         private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)        {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
@@ -694,6 +723,18 @@ namespace FingerDiceDuel.Assistant
                     case HandEffectType.Attack6: score = 66; break;
                     case HandEffectType.Attack8: score = 88; break;
                 }
+            }
+
+            // 身份局主公：反贼死亡不足 2、且无法斩杀反贼时，
+            // 合盾 / 回复的权重显著提高（防守优先）。
+            if (_identityLordDefenseBonus)
+            {
+                HandEffectType effect = Hand.GetEffectType(result);
+                if (effect == HandEffectType.Shield)
+                    score += 300;
+                else if (effect == HandEffectType.Heal
+                         && actor.Health < actor.MaximumHealth)
+                    score += 350;
             }
 
             // ---- 角色特性加分 ----

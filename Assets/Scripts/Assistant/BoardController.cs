@@ -3870,7 +3870,7 @@ namespace FingerDiceDuel.Assistant
             if (_game.IsIdentityMode)
             {
                 why = _game.IdentityOf(victim) == IdentityRole.Rebel
-                    ? "击杀反贼，额外行动一次"
+                    ? $"击杀反贼，额外行动 {rewards.Count} 次"
                     : "主公击杀忠臣，所有反贼各行动一次";
             }
             else
