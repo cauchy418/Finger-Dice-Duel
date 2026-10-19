@@ -93,7 +93,7 @@ namespace FingerDiceDuel.Tests
                 }
 
                 GameManager game = GameManager.CreateIdentityEight(seated, providers, roles);
-                game.RoundLimit = GameManager.DefaultRoundLimit;
+                game.RoundLimit = GameManager.IdentityRoundLimit;
                 for (int i = 0; i < 8; i++) ApplyOpeningHands(seated[i], rng);
 
                 var controller = new BoardController(game, sinks[0], sinks[1]);

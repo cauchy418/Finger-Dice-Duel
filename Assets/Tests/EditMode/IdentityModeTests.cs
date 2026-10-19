@@ -32,12 +32,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Lord_is_seat_one_and_has_five_extra_health()
+        public void Lord_is_seat_one_and_has_ten_extra_health()
         {
             GameManager game = Match(out List<PlayerState> p, out _);
             Assert.AreEqual(IdentityRole.Lord, game.IdentityOf(p[0]));
-            Assert.AreEqual(25, p[0].MaximumHealth, "白板 20 + 主公 5。");
-            Assert.AreEqual(25, p[0].Health);
+            Assert.AreEqual(30, p[0].MaximumHealth, "白板 20 + 主公 10。");
+            Assert.AreEqual(30, p[0].Health);
             Assert.IsTrue(game.IsIdentityPublic(p[0]));
             Assert.IsFalse(game.IsIdentityPublic(p[1]));
         }

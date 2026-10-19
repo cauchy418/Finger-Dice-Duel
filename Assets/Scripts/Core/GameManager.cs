@@ -215,7 +215,10 @@ namespace FingerDiceDuel.Core
 
         /// <summary>反贼嫌疑值（0~10，公开行为推断，不代表真实身份）。</summary>
         public const int MajorRebelSuspicion = 5;
-        public const int MinorRebelSuspicion = 1;
+        public const int MinorRebelSuspicion = 2;
+
+        /// <summary>身份局统一轮次上限。</summary>
+        public const int IdentityRoundLimit = 80;
 
         private readonly Dictionary<PlayerState, int> _rebelSuspicion
             = new Dictionary<PlayerState, int>();
@@ -1015,8 +1018,8 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < 8; i++)
                 game._identity[seated[i]] = roles[i];
 
-            // 主公体力上限 +5。
-            seated[0].SetMaxHealth(seated[0].MaximumHealth + 5);
+            // 主公体力上限 +10。
+            seated[0].SetMaxHealth(seated[0].MaximumHealth + 10);
             seated[0].SetHealthExact(seated[0].MaximumHealth);
             return game;
         }

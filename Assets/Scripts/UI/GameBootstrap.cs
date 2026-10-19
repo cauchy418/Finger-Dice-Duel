@@ -1309,7 +1309,7 @@ namespace FingerDiceDuel.UI
             }
 
             _game = GameManager.CreateIdentityEight(seated, providers, _idRoles);
-            _game.RoundLimit = GameManager.DefaultRoundLimit;
+            _game.RoundLimit = GameManager.IdentityRoundLimit;
             for (int i = 0; i < 8; i++) ApplyEightOpeningHands(seated[i], _idRng);
 
             var sinkA = new SimpleChoiceProvider();
