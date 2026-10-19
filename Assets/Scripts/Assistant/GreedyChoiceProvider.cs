@@ -1175,27 +1175,46 @@ namespace FingerDiceDuel.Assistant
                 IdentityRole targetRole = game.IdentityOf(target);
                 bool targetIsLord = targetRole == IdentityRole.Lord;
 
+                int suspicion = game.RebelSuspicionOf(target);
+
                 if (actorRole == IdentityRole.Rebel && targetIsLord)
                 {
                     score += 1000000;
                 }
-                else if (IdentityRoleInfo.IsLordSide(actorRole)
-                         && game.HasAttackedLord(target))
+                else if (IdentityRoleInfo.IsLordSide(actorRole))
                 {
-                    // 主忠方：攻击过主公的人按“反贼嫌疑”优先处理。
-                    score += 900000;
+                    // 主忠方：优先攻击范围内最被怀疑是反贼的人。
+                    score += suspicion * 200000;
+                    if (suspicion >= GameManager.MajorRebelSuspicion)
+                        score += 500000;
                 }
                 else if (actorRole == IdentityRole.Traitor)
                 {
-                    int aliveNonLord = 0;
-                    IReadOnlyList<PlayerState> all = game.Players;
-                    for (int i = 0; i < all.Count; i++)
-                        if (all[i] != null && all[i].IsAlive
-                            && game.IdentityOf(all[i]) != IdentityRole.Lord)
-                            aliveNonLord++;
+                    int loyalAlive = game.AliveCountOf(IdentityRole.Loyalist);
+                    int rebelAlive = game.AliveCountOf(IdentityRole.Rebel);
+                    int lordSideAlive = 1 + loyalAlive;
 
-                    if (targetIsLord && aliveNonLord <= 1) score += 1000000;
-                    else if (targetIsLord) score -= 500000;
+                    if (targetIsLord)
+                    {
+                        // 所有忠臣/反贼死光前绝不攻击主公。
+                        score += (loyalAlive == 0 && rebelAlive == 0)
+                            ? 1000000 : -1000000;
+                    }
+                    else if (game.DeadRebelCount < 2
+                             || !(lordSideAlive > rebelAlive))
+                    {
+                        // 两个反贼阵亡前，行动轨迹同主忠方。
+                        score += suspicion * 200000;
+                    }
+                    else if (targetRole == IdentityRole.Loyalist)
+                    {
+                        // 主忠方人数大于反贼后，开始攻击忠臣。
+                        score += 900000;
+                    }
+                    else if (targetRole == IdentityRole.Rebel)
+                    {
+                        score -= 300000;
+                    }
                 }
             }
 

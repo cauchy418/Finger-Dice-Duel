@@ -213,6 +213,51 @@ namespace FingerDiceDuel.Core
 
         private readonly HashSet<PlayerState> _attackedLord = new HashSet<PlayerState>();
 
+        /// <summary>反贼嫌疑值（0~10，公开行为推断，不代表真实身份）。</summary>
+        public const int MajorRebelSuspicion = 5;
+        public const int MinorRebelSuspicion = 1;
+
+        private readonly Dictionary<PlayerState, int> _rebelSuspicion
+            = new Dictionary<PlayerState, int>();
+
+        public int RebelSuspicionOf(PlayerState player)
+            => player != null && _rebelSuspicion.TryGetValue(player, out int v) ? v : 0;
+
+        public bool IsMajorRebelSuspect(PlayerState p)
+            => RebelSuspicionOf(p) >= MajorRebelSuspicion;
+
+        /// <summary>已阵亡反贼数量（身份死亡公开，内奸可据此切换策略）。</summary>
+        public int DeadRebelCount
+        {
+            get
+            {
+                int n = 0;
+                for (int i = 0; i < _players.Count; i++)
+                    if (_players[i] != null && !_players[i].IsAlive
+                        && IdentityOf(_players[i]) == IdentityRole.Rebel) n++;
+                return n;
+            }
+        }
+
+        public int AliveCountOf(IdentityRole role)
+        {
+            int n = 0;
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i] != null && _players[i].IsAlive
+                    && IdentityOf(_players[i]) == role) n++;
+            return n;
+        }
+
+        private void AddRebelSuspicion(PlayerState p, int delta)
+        {
+            if (p == null || delta == 0) return;
+            int old = RebelSuspicionOf(p);
+            int next = old + delta;
+            if (next < 0) next = 0;
+            if (next > 10) next = 10;
+            _rebelSuspicion[p] = next;
+        }
+
         /// <summary>该玩家是否攻击过主公（主忠方 AI 据此标记为反贼优先目标）。</summary>
         public bool HasAttackedLord(PlayerState player) => player != null && _attackedLord.Contains(player);
 
@@ -223,6 +268,44 @@ namespace FingerDiceDuel.Core
             if (IdentityOf(defender) != IdentityRole.Lord) return;
             if (IdentityOf(actor) == IdentityRole.Lord) return;
             _attackedLord.Add(actor);
+            AddRebelSuspicion(actor, MajorRebelSuspicion);
+        }
+
+        /// <summary>
+        /// 攻击行为结束后的怀疑度推断。
+        ///
+        ///   · 攻击主公 -> 大幅怀疑（在 MarkAttackedLord 里 +5）；
+        ///   · 攻击范围内有大幅嫌疑目标，却打了别人 -> 小幅怀疑 +1；
+        ///   · 之前有嫌疑，后来持续攻击大幅嫌疑目标 -> 降低嫌疑。
+        /// </summary>
+        public void ApplySuspicionAfterAttack(PlayerState actor, PlayerState target)
+        {
+            if (!IsIdentityMode || actor == null || target == null) return;
+            if (ReferenceEquals(actor, target)) return;
+            if (IdentityOf(target) == IdentityRole.Lord) return; // 已由 MarkAttackedLord 处理
+
+            if (IsMajorRebelSuspect(target))
+            {
+                AddRebelSuspicion(actor, -2);
+                return;
+            }
+
+            PlayerState best = null;
+            int bestScore = 0;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || !p.IsAlive || ReferenceEquals(p, actor)) continue;
+                if (!CanReach(actor, p)) continue;
+                int sc = RebelSuspicionOf(p);
+                if (sc > bestScore) { bestScore = sc; best = p; }
+            }
+
+            if (bestScore >= MajorRebelSuspicion
+                && !ReferenceEquals(best, target))
+            {
+                AddRebelSuspicion(actor, MinorRebelSuspicion);
+            }
         }
 
         public IdentityRole IdentityOf(PlayerState player)
@@ -1810,6 +1893,7 @@ namespace FingerDiceDuel.Core
             LastTurnResult = result;
 
             MarkAttackedLord(actor, victim);
+            ApplySuspicionAfterAttack(actor, victim);
 
             PendingStealAttackHand = null;
             PendingStealAttackValue = 0;
@@ -2506,6 +2590,7 @@ namespace FingerDiceDuel.Core
                 || effect == HandEffectType.Attack6
                 || effect == HandEffectType.Attack8)
                 MarkAttackedLord(actor, opponent);
+                ApplySuspicionAfterAttack(actor, opponent);
 
             // 4. 胜负判定
             CheckGameOver();

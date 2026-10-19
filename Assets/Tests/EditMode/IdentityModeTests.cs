@@ -141,7 +141,46 @@ namespace FingerDiceDuel.Tests
 
             Assert.IsTrue(game.HasAttackedLord(p[1]),
                 "攻击过主公的玩家应被主忠方标记。");
+            Assert.AreEqual(GameManager.MajorRebelSuspicion,
+                game.RebelSuspicionOf(p[1]), "攻击主公应大幅提高反贼怀疑。");
             Assert.IsFalse(game.HasAttackedLord(p[2]));
+        }
+
+        [Test]
+        public void Ignoring_a_major_suspect_raises_minor_suspicion_and_attacking_them_lowers_it()
+        {
+            var p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Rebel, IdentityRole.Loyalist,
+                IdentityRole.Rebel, IdentityRole.Loyalist, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            GameManager game = GameManager.CreateIdentityEight(p, providers, roles);
+
+            // p1（座位2）攻击主公 -> 大幅怀疑。
+            p[1].LeftHand.SetValue(3);
+            p[0].LeftHand.SetValue(1);
+            game.ExecuteTurn(p[1], p[1].LeftHand, p[0].LeftHand);
+            Assert.IsTrue(game.IsMajorRebelSuspect(p[1]));
+
+            // p2（座位3）攻击 p3（座位4），而范围内有 p1：小幅怀疑。
+            p[2].LeftHand.SetValue(3);
+            p[3].LeftHand.SetValue(1);
+            game.ExecuteTurn(p[2], p[2].LeftHand, p[3].LeftHand);
+            Assert.AreEqual(GameManager.MinorRebelSuspicion,
+                game.RebelSuspicionOf(p[2]), "放着大幅嫌疑目标不打，应小幅怀疑。");
+
+            // p2 改为攻击 p1，怀疑降低。
+            p[2].LeftHand.SetValue(3);
+            p[1].LeftHand.SetValue(1);
+            game.ExecuteTurn(p[2], p[2].LeftHand, p[1].LeftHand);
+            Assert.AreEqual(0, game.RebelSuspicionOf(p[2]),
+                "攻击被怀疑对象应降低自身嫌疑。");
         }
     }
 }
