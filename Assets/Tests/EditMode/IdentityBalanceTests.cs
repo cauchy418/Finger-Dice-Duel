@@ -76,8 +76,8 @@ namespace FingerDiceDuel.Tests
 
             for (int g = 0; g < Games; g++)
             {
-                List<CharacterDefinition> defs = PickCharacters(rng);
                 IdentityRole[] roles = PickRoles(rng);
+                List<CharacterDefinition> defs = PickCharactersForRoles(rng, roles);
 
                 var seated = new List<PlayerState>(8);
                 var providers = new List<IChoiceProvider>(8);
@@ -173,6 +173,7 @@ namespace FingerDiceDuel.Tests
             var sb = new StringBuilder();
             sb.AppendLine("=== 8 人身份局抽样统计 ===");
             sb.AppendLine($"总对局 {Games}，异常 {errors}，模拟器强停 {stalls}，未分出胜负 {draws}");
+            sb.AppendLine("角色选择：按各身份上一轮胜率排名加权偏向高胜角色（全 AI）。");
             if (firstError != null) sb.AppendLine("首个异常：" + firstError);
             sb.AppendLine($"主公存活结束 {lordSurvived} 局");
             if (firstStall != null) sb.AppendLine("首个强停现场：" + firstStall);
@@ -242,6 +243,80 @@ namespace FingerDiceDuel.Tests
             System.IO.File.WriteAllText("Tools/identity-report.txt", sb.ToString());
 
             Assert.True(errors == 0, "身份局抽样不应出现异常：" + firstError);
+        }
+
+        /// <summary>
+        /// 各身份的高胜角色偏好（来自上一轮 2,000 局身份内胜率排序）。
+        /// 玩家不是必选第一，而是按名次权重加权选择；角色仍要求 8 人不重复。
+        /// </summary>
+        private static readonly Dictionary<IdentityRole, string[]> RoleRankings =
+            new Dictionary<IdentityRole, string[]>
+            {
+                [IdentityRole.Lord] = new[]
+                {
+                    "巨人", "圣武士", "士兵", "邪术师", "狼人",
+                    "猎人", "野蛮人", "骑士", "剑客", "术士",
+                },
+                [IdentityRole.Loyalist] = new[]
+                {
+                    "吟游诗人", "咒术师", "邪术师", "术士", "魔射手",
+                    "牧师", "妖术师", "刺客", "武僧", "游侠",
+                },
+                [IdentityRole.Rebel] = new[]
+                {
+                    "术士", "魔射手", "圣武士", "邪术师", "咒术师",
+                    "法师", "巨人", "妖术师", "战士", "狼人",
+                },
+                [IdentityRole.Traitor] = new[]
+                {
+                    "圣武士", "剑客", "魔射手", "咒术师", "牧师",
+                    "邪术师", "狼人", "术士", "巨人", "士兵",
+                },
+            };
+
+        private static double RolePickWeight(IdentityRole role, string name)
+        {
+            if (!RoleRankings.TryGetValue(role, out string[] ranking)) return 1.0;
+            for (int i = 0; i < ranking.Length; i++)
+                if (ranking[i] == name)
+                    return new[] { 12.0, 9.0, 7.0, 5.0, 4.0, 3.0, 2.5, 2.0, 1.5, 1.2 }[i];
+            return 1.0;
+        }
+
+        private static List<CharacterDefinition> PickCharactersForRoles(Random rng,
+                                                                      IdentityRole[] roles)
+        {
+            var pool = new List<CharacterDefinition>();
+            foreach (CharacterDefinition d in CharacterDefinition.BuiltIn)
+                if (CharacterFactory.IsRegistered(d.Logic)) pool.Add(d);
+
+            var picked = new List<CharacterDefinition>(8);
+            var seatOrder = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
+            for (int i = 7; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                int t = seatOrder[i]; seatOrder[i] = seatOrder[j]; seatOrder[j] = t;
+            }
+
+            foreach (int seat in seatOrder)
+            {
+                double total = 0;
+                for (int i = 0; i < pool.Count; i++)
+                    total += RolePickWeight(roles[seat], pool[i].DisplayName);
+
+                double roll = rng.NextDouble() * total;
+                int chosen = 0;
+                for (int i = 0; i < pool.Count; i++)
+                {
+                    roll -= RolePickWeight(roles[seat], pool[i].DisplayName);
+                    if (roll <= 0) { chosen = i; break; }
+                }
+
+                picked.Add(pool[chosen]);
+                pool.RemoveAt(chosen);
+            }
+
+            return picked;
         }
 
         private static List<CharacterDefinition> PickCharacters(Random rng)
