@@ -1,0 +1,150 @@
+=== 8 人身份局抽样统计 ===
+总对局 2000，异常 0，模拟器强停 8，未分出胜负 589
+角色选择：随机选角（全 AI）。
+主公存活结束 413 局
+首个强停现场：phase=ChoosingTargetHand actor=P4 activeHP=11 hands=4/2 probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False ai=FAIL-STEP2 phase=ChoosingTargetHand actor=P4 current=P4 acted=2 target=4 sameAsSelected=False targetLocked=True ownsTarget=True isGameOver=False thief=
+强停原因：
+     2  ChoosingTargetHand|skip=False|round=7|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+     1  ChoosingTargetHand|skip=False|round=6|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+     2  ChoosingTargetHand|skip=False|round=1|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+     1  ChoosingTargetHand|skip=False|round=2|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+     1  ChoosingTargetHand|skip=False|round=10|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+     1  ChoosingTargetHand|skip=False|round=5|probe=wizardDeclineAnswered=False idx=0/0 preTarget=False phase=ChoosingTargetHand sel=True tgt=False
+
+身份        胜 / 场次    身份胜率
+主公       404 / 2000      20.2%
+忠臣       808 / 4000      20.2%
+反贼      3168 / 8000      39.6%
+内奸       215 / 2000      10.8%
+
+角色总胜率（所有身份合计）：
+圣武士        266 / 666       39.9%
+邪术师        274 / 700       39.1%
+巨人         261 / 670       39.0%
+咒术师        248 / 721       34.4%
+术士         231 / 680       34.0%
+魔射手        223 / 694       32.1%
+妖术师        200 / 642       31.2%
+吟游诗人       196 / 659       29.7%
+狼人         199 / 670       29.7%
+战士         193 / 652       29.6%
+牧师         189 / 639       29.6%
+剑客         178 / 627       28.4%
+士兵         190 / 673       28.2%
+忍者         179 / 658       27.2%
+魔术师        176 / 648       27.2%
+刺客         180 / 672       26.8%
+法师         185 / 692       26.7%
+骑士         186 / 705       26.4%
+猎人         167 / 635       26.3%
+游侠         179 / 683       26.2%
+野蛮人        166 / 657       25.3%
+赌徒         156 / 661       23.6%
+武僧         132 / 635       20.8%
+盗贼          41 / 661        6.2%
+
+各身份角色胜率：
+
+--- 主公 ---
+巨人          30 / 80        37.5%
+圣武士         32 / 86        37.2%
+邪术师         24 / 81        29.6%
+士兵          23 / 79        29.1%
+咒术师         24 / 83        28.9%
+忍者          23 / 88        26.1%
+魔射手         26 / 100       26.0%
+战士          20 / 82        24.4%
+剑客          17 / 70        24.3%
+狼人          18 / 76        23.7%
+牧师          17 / 75        22.7%
+魔术师         16 / 71        22.5%
+术士          21 / 101       20.8%
+妖术师         16 / 77        20.8%
+刺客          13 / 72        18.1%
+野蛮人         15 / 92        16.3%
+骑士          14 / 88        15.9%
+吟游诗人         9 / 69        13.0%
+游侠          11 / 98        11.2%
+赌徒           9 / 83        10.8%
+法师           9 / 89        10.1%
+猎人           6 / 61         9.8%
+武僧           8 / 113        7.1%
+盗贼           3 / 86         3.5%
+
+--- 忠臣 ---
+咒术师         52 / 170       30.6%
+邪术师         56 / 190       29.5%
+术士          46 / 161       28.6%
+巨人          43 / 164       26.2%
+吟游诗人        42 / 163       25.8%
+魔射手         46 / 185       24.9%
+牧师          37 / 154       24.0%
+妖术师         35 / 151       23.2%
+法师          41 / 186       22.0%
+魔术师         35 / 161       21.7%
+刺客          32 / 166       19.3%
+武僧          28 / 148       18.9%
+狼人          34 / 181       18.8%
+野蛮人         32 / 171       18.7%
+忍者          29 / 164       17.7%
+战士          29 / 167       17.4%
+猎人          28 / 162       17.3%
+赌徒          29 / 174       16.7%
+游侠          27 / 168       16.1%
+圣武士         23 / 145       15.9%
+剑客          23 / 149       15.4%
+骑士          25 / 168       14.9%
+士兵          27 / 183       14.8%
+盗贼           9 / 169        5.3%
+
+--- 反贼 ---
+圣武士        189 / 348       54.3%
+邪术师        176 / 338       52.1%
+巨人         166 / 338       49.1%
+术士         153 / 337       45.4%
+魔射手        146 / 324       45.1%
+妖术师        143 / 336       42.6%
+咒术师        151 / 356       42.4%
+狼人         129 / 316       40.8%
+牧师         131 / 324       40.4%
+战士         134 / 332       40.4%
+吟游诗人       136 / 337       40.4%
+游侠         136 / 338       40.2%
+士兵         133 / 333       39.9%
+剑客         129 / 326       39.6%
+忍者         123 / 314       39.2%
+骑士         140 / 365       38.4%
+魔术师        123 / 326       37.7%
+刺客         128 / 345       37.1%
+法师         132 / 359       36.8%
+猎人         124 / 338       36.7%
+赌徒         112 / 315       35.6%
+野蛮人        112 / 330       33.9%
+武僧          93 / 297       31.3%
+盗贼          29 / 328        8.8%
+
+--- 内奸 ---
+圣武士         22 / 87        25.3%
+巨人          22 / 88        25.0%
+邪术师         18 / 91        19.8%
+咒术师         21 / 112       18.8%
+狼人          18 / 97        18.6%
+战士          10 / 71        14.1%
+术士          11 / 81        13.6%
+猎人           9 / 74        12.2%
+剑客           9 / 82        11.0%
+野蛮人          7 / 64        10.9%
+吟游诗人         9 / 90        10.0%
+士兵           7 / 78         9.0%
+骑士           7 / 84         8.3%
+刺客           7 / 89         7.9%
+妖术师          6 / 78         7.7%
+赌徒           6 / 89         6.7%
+游侠           5 / 79         6.3%
+魔射手          5 / 85         5.9%
+法师           3 / 58         5.2%
+牧师           4 / 86         4.7%
+忍者           4 / 92         4.3%
+武僧           3 / 77         3.9%
+魔术师          2 / 90         2.2%
+盗贼           0 / 78         0.0%

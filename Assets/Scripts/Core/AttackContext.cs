@@ -135,6 +135,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<HandEffect, int, Hand> AiDecisionLookup { get; set; }
 
+        /// <summary>
+        /// 主公即将受到致命伤害时，由主忠方选择一名忠臣替死。
+        /// 返回替死的忠臣（已阵亡）；返回 null 表示不替死。
+        /// </summary>
+        public System.Func<PlayerState, int, PlayerState> LethalLoyalistSacrifice { get; set; }
+
         /// <summary>查询 AI 抉择（便捷封装，未注入时返回 null）。</summary>
         public Hand GetAiDecision(HandEffect effect, int variant = 0)
             => AiDecisionLookup?.Invoke(effect, variant);
@@ -328,6 +334,18 @@ namespace FingerDiceDuel.Core
                 }
 
                 if (i == 0) perHitReduction = reductionThisSegment;
+
+                // 主公即将受到致命伤害：忠臣可以选择替死，取消这次攻击。
+                if (LethalLoyalistSacrifice != null)
+                {
+                    PlayerState savior = LethalLoyalistSacrifice(Defender, dealt);
+                    if (savior != null)
+                    {
+                        WasCancelled = true;
+                        CancelledBy = savior.Name + "（替死）";
+                        break;
+                    }
+                }
 
                 Defender.TakeDamage(dealt);
                 AppliedDamage += dealt;

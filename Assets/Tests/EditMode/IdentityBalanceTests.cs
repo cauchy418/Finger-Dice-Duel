@@ -58,7 +58,14 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Identity_role_and_character_win_rates_2000_games()
+        public void Identity_random_character_win_rates_2000_games()
+            => RunIdentitySample(false, "Tools/identity-report-random.txt", "随机选角");
+
+        [Test]
+        public void Identity_biased_character_win_rates_2000_games()
+            => RunIdentitySample(true, "Tools/identity-report.txt", "按身份胜率偏好选角");
+
+        private void RunIdentitySample(bool biased, string reportPath, string label)
         {
             var rng = new Random(20261018);
             var roleGames = new Dictionary<IdentityRole, int>();
@@ -77,7 +84,9 @@ namespace FingerDiceDuel.Tests
             for (int g = 0; g < Games; g++)
             {
                 IdentityRole[] roles = PickRoles(rng);
-                List<CharacterDefinition> defs = PickCharactersForRoles(rng, roles);
+                List<CharacterDefinition> defs = biased
+                    ? PickCharactersForRoles(rng, roles)
+                    : PickCharacters(rng);
 
                 var seated = new List<PlayerState>(8);
                 var providers = new List<IChoiceProvider>(8);
@@ -173,7 +182,7 @@ namespace FingerDiceDuel.Tests
             var sb = new StringBuilder();
             sb.AppendLine("=== 8 人身份局抽样统计 ===");
             sb.AppendLine($"总对局 {Games}，异常 {errors}，模拟器强停 {stalls}，未分出胜负 {draws}");
-            sb.AppendLine("角色选择：按各身份上一轮胜率排名加权偏向高胜角色（全 AI）。");
+            sb.AppendLine($"角色选择：{label}（全 AI）。");
             if (firstError != null) sb.AppendLine("首个异常：" + firstError);
             sb.AppendLine($"主公存活结束 {lordSurvived} 局");
             if (firstStall != null) sb.AppendLine("首个强停现场：" + firstStall);
@@ -240,7 +249,7 @@ namespace FingerDiceDuel.Tests
             }
 
             Console.WriteLine(sb.ToString());
-            System.IO.File.WriteAllText("Tools/identity-report.txt", sb.ToString());
+            System.IO.File.WriteAllText(reportPath, sb.ToString());
 
             Assert.True(errors == 0, "身份局抽样不应出现异常：" + firstError);
         }

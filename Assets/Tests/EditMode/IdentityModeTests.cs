@@ -321,5 +321,32 @@ namespace FingerDiceDuel.Tests
             Assert.False(game.TraitorRevealed,
                 "主公前三个阵亡时，内奸来不及亮身份。");
         }
+
+        [Test]
+        public void Lethal_attack_on_lord_is_cancelled_by_one_loyalist_sacrifice()
+        {
+            var p = new List<PlayerState>(8);
+            for (int i = 0; i < 8; i++)
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Rebel, IdentityRole.Loyalist,
+                IdentityRole.Loyalist, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++) providers.Add(new SimpleChoiceProvider());
+            GameManager game = GameManager.CreateIdentityEight(p, providers, roles);
+
+            p[0].SetHealthExact(1);
+            p[1].LeftHand.SetValue(3);   // 与主公的 1 相加 = 4，攻击
+            p[0].LeftHand.SetValue(1);
+            TurnResult result = game.ExecuteTurn(p[1], p[1].LeftHand, p[0].LeftHand);
+
+            Assert.IsTrue(result.WasCancelled);
+            Assert.AreEqual(1, p[0].Health, "替死后主公不应受到这次攻击伤害。");
+            Assert.False(p[2].IsAlive, "两名忠臣中只有一名替死。");
+            Assert.IsTrue(p[3].IsAlive);
+        }
     }
 }

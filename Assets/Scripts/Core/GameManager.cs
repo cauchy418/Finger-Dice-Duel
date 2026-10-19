@@ -1902,6 +1902,7 @@ namespace FingerDiceDuel.Core
             {
                 var ctx = new AttackContext(actor, victim, PendingStealAttackHand,
                                             PendingStealAttackValue);
+                ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                 ctx.Resolve(GetChoiceProvider(victim), this);
 
                 result.DamageDealt = ctx.AppliedDamage;
@@ -2514,6 +2515,7 @@ namespace FingerDiceDuel.Core
                         }
 
                         var ctx = new AttackContext(actor, opponent, actedHand, (int)effect);
+                        ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
@@ -3277,6 +3279,28 @@ namespace FingerDiceDuel.Core
                     && IdentityOf(p) == IdentityRole.Loyalist)
                     p.SetHealthExact(0);
             }
+        }
+
+        /// <summary>
+        /// 主公即将受到致命伤害时，选择一名存活忠臣替死并取消这次攻击。
+        /// 一次攻击最多一名忠臣替死（由 AttackContext 取消后续结算保证）。
+        /// </summary>
+        public PlayerState TryLoyalistSacrifice(PlayerState lord, int incomingDamage)
+        {
+            if (!IsIdentityMode || lord == null || !lord.IsAlive) return null;
+            if (IdentityOf(lord) != IdentityRole.Lord) return null;
+            if (incomingDamage <= 0 || incomingDamage < lord.Health) return null;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p != null && p.IsAlive && IdentityOf(p) == IdentityRole.Loyalist)
+                {
+                    p.SetHealthExact(0);
+                    return p;
+                }
+            }
+            return null;
         }
 
         private void RevealTraitorIfNeeded()
