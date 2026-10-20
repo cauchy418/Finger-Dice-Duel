@@ -22,6 +22,7 @@ async function contact(group,keys,cols,cellW,cellH,imgW,imgH,filename){
 }
 async function assembly(){
  const p=[];
+ let paintedClasses=false;try{paintedClasses=JSON.parse(await fs.readFile(path.join(root,'Art/Production/painted-icons-v2/painted-manifest.json'),'utf8')).assets.some(a=>a.group==='Classes');}catch(e){if(e.code!=='ENOENT')throw e;}
  async function add(rel,x,y,w,h){p.push({input:await sharp(path.join(dst,rel)).resize(w,h,{fit:'fill'}).png().toBuffer(),left:x,top:y});}
  async function text(t,x,y,size=24,c){p.push({input:await label(t,size,c),left:x,top:y});}
  await add('UI/d20_sigil.png',592,330,500,500);
@@ -32,8 +33,8 @@ async function assembly(){
  await text('手指骰子对决',70,58,48);
  await text('第 3 轮',115,144,28);
  for(const [y,key,name,hp] of [[30,'wizard','法师','18 / 20'],[628,'soldier','士兵','16 / 20']]){
-   await add('UI/badge_ring.png',690,y,108,108);
-   await add(`Classes/${key}.png`,703,y+13,82,82);
+   if(paintedClasses)await add(`Classes/${key}.png`,685,y-5,118,118);
+   else{await add('UI/badge_ring.png',690,y,108,108);await add(`Classes/${key}.png`,703,y+13,82,82);}
    await text(name,820,y+7,29);
    await add('UI/health_track.png',814,y+55,340,33);
    await add('UI/health_fill.png',826,y+61,key==='wizard'?288:255,20);

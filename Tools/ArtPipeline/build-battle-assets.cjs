@@ -5,6 +5,7 @@ const {sharp, root} = require('./deps.cjs');
 const src = path.join(root,'Art/Production/battle-v1/svg');
 const dst = path.join(root,'Assets/Resources/Art/Battle/v1');
 const manifest=[];
+let activePainted=new Set();
 const gold='#AD8B50', ivory='#E5D6B3';
 const line=(d,s=gold,w=4)=>`<path d="${d}" fill="none" stroke="${s}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
 const poly=(d,c='url(#metal)')=>`<path d="${d}" fill="${c}" stroke="#D6BC83" stroke-width="1.6" stroke-linejoin="round"/>`;
@@ -17,7 +18,8 @@ async function emit(group,key,w,h,body,extra={}){
   await fs.mkdir(path.join(src,group),{recursive:true});
   await fs.mkdir(path.join(dst,group),{recursive:true});
   await fs.writeFile(path.join(src,group,`${key}.svg`),text);
-  await sharp(Buffer.from(text)).png().toFile(path.join(dst,rel));
+  if(!activePainted.has(rel))await sharp(Buffer.from(text)).png().toFile(path.join(dst,rel));
+  else await fs.access(path.join(dst,rel));
   manifest.push({key,group,path:rel,width:w,height:h,alpha:true,source:`Art/Production/battle-v1/svg/${group}/${key}.svg`,...extra});
 }
 function corners(w,h,c=gold){return [[0,0,1,1],[w,0,-1,1],[0,h,1,-1],[w,h,-1,-1]].map(([x,y,sx,sy])=>`<g transform="translate(${x} ${y}) scale(${sx} ${sy})">${line('M10 42V10H42 M17 35V17H35 M17 28L28 17 M27 34L34 27',c,1.7)}<path d="M30 10L37 6 44 10 37 14Z" fill="${c}"/></g>`).join('');}
@@ -108,9 +110,10 @@ async function icons(){
   for(const [key,body,c] of overlayIcons)await emit('Overlay',key,256,256,`<g transform="scale(2)" style="color:${c}">${body.replaceAll('url(#metal)','currentColor').replaceAll(gold,'currentColor').replaceAll('#D6BC83','currentColor')}</g>`);
 }
 async function main(){
+  try{const p=JSON.parse(await fs.readFile(path.join(root,'Art/Production/painted-icons-v2/painted-manifest.json'),'utf8'));activePainted=new Set(p.assets.map(a=>a.path));}catch(e){if(e.code!=='ENOENT')throw e;}
   await ui(); await icons();
   await fs.mkdir(path.join(root,'Art/Production/battle-v1'),{recursive:true});
   await fs.writeFile(path.join(root,'Art/Production/battle-v1/vector-manifest.json'),JSON.stringify({version:1,assets:manifest},null,2));
-  console.log(`Exported ${manifest.length} original SVG masters and transparent PNG assets.`);
+  console.log(`Built ${manifest.length} vector masters; preserved ${activePainted.size} active painted replacements.`);
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

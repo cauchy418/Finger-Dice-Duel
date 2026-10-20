@@ -7,7 +7,10 @@ async function main(){
  const dst=path.join(root,'Assets/Resources/Art/Battle/v1');
  const vector=JSON.parse(await fs.readFile(path.join(art,'vector-manifest.json'),'utf8'));
  const hands=JSON.parse(await fs.readFile(path.join(art,'hand-manifest.json'),'utf8'));
- const assets=[...vector.assets];
+ let painted=[];
+ try{painted=JSON.parse(await fs.readFile(path.join(root,'Art/Production/painted-icons-v2/painted-manifest.json'),'utf8')).assets;}catch(e){if(e.code!=='ENOENT')throw e;}
+ const overrides=new Map(painted.map(a=>[a.path,a]));
+ const assets=vector.assets.map(a=>({...a,...(overrides.get(a.path)||{})}));
  for(const hand of hands.hands)for(const side of ['left','right'])assets.push({key:`hand_${side}_${hand.value}`,group:'Hands',path:hand[side],width:512,height:640,alpha:true,value:hand.value,side,pivot:[.5,30/640],source:hand.source});
  const bg=await sharp(path.join(dst,'Backgrounds/battle_table.png')).metadata();
  assets.push({key:'battle_table',group:'Backgrounds',path:'Backgrounds/battle_table.png',width:bg.width,height:bg.height,source:'Art/Production/battle-v1/prompts/background.txt'});
@@ -31,9 +34,9 @@ async function main(){
    const raw=await sharp(path.join(dst,`Hands/hand_left_${i}.png`)).ensureAlpha().raw().toBuffer();
    if(raw[3]!==0||raw[raw.length-1]!==0)throw new Error(`Opaque hand corners: ${i}`);
  }
- const manifest={version:1,date:'2026-10-20',status:'Exported first production asset pack; runtime not wired; visual review and engine import still required.',resourceRoot:'Assets/Resources/Art/Battle/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets};
+ const manifest={version:painted.length?2:1,date:'2026-10-20',status:'Exported production assets; static assembly preview checked; runtime not wired.',paintedIcons:painted.length,resourceRoot:'Assets/Resources/Art/Battle/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets};
  await fs.writeFile(path.join(art,'asset-manifest.json'),JSON.stringify(manifest,null,2));
- const report={pngFiles:assets.length,counts,checks:['PNG decoding and dimensions','No empty alpha masks','All asset content hashes distinct','10 left/right pixel-perfect mirror pairs','Transparent hand corners'],manual:['Corrected 4 has four extended long fingers and one folded thumb','Corrected 6 has extended pinky/thumb and three folded fingers','0 and 9 canonicalized to anatomical left before mirroring','Contact sheets and assembly preview visually inspected'],runtimeVerified:false};
+ const report={pngFiles:assets.length,paintedIcons:painted.length,counts,checks:['PNG decoding and dimensions','No empty alpha masks','All asset content hashes distinct','10 left/right pixel-perfect mirror pairs','Transparent hand corners'],manual:['Corrected 4 has four extended long fingers and one folded thumb','Corrected 6 has extended pinky/thumb and three folded fingers','0 and 9 canonicalized to anatomical left before mirroring','Contact sheets and assembly preview visually inspected',...(painted.length?['46 painted subjects checked against project damage/status/class keys','Old-gold frames and 28/40/64px previews inspected; fine detail needs larger UI sizes']:[])],runtimeVerified:false};
  await fs.writeFile(path.join(art,'validation-report.json'),JSON.stringify(report,null,2));
  console.log(JSON.stringify(report));
 }

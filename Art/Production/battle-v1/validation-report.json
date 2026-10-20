@@ -1,5 +1,6 @@
 {
   "pngFiles": 97,
+  "paintedIcons": 46,
   "counts": {
     "UI": 19,
     "Damage": 13,
@@ -20,7 +21,9 @@
     "Corrected 4 has four extended long fingers and one folded thumb",
     "Corrected 6 has extended pinky/thumb and three folded fingers",
     "0 and 9 canonicalized to anatomical left before mirroring",
-    "Contact sheets and assembly preview visually inspected"
+    "Contact sheets and assembly preview visually inspected",
+    "46 painted subjects checked against project damage/status/class keys",
+    "Old-gold frames and 28/40/64px previews inspected; fine detail needs larger UI sizes"
   ],
   "runtimeVerified": false
 }
