@@ -108,6 +108,7 @@ namespace FingerDiceDuel.UI
                 _candidateButtons[i] = MakeButton("?", new Vector2(
                     (i % 2 == 0 ? -105f : 105f),
                     40f - (i / 2) * (BtnH + Gap - 6f)), () => ToggleCandidate(index));
+                _candidateButtons[i].name = "BardTarget" + i;
                 _candidateLabels[i] = _candidateButtons[i].GetComponentInChildren<Text>();
             }
 

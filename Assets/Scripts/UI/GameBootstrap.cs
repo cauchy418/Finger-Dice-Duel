@@ -3250,6 +3250,10 @@ namespace FingerDiceDuel.UI
                 _board.SetDeclineButtonVisible(false);
             }
 
+            _board.SetSkillActionContext(_controller.PendingEffect,
+                _controller.IsHumanChooser ? _controller.Chooser : null, _controller.ActivePlayer,
+                _controller.PendingRequest?.Candidates, canAccept);
+
             // 临时诊断：把面板显隐的真实状态打出来 ——
             // "点了放弃却看不到 10 选 1"这类问题只能靠它定位
             // （是没进这个分支、还是面板没显示出来）。

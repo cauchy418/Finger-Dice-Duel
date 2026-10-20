@@ -9,6 +9,7 @@ namespace FingerDiceDuel.UI
         private RectTransform _die;
         private Text _number, _caption;
         private string _name;
+        private Vector2 _faceCenter;
         public RectTransform Root { get; private set; }
         public int? Face { get; private set; }
 
@@ -19,7 +20,8 @@ namespace FingerDiceDuel.UI
             var image = FrontEndArt.Image(result.Root, "PaintedD20", "Illustrations/d20_initiative", Vector2.zero, new Vector2(size, size), false);
             image.preserveAspect = true;
             result._die = image.rectTransform;
-            result._number = FrontEndArt.Text(result._die, "Face", "?", new Vector2(0, -size * 0.035f),
+            result._faceCenter = new Vector2(-size * 0.01f, size * 0.006f);
+            result._number = FrontEndArt.Text(result._die, "Face", "?", result._faceCenter,
                 new Vector2(size * 0.46f, size * 0.5f), Mathf.RoundToInt(size * 0.24f));
             result._number.font = UiFont.Bold;
             result._number.verticalOverflow = VerticalWrapMode.Overflow;
@@ -30,6 +32,7 @@ namespace FingerDiceDuel.UI
             result._caption = FrontEndArt.Text(result.Root, "Caption", caption,
                 new Vector2(0, -size * 0.57f), new Vector2(size + 110, 48), size >= 240 ? 25 : 21);
             result._name = caption;
+            result.SetFace(null);
             return result;
         }
 
@@ -38,6 +41,7 @@ namespace FingerDiceDuel.UI
         {
             Face = value;
             _number.text = value.HasValue ? value.Value.ToString() : "?";
+            UiInkAlignment.Center(_number, _faceCenter);
             _number.color = final && value == 1 ? new Color(1, 0.42f, 0.33f) : FrontEndArt.Gold;
             _caption.text = _name + (final && value == 20 ? " · 大成功" : final && value == 1 ? " · 大失败" : "");
         }

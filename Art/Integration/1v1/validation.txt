@@ -69,7 +69,7 @@ PASS left hand 9
 PASS right hand 9
 PASS exactly two clickable hands per side
 PASS actor hand initially clickable
-PASS visible hand receives UI raycast (first=PaintedHandCard, point=(519.65, 109.67), screen=1283x658)
+PASS visible hand receives UI raycast (first=PaintedHandCard, point=(519.46, 109.83), screen=1283x659)
 PASS click routes into controller selection
 PASS selected hand uses gold frame
 PASS target click resolves real 1+1 operation

@@ -228,6 +228,7 @@ namespace FingerDiceDuel.UI
             if (_stealButton != null) _stealButton.gameObject.SetActive(false);
             if (!painted)
             {
+                HideSkillChoices();
                 RestoreAction(_acceptButton, new Vector2(ChoiceButtonX, ChoiceAcceptY), new Vector2(ChoiceButtonWidth, ChoiceButtonHeight));
                 RestoreAction(_declineButton, new Vector2(ChoiceButtonX, ChoiceDeclineY), new Vector2(ChoiceButtonWidth, ChoiceButtonHeight));
                 RestoreAction(_skipButton, Vector2.zero, new Vector2(180, 56));
@@ -245,8 +246,11 @@ namespace FingerDiceDuel.UI
             if (label != null)
             {
                 label.rectTransform.sizeDelta = size;
+                label.rectTransform.anchoredPosition = Vector2.zero;
                 label.fontSize = 26;
             }
+            var icon = button.transform.Find("SkillIcon");
+            if (icon != null) icon.gameObject.SetActive(false);
         }
 
         private void RefreshBattleHeader(PlayerState player, bool top)
@@ -275,26 +279,9 @@ namespace FingerDiceDuel.UI
         private void LayoutBattleActions()
         {
             if (!_paintedBattle) return;
-            bool top = _cardsB != null && ReferenceEquals(_battleChoiceOwner, _cardsB[0].Owner);
-            SkinAction(_acceptButton, new Vector2(267, top ? 290 : -280));
-            SkinAction(_declineButton, new Vector2(267, top ? 215 : -355));
-            SkinAction(_skipButton, new Vector2(267, -430));
-            SkinAction(_gambleButton, new Vector2(267, -355));
-            SkinAction(_stealButton, new Vector2(267, -280));
+            LayoutSkillActions();
             BattleArt.Button(_exitButton);
         }
 
-        private static void SkinAction(Button button, Vector2 position)
-        {
-            if (button == null) return;
-            Position(button.GetComponent<RectTransform>(), position, new Vector2(210, 62));
-            BattleArt.Button(button);
-            var label = button.GetComponentInChildren<Text>();
-            if (label != null)
-            {
-                label.rectTransform.sizeDelta = new Vector2(186, 50);
-                label.fontSize = 22;
-            }
-        }
     }
 }

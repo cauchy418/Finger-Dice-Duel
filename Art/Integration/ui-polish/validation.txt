@@ -1,0 +1,748 @@
+PASS visible numeral centered 1
+PASS visible numeral centered 2
+PASS visible numeral centered 3
+PASS visible numeral centered 4
+PASS visible numeral centered 5
+PASS visible numeral centered 6
+PASS visible numeral centered 7
+PASS visible numeral centered 8
+PASS visible numeral centered 9
+PASS visible numeral centered 10
+PASS visible numeral centered 11
+PASS visible numeral centered 12
+PASS visible numeral centered 13
+PASS visible numeral centered 14
+PASS visible numeral centered 15
+PASS visible numeral centered 16
+PASS visible numeral centered 17
+PASS visible numeral centered 18
+PASS visible numeral centered 19
+PASS visible numeral centered 20
+PASS emblem centered 士兵
+PASS emblem clears name 士兵
+PASS readable bold name 士兵
+PASS emblem centered 战士
+PASS emblem clears name 战士
+PASS readable bold name 战士
+PASS emblem centered 咒术师
+PASS emblem clears name 咒术师
+PASS readable bold name 咒术师
+PASS emblem centered 野蛮人
+PASS emblem clears name 野蛮人
+PASS readable bold name 野蛮人
+PASS emblem centered 牧师
+PASS emblem clears name 牧师
+PASS readable bold name 牧师
+PASS emblem centered 游侠
+PASS emblem clears name 游侠
+PASS readable bold name 游侠
+PASS emblem centered 狼人
+PASS emblem clears name 狼人
+PASS readable bold name 狼人
+PASS emblem centered 剑客
+PASS emblem clears name 剑客
+PASS readable bold name 剑客
+PASS emblem centered 忍者
+PASS emblem clears name 忍者
+PASS readable bold name 忍者
+PASS emblem centered 刺客
+PASS emblem clears name 刺客
+PASS readable bold name 刺客
+PASS emblem centered 圣武士
+PASS emblem clears name 圣武士
+PASS readable bold name 圣武士
+PASS emblem centered 妖术师
+PASS emblem clears name 妖术师
+PASS readable bold name 妖术师
+PASS emblem centered 魔射手
+PASS emblem clears name 魔射手
+PASS readable bold name 魔射手
+PASS emblem centered 赌徒
+PASS emblem clears name 赌徒
+PASS readable bold name 赌徒
+PASS emblem centered 骑士
+PASS emblem clears name 骑士
+PASS readable bold name 骑士
+PASS emblem centered 武僧
+PASS emblem clears name 武僧
+PASS readable bold name 武僧
+PASS emblem centered 巨人
+PASS emblem clears name 巨人
+PASS readable bold name 巨人
+PASS emblem centered 盗贼
+PASS emblem clears name 盗贼
+PASS readable bold name 盗贼
+PASS emblem centered 猎人
+PASS emblem clears name 猎人
+PASS readable bold name 猎人
+PASS emblem centered 魔术师
+PASS emblem clears name 魔术师
+PASS readable bold name 魔术师
+PASS emblem centered 法师
+PASS emblem clears name 法师
+PASS readable bold name 法师
+PASS emblem centered 术士
+PASS emblem clears name 术士
+PASS readable bold name 术士
+PASS emblem centered 邪术师
+PASS emblem clears name 邪术师
+PASS readable bold name 邪术师
+PASS emblem centered 吟游诗人
+PASS emblem clears name 吟游诗人
+PASS readable bold name 吟游诗人
+PASS emblem centered 士兵
+PASS emblem clears name 士兵
+PASS readable bold name 士兵
+PASS emblem centered 战士
+PASS emblem clears name 战士
+PASS readable bold name 战士
+PASS emblem centered 咒术师
+PASS emblem clears name 咒术师
+PASS readable bold name 咒术师
+PASS emblem centered 野蛮人
+PASS emblem clears name 野蛮人
+PASS readable bold name 野蛮人
+PASS emblem centered 牧师
+PASS emblem clears name 牧师
+PASS readable bold name 牧师
+PASS emblem centered 游侠
+PASS emblem clears name 游侠
+PASS readable bold name 游侠
+PASS emblem centered 狼人
+PASS emblem clears name 狼人
+PASS readable bold name 狼人
+PASS emblem centered 剑客
+PASS emblem clears name 剑客
+PASS readable bold name 剑客
+PASS emblem centered 忍者
+PASS emblem clears name 忍者
+PASS readable bold name 忍者
+PASS emblem centered 刺客
+PASS emblem clears name 刺客
+PASS readable bold name 刺客
+PASS emblem centered 圣武士
+PASS emblem clears name 圣武士
+PASS readable bold name 圣武士
+PASS emblem centered 妖术师
+PASS emblem clears name 妖术师
+PASS readable bold name 妖术师
+PASS emblem centered 魔射手
+PASS emblem clears name 魔射手
+PASS readable bold name 魔射手
+PASS emblem centered 赌徒
+PASS emblem clears name 赌徒
+PASS readable bold name 赌徒
+PASS emblem centered 骑士
+PASS emblem clears name 骑士
+PASS readable bold name 骑士
+PASS emblem centered 武僧
+PASS emblem clears name 武僧
+PASS readable bold name 武僧
+PASS emblem centered 巨人
+PASS emblem clears name 巨人
+PASS readable bold name 巨人
+PASS emblem centered 盗贼
+PASS emblem clears name 盗贼
+PASS readable bold name 盗贼
+PASS emblem centered 猎人
+PASS emblem clears name 猎人
+PASS readable bold name 猎人
+PASS emblem centered 魔术师
+PASS emblem clears name 魔术师
+PASS readable bold name 魔术师
+PASS emblem centered 法师
+PASS emblem clears name 法师
+PASS readable bold name 法师
+PASS emblem centered 术士
+PASS emblem clears name 术士
+PASS readable bold name 术士
+PASS emblem centered 邪术师
+PASS emblem clears name 邪术师
+PASS readable bold name 邪术师
+PASS emblem centered 吟游诗人
+PASS emblem clears name 吟游诗人
+PASS readable bold name 吟游诗人
+PASS emblem centered 士兵
+PASS emblem clears name 士兵
+PASS readable bold name 士兵
+PASS emblem centered 战士
+PASS emblem clears name 战士
+PASS readable bold name 战士
+PASS emblem centered 咒术师
+PASS emblem clears name 咒术师
+PASS readable bold name 咒术师
+PASS emblem centered 野蛮人
+PASS emblem clears name 野蛮人
+PASS readable bold name 野蛮人
+PASS emblem centered 牧师
+PASS emblem clears name 牧师
+PASS readable bold name 牧师
+PASS emblem centered 游侠
+PASS emblem clears name 游侠
+PASS readable bold name 游侠
+PASS emblem centered 狼人
+PASS emblem clears name 狼人
+PASS readable bold name 狼人
+PASS emblem centered 剑客
+PASS emblem clears name 剑客
+PASS readable bold name 剑客
+PASS emblem centered 忍者
+PASS emblem clears name 忍者
+PASS readable bold name 忍者
+PASS emblem centered 刺客
+PASS emblem clears name 刺客
+PASS readable bold name 刺客
+PASS emblem centered 圣武士
+PASS emblem clears name 圣武士
+PASS readable bold name 圣武士
+PASS emblem centered 妖术师
+PASS emblem clears name 妖术师
+PASS readable bold name 妖术师
+PASS emblem centered 魔射手
+PASS emblem clears name 魔射手
+PASS readable bold name 魔射手
+PASS emblem centered 赌徒
+PASS emblem clears name 赌徒
+PASS readable bold name 赌徒
+PASS emblem centered 骑士
+PASS emblem clears name 骑士
+PASS readable bold name 骑士
+PASS emblem centered 武僧
+PASS emblem clears name 武僧
+PASS readable bold name 武僧
+PASS emblem centered 巨人
+PASS emblem clears name 巨人
+PASS readable bold name 巨人
+PASS emblem centered 盗贼
+PASS emblem clears name 盗贼
+PASS readable bold name 盗贼
+PASS emblem centered 猎人
+PASS emblem clears name 猎人
+PASS readable bold name 猎人
+PASS emblem centered 魔术师
+PASS emblem clears name 魔术师
+PASS readable bold name 魔术师
+PASS emblem centered 法师
+PASS emblem clears name 法师
+PASS readable bold name 法师
+PASS emblem centered 术士
+PASS emblem clears name 术士
+PASS readable bold name 术士
+PASS emblem centered 邪术师
+PASS emblem clears name 邪术师
+PASS readable bold name 邪术师
+PASS emblem centered 吟游诗人
+PASS emblem clears name 吟游诗人
+PASS readable bold name 吟游诗人
+PASS real ranger defense request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS single dodge spends the selected one
+PASS single dodge prevents damage
+PASS real ranger defense request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS interactive SkillChoice1
+PASS raycast reaches SkillChoice1
+PASS right dodge button selects the right hand only
+PASS two-candidate dodge prevents damage
+PASS real ranger defense request
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS declining dodge keeps the hand and takes damage
+PASS real power-shot request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS power-shot button spends the two
+PASS assassin enters stealth through real operation
+PASS stealth blocks opposing attack
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS stealth skip available
+PASS stealth action explicitly named
+PASS action inside canvas SkipTurnButton
+PASS painted skill emblem SkipTurnButton
+PASS skill label fits SkipTurnButton
+PASS skill avoids log SkipTurnButton
+PASS skill avoids hint SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS stealth skip cannot be used twice
+PASS action inside canvas GambleButton
+PASS painted skill emblem GambleButton
+PASS skill label fits GambleButton
+PASS skill avoids log GambleButton
+PASS skill avoids hint GambleButton
+PASS skill avoids hand GambleButton
+PASS skill avoids hand GambleButton
+PASS skill avoids hand GambleButton
+PASS skill avoids hand GambleButton
+PASS interactive GambleButton
+PASS raycast reaches GambleButton
+PASS gamble button still rolls via controller
+PASS action inside canvas StealButton
+PASS painted skill emblem StealButton
+PASS skill label fits StealButton
+PASS skill avoids log StealButton
+PASS skill avoids hint StealButton
+PASS skill avoids hand StealButton
+PASS skill avoids hand StealButton
+PASS skill avoids hand StealButton
+PASS skill avoids hand StealButton
+PASS interactive StealButton
+PASS raycast reaches StealButton
+PASS battle emblem available 士兵
+PASS battle emblem available 战士
+PASS battle emblem available 咒术师
+PASS battle emblem available 野蛮人
+PASS battle emblem available 牧师
+PASS battle emblem available 游侠
+PASS battle emblem available 狼人
+PASS battle emblem available 剑客
+PASS battle emblem available 忍者
+PASS battle emblem available 刺客
+PASS battle emblem available 圣武士
+PASS battle emblem available 妖术师
+PASS battle emblem available 魔射手
+PASS battle emblem available 赌徒
+PASS battle emblem available 骑士
+PASS battle emblem available 武僧
+PASS battle emblem available 巨人
+PASS battle emblem available 盗贼
+PASS battle emblem available 猎人
+PASS battle emblem available 魔术师
+PASS battle emblem available 法师
+PASS battle emblem available 术士
+PASS battle emblem available 邪术师
+PASS battle emblem available 吟游诗人
+PASS barbarian lock request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS interactive SkillChoice1
+PASS raycast reaches SkillChoice1
+PASS lock button locks chosen hand
+PASS monk taichi request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS taichi button consumes five
+PASS hexer cancel request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS interactive SkillChoice1
+PASS raycast reaches SkillChoice1
+PASS cancel button raises selected hand and prevents attack
+PASS action inside canvas SkipTurnButton
+PASS painted skill emblem SkipTurnButton
+PASS skill label fits SkipTurnButton
+PASS skill avoids log SkipTurnButton
+PASS skill avoids hint SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS hexer skip opens health target and applies same health
+PASS priest attack or heal request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS interactive SkillChoice0
+PASS raycast reaches SkillChoice0
+PASS priest target button heals chosen player
+PASS priest extra-nine heal request
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS interactive SkillChoice0
+PASS raycast reaches SkillChoice0
+PASS normal nine heal target also available
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill buttons do not overlap
+PASS interactive SkillChoice0
+PASS raycast reaches SkillChoice0
+PASS swordsman follow-up request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS hunter ambush request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS ambush button conceals the operated hand
+PASS paladin shock request
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS interactive SkillChoice0
+PASS raycast reaches SkillChoice0
+PASS shock target button deals damage
+PASS fighter range request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS fighter multi-target chain request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas SkillChoice0
+PASS painted skill emblem SkillChoice0
+PASS skill label fits SkillChoice0
+PASS skill avoids log SkillChoice0
+PASS skill avoids hint SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS skill avoids hand SkillChoice0
+PASS action inside canvas SkillChoice1
+PASS painted skill emblem SkillChoice1
+PASS skill label fits SkillChoice1
+PASS skill avoids log SkillChoice1
+PASS skill avoids hint SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS skill avoids hand SkillChoice1
+PASS action inside canvas SkillChoice2
+PASS painted skill emblem SkillChoice2
+PASS skill label fits SkillChoice2
+PASS skill avoids log SkillChoice2
+PASS skill avoids hint SkillChoice2
+PASS skill avoids hand SkillChoice2
+PASS skill avoids hand SkillChoice2
+PASS skill avoids hand SkillChoice2
+PASS skill avoids hand SkillChoice2
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS interactive SkillChoice2
+PASS raycast reaches SkillChoice2
+PASS chain button breaks selected shield
+PASS wizard enchant request
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS action inside canvas AcceptButton
+PASS painted skill emblem AcceptButton
+PASS skill label fits AcceptButton
+PASS skill avoids log AcceptButton
+PASS skill avoids hint AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill avoids hand AcceptButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS interactive Type5
+PASS raycast reaches Type5
+PASS damage type button completes type selection
+PASS bard opens real choice panel
+PASS interactive Bard增幅攻击
+PASS raycast reaches Bard增幅攻击
+PASS interactive Bard1 人  ±3
+PASS raycast reaches Bard1 人  ±3
+PASS interactive BardTarget0
+PASS raycast reaches BardTarget0
+PASS interactive Bard确认
+PASS raycast reaches Bard确认
+PASS bard buttons finish complete choice flow

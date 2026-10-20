@@ -112,7 +112,7 @@ namespace FingerDiceDuel.UI
 
         public static void StyleButton(Button button, string family = "tab", bool selected = false)
         {
-            var image = button.GetComponent<Image>();
+            var image = button.targetGraphic as Image ?? button.GetComponent<Image>();
             string prefix = "UI/" + family + "_";
             Apply(image, prefix + (selected ? "selected" : "normal"));
             button.targetGraphic = image;
@@ -124,6 +124,33 @@ namespace FingerDiceDuel.UI
             };
             var label = button.GetComponentInChildren<Text>();
             if (label != null) label.color = Gold;
+        }
+
+        /// <summary>徽记在装饰框正中，名称单独占下方一行，避免框饰穿过名字。</summary>
+        public static void RoleTile(Button button, string id, string displayName, int fontSize)
+        {
+            var rect = (RectTransform)button.transform;
+            float height = rect.sizeDelta.y;
+            float frameHeight = height - 34;
+            Vector2 center = new Vector2(0, 17);
+            var frame = Image(rect, "TileFrame", "UI/roster_tile_normal", center,
+                new Vector2(rect.sizeDelta.x, frameHeight));
+            button.GetComponent<Image>().color = Color.clear;
+            button.targetGraphic = frame;
+            StyleButton(button, "roster_tile");
+            float iconSize = Mathf.Min(rect.sizeDelta.x - 20, frameHeight - 12);
+            var halo = Image(rect, "SelectionHalo", "UI/selection_halo", center, new Vector2(iconSize + 12, iconSize + 12), false);
+            halo.gameObject.SetActive(false);
+            Emblem(rect, "Emblem", id, center, new Vector2(iconSize, iconSize));
+            var label = button.GetComponentInChildren<Text>();
+            label.text = displayName;
+            label.font = UiFont.Bold;
+            label.fontSize = fontSize;
+            label.color = new Color(0.98f, 0.89f, 0.66f);
+            label.rectTransform.sizeDelta = new Vector2(rect.sizeDelta.x + 4, 36);
+            label.verticalOverflow = VerticalWrapMode.Overflow;
+            UiInkAlignment.Center(label, new Vector2(0, -height / 2 + 14));
+            label.transform.SetAsLastSibling();
         }
 
         /// <summary>实际可拖动、可滚轮的区域。内容高度由调用者或 ContentSizeFitter 提供。</summary>

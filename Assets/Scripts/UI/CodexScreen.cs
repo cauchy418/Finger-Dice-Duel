@@ -255,16 +255,7 @@ namespace FingerDiceDuel.UI
                 var c = _filtered[i];
                 int index = i;
                 var tile = FrontEndArt.Button(_overviewRoot, "CodexTile" + i, "", new Vector2(-750 + i % 6 * 200, 242 - i / 6 * 172), new Vector2(170, 160), "roster_tile");
-                FrontEndArt.Emblem(tile.transform, "Emblem", c.Id, new Vector2(0, 22), new Vector2(112, 112));
-                var label = tile.GetComponentInChildren<Text>();
-                label.text = c.NameZh;
-                label.rectTransform.anchoredPosition = new Vector2(0, -59);
-                label.rectTransform.sizeDelta = new Vector2(160, 36);
-                label.fontSize = 20;
-                var plate = FrontEndArt.Rect(tile.transform, "NamePlate", new Vector2(0, -59), new Vector2(150, 32)).gameObject.AddComponent<Image>();
-                plate.color = new Color(0.025f, 0.04f, 0.05f, 0.96f);
-                plate.raycastTarget = false;
-                label.transform.SetAsLastSibling();
+                FrontEndArt.RoleTile(tile, c.Id, c.NameZh, 24);
                 tile.onClick.AddListener(() => GoTo(index));
                 var row = FrontEndArt.Button(_listContent, "RoleRow" + i, c.NameZh,
                     new Vector2(122, -40 - i * 76), new Vector2(244, 68), "list_row", 20);

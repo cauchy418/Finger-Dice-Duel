@@ -71,20 +71,8 @@ namespace FingerDiceDuel.UI
                     new Vector2(width - 6, height - 4), "roster_tile");
                 var rect = (RectTransform)button.transform;
                 rect.anchorMin = rect.anchorMax = new Vector2(0, 1);
-                float iconSize = Mathf.Min(width - 12, height - 32);
-                var halo = FrontEndArt.Image(rect, "SelectionHalo", "UI/selection_halo",
-                    new Vector2(0, 12), new Vector2(iconSize + 12, iconSize + 12), false);
-                _halos.Add(halo.gameObject);
-                FrontEndArt.Emblem(rect, "Emblem", def.Id, new Vector2(0, 12), new Vector2(iconSize, iconSize));
-                var label = button.GetComponentInChildren<Text>();
-                label.rectTransform.anchoredPosition = new Vector2(0, -height / 2 + 18);
-                label.rectTransform.sizeDelta = new Vector2(width - 12, 28);
-                label.fontSize = 18;
-                label.text = def.DisplayName;
-                var namePlate = FrontEndArt.Rect(rect, "NamePlate", label.rectTransform.anchoredPosition, new Vector2(width - 18, 28)).gameObject.AddComponent<Image>();
-                namePlate.color = new Color(0.025f, 0.04f, 0.05f, 0.96f);
-                namePlate.raycastTarget = false;
-                label.transform.SetAsLastSibling();
+                FrontEndArt.RoleTile(button, def.Id, def.DisplayName, 20);
+                _halos.Add(rect.Find("SelectionHalo").gameObject);
                 string hint = _skillText != null ? _skillText(def) : Shorten(def.Description);
                 BattleTooltip.Set(button.GetComponent<Image>(), def.DisplayName + "　" + DescribeStats(def) + "\n" + hint);
                 int captured = i;
