@@ -34,9 +34,18 @@ async function main(){
    const raw=await sharp(path.join(dst,`Hands/hand_left_${i}.png`)).ensureAlpha().raw().toBuffer();
    if(raw[3]!==0||raw[raw.length-1]!==0)throw new Error(`Opaque hand corners: ${i}`);
  }
- const manifest={version:painted.length?2:1,date:'2026-10-20',status:'Exported production assets; static assembly preview checked; runtime not wired.',paintedIcons:painted.length,resourceRoot:'Assets/Resources/Art/Battle/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets};
+ const runtimeEvidence='Art/Integration/1v1/validation.txt';
+ let runtimeChecks=[];
+ try{runtimeChecks=(await fs.readFile(path.join(root,runtimeEvidence),'utf8')).trim().split(/\r?\n/);}catch(e){if(e.code!=='ENOENT')throw e;}
+ const runtimeVerified=runtimeChecks.length>=82&&runtimeChecks.every(line=>line.startsWith('PASS '));
+ const manifest={version:painted.length?2:1,date:'2026-10-20',status:runtimeVerified?'Integrated in the 1v1 runtime UI; recorded editor verification passed.':'Exported production assets; runtime verification not recorded.',runtimeEvidence,runtimeRecordedChecks:runtimeVerified?runtimeChecks.length:0,paintedIcons:painted.length,resourceRoot:'Assets/Resources/Art/Battle/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets};
  await fs.writeFile(path.join(art,'asset-manifest.json'),JSON.stringify(manifest,null,2));
  const report={pngFiles:assets.length,paintedIcons:painted.length,counts,checks:['PNG decoding and dimensions','No empty alpha masks','All asset content hashes distinct','10 left/right pixel-perfect mirror pairs','Transparent hand corners'],manual:['Corrected 4 has four extended long fingers and one folded thumb','Corrected 6 has extended pinky/thumb and three folded fingers','0 and 9 canonicalized to anatomical left before mirroring','Contact sheets and assembly preview visually inspected',...(painted.length?['46 painted subjects checked against project damage/status/class keys','Old-gold frames and 28/40/64px previews inspected; fine detail needs larger UI sizes']:[])],runtimeVerified:false};
+ await fs.writeFile(path.join(art,'validation-report.json'),JSON.stringify(report,null,2));
+ report.runtimeVerified=runtimeVerified;
+ report.runtimeEvidence=runtimeEvidence;
+ report.runtimeRecordedChecks=runtimeVerified?runtimeChecks.length:0;
+ report.runtimeNote='Recorded editor run; this asset validator does not execute Unity. Re-run the editor preview after UI changes.';
  await fs.writeFile(path.join(art,'validation-report.json'),JSON.stringify(report,null,2));
  console.log(JSON.stringify(report));
 }

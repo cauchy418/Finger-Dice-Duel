@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using FingerDiceDuel.Assistant;
@@ -86,6 +86,18 @@ namespace FingerDiceDuel.UI
                 ? FromRgb(spawn.ColorRgb)
                 : ColorOf(spawn.Kind);
 
+            if (!string.IsNullOrEmpty(spawn.IconKey))
+            {
+                var iconGo = new GameObject("DamageIcon", typeof(Image));
+                iconGo.transform.SetParent(rect, false);
+                var icon = iconGo.GetComponent<Image>();
+                icon.rectTransform.sizeDelta = new Vector2(42, 42);
+                icon.rectTransform.anchoredPosition = new Vector2(-88, 0);
+                BattleArt.Apply(icon, spawn.IconKey);
+                icon.preserveAspect = true;
+                icon.raycastTarget = false;
+            }
+
             var anim = go.AddComponent<FloatAnimator>();
             anim.Begin(rect, spawn.DelaySeconds, text);
         }
@@ -133,6 +145,7 @@ namespace FingerDiceDuel.UI
         ///    所以飘字与图标必然同色。
         /// </summary>
         public int ColorRgb { get; }
+        public string IconKey { get; }
 
         public FloatSpawn(string text, FloatKind kind, Vector2 anchoredPosition, float delaySeconds)
             : this(text, kind, anchoredPosition, delaySeconds, 0)
@@ -140,13 +153,14 @@ namespace FingerDiceDuel.UI
         }
 
         public FloatSpawn(string text, FloatKind kind, Vector2 anchoredPosition,
-                          float delaySeconds, int colorRgb)
+                          float delaySeconds, int colorRgb, string iconKey = null)
         {
             Text = text ?? "";
             Kind = kind;
             AnchoredPosition = anchoredPosition;
             DelaySeconds = delaySeconds;
             ColorRgb = colorRgb;
+            IconKey = iconKey;
         }
     }
 
@@ -164,6 +178,7 @@ namespace FingerDiceDuel.UI
         private float _delay;
         private float _elapsed;
         private bool _started;
+        private CanvasGroup _group;
 
         public void Begin(RectTransform rect, float delaySeconds, Text text)
         {
@@ -171,6 +186,9 @@ namespace FingerDiceDuel.UI
             _text = text;
             _start = rect.anchoredPosition;
             _delay = Mathf.Max(0f, delaySeconds);
+            _group = gameObject.AddComponent<CanvasGroup>();
+            _group.blocksRaycasts = false;
+            _group.alpha = 0;
         }
 
         private void Update()
@@ -200,8 +218,9 @@ namespace FingerDiceDuel.UI
                     : 1f - (t - FloatingTextLayer.FadeStartRatio) / (1f - FloatingTextLayer.FadeStartRatio);
 
                 Color c = _text.color;
-                c.a = Mathf.Clamp01(fade);
+                c.a = 1f;
                 _text.color = c;
+                if (_group != null) _group.alpha = Mathf.Clamp01(fade);
             }
 
             if (t >= 1f) Destroy(gameObject);

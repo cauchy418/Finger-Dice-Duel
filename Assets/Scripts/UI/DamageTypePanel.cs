@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using UnityEngine;
@@ -28,8 +28,8 @@ namespace FingerDiceDuel.UI
         /// </summary>
         public static DamageType[] AllTypes => StatusNames.AllTypes;
 
-        private const float CellW = 132f;
-        private const float CellH = 62f;
+        private const float CellW = 152f;
+        private const float CellH = 146f;
         private const float Gap = 8f;
         private const int Columns = 5;
 
@@ -60,14 +60,16 @@ namespace FingerDiceDuel.UI
             //    原来居中（Vector2.zero），正好压在下方自己的手牌上 ——
             //    玩家要在"手牌"和"类型格"之间来回看，挡着就没法选。
             //    右移 320px 之后与手牌错开（面板宽 ~924，居中时右边界 +462）。
-            _root.anchoredPosition = new Vector2(320f, 0f);
+            _root.anchoredPosition = new Vector2(160f, 0f);
 
-            go.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.12f, 0.94f);
+            BattleArt.Apply(go.GetComponent<Image>(), "UI/panel_tooltip", true);
 
-            Text title = MakeText(_root, "Title", new Vector2(0f, -14f),
+            Text title = MakeText(_root, "Title", new Vector2(0f, _root.sizeDelta.y / 2 - 27),
                                   new Vector2(_root.sizeDelta.x, 30f), 22,
                                   TextAnchor.MiddleCenter, Color.white);
             title.text = "选择伤害类型（放弃本次攻击）";
+            title.font = UiFont.Title;
+            title.color = BattleArt.Gold;
 
             for (int i = 0; i < AllTypes.Length; i++)
             {
@@ -75,7 +77,7 @@ namespace FingerDiceDuel.UI
                 int col = i % Columns;
 
                 float x = -(Columns - 1) * 0.5f * (CellW + Gap) + col * (CellW + Gap);
-                float y = 18f - row * (CellH + Gap);
+                float y = 55f - row * (CellH + Gap);
 
                 _buttons[i] = MakeCell(AllTypes[i], new Vector2(x, y), i);
             }
@@ -95,16 +97,26 @@ namespace FingerDiceDuel.UI
             rect.anchoredPosition = position;
 
             var fill = go.GetComponent<Image>();
-            fill.color = FillOf(type);
+            BattleArt.Apply(fill, "UI/button_normal", true);
             _fills[index] = fill;
 
-            Text name = MakeText(rect, "Name", new Vector2(0f, 12f),
+            var iconGo = new GameObject("PaintedDamage", typeof(Image));
+            iconGo.transform.SetParent(rect, false);
+            var icon = iconGo.GetComponent<Image>();
+            icon.rectTransform.sizeDelta = new Vector2(76, 76);
+            icon.rectTransform.anchoredPosition = new Vector2(0, 23);
+            BattleArt.Apply(icon, "Damage/" + BattleArt.DamageKey(type));
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            BattleTooltip.Set(icon, GuideSheets.MagicLinePlain(type));
+            Text name = MakeText(rect, "Name", new Vector2(0f, -30f),
                                  new Vector2(CellW - 8f, 26f), 20,
                                  TextAnchor.MiddleCenter, Color.white);
             name.text = StatusNames.Of(type);
 
             // 第二行写"它会挂上的状态"（力场没有状态，写明是穿透）
-            Text sub = MakeText(rect, "Sub", new Vector2(0f, -14f),
+            name.color = BattleArt.Gold;
+            Text sub = MakeText(rect, "Sub", new Vector2(0f, -55f),
                                 new Vector2(CellW - 8f, 22f), 14,
                                 TextAnchor.MiddleCenter, new Color(1f, 1f, 1f, 0.85f));
 
@@ -114,6 +126,7 @@ namespace FingerDiceDuel.UI
                 : "→ " + StatusNames.Of(st);
 
             var btn = go.GetComponent<Button>();
+            BattleArt.Button(btn);
             DamageType captured = type;
             btn.onClick.AddListener(() => { OnPicked?.Invoke(captured); });
 
@@ -123,7 +136,11 @@ namespace FingerDiceDuel.UI
         /// <summary>显示面板。</summary>
         public void Show()
         {
-            if (_root != null) _root.gameObject.SetActive(true);
+            if (_root != null)
+            {
+                _root.gameObject.SetActive(true);
+                _root.SetAsLastSibling();
+            }
         }
 
         /// <summary>隐藏面板。</summary>

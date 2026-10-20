@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;   // 图鉴资料（表现层入口是唯一允许看到它的地方）
@@ -3324,6 +3324,8 @@ namespace FingerDiceDuel.UI
                                turnCount: _controller.DisplayRound,
                                turnLimit: _controller.RoundLimit,
                                extraHighlights: null);
+                if (_controller.Chooser != null)
+                    _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
             }
 
             // 赌徒的「开赌」按钮：只在"等开赌"这一步显示

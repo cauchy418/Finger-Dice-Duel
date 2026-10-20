@@ -32,6 +32,7 @@
 | `Assets/Scripts/Characters/` | 角色数据层（`CharacterDefinition`）+ 各角色技能 |
 | `Assets/Scripts/Assistant/` | AI、测试替身、整局驱动、`BoardController` 交互状态机、2v2 先攻与环形布局。**不依赖 Unity** |
 | `Assets/Scripts/UI/` | 表现层（**唯一**允许引用 `UnityEngine` 的目录） |
+| `Assets/Editor/` | 仅编辑器的战斗美术预览、运行时界面检查与截图工具；可引用 UnityEditor / UnityEngine |
 | `Assets/Tests/EditMode/` | 无头测试；`UnityTestShim.cs` 是环境适配门面 |
 | `Assets/Resources/Fonts/` | 思源黑体 Medium（正文）/ Bold（标题），SIL OFL 1.1 |
 | `Tools/HeadlessTests/` | 无头测试运行器 |
@@ -76,7 +77,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 > ⚠️ 本机 `Tuanjie.exe` 批处理模式**会直接崩溃**（exit 140063，无输出），
 > 所以无法用编辑器做自动化编译/测试。上面前两条是逻辑测试（**真跑**），
 > 第三条只能保证表现层**能编译 + 无明显组件冲突** ——
-> **界面效果、点击、字体渲染都无法在这台机器上验证**，必须实机确认。
+> 上述命令不会验证画面。1v1 现在可通过正在运行的编辑器执行菜单 `Finger Dice Duel/Preview/1v1 Battle Art`，检验真实点击、字体加载、资源映射与布局，并输出引擎渲染截图至 `Art/Integration/1v1/`。批处理启动失败不代表此编辑器内验证不可用。
 
 **用编辑器看画面**：团结 Hub 打开本目录 → 直接 Play（任意场景都行）。
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，

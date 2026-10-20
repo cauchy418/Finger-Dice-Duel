@@ -1,0 +1,140 @@
+PASS 1v1 canvas visible
+PASS battle canvas draws above menu background after captures
+PASS Source Han Serif static title font loaded
+PASS class emblem soldier
+PASS class emblem fighter
+PASS class emblem curseweaver
+PASS class emblem barbarian
+PASS class emblem priest
+PASS class emblem ranger
+PASS class emblem werewolf
+PASS class emblem swordsman
+PASS class emblem ninja
+PASS class emblem assassin
+PASS class emblem paladin
+PASS class emblem hexer
+PASS class emblem arcane_archer
+PASS class emblem gambler
+PASS class emblem knight
+PASS class emblem monk
+PASS class emblem giant
+PASS class emblem thief
+PASS class emblem hunter
+PASS class emblem magician
+PASS class emblem wizard
+PASS class emblem sorcerer
+PASS class emblem warlock
+PASS class emblem bard
+PASS damage icon Slashing
+PASS damage icon Bludgeoning
+PASS damage icon Piercing
+PASS damage icon Thunder
+PASS damage icon Acid
+PASS damage icon Poison
+PASS damage icon Radiant
+PASS damage icon Necrotic
+PASS damage icon Fire
+PASS damage icon Cold
+PASS damage icon Lightning
+PASS damage icon Force
+PASS damage icon Psychic
+PASS status icon Resonance
+PASS status icon Acid
+PASS status icon Poison
+PASS status icon Blind
+PASS status icon Decay
+PASS status icon Burn
+PASS status icon Freeze
+PASS status icon Shock
+PASS status icon Stun
+PASS left hand 0
+PASS right hand 0
+PASS left hand 1
+PASS right hand 1
+PASS left hand 2
+PASS right hand 2
+PASS left hand 3
+PASS right hand 3
+PASS left hand 4
+PASS right hand 4
+PASS left hand 5
+PASS right hand 5
+PASS left hand 6
+PASS right hand 6
+PASS left hand 7
+PASS right hand 7
+PASS left hand 8
+PASS right hand 8
+PASS left hand 9
+PASS right hand 9
+PASS exactly two clickable hands per side
+PASS actor hand initially clickable
+PASS visible hand receives UI raycast (first=PaintedHandCard, point=(519.65, 109.67), screen=1283x658)
+PASS click routes into controller selection
+PASS selected hand uses gold frame
+PASS target click resolves real 1+1 operation
+PASS gesture updates after operation
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS initial value 5 does not imply a formed shield
+PASS health fill uses current health ratio
+PASS all nine status icons visible
+PASS all nine statuses avoid match title
+PASS all nine statuses avoid subtitle
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1280x720
+PASS hands within canvas at 1280x720
+PASS hands within canvas at 1280x720
+PASS hands within canvas at 1280x720
+PASS hands within canvas at 1600x1200
+PASS hands within canvas at 1600x1200
+PASS hands within canvas at 1600x1200
+PASS hands within canvas at 1600x1200
+PASS opponent decision button avoids hint panel
+PASS opponent decision button avoids combat log
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS formed shield overlay visible
+PASS locked hand overlay visible
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS hands within canvas at 1920x1080
+PASS bound left hand value 0
+PASS bound right hand value 0
+PASS bound left hand value 1
+PASS bound right hand value 1
+PASS bound left hand value 2
+PASS bound right hand value 2
+PASS bound left hand value 3
+PASS bound right hand value 3
+PASS bound left hand value 4
+PASS bound right hand value 4
+PASS bound left hand value 5
+PASS bound right hand value 5
+PASS bound left hand value 6
+PASS bound right hand value 6
+PASS bound left hand value 7
+PASS bound right hand value 7
+PASS bound left hand value 8
+PASS bound right hand value 8
+PASS bound left hand value 9
+PASS bound right hand value 9
+PASS combat log grows beyond masked viewport
+PASS combat log retains earlier entries for scrolling
+PASS ring switch hides painted player areas
+PASS ring switch restores button size and hand-relative anchor
+PASS ring switch restores bottom log width
+PASS return to 1v1 restores painted player areas
+PASS return to 1v1 restores right log width

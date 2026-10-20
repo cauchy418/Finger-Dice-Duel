@@ -25,5 +25,8 @@
     "46 painted subjects checked against project damage/status/class keys",
     "Old-gold frames and 28/40/64px previews inspected; fine detail needs larger UI sizes"
   ],
-  "runtimeVerified": false
+  "runtimeVerified": true,
+  "runtimeEvidence": "Art/Integration/1v1/validation.txt",
+  "runtimeRecordedChecks": 140,
+  "runtimeNote": "Recorded editor run; this asset validator does not execute Unity. Re-run the editor preview after UI changes."
 }

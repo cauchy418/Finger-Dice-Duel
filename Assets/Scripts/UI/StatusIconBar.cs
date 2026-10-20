@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,14 +8,8 @@ namespace FingerDiceDuel.UI
     /// <summary>
     /// **法师状态的图标栏**（显示在玩家面板右侧）。
     ///
-    /// 9 种负面状态各有一个小方块：底色 = 伤害类型的主色，
-    /// 中间一个符号，右下角小字是**剩余回合数**。
-    ///
-    /// ⚠️ 为什么用"色块 + 符号"而不是美术图片：
-    ///    目前没有图标资源，而这一栏必须先把**信息**传出去
-    ///    （玩家要知道自己身上还剩什么、还有几回合）。
-    ///    换成 PNG 只需给 <see cref="Image.sprite"/> 赋值，
-    ///    其余布局与刷新逻辑都不用动。
+    /// 9 种负面状态使用绘制图标，右下角保留剩余回合数。
+    /// 缺图时才回退到既有颜色与符号。
     ///
     /// 为什么不用 Emoji：uGUI 的字体回退不一定带彩色 Emoji，
     /// 缺字会显示成方框（本项目在 ∞ 上踩过同类问题）。
@@ -40,6 +34,23 @@ namespace FingerDiceDuel.UI
 
         /// <summary>当前显示的图标数量（供测试断言）。</summary>
         public int VisibleCount { get; private set; }
+
+        /// <summary>1v1 姓名前放大图标；多人模式仍保留紧凑布局。</summary>
+        public void SetBattleLayout(Vector2 position)
+        {
+            const float size = 42f, gap = 4f;
+            _root.anchorMin = _root.anchorMax = new Vector2(0.5f, 0.5f);
+            _root.anchoredPosition = position;
+            _root.sizeDelta = new Vector2(MaxIcons * (size + gap), size);
+            for (int i = 0; i < _icons.Count; i++)
+            {
+                _icons[i].rectTransform.sizeDelta = new Vector2(size, size);
+                _icons[i].rectTransform.anchoredPosition = new Vector2(i * (size + gap), 0);
+                _turns[i].rectTransform.anchoredPosition = new Vector2(14, -14);
+                _turns[i].rectTransform.sizeDelta = new Vector2(22, 20);
+                _turns[i].fontSize = 14;
+            }
+        }
 
         public StatusIconBar(RectTransform parent, Font font, bool anchorTop, string name)
         {
@@ -88,9 +99,14 @@ namespace FingerDiceDuel.UI
                 if (!show) continue;
 
                 StatusEffect s = list[i];
-                _icons[i].color = ColorOf(s);
-                _glyphs[i].text = GlyphOf(s);
+                string key = BattleArt.StatusKey(s);
+                var sprite = key == null ? null : BattleArt.Get("Status/" + key);
+                _icons[i].sprite = sprite;
+                _icons[i].color = sprite != null ? Color.white : ColorOf(s);
+                _glyphs[i].text = sprite != null ? "" : GlyphOf(s);
                 _turns[i].text = player.StatusTurnsLeft(s).ToString();
+                BattleTooltip.Set(_icons[i], StatusNames.Of(s) + " · 剩余 " + player.StatusTurnsLeft(s)
+                    + " 回合\n" + StatusNames.Describe(s));
             }
 
             VisibleCount = count;
@@ -125,6 +141,14 @@ namespace FingerDiceDuel.UI
                                      new Vector2(IconSize, IconSize), 18,
                                      TextAnchor.MiddleCenter, Color.white));
 
+                var counterGo = new GameObject("Counter", typeof(Image));
+                counterGo.transform.SetParent(rect, false);
+                var counter = counterGo.GetComponent<Image>();
+                counter.rectTransform.anchorMin = counter.rectTransform.anchorMax = new Vector2(1, 0);
+                counter.rectTransform.sizeDelta = new Vector2(19, 19);
+                counter.rectTransform.anchoredPosition = new Vector2(-3, 3);
+                BattleArt.Apply(counter, "UI/status_counter");
+                counter.raycastTarget = false;
                 _turns.Add(MakeText(rect, "Turns", new Vector2(IconSize / 2f - 3f,
                                                                -(IconSize / 2f - 3f)),
                                     new Vector2(13f, 13f), 11, TextAnchor.MiddleCenter,

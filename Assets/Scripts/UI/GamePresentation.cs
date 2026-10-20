@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using FingerDiceDuel.Assistant;
@@ -126,7 +126,7 @@ namespace FingerDiceDuel.UI
                     spawns.Add(new FloatSpawn(spec.Text, spec.Kind,
                                               AnchorOf(spec.Target, playerA, playerB),
                                               spec.DelaySeconds,
-                                              spec.ColorRgb));
+                                              spec.ColorRgb, FloatIcon(spec, plan.SoundSource)));
                 }
                 _floats.Play(spawns);
             }
@@ -205,6 +205,23 @@ namespace FingerDiceDuel.UI
                 case HitTier.Heavy: return 0.80f;
                 default: return 0f;
             }
+        }
+
+        private static string FloatIcon(FloatTextSpec spec, TurnResult result)
+        {
+            if (spec.Kind == FloatKind.Heal) return "Overlay/heal";
+            if (spec.ColorRgb == 0) return null;
+            var type = result != null ? result.AttackType : AttackDamageType.None;
+            if (type != AttackDamageType.None && AttackDamageTypes.ColorOf(type) == spec.ColorRgb)
+                return "Damage/" + AttackDamageTypes.IconKeyOf(type);
+            // 持续伤害可与本次普通攻击不同，颜色来自逻辑层的同一类型表。
+            foreach (DamageType magic in StatusNames.AllTypes)
+            {
+                var damage = AttackDamageTypes.FromDamageType(magic);
+                if (AttackDamageTypes.ColorOf(damage) == spec.ColorRgb)
+                    return "Damage/" + AttackDamageTypes.IconKeyOf(damage);
+            }
+            return null;
         }
 
         private Vector2 AnchorOf(PlayerState player, PlayerState a, PlayerState b)

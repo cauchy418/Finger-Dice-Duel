@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
@@ -18,7 +18,7 @@ namespace FingerDiceDuel.UI
     ///
     /// 后续要换成美术预制体时，只需替换本类的构建部分，对外的事件与方法保持不变。
     /// </summary>
-    public sealed class GameBoardUI : MonoBehaviour
+    public sealed partial class GameBoardUI : MonoBehaviour
     {
         // 参考分辨率
         private const float DesignWidth = 1920f;
@@ -157,6 +157,7 @@ namespace FingerDiceDuel.UI
 
             /// <summary>受击闪烁用的白色覆盖层（默认全透明）。</summary>
             public Image Flash;
+            public Image Gesture, StateIcon, LockIcon;
         }
 
         // ============================================================
@@ -172,6 +173,8 @@ namespace FingerDiceDuel.UI
             canvasGo.transform.SetParent(transform, false);
 
             canvasGo.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            // 显式高于菜单背景，避免 Canvas 重新注册（截图或切屏）后同序号互相遮挡。
+            canvasGo.GetComponent<Canvas>().sortingOrder = 10;
 
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -205,12 +208,12 @@ namespace FingerDiceDuel.UI
             UiFont.ApplyBold(_hintText);
 
             // 上方 = B（对手）；下方靠上 = A（当前人类玩家）；最下方 = 战斗文字
-            BuildPlayerArea(anchorTop: true, out _areaB, out _cardsB,
+            BuildPaintedPlayerArea(true, out _areaB, out _cardsB,
                             out _nameTextB, out _statusTextB);
-            BuildPlayerArea(anchorTop: false, out _areaA, out _cardsA,
+            BuildPaintedPlayerArea(false, out _areaA, out _cardsA,
                             out _nameTextA, out _statusTextA);
 
-            BuildLogPanel();
+            BuildPaintedLog();
             BuildGameOverPanel();
             BuildTopRightButtons();
             BuildTurnLabel();
@@ -226,6 +229,7 @@ namespace FingerDiceDuel.UI
             SetSkipButtonVisible(false);
             SetDeclineButtonVisible(false);
             SetAcceptButtonVisible(false);
+            CompleteBattleSkin();
         }
 
         /// <summary>
@@ -252,7 +256,8 @@ namespace FingerDiceDuel.UI
             Stretch(go.GetComponent<RectTransform>());
 
             var img = go.GetComponent<Image>();
-            img.color = BgColor;
+            _battleBackground = img;
+            BattleArt.Apply(img, "Backgrounds/battle_table");
             img.raycastTarget = false;
         }
 
@@ -640,6 +645,7 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void RestoreTwoPlayerLayout()
         {
+            SetBattleSkinLayout(true);
             _ringActive = null;
             if (_areaA != null) _areaA.gameObject.SetActive(true);
             if (_areaB != null) _areaB.gameObject.SetActive(true);
@@ -673,6 +679,8 @@ namespace FingerDiceDuel.UI
                                     IReadOnlyList<RingRelation> relationBySeat = null)
         {
             if (me == null || playersBySeat == null) return;
+
+            SetBattleSkinLayout(false);
 
             _ringActive = null;
             // 隐藏 1v1 的两人布局
@@ -1113,12 +1121,15 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void EnsureSkipButtonForRing(IReadOnlyList<PlayerState> playersBySeat)
         {
-            if (_skipButton != null) return;
-
             HandCard anchor = FindRightmostRingCard();
             if (anchor == null) return;
 
-            EnsureSkipButton(anchor.Button.GetComponent<RectTransform>());
+            var rect = anchor.Button.GetComponent<RectTransform>();
+            EnsureSkipButton(rect);
+            // 按钮可能已由上一局 1v1 创建，切换布局时也必须重新放置。
+            PlaceButtonRightOf(rect, _skipButton, 60f);
+            if (_gambleButton != null) PlaceButtonRightOf(rect, _gambleButton, 60f);
+            if (_stealButton != null) PlaceButtonRightOf(rect, _stealButton, 60f);
         }
 
         /// <summary>
@@ -1203,12 +1214,12 @@ namespace FingerDiceDuel.UI
             float rightWorldX = corners[2].x;
             float centerWorldY = (corners[0].y + corners[1].y) * 0.5f;
 
-            var world = new Vector3(rightWorldX + gap, centerWorldY, 0f);
+            var world = new Vector3(rightWorldX, centerWorldY, 0f);
             Vector3 local = _canvasRoot.InverseTransformPoint(world);
 
             target.anchorMin = target.anchorMax = new Vector2(0.5f, 0.5f);
             target.pivot = new Vector2(0f, 0.5f);      // 左边缘对齐，向右伸展
-            target.anchoredPosition = new Vector2(local.x, local.y);
+            target.anchoredPosition = new Vector2(local.x + gap, local.y);
         }
 
         /// <summary>显示/更新身份局忠臣的「替死待命」按钮。</summary>
@@ -1351,6 +1362,12 @@ namespace FingerDiceDuel.UI
         public void PlaceChoiceButtonsNextTo(PlayerState decider)
         {
             if (decider == null) return;
+            if (_paintedBattle)
+            {
+                _battleChoiceOwner = decider;
+                LayoutBattleActions();
+                return;
+            }
             if (_acceptButton == null && _declineButton == null) return;
 
             HandCard anchor = FindRightmostCardOf(decider);
@@ -1507,9 +1524,18 @@ namespace FingerDiceDuel.UI
             if (lines == null || lines.Count == 0) { _logText.text = ""; return; }
 
             var sb = new StringBuilder();
-            int start = lines.Count > 6 ? lines.Count - 6 : 0;
+            int limit = _paintedBattle ? 200 : 6;
+            int start = lines.Count > limit ? lines.Count - limit : 0;
             for (int i = start; i < lines.Count; i++) sb.AppendLine(lines[i]);
-            _logText.text = sb.ToString();
+            string text = sb.ToString();
+            if (_logText.text == text) return;
+            bool follow = _battleLogScroll == null || _battleLogScroll.verticalNormalizedPosition < 0.03f;
+            _logText.text = text;
+            if (follow && _battleLogScroll != null)
+            {
+                Canvas.ForceUpdateCanvases();
+                _battleLogScroll.verticalNormalizedPosition = 0;
+            }
         }
 
         /// <summary>
@@ -1536,6 +1562,9 @@ namespace FingerDiceDuel.UI
             if (_nameTextB != null) _nameTextB.text = DescribeNameLine(b);
             _statusTextA.text = HandVisual.ShieldSummary(a);
             _statusTextB.text = HandVisual.ShieldSummary(b);
+
+            RefreshBattleHeader(a, false);
+            RefreshBattleHeader(b, true);
 
             // 法师的状态图标（玩家面板右侧）
             _statusIconsA?.Refresh(a);
@@ -1614,6 +1643,11 @@ namespace FingerDiceDuel.UI
             if (fill == null || p == null) return;
 
             float ratio = HealthRatio(p.Health, p.MaximumHealth);
+            if (fill.type == Image.Type.Filled)
+            {
+                fill.fillAmount = ratio;
+                return;
+            }
 
             // 填充是左右拉伸的锚点，可用宽度就是底槽减去左右各 2px 内边距
             RectTransform rect = fill.rectTransform;
@@ -1654,6 +1688,11 @@ namespace FingerDiceDuel.UI
 
                 card.ValueText.text = hand.Value.ToString();
                 card.StatusText.text = HandVisual.StatusText(hand, card.Owner);
+                if (card.Gesture != null)
+                {
+                    RefreshPaintedHand(card, hand, outline);
+                    continue;
+                }
                 card.Background.color = HandVisual.CardColor(hand, card.Owner);
                 card.Outline.color = HandVisual.OutlineColor(outline);
                 card.Outline.enabled = outline != HandVisual.OutlineState.Hidden;
@@ -1702,6 +1741,7 @@ namespace FingerDiceDuel.UI
             if (_gameOverPanel == null) return;
             _gameOverText.text = message ?? "";
             _gameOverPanel.SetActive(true);
+            _gameOverPanel.transform.SetAsLastSibling();
         }
 
         public void HideGameOver()
@@ -1803,8 +1843,9 @@ namespace FingerDiceDuel.UI
             Text text = CreateText(rect, "Label", Vector2.zero, size, 26,
                                    TextAnchor.MiddleCenter, Color.white);
             text.text = label;
-
-            return go.GetComponent<Button>();
+            Button button = go.GetComponent<Button>();
+            BattleArt.Button(button);
+            return button;
         }
 
         private static void Stretch(RectTransform rect)

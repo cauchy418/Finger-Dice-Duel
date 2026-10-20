@@ -1,7 +1,9 @@
 {
   "version": 2,
   "date": "2026-10-20",
-  "status": "Exported production assets; static assembly preview checked; runtime not wired.",
+  "status": "Integrated in the 1v1 runtime UI; recorded editor verification passed.",
+  "runtimeEvidence": "Art/Integration/1v1/validation.txt",
+  "runtimeRecordedChecks": 140,
   "paintedIcons": 46,
   "resourceRoot": "Assets/Resources/Art/Battle/v1",
   "spriteBorderOrder": "left,bottom,right,top",

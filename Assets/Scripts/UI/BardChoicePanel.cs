@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -75,11 +75,13 @@ namespace FingerDiceDuel.UI
             // ⚠️ 玩家要求：放在**右侧**，与"发动 / 不发动"按钮同一处。
             //    原来放左侧，正好压住对手的手牌与战场信息。
             _root.anchoredPosition = new Vector2(640f, 0f);
-            go.GetComponent<Image>().color = new Color(0.06f, 0.08f, 0.12f, 0.94f);
+            BattleArt.Apply(go.GetComponent<Image>(), "UI/panel_tooltip", true);
 
             _title = MakeText(_root, "Title", new Vector2(0f, 165f),
                               new Vector2(PanelW - 24f, 32f), 21,
                               TextAnchor.MiddleCenter, Color.white);
+            _title.font = UiFont.Title;
+            _title.color = BattleArt.Gold;
 
             // ---- ② 四项 ----
             for (int i = 0; i < 4; i++)
@@ -288,6 +290,7 @@ namespace FingerDiceDuel.UI
             text.text = label;
 
             var btn = go.GetComponent<Button>();
+            BattleArt.Button(btn);
             btn.onClick.AddListener(() => onClick?.Invoke());
             return btn;
         }

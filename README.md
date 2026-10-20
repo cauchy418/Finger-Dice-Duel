@@ -32,7 +32,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**978 项逻辑测试**（关键回归已通过；全量套件在本机 .NET 运行时偶发原生崩溃，需按测试组拆分运行）。
+当前状态：**978 项逻辑测试**。2026-10-21 全量 978 项通过，Unity 条件编译与表现层编译通过。
+
+**1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。

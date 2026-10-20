@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FingerDiceDuel.UI
 {
@@ -33,6 +33,7 @@ namespace FingerDiceDuel.UI
 
         private static Font _regular;
         private static Font _bold;
+        private static Font _title;
         private static bool _resolved;
 
         /// <summary>正文字体（首次调用时解析并缓存）。</summary>
@@ -43,6 +44,9 @@ namespace FingerDiceDuel.UI
         /// 由调用方决定是否再用 <see cref="FontStyle.Bold"/> 做合成粗体。
         /// </summary>
         public static Font Bold { get { Resolve(); return _bold; } }
+
+        /// <summary>暗色奇幻界面的中文衬线标题；缺失时回退到既有粗体。</summary>
+        public static Font Title { get { Resolve(); return _title; } }
 
         /// <summary>项目是否提供了独立的粗体文件（否则是伪粗体）。</summary>
         public static bool HasRealBold
@@ -93,6 +97,7 @@ namespace FingerDiceDuel.UI
                        ?? Builtin("LegacyRuntime.ttf")
                        ?? Builtin("Arial.ttf");
             _bold = TryResource(BoldResourcePath) ?? _regular;
+            _title = Resources.Load<Font>("Fonts/SourceHanSerifCN-SemiBold") ?? _bold;
 
             if (_regular == null)
             {
