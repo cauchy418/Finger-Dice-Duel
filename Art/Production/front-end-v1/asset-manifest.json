@@ -1,0 +1,1760 @@
+{
+  "version": 1,
+  "date": "2026-10-21",
+  "status": "New front-end assets exported; menu/codex/selection runtime wiring pending",
+  "resourceRoot": "Assets/Resources/Art/FrontEnd/v1",
+  "spriteBorderOrder": "left,bottom,right,top",
+  "counts": {
+    "Backgrounds": 4,
+    "Illustrations": 5,
+    "UI": 46,
+    "Icons": 24
+  },
+  "assets": [
+    {
+      "key": "menu_candle_chamber",
+      "group": "Backgrounds",
+      "path": "Backgrounds/menu_candle_chamber.png",
+      "resourcesKey": "Art/FrontEnd/v1/Backgrounds/menu_candle_chamber",
+      "width": 1920,
+      "height": 1080,
+      "nativeAlpha": false,
+      "bytes": 3451003,
+      "sha256": "c9d776d5eac86278705150290b2def391254d11864499d718f2b5cce62395530",
+      "source": "Art/Production/front-end-v1/source/menu_candle_chamber.png",
+      "kind": "imagegen",
+      "nativeWidth": 1672,
+      "nativeHeight": 941,
+      "resampling": "uniform cover; centered crop",
+      "upscaled": true,
+      "textSafe": [
+        0.3,
+        0.08,
+        0.4,
+        0.74
+      ],
+      "usage": "Opaque cover background"
+    },
+    {
+      "key": "menu_moonlit_archive",
+      "group": "Backgrounds",
+      "path": "Backgrounds/menu_moonlit_archive.png",
+      "resourcesKey": "Art/FrontEnd/v1/Backgrounds/menu_moonlit_archive",
+      "width": 1920,
+      "height": 1080,
+      "nativeAlpha": false,
+      "bytes": 3139044,
+      "sha256": "778eeea9d84ead18cf0e4e74a13c6c75fe58fdd013fc27a9445f5ae66122d2f0",
+      "source": "Art/Production/front-end-v1/source/menu_moonlit_archive.png",
+      "kind": "imagegen",
+      "nativeWidth": 1672,
+      "nativeHeight": 941,
+      "resampling": "uniform cover; centered crop",
+      "upscaled": true,
+      "textSafe": [
+        0.3,
+        0.08,
+        0.4,
+        0.74
+      ],
+      "usage": "Opaque cover background"
+    },
+    {
+      "key": "selection_oath_hall",
+      "group": "Backgrounds",
+      "path": "Backgrounds/selection_oath_hall.png",
+      "resourcesKey": "Art/FrontEnd/v1/Backgrounds/selection_oath_hall",
+      "width": 1920,
+      "height": 1080,
+      "nativeAlpha": false,
+      "bytes": 3123795,
+      "sha256": "adc64c1cfaffead71ad2ea2593a4e6780e8bffa7cf01c6d2528f85b2a70fa98b",
+      "source": "Art/Production/front-end-v1/source/selection_oath_hall.png",
+      "kind": "imagegen",
+      "nativeWidth": 1672,
+      "nativeHeight": 941,
+      "resampling": "uniform cover; centered crop",
+      "upscaled": true,
+      "textSafe": [
+        0.12,
+        0.08,
+        0.76,
+        0.84
+      ],
+      "usage": "Opaque cover background"
+    },
+    {
+      "key": "codex_scribes_desk",
+      "group": "Backgrounds",
+      "path": "Backgrounds/codex_scribes_desk.png",
+      "resourcesKey": "Art/FrontEnd/v1/Backgrounds/codex_scribes_desk",
+      "width": 1920,
+      "height": 1080,
+      "nativeAlpha": false,
+      "bytes": 3680019,
+      "sha256": "08c4b73eb381632d8b2c72c8080107231413b3190cb3d05dc262f6933e53880e",
+      "source": "Art/Production/front-end-v1/source/codex_scribes_desk.png",
+      "kind": "imagegen",
+      "nativeWidth": 1672,
+      "nativeHeight": 941,
+      "resampling": "uniform cover; centered crop",
+      "upscaled": true,
+      "textSafe": [
+        0.12,
+        0.08,
+        0.76,
+        0.84
+      ],
+      "usage": "Opaque cover background"
+    },
+    {
+      "key": "mode_adventure",
+      "group": "Illustrations",
+      "path": "Illustrations/mode_adventure.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/mode_adventure",
+      "width": 512,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 318451,
+      "sha256": "c344b33a2c14e93010774ac888c2fc1f3451d845815eed51932dd0df27e547ae",
+      "source": "Art/Production/front-end-v1/source/mode_adventure.png",
+      "kind": "imagegen",
+      "nativeWidth": 1254,
+      "nativeHeight": 1254,
+      "resampling": "uniform contain; 16px transparent canvas padding; preserved alpha",
+      "upscaled": false,
+      "textSafe": null,
+      "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "mode_competition",
+      "group": "Illustrations",
+      "path": "Illustrations/mode_competition.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/mode_competition",
+      "width": 512,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 244251,
+      "sha256": "d3f741fbdc63e569ed32a7fafaf94c688789d5ac0ac395bb5652b569147ef0ee",
+      "source": "Art/Production/front-end-v1/source/mode_competition.png",
+      "kind": "imagegen",
+      "nativeWidth": 1254,
+      "nativeHeight": 1254,
+      "resampling": "uniform contain; 16px transparent canvas padding; preserved alpha",
+      "upscaled": false,
+      "textSafe": null,
+      "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "mode_casual",
+      "group": "Illustrations",
+      "path": "Illustrations/mode_casual.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/mode_casual",
+      "width": 512,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 352678,
+      "sha256": "93b516bc32e63d6d839a77401f3c405de90ef3815d2b7cc059b14bacfac097f1",
+      "source": "Art/Production/front-end-v1/source/mode_casual.png",
+      "kind": "imagegen",
+      "nativeWidth": 1254,
+      "nativeHeight": 1254,
+      "resampling": "uniform contain; 16px transparent canvas padding; preserved alpha",
+      "upscaled": false,
+      "textSafe": null,
+      "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "codex_parchment",
+      "group": "Illustrations",
+      "path": "Illustrations/codex_parchment.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/codex_parchment",
+      "width": 768,
+      "height": 1152,
+      "nativeAlpha": true,
+      "bytes": 1689276,
+      "sha256": "0d2b12cffcd71f3f872f14678084dc3ecaaddba414e8cc041c90e360e18a9181",
+      "source": "Art/Production/front-end-v1/source/codex_parchment.png",
+      "kind": "imagegen",
+      "nativeWidth": 1024,
+      "nativeHeight": 1536,
+      "resampling": "uniform contain; 0px transparent canvas padding; preserved alpha",
+      "upscaled": false,
+      "textSafe": [
+        0.12,
+        0.1,
+        0.76,
+        0.8
+      ],
+      "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "codex_book_dice",
+      "group": "Illustrations",
+      "path": "Illustrations/codex_book_dice.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/codex_book_dice",
+      "width": 768,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 614599,
+      "sha256": "d9ba22ca337b114b6ff2cddffa58789c66871cd970a5ac3c5c96a8953f8ada16",
+      "source": "Art/Production/front-end-v1/source/codex_book_dice.png",
+      "kind": "imagegen",
+      "nativeWidth": 1536,
+      "nativeHeight": 1024,
+      "resampling": "uniform contain; 0px transparent canvas padding; preserved alpha",
+      "upscaled": false,
+      "textSafe": null,
+      "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "screen_frame",
+      "group": "UI",
+      "path": "UI/screen_frame.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/screen_frame",
+      "width": 1280,
+      "height": 768,
+      "nativeAlpha": true,
+      "bytes": 10323,
+      "sha256": "fc2ae90033798d139b52b8409617f10158ebfa26d84b3261079de91eee77ef07",
+      "source": "Art/Production/front-end-v1/svg/UI/screen_frame.svg",
+      "kind": "editable-svg",
+      "border": [
+        96,
+        96,
+        96,
+        96
+      ],
+      "usage": "Sliced transparent full-screen trim; no raycast"
+    },
+    {
+      "key": "panel_content",
+      "group": "UI",
+      "path": "UI/panel_content.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/panel_content",
+      "width": 960,
+      "height": 640,
+      "nativeAlpha": true,
+      "bytes": 26615,
+      "sha256": "9a682347c980a6ab037329e3d77af19fdf2b5178cb87d93532791c7f82fd6f49",
+      "source": "Art/Production/front-end-v1/svg/UI/panel_content.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "usage": "Sliced panel; dark text area"
+    },
+    {
+      "key": "panel_sidebar",
+      "group": "UI",
+      "path": "UI/panel_sidebar.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/panel_sidebar",
+      "width": 384,
+      "height": 768,
+      "nativeAlpha": true,
+      "bytes": 17568,
+      "sha256": "38d79040f83b157e43d62bd774f273de84e51532cbb49a2cf2ca8d49c19a4121",
+      "source": "Art/Production/front-end-v1/svg/UI/panel_sidebar.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "usage": "Sliced panel; dark text area"
+    },
+    {
+      "key": "panel_detail",
+      "group": "UI",
+      "path": "UI/panel_detail.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/panel_detail",
+      "width": 480,
+      "height": 768,
+      "nativeAlpha": true,
+      "bytes": 20232,
+      "sha256": "2c0e541993be82c2848c69f99356968c38ed39d3f457aee9ce4cecd9166903c1",
+      "source": "Art/Production/front-end-v1/svg/UI/panel_detail.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "usage": "Sliced panel; dark text area"
+    },
+    {
+      "key": "panel_tooltip",
+      "group": "UI",
+      "path": "UI/panel_tooltip.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/panel_tooltip",
+      "width": 512,
+      "height": 256,
+      "nativeAlpha": true,
+      "bytes": 10504,
+      "sha256": "e38cc61100c89792bf36daded43a8424d218fdc87a623e601a38b814297ab076",
+      "source": "Art/Production/front-end-v1/svg/UI/panel_tooltip.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "usage": "Sliced panel; dark text area"
+    },
+    {
+      "key": "mode_button_normal",
+      "group": "UI",
+      "path": "UI/mode_button_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/mode_button_normal",
+      "width": 640,
+      "height": 144,
+      "nativeAlpha": true,
+      "bytes": 7442,
+      "sha256": "0fbcfca83c689374b0b08ed911e51538ab78c6fa7a7e226c290dad5708b933ba",
+      "source": "Art/Production/front-end-v1/svg/UI/mode_button_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        64,
+        48,
+        64,
+        48
+      ],
+      "state": "normal",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "tab_normal",
+      "group": "UI",
+      "path": "UI/tab_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/tab_normal",
+      "width": 256,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 3396,
+      "sha256": "8f8a6bdacec731fc5c5004f52488add9e601a8c34bcc4356a93a0f42b40f932e",
+      "source": "Art/Production/front-end-v1/svg/UI/tab_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "normal",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "list_row_normal",
+      "group": "UI",
+      "path": "UI/list_row_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/list_row_normal",
+      "width": 384,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 4414,
+      "sha256": "f35d8431fe8fcc9aacd3dc27540b4e56e41ec9404fc92883bbd95bd5fb4bf2da",
+      "source": "Art/Production/front-end-v1/svg/UI/list_row_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "normal",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "roster_tile_normal",
+      "group": "UI",
+      "path": "UI/roster_tile_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/roster_tile_normal",
+      "width": 240,
+      "height": 240,
+      "nativeAlpha": true,
+      "bytes": 7349,
+      "sha256": "e459062e901e1e24ab2290eb156221202d6f5ab7e23edc0e6fa12769dc3c4063",
+      "source": "Art/Production/front-end-v1/svg/UI/roster_tile_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "state": "normal",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "icon_button_normal",
+      "group": "UI",
+      "path": "UI/icon_button_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/icon_button_normal",
+      "width": 96,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 3173,
+      "sha256": "e5336ef5e2e09b3f4ac636fd2d27bbb15ac61f493f6383bd9ca0bf24ebde6e27",
+      "source": "Art/Production/front-end-v1/svg/UI/icon_button_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "state": "normal",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "mode_button_hover",
+      "group": "UI",
+      "path": "UI/mode_button_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/mode_button_hover",
+      "width": 640,
+      "height": 144,
+      "nativeAlpha": true,
+      "bytes": 8812,
+      "sha256": "d193483a72634fd9d883ac4b5f4bd25766439ea6a145b8a5b682a729eeaa55e8",
+      "source": "Art/Production/front-end-v1/svg/UI/mode_button_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        64,
+        48,
+        64,
+        48
+      ],
+      "state": "hover",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "tab_hover",
+      "group": "UI",
+      "path": "UI/tab_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/tab_hover",
+      "width": 256,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 3909,
+      "sha256": "a770d8db30bf35cc42a46c31ebb2d968521643962b70129c0663ccdfbee51578",
+      "source": "Art/Production/front-end-v1/svg/UI/tab_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "hover",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "list_row_hover",
+      "group": "UI",
+      "path": "UI/list_row_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/list_row_hover",
+      "width": 384,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 5206,
+      "sha256": "3f17ae5ff2f1b08b76955ca9797c93897b895cf4841428c7483ed0d853dbc128",
+      "source": "Art/Production/front-end-v1/svg/UI/list_row_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "hover",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "roster_tile_hover",
+      "group": "UI",
+      "path": "UI/roster_tile_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/roster_tile_hover",
+      "width": 240,
+      "height": 240,
+      "nativeAlpha": true,
+      "bytes": 8495,
+      "sha256": "2b1121ecdfe3c461ea845a2da0a853ed82fcd38f089669c0b876de76cb75de87",
+      "source": "Art/Production/front-end-v1/svg/UI/roster_tile_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "state": "hover",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "icon_button_hover",
+      "group": "UI",
+      "path": "UI/icon_button_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/icon_button_hover",
+      "width": 96,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 3583,
+      "sha256": "5d6b174059c1c84969a0a63d3d59b5a8f86a72c3bbc16d365784c45d4b55bd55",
+      "source": "Art/Production/front-end-v1/svg/UI/icon_button_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "state": "hover",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "mode_button_pressed",
+      "group": "UI",
+      "path": "UI/mode_button_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/mode_button_pressed",
+      "width": 640,
+      "height": 144,
+      "nativeAlpha": true,
+      "bytes": 5051,
+      "sha256": "fa0cdbb0b9223de0813bf5d805d939d5e7184360807e85e435e504262858bc42",
+      "source": "Art/Production/front-end-v1/svg/UI/mode_button_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        64,
+        48,
+        64,
+        48
+      ],
+      "state": "pressed",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "tab_pressed",
+      "group": "UI",
+      "path": "UI/tab_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/tab_pressed",
+      "width": 256,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 2448,
+      "sha256": "5d780808408cc150b38e8865f1b81ba32e13ff13140482f94b2c658dd7288a72",
+      "source": "Art/Production/front-end-v1/svg/UI/tab_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "pressed",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "list_row_pressed",
+      "group": "UI",
+      "path": "UI/list_row_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/list_row_pressed",
+      "width": 384,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 3237,
+      "sha256": "666aabc9c406b5efad410596fd1940d875f98a633d60433a75d08e493f9ddacb",
+      "source": "Art/Production/front-end-v1/svg/UI/list_row_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "pressed",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "roster_tile_pressed",
+      "group": "UI",
+      "path": "UI/roster_tile_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/roster_tile_pressed",
+      "width": 240,
+      "height": 240,
+      "nativeAlpha": true,
+      "bytes": 4667,
+      "sha256": "e602cc9261c21ca483e5e1d20dd0a4d499a43547920954cce509715a1e57ee75",
+      "source": "Art/Production/front-end-v1/svg/UI/roster_tile_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "state": "pressed",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "icon_button_pressed",
+      "group": "UI",
+      "path": "UI/icon_button_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/icon_button_pressed",
+      "width": 96,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 2101,
+      "sha256": "b2010f69a841efcfee7a933ad067934771b845550ecd5b6e633d44e8c8fa1e33",
+      "source": "Art/Production/front-end-v1/svg/UI/icon_button_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "state": "pressed",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "mode_button_selected",
+      "group": "UI",
+      "path": "UI/mode_button_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/mode_button_selected",
+      "width": 640,
+      "height": 144,
+      "nativeAlpha": true,
+      "bytes": 8823,
+      "sha256": "ce9c14431049758af4db17255cebf4fc243affeccc81ba35ca2efb35ac55cbaa",
+      "source": "Art/Production/front-end-v1/svg/UI/mode_button_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        64,
+        48,
+        64,
+        48
+      ],
+      "state": "selected",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "tab_selected",
+      "group": "UI",
+      "path": "UI/tab_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/tab_selected",
+      "width": 256,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 4001,
+      "sha256": "080ff2bbd42005b683f70e850f199e82dc66513d04fb31359699e8a9ffbd0dd3",
+      "source": "Art/Production/front-end-v1/svg/UI/tab_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "selected",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "list_row_selected",
+      "group": "UI",
+      "path": "UI/list_row_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/list_row_selected",
+      "width": 384,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 5094,
+      "sha256": "ad4a7a1cf29f052e3b8e8f74e8e00a541b134b16005775d4f89a39750ae91761",
+      "source": "Art/Production/front-end-v1/svg/UI/list_row_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "selected",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "roster_tile_selected",
+      "group": "UI",
+      "path": "UI/roster_tile_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/roster_tile_selected",
+      "width": 240,
+      "height": 240,
+      "nativeAlpha": true,
+      "bytes": 8675,
+      "sha256": "25f58d5824a3127187d64408ec66337d0d81d5a0a7324d5dbd182fbfdb00f97e",
+      "source": "Art/Production/front-end-v1/svg/UI/roster_tile_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "state": "selected",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "icon_button_selected",
+      "group": "UI",
+      "path": "UI/icon_button_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/icon_button_selected",
+      "width": 96,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 3602,
+      "sha256": "b40972c60bef7c5f4a7dae7bc579130186a0b2422cd1a990d32e728116628f85",
+      "source": "Art/Production/front-end-v1/svg/UI/icon_button_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "state": "selected",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "mode_button_disabled",
+      "group": "UI",
+      "path": "UI/mode_button_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/mode_button_disabled",
+      "width": 640,
+      "height": 144,
+      "nativeAlpha": true,
+      "bytes": 4866,
+      "sha256": "567dd02dd0658719966952c6f3e2f4eae6028fd3181ad65f9eb9a42cdffe73f5",
+      "source": "Art/Production/front-end-v1/svg/UI/mode_button_disabled.svg",
+      "kind": "editable-svg",
+      "border": [
+        64,
+        48,
+        64,
+        48
+      ],
+      "state": "disabled",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "tab_disabled",
+      "group": "UI",
+      "path": "UI/tab_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/tab_disabled",
+      "width": 256,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 2352,
+      "sha256": "cd89876cbcc51cf443127b67bb6cfd3d42b2b4586a0cd316357dde023cc81fd1",
+      "source": "Art/Production/front-end-v1/svg/UI/tab_disabled.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "disabled",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "list_row_disabled",
+      "group": "UI",
+      "path": "UI/list_row_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/list_row_disabled",
+      "width": 384,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 3100,
+      "sha256": "939b562ff83dc2bf1cbfea352ea0b573883007ea31a784d71dcd41c5857812da",
+      "source": "Art/Production/front-end-v1/svg/UI/list_row_disabled.svg",
+      "kind": "editable-svg",
+      "border": [
+        40,
+        32,
+        40,
+        32
+      ],
+      "state": "disabled",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "roster_tile_disabled",
+      "group": "UI",
+      "path": "UI/roster_tile_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/roster_tile_disabled",
+      "width": 240,
+      "height": 240,
+      "nativeAlpha": true,
+      "bytes": 4580,
+      "sha256": "466a9337a7cc5a13934de683d89c3afbfe67613cb7e7547d741d3f84afc5c945",
+      "source": "Art/Production/front-end-v1/svg/UI/roster_tile_disabled.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        80,
+        80,
+        80
+      ],
+      "state": "disabled",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "icon_button_disabled",
+      "group": "UI",
+      "path": "UI/icon_button_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/icon_button_disabled",
+      "width": 96,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 1979,
+      "sha256": "bbe3347d3f8a7fef495e760155b8b711333102ed40c9699c6f862bffa6483df2",
+      "source": "Art/Production/front-end-v1/svg/UI/icon_button_disabled.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "state": "disabled",
+      "usage": "Sliced; sprite state rather than tint the gold border"
+    },
+    {
+      "key": "selection_halo",
+      "group": "UI",
+      "path": "UI/selection_halo.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/selection_halo",
+      "width": 256,
+      "height": 256,
+      "nativeAlpha": true,
+      "bytes": 26181,
+      "sha256": "9eab831873f87f0fda5407e4b653f3eaff07b93edf01608f7996a1e32a399e67",
+      "source": "Art/Production/front-end-v1/svg/UI/selection_halo.svg",
+      "kind": "editable-svg",
+      "usage": "Simple; behind selected class emblem; not another gold ring"
+    },
+    {
+      "key": "title_banner",
+      "group": "UI",
+      "path": "UI/title_banner.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/title_banner",
+      "width": 576,
+      "height": 96,
+      "nativeAlpha": true,
+      "bytes": 6212,
+      "sha256": "284a3111c097ee881cf071b23376dc959def0a9a66469d7392444dba98251e2c",
+      "source": "Art/Production/front-end-v1/svg/UI/title_banner.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        32,
+        80,
+        32
+      ]
+    },
+    {
+      "key": "divider_horizontal",
+      "group": "UI",
+      "path": "UI/divider_horizontal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/divider_horizontal",
+      "width": 512,
+      "height": 32,
+      "nativeAlpha": true,
+      "bytes": 616,
+      "sha256": "1fa53b5570a85c117cbf0c8031d03143ec03a0557528e540d3f0a5d920d396b8",
+      "source": "Art/Production/front-end-v1/svg/UI/divider_horizontal.svg",
+      "kind": "editable-svg",
+      "border": [
+        80,
+        8,
+        80,
+        8
+      ]
+    },
+    {
+      "key": "divider_vertical",
+      "group": "UI",
+      "path": "UI/divider_vertical.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/divider_vertical",
+      "width": 32,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 994,
+      "sha256": "da3776c989a2a7242823147b66f7a71fc191b8827243009e80ec05e039f1313f",
+      "source": "Art/Production/front-end-v1/svg/UI/divider_vertical.svg",
+      "kind": "editable-svg",
+      "border": [
+        8,
+        80,
+        8,
+        80
+      ]
+    },
+    {
+      "key": "scroll_track",
+      "group": "UI",
+      "path": "UI/scroll_track.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/scroll_track",
+      "width": 24,
+      "height": 256,
+      "nativeAlpha": true,
+      "bytes": 537,
+      "sha256": "0949af5ba4e417209b6f14cdf9e5f9c6af860b004671e3a55e855226eca76109",
+      "source": "Art/Production/front-end-v1/svg/UI/scroll_track.svg",
+      "kind": "editable-svg",
+      "border": [
+        8,
+        24,
+        8,
+        24
+      ]
+    },
+    {
+      "key": "scroll_thumb_normal",
+      "group": "UI",
+      "path": "UI/scroll_thumb_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/scroll_thumb_normal",
+      "width": 24,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 1744,
+      "sha256": "f32d868aad6c9d70f9c69d928b0bc03a097aaa5ef6fb7618b1661ea3b9f1501f",
+      "source": "Art/Production/front-end-v1/svg/UI/scroll_thumb_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        8,
+        24,
+        8,
+        24
+      ],
+      "state": "normal"
+    },
+    {
+      "key": "scroll_thumb_hover",
+      "group": "UI",
+      "path": "UI/scroll_thumb_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/scroll_thumb_hover",
+      "width": 24,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 1774,
+      "sha256": "fcbc935e51aa3aaa46e58f9fbf40d4dcd056ee3c612c324bdadd211b643d6d95",
+      "source": "Art/Production/front-end-v1/svg/UI/scroll_thumb_hover.svg",
+      "kind": "editable-svg",
+      "border": [
+        8,
+        24,
+        8,
+        24
+      ],
+      "state": "hover"
+    },
+    {
+      "key": "scroll_thumb_pressed",
+      "group": "UI",
+      "path": "UI/scroll_thumb_pressed.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/scroll_thumb_pressed",
+      "width": 24,
+      "height": 80,
+      "nativeAlpha": true,
+      "bytes": 604,
+      "sha256": "00d6aa1fc4041f9e0a8ccf5e233b5c3199e44df0a86927b061a0b59affa93aa3",
+      "source": "Art/Production/front-end-v1/svg/UI/scroll_thumb_pressed.svg",
+      "kind": "editable-svg",
+      "border": [
+        8,
+        24,
+        8,
+        24
+      ],
+      "state": "pressed"
+    },
+    {
+      "key": "page_left_normal",
+      "group": "UI",
+      "path": "UI/page_left_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_left_normal",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2456,
+      "sha256": "9c588e5f895cbca67326f06748784da7f5e8992c7ef41c81c00c59637db66b3f",
+      "source": "Art/Production/front-end-v1/svg/UI/page_left_normal.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "normal"
+    },
+    {
+      "key": "page_right_normal",
+      "group": "UI",
+      "path": "UI/page_right_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_right_normal",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2448,
+      "sha256": "75321db027fea8f79a16ba4db9cd48a87b479c798cfe4c3c1e8be2fb927cc382",
+      "source": "Art/Production/front-end-v1/svg/UI/page_right_normal.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "normal"
+    },
+    {
+      "key": "page_left_hover",
+      "group": "UI",
+      "path": "UI/page_left_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_left_hover",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2514,
+      "sha256": "d04234fd7e35dd59ac5c0d4d926852be57639ef7b0874023a011ca7630a5107f",
+      "source": "Art/Production/front-end-v1/svg/UI/page_left_hover.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "hover"
+    },
+    {
+      "key": "page_right_hover",
+      "group": "UI",
+      "path": "UI/page_right_hover.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_right_hover",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2508,
+      "sha256": "587f44aac0b56a4aa8b7d13452e251ed51e672f3ba079f44195df3b465178d5a",
+      "source": "Art/Production/front-end-v1/svg/UI/page_right_hover.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "hover"
+    },
+    {
+      "key": "page_left_disabled",
+      "group": "UI",
+      "path": "UI/page_left_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_left_disabled",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2271,
+      "sha256": "bf672f81a978253f0acf0d99fe7eda169d32fe4181dfdf7658be0e231d6f8019",
+      "source": "Art/Production/front-end-v1/svg/UI/page_left_disabled.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "disabled"
+    },
+    {
+      "key": "page_right_disabled",
+      "group": "UI",
+      "path": "UI/page_right_disabled.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/page_right_disabled",
+      "width": 80,
+      "height": 64,
+      "nativeAlpha": true,
+      "bytes": 2267,
+      "sha256": "264b5add8d4000496f04fd87e3ee54c1ae83fd7d5b97e091ea5f07fa0b8efb4b",
+      "source": "Art/Production/front-end-v1/svg/UI/page_right_disabled.svg",
+      "kind": "editable-svg",
+      "usage": "Simple, preserve aspect",
+      "state": "disabled"
+    },
+    {
+      "key": "filter_ribbon_normal",
+      "group": "UI",
+      "path": "UI/filter_ribbon_normal.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/filter_ribbon_normal",
+      "width": 128,
+      "height": 384,
+      "nativeAlpha": true,
+      "bytes": 6466,
+      "sha256": "4ee263b5c466e3994d0a71f2a3cf0223ba94dd7e681431b74ef8624ccb6b075d",
+      "source": "Art/Production/front-end-v1/svg/UI/filter_ribbon_normal.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        64,
+        32,
+        48
+      ],
+      "usage": "Sliced vertical filter strip; reserve for optional category navigation"
+    },
+    {
+      "key": "filter_ribbon_selected",
+      "group": "UI",
+      "path": "UI/filter_ribbon_selected.png",
+      "resourcesKey": "Art/FrontEnd/v1/UI/filter_ribbon_selected",
+      "width": 128,
+      "height": 384,
+      "nativeAlpha": true,
+      "bytes": 8802,
+      "sha256": "f9e1f9051a1d1eec9f9fff6e2ba37a23324acd7fb41b951a7d04c7fb69c09035",
+      "source": "Art/Production/front-end-v1/svg/UI/filter_ribbon_selected.svg",
+      "kind": "editable-svg",
+      "border": [
+        32,
+        64,
+        32,
+        48
+      ],
+      "usage": "Sliced vertical filter strip; reserve for optional category navigation"
+    },
+    {
+      "key": "codex",
+      "group": "Icons",
+      "path": "Icons/codex.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/codex",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2219,
+      "sha256": "5a9bc76d1d9644d8dc9b57223ff0fedfcfe1a398dea453038ddf52e7cff4a25c",
+      "source": "Art/Production/front-end-v1/svg/Icons/codex.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "rules",
+      "group": "Icons",
+      "path": "Icons/rules.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/rules",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 1325,
+      "sha256": "a580f920e94780be3a2ee8210aacd001f5c817d3e390a075951137ccb5ba21c5",
+      "source": "Art/Production/front-end-v1/svg/Icons/rules.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "settings",
+      "group": "Icons",
+      "path": "Icons/settings.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/settings",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2948,
+      "sha256": "8c652649d300a10885516235015c620f15bc993f29bffa89a98dd27805863d84",
+      "source": "Art/Production/front-end-v1/svg/Icons/settings.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "quit",
+      "group": "Icons",
+      "path": "Icons/quit.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/quit",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 680,
+      "sha256": "671b443cc2aca0e0c29a79beb34eb32ee7708c6886d42851e53ebbc1235b5069",
+      "source": "Art/Production/front-end-v1/svg/Icons/quit.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "back",
+      "group": "Icons",
+      "path": "Icons/back.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/back",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 395,
+      "sha256": "c7a452d82916b45fcfeafca30c043b1cbfed08601908853fae410fafde6b9fe6",
+      "source": "Art/Production/front-end-v1/svg/Icons/back.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "help",
+      "group": "Icons",
+      "path": "Icons/help.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/help",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3303,
+      "sha256": "06b14ade57cc749de923d3b6e365dbc2b994eeee1ec2d19b0d8a8100eaedb61a",
+      "source": "Art/Production/front-end-v1/svg/Icons/help.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "all",
+      "group": "Icons",
+      "path": "Icons/all.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/all",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 558,
+      "sha256": "dcb1ce8c27dad3aea0765cbdf68bdf61778d22d55c3da771a2cfeb01a789d576",
+      "source": "Art/Production/front-end-v1/svg/Icons/all.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "melee",
+      "group": "Icons",
+      "path": "Icons/melee.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/melee",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3037,
+      "sha256": "8ff430ca4cbd4ef207cca961cda82b7c7c79745e96d88d990f890bd9f29b572d",
+      "source": "Art/Production/front-end-v1/svg/Icons/melee.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "ranged",
+      "group": "Icons",
+      "path": "Icons/ranged.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/ranged",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2509,
+      "sha256": "1c666722d9753e5cd7d580af21e2e5151f9b7b8ca1c486133da5e4dfad5cfa89",
+      "source": "Art/Production/front-end-v1/svg/Icons/ranged.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "magic",
+      "group": "Icons",
+      "path": "Icons/magic.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/magic",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 1829,
+      "sha256": "772b60b678367c5471744037f69f5959357ab9629dd408d3f373439a36964d60",
+      "source": "Art/Production/front-end-v1/svg/Icons/magic.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "support",
+      "group": "Icons",
+      "path": "Icons/support.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/support",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2324,
+      "sha256": "9a1961f21c6ee8d373fca4ab68ebf3ff203591bc66fc43c407c7b276228016f4",
+      "source": "Art/Production/front-end-v1/svg/Icons/support.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "special",
+      "group": "Icons",
+      "path": "Icons/special.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/special",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2947,
+      "sha256": "fcace6ba9f708d805f204df58f9288c55a293a8b246fe53e0b2f629c80668b06",
+      "source": "Art/Production/front-end-v1/svg/Icons/special.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "health",
+      "group": "Icons",
+      "path": "Icons/health.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/health",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2556,
+      "sha256": "b00159bd9ec77fc396696a863198c75403c00e4f887ea04514cd42cf8bbf215e",
+      "source": "Art/Production/front-end-v1/svg/Icons/health.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "skill",
+      "group": "Icons",
+      "path": "Icons/skill.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/skill",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3752,
+      "sha256": "3a50d6d2a80e63f77474de831e0799d1d297a35742a9c5c916a64450e748278c",
+      "source": "Art/Production/front-end-v1/svg/Icons/skill.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "detail",
+      "group": "Icons",
+      "path": "Icons/detail.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/detail",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3220,
+      "sha256": "547b798f3b5c07f585c9d5df9353c0b26b792ebd47189396ec599b575bbd3323",
+      "source": "Art/Production/front-end-v1/svg/Icons/detail.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "guide",
+      "group": "Icons",
+      "path": "Icons/guide.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/guide",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2104,
+      "sha256": "737e5a05cba2793813535cbd49ec604f9d2f3f973b89c3f0b46525d97fc3887d",
+      "source": "Art/Production/front-end-v1/svg/Icons/guide.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "counter",
+      "group": "Icons",
+      "path": "Icons/counter.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/counter",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2686,
+      "sha256": "687a5ad4269a8994d569017b50f4dd053bc39d41233be6d29d4159c3f713303d",
+      "source": "Art/Production/front-end-v1/svg/Icons/counter.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "synergy",
+      "group": "Icons",
+      "path": "Icons/synergy.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/synergy",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3127,
+      "sha256": "2df8041834dbbf35f81db5726e501c928d58411e5fb02f19893528ee25ec258b",
+      "source": "Art/Production/front-end-v1/svg/Icons/synergy.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "lawful",
+      "group": "Icons",
+      "path": "Icons/lawful.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/lawful",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 1381,
+      "sha256": "ad236e621d21dcab566d48e8e19f6fd008fbe74991d8fb4b4afd060f1671b3d2",
+      "source": "Art/Production/front-end-v1/svg/Icons/lawful.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "neutral",
+      "group": "Icons",
+      "path": "Icons/neutral.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/neutral",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 2668,
+      "sha256": "a4cbd7aab434ba48efd8f183ec4a837703444cd8568cac030821b5e93164e0a4",
+      "source": "Art/Production/front-end-v1/svg/Icons/neutral.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "chaotic",
+      "group": "Icons",
+      "path": "Icons/chaotic.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/chaotic",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 1419,
+      "sha256": "db8afe10b19713a91b0820d0bec202b8c8798c2952402b525981fee9e222b516",
+      "source": "Art/Production/front-end-v1/svg/Icons/chaotic.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "good",
+      "group": "Icons",
+      "path": "Icons/good.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/good",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 1891,
+      "sha256": "7e45c7a35cd7a2822e2bc0919d6aeae10ced4ace77e5a084381ee2aefa18a275",
+      "source": "Art/Production/front-end-v1/svg/Icons/good.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "evil",
+      "group": "Icons",
+      "path": "Icons/evil.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/evil",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3508,
+      "sha256": "ff657062f2a1671124e09a236a799dcf6fb8ba93111dc9bf1bd9dcf301e421cb",
+      "source": "Art/Production/front-end-v1/svg/Icons/evil.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    },
+    {
+      "key": "arcane_orb",
+      "group": "Icons",
+      "path": "Icons/arcane_orb.png",
+      "resourcesKey": "Art/FrontEnd/v1/Icons/arcane_orb",
+      "width": 128,
+      "height": 128,
+      "nativeAlpha": true,
+      "bytes": 3894,
+      "sha256": "c16068234c8eec8bd065c2b206b8840e861ed52e8f67fcf24a7360e10e685580",
+      "source": "Art/Production/front-end-v1/svg/Icons/arcane_orb.svg",
+      "kind": "editable-svg",
+      "usage": "Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels"
+    }
+  ],
+  "reused": [
+    {
+      "key": "slashing",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/slashing",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/slashing.png"
+    },
+    {
+      "key": "bludgeoning",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/bludgeoning",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/bludgeoning.png"
+    },
+    {
+      "key": "piercing",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/piercing",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/piercing.png"
+    },
+    {
+      "key": "thunder",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/thunder",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/thunder.png"
+    },
+    {
+      "key": "acid",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/acid",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/acid.png"
+    },
+    {
+      "key": "poison",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/poison",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/poison.png"
+    },
+    {
+      "key": "radiant",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/radiant",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/radiant.png"
+    },
+    {
+      "key": "necrotic",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/necrotic",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/necrotic.png"
+    },
+    {
+      "key": "fire",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/fire",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/fire.png"
+    },
+    {
+      "key": "cold",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/cold",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/cold.png"
+    },
+    {
+      "key": "lightning",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/lightning",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/lightning.png"
+    },
+    {
+      "key": "force",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/force",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/force.png"
+    },
+    {
+      "key": "psychic",
+      "group": "Damage",
+      "resourcesKey": "Art/Battle/v1/Damage/psychic",
+      "path": "Assets/Resources/Art/Battle/v1/Damage/psychic.png"
+    },
+    {
+      "key": "resonance",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/resonance",
+      "path": "Assets/Resources/Art/Battle/v1/Status/resonance.png"
+    },
+    {
+      "key": "acid",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/acid",
+      "path": "Assets/Resources/Art/Battle/v1/Status/acid.png"
+    },
+    {
+      "key": "poison",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/poison",
+      "path": "Assets/Resources/Art/Battle/v1/Status/poison.png"
+    },
+    {
+      "key": "blind",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/blind",
+      "path": "Assets/Resources/Art/Battle/v1/Status/blind.png"
+    },
+    {
+      "key": "decay",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/decay",
+      "path": "Assets/Resources/Art/Battle/v1/Status/decay.png"
+    },
+    {
+      "key": "burn",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/burn",
+      "path": "Assets/Resources/Art/Battle/v1/Status/burn.png"
+    },
+    {
+      "key": "freeze",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/freeze",
+      "path": "Assets/Resources/Art/Battle/v1/Status/freeze.png"
+    },
+    {
+      "key": "shock",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/shock",
+      "path": "Assets/Resources/Art/Battle/v1/Status/shock.png"
+    },
+    {
+      "key": "stun",
+      "group": "Status",
+      "resourcesKey": "Art/Battle/v1/Status/stun",
+      "path": "Assets/Resources/Art/Battle/v1/Status/stun.png"
+    },
+    {
+      "key": "soldier",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/soldier",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/soldier.png"
+    },
+    {
+      "key": "fighter",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/fighter",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/fighter.png"
+    },
+    {
+      "key": "curseweaver",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/curseweaver",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/curseweaver.png"
+    },
+    {
+      "key": "barbarian",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/barbarian",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png"
+    },
+    {
+      "key": "priest",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/priest",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/priest.png"
+    },
+    {
+      "key": "ranger",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/ranger",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/ranger.png"
+    },
+    {
+      "key": "werewolf",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/werewolf",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/werewolf.png"
+    },
+    {
+      "key": "swordsman",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/swordsman",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/swordsman.png"
+    },
+    {
+      "key": "ninja",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/ninja",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/ninja.png"
+    },
+    {
+      "key": "assassin",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/assassin",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/assassin.png"
+    },
+    {
+      "key": "paladin",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/paladin",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/paladin.png"
+    },
+    {
+      "key": "hexer",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/hexer",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/hexer.png"
+    },
+    {
+      "key": "arcane_archer",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/arcane_archer",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/arcane_archer.png"
+    },
+    {
+      "key": "gambler",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/gambler",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/gambler.png"
+    },
+    {
+      "key": "knight",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/knight",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/knight.png"
+    },
+    {
+      "key": "monk",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/monk",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/monk.png"
+    },
+    {
+      "key": "giant",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/giant",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/giant.png"
+    },
+    {
+      "key": "thief",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/thief",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/thief.png"
+    },
+    {
+      "key": "hunter",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/hunter",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/hunter.png"
+    },
+    {
+      "key": "magician",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/magician",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/magician.png"
+    },
+    {
+      "key": "wizard",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/wizard",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/wizard.png"
+    },
+    {
+      "key": "sorcerer",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/sorcerer",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/sorcerer.png"
+    },
+    {
+      "key": "warlock",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/warlock",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/warlock.png"
+    },
+    {
+      "key": "bard",
+      "group": "Classes",
+      "resourcesKey": "Art/Battle/v1/Classes/bard",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/bard.png"
+    },
+    {
+      "key": "attack",
+      "group": "Overlay",
+      "resourcesKey": "Art/Battle/v1/Overlay/attack",
+      "path": "Assets/Resources/Art/Battle/v1/Overlay/attack.png"
+    },
+    {
+      "key": "defense",
+      "group": "Overlay",
+      "resourcesKey": "Art/Battle/v1/Overlay/defense",
+      "path": "Assets/Resources/Art/Battle/v1/Overlay/defense.png"
+    },
+    {
+      "key": "range",
+      "group": "Overlay",
+      "resourcesKey": "Art/Battle/v1/Overlay/range",
+      "path": "Assets/Resources/Art/Battle/v1/Overlay/range.png"
+    },
+    {
+      "key": "heal",
+      "group": "Overlay",
+      "resourcesKey": "Art/Battle/v1/Overlay/heal",
+      "path": "Assets/Resources/Art/Battle/v1/Overlay/heal.png"
+    },
+    {
+      "key": "d20_sigil",
+      "group": "UI",
+      "resourcesKey": "Art/Battle/v1/UI/d20_sigil",
+      "path": "Assets/Resources/Art/Battle/v1/UI/d20_sigil.png"
+    }
+  ]
+}

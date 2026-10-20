@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "referenceRole": "User supplied four-screen concept: dark fantasy, black iron, aged gold, tabletop props. Reference is visual guidance, not a source of gameplay facts.",
+  "referencePath": "Art/Production/front-end-v1/references/front-end-concept.png",
+  "generationMode": "Built-in image_gen. New artwork described from reference, not a screenshot edit.",
+  "assets": [
+    {
+      "key": "menu_candle_chamber",
+      "group": "Backgrounds",
+      "file": "menu_candle_chamber.png",
+      "width": 1920,
+      "height": 1080,
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: a SINGLE production-ready 16:9 landscape main-menu BACKGROUND for a dark fantasy tabletop game, not a UI screenshot or montage. Painterly cinematic realism with visible oil-painted material detail, blackened iron, antique muted gold, worn brown leather, deep blue-black stone, warm candlelight. Medieval vaulted council chamber at night. A tabletop in the lower quarter, a restrained cluster of ornate old-gold polyhedral dice and a closed iron-bound codex at the lower-left edge, an antique chalice near the far left, a burning wax candle and several closed books at the far right, subtle hanging dark banners at the outer edges. Camera eye level slightly above the table. Composition is for a centered title and THREE stacked wide menu buttons: the central horizontal 40 percent, from x=30% to 70% and y=8% to 82%, must be especially dark, calm and nearly empty, without bright objects, silhouettes or hard edges. All strong detail remains in the outer 25 percent and bottom 20 percent. The upper central area is a dark recess, not a light window. Keep the table horizon below the lower menu button. Natural chiaroscuro, rich but restrained old gold, no modern objects, no people, no characters, no UI panels, no borders, no lettering, no words, no symbols resembling text, no logos, no watermark. Full-bleed opaque artwork; wide 16:9 composition. Deliver exactly one image."
+    },
+    {
+      "key": "menu_moonlit_archive",
+      "group": "Backgrounds",
+      "file": "menu_moonlit_archive.png",
+      "width": 1920,
+      "height": 1080,
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: SINGLE full-bleed 16:9 landscape alternate main-menu background for the same dark fantasy tabletop game. Painterly realism, hand-painted stone and leather, black iron and aged-gold fittings. A quiet moonlit arcane archive at night: shadowy gothic shelves along the far left and far right, a tall narrow moonlit window restricted to the upper-left outer edge, a dark velvet banner at the right edge, a desk occupying the bottom fifth with a few closed books, a brass astrolabe near the lower-right corner, two worn polyhedral dice and a folded map near the lower-left corner. Muted cool indigo moonlight mixed with tiny amber candles at the extreme edges. The central 45% width, x=27.5% to 72.5%, y=5% to 83%, must remain very dark and uncluttered for a title and three stacked buttons. No window, lamp, bright book edge or figure behind this central UI zone. Keep scene details in peripheral shadows. Match black-iron, antique-gold, tabletop-prop fantasy aesthetics with nuanced painterly textures. No text of any kind, no labels, no logos, no people, no UI panels, no border, no split image. Deliver a single opaque wide image."
+    },
+    {
+      "key": "selection_oath_hall",
+      "group": "Backgrounds",
+      "file": "selection_oath_hall.png",
+      "width": 1920,
+      "height": 1080,
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: SINGLE 16:9 landscape production backdrop for a dark fantasy CHARACTER SELECTION screen. No interface is drawn on it. Painterly realism with black iron, muted antique gold, smoky slate and midnight teal. View into a dark medieval hall of oaths; only the extreme left and right 10% edges reveal weathered stone columns, hanging deep-blue banners, the suggestion of a sheathed sword and an unmarked shield at the far lower corners. Very faint candle glow at the far right boundary. The center 80% width and central 90% height is an almost flat dark charcoal-teal recess with extremely subtle worn-stone texture. It must support a six-column by four-row grid of 24 bright round class emblems plus a right-hand information panel: there should be no competing illustration, lit object, doorway or architectural line across these areas. Gentle vignette darkens edges; maintain readable dark values throughout. Elegant, restrained, old, believable hand-painted surfaces, not futuristic, not geometric vector art. Do not paint characters, emblems, icons, slots, frames, buttons, writing, letters or UI. Opaque full-bleed, one wide background, not a collage."
+    },
+    {
+      "key": "codex_scribes_desk",
+      "group": "Backgrounds",
+      "file": "codex_scribes_desk.png",
+      "width": 1920,
+      "height": 1080,
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: SINGLE full-bleed 16:9 landscape production BACKGROUND for a dark fantasy CODEX / encyclopedia screen. Painterly realism matching blackened iron, aged gold and medieval tabletop props. A dim archivist's desk and library, seen from slightly above: very dark ink-blue leather or slate reading surface fills the central 85%; only the outer margins reveal the corner of a closed gold-tooled volume at the bottom-left, a small ink bottle and quill at the extreme top-left, a subtle brass bookmark and a small candle at the far right edge. No open book in the center. Central x=10% through 92%, y=7% through 94% must remain dark, calm, low contrast and unoccupied for a roster sidebar, large class badge and long readable text. Warm amber illumination restricted to the far margins, cool black-teal shadows, restrained metallic glints. Fine brush texture and tactile worn materials. No people, no title, no text, no runes or writing, no pages full of marks, no UI borders, no interface components, no montage. Deliver one opaque wide landscape artwork."
+    },
+    {
+      "key": "mode_adventure",
+      "group": "Illustrations",
+      "file": "mode_adventure.png",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE transparent-background painted menu emblem for ADVENTURE mode in a dark fantasy tabletop RPG. Isolated compact triangular composition: an ancient fortified castle with three readable towers sitting on a small dark rocky outcrop, a softly lit winding path leading to its gate, a tiny fragment of weathered parchment map tucked beneath the outcrop. Hand-painted realistic miniature, black stone, antique muted gold light on the tower edges, subtle blue-grey shadow. Distinct silhouette readable at 96 pixels. Three-quarter view, elegant detailed brushwork and material texture, consistent with painted old-gold class emblems. No outer ring or decorative frame, no badge disc or square panel, no circular glow, no ground plane extending beyond the compact object, no cast shadow on an opaque backdrop. Keep all painted content within the central 82% of the square with breathing room. Actual transparent alpha background. No text, no letters, no numbers, no watermark. Deliver a single isolated emblem, not a collection."
+    },
+    {
+      "key": "mode_competition",
+      "group": "Illustrations",
+      "file": "mode_competition.png",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated painted menu emblem for COMPETITION / DUEL mode in a dark fantasy tabletop game, actual transparent background. A pair of well-crafted medieval longswords crossed in a bold X, short tips visible, worn cool steel blades with tiny chips, antique-gold guards and pommels, wrapped black leather handles. A small dark iron shield behind their crossing, enough to unite the composition without becoming a panel. Dramatic but restrained warm rim light, painterly realism and tangible metal, compact readable silhouette at 96 pixels. Match antique-gold, black-iron painted class emblem aesthetics, not flat vector clipart. No border or outer ring, no circular backing, no lettering, no numerals, no sparks spread outside the object. Keep the full silhouette inside the central 82% of the square with transparent breathing room. No white, grey or black matte background, no checkerboard painted into the image. One transparent isolated icon only."
+    },
+    {
+      "key": "mode_casual",
+      "group": "Illustrations",
+      "file": "mode_casual.png",
+      "width": 512,
+      "height": 512,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE isolated transparent painted emblem for CASUAL / VARIANT mode in a dark fantasy tabletop dice game. Two chunky medieval six-sided dice, one slightly raised behind the other, warm aged ivory with worn corners, dark recessed round pips, tiny restrained antique-gold inlays and blackened metal corner fittings. Physically believable dice faces: opposing faces need not be visible; each visible square face has a conventional arrangement of one to six round pips, never words or invented glyphs. Small gold token beneath them, mostly hidden. Painterly realistic object rendering, deep umber shadows, soft amber highlights, readable silhouette at 96 pixels, no bright neon or cartoon. No outer ring, no medallion frame, no opaque backdrop, no lettering or numerals. Keep all content in the central 82% of the square and use real transparent alpha beyond the dice, including gaps between objects. Single isolated menu emblem, not a full scene or grid."
+    },
+    {
+      "key": "codex_parchment",
+      "group": "Illustrations",
+      "file": "codex_parchment.png",
+      "width": 768,
+      "height": 1152,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE empty portrait parchment panel on an actual transparent background, for a dark fantasy RPG codex overview. Aspect ratio 2:3 portrait. A single flat rectangular sheet of warm aged vellum, viewed exactly head-on with no perspective tilt and no curled scroll ends. Beautiful subtle hand-painted paper grain, restrained softly singed ragged outer edges and a very thin antique-gold tooled border close to the edges. The central 78% width and 86% height must be a consistent pale muted ochre-beige and free of stains, illustrations, folds, cracks or bright spots, providing an excellent readable area for live dark text and a separate illustration. Moderate edge aging only; no large tears that eat into the text-safe region. The page occupies about 92% of the image, with transparent space around every edge and all four corners. No lettering, symbols, runes, watermarks, printed text, map lines, or central objects. Painterly realistic tactile material consistent with a dark fantasy black-iron and old-gold game. One blank physical page asset only."
+    },
+    {
+      "key": "codex_book_dice",
+      "group": "Illustrations",
+      "file": "codex_book_dice.png",
+      "width": 768,
+      "height": 512,
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: ONE standalone codex overview vignette with actual transparent alpha background, landscape 3:2 composition. A small open medieval rules codex with a gold-inlaid twenty-sided die resting across the center fold, a pair of subtle closed gold clasps and a short dark quill along its lower edge. Three-quarter view, compact centered grouping. Monochrome sepia and antique gold ink / delicate painterly engraving style, suitable to sit on an ochre parchment panel, intentionally quieter than colorful class badges. Leather book cover and thick vellum pages have tactile hand-painted material detail. The pages are blank except for faint nonverbal geometric diagrams, no legible text, numbers, letters, runes or fake writing. No background rectangle, no surrounding scenery, no decorative outer frame, no opaque parchment sheet behind the object. Keep the silhouette and all details inside the central 84% with generous clear transparent margins. Refined dark fantasy tabletop illustration, one object grouping, not an atlas or mockup."
+    }
+  ]
+}

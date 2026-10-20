@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="384" viewBox="0 0 128 384"><defs>
+ <linearGradient id="metal" x1="0" y1="0" x2=".65" y2="1"><stop stop-color="#F0D79B"/><stop offset=".24" stop-color="#B68E48"/><stop offset=".5" stop-color="#70512C"/><stop offset=".72" stop-color="#D6B576"/><stop offset="1" stop-color="#75562C"/></linearGradient>
+ <linearGradient id="iron" x2=".1" y2="1"><stop stop-color="#222C31"/><stop offset=".45" stop-color="#10181D"/><stop offset="1" stop-color="#080D11"/></linearGradient>
+ <linearGradient id="blue" x2=".2" y2="1"><stop stop-color="#244A64"/><stop offset=".5" stop-color="#142C43"/><stop offset="1" stop-color="#0C182B"/></linearGradient>
+ <linearGradient id="hover" x2=".2" y2="1"><stop stop-color="#334C5A"/><stop offset="1" stop-color="#15232F"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#527EAC" stop-opacity="0"/><stop offset=".58" stop-color="#527EAC" stop-opacity="0"/><stop offset=".8" stop-color="#6B9FCD" stop-opacity=".26"/><stop offset="1" stop-color="#4673AB" stop-opacity="0"/></radialGradient>
+</defs><path d="M8 8H120V374L64 345 8 374Z" fill="url(#blue)" stroke="#F0CD7B" stroke-width="2"/><path d="M16 16H112V358L64 332 16 358Z" fill="none" stroke="#F0CD7B" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>

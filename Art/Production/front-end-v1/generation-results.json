@@ -1,0 +1,47 @@
+[
+  {
+    "key": "menu_candle_chamber",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-74445aff-e2e5-4d81-b56b-0d4a9e44fe05.png",
+    "source": "Art/Production/front-end-v1/source/menu_candle_chamber.png"
+  },
+  {
+    "key": "menu_moonlit_archive",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-eab12714-a089-4b1c-9574-cfa9430e4148.png",
+    "source": "Art/Production/front-end-v1/source/menu_moonlit_archive.png"
+  },
+  {
+    "key": "selection_oath_hall",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-9ca7cc11-920a-407d-bbac-f1ccdabc2db5.png",
+    "source": "Art/Production/front-end-v1/source/selection_oath_hall.png"
+  },
+  {
+    "key": "codex_scribes_desk",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-e18ca7f8-2afa-4013-8bfd-18bead6220fc.png",
+    "source": "Art/Production/front-end-v1/source/codex_scribes_desk.png"
+  },
+  {
+    "key": "mode_adventure",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-8e7b796f-dceb-4b8e-be26-d5792ffa6373.png",
+    "source": "Art/Production/front-end-v1/source/mode_adventure.png"
+  },
+  {
+    "key": "mode_competition",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-a0b83b71-0a97-4c0a-8576-7c431f7434e7.png",
+    "source": "Art/Production/front-end-v1/source/mode_competition.png"
+  },
+  {
+    "key": "mode_casual",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-2a2241f1-ad98-45ea-af7f-6ee5cc6b7133.png",
+    "source": "Art/Production/front-end-v1/source/mode_casual.png"
+  },
+  {
+    "key": "codex_parchment",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-8e58eaf0-da81-4f5f-9c9f-492581f932ef.png",
+    "source": "Art/Production/front-end-v1/source/codex_parchment.png"
+  },
+  {
+    "key": "codex_book_dice",
+    "generatedPath": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-324aa24a-7106-4de4-9b3b-61db3c7a07df.png",
+    "source": "Art/Production/front-end-v1/source/codex_book_dice.png"
+  }
+]

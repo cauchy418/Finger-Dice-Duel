@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-21",
+  "assets": 79,
+  "counts": {
+    "Backgrounds": 4,
+    "Illustrations": 5,
+    "UI": 46,
+    "Icons": 24
+  },
+  "reused": 51,
+  "automatedChecks": [
+    "PNG dimensions and SHA-256",
+    "Unique asset content",
+    "Four opaque 16:9 backgrounds",
+    "Preserved transparent alpha and illustration corners",
+    "Nine-slice border bounds",
+    "Five interaction states for five widget families",
+    "All 24 class / 13 damage / 9 status reusable resources exist",
+    "Five full-size static screen assemblies"
+  ],
+  "visualChecks": [
+    "No text or controls baked into painted backgrounds",
+    "Peripheral background props leave central UI space",
+    "Mode illustrations readable at menu size",
+    "Parchment and vignette alpha checked on dark surface",
+    "All 24 class emblems present in selection and overview",
+    "Selected tile label moved clear of bottom frame",
+    "Long codex content fits above pager"
+  ],
+  "runtimeIntegrated": false,
+  "previewType": "Static compositions of exported assets, not Unity runtime screenshots",
+  "fontReuse": [
+    "Fonts/SourceHanSerifCN-SemiBold",
+    "Fonts/NotoSansCJKsc-Medium",
+    "Fonts/NotoSansCJKsc-Bold"
+  ],
+  "notes": [
+    "Background sources are 1672x941; 1920x1080 exports use uniform resampling, not native 4K.",
+    "The settings and role-category glyphs are reserved artwork; this kit does not add those features."
+  ]
+}

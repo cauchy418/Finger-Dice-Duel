@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="32" viewBox="0 0 512 32"><defs>
+ <linearGradient id="metal" x1="0" y1="0" x2=".65" y2="1"><stop stop-color="#F0D79B"/><stop offset=".24" stop-color="#B68E48"/><stop offset=".5" stop-color="#70512C"/><stop offset=".72" stop-color="#D6B576"/><stop offset="1" stop-color="#75562C"/></linearGradient>
+ <linearGradient id="iron" x2=".1" y2="1"><stop stop-color="#222C31"/><stop offset=".45" stop-color="#10181D"/><stop offset="1" stop-color="#080D11"/></linearGradient>
+ <linearGradient id="blue" x2=".2" y2="1"><stop stop-color="#244A64"/><stop offset=".5" stop-color="#142C43"/><stop offset="1" stop-color="#0C182B"/></linearGradient>
+ <linearGradient id="hover" x2=".2" y2="1"><stop stop-color="#334C5A"/><stop offset="1" stop-color="#15232F"/></linearGradient>
+ <radialGradient id="halo"><stop stop-color="#527EAC" stop-opacity="0"/><stop offset=".58" stop-color="#527EAC" stop-opacity="0"/><stop offset=".8" stop-color="#6B9FCD" stop-opacity=".26"/><stop offset="1" stop-color="#4673AB" stop-opacity="0"/></radialGradient>
+</defs><path d="M4 16H224 M288 16H508" fill="none" stroke="#BE9B5C" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/><path d="M232 16L246 10 256 16 266 22 280 16 M246 10L256 4 266 10 256 16Z" fill="none" stroke="#BE9B5C" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>

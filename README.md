@@ -36,6 +36,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
+**主菜单／图鉴／选将素材已准备**：新增 79 个独立 PNG，包含 4 张背景、5 张绘画素材、46 个 UI 组件和 24 个工具图标，并提供静态拼装预览及接入清单；这三类运行时界面尚未换肤，详见 [素材分析与交付](Art/Production/front-end-v1/README.md)。
+
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
 > 遇到偶发问题时**直接复制 Console 输出**即可定位。
