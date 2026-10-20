@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -87,13 +87,14 @@ namespace FingerDiceDuel.UI
             boxRect.anchoredPosition = Vector2.zero;
 
             var boxImg = box.GetComponent<Image>();
-            boxImg.color = new Color(0.14f, 0.16f, 0.21f, 0.99f);
+            FrontEndArt.Apply(boxImg, "UI/panel_content");
             boxImg.raycastTarget = true;
 
             _title = MakeText(boxRect, "Title", new Vector2(0f, size.y * 0.5f - 52f),
                               new Vector2(size.x - 60f, 50f), (int)titleFontSize,
                               TextAnchor.MiddleCenter, new Color(0.98f, 0.86f, 0.48f), boldFont);
-            _title.fontStyle = FontStyle.Bold;
+            _title.font = UiFont.Title;
+            _title.fontStyle = FontStyle.Normal;
 
             // 正文放在**可滚动**区域里。
             // 规则说明（基础规则 + 10 个角色）远超过一屏，
@@ -258,11 +259,10 @@ namespace FingerDiceDuel.UI
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
 
-            go.GetComponent<Image>().color = new Color(0.26f, 0.48f, 0.78f);
-
             Text text = MakeText(rect, "Label", Vector2.zero, size, 26,
                                  TextAnchor.MiddleCenter, Color.white, font);
             text.text = label;
+            FrontEndArt.StyleButton(go.GetComponent<Button>());
 
             return go.GetComponent<Button>();
         }

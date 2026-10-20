@@ -1,9 +1,9 @@
 {
   "date": "2026-10-21",
-  "assets": 79,
+  "assets": 80,
   "counts": {
     "Backgrounds": 4,
-    "Illustrations": 5,
+    "Illustrations": 6,
     "UI": 46,
     "Icons": 24
   },
@@ -27,8 +27,10 @@
     "Selected tile label moved clear of bottom frame",
     "Long codex content fits above pager"
   ],
-  "runtimeIntegrated": false,
-  "previewType": "Static compositions of exported assets, not Unity runtime screenshots",
+  "runtimeIntegrated": true,
+  "runtimeReport": "Art/Integration/front-end/validation.txt",
+  "runtimeChecks": 638,
+  "previewType": "Production previews are static compositions; Art/Integration/front-end contains actual Unity Canvas and Game View captures",
   "fontReuse": [
     "Fonts/SourceHanSerifCN-SemiBold",
     "Fonts/NotoSansCJKsc-Medium",

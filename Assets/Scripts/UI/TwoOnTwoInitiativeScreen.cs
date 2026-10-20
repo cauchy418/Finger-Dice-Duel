@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -22,6 +23,9 @@ namespace FingerDiceDuel.UI
     /// </summary>
     public sealed class TwoOnTwoInitiativeScreen
     {
+        private readonly D20DieView[] _dice = new D20DieView[4];
+        private MonoBehaviour _runner;
+        private Coroutine _rollAnimation;
         private RectTransform _root;
         private Font _font;
 
@@ -45,6 +49,7 @@ namespace FingerDiceDuel.UI
         public void Build(RectTransform parent, Font font)
         {
             _font = font;
+            _runner = parent.GetComponentInParent<GameBootstrap>();
 
             var go = new GameObject("TwoOnTwoInitiativeScreen", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -56,53 +61,59 @@ namespace FingerDiceDuel.UI
             var panelRect = panel.GetComponent<RectTransform>();
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.sizeDelta = new Vector2(1520f, 860f);
+            panelRect.sizeDelta = new Vector2(1660f, 980f);
             panelRect.anchoredPosition = Vector2.zero;
-            panel.GetComponent<Image>().color = new Color(0.13f, 0.15f, 0.19f);
+            FrontEndArt.Apply(panel.GetComponent<Image>(), "UI/panel_content");
 
-            _titleText = MakeText(panelRect, "Title", new Vector2(0f, 380f),
+            _titleText = MakeText(panelRect, "Title", new Vector2(0f, 430f),
                                   new Vector2(1440f, 60f), 44, TextAnchor.MiddleCenter,
                                   new Color(0.98f, 0.86f, 0.45f));
             _titleText.text = "2 v 2 掷骰先攻";
 
-            _seatText = MakeText(panelRect, "Seats", new Vector2(0f, 310f),
-                                 new Vector2(1440f, 90f), 30, TextAnchor.MiddleCenter,
+            _seatText = MakeText(panelRect, "Seats", new Vector2(0f, 34f),
+                                 new Vector2(1500f, 90f), 22, TextAnchor.MiddleCenter,
                                  new Color(0.75f, 0.85f, 1f));
 
-            _stepText = MakeText(panelRect, "Step", new Vector2(0f, 240f),
-                                 new Vector2(1440f, 56f), 32, TextAnchor.MiddleCenter,
+            _stepText = MakeText(panelRect, "Step", new Vector2(0f, -60f),
+                                 new Vector2(1500f, 64f), 26, TextAnchor.MiddleCenter,
                                  Color.white);
 
-            _decidedText = MakeText(panelRect, "Decided", new Vector2(0f, 186f),
-                                    new Vector2(1440f, 64f), 28, TextAnchor.MiddleCenter,
+            _decidedText = MakeText(panelRect, "Decided", new Vector2(0f, -120f),
+                                    new Vector2(1500f, 48f), 22, TextAnchor.MiddleCenter,
                                     new Color(0.55f, 0.90f, 0.70f));
 
-            _hintText = MakeText(panelRect, "Hint", new Vector2(0f, 128f),
-                                 new Vector2(1440f, 56f), 26, TextAnchor.MiddleCenter,
+            _hintText = MakeText(panelRect, "Hint", new Vector2(0f, -180f),
+                                 new Vector2(1500f, 56f), 23, TextAnchor.MiddleCenter,
                                  new Color(0.85f, 0.88f, 0.95f));
 
-            _rollButton = MakeButton(panelRect, "RollButton", new Vector2(0f, 54f),
+            _rollButton = MakeButton(panelRect, "RollButton", new Vector2(0f, -260f),
                                      new Vector2(340f, 68f), "掷骰");
             _rollButton.onClick.AddListener(OnRollClicked);
 
-            var options = new GameObject("Options", typeof(RectTransform));
-            options.transform.SetParent(panelRect, false);
-            _optionsRoot = options.GetComponent<RectTransform>();
-            _optionsRoot.anchorMin = _optionsRoot.anchorMax = new Vector2(0.5f, 0.5f);
-            _optionsRoot.pivot = new Vector2(0.5f, 0.5f);
-            _optionsRoot.sizeDelta = new Vector2(1440f, 620f);
-            _optionsRoot.anchoredPosition = new Vector2(0f, -170f);
-
-            _flipButton = MakeButton(panelRect, "FlipButton", new Vector2(0f, -390f),
+            var optionScroll = FrontEndArt.Scroll(panelRect, "OptionsViewport", new Vector2(0, -325),
+                new Vector2(1400, 200), out _optionsRoot);
+            optionScroll.gameObject.SetActive(false);
+            _optionsRoot.name = "Options";
+            _optionsRoot.anchorMin = _optionsRoot.anchorMax = new Vector2(0.5f, 1);
+            _optionsRoot.pivot = new Vector2(0.5f, 1);
+            _optionsRoot.anchoredPosition = Vector2.zero;
+            _flipButton = MakeButton(panelRect, "FlipButton", new Vector2(0f, -455f),
                                      new Vector2(240f, 52f), "翻转：关", 26);
             _flipButton.onClick.AddListener(OnFlipClicked);
 
+            for (int i = 0; i < 4; i++)
+                _dice[i] = D20DieView.Build(panelRect, "InitiativeDie" + i, "先攻骰 " + (i + 1), new Vector2(-570 + i * 380, 230), 210);
             _root.gameObject.SetActive(false);
         }
 
         public void SetVisible(bool visible)
         {
             if (_root != null) _root.gameObject.SetActive(visible);
+            if (!visible && _rollAnimation != null && _runner != null)
+            {
+                _runner.StopCoroutine(_rollAnimation);
+                _rollAnimation = null;
+            }
         }
 
         // ============================================================
@@ -113,6 +124,12 @@ namespace FingerDiceDuel.UI
         public void Begin(TwoOnTwoStartController controller)
         {
             _controller = controller;
+            for (int i = 0; i < 4; i++)
+            {
+                _dice[i].SetName("先攻骰 " + (i + 1));
+                _dice[i].SetFace(null);
+                _dice[i].Pose(1, 0);
+            }
             _flipped = false;
 
             ClearOptions();
@@ -127,20 +144,39 @@ namespace FingerDiceDuel.UI
 
         private void OnRollClicked()
         {
-            if (_controller == null) return;
-
+            if (_controller == null || _rollAnimation != null) return;
             _rollButton.gameObject.SetActive(false);
-            _seatText.text = _controller.SeatSummary;
-
-            // AI 的步骤自动做完，停在"该人类决定"的那一步
-            AdvanceUntilHuman();
+            _rollAnimation = _runner.StartCoroutine(PlayRoll());
         }
 
-        /// <summary>
-        /// 把 AI 的步骤连续做完，直到轮到人类（或整轮结束）。
-        ///
-        /// 人类 = <see cref="IsHuman"/> 为 true 的那位；其余都由 AI 代做。
-        /// </summary>
+        private IEnumerator PlayRoll()
+        {
+            // 控制器已完成唯一一次掷骰；这里只播放既定结果，不重新取随机数。
+            var plans = new DiceRollAnimationPlan[4];
+            for (int i = 0; i < 4; i++)
+                plans[i] = new DiceRollAnimationPlan(_controller.RollOf(_controller.PlayerAtSeat(i + 1)), new System.Random(61 + i));
+            _stepText.text = "正在投掷 1d20 …";
+            float time = 0;
+            while (time < plans[0].Duration)
+            {
+                time += Time.deltaTime;
+                for (int i = 0; i < 4; i++)
+                {
+                    _dice[i].SetFace(plans[i].FaceAt(time));
+                    _dice[i].Pose(plans[i].ScaleAt(time), Mathf.Sin(time * 30 + i) * 10 * (1 - plans[i].ProgressAt(time)));
+                }
+                yield return null;
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                _dice[i].SetName((i + 1) + "号位 · " + _controller.PlayerAtSeat(i + 1).Name);
+                _dice[i].SetFace(plans[i].FinalValue, true);
+                _dice[i].Pose(1, 0);
+            }
+            _seatText.text = _controller.SeatSummary;
+            _rollAnimation = null;
+            AdvanceUntilHuman();
+        }
         private void AdvanceUntilHuman()
         {
             if (_controller == null) return;
@@ -220,7 +256,9 @@ namespace FingerDiceDuel.UI
 
             int rows = (cands.Count + perRow - 1) / perRow;
             float totalH = rows * btnH + (rows - 1) * gapY;
-            float startY = totalH * 0.5f - btnH * 0.5f;
+            float startY = -btnH * 0.5f;
+            _optionsRoot.sizeDelta = new Vector2(1360, Mathf.Max(200, totalH));
+            _optionsRoot.anchoredPosition = Vector2.zero;
 
             for (int i = 0; i < cands.Count; i++)
             {
@@ -242,10 +280,14 @@ namespace FingerDiceDuel.UI
 
                 Button b = MakeButton(_optionsRoot, "Split" + i, new Vector2(x, y),
                                       new Vector2(btnW, btnH), label, 30);
+                var rect = (RectTransform)b.transform;
+                rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1f);
+                rect.anchoredPosition = new Vector2(x, y);
                 b.onClick.AddListener(() => OnSplitClicked(split));
                 _optionButtons.Add(b.gameObject);
             }
 
+            _optionsRoot.parent.gameObject.SetActive(true);
             UpdateFlipButton();
         }
 
@@ -312,6 +354,7 @@ namespace FingerDiceDuel.UI
 
         private void ClearOptions()
         {
+            if (_optionsRoot != null) _optionsRoot.parent.gameObject.SetActive(false);
             for (int i = 0; i < _optionButtons.Count; i++)
                 if (_optionButtons[i] != null) UnityEngine.Object.Destroy(_optionButtons[i]);
             _optionButtons.Clear();
@@ -355,11 +398,10 @@ namespace FingerDiceDuel.UI
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
-            go.GetComponent<Image>().color = new Color(0.24f, 0.46f, 0.76f);
-
             Text text = MakeText(rect, "Label", Vector2.zero, size, fontSize,
                                  TextAnchor.MiddleCenter, Color.white);
             text.text = label;
+            FrontEndArt.StyleButton(go.GetComponent<Button>());
 
             return go.GetComponent<Button>();
         }

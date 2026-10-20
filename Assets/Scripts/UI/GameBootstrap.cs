@@ -24,7 +24,7 @@ namespace FingerDiceDuel.UI
     /// （重复挂载有 <c>_autoInstance</c> 保护，不会创建两份界面）。
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class GameBootstrap : MonoBehaviour
+    public sealed partial class GameBootstrap : MonoBehaviour
     {
         [Header("对局设置")]
         [Tooltip("玩家 A 使用的角色（默认白板）")]
@@ -473,6 +473,7 @@ namespace FingerDiceDuel.UI
             BuildCharacterScreen();
             BuildTwoOnTwoCharacterScreen();
             BuildInitiativeScreen();
+            ConfigureFrontEndSelections();
 
             _board = gameObject.AddComponent<GameBoardUI>();
             _board.Build();
@@ -532,6 +533,7 @@ namespace FingerDiceDuel.UI
             var scaler = canvasGo.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
 
             _selectRoot = canvasGo.GetComponent<RectTransform>();
             StretchFull(_selectRoot);
@@ -543,6 +545,7 @@ namespace FingerDiceDuel.UI
             var bgImg = bg.GetComponent<Image>();
             bgImg.color = new Color(0.09f, 0.10f, 0.13f);
             bgImg.raycastTarget = false;
+            BuildFrontEndDecoration(bgImg);
 
             _modal = new ModalPanel();
             _modal.Build(_selectRoot, UiFont.Regular, UiFont.Bold,
@@ -559,7 +562,6 @@ namespace FingerDiceDuel.UI
         {
             Button help = MakeButton(parent, "Help", new Vector2(880f, 470f),
                                      new Vector2(64f, 64f), "?");
-            help.GetComponent<Image>().color = new Color(0.22f, 0.26f, 0.34f);
             help.onClick.AddListener(OnHelpClicked);
             return help;
         }
@@ -597,137 +599,8 @@ namespace FingerDiceDuel.UI
 
         // ---- 主菜单 ----
 
-        private void BuildMainMenuScreen()
-        {
-            _screenMainMenu = new ScreenGroup();
+        private void BuildMainMenuScreen() => BuildSkinnedMainMenu();
 
-            // 标题：厚重金色立体字（纯代码绘制）
-            var art = new TitleArt();
-            RectTransform titleRoot = art.Build(_selectRoot, "MainTitle", "手指骰子对决",
-                                                new Vector2(0f, 280f), 116, UiFont.Bold);
-            _screenMainMenu.Add(titleRoot.gameObject);
-
-            Text subtitle = TitleArt.BuildSubtitle(_selectRoot, "SubTitle",
-                                                   "F I N G E R   D I C E   D U E L",
-                                                   new Vector2(0f, 126f), 32, UiFont.Regular);
-            _screenMainMenu.Add(subtitle.gameObject);
-
-            var dividerRoot = new GameObject("Divider", typeof(RectTransform));
-            dividerRoot.transform.SetParent(_selectRoot, false);
-            StretchFull(dividerRoot.GetComponent<RectTransform>());
-            TitleArt.BuildDivider(dividerRoot.GetComponent<RectTransform>(),
-                                  new Vector2(0f, 48f), 1500f);
-            _screenMainMenu.Add(dividerRoot);
-
-            // 玩家要求：主界面改成**三个大模式**。
-            //   1 冒险模式（后续开发的 PVE，现在点进去是占位）
-            //   2 竞技模式（**原本的 1v1 / 2v2 / 8 人都收进去**）
-            //   3 娱乐模式（现在只有双将）
-            Button mAdventure = MakeModeButton(_selectRoot, "ModeAdventure",
-                                               new Vector2(0f, -42f),
-                                               "冒险模式", "剧情与挑战（敬请期待）",
-                                               () => ShowScreen(GameScreen.Adventure));
-            Button mCompetition = MakeModeButton(_selectRoot, "ModeCompetition",
-                                                 new Vector2(0f, -198f),
-                                                 "竞技模式", "对战：1v1 / 2v2 / 8 人",
-                                                 () => ShowScreen(GameScreen.Competition));
-            Button mCasual = MakeModeButton(_selectRoot, "ModeCasual",
-                                            new Vector2(0f, -354f),
-                                            "娱乐模式", "双将等变体玩法",
-                                            () => ShowScreen(GameScreen.Casual));
-
-            _screenMainMenu.Add(mAdventure.gameObject);
-            _screenMainMenu.Add(mCompetition.gameObject);
-            _screenMainMenu.Add(mCasual.gameObject);
-
-            Button help = MakeHelpButton(_selectRoot);
-            _screenMainMenu.Add(help.gameObject);
-
-            // 图鉴入口：玩家要求放在**右上角问号的下面**。
-            //
-            // ⚠️ 玩家要求：入口做成**棕色书皮封面**的样子（不再是方块 + "图"字）。
-            //    做法：棕色底 + 一条更深的书脊 + 靠上留一条浅色"书签/标题带"，
-            //    这样即使不用美术资源也能一眼看出是"一本书"。
-            //    （界面全部运行时用代码构建，没有预制体/贴图可用 —— 见 CODELY.md。）
-            Button codex = MakeButton(_selectRoot, "Codex",
-                                      new Vector2(880f, 388f),
-                                      new Vector2(64f, 64f), "图");
-
-            // 棕色书皮
-            codex.GetComponent<Image>().color = new Color(0.42f, 0.26f, 0.15f);
-
-            // 书脊（左侧一条更深的竖条）
-            var spine = new GameObject("CodexSpine", typeof(Image));
-            spine.transform.SetParent(codex.transform, false);
-            var spineRect = spine.GetComponent<RectTransform>();
-            spineRect.anchorMin = new Vector2(0f, 0f);
-            spineRect.anchorMax = new Vector2(0f, 1f);
-            spineRect.pivot = new Vector2(0f, 0.5f);
-            spineRect.sizeDelta = new Vector2(7f, 0f);
-            spineRect.anchoredPosition = Vector2.zero;
-            var spineImg = spine.GetComponent<Image>();
-            spineImg.color = new Color(0.26f, 0.15f, 0.09f);
-            spineImg.raycastTarget = false;
-
-            // 封面上的浅色标题带（像书皮上的烫金条）
-            var band = new GameObject("CodexBand", typeof(Image));
-            band.transform.SetParent(codex.transform, false);
-            var bandRect = band.GetComponent<RectTransform>();
-            bandRect.anchorMin = new Vector2(0f, 1f);
-            bandRect.anchorMax = new Vector2(1f, 1f);
-            bandRect.pivot = new Vector2(0.5f, 1f);
-            bandRect.sizeDelta = new Vector2(0f, 7f);
-            bandRect.anchoredPosition = new Vector2(0f, -9f);
-            var bandImg = band.GetComponent<Image>();
-            bandImg.color = new Color(0.78f, 0.64f, 0.36f);
-            bandImg.raycastTarget = false;
-
-            // 「图」字挪到封面**中间偏右**（避让左侧书脊）
-            Text label = codex.GetComponentInChildren<Text>();
-            if (label != null)
-            {
-                var lr = label.rectTransform;
-                lr.anchorMin = lr.anchorMax = new Vector2(0.5f, 0.5f);
-                lr.anchoredPosition = new Vector2(4f, -2f);
-            }
-
-            codex.onClick.AddListener(OnCodexClicked);
-
-            _screenMainMenu.Add(codex.gameObject);
-
-            // **魔法球入口**：伤害类型 / 状态指引（玩家要求做成一个魔法球图标）。
-            //
-            // 放在"图"的**正下方** —— 两个都是"查看资料"，竖排更好找。
-            // 图标用"✦"（四角星）而不是 Emoji：字体回退不一定带 Emoji，
-            // 缺字会显示成方框（本项目在 ∞ 上踩过同类问题）。
-            Button orb = MakeButton(_selectRoot, "MagicOrb",
-                                    new Vector2(880f, 316f),
-                                    new Vector2(64f, 64f), "✦");
-            orb.GetComponent<Image>().color = new Color(0.34f, 0.26f, 0.52f);
-            orb.onClick.AddListener(OnMagicOrbClicked);
-            _screenMainMenu.Add(orb.gameObject);
-
-            // 真正结束进程的入口放在主菜单 —— 对局中那个按钮只负责"返回标题"
-            Button quit = MakeButton(_selectRoot, "Quit", new Vector2(0f, -516f),
-                                     new Vector2(240f, 58f), "退出游戏");
-            quit.GetComponent<Image>().color = new Color(0.34f, 0.24f, 0.26f);
-            quit.onClick.AddListener(QuitGame);
-            _screenMainMenu.Add(quit.gameObject);
-
-            // 版本/提示
-            Text tip = MakeText(_selectRoot, "Tip", new Vector2(0f, -456f), new Vector2(1200f, 30f),
-                                20, TextAnchor.MiddleCenter, new Color(0.55f, 0.60f, 0.70f));
-            tip.text = "点击右上角 ? 查看游戏规则";
-            _screenMainMenu.Add(tip.gameObject);
-        }
-
-        // ============================================================
-        // 玩家要求的三大模式子界面
-        // ============================================================
-
-        /// <summary>
-        /// 一个子菜单里的“竞技型”按钮（标题 + 副标题）。
-        /// </summary>
         private Button MakeSubModeButton(RectTransform parent, string name,
                                          Vector2 position, string title,
                                          string subtitle, System.Action onClick)
@@ -926,7 +799,6 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "FbBack", new Vector2(-460f, -52f),
                                      new Vector2(220f, 68f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(GameScreen.Competition));
             _screenFactionSelect.Add(back.gameObject);
 
@@ -1180,7 +1052,6 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "IdBack", new Vector2(-460f, -176f),
                                      new Vector2(220f, 64f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(GameScreen.IdentityBattleMenu));
             _screenIdentitySelect.Add(back.gameObject);
             _screenIdentitySelect.Add(MakeHelpButton(_selectRoot).gameObject);
@@ -1393,13 +1264,11 @@ namespace FingerDiceDuel.UI
 
             Button reset = MakeButton(_selectRoot, "DgReset", new Vector2(-180f, -52f),
                                       new Vector2(240f, 68f), "重选");
-            reset.GetComponent<Image>().color = new Color(0.34f, 0.30f, 0.38f);
             reset.onClick.AddListener(ResetDualSelection);
             _screenDualSelect.Add(reset.gameObject);
 
             Button back = MakeButton(_selectRoot, "DgBack", new Vector2(-460f, -52f),
                                      new Vector2(220f, 68f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(_dualFactionMode
                 ? _dualFactionReturnScreen : GameScreen.DualGeneralMenu));
             _screenDualSelect.Add(back.gameObject);
@@ -1442,7 +1311,7 @@ namespace FingerDiceDuel.UI
                     : (IReadOnlyList<CharacterDefinition>)new List<CharacterDefinition>();
             }
 
-            _dgRoster.SetRoster(list, list.Count > 0 ? 0 : -1);
+            _dgRoster.SetRoster(list, -1);
             _dgRoster.ScrollToSelected();
 
             if (list.Count > 0) RefreshDetail(_dgDetail, list[0]);
@@ -1706,28 +1575,8 @@ namespace FingerDiceDuel.UI
 
         /// <summary>模式按钮：大号标题 + 副标题，两行文字。</summary>
         private Button MakeModeButton(RectTransform parent, string name, Vector2 position,
-                                      string title, string subtitle, Action onClick)
-        {
-            Button button = MakeButton(parent, name, position, new Vector2(620f, 116f), title);
-
-            // MakeButton 已经建了一个居中大标签，再加一行副标题
-            Text sub = MakeText(button.GetComponent<RectTransform>(), "Sub",
-                                new Vector2(0f, -34f), new Vector2(560f, 28f),
-                                20, TextAnchor.MiddleCenter, new Color(0.90f, 0.93f, 1f, 0.85f));
-            sub.text = subtitle;
-
-            // 主标题上移，给副标题让位
-            var label = button.GetComponentInChildren<Text>();
-            if (label != null) label.rectTransform.anchoredPosition = new Vector2(0f, 16f);
-
-            button.onClick.AddListener(() => onClick?.Invoke());
-            return button;
-        }
-
-        // ============================================================
-        // 图鉴
-        // ============================================================
-
+            string title, string subtitle, Action onClick)
+            => CreateArtModeButton(parent, name, position, title, subtitle, onClick);
         private CodexScreen _codex;
 
         /// <summary>
@@ -1816,6 +1665,7 @@ namespace FingerDiceDuel.UI
 
                 var card = new CodexCardData
                 {
+                    Id = def.Id == "blank" ? "soldier" : def.Id,
                     NameZh = def.DisplayName,
                     NameEn = e.EnglishName,
                     Alignment = Alignments.NameOf(e.Alignment),
@@ -2441,6 +2291,7 @@ namespace FingerDiceDuel.UI
         public void ShowScreen(GameScreen screen)
         {
             _screen = screen;
+            ApplyFrontEndScreen(screen);
 
             // 保险：画布是三个界面共用的，切回来时必须确保它是激活的
             if (_selectRoot != null && !_selectRoot.gameObject.activeSelf)
@@ -2560,7 +2411,6 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "SelectBack", new Vector2(-420f, -256f),
                                      new Vector2(220f, 76f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(GameScreen.OneOnOneMenu));
             _screenCharacter.Add(back.gameObject);
 
@@ -2603,7 +2453,7 @@ namespace FingerDiceDuel.UI
             rect.anchoredPosition = position;
 
             var img = go.GetComponent<Image>();
-            img.color = new Color(0.13f, 0.15f, 0.20f, 0.95f);
+            FrontEndArt.Apply(img, "UI/panel_detail");
             img.raycastTarget = false;
 
             Text text = MakeText(rect, "Text", Vector2.zero, new Vector2(1092f, 62f),
@@ -2618,7 +2468,9 @@ namespace FingerDiceDuel.UI
             if (target == null || def == null) return;
 
             // 详情也用图鉴那条短描述（与卡片一致）
-            target.text = $"【{def.DisplayName}】  {SkillHintText(def)}";
+            target.text = def.DisplayName + "　" + CharacterRosterView.DescribeStats(def) + "\n" + SkillHintText(def);
+            var emblem = target.transform.parent.Find("SelectedEmblem");
+            if (emblem != null) emblem.GetComponent<Image>().sprite = BattleArt.Get("Classes/" + (def.Id == "blank" ? "soldier" : def.Id));
         }
 
 
@@ -3893,7 +3745,6 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "TtCharBack", new Vector2(-420f, -196f),
                                      new Vector2(220f, 76f), "返回");
-            back.GetComponent<Image>().color = new Color(0.30f, 0.33f, 0.40f);
             back.onClick.AddListener(() => ShowScreen(GameScreen.ModeMenu));
             _screenTwoOnTwoCharacter.Add(back.gameObject);
 
@@ -3985,9 +3836,7 @@ namespace FingerDiceDuel.UI
                     Image img = _seatButtons[i].GetComponent<Image>();
                     if (img == null) continue;
 
-                    img.color = (i + 1 == me)
-                        ? new Color(0.85f, 0.70f, 0.30f)
-                        : new Color(0.30f, 0.33f, 0.40f);
+                    FrontEndArt.StyleButton(_seatButtons[i], "tab", i + 1 == me);
                 }
             }
         }
@@ -4004,11 +3853,10 @@ namespace FingerDiceDuel.UI
             rect.sizeDelta = size;
             rect.anchoredPosition = position;
 
-            go.GetComponent<Image>().color = new Color(0.24f, 0.46f, 0.76f);
-
             Text text = MakeText(rect, "Label", Vector2.zero, size, 28,
                                  TextAnchor.MiddleCenter, Color.white);
             text.text = label;
+            FrontEndArt.StyleButton(go.GetComponent<Button>());
 
             return go.GetComponent<Button>();
         }

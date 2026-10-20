@@ -1,6 +1,6 @@
 # Unity / 团结引擎接入清单
 
-本文件对应 79 个独立 PNG 和已有职业／伤害／状态图标的复用。当前主菜单、选将、图鉴仍由原代码构建，素材准备不等同于运行时接入。
+本文件对应 80 个独立 PNG 和已有职业／伤害／状态图标的复用。已由 FrontEndArt、GameBootstrap.FrontEnd、CharacterRosterView、CodexScreen 和 D20DieView 接入运行时。实际截图、复现菜单与检查范围见 [运行时接入记录](../../Integration/front-end/README.md)。下文保留资源使用与维护约定。
 
 ## 加载与导入
 
@@ -44,8 +44,8 @@ image.color = Color.white;
 | 页面 | 入口 | 需要改造的显示部分 |
 |---|---|---|
 | 主菜单 | GameBootstrap.BuildMainMenuScreen | 装入背景、三种绘画模式图标和按钮五态；保留原模式回调、图鉴／魔法球／规则／退出功能 |
-| 选将 | CharacterRosterView、GameBootstrap 的角色选择构建 | 当前横向文字卡可改为六列四行；复用完整 24 人名单和 SelectionChanged；详情读取 CharacterDefinition 与注入的技能摘要 |
-| 图鉴 | CodexScreen、GameBootstrap.BuildCodexIfNeeded | 复用现有 CodexCardData、阵营筛选、翻页和说明；新增左栏／徽记／正文容器；总览跳详情需要独立的显示状态 |
+| 选将 | CharacterRosterView、GameBootstrap 的角色选择构建 | 已改为六列四行绘画徽记网格；复用完整 24 人名单和 SelectionChanged；详情读取 CharacterDefinition 与注入的技能摘要 |
+| 图鉴 | CodexScreen、GameBootstrap.BuildCodexIfNeeded | 复用现有 CodexCardData、阵营筛选、翻页和说明；新增左栏／徽记／正文容器；总览跳详情已有独立的显示状态 |
 | 指南 | 既有伤害／状态资料入口 | 复用原 13 / 9 图标和 Core 的名称、颜色、说明，不采用参考图里未实现的状态 |
 
 本批 `settings`、`melee/ranged/magic/support/special` 是预留图标。接线时按真实功能决定是否展示；现有代码不能据这些图片自动推导职业类别，也不应放出无响应入口。

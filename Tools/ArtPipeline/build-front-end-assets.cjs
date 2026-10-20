@@ -120,7 +120,12 @@ async function icons() {
  for(const [key,body]of Object.entries(paths))await emit('Icons',key,128,128,body,{usage:'Simple glyph, color white to retain aged gold; recommended 24–40 UI pixels'});
 }
 async function main() {
- await painted(); await ui(); await icons();
+ await painted();
+ const dieSource='Art/Production/initiative-v1/d20_obsidian-gold.source.png';
+ const dieMeta=await sharp(path.join(root,dieSource)).metadata();
+ await sharp(path.join(root,dieSource)).resize(464,464,{fit:'inside'}).extend({top:24,bottom:24,left:24,right:24,background:'#00000000'}).png().toFile(path.join(dst,'Illustrations/d20_initiative.png'));
+ await record('Illustrations','d20_initiative',512,512,{source:dieSource,kind:'imagegen',nativeWidth:dieMeta.width,nativeHeight:dieMeta.height,resampling:'uniform contain; 24px transparent padding; preserved alpha',upscaled:false,usage:'Simple Image, white tint; live numeral overlay, never a baked dice result'});
+ await ui(); await icons();
  const battle=JSON.parse(await fs.readFile(path.join(root,'Art/Production/battle-v1/asset-manifest.json'),'utf8'));
  const reused=battle.assets.filter(a=>['Classes','Damage','Status'].includes(a.group)).map(a=>({key:a.key,group:a.group,resourcesKey:a.resourcesKey,path:'Assets/Resources/Art/Battle/v1/'+a.path}));
  for(const key of ['attack','defense','range','heal','d20_sigil']) {
@@ -128,7 +133,7 @@ async function main() {
   reused.push({key:a.key,group:a.group,resourcesKey:a.resourcesKey,path:'Assets/Resources/Art/Battle/v1/'+a.path});
  }
  const counts={};for(const a of assets)counts[a.group]=(counts[a.group]||0)+1;
- await fs.writeFile(path.join(art,'asset-manifest.json'),JSON.stringify({version:1,date:'2026-10-21',status:'New front-end assets exported; menu/codex/selection runtime wiring pending',resourceRoot:'Assets/Resources/Art/FrontEnd/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets,reused},null,2));
+ await fs.writeFile(path.join(art,'asset-manifest.json'),JSON.stringify({version:1,date:'2026-10-21',status:'Runtime front-end and D20 wiring implemented; verification in Art/Integration/front-end/validation.txt',resourceRoot:'Assets/Resources/Art/FrontEnd/v1',spriteBorderOrder:'left,bottom,right,top',counts,assets,reused},null,2));
  console.log(JSON.stringify({exported:assets.length,counts,reused:reused.length}));
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

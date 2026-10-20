@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **978 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
+| 测试 | **979 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
@@ -34,7 +34,7 @@
 | `Assets/Scripts/UI/` | 表现层（**唯一**允许引用 `UnityEngine` 的目录） |
 | `Assets/Editor/` | 仅编辑器的战斗美术预览、运行时界面检查与截图工具；可引用 UnityEditor / UnityEngine |
 | `Assets/Tests/EditMode/` | 无头测试；`UnityTestShim.cs` 是环境适配门面 |
-| `Assets/Resources/Fonts/` | 思源黑体 Medium（正文）/ Bold（标题），SIL OFL 1.1 |
+| `Assets/Resources/Fonts/` | 思源黑体 Medium（正文）/ Bold（数字），思源宋体 SemiBold（标题），SIL OFL 1.1 |
 | `Tools/HeadlessTests/` | 无头测试运行器 |
 | `Tools/UiCompileCheck/` | 表现层编译 + 组件冲突静态检查 |
 | `Tools/push.ps1` | 一键推送（openssl 后端 + 本机代理 + 重试） |
@@ -80,6 +80,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 > 上述命令不会验证画面。1v1 现在可通过正在运行的编辑器执行菜单 `Finger Dice Duel/Preview/1v1 Battle Art`，检验真实点击、字体加载、资源映射与布局，并输出引擎渲染截图至 `Art/Integration/1v1/`。批处理启动失败不代表此编辑器内验证不可用。
 
 **用编辑器看画面**：团结 Hub 打开本目录 → 直接 Play（任意场景都行）。
+前台美术验收菜单：`Finger Dice Duel/Preview/All Front End Art`。覆盖主菜单、全部子菜单、五类选将、图鉴与先攻，输出 `Art/Integration/front-end/`。
+
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
@@ -234,21 +236,21 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 
 ## Roadmap
 
-- [ ] **实机验证表现层**（本机无法自动化，只能人工看）
+- [x] **前台与 1v1 美术运行时验收**（正在运行的编辑器菜单可执行点击、布局和截图检查；批处理仍不可用）
 - [x] **2v2**（入门 / 经典 + 先攻界面 + 环形布局 + 攻击距离）
 - [x] **8 人阵营混战**（单将、三阵营 3/3/2、50 轮、按阵营总血量判胜）
 - [x] **8 人身份对局** —— AI 练习已接入；80 轮、主公 +10 / +1/+1、内奸 5 人亮身份、忠臣替死；真人对战占位
 - [ ] **8 人角色/阵营平衡** —— 首版抽样中立仅 14.9%，需单独调
 - [ ] 竞技（联网）
 - [ ] 菜单按钮音效
-- [ ] 角色卡片列表的滚动提示（最后一张被右边缘切掉）
+- [x] 角色选将改为 6 × 4 徽记网格，24 人完整可见；长名单可竖直滚动
 - [ ] **空运算源**那次不该发生的第二次结算（根因未消除，已有守门与 `[FDD异常]` 日志）
 
 ## 已知风险 / 技术债
 
 | 项 | 说明 |
 |---|---|
-| **表现层无法自动验证** | `Tuanjie.exe` 批处理崩溃，UI 效果只能人工确认 |
+| **批处理启动不可用** | `Tuanjie.exe` 批处理崩溃；已有运行中的编辑器可执行前台／1v1 预览检查，结果见 `Art/Integration/` |
 | **平衡隐患** | 单回合最大伤害 8 < 一次回复 9，双方都只顾活命时可拖延；靠轮次上限兜底（见 `RULES.md` §17） |
 | **AI 给队友回血未实现** | 1v1 里给对手回血是资敌；2v2 已支持队友但 AI 尚未利用 |
 | **空运算源** | 2v2 AI 对局里偶发"用空运算源去结算"，已由两道守门拦住（不再抛异常、不再崩），改为记录 `[FDD异常]` 现场。**根因未消除** |

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
@@ -277,8 +277,7 @@ namespace FingerDiceDuel.Assistant
                 string note = DiceRollText.SpecialNote(roll);
 
                 if (IsNamingOpponent)
-                    return $"{Decider.Name} 投出 {roll}（大失败）：由你来替 " +
-                           $"{Assignee.Name} 指定初始手值。";
+                    return $"{Assignee.Name} 投出 {roll}（大失败）：由 {Decider.Name} 替其指定初始手值。";
 
                 string head = $"{Decider.Name} 投出 {roll}";
                 if (!string.IsNullOrEmpty(note)) head += $"（{note}）";
@@ -300,9 +299,8 @@ namespace FingerDiceDuel.Assistant
 
             if (IsNamingOpponent)
             {
-                // decider 就是那个"投出 1 的人"（大失败者），这里要写清楚
-                sb.Append($"{Decider.Name} 投出 {roll}（大失败）：由你来替 ")
-                  .Append($"{who} 指定初始手值。");
+                // 投骰者与指定者是两个人；人机回合也应明确写出双方名字。
+                sb.Append($"{who} 投出 {roll}（大失败）：由 {Decider.Name} 替其指定初始手值。");
             }
             else
             {

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -541,6 +541,19 @@ namespace FingerDiceDuel.Tests
             Assert.False(plain.DecisionText.Contains("大失败"));
             Assert.False(plain.DecisionText.Contains("小成功"));
             Assert.False(plain.DecisionText.Contains("大成功"));
+        }
+
+        [Test]
+        public void Critical_failure_text_names_the_roller_and_the_decider_separately()
+        {
+            foreach (var rolls in new[] { new[] { 1, 20 }, new[] { 20, 1 }, new[] { 1, 1 } })
+            {
+                var start = Arrange(rolls[0], rolls[1]);
+                string expected = start.Assignee.Name + " 投出 1（大失败）：由 " + start.Decider.Name + " 替其指定初始手值。";
+                Assert.AreEqual(expected, start.DecisionText);
+                Assert.True(start.Hint.StartsWith(expected), start.Hint);
+                Assert.False(object.ReferenceEquals(start.Assignee, start.Decider));
+            }
         }
 
         [Test]

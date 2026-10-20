@@ -1,12 +1,12 @@
 {
   "version": 1,
   "date": "2026-10-21",
-  "status": "New front-end assets exported; menu/codex/selection runtime wiring pending",
+  "status": "Runtime front-end and D20 wiring implemented; verification in Art/Integration/front-end/validation.txt",
   "resourceRoot": "Assets/Resources/Art/FrontEnd/v1",
   "spriteBorderOrder": "left,bottom,right,top",
   "counts": {
     "Backgrounds": 4,
-    "Illustrations": 5,
+    "Illustrations": 6,
     "UI": 46,
     "Icons": 24
   },
@@ -206,6 +206,24 @@
       "upscaled": false,
       "textSafe": null,
       "usage": "Simple Image, preserve aspect, white tint"
+    },
+    {
+      "key": "d20_initiative",
+      "group": "Illustrations",
+      "path": "Illustrations/d20_initiative.png",
+      "resourcesKey": "Art/FrontEnd/v1/Illustrations/d20_initiative",
+      "width": 512,
+      "height": 512,
+      "nativeAlpha": true,
+      "bytes": 342790,
+      "sha256": "897974dd31cfb17d7e31b9cdfd4b89bf783041b747bf4ed2c6df09f99a205dcc",
+      "source": "Art/Production/initiative-v1/d20_obsidian-gold.source.png",
+      "kind": "imagegen",
+      "nativeWidth": 1254,
+      "nativeHeight": 1254,
+      "resampling": "uniform contain; 24px transparent padding; preserved alpha",
+      "upscaled": false,
+      "usage": "Simple Image, white tint; live numeral overlay, never a baked dice result"
     },
     {
       "key": "screen_frame",

@@ -1,0 +1,638 @@
+PASS navigation MainMenu
+PASS shared menu canvas stays active MainMenu
+PASS clickable Help
+PASS unobstructed raycast Help
+PASS shared menu canvas stays active Rules
+PASS rules body scrolls
+PASS shared menu canvas stays active RulesBottom
+PASS clickable Close
+PASS unobstructed raycast Close
+PASS clickable ModeAdventure
+PASS unobstructed raycast ModeAdventure
+PASS shared menu canvas stays active Adventure
+PASS clickable AdvPve
+PASS unobstructed raycast AdvPve
+PASS shared menu canvas stays active ComingSoon
+PASS clickable Close
+PASS unobstructed raycast Close
+PASS navigation Competition
+PASS Competition button in canvas Comp1v1
+PASS Competition skinned Comp1v1
+PASS Competition button in canvas Comp2v2
+PASS Competition skinned Comp2v2
+PASS Competition buttons do not overlap Comp2v2/Comp1v1
+PASS Competition button in canvas Comp8p
+PASS Competition skinned Comp8p
+PASS Competition buttons do not overlap Comp8p/Comp1v1
+PASS Competition buttons do not overlap Comp8p/Comp2v2
+PASS Competition button in canvas Back
+PASS Competition skinned Back
+PASS Competition buttons do not overlap Back/Comp1v1
+PASS Competition buttons do not overlap Back/Comp2v2
+PASS Competition buttons do not overlap Back/Comp8p
+PASS shared menu canvas stays active Competition
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from Competition
+PASS navigation Casual
+PASS Casual button in canvas CasualDual
+PASS Casual skinned CasualDual
+PASS Casual button in canvas Back
+PASS Casual skinned Back
+PASS Casual buttons do not overlap Back/CasualDual
+PASS shared menu canvas stays active Casual
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from Casual
+PASS navigation OneOnOneMenu
+PASS OneOnOneMenu button in canvas ModeAi
+PASS OneOnOneMenu skinned ModeAi
+PASS OneOnOneMenu button in canvas ModePvp
+PASS OneOnOneMenu skinned ModePvp
+PASS OneOnOneMenu buttons do not overlap ModePvp/ModeAi
+PASS OneOnOneMenu button in canvas Back
+PASS OneOnOneMenu skinned Back
+PASS OneOnOneMenu buttons do not overlap Back/ModeAi
+PASS OneOnOneMenu buttons do not overlap Back/ModePvp
+PASS OneOnOneMenu button in canvas Help
+PASS OneOnOneMenu skinned Help
+PASS OneOnOneMenu buttons do not overlap Help/ModeAi
+PASS OneOnOneMenu buttons do not overlap Help/ModePvp
+PASS OneOnOneMenu buttons do not overlap Help/Back
+PASS shared menu canvas stays active OneOnOneMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from OneOnOneMenu
+PASS navigation TwoOnTwoMenu
+PASS TwoOnTwoMenu button in canvas TtPractice
+PASS TwoOnTwoMenu skinned TtPractice
+PASS TwoOnTwoMenu button in canvas TtPvp
+PASS TwoOnTwoMenu skinned TtPvp
+PASS TwoOnTwoMenu buttons do not overlap TtPvp/TtPractice
+PASS TwoOnTwoMenu button in canvas TtBack
+PASS TwoOnTwoMenu skinned TtBack
+PASS TwoOnTwoMenu buttons do not overlap TtBack/TtPractice
+PASS TwoOnTwoMenu buttons do not overlap TtBack/TtPvp
+PASS TwoOnTwoMenu button in canvas Help
+PASS TwoOnTwoMenu skinned Help
+PASS TwoOnTwoMenu buttons do not overlap Help/TtPractice
+PASS TwoOnTwoMenu buttons do not overlap Help/TtPvp
+PASS TwoOnTwoMenu buttons do not overlap Help/TtBack
+PASS shared menu canvas stays active TwoOnTwoMenu
+PASS clickable TtBack
+PASS unobstructed raycast TtBack
+PASS return from TwoOnTwoMenu
+PASS navigation ModeMenu
+PASS ModeMenu button in canvas ModeIntro
+PASS ModeMenu skinned ModeIntro
+PASS ModeMenu button in canvas ModeClassic
+PASS ModeMenu skinned ModeClassic
+PASS ModeMenu buttons do not overlap ModeClassic/ModeIntro
+PASS ModeMenu button in canvas ModeBack
+PASS ModeMenu skinned ModeBack
+PASS ModeMenu buttons do not overlap ModeBack/ModeIntro
+PASS ModeMenu buttons do not overlap ModeBack/ModeClassic
+PASS ModeMenu button in canvas Help
+PASS ModeMenu skinned Help
+PASS ModeMenu buttons do not overlap Help/ModeIntro
+PASS ModeMenu buttons do not overlap Help/ModeClassic
+PASS ModeMenu buttons do not overlap Help/ModeBack
+PASS shared menu canvas stays active ModeMenu
+PASS clickable ModeBack
+PASS unobstructed raycast ModeBack
+PASS return from ModeMenu
+PASS navigation DifficultyMenu
+PASS DifficultyMenu button in canvas DiffEasy
+PASS DifficultyMenu skinned DiffEasy
+PASS DifficultyMenu button in canvas DiffNormal
+PASS DifficultyMenu skinned DiffNormal
+PASS DifficultyMenu buttons do not overlap DiffNormal/DiffEasy
+PASS DifficultyMenu button in canvas DiffHard
+PASS DifficultyMenu skinned DiffHard
+PASS DifficultyMenu buttons do not overlap DiffHard/DiffEasy
+PASS DifficultyMenu buttons do not overlap DiffHard/DiffNormal
+PASS DifficultyMenu button in canvas DiffBack
+PASS DifficultyMenu skinned DiffBack
+PASS DifficultyMenu buttons do not overlap DiffBack/DiffEasy
+PASS DifficultyMenu buttons do not overlap DiffBack/DiffNormal
+PASS DifficultyMenu buttons do not overlap DiffBack/DiffHard
+PASS DifficultyMenu button in canvas Help
+PASS DifficultyMenu skinned Help
+PASS DifficultyMenu buttons do not overlap Help/DiffEasy
+PASS DifficultyMenu buttons do not overlap Help/DiffNormal
+PASS DifficultyMenu buttons do not overlap Help/DiffHard
+PASS DifficultyMenu buttons do not overlap Help/DiffBack
+PASS shared menu canvas stays active DifficultyMenu
+PASS clickable DiffBack
+PASS unobstructed raycast DiffBack
+PASS return from DifficultyMenu
+PASS navigation DualGeneral
+PASS DualGeneral button in canvas DualDuel
+PASS DualGeneral skinned DualDuel
+PASS DualGeneral button in canvas DualFaction
+PASS DualGeneral skinned DualFaction
+PASS DualGeneral buttons do not overlap DualFaction/DualDuel
+PASS DualGeneral button in canvas Back
+PASS DualGeneral skinned Back
+PASS DualGeneral buttons do not overlap Back/DualDuel
+PASS DualGeneral buttons do not overlap Back/DualFaction
+PASS shared menu canvas stays active DualGeneral
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from DualGeneral
+PASS navigation DualGeneralMenu
+PASS DualGeneralMenu button in canvas DualAi
+PASS DualGeneralMenu skinned DualAi
+PASS DualGeneralMenu button in canvas DualPvp
+PASS DualGeneralMenu skinned DualPvp
+PASS DualGeneralMenu buttons do not overlap DualPvp/DualAi
+PASS DualGeneralMenu button in canvas Back
+PASS DualGeneralMenu skinned Back
+PASS DualGeneralMenu buttons do not overlap Back/DualAi
+PASS DualGeneralMenu buttons do not overlap Back/DualPvp
+PASS shared menu canvas stays active DualGeneralMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from DualGeneralMenu
+PASS navigation DualFactionMenu
+PASS DualFactionMenu button in canvas DualFactionAi
+PASS DualFactionMenu skinned DualFactionAi
+PASS DualFactionMenu button in canvas DualFactionPvp
+PASS DualFactionMenu skinned DualFactionPvp
+PASS DualFactionMenu buttons do not overlap DualFactionPvp/DualFactionAi
+PASS DualFactionMenu button in canvas Back
+PASS DualFactionMenu skinned Back
+PASS DualFactionMenu buttons do not overlap Back/DualFactionAi
+PASS DualFactionMenu buttons do not overlap Back/DualFactionPvp
+PASS shared menu canvas stays active DualFactionMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from DualFactionMenu
+PASS navigation EightPlayerMenu
+PASS EightPlayerMenu button in canvas EightFaction
+PASS EightPlayerMenu skinned EightFaction
+PASS EightPlayerMenu button in canvas EightIdentity
+PASS EightPlayerMenu skinned EightIdentity
+PASS EightPlayerMenu buttons do not overlap EightIdentity/EightFaction
+PASS EightPlayerMenu button in canvas Back
+PASS EightPlayerMenu skinned Back
+PASS EightPlayerMenu buttons do not overlap Back/EightFaction
+PASS EightPlayerMenu buttons do not overlap Back/EightIdentity
+PASS shared menu canvas stays active EightPlayerMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from EightPlayerMenu
+PASS navigation FactionBattleMenu
+PASS FactionBattleMenu button in canvas FactionAi
+PASS FactionBattleMenu skinned FactionAi
+PASS FactionBattleMenu button in canvas FactionPvp
+PASS FactionBattleMenu skinned FactionPvp
+PASS FactionBattleMenu buttons do not overlap FactionPvp/FactionAi
+PASS FactionBattleMenu button in canvas Back
+PASS FactionBattleMenu skinned Back
+PASS FactionBattleMenu buttons do not overlap Back/FactionAi
+PASS FactionBattleMenu buttons do not overlap Back/FactionPvp
+PASS shared menu canvas stays active FactionBattleMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from FactionBattleMenu
+PASS navigation IdentityBattleMenu
+PASS IdentityBattleMenu button in canvas IdentityAi
+PASS IdentityBattleMenu skinned IdentityAi
+PASS IdentityBattleMenu button in canvas IdentityPvp
+PASS IdentityBattleMenu skinned IdentityPvp
+PASS IdentityBattleMenu buttons do not overlap IdentityPvp/IdentityAi
+PASS IdentityBattleMenu button in canvas Back
+PASS IdentityBattleMenu skinned Back
+PASS IdentityBattleMenu buttons do not overlap Back/IdentityAi
+PASS IdentityBattleMenu buttons do not overlap Back/IdentityPvp
+PASS shared menu canvas stays active IdentityBattleMenu
+PASS clickable Back
+PASS unobstructed raycast Back
+PASS return from IdentityBattleMenu
+PASS clickable ModeCompetition
+PASS unobstructed raycast ModeCompetition
+PASS navigation Competition
+PASS clickable Comp1v1
+PASS unobstructed raycast Comp1v1
+PASS navigation OneOnOneMenu
+PASS clickable ModeAi
+PASS unobstructed raycast ModeAi
+PASS navigation ModeMenu
+PASS clickable ModeIntro
+PASS unobstructed raycast ModeIntro
+PASS navigation DifficultyMenu
+PASS clickable DiffEasy
+PASS unobstructed raycast DiffEasy
+PASS navigation CharacterSelect
+PASS shared menu canvas stays active CharacterSelectInitial
+PASS _rosterViewA count 24
+PASS _rosterViewA visible Card0
+PASS _rosterViewA painted Card0
+PASS _rosterViewA visible Card1
+PASS _rosterViewA painted Card1
+PASS _rosterViewA visible Card2
+PASS _rosterViewA painted Card2
+PASS _rosterViewA visible Card3
+PASS _rosterViewA painted Card3
+PASS _rosterViewA visible Card4
+PASS _rosterViewA painted Card4
+PASS _rosterViewA visible Card5
+PASS _rosterViewA painted Card5
+PASS _rosterViewA visible Card6
+PASS _rosterViewA painted Card6
+PASS _rosterViewA visible Card7
+PASS _rosterViewA painted Card7
+PASS _rosterViewA visible Card8
+PASS _rosterViewA painted Card8
+PASS _rosterViewA visible Card9
+PASS _rosterViewA painted Card9
+PASS _rosterViewA visible Card10
+PASS _rosterViewA painted Card10
+PASS _rosterViewA visible Card11
+PASS _rosterViewA painted Card11
+PASS _rosterViewA visible Card12
+PASS _rosterViewA painted Card12
+PASS _rosterViewA visible Card13
+PASS _rosterViewA painted Card13
+PASS _rosterViewA visible Card14
+PASS _rosterViewA painted Card14
+PASS _rosterViewA visible Card15
+PASS _rosterViewA painted Card15
+PASS _rosterViewA visible Card16
+PASS _rosterViewA painted Card16
+PASS _rosterViewA visible Card17
+PASS _rosterViewA painted Card17
+PASS _rosterViewA visible Card18
+PASS _rosterViewA painted Card18
+PASS _rosterViewA visible Card19
+PASS _rosterViewA painted Card19
+PASS _rosterViewA visible Card20
+PASS _rosterViewA painted Card20
+PASS _rosterViewA visible Card21
+PASS _rosterViewA painted Card21
+PASS _rosterViewA visible Card22
+PASS _rosterViewA painted Card22
+PASS _rosterViewA visible Card23
+PASS _rosterViewA painted Card23
+PASS _rosterViewB count 24
+PASS _rosterViewB visible Card0
+PASS _rosterViewB painted Card0
+PASS _rosterViewB visible Card1
+PASS _rosterViewB painted Card1
+PASS _rosterViewB visible Card2
+PASS _rosterViewB painted Card2
+PASS _rosterViewB visible Card3
+PASS _rosterViewB painted Card3
+PASS _rosterViewB visible Card4
+PASS _rosterViewB painted Card4
+PASS _rosterViewB visible Card5
+PASS _rosterViewB painted Card5
+PASS _rosterViewB visible Card6
+PASS _rosterViewB painted Card6
+PASS _rosterViewB visible Card7
+PASS _rosterViewB painted Card7
+PASS _rosterViewB visible Card8
+PASS _rosterViewB painted Card8
+PASS _rosterViewB visible Card9
+PASS _rosterViewB painted Card9
+PASS _rosterViewB visible Card10
+PASS _rosterViewB painted Card10
+PASS _rosterViewB visible Card11
+PASS _rosterViewB painted Card11
+PASS _rosterViewB visible Card12
+PASS _rosterViewB painted Card12
+PASS _rosterViewB visible Card13
+PASS _rosterViewB painted Card13
+PASS _rosterViewB visible Card14
+PASS _rosterViewB painted Card14
+PASS _rosterViewB visible Card15
+PASS _rosterViewB painted Card15
+PASS _rosterViewB visible Card16
+PASS _rosterViewB painted Card16
+PASS _rosterViewB visible Card17
+PASS _rosterViewB painted Card17
+PASS _rosterViewB visible Card18
+PASS _rosterViewB painted Card18
+PASS _rosterViewB visible Card19
+PASS _rosterViewB painted Card19
+PASS _rosterViewB visible Card20
+PASS _rosterViewB painted Card20
+PASS _rosterViewB visible Card21
+PASS _rosterViewB painted Card21
+PASS _rosterViewB visible Card22
+PASS _rosterViewB painted Card22
+PASS _rosterViewB visible Card23
+PASS _rosterViewB painted Card23
+PASS clickable Card23
+PASS unobstructed raycast Card23
+PASS clickable Card20
+PASS unobstructed raycast Card20
+PASS last character can be selected
+PASS selection detail reflects Bard
+PASS shared menu canvas stays active CharacterSelect
+PASS clickable SelectBack
+PASS unobstructed raycast SelectBack
+PASS clickable ModeAi
+PASS unobstructed raycast ModeAi
+PASS clickable ModeClassic
+PASS unobstructed raycast ModeClassic
+PASS clickable Start
+PASS unobstructed raycast Start
+PASS navigation DiceRoll
+PASS shared menu canvas stays active DiceRoll
+PASS clickable RollButton
+PASS unobstructed raycast RollButton
+PASS 1v1 painted dice match controller rolls
+PASS shared menu canvas stays active DiceRollCriticals
+PASS critical result numerals remain accurate
+PASS all 45 critical split choices available
+PASS first split is visibly inside viewport
+PASS critical options scroll within assigned region
+PASS shared menu canvas stays active DiceRollCriticalsBottom
+PASS clickable FlipButton
+PASS unobstructed raycast FlipButton
+PASS shared menu canvas stays active DiceRollFlipped
+PASS clickable Split0
+PASS unobstructed raycast Split0
+PASS critical-failure choice advances to major-success player
+PASS clickable Comp2v2
+PASS unobstructed raycast Comp2v2
+PASS clickable TtPractice
+PASS unobstructed raycast TtPractice
+PASS clickable ModeIntro
+PASS unobstructed raycast ModeIntro
+PASS navigation TwoOnTwoCharacter
+PASS _rosterView2Me count 24
+PASS _rosterView2Me visible Card0
+PASS _rosterView2Me painted Card0
+PASS _rosterView2Me visible Card1
+PASS _rosterView2Me painted Card1
+PASS _rosterView2Me visible Card2
+PASS _rosterView2Me painted Card2
+PASS _rosterView2Me visible Card3
+PASS _rosterView2Me painted Card3
+PASS _rosterView2Me visible Card4
+PASS _rosterView2Me painted Card4
+PASS _rosterView2Me visible Card5
+PASS _rosterView2Me painted Card5
+PASS _rosterView2Me visible Card6
+PASS _rosterView2Me painted Card6
+PASS _rosterView2Me visible Card7
+PASS _rosterView2Me painted Card7
+PASS _rosterView2Me visible Card8
+PASS _rosterView2Me painted Card8
+PASS _rosterView2Me visible Card9
+PASS _rosterView2Me painted Card9
+PASS _rosterView2Me visible Card10
+PASS _rosterView2Me painted Card10
+PASS _rosterView2Me visible Card11
+PASS _rosterView2Me painted Card11
+PASS _rosterView2Me visible Card12
+PASS _rosterView2Me painted Card12
+PASS _rosterView2Me visible Card13
+PASS _rosterView2Me painted Card13
+PASS _rosterView2Me visible Card14
+PASS _rosterView2Me painted Card14
+PASS _rosterView2Me visible Card15
+PASS _rosterView2Me painted Card15
+PASS _rosterView2Me visible Card16
+PASS _rosterView2Me painted Card16
+PASS _rosterView2Me visible Card17
+PASS _rosterView2Me painted Card17
+PASS _rosterView2Me visible Card18
+PASS _rosterView2Me painted Card18
+PASS _rosterView2Me visible Card19
+PASS _rosterView2Me painted Card19
+PASS _rosterView2Me visible Card20
+PASS _rosterView2Me painted Card20
+PASS _rosterView2Me visible Card21
+PASS _rosterView2Me painted Card21
+PASS _rosterView2Me visible Card22
+PASS _rosterView2Me painted Card22
+PASS _rosterView2Me visible Card23
+PASS _rosterView2Me painted Card23
+PASS _rosterView2Mate count 24
+PASS _rosterView2Mate visible Card0
+PASS _rosterView2Mate painted Card0
+PASS _rosterView2Mate visible Card1
+PASS _rosterView2Mate painted Card1
+PASS _rosterView2Mate visible Card2
+PASS _rosterView2Mate painted Card2
+PASS _rosterView2Mate visible Card3
+PASS _rosterView2Mate painted Card3
+PASS _rosterView2Mate visible Card4
+PASS _rosterView2Mate painted Card4
+PASS _rosterView2Mate visible Card5
+PASS _rosterView2Mate painted Card5
+PASS _rosterView2Mate visible Card6
+PASS _rosterView2Mate painted Card6
+PASS _rosterView2Mate visible Card7
+PASS _rosterView2Mate painted Card7
+PASS _rosterView2Mate visible Card8
+PASS _rosterView2Mate painted Card8
+PASS _rosterView2Mate visible Card9
+PASS _rosterView2Mate painted Card9
+PASS _rosterView2Mate visible Card10
+PASS _rosterView2Mate painted Card10
+PASS _rosterView2Mate visible Card11
+PASS _rosterView2Mate painted Card11
+PASS _rosterView2Mate visible Card12
+PASS _rosterView2Mate painted Card12
+PASS _rosterView2Mate visible Card13
+PASS _rosterView2Mate painted Card13
+PASS _rosterView2Mate visible Card14
+PASS _rosterView2Mate painted Card14
+PASS _rosterView2Mate visible Card15
+PASS _rosterView2Mate painted Card15
+PASS _rosterView2Mate visible Card16
+PASS _rosterView2Mate painted Card16
+PASS _rosterView2Mate visible Card17
+PASS _rosterView2Mate painted Card17
+PASS _rosterView2Mate visible Card18
+PASS _rosterView2Mate painted Card18
+PASS _rosterView2Mate visible Card19
+PASS _rosterView2Mate painted Card19
+PASS _rosterView2Mate visible Card20
+PASS _rosterView2Mate painted Card20
+PASS _rosterView2Mate visible Card21
+PASS _rosterView2Mate painted Card21
+PASS _rosterView2Mate visible Card22
+PASS _rosterView2Mate painted Card22
+PASS _rosterView2Mate visible Card23
+PASS _rosterView2Mate painted Card23
+PASS intro seat picker visible
+PASS clickable Seat4
+PASS unobstructed raycast Seat4
+PASS seat selection updates summary
+PASS shared menu canvas stays active TwoOnTwoCharacterIntro
+PASS clickable TtCharBack
+PASS unobstructed raycast TtCharBack
+PASS clickable ModeClassic
+PASS unobstructed raycast ModeClassic
+PASS classic hides manual seat picker
+PASS shared menu canvas stays active TwoOnTwoCharacterClassic
+PASS clickable TtStart
+PASS unobstructed raycast TtStart
+PASS navigation TwoOnTwoInitiative
+PASS shared menu canvas stays active TwoOnTwoInitiative
+PASS clickable RollButton
+PASS unobstructed raycast RollButton
+PASS 2v2 painted die result at seat 1
+PASS 2v2 painted die result at seat 2
+PASS 2v2 painted die result at seat 3
+PASS 2v2 painted die result at seat 4
+PASS 2v2 critical split choices available
+PASS 2v2 first split visibly inside viewport
+PASS shared menu canvas stays active TwoOnTwoSplits
+PASS clickable Split0
+PASS unobstructed raycast Split0
+PASS navigation InMatch
+PASS clickable FactionAi
+PASS unobstructed raycast FactionAi
+PASS navigation FactionSelect
+PASS _fbRoster count 24
+PASS _fbRoster visible Card0
+PASS _fbRoster painted Card0
+PASS _fbRoster visible Card1
+PASS _fbRoster painted Card1
+PASS _fbRoster visible Card2
+PASS _fbRoster painted Card2
+PASS _fbRoster visible Card3
+PASS _fbRoster painted Card3
+PASS _fbRoster visible Card4
+PASS _fbRoster painted Card4
+PASS _fbRoster visible Card5
+PASS _fbRoster painted Card5
+PASS _fbRoster visible Card6
+PASS _fbRoster painted Card6
+PASS _fbRoster visible Card7
+PASS _fbRoster painted Card7
+PASS _fbRoster visible Card8
+PASS _fbRoster painted Card8
+PASS _fbRoster visible Card9
+PASS _fbRoster painted Card9
+PASS _fbRoster visible Card10
+PASS _fbRoster painted Card10
+PASS _fbRoster visible Card11
+PASS _fbRoster painted Card11
+PASS _fbRoster visible Card12
+PASS _fbRoster painted Card12
+PASS _fbRoster visible Card13
+PASS _fbRoster painted Card13
+PASS _fbRoster visible Card14
+PASS _fbRoster painted Card14
+PASS _fbRoster visible Card15
+PASS _fbRoster painted Card15
+PASS _fbRoster visible Card16
+PASS _fbRoster painted Card16
+PASS _fbRoster visible Card17
+PASS _fbRoster painted Card17
+PASS _fbRoster visible Card18
+PASS _fbRoster painted Card18
+PASS _fbRoster visible Card19
+PASS _fbRoster painted Card19
+PASS _fbRoster visible Card20
+PASS _fbRoster painted Card20
+PASS _fbRoster visible Card21
+PASS _fbRoster painted Card21
+PASS _fbRoster visible Card22
+PASS _fbRoster painted Card22
+PASS _fbRoster visible Card23
+PASS _fbRoster painted Card23
+PASS shared menu canvas stays active FactionSelect
+PASS clickable IdentityAi
+PASS unobstructed raycast IdentityAi
+PASS navigation IdentitySelect
+PASS identity excludes reserved lord character
+PASS clickable Card4
+PASS unobstructed raycast Card4
+PASS shared menu canvas stays active IdentitySelect
+PASS clickable DualAi
+PASS unobstructed raycast DualAi
+PASS shared menu canvas stays active DualGeneralSelect
+PASS clickable Card0
+PASS unobstructed raycast Card0
+PASS dual secondary restricted to same faction
+PASS dual start disabled before secondary
+PASS shared menu canvas stays active DualSecondarySelect
+PASS clickable Card0
+PASS unobstructed raycast Card0
+PASS dual start enabled after two choices
+PASS shared menu canvas stays active DualReady
+PASS clickable DgReset
+PASS unobstructed raycast DgReset
+PASS dual reset restores full roster
+PASS clickable DualFactionAi
+PASS unobstructed raycast DualFactionAi
+PASS shared menu canvas stays active DualFactionSelect
+PASS clickable Codex
+PASS unobstructed raycast Codex
+PASS codex opens all 24 characters in overview
+PASS codex name fits 士兵
+PASS codex name fits 战士
+PASS codex name fits 咒术师
+PASS codex name fits 野蛮人
+PASS codex name fits 牧师
+PASS codex name fits 游侠
+PASS codex name fits 狼人
+PASS codex name fits 剑客
+PASS codex name fits 忍者
+PASS codex name fits 刺客
+PASS codex name fits 圣武士
+PASS codex name fits 妖术师
+PASS codex name fits 魔射手
+PASS codex name fits 赌徒
+PASS codex name fits 骑士
+PASS codex name fits 武僧
+PASS codex name fits 巨人
+PASS codex name fits 盗贼
+PASS codex name fits 猎人
+PASS codex name fits 魔术师
+PASS codex name fits 法师
+PASS codex name fits 术士
+PASS codex name fits 邪术师
+PASS codex name fits 吟游诗人
+PASS shared menu canvas stays active CodexOverview
+PASS clickable CodexTile23
+PASS unobstructed raycast CodexTile23
+PASS shared menu canvas stays active CodexDetail
+PASS clickable Next
+PASS unobstructed raycast Next
+PASS codex next wraps
+PASS clickable Prev
+PASS unobstructed raycast Prev
+PASS codex previous wraps
+PASS clickable FilterToggle
+PASS unobstructed raycast FilterToggle
+PASS clickable Filter_守序
+PASS unobstructed raycast Filter_守序
+PASS clickable Filter_善良
+PASS unobstructed raycast Filter_善良
+PASS codex filters combine
+PASS shared menu canvas stays active CodexFiltered
+PASS clickable Filter_守序
+PASS unobstructed raycast Filter_守序
+PASS clickable Filter_善良
+PASS unobstructed raycast Filter_善良
+PASS clickable FilterToggle
+PASS unobstructed raycast FilterToggle
+PASS codex filters clear
+PASS clickable Close
+PASS unobstructed raycast Close
+PASS navigation MainMenu
+PASS clickable MagicOrb
+PASS unobstructed raycast MagicOrb
+PASS magic guide remains separate from characters
+PASS magic guide has no alignment filter
+PASS all 13 painted damage icons
+PASS shared menu canvas stays active DamageGuide
+PASS damage guide scroll exposes physical types
+PASS shared menu canvas stays active DamageGuideBottom
+PASS clickable Next
+PASS unobstructed raycast Next
+PASS all 9 painted status icons
+PASS shared menu canvas stays active StatusGuide
+PASS clickable Close
+PASS unobstructed raycast Close
+PASS navigation MainMenu

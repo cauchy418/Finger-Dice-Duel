@@ -1,0 +1,8 @@
+{
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "prompt": "Use case: stylized-concept. Asset type: production 2D transparent game UI sprite for an original dark fantasy tabletop dice duel, an initiative D20 die. Primary request: ONE single unmistakable twenty-sided icosahedral die, nearly front-facing, centered, isolated, with a very large broad EMPTY triangular central face placed at optical center for a live game numeral overlay. True geometric icosahedron: triangular facets, hexagonal pointed silhouette, NOT a cube, not a d12 pentagonal die. Style: rich hand-painted dark fantasy inventory art, tactile black obsidian and charcoal iron faces, restrained antique worn gold beveled edges and tiny engraved corner ornaments, subtle cool teal reflected light with warm candle highlights, sophisticated painted brushwork and materials, sharp legible silhouette. The central face is flat dark charcoal, softly lit and uncluttered so a large pale gold number rendered by the game can remain highly legible. No numerals on any face, no letters, no text, no logos. The die fills about 78% of a square canvas, with generous transparent padding, all tips fully visible. Real alpha transparency around the die; no floor, no background, no frame, no medallion, no hands, no extra props, no cast shadow or opaque glow outside the silhouette. Keep the die symmetrical and readable at 160 pixels. Output one square sprite, ideally 1024 by 1024.",
+  "source": "d20_obsidian-gold.source.png",
+  "runtime": "Assets/Resources/Art/FrontEnd/v1/Illustrations/d20_initiative.png",
+  "processing": "Preserve generated RGBA; resize to 464px, place centered within a 512px transparent canvas. No background reconstruction or recoloring."
+}

@@ -1,0 +1,30 @@
+{
+  "resourceValidation": "Art/Production/front-end-v1/validation-report.json",
+  "existingOneOnOneRegression": {
+    "passed": 140,
+    "failed": 0
+  },
+  "headless": {
+    "passed": 979,
+    "failed": 0
+  },
+  "unityTestDefineCompile": true,
+  "engine": "Tuanjie 2022.3.62t15",
+  "date": "2026-10-21",
+  "editorRefresh": {
+    "warnings": 0,
+    "errors": 0
+  },
+  "uiCompileAndComponentCheck": true,
+  "notes": [
+    "All captures use real runtime Unity Canvas; overview-contact is a resized contact sheet.",
+    "Only Editor fixtures inject fixed critical rolls. Production dice still use existing controller randomness.",
+    "No scene or importer meta was hand-authored."
+  ],
+  "frontEnd": {
+    "screenCaptures": 43,
+    "passed": 638,
+    "failed": 0,
+    "report": "validation.txt"
+  }
+}
