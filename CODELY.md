@@ -84,6 +84,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 ## 开发约定
 
+- 用户已授权：后续工作完成后，将本工作区的应入库改动提交并推送至 `https://github.com/cauchy418/Finger-Dice-Duel`。继续遵守 `.gitignore`，不提交引擎缓存和构建产物；推送失败时如实报告，不使用强制推送覆盖远程历史。
+
 - 🚫 **绝对不要手工创建/编辑 `.meta` 文件**（GUID 格式很特殊，见下）
 - 源文件与 **PowerShell 脚本都必须是 UTF-8 with BOM**，否则中文会乱码并报语法错
 - C#：类型/方法 PascalCase，命名空间统一 `FingerDiceDuel.*`

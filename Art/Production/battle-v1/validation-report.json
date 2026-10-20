@@ -1,0 +1,26 @@
+{
+  "pngFiles": 97,
+  "counts": {
+    "UI": 19,
+    "Damage": 13,
+    "Status": 9,
+    "Classes": 24,
+    "Overlay": 11,
+    "Hands": 20,
+    "Backgrounds": 1
+  },
+  "checks": [
+    "PNG decoding and dimensions",
+    "No empty alpha masks",
+    "All asset content hashes distinct",
+    "10 left/right pixel-perfect mirror pairs",
+    "Transparent hand corners"
+  ],
+  "manual": [
+    "Corrected 4 has four extended long fingers and one folded thumb",
+    "Corrected 6 has extended pinky/thumb and three folded fingers",
+    "0 and 9 canonicalized to anatomical left before mirroring",
+    "Contact sheets and assembly preview visually inspected"
+  ],
+  "runtimeVerified": false
+}

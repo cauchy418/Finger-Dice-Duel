@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "processing": "Grid cutouts, background speck isolation, common cuff scale and baseline; right sprites are horizontal mirrors of left sprites.",
+  "hands": [
+    {
+      "value": 0,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-0.png",
+      "repaired": false,
+      "sourceNeedsMirror": true,
+      "left": "Hands/hand_left_0.png",
+      "right": "Hands/hand_right_0.png",
+      "sourceBounds": [
+        69,
+        212,
+        266,
+        473
+      ]
+    },
+    {
+      "value": 1,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-1.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_1.png",
+      "right": "Hands/hand_right_1.png",
+      "sourceBounds": [
+        79,
+        65,
+        255,
+        476
+      ]
+    },
+    {
+      "value": 2,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-2.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_2.png",
+      "right": "Hands/hand_right_2.png",
+      "sourceBounds": [
+        97,
+        70,
+        259,
+        476
+      ]
+    },
+    {
+      "value": 3,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-3.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_3.png",
+      "right": "Hands/hand_right_3.png",
+      "sourceBounds": [
+        87,
+        68,
+        266,
+        477
+      ]
+    },
+    {
+      "value": 4,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/hand-4-repaired.png",
+      "repaired": true,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_4.png",
+      "right": "Hands/hand_right_4.png",
+      "sourceBounds": [
+        137,
+        93,
+        905,
+        1465
+      ]
+    },
+    {
+      "value": 5,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-5.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_5.png",
+      "right": "Hands/hand_right_5.png",
+      "sourceBounds": [
+        26,
+        17,
+        323,
+        423
+      ]
+    },
+    {
+      "value": 6,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/hand-6-repaired.png",
+      "repaired": true,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_6.png",
+      "right": "Hands/hand_right_6.png",
+      "sourceBounds": [
+        63,
+        256,
+        1010,
+        1295
+      ]
+    },
+    {
+      "value": 7,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-7.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_7.png",
+      "right": "Hands/hand_right_7.png",
+      "sourceBounds": [
+        92,
+        71,
+        278,
+        424
+      ]
+    },
+    {
+      "value": 8,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-8.png",
+      "repaired": false,
+      "sourceNeedsMirror": false,
+      "left": "Hands/hand_left_8.png",
+      "right": "Hands/hand_right_8.png",
+      "sourceBounds": [
+        71,
+        32,
+        323,
+        423
+      ]
+    },
+    {
+      "value": 9,
+      "width": 512,
+      "height": 640,
+      "wristBaseline": 610,
+      "nominalCuffWidth": 196,
+      "source": "Art/Production/battle-v1/raw-hands/left-9.png",
+      "repaired": false,
+      "sourceNeedsMirror": true,
+      "left": "Hands/hand_left_9.png",
+      "right": "Hands/hand_right_9.png",
+      "sourceBounds": [
+        106,
+        69,
+        276,
+        423
+      ]
+    }
+  ]
+}

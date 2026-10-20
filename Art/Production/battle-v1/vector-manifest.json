@@ -1,0 +1,867 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "key": "hand_plate",
+      "group": "UI",
+      "path": "UI/hand_plate.png",
+      "width": 320,
+      "height": 448,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/hand_plate.svg",
+      "usage": "Simple Image; preserve aspect ratio."
+    },
+    {
+      "key": "hand_frame_normal",
+      "group": "UI",
+      "path": "UI/hand_frame_normal.png",
+      "width": 320,
+      "height": 448,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/hand_frame_normal.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "hand_frame_available",
+      "group": "UI",
+      "path": "UI/hand_frame_available.png",
+      "width": 320,
+      "height": 448,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/hand_frame_available.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "hand_frame_selected",
+      "group": "UI",
+      "path": "UI/hand_frame_selected.png",
+      "width": 320,
+      "height": 448,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/hand_frame_selected.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "hand_frame_disabled",
+      "group": "UI",
+      "path": "UI/hand_frame_disabled.png",
+      "width": 320,
+      "height": 448,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/hand_frame_disabled.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "button_normal",
+      "group": "UI",
+      "path": "UI/button_normal.png",
+      "width": 320,
+      "height": 88,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/button_normal.svg",
+      "border": [
+        48,
+        32,
+        48,
+        32
+      ]
+    },
+    {
+      "key": "button_hover",
+      "group": "UI",
+      "path": "UI/button_hover.png",
+      "width": 320,
+      "height": 88,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/button_hover.svg",
+      "border": [
+        48,
+        32,
+        48,
+        32
+      ]
+    },
+    {
+      "key": "button_pressed",
+      "group": "UI",
+      "path": "UI/button_pressed.png",
+      "width": 320,
+      "height": 88,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/button_pressed.svg",
+      "border": [
+        48,
+        32,
+        48,
+        32
+      ]
+    },
+    {
+      "key": "button_disabled",
+      "group": "UI",
+      "path": "UI/button_disabled.png",
+      "width": 320,
+      "height": 88,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/button_disabled.svg",
+      "border": [
+        48,
+        32,
+        48,
+        32
+      ]
+    },
+    {
+      "key": "panel_log",
+      "group": "UI",
+      "path": "UI/panel_log.png",
+      "width": 512,
+      "height": 640,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/panel_log.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "panel_tooltip",
+      "group": "UI",
+      "path": "UI/panel_tooltip.png",
+      "width": 384,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/panel_tooltip.svg",
+      "border": [
+        48,
+        48,
+        48,
+        48
+      ]
+    },
+    {
+      "key": "label_strip",
+      "group": "UI",
+      "path": "UI/label_strip.png",
+      "width": 320,
+      "height": 64,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/label_strip.svg",
+      "border": [
+        40,
+        12,
+        40,
+        12
+      ]
+    },
+    {
+      "key": "health_track",
+      "group": "UI",
+      "path": "UI/health_track.png",
+      "width": 512,
+      "height": 48,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/health_track.svg",
+      "border": [
+        24,
+        16,
+        24,
+        16
+      ]
+    },
+    {
+      "key": "health_fill",
+      "group": "UI",
+      "path": "UI/health_fill.png",
+      "width": 256,
+      "height": 32,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/health_fill.svg",
+      "border": [
+        2,
+        8,
+        2,
+        8
+      ],
+      "usage": "Horizontal filled image; render track above fill."
+    },
+    {
+      "key": "badge_ring",
+      "group": "UI",
+      "path": "UI/badge_ring.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/badge_ring.svg"
+    },
+    {
+      "key": "divider",
+      "group": "UI",
+      "path": "UI/divider.png",
+      "width": 512,
+      "height": 32,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/divider.svg",
+      "border": [
+        32,
+        8,
+        32,
+        8
+      ]
+    },
+    {
+      "key": "status_counter",
+      "group": "UI",
+      "path": "UI/status_counter.png",
+      "width": 64,
+      "height": 64,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/status_counter.svg"
+    },
+    {
+      "key": "turn_marker",
+      "group": "UI",
+      "path": "UI/turn_marker.png",
+      "width": 128,
+      "height": 128,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/turn_marker.svg"
+    },
+    {
+      "key": "d20_sigil",
+      "group": "UI",
+      "path": "UI/d20_sigil.png",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/UI/d20_sigil.svg"
+    },
+    {
+      "key": "slashing",
+      "group": "Damage",
+      "path": "Damage/slashing.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/slashing.svg",
+      "label": "挥砍",
+      "color": "#9AA0AC"
+    },
+    {
+      "key": "bludgeoning",
+      "group": "Damage",
+      "path": "Damage/bludgeoning.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/bludgeoning.svg",
+      "label": "钝击",
+      "color": "#9AA0AC"
+    },
+    {
+      "key": "piercing",
+      "group": "Damage",
+      "path": "Damage/piercing.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/piercing.svg",
+      "label": "穿刺",
+      "color": "#9AA0AC"
+    },
+    {
+      "key": "thunder",
+      "group": "Damage",
+      "path": "Damage/thunder.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/thunder.svg",
+      "label": "雷鸣",
+      "color": "#9B4FD0"
+    },
+    {
+      "key": "acid",
+      "group": "Damage",
+      "path": "Damage/acid.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/acid.svg",
+      "label": "强酸",
+      "color": "#B6CC2E"
+    },
+    {
+      "key": "poison",
+      "group": "Damage",
+      "path": "Damage/poison.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/poison.svg",
+      "label": "毒素",
+      "color": "#3FA34D"
+    },
+    {
+      "key": "radiant",
+      "group": "Damage",
+      "path": "Damage/radiant.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/radiant.svg",
+      "label": "光耀",
+      "color": "#F2C72E"
+    },
+    {
+      "key": "necrotic",
+      "group": "Damage",
+      "path": "Damage/necrotic.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/necrotic.svg",
+      "label": "暗蚀",
+      "color": "#1E5B2E"
+    },
+    {
+      "key": "fire",
+      "group": "Damage",
+      "path": "Damage/fire.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/fire.svg",
+      "label": "火焰",
+      "color": "#E8701A"
+    },
+    {
+      "key": "cold",
+      "group": "Damage",
+      "path": "Damage/cold.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/cold.svg",
+      "label": "寒冷",
+      "color": "#4C9EE6"
+    },
+    {
+      "key": "lightning",
+      "group": "Damage",
+      "path": "Damage/lightning.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/lightning.svg",
+      "label": "闪电",
+      "color": "#1A4FA0"
+    },
+    {
+      "key": "force",
+      "group": "Damage",
+      "path": "Damage/force.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/force.svg",
+      "label": "力场",
+      "color": "#8B1A1A"
+    },
+    {
+      "key": "psychic",
+      "group": "Damage",
+      "path": "Damage/psychic.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Damage/psychic.svg",
+      "label": "心灵",
+      "color": "#F08CBB"
+    },
+    {
+      "key": "resonance",
+      "group": "Status",
+      "path": "Status/resonance.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/resonance.svg",
+      "label": "残响",
+      "color": "#9B4FD0"
+    },
+    {
+      "key": "acid",
+      "group": "Status",
+      "path": "Status/acid.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/acid.svg",
+      "label": "强酸",
+      "color": "#B6CC2E"
+    },
+    {
+      "key": "poison",
+      "group": "Status",
+      "path": "Status/poison.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/poison.svg",
+      "label": "中毒",
+      "color": "#3FA34D"
+    },
+    {
+      "key": "blind",
+      "group": "Status",
+      "path": "Status/blind.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/blind.svg",
+      "label": "目盲",
+      "color": "#F2C72E"
+    },
+    {
+      "key": "decay",
+      "group": "Status",
+      "path": "Status/decay.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/decay.svg",
+      "label": "腐朽",
+      "color": "#1E5B2E"
+    },
+    {
+      "key": "burn",
+      "group": "Status",
+      "path": "Status/burn.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/burn.svg",
+      "label": "燃烧",
+      "color": "#E8701A"
+    },
+    {
+      "key": "freeze",
+      "group": "Status",
+      "path": "Status/freeze.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/freeze.svg",
+      "label": "冰冻",
+      "color": "#4C9EE6"
+    },
+    {
+      "key": "shock",
+      "group": "Status",
+      "path": "Status/shock.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/shock.svg",
+      "label": "感电",
+      "color": "#1A4FA0"
+    },
+    {
+      "key": "stun",
+      "group": "Status",
+      "path": "Status/stun.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Status/stun.svg",
+      "label": "震慑",
+      "color": "#F08CBB"
+    },
+    {
+      "key": "soldier",
+      "group": "Classes",
+      "path": "Classes/soldier.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/soldier.svg",
+      "label": "士兵",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "fighter",
+      "group": "Classes",
+      "path": "Classes/fighter.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/fighter.svg",
+      "label": "战士",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "curseweaver",
+      "group": "Classes",
+      "path": "Classes/curseweaver.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/curseweaver.svg",
+      "label": "咒术师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "barbarian",
+      "group": "Classes",
+      "path": "Classes/barbarian.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/barbarian.svg",
+      "label": "野蛮人",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "priest",
+      "group": "Classes",
+      "path": "Classes/priest.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/priest.svg",
+      "label": "牧师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "ranger",
+      "group": "Classes",
+      "path": "Classes/ranger.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/ranger.svg",
+      "label": "游侠",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "werewolf",
+      "group": "Classes",
+      "path": "Classes/werewolf.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/werewolf.svg",
+      "label": "狼人",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "swordsman",
+      "group": "Classes",
+      "path": "Classes/swordsman.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/swordsman.svg",
+      "label": "剑客",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "ninja",
+      "group": "Classes",
+      "path": "Classes/ninja.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/ninja.svg",
+      "label": "忍者",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "assassin",
+      "group": "Classes",
+      "path": "Classes/assassin.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/assassin.svg",
+      "label": "刺客",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "paladin",
+      "group": "Classes",
+      "path": "Classes/paladin.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/paladin.svg",
+      "label": "圣武士",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "hexer",
+      "group": "Classes",
+      "path": "Classes/hexer.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/hexer.svg",
+      "label": "妖术师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "arcane_archer",
+      "group": "Classes",
+      "path": "Classes/arcane_archer.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/arcane_archer.svg",
+      "label": "魔射手",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "gambler",
+      "group": "Classes",
+      "path": "Classes/gambler.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/gambler.svg",
+      "label": "赌徒",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "knight",
+      "group": "Classes",
+      "path": "Classes/knight.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/knight.svg",
+      "label": "骑士",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "monk",
+      "group": "Classes",
+      "path": "Classes/monk.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/monk.svg",
+      "label": "武僧",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "giant",
+      "group": "Classes",
+      "path": "Classes/giant.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/giant.svg",
+      "label": "巨人",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "thief",
+      "group": "Classes",
+      "path": "Classes/thief.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/thief.svg",
+      "label": "盗贼",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "hunter",
+      "group": "Classes",
+      "path": "Classes/hunter.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/hunter.svg",
+      "label": "猎人",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "magician",
+      "group": "Classes",
+      "path": "Classes/magician.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/magician.svg",
+      "label": "魔术师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "wizard",
+      "group": "Classes",
+      "path": "Classes/wizard.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/wizard.svg",
+      "label": "法师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "sorcerer",
+      "group": "Classes",
+      "path": "Classes/sorcerer.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/sorcerer.svg",
+      "label": "术士",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "warlock",
+      "group": "Classes",
+      "path": "Classes/warlock.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/warlock.svg",
+      "label": "邪术师",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "bard",
+      "group": "Classes",
+      "path": "Classes/bard.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Classes/bard.svg",
+      "label": "吟游诗人",
+      "color": "#AD8B50"
+    },
+    {
+      "key": "shield",
+      "group": "Overlay",
+      "path": "Overlay/shield.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/shield.svg"
+    },
+    {
+      "key": "shield_broken",
+      "group": "Overlay",
+      "path": "Overlay/shield_broken.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/shield_broken.svg"
+    },
+    {
+      "key": "locked",
+      "group": "Overlay",
+      "path": "Overlay/locked.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/locked.svg"
+    },
+    {
+      "key": "taichi",
+      "group": "Overlay",
+      "path": "Overlay/taichi.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/taichi.svg"
+    },
+    {
+      "key": "concealed",
+      "group": "Overlay",
+      "path": "Overlay/concealed.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/concealed.svg"
+    },
+    {
+      "key": "stealth",
+      "group": "Overlay",
+      "path": "Overlay/stealth.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/stealth.svg"
+    },
+    {
+      "key": "attack",
+      "group": "Overlay",
+      "path": "Overlay/attack.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/attack.svg"
+    },
+    {
+      "key": "defense",
+      "group": "Overlay",
+      "path": "Overlay/defense.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/defense.svg"
+    },
+    {
+      "key": "range",
+      "group": "Overlay",
+      "path": "Overlay/range.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/range.svg"
+    },
+    {
+      "key": "heal",
+      "group": "Overlay",
+      "path": "Overlay/heal.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/heal.svg"
+    },
+    {
+      "key": "dead",
+      "group": "Overlay",
+      "path": "Overlay/dead.png",
+      "width": 256,
+      "height": 256,
+      "alpha": true,
+      "source": "Art/Production/battle-v1/svg/Overlay/dead.svg"
+    }
+  ]
+}

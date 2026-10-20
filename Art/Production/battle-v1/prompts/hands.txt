@@ -1,0 +1,15 @@
+Use case: stylized-concept. Asset type: production SPRITE SHEET of TEN anatomical LEFT HUMAN HAND gestures for the game Finger Dice Duel.
+Input image: style reference only, the approved battle UI concept. Match the warm natural ivory skin, hand-painted realistic spellbook anatomy and small dark leather cuff with narrow antique-brass edge of its hands. NOT its UI.
+OUTPUT: a wide high-resolution canvas, ideally 2560 x 1536, exactly FIVE COLUMNS and TWO ROWS, equal sized cells. Completely TRANSPARENT background. Exactly one isolated hand in each cell, not touching adjacent cells. NO cards, no frames, no numerals or text, no shadows outside silhouette, no watermark. Every cell same scale and SAME wrist baseline near lower cell edge, 15% clear margin. Show entire hand including fingertips, curled fingers and short wrist cuff. Hand pointing upward, palm toward viewer, ANATOMICAL LEFT HAND throughout: the thumb emerges on the viewer's RIGHT side, little finger is viewer LEFT. Five anatomically correct fingers per hand. Identical person, skin tone, cuff, lighting direction and drawing style in every cell. Crisp readable silhouette and mild painterly shading, no jewelry, no bandages.
+EXACT row-major order:
+ROW 1 cell 1 VALUE ZERO: closed fist with thumb folded across outside curled fingers.
+ROW 1 cell 2 VALUE ONE: only INDEX finger upright, other three fingers tightly curled, thumb rests across curled fingers. Thumb is NOT the extended finger.
+ROW 1 cell 3 VALUE TWO: INDEX and MIDDLE upright in V, ring and pinky curled with thumb over them.
+ROW 1 cell 4 VALUE THREE: INDEX, MIDDLE and RING upright; pinky curled; thumb folded across pinky.
+ROW 1 cell 5 VALUE FOUR: all four long fingers upright; thumb folded across palm.
+ROW 2 cell 1 VALUE FIVE: open palm with exactly five fingers extended, thumb to viewer RIGHT.
+ROW 2 cell 2 VALUE SIX: thumb pointing right and pinky pointing upward-left extended, INDEX MIDDLE RING curled. Chinese six/shaka sign, exactly TWO extended digits.
+ROW 2 cell 3 VALUE SEVEN: thumb, INDEX and MIDDLE fingertips meet in a pinching cluster in front of upper palm; ring and pinky folded. Chinese single-hand seven, NOT a V sign.
+ROW 2 cell 4 VALUE EIGHT: INDEX pointing up and THUMB pointing right make L shape, other three long fingers curled. Chinese eight finger-gun gesture, NOT V sign.
+ROW 2 cell 5 VALUE NINE: INDEX bends in a distinctive upright hook at both joints; other long fingers curled, thumb folded. Chinese nine, NOT a straight index and not a fist.
+Critical: NO duplicate gestures. No additional hand, all ten left hands. Isolated individual sprites, neutral restrained fantasy realism, designed for later programmatic grid slicing and horizontal mirroring to create the matching anatomical right-hand sprites. Sheet background must have genuine alpha transparency, NOT checkerboard painted pixels.
