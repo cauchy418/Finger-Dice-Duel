@@ -32,16 +32,58 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Lord_is_seat_one_and_has_ten_extra_health()
+        public void Lord_has_five_extra_health_and_neutral_tyrant_bonus()
         {
             GameManager game = Match(out List<PlayerState> p, out _);
             Assert.AreEqual(IdentityRole.Lord, game.IdentityOf(p[0]));
-            Assert.AreEqual(30, p[0].MaximumHealth, "白板 20 + 主公 10。");
-            Assert.AreEqual(30, p[0].Health);
-            Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(p[0]));
+            Assert.AreEqual(25, p[0].MaximumHealth, "白板 20 + 主公 5。");
+            Assert.AreEqual(25, p[0].Health);
+            Assert.AreEqual("霸王", game.IdentityLordTitle);
+            // 8 名白板都按中立计：基础 +1 攻击，霸王每人 +1 攻击。
+            Assert.AreEqual(9, StatusRules.EffectiveAttackBonus(p[0]));
             Assert.AreEqual(1, StatusRules.EffectiveDefenseBonus(p[0]));
             Assert.IsTrue(game.IsIdentityPublic(p[0]));
             Assert.IsFalse(game.IsIdentityPublic(p[1]));
+        }
+
+        [Test]
+        public void Lord_titles_and_bonuses_follow_alignment_and_alive_units()
+        {
+            MatchWith(CharacterDefinition.Paladin, out GameManager lawful, out List<PlayerState> lp);
+            Assert.AreEqual("明主", lawful.IdentityLordTitle);
+            Assert.AreEqual(25, lp[0].MaximumHealth);
+            Assert.AreEqual(10, StatusRules.EffectiveDefenseBonus(lp[0]), "圣武士基础防御 +1、主公 +1、明主 8 人 +8。");
+            Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(lp[0]));
+
+            MatchWith(CharacterDefinition.Barbarian, out GameManager chaotic, out List<PlayerState> cp);
+            Assert.AreEqual("暴君", chaotic.IdentityLordTitle);
+            Assert.AreEqual(20 + 5 + 8 * 5, cp[0].MaximumHealth, "基础 +5，每个混乱单位再 +5。");
+            Assert.AreEqual(cp[0].MaximumHealth, cp[0].Health);
+
+            cp[1].SetHealthExact(0);
+            chaotic.RefreshGameOver();
+            Assert.AreEqual(20 + 5 + 7 * 5, cp[0].MaximumHealth, "死亡后暴君加成实时下降。");
+        }
+
+        private static void MatchWith(CharacterDefinition def,
+                                      out GameManager game,
+                                      out List<PlayerState> p)
+        {
+            p = new List<PlayerState>(8);
+            var providers = new List<IChoiceProvider>(8);
+            for (int i = 0; i < 8; i++)
+            {
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), def));
+                providers.Add(new SimpleChoiceProvider());
+            }
+
+            var roles = new List<IdentityRole>
+            {
+                IdentityRole.Lord, IdentityRole.Loyalist, IdentityRole.Loyalist,
+                IdentityRole.Rebel, IdentityRole.Rebel, IdentityRole.Rebel,
+                IdentityRole.Rebel, IdentityRole.Traitor,
+            };
+            game = GameManager.CreateIdentityEight(p, providers, roles);
         }
 
         [Test]

@@ -30,6 +30,7 @@ namespace FingerDiceDuel.Core
             if (p != null) bonus += p.BardAttackOffset;
             if (p != null) bonus += p.IdentityAttackBonus;
             if (p != null) bonus += p.DynamicAttackBonus;
+            if (p != null) bonus += p.LordAttackBonus;
             return bonus;
         }
 
@@ -44,6 +45,7 @@ namespace FingerDiceDuel.Core
             if (p != null) bonus += p.BardDefenseOffset;
             if (p != null) bonus += p.IdentityDefenseBonus;
             if (p != null) bonus += p.DynamicDefenseBonus;
+            if (p != null) bonus += p.LordDefenseBonus;
             return bonus;
         }
 

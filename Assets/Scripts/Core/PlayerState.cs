@@ -180,6 +180,16 @@ namespace FingerDiceDuel.Core
         public int DynamicAttackBonus { get; private set; }
         public int DynamicDefenseBonus { get; private set; }
 
+        /// <summary>身份局主公的明主/霸王/暴君动态攻防（不覆盖角色自身动态攻防）。</summary>
+        public int LordAttackBonus { get; private set; }
+        public int LordDefenseBonus { get; private set; }
+
+        public void SetLordBonuses(int attack, int defense)
+        {
+            LordAttackBonus = attack;
+            LordDefenseBonus = defense;
+        }
+
         public void SetDynamicBonuses(int attack, int defense)
         {
             DynamicAttackBonus = attack;

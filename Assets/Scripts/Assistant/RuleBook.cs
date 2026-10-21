@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
 
@@ -73,7 +73,7 @@ namespace FingerDiceDuel.Assistant
             sb.AppendLine($"1v1 生命归零即败；2v2 一队全灭即败（1、4 同队，2、3 同队）。打满 {GameManager.DefaultRoundLimit} 轮，比个人／队伍总血量，相同平局。一轮为所有存活角色各行动一次。");
             sb.AppendLine("8 人阵营局分守序／中立／混乱三队：3／3／2 人；最后存活阵营胜，50 轮后比阵营总血量。双将同时拥有两名角色的能力。");
             sb.AppendLine("阵营局直接击杀敌方，可额外行动剩余敌方人数次；误杀队友，其他阵营各行动一次。奖惩不推进轮次。");
-            sb.AppendLine($"身份局：1 主公、2 忠臣、4 反贼、1 内奸，{GameManager.IdentityRoundLimit} 轮上限（到限未胜为平局）。主公上限＋10、攻防＋1；主忠消灭反贼与内奸即胜，内奸须独活。主公倒下通常反贼胜；若主公前三阵亡立即判反贼胜。内奸在剩 5 人时亮身份并强化；亮身份后主公倒下且仍有反贼，忠臣退场，内奸与反贼继续。忠臣可用替死待命救主公。");
+            sb.AppendLine($"身份局：1 主公、2 忠臣、4 反贼、1 内奸，{GameManager.IdentityRoundLimit} 轮上限（到限未胜为平局）。主公基础上限＋5、攻防＋1；守序「明主」每名存活守序单位防御＋1，中立「霸王」每名存活中立单位攻击＋1，混乱「暴君」每名存活混乱单位体力上限＋5（均含自己，死亡实时刷新）。主忠消灭反贼与内奸即胜，内奸须独活。主公倒下通常反贼胜；若主公前三阵亡立即判反贼胜。内奸在剩 5 人时亮身份并强化；亮身份后主公倒下且仍有反贼，忠臣退场，内奸与反贼继续。忠臣可用替死待命救主公。");
             sb.AppendLine("身份局击杀反贼可额外行动剩余反贼数次；主公误杀忠臣，存活反贼各行动一次。身份与技能细节见图鉴及局内提示。");
 
             return sb.ToString();

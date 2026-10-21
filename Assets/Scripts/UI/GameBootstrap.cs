@@ -1121,7 +1121,7 @@ namespace FingerDiceDuel.UI
             bool humanLord = _idHumanSeat == 0;
             IdentityRole myRole = _idRoles[_idHumanSeat];
             _idStatus.text = humanLord
-                ? "你是主公（1 号位），请先选将。体力上限 +5。"
+                ? "你是主公（1 号位），请先选将。基础体力上限 +5、攻防 +1/+1；守序/中立/混乱分别触发 明主/霸王/暴君。"
                 : $"你是{IdentityRoleInfo.DisplayName(myRole)}（{_idHumanSeat + 1} 号位）；" +
                   $"主公 AI 已选 {_idLordPick.DisplayName}，请选择你的角色。";
 
@@ -2664,8 +2664,10 @@ namespace FingerDiceDuel.UI
                 IdentityRole role = _game.IdentityOf(p);
                 bool reveal = _game.IsIdentityPublic(p)
                               || ReferenceEquals(p, _eightHumanPlayer);
-                _board.SetRingIdentity(p,
-                    reveal ? IdentityRoleInfo.DisplayName(role) : "？", true);
+                string label = !reveal ? "？"
+                    : role == IdentityRole.Lord ? _game.IdentityLordTitle
+                    : IdentityRoleInfo.DisplayName(role);
+                _board.SetRingIdentity(p, label, true);
             }
         }
 

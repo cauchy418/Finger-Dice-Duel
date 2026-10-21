@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
 
 namespace FingerDiceDuel.Core
@@ -226,6 +227,11 @@ namespace FingerDiceDuel.Core
         /// <summary>反贼嫌疑值（0~10，公开行为推断，不代表真实身份）。</summary>
         public const int MajorRebelSuspicion = 5;
         public const int MinorRebelSuspicion = 2;
+
+        private PlayerState _identityLord;
+        private int _identityLordBaseMaxHealth;
+        private string _identityLordAxis;
+        public string IdentityLordTitle { get; private set; }
 
         /// <summary>身份局统一轮次上限。</summary>
         public const int IdentityRoundLimit = 80;
@@ -1040,11 +1046,51 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < 8; i++)
                 game._identity[seated[i]] = roles[i];
 
-            // 主公：体力上限 +10、初始满血、攻防 +1/+1。
-            seated[0].SetMaxHealth(seated[0].MaximumHealth + 10);
-            seated[0].SetHealthExact(seated[0].MaximumHealth);
+            // 主公：基础 +5 体力上限、攻防 +1/+1；
+            // 再按阵营触发 明主 / 霸王 / 暴君 的实时加成。
+            game._identityLord = seated[0];
+            game._identityLordBaseMaxHealth = seated[0].MaximumHealth;
+            game._identityLordAxis = LawAxisOfDefinition(seated[0].Definition);
+            game.IdentityLordTitle = game._identityLordAxis == "守序" ? "明主"
+                                   : game._identityLordAxis == "混乱" ? "暴君" : "霸王";
             seated[0].AddIdentityBonus(1, 1);
+            game.RefreshIdentityLordBonus();
+            seated[0].SetHealthExact(seated[0].MaximumHealth);
             return game;
+        }
+
+        /// <summary>守序 / 中立 / 混乱；无图鉴的角色按中立处理。</summary>
+        private static string LawAxisOfDefinition(CharacterDefinition definition)
+        {
+            CodexEntry entry = CharacterCodex.For(definition);
+            return entry == null ? "中立" : Alignments.LawAxisOf(entry.Alignment);
+        }
+
+        /// <summary>
+        /// 主公按**当前存活阵营单位数**实时刷新：
+        /// 明主=守序防御 +1/人；霸王=中立攻击 +1/人；暴君=混乱体力上限 +5/人。
+        /// 基础主公加成为体力上限 +5、攻防 +1/+1。
+        /// </summary>
+        public void RefreshIdentityLordBonus()
+        {
+            if (!IsIdentityMode || _identityLord == null || !_identityLord.IsAlive) return;
+
+            int count = 0;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || !p.IsAlive) continue;
+                if (LawAxisOfDefinition(p.Definition) == _identityLordAxis) count++;
+            }
+
+            int attack = _identityLordAxis == "中立" ? count : 0;
+            int defense = _identityLordAxis == "守序" ? count : 0;
+            _identityLord.SetLordBonuses(attack, defense);
+
+            int maxHealth = _identityLordBaseMaxHealth + 5
+                          + (_identityLordAxis == "混乱" ? count * 5 : 0);
+            if (_identityLord.MaximumHealth != maxHealth)
+                _identityLord.SetMaxHealth(maxHealth);
         }
 
         /// <summary>靠"环形座位"取名次：座位号 1..4（1 起算，便于与玩家沟通）。</summary>
@@ -3220,6 +3266,7 @@ namespace FingerDiceDuel.Core
         {
             if (IsIdentityMode)
             {
+                RefreshIdentityLordBonus();
                 CheckIdentityGameOver();
                 return;
             }
