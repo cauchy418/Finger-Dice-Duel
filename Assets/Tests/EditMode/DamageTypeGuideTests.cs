@@ -25,10 +25,10 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void There_are_exactly_nine_statuses()
+        public void Status_list_contains_the_full_sixteen_status_pool()
         {
-            Assert.AreEqual(9, StatusNames.AllStatuses.Length,
-                "力场不挂状态，所以是 10 种类型 / 9 种状态。");
+            Assert.AreEqual(16, StatusNames.AllStatuses.Length,
+                "旧 7 种保留，加上新增状态，共 16 种。");
         }
 
         [Test]
@@ -260,8 +260,8 @@ namespace FingerDiceDuel.Tests
             //    第 1 页（伤害类型）= "附加两回合XX状态"
             //    第 2 页（状态一览）= 状态的具体效果
             //    所以"效果"类断言要看 **StatusLine**，"挂什么状态"看 GuideLine。
-            Assert.IsTrue(StatusNames.GuideLine(DamageType.Cold).Contains("冰冻状态"),
-                "寒冷 = 附加两回合冰冻状态");
+            Assert.IsTrue(StatusNames.GuideLine(DamageType.Cold).Contains("覆霜"),
+                "寒冷 = 附加两回合覆霜状态");
             Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Freeze).Contains("减半"),
                 "冰冻 = 结果减半");
             Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Poison).Contains("不可被抵挡"),

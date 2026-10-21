@@ -262,9 +262,16 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Blind: return "radiant";
                 case StatusEffect.Decay: return "necrotic";
                 case StatusEffect.Burn: return "fire";
-                case StatusEffect.Freeze: return "cold";
+                case StatusEffect.Frost: return "cold";
                 case StatusEffect.Shock: return "lightning";
-                case StatusEffect.Stun: return "psychic";
+                case StatusEffect.Panic: return "psychic";
+                case StatusEffect.Bleed: return "slashing";
+                case StatusEffect.Wet: return "cold";
+                case StatusEffect.Frozen: return "cold";
+                case StatusEffect.Stunned: return "psychic";
+                case StatusEffect.Limp: return "piercing";
+                case StatusEffect.KnockedDown: return "bludgeoning";
+                case StatusEffect.Charm: return "psychic";
                 default: return "force";
             }
         }

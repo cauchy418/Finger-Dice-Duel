@@ -23,7 +23,8 @@ namespace FingerDiceDuel.Core
         public static int EffectiveAttackBonus(PlayerState p)
         {
             int bonus = p?.Character?.AttackBonus ?? 0;
-            if (p != null && p.HasStatus(StatusEffect.Stun)) bonus -= StunAttackPenalty;
+            if (p != null && p.HasStatus(StatusEffect.Panic)) bonus -= PanicAttackPenalty;
+            if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
             // 吟游诗人的加成与"角色自身加成"**同层相加**（可正可负）
             if (p != null) bonus += p.BardAttackOffset;
@@ -36,6 +37,7 @@ namespace FingerDiceDuel.Core
         {
             int bonus = p?.Character?.DefenseBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
+            if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
             // 吟游诗人的加成（与强酸同层相加）
             if (p != null) bonus += p.BardDefenseOffset;
@@ -46,8 +48,17 @@ namespace FingerDiceDuel.Core
         /// <summary>强酸的防御惩罚。</summary>
         public const int AcidDefensePenalty = 2;
 
-        /// <summary>震慑的攻击惩罚。</summary>
-        public const int StunAttackPenalty = 2;
+        /// <summary>恐慌的攻击惩罚。</summary>
+        public const int PanicAttackPenalty = 2;
+
+        /// <summary>流血的攻防惩罚。</summary>
+        public const int BleedPenalty = 1;
+
+        /// <summary>兼容旧名：恐慌的攻击惩罚。</summary>
+        public const int StunAttackPenalty = PanicAttackPenalty;
+
+        /// <summary>流血每回合开始失去的体力。</summary>
+        public const int BleedDamagePerTurn = 1;
 
         /// <summary>中毒：每回合开始时受到 2 点毒素伤害，**不可被抵挡**。</summary>
         public const int PoisonDamagePerTurn = 2;
@@ -76,10 +87,19 @@ namespace FingerDiceDuel.Core
         public static int ApplyResultModifiers(PlayerState actor, int result)
         {
             if (actor == null) return result;
-            if (!actor.HasStatus(StatusEffect.Freeze)) return result;
 
-            int halved = result / 2;
-            return halved < 1 ? 1 : halved;
+            if (actor.HasStatus(StatusEffect.Frost))
+            {
+                result /= 2;
+                if (result < 1) result = 1;
+            }
+            if (actor.HasStatus(StatusEffect.Wet))
+            {
+                result -= 1;
+                if (result < 1) result = 1;
+            }
+            if (actor.HasStatus(StatusEffect.Stunned)) return 0;
+            return result;
         }
 
         // ============================================================
@@ -93,27 +113,47 @@ namespace FingerDiceDuel.Core
         public static bool CanAttackTarget(PlayerState actor, PlayerState target, GameManager game)
         {
             if (actor == null || target == null || game == null) return true;
-            if (!actor.HasStatus(StatusEffect.Resonance)) return true;
+            if (actor.HasStatus(StatusEffect.Stunned)) return false;
 
-            return game.DistanceBetween(actor, target) == 1;
+            if (actor.HasStatus(StatusEffect.Panic))
+            {
+                PlayerState source = actor.StatusSourceOf(StatusEffect.Panic);
+                if (source != null && ReferenceEquals(source, target)) return false;
+            }
+
+            int distance = game.DistanceBetween(actor, target);
+            if (actor.HasStatus(StatusEffect.Resonance) && distance != 1) return false;
+
+            int range = StatusRules.EffectiveAttackRange(actor, game);
+            if (range >= 0 && distance > range) return false;
+            return true;
         }
 
-        /// <summary>
-        /// **震慑**：被震慑者**不能攻击施加者**。
-        ///
-        /// 玩家确认的表述："是法师（或者说心灵伤害发起者）不能成为被震慑的人的合法目标"。
-        /// 所以这里要反过来读：被震慑的人打不到"那个给他挂震慑的法师"。
-        ///
-        /// ⚠️ 没有记施加者时（例如状态是测试直接挂上的）不做限制 ——
-        ///    此时应当由 <see cref="PlayerState.StatusSourceOf"/> 返回 null。
-        /// </summary>
-        public static bool IsBlockedByStun(PlayerState actor, PlayerState target)
+        /// <summary>**恐慌**：被恐慌者不能攻击施加者。</summary>
+        public static bool IsBlockedByPanic(PlayerState actor, PlayerState target)
         {
             if (actor == null || target == null) return false;
-            if (!actor.HasStatus(StatusEffect.Stun)) return false;
+            if (!actor.HasStatus(StatusEffect.Panic)) return false;
 
-            PlayerState source = actor.StatusSourceOf(StatusEffect.Stun);
+            PlayerState source = actor.StatusSourceOf(StatusEffect.Panic);
             return source != null && ReferenceEquals(source, target);
+        }
+
+        /// <summary>兼容旧名：恐慌来源限制。</summary>
+        public static bool IsBlockedByStun(PlayerState actor, PlayerState target)
+            => IsBlockedByPanic(actor, target);
+
+        /// <summary>**冻结**：不能行动。</summary>
+        public static bool CanAct(PlayerState p) => p == null || !p.HasStatus(StatusEffect.Frozen);
+
+        /// <summary>**跛脚**：攻击距离减半，至少为 1。</summary>
+        public static int EffectiveAttackRange(PlayerState actor, GameManager game)
+        {
+            if (actor == null || game == null) return -1;
+            if (!actor.HasStatus(StatusEffect.Limp)) return -1;
+            int baseRange = GameManager.BaseRangeOf(actor);
+            int range = baseRange / 2;
+            return range < 1 ? 1 : range;
         }
 
         /// <summary>
@@ -153,12 +193,18 @@ namespace FingerDiceDuel.Core
         {
             unstoppable = false;
             if (p == null) return 0;
+            int total = 0;
             if (p.HasStatus(StatusEffect.Poison))
             {
                 unstoppable = true;
-                return PoisonDamagePerTurn;
+                total += PoisonDamagePerTurn;
             }
-            return 0;
+            if (p.HasStatus(StatusEffect.Bleed))
+            {
+                unstoppable = true;
+                total += BleedDamagePerTurn;
+            }
+            return total;
         }
 
         /// <summary>
@@ -166,6 +212,106 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static int TurnEndDamage(PlayerState p)
             => p != null && p.HasStatus(StatusEffect.Burn) ? BurnDamagePerTurn : 0;
+
+        private static readonly System.Random _interactionRng = new System.Random();
+
+        /// <summary>
+        /// 伤害类型与目标状态的联动。
+        /// 返回修改后的伤害；同时给出命中后要附加/清除的状态。
+        /// </summary>
+        public static int ApplyDamageTypeInteraction(
+            PlayerState target, DamageType type, int damage,
+            out StatusEffect statusToApply, out StatusEffect statusToClear)
+        {
+            statusToApply = StatusEffect.None;
+            statusToClear = StatusEffect.None;
+            if (target == null || damage <= 0) return damage;
+
+            switch (type)
+            {
+                case DamageType.Thunder:
+                    if (target.HasStatus(StatusEffect.Resonance))
+                    {
+                        statusToClear = StatusEffect.Resonance;
+                        statusToApply = StatusEffect.Stunned;
+                    }
+                    else statusToApply = StatusEffect.Resonance;
+                    break;
+
+                case DamageType.Fire:
+                    if (target.HasStatus(StatusEffect.Frost) || target.HasStatus(StatusEffect.Wet))
+                    {
+                        statusToClear = StatusEffect.Frost; // 两个都清由调用方处理
+                        damage = (damage * 3 + 1) / 2;
+                        statusToApply = StatusEffect.None;
+                    }
+                    else statusToApply = StatusEffect.Burn;
+                    break;
+
+                case DamageType.Cold:
+                    if (target.HasStatus(StatusEffect.Frozen))
+                    {
+                        damage = (damage * 3 + 1) / 2;
+                    }
+                    else if (target.HasStatus(StatusEffect.Burn))
+                    {
+                        statusToClear = StatusEffect.Burn;
+                        damage = (damage * 3 + 1) / 2;
+                    }
+                    else if (target.HasStatus(StatusEffect.Frost) || target.HasStatus(StatusEffect.Wet))
+                    {
+                        statusToClear = StatusEffect.Frost;
+                        statusToApply = StatusEffect.Frozen;
+                    }
+                    else statusToApply = StatusEffect.Frost;
+                    break;
+
+                case DamageType.Lightning:
+                    if (target.HasStatus(StatusEffect.Wet))
+                        damage = (damage * 3 + 1) / 2;
+                    statusToApply = StatusEffect.Shock;
+                    break;
+
+                case DamageType.Psychic:
+                    statusToApply = _interactionRng.Next(2) == 0
+                        ? StatusEffect.Panic : StatusEffect.Stunned;
+                    break;
+
+                default:
+                    statusToApply = StatusNames.StatusOf(type);
+                    break;
+            }
+            return damage;
+        }
+
+        /// <summary>清除指定状态（兼容火焰同时清除覆霜 + 潮湿）。</summary>
+        public static void ClearInteractionStatuses(PlayerState target, DamageType type)
+        {
+            if (target == null) return;
+            if (type == DamageType.Fire)
+            {
+                target.RemoveStatus(StatusEffect.Frost);
+                target.RemoveStatus(StatusEffect.Wet);
+            }
+            else if (type == DamageType.Cold)
+            {
+                if (target.HasStatus(StatusEffect.Frost)) target.RemoveStatus(StatusEffect.Frost);
+                if (target.HasStatus(StatusEffect.Wet)) target.RemoveStatus(StatusEffect.Wet);
+                if (target.HasStatus(StatusEffect.Burn)) target.RemoveStatus(StatusEffect.Burn);
+            }
+            else if (type == DamageType.Thunder)
+            {
+                target.RemoveStatus(StatusEffect.Resonance);
+            }
+        }
+
+        /// <summary>**倒伏**：受到伤害 ×1.5，向上取整。</summary>
+        public static int ApplyIncomingDamage(PlayerState defender, int damage)
+        {
+            if (defender == null || damage <= 0) return damage;
+            if (!defender.HasStatus(StatusEffect.KnockedDown)) return damage;
+            return (damage * 3 + 1) / 2;
+        }
 
         /// <summary>**感电**：自己与环上相邻的玩家都要吃 1 点闪电伤害。</summary>
         public static List<PlayerState> ShockVictims(PlayerState p, GameManager game)

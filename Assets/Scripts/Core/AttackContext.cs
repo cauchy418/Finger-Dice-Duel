@@ -107,6 +107,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public AttackDamageType AttackType { get; set; } = AttackDamageType.None;
 
+        /// <summary>本次攻击由伤害类型联动决定的状态（命中后使用）。</summary>
+        public StatusEffect InteractionStatus { get; set; } = StatusEffect.None;
+
+        /// <summary>本次攻击需要清除的状态（伤害类型联动）。</summary>
+        public DamageType InteractionDamageType { get; set; } = DamageType.None;
+
         /// <summary>
         /// **术士专用**：本次攻击被掷骰改写成哪种元素（`DamageType.None` = 没改写）。
         ///
@@ -236,6 +242,19 @@ namespace FingerDiceDuel.Core
             //   而代挡者应当承受**最终确定下来**的那一击。
             TryRedirectDefender(manager);
 
+            // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
+            if (manager != null && AttackType != AttackDamageType.None)
+            {
+                DamageType dtype = AttackDamageTypes.ToDamageType(AttackType);
+                InteractionStatus = StatusEffect.None;
+                StatusEffect resolvedStatus;
+                StatusEffect ignoredClear;
+                FinalDamage = StatusRules.ApplyDamageTypeInteraction(
+                    Defender, dtype, FinalDamage, out resolvedStatus, out ignoredClear);
+                InteractionStatus = resolvedStatus;
+                InteractionDamageType = dtype;
+            }
+
             // 2~4. 逐段结算：每一段都**独立**判定闪避、独立判定护盾、独立扣血、
             //      独立结算攻防加成。
             //
@@ -334,6 +353,8 @@ namespace FingerDiceDuel.Core
                 }
 
                 if (i == 0) perHitReduction = reductionThisSegment;
+
+                dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
 
                 // 主公即将受到致命伤害：忠臣可以选择替死，取消这次攻击。
                 if (LethalLoyalistSacrifice != null)
@@ -454,7 +475,16 @@ namespace FingerDiceDuel.Core
             if (Attacker == null) return;
             if (!(Attacker.Character is IStatusApplyingAttack applier)) return;
 
-            StatusEffect status = applier.StatusToApplyOnHit(this);
+            StatusEffect status = InteractionStatus;
+            if (status == StatusEffect.None)
+                status = applier.StatusToApplyOnHit(this);
+
+            // 伤害类型联动：清除目标状态也只在命中后执行。
+            if (InteractionDamageType != DamageType.None && HitCount > 0
+                && (LandedHits > 0 || BlockedHits > 0))
+            {
+                StatusRules.ClearInteractionStatuses(Defender, InteractionDamageType);
+            }
 
             // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
             if (Attacker.Character is Characters.SpecialLogics.WizardLogic mage)

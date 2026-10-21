@@ -68,7 +68,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        private const int MaxStatusValue = 9;
+        private const int MaxStatusValue = 16;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -130,6 +130,8 @@ namespace FingerDiceDuel.Core
                     _statuses.Remove(keys[i]);
                     _statusSources.Remove(keys[i]);
                     expired.Add(keys[i]);
+                    if (keys[i] == StatusEffect.Frost)
+                        ApplyStatus(StatusEffect.Wet, StatusDurationTurns);
                 }
                 else
                 {

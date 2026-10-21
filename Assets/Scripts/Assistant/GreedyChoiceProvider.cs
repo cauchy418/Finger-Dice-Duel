@@ -470,6 +470,10 @@ namespace FingerDiceDuel.Assistant
             IReadOnlyList<LegalMove> moves = game.GetLegalMoves(actor);
             if (moves.Count == 0) return default;
 
+            // 魅惑：直接交给 AI 随机选一个合法行动。
+            if (actor.HasStatus(StatusEffect.Charm))
+                return moves[_rng.Next(moves.Count)];
+
             // 集火目标**每回合只解析一次**（阵亡后环会收缩，所以不能跨回合缓存）。
             _focusTargetForScoring = ResolveFocusTarget(game, actor);
             _identityLordDefenseBonus = ShouldBoostLordDefense(game, actor, moves);

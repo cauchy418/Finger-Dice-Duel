@@ -8,7 +8,7 @@ namespace FingerDiceDuel.UI
     /// <summary>
     /// **法师状态的图标栏**（显示在玩家面板右侧）。
     ///
-    /// 9 种负面状态使用绘制图标，右下角保留剩余回合数。
+    /// 16 种负面状态使用绘制图标，右下角保留剩余回合数。
     /// 缺图时才回退到既有颜色与符号。
     ///
     /// 为什么不用 Emoji：uGUI 的字体回退不一定带彩色 Emoji，
@@ -24,7 +24,7 @@ namespace FingerDiceDuel.UI
         private const float IconGap = 4f;
 
         /// <summary>最大同时显示的数量（= 状态种类数）。</summary>
-        public const int MaxIcons = 9;
+        public const int MaxIcons = 16;
 
         private readonly RectTransform _root;
         private readonly Font _font;

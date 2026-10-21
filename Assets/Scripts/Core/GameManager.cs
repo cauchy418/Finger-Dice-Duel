@@ -515,7 +515,7 @@ namespace FingerDiceDuel.Core
                 //    · 残响：只能打距离 1 的角色
                 //    · 震慑：不能打"给自己挂震慑的那个法师"
                 if (!StatusRules.CanAttackTarget(player, p, this)) continue;
-                if (StatusRules.IsBlockedByStun(player, p)) continue;
+                if (StatusRules.IsBlockedByPanic(player, p)) continue;
 
                 result.Add(p);
             }
@@ -1277,6 +1277,8 @@ namespace FingerDiceDuel.Core
         {
             _legalMoves.Clear();
             if (actor == null || IsGameOver) return _legalMoves;
+            if (!StatusRules.CanAct(actor)) return _legalMoves;
+            if (actor.HasStatus(StatusEffect.Stunned)) return _legalMoves;
 
             // ⚠️ 用"所有对手"而不是"某一个对手" ——
             // 2v2 里 A 可以打 B 或 D，只列第一个会漏掉另一个。
@@ -2341,15 +2343,18 @@ namespace FingerDiceDuel.Core
             //       · 放太早会被 RewriteEffect 用旧值覆盖；
             //       · 放太晚（效果分派后）就已经先按 9 回过血了。
             //     归一化后的 9 是"回复"，减半成 4 就是"攻击" —— 效果类型要跟着重算。
-            if (actor != null && actor.HasStatus(StatusEffect.Freeze))
+            if (actor != null
+                && (actor.HasStatus(StatusEffect.Frost)
+                    || actor.HasStatus(StatusEffect.Wet)
+                    || actor.HasStatus(StatusEffect.Stunned)))
             {
                 int before = actedHand.Value;
                 int halved = StatusRules.ApplyResultModifiers(actor, before);
 
                 if (halved != before)
                 {
-                    actedHand.SetValue(halved);
-                    effect = Hand.GetEffectType(halved);
+                    actedHand.SetValue(halved < 1 ? 1 : halved);
+                    effect = Hand.GetEffectType(halved < 1 ? 1 : halved);
 
                     // 手牌状态跟随新效果（与 PerformOperation 同一约定）
                     actedHand.SetShieldState(effect == HandEffectType.Shield

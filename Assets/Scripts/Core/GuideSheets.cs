@@ -219,6 +219,8 @@ namespace FingerDiceDuel.Core
             var lines = new List<string>();
             lines.AddRange(MagicLines());
             lines.AddRange(PhysicalLines());
+            lines.Add("【状态联动】");
+            lines.AddRange(InteractionLines());
 
             return new GuideSheet("伤害类型", "Damage Types", lines, twoColumn: false,
                                   groups: new List<GuideGroup>
@@ -298,12 +300,39 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static string MagicLinePlain(DamageType t)
         {
-            StatusEffect st = StatusNames.StatusOf(t);
+            switch (t)
+            {
+                case DamageType.Thunder:
+                    return "雷鸣：附加 2 回合残响；若目标已有残响，清除残响并改为 2 回合眩晕";
+                case DamageType.Fire:
+                    return "火焰：附加 2 回合燃烧；若目标有覆霜/潮湿，清除状态并伤害 ×1.5";
+                case DamageType.Cold:
+                    return "寒冷：附加 2 回合覆霜；对覆霜/潮湿改为冻结；对冻结/燃烧伤害 ×1.5";
+                case DamageType.Lightning:
+                    return "闪电：附加 2 回合感电；对潮湿目标伤害 ×1.5，保留潮湿";
+                case DamageType.Psychic:
+                    return "心灵：50% 附加 2 回合恐慌，50% 附加 2 回合震慑";
+                default:
+                    StatusEffect st = StatusNames.StatusOf(t);
+                    return st == StatusEffect.None
+                        ? StatusNames.Of(t) + "：穿盾、无视正向防御、不可闪避（不挂状态）"
+                        : StatusNames.Of(t) + "：附加两回合" + StatusNames.Of(st) + "状态";
+            }
+        }
 
-            if (st == StatusEffect.None)
-                return StatusNames.Of(t) + "：穿盾、无视正向防御、不可闪避（不挂状态）";
-
-            return StatusNames.Of(t) + "：附加两回合" + StatusNames.Of(st) + "状态";
+        /// <summary>伤害类型与状态的联动速查行。</summary>
+        public static List<string> InteractionLines()
+        {
+            return new List<string>
+            {
+                "雷鸣 → 残响目标：清除残响，附加 2 回合眩晕",
+                "寒冷 → 覆霜/潮湿目标：清除状态，附加 2 回合冻结",
+                "寒冷 → 冻结目标：伤害 ×1.5，保留冻结",
+                "寒冷 → 燃烧目标：清除燃烧，伤害 ×1.5",
+                "火焰 → 覆霜/潮湿目标：清除状态，伤害 ×1.5",
+                "闪电 → 潮湿目标：伤害 ×1.5，保留潮湿，仍附加感电",
+                "心灵：50% 恐慌 / 50% 震慑",
+            };
         }
     }
 }

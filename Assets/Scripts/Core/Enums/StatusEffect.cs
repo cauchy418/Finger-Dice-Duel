@@ -62,14 +62,41 @@ namespace FingerDiceDuel.Core
         /// <summary>火焰：回合结束时受 **3** 点火焰伤害（可被盾 / 闪避 / 太极抵挡）。</summary>
         Burn = 6,
 
-        /// <summary>寒冷：运算后得到的结果**减半（向下取整）**。</summary>
-        Freeze = 7,
+        /// <summary>寒冷（覆霜）：运算结果**减半（至少 1）**；到期后附加潮湿。</summary>
+        Frost = 7,
+
+        /// <summary>兼容旧名：旧版“冰冻”现在叫覆霜。</summary>
+        Freeze = Frost,
 
         /// <summary>闪电：回合开始时自己与相邻玩家各受 **1** 点闪电伤害。</summary>
         Shock = 8,
 
-        /// <summary>心灵：攻击加成 **−2**，且施加者不能成为其合法攻击目标。</summary>
-        Stun = 9
+        /// <summary>心灵（恐慌）：攻击加成 −2，且施加者不能成为其合法攻击目标。</summary>
+        Panic = 9,
+
+        /// <summary>兼容旧名：旧版“震慑”现在叫恐慌。</summary>
+        Stun = Panic,
+
+        /// <summary>流血：攻防 −1；自己回合开始时失去 1 点体力，不可抵挡。</summary>
+        Bleed = 10,
+
+        /// <summary>潮湿：运算结果 −1（至少 1）。</summary>
+        Wet = 11,
+
+        /// <summary>冻结：不能行动。</summary>
+        Frozen = 12,
+
+        /// <summary>震慑（新）：不能攻击。</summary>
+        Stunned = 13,
+
+        /// <summary>跛脚：攻击距离减半。</summary>
+        Limp = 14,
+
+        /// <summary>倒伏：受到伤害 ×1.5。</summary>
+        KnockedDown = 15,
+
+        /// <summary>魅惑：行动随机化（由 AI 随机合法行动）。</summary>
+        Charm = 16,
     }
 
     /// <summary>
@@ -149,9 +176,16 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Blind: return "目盲";
                 case StatusEffect.Decay: return "腐朽";
                 case StatusEffect.Burn: return "燃烧";
-                case StatusEffect.Freeze: return "冰冻";
+                case StatusEffect.Frost: return "覆霜";
                 case StatusEffect.Shock: return "感电";
-                case StatusEffect.Stun: return "震慑";
+                case StatusEffect.Panic: return "恐慌";
+                case StatusEffect.Bleed: return "流血";
+                case StatusEffect.Wet: return "潮湿";
+                case StatusEffect.Frozen: return "冻结";
+                case StatusEffect.Stunned: return "震慑";
+                case StatusEffect.Limp: return "跛脚";
+                case StatusEffect.KnockedDown: return "倒伏";
+                case StatusEffect.Charm: return "魅惑";
                 default: return "无";
             }
         }
@@ -173,12 +207,26 @@ namespace FingerDiceDuel.Core
                     return "不能回复生命值";
                 case StatusEffect.Burn:
                     return "回合结束时受 3 点火焰伤害（可被盾 / 闪避 / 太极抵挡）";
-                case StatusEffect.Freeze:
-                    return "运算后得到的结果减半（向下取整）";
+                case StatusEffect.Frost:
+                    return "运算结果减半（至少为 1）；结束后附加 2 回合潮湿";
                 case StatusEffect.Shock:
                     return "回合开始时自己与相邻玩家各受 1 点闪电伤害";
-                case StatusEffect.Stun:
+                case StatusEffect.Panic:
                     return "攻击加成 −2，且施加者不能成为其合法攻击目标";
+                case StatusEffect.Bleed:
+                    return "攻防 −1；自己回合开始时失去 1 点体力，不可抵挡";
+                case StatusEffect.Wet:
+                    return "运算结果 −1（至少为 1）";
+                case StatusEffect.Frozen:
+                    return "不能行动";
+                case StatusEffect.Stunned:
+                    return "不能攻击";
+                case StatusEffect.Limp:
+                    return "攻击距离减半（至少为 1）";
+                case StatusEffect.KnockedDown:
+                    return "受到伤害 ×1.5";
+                case StatusEffect.Charm:
+                    return "行动随机化（由 AI 随机选择合法行动）";
                 default:
                     return "无";
             }
@@ -195,9 +243,9 @@ namespace FingerDiceDuel.Core
                 case DamageType.Radiant: return StatusEffect.Blind;
                 case DamageType.Necrotic: return StatusEffect.Decay;
                 case DamageType.Fire: return StatusEffect.Burn;
-                case DamageType.Cold: return StatusEffect.Freeze;
+                case DamageType.Cold: return StatusEffect.Frost;
                 case DamageType.Lightning: return StatusEffect.Shock;
-                case DamageType.Psychic: return StatusEffect.Stun;
+                case DamageType.Psychic: return StatusEffect.Panic;
                 default: return StatusEffect.None;      // 力场
             }
         }
@@ -221,7 +269,10 @@ namespace FingerDiceDuel.Core
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
             StatusEffect.Blind, StatusEffect.Decay, StatusEffect.Burn,
-            StatusEffect.Freeze, StatusEffect.Shock, StatusEffect.Stun,
+            StatusEffect.Frost, StatusEffect.Shock, StatusEffect.Panic,
+            StatusEffect.Bleed, StatusEffect.Wet, StatusEffect.Frozen,
+            StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
+            StatusEffect.Charm,
         };
 
         /// <summary>
@@ -270,10 +321,16 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Blind: return 0xF2C72E;       // 亮金
                 case StatusEffect.Decay: return 0x1E5B2E;       // 深绿（暗蚀 / 腐朽）
                 case StatusEffect.Burn: return 0xE8701A;        // 橙红（火焰）
-                case StatusEffect.Freeze: return 0x4C9EE6;      // 冰蓝
+                case StatusEffect.Frost: return 0x4C9EE6;       // 冰蓝
                 case StatusEffect.Shock: return 0x1A4FA0;       // 深蓝（闪电 / 感电）
-                // 玩家要求："心灵现在红色太深，换成比火焰淡的粉色"
-                case StatusEffect.Stun: return 0xF08CBB;        // 淡粉（比火焰淡）
+                case StatusEffect.Panic: return 0xF08CBB;       // 淡粉（心灵 / 恐慌）
+                case StatusEffect.Bleed: return 0xA83232;       // 暗红
+                case StatusEffect.Wet: return 0x2E7FA8;         // 水蓝
+                case StatusEffect.Frozen: return 0x7FD8FF;      // 亮冰
+                case StatusEffect.Stunned: return 0xD8A6FF;     // 淡紫
+                case StatusEffect.Limp: return 0x8C8C8C;        // 灰
+                case StatusEffect.KnockedDown: return 0xB8743A;  // 土褐
+                case StatusEffect.Charm: return 0xE05AA8;       // 魅紫
                 default: return 0x9AA0AC;                       // 中性灰
 
                 // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
@@ -300,9 +357,16 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Blind: return "\u25c9";       // ◉ 鱼眼（眼睛）
                 case StatusEffect.Decay: return "\u2716";       // ✖ 重叉（斩断治疗）
                 case StatusEffect.Burn: return "\u25c6";        // ◆ 实心菱形（热源）
-                case StatusEffect.Freeze: return "\u2744";      // ❄ 雪花
-                case StatusEffect.Shock: return "\u26a0";       // ⚠ 警告（电压危险）
-                case StatusEffect.Stun: return "\u273d";        // ✽ 重花瓣星（精神冲击）
+                case StatusEffect.Frost: return "❄";       // ❄ 雪花
+                case StatusEffect.Shock: return "⚠";        // ⚠ 警告（电压危险）
+                case StatusEffect.Panic: return "✽";        // ✽ 花瓣（恐慌）
+                case StatusEffect.Bleed: return "♥";        // ♥ 流血
+                case StatusEffect.Wet: return "≈";          // ≈ 水波
+                case StatusEffect.Frozen: return "❅";       // ❅ 冻结
+                case StatusEffect.Stunned: return "✶";      // ✶ 震慑
+                case StatusEffect.Limp: return "↯";         // ↯ 腿伤
+                case StatusEffect.KnockedDown: return "↩";  // ↩ 倒地
+                case StatusEffect.Charm: return "♡";        // ♡ 魅惑
 
                 // △ 力场（玩家要求："把三角形标记移给力场"）
                 case StatusEffect.None: return "\u25b3";
