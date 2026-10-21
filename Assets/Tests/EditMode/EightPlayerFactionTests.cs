@@ -35,14 +35,15 @@ namespace FingerDiceDuel.Tests
         }
 
         private static List<CharacterDefinition[]> PickDualEight(Random rng,
-                                                                  out List<int> teams)
+                                                                  out List<int> teams,
+                                                                  int forcedWeak = -1)
         {
             var byFaction = new List<CharacterDefinition>[3];
             for (int i = 0; i < 3; i++) byFaction[i] = new List<CharacterDefinition>();
             foreach (CharacterDefinition def in CharacterDefinition.BuiltIn)
                 byFaction[FactionOf(def)].Add(def);
 
-            int weak = rng.Next(3);             // 2 人的阵营
+            int weak = forcedWeak >= 0 ? forcedWeak : rng.Next(3); // 2 人的阵营
             int[] counts = { 3, 3, 3 };
             counts[weak] = 2;
 
@@ -98,6 +99,14 @@ namespace FingerDiceDuel.Tests
             var factionWins = new int[3];
             var factionWeakGames = new int[3];
             var factionWeakWins = new int[3];
+            var weakGames = new int[3];
+            var weakOrder = new List<int>(Games);
+            for (int g = 0; g < Games; g++) weakOrder.Add(g % 3);
+            for (int i = weakOrder.Count - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                int t = weakOrder[i]; weakOrder[i] = weakOrder[j]; weakOrder[j] = t;
+            }
 
             int totalTurns = 0;
             int draws = 0;
@@ -106,7 +115,7 @@ namespace FingerDiceDuel.Tests
 
             for (int g = 0; g < Games; g++)
             {
-                List<CharacterDefinition[]> pairs = PickDualEight(rng, out List<int> teams);
+                List<CharacterDefinition[]> pairs = PickDualEight(rng, out List<int> teams, weakOrder[g]);
 
                 var seated = new List<PlayerState>(8);
                 var providers = new List<IChoiceProvider>(8);
@@ -119,6 +128,8 @@ namespace FingerDiceDuel.Tests
                     for (int i = 0; i < 8; i++) if (teams[i] == f) count++;
                     if (count == 2) weakFaction = f;
                 }
+
+                if (weakFaction >= 0) weakGames[weakFaction]++;
 
                 for (int i = 0; i < 8; i++)
                 {
@@ -185,6 +196,7 @@ namespace FingerDiceDuel.Tests
             if (firstError != null) sb.AppendLine("首个异常：" + firstError);
             sb.AppendLine();
 
+            sb.AppendLine($"2 人阵营分布：守序 {weakGames[0]} / 中立 {weakGames[1]} / 混乱 {weakGames[2]}");
             sb.AppendLine("阵营        胜 / 局数    胜率（按局）  作为 2 人阵营时");
             for (int f = 0; f < 3; f++)
                 sb.AppendLine($"{FactionNames[f],-6}{factionWins[f],6} / {Games,-6}" +
