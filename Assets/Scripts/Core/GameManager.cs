@@ -1278,7 +1278,6 @@ namespace FingerDiceDuel.Core
             _legalMoves.Clear();
             if (actor == null || IsGameOver) return _legalMoves;
             if (!StatusRules.CanAct(actor)) return _legalMoves;
-            if (actor.HasStatus(StatusEffect.Stunned)) return _legalMoves;
 
             // ⚠️ 用"所有对手"而不是"某一个对手" ——
             // 2v2 里 A 可以打 B 或 D，只列第一个会漏掉另一个。
@@ -2507,6 +2506,14 @@ namespace FingerDiceDuel.Core
                             //       也能正常消耗类型并挂状态（与普通命中同一套判定）。
 
                             ApplyMageStatusOnSuppressedAttack(actor, opponent, result);
+                            break;
+                        }
+
+                        // 状态禁止攻击时，无头 / AI 直调也必须保留运算并取消伤害。
+                        if (!StatusRules.CanAttackTarget(actor, opponent, this))
+                        {
+                            result.AttackSuppressed = true;
+                            result.DamageDealt = 0;
                             break;
                         }
 

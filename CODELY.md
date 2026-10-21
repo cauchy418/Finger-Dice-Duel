@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **998 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验）；当前 995 通过、3 项既有失败，见状态图标验证记录 |
+| 测试 | **1013 项全部通过**（2026-10-22，含三套统计 + 86,400 局集火实验）；跳过／放弃真实界面另有 264 项检查通过 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
@@ -92,6 +92,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，按「伤害类型／状态一览／元素反应」分三页，第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 ## 战报与提示
+
+- 回合出口统一由 `BoardController` 管理：无合法运算不等于结束比赛，冻结／双手不可用时保留选手阶段并提供跳过；AI 自动跳过。所有跳过路径设置待结算的回合结束者，燃烧与状态时长照常推进。震慑保留合法运算，攻击目标按 `StatusRules.CanAttackTarget` 过滤，无合法攻击目标才提供放弃。编辑器菜单 `Finger Dice Duel/Preview/Turn Skip and Give Up` 验证实际按钮，记录见 [`Art/Integration/turn-exits/README.md`](Art/Integration/turn-exits/README.md)。
 
 - `Assistant/BattleTurnText.cs` 只格式化结算快照；回复显示实际增量，放弃攻击不写成零伤害命中。
 - `Core/CombatText.cs` 统一“角色【技能】操作／结果”。技能实际生效后调用 `GameManager.NoteSkill`；不要把收集抉择、点击候选或 AI 意图记成已发动。

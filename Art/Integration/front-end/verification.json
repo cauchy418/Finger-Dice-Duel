@@ -5,10 +5,11 @@
     "failed": 0
   },
   "headless": {
-    "passed": 994,
-    "failed": 3,
-    "total": 997,
-    "report": "../../Production/status-icons-v3/validation.md"
+    "passed": 1013,
+    "failed": 0,
+    "total": 1013,
+    "report": "../turn-exits/README.md",
+    "date": "2026-10-22"
   },
   "unityTestDefineCompile": true,
   "engine": "Tuanjie 2022.3.62t15",
@@ -46,5 +47,11 @@
     "manifest": "../../Production/status-icons-v3/manifest.json",
     "total": 18,
     "handbookPages": 3
+  },
+  "turnExits": {
+    "report": "../turn-exits/validation.txt",
+    "date": "2026-10-22",
+    "failed": 0,
+    "passed": 264
   }
 }

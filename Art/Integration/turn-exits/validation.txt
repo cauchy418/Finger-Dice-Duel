@@ -1,0 +1,264 @@
+PASS match remains live frozen human
+PASS no restart overlay frozen human
+PASS frozen human sees skip
+PASS frozen hands disabled
+PASS action inside canvas SkipTurnButton
+PASS painted skill emblem SkipTurnButton
+PASS skill label fits SkipTurnButton
+PASS skill avoids log SkipTurnButton
+PASS skill avoids hint SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS skill avoids hand SkipTurnButton
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS match remains live after frozen skip
+PASS no restart overlay after frozen skip
+PASS frozen skip hands turn to opponent
+PASS frozen ticks once
+PASS match remains live frozen AI fighter
+PASS no restart overlay frozen AI fighter
+PASS AI turn has no human skip button
+PASS match remains live AI automatic skip
+PASS no restart overlay AI automatic skip
+PASS bootstrap update automatically skips frozen AI
+PASS AI frozen duration ticks
+PASS match remains live unusable hands 0
+PASS no restart overlay unusable hands 0
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS unusable hand button advances once 0
+PASS match remains live unusable hands 1
+PASS no restart overlay unusable hands 1
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS unusable hand button advances once 1
+PASS match remains live unusable hands 2
+PASS no restart overlay unusable hands 2
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS unusable hand button advances once 2
+PASS match remains live unusable hands 3
+PASS no restart overlay unusable hands 3
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS unusable hand button advances once 3
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS voluntary skip preserves shields
+PASS one locked hand and one shield cannot skip
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS assassin stealth skip only once
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS hexer skip still asks for target
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS hexer target click resolves skill and duration
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS give up offered for Stunned
+PASS give up label Stunned
+PASS target confirmation cannot be bypassed by skip
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS match remains live after give up
+PASS no restart overlay after give up
+PASS give up retains sum without damage
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS give up offered for Panic
+PASS give up label Panic
+PASS target confirmation cannot be bypassed by skip
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS match remains live after give up
+PASS no restart overlay after give up
+PASS give up retains sum without damage
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS interactive PaintedHandCard
+PASS raycast reaches PaintedHandCard
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS stealth target give up retains sum
+PASS match remains live 4p frozen seat 0
+PASS no restart overlay 4p frozen seat 0
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 0
+PASS ring button advances seat 0
+PASS 4p no legal target exit at seat 0
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 0
+PASS ring give up finishes status at seat 0
+PASS match remains live 4p after giving up
+PASS no restart overlay 4p after giving up
+PASS match remains live 4p frozen seat 1
+PASS no restart overlay 4p frozen seat 1
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 1
+PASS ring button advances seat 1
+PASS 4p no legal target exit at seat 1
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 1
+PASS ring give up finishes status at seat 1
+PASS match remains live 4p after giving up
+PASS no restart overlay 4p after giving up
+PASS match remains live 4p frozen seat 2
+PASS no restart overlay 4p frozen seat 2
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 2
+PASS ring button advances seat 2
+PASS 4p no legal target exit at seat 2
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 2
+PASS ring give up finishes status at seat 2
+PASS match remains live 4p after giving up
+PASS no restart overlay 4p after giving up
+PASS match remains live 4p frozen seat 3
+PASS no restart overlay 4p frozen seat 3
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 3
+PASS ring button advances seat 3
+PASS 4p no legal target exit at seat 3
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 3
+PASS ring give up finishes status at seat 3
+PASS match remains live 4p after giving up
+PASS no restart overlay 4p after giving up
+PASS match remains live 8p frozen seat 0
+PASS no restart overlay 8p frozen seat 0
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 0
+PASS ring button advances seat 0
+PASS 8p no legal target exit at seat 0
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 0
+PASS ring give up finishes status at seat 0
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 1
+PASS no restart overlay 8p frozen seat 1
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 1
+PASS ring button advances seat 1
+PASS 8p no legal target exit at seat 1
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 1
+PASS ring give up finishes status at seat 1
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 2
+PASS no restart overlay 8p frozen seat 2
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 2
+PASS ring button advances seat 2
+PASS 8p no legal target exit at seat 2
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 2
+PASS ring give up finishes status at seat 2
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 3
+PASS no restart overlay 8p frozen seat 3
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 3
+PASS ring button advances seat 3
+PASS 8p no legal target exit at seat 3
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 3
+PASS ring give up finishes status at seat 3
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 4
+PASS no restart overlay 8p frozen seat 4
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 4
+PASS ring button advances seat 4
+PASS 8p no legal target exit at seat 4
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 4
+PASS ring give up finishes status at seat 4
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 5
+PASS no restart overlay 8p frozen seat 5
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 5
+PASS ring button advances seat 5
+PASS 8p no legal target exit at seat 5
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 5
+PASS ring give up finishes status at seat 5
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 6
+PASS no restart overlay 8p frozen seat 6
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 6
+PASS ring button advances seat 6
+PASS 8p no legal target exit at seat 6
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 6
+PASS ring give up finishes status at seat 6
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up
+PASS match remains live 8p frozen seat 7
+PASS no restart overlay 8p frozen seat 7
+PASS interactive SkipTurnButton
+PASS raycast reaches SkipTurnButton
+PASS ring frozen button ticks seat 7
+PASS ring button advances seat 7
+PASS 8p no legal target exit at seat 7
+PASS interactive DeclineButton
+PASS raycast reaches DeclineButton
+PASS ring give up preserves result at seat 7
+PASS ring give up finishes status at seat 7
+PASS match remains live 8p after giving up
+PASS no restart overlay 8p after giving up

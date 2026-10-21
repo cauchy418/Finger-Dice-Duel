@@ -2954,7 +2954,7 @@ namespace FingerDiceDuel.UI
             if (!_controller.IsHumanChooser) return;
 
             // 「放弃攻击」：已经选好参与运算的手，但没有合法攻击目标。
-            // 放弃 = 算用掉本回合（换对方行动，手值不变）。
+            // 放弃 = 算用掉本回合，保留运算结果，只取消本次攻击伤害。
             if (_controller.CanGiveUpAttack)
             {
                 _controller.GiveUpAttack();
@@ -3415,7 +3415,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// "跳过回合"按钮只在**人类玩家 A 回合、且 A 双盾在手、且还没开始选目标**时出现。
+        /// 跳过回合按钮依当前人类行动者与控制器规则显示，不依赖座位编号。
         /// 按钮挂在 A 的右手牌右侧，所以 B 的回合不应该显示它。
         /// </summary>
         /// <summary>

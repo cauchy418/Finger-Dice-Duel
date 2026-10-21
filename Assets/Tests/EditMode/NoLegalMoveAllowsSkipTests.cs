@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -43,6 +43,13 @@ namespace FingerDiceDuel.Tests
 
             Assert.IsTrue(game.CanSkipTurnFor(foe),
                 "玩家确认：无合法步时**可以跳过回合**。");
+            var board = new BoardController(game, (SimpleChoiceProvider)game.ChoiceProviderA,
+                (SimpleChoiceProvider)game.ChoiceProviderB);
+            board.BeginTurn();
+            Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase, "控制器不能把无加数误判为结束。");
+            Assert.True(board.CanSkipTurn);
+            Assert.True(board.SkipTurn());
+            Assert.AreEqual(1, foe.StatusTurnsLeft(StatusEffect.Blind));
         }
 
         [Test]

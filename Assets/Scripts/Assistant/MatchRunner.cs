@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
@@ -131,6 +131,7 @@ namespace FingerDiceDuel.Assistant
                     if (game.CanSkipTurnFor(actor))
                     {
                         game.SkipTurn();          // 内部会把回合交给下一位
+                        game.ResolveStatusTurnEnd(actor);
                         result.Turns++;
 
                         TurnResult skipped = game.LastTurnResult;

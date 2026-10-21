@@ -22,6 +22,8 @@ namespace FingerDiceDuel.EditorTools
         private static readonly List<string> Checks = new List<string>();
         private static GameBootstrap _boot;
         private static bool _ready, _background;
+        private static bool _turnExitsOnly = SessionState.GetBool(Pending + ".TurnExits", false);
+        private static float _savedThinkSeconds;
         private static double _after;
         private static GameManager Game => Field<GameManager>(_boot, "_game");
         private static BoardController Controller => Field<BoardController>(_boot, "_controller");
@@ -32,6 +34,19 @@ namespace FingerDiceDuel.EditorTools
         static UiPolishPreview() { EditorApplication.update += Update; }
         [MenuItem("Finger Dice Duel/Preview/UI Alignment and Skills")]
         public static void Run()
+        {
+            _turnExitsOnly = false;
+            SessionState.SetBool(Pending + ".TurnExits", false);
+            StartPreview();
+        }
+        [MenuItem("Finger Dice Duel/Preview/Turn Skip and Give Up")]
+        public static void RunTurnExits()
+        {
+            _turnExitsOnly = true;
+            SessionState.SetBool(Pending + ".TurnExits", true);
+            StartPreview();
+        }
+        private static void StartPreview()
         {
             _ready = false;
             SessionState.SetBool(Pending, true);
@@ -49,11 +64,14 @@ namespace FingerDiceDuel.EditorTools
                     _boot = UnityEngine.Object.FindObjectOfType<GameBootstrap>();
                     if (_boot == null) return;
                     _background = Application.runInBackground; Application.runInBackground = true;
+                    _savedThinkSeconds = _boot.AiThinkSeconds;
+                    if (_turnExitsOnly) _boot.AiThinkSeconds = 1000;
                     Prepare(); _ready = true;
                 }
                 if (Steps.Count == 0)
                 {
                     SessionState.SetBool(Pending, false); Application.runInBackground = _background;
+                    if (_turnExitsOnly) _boot.AiThinkSeconds = _savedThinkSeconds;
                     File.WriteAllLines(Output("validation.txt"), Checks);
                     Debug.Log("[UiPolishPreview] " + Checks.Count + " checks passed.");
                     return;
@@ -65,12 +83,14 @@ namespace FingerDiceDuel.EditorTools
             catch (Exception error)
             {
                 SessionState.SetBool(Pending, false); Application.runInBackground = _background;
+                if (_turnExitsOnly && _boot != null) _boot.AiThinkSeconds = _savedThinkSeconds;
                 File.WriteAllLines(Output("validation.txt"), Checks.Concat(new[] { "FAILED " + error }));
                 Debug.LogException(error);
             }
         }
         private static T Field<T>(object value, string name) => (T)value.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(value);
-        private static object Invoke(object value, string name) => value.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(value, null);
+        private static object Invoke(object value, string name, params object[] args) => value.GetType().GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(value, args);
+        private static void Set(object value, string name, object data) => value.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(value, data);
         private static void Check(bool value, string message)
         {
             if (!value) throw new InvalidOperationException(message);
@@ -81,13 +101,15 @@ namespace FingerDiceDuel.EditorTools
         private static void Refresh() { Invoke(_boot, "RefreshView"); Canvas.ForceUpdateCanvases(); }
         private static string Output(string name)
         {
-            var path = Path.GetFullPath(Path.Combine(Application.dataPath, "../Art/Integration/ui-polish"));
+            var path = Path.GetFullPath(Path.Combine(Application.dataPath, _turnExitsOnly ? "../Art/Integration/turn-exits" : "../Art/Integration/ui-polish"));
             Directory.CreateDirectory(path); return Path.Combine(path, name);
         }
         private static Button Find(string name) => Root.GetComponentsInChildren<Button>().Single(b => b.gameObject.activeInHierarchy && b.name == name);
         private static void Click(string name)
+            => Click(Find(name));
+        private static void Click(Button button)
         {
-            var button = Find(name);
+            string name = button.name;
             Capture(null);
             Check(button.interactable, "interactive " + name);
             var data = new PointerEventData(EventSystem.current) { position = RectTransformUtility.WorldToScreenPoint(null, button.transform.position) };
@@ -148,6 +170,7 @@ namespace FingerDiceDuel.EditorTools
         {
             Checks.Clear(); Steps.Clear();
             File.WriteAllText(Output("validation.txt"), "RUNNING\n");
+            if (_turnExitsOnly) { PrepareTurnExits(); return; }
             Add(() =>
             {
                 Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
@@ -267,6 +290,142 @@ namespace FingerDiceDuel.EditorTools
             Shot("bard-kind"); Add(() => Click("Bard增幅攻击")); Shot("bard-count"); Add(() => Click("Bard1 人  ±3")); Shot("bard-target"); Add(() => Click("BardTarget0"));
             Add(() => Click("Bard确认")); Add(() => Check(!Board.IsBardChoicePanelVisible, "bard buttons finish complete choice flow"));
         }
+        private static void HandClick(bool playerA, int index = 0)
+        {
+            var cards = Field<Array>(Board, playerA ? "_cardsA" : "_cardsB");
+            var card = cards.GetValue(index);
+            Click((Button)card.GetType().GetField("Button").GetValue(card));
+        }
+        private static void CheckLive(string label)
+        {
+            Check(!Game.IsGameOver && Controller.Phase != BoardPhase.GameOver, "match remains live " + label);
+            Check(!Field<GameObject>(Board, "_gameOverPanel").activeSelf, "no restart overlay " + label);
+        }
+        private static void PrepareTurnExits()
+        {
+            Add(() => { Start(CharacterDefinition.Wizard, CharacterDefinition.Fighter, 1, 1, 3, 1); Game.PlayerA.ApplyStatus(StatusEffect.Frozen); Controller.BeginTurn(); Refresh(); CheckLive("frozen human"); Check(Find("SkipTurnButton").interactable, "frozen human sees skip"); Check(!Controller.CanClick(Game.PlayerA.LeftHand), "frozen hands disabled"); });
+            Shot("frozen-human");
+            Add(() => { Click("SkipTurnButton"); CheckLive("after frozen skip"); Check(ReferenceEquals(Controller.ActivePlayer, Game.PlayerB), "frozen skip hands turn to opponent"); Check(Game.PlayerA.StatusTurnsLeft(StatusEffect.Frozen) == 1, "frozen ticks once"); });
+            Add(() =>
+            {
+                Start(CharacterDefinition.Wizard, CharacterDefinition.Fighter, 1, 1, 3, 1);
+                Controller.BindPlayer(Game.PlayerB, new GreedyChoiceProvider(), Field<SimpleChoiceProvider>(_boot, "_choiceB"));
+                Game.PlayerB.ApplyStatus(StatusEffect.Frozen); Controller.SetFirstPlayer(Game.PlayerB); Controller.BeginTurn(); Refresh();
+                CheckLive("frozen AI fighter");
+                Check(!Field<Button>(Board, "_skipButton").gameObject.activeInHierarchy, "AI turn has no human skip button");
+                _boot.AiThinkSeconds = 0; Invoke(_boot, "Update"); _boot.AiThinkSeconds = 1000;
+                CheckLive("AI automatic skip"); Check(ReferenceEquals(Controller.ActivePlayer, Game.PlayerA), "bootstrap update automatically skips frozen AI");
+                Check(Game.PlayerB.StatusTurnsLeft(StatusEffect.Frozen) == 1, "AI frozen duration ticks");
+            });
+            Shot("frozen-ai-resumed");
+            for (int mask = 0; mask < 4; mask++)
+            {
+                int value = mask;
+                Add(() =>
+                {
+                    Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
+                    if ((value & 1) == 0) Game.PlayerA.LeftHand.Lock(); else Game.PlayerA.LeftHand.Conceal();
+                    if ((value & 2) == 0) Game.PlayerA.RightHand.Lock(); else Game.PlayerA.RightHand.Conceal();
+                    Controller.BeginTurn(); Refresh(); CheckLive("unusable hands " + value); Click("SkipTurnButton");
+                    Check(Game.TurnCount == 1, "unusable hand button advances once " + value);
+                });
+            }
+            Add(() =>
+            {
+                Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 5, 5, 1, 1);
+                Game.PlayerA.LeftHand.SetShieldState(ShieldState.Formed); Game.PlayerA.RightHand.SetShieldState(ShieldState.Formed); Refresh();
+                Click("SkipTurnButton"); Check(Game.PlayerA.HasDoubleShield, "voluntary skip preserves shields");
+            });
+            Add(() =>
+            {
+                Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 5, 1, 1);
+                Game.PlayerA.LeftHand.Lock(); Game.PlayerA.RightHand.SetShieldState(ShieldState.Formed); Refresh();
+                Check(!Field<Button>(Board, "_skipButton").gameObject.activeInHierarchy, "one locked hand and one shield cannot skip");
+            });
+            Add(() =>
+            {
+                Start(CharacterDefinition.Assassin, CharacterDefinition.Fighter, 7, 7, 1, 1);
+                ((FingerDiceDuel.Characters.SpecialLogics.AssassinLogic)Game.PlayerA.Character).EnterStealthForTest(); Refresh();
+                Click("SkipTurnButton"); Controller.SetFirstPlayer(Game.PlayerA); Controller.BeginTurn(); Refresh();
+                Check(!Controller.CanSkipTurn, "assassin stealth skip only once");
+            });
+            Add(() =>
+            {
+                Start(CharacterDefinition.Hexer, CharacterDefinition.Fighter, 1, 1, 1, 1);
+                Game.PlayerA.TakeDamage(4); Game.PlayerA.ApplyStatus(StatusEffect.Acid); Refresh(); Click("SkipTurnButton");
+                Check(Controller.Phase == BoardPhase.ChoosingHealthSwapTarget, "hexer skip still asks for target"); HandClick(false);
+                Check(Game.PlayerB.Health == 16 && Game.PlayerA.StatusTurnsLeft(StatusEffect.Acid) == 1, "hexer target click resolves skill and duration");
+            });
+            foreach (var status in new[] { StatusEffect.Stunned, StatusEffect.Panic })
+            {
+                var effect = status;
+                Add(() =>
+                {
+                    Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 3, 1);
+                    Game.PlayerA.ApplyStatus(effect, source: Game.PlayerB); Controller.BeginTurn(); Refresh(); HandClick(true); HandClick(false);
+                    Check(Controller.CanGiveUpAttack, "give up offered for " + effect);
+                    Check(Find("DeclineButton").GetComponentInChildren<Text>().text == "放弃攻击", "give up label " + effect);
+                    Check(!Field<Button>(Board, "_skipButton").gameObject.activeInHierarchy, "target confirmation cannot be bypassed by skip");
+                }); Shot("give-up-" + effect.ToString().ToLowerInvariant());
+                Add(() => { Click("DeclineButton"); CheckLive("after give up"); Check(Game.PlayerA.LeftHand.Value == 4 && Game.PlayerB.Health == 20, "give up retains sum without damage"); });
+            }
+            Add(() =>
+            {
+                Start(CharacterDefinition.Soldier, CharacterDefinition.Assassin, 1, 1, 7, 7);
+                ((FingerDiceDuel.Characters.SpecialLogics.AssassinLogic)Game.PlayerB.Character).EnterStealthForTest(); Refresh(); HandClick(true); HandClick(false); Click("DeclineButton");
+                Check(Game.PlayerA.LeftHand.Value == 8 && Game.PlayerB.Health == 20, "stealth target give up retains sum");
+            });
+            foreach (int count in new[] { 4, 8 }) for (int seat = 0; seat < count; seat++)
+            {
+                int n = count, index = seat;
+                Add(() =>
+                {
+                    StartExitRing(n, index); var actor = Controller.ActivePlayer; actor.ApplyStatus(StatusEffect.Frozen); Controller.BeginTurn(); Refresh();
+                    CheckLive(n + "p frozen seat " + index);
+                    if (index == n - 1) Capture(n + "p-frozen-skip.png");
+                    Click("SkipTurnButton");
+                    Check(actor.StatusTurnsLeft(StatusEffect.Frozen) == 1, "ring frozen button ticks seat " + index);
+                    Check(!ReferenceEquals(actor, Controller.ActivePlayer), "ring button advances seat " + index);
+                });
+                if (seat == count - 1) Add(() => Capture(n + "p-skip-resumed.png"));
+                Add(() =>
+                {
+                    var actor = Game.Players[index]; actor.RemoveStatus(StatusEffect.Frozen); actor.ApplyStatus(StatusEffect.Stunned); actor.LeftHand.SetValue(1);
+                    var target = Game.Players.First(p => !ReferenceEquals(p, actor)); target.LeftHand.SetValue(3);
+                    Controller.SetFirstPlayer(actor); Controller.BeginTurn(); Controller.ClickHand(actor.LeftHand); Controller.ClickHand(target.LeftHand); Refresh();
+                    Check(Controller.CanGiveUpAttack, n + "p no legal target exit at seat " + index);
+                    if (index == n - 1) Capture(n + "p-give-up.png");
+                    Click("DeclineButton");
+                    Check(actor.LeftHand.Value == 4, "ring give up preserves result at seat " + index);
+                    Check(actor.StatusTurnsLeft(StatusEffect.Stunned) == 1, "ring give up finishes status at seat " + index);
+                    CheckLive(n + "p after giving up");
+                });
+            }
+            Add(() => { _boot.PlayerBIsAI = true; _boot.ShowScreen(GameScreen.MainMenu); });
+        }
+        private static void StartExitRing(int count, int seat)
+        {
+            Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
+            var players = new List<PlayerState>(); var sinks = new List<SimpleChoiceProvider>();
+            var lookup = Field<Dictionary<PlayerState, SimpleChoiceProvider>>(_boot, "_sinkByPlayer"); lookup.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                var p = CharacterFactory.CreatePlayer("座位" + (i + 1), CharacterDefinition.Soldier);
+                var sink = new SimpleChoiceProvider(); players.Add(p); sinks.Add(sink); lookup[p] = sink;
+            }
+            Set(_boot, "_isTwoOnTwo", count == 4); Set(_boot, "_isEightPlayer", count == 8); Set(_boot, "_isIdentity", count == 8);
+            if (count == 4) Invoke(_boot, "BuildTwoOnTwoMatch", players, sinks, seat, null);
+            else
+            {
+                var roles = new[] { IdentityRole.Lord, IdentityRole.Loyalist, IdentityRole.Rebel, IdentityRole.Rebel, IdentityRole.Loyalist, IdentityRole.Rebel, IdentityRole.Rebel, IdentityRole.Traitor };
+                var game = GameManager.CreateIdentityEight(players, sinks.ConvertAll(s => (IChoiceProvider)s), roles);
+                Set(_boot, "_game", game); Set(_boot, "_controller", new BoardController(game, sinks[0], sinks[1]));
+                Set(_boot, "_eightSeated", players); Set(_boot, "_eightHumanPlayer", players[seat]);
+            }
+            for (int i = 0; i < count; i++) Controller.BindPlayer(players[i], null, sinks[i]);
+            Controller.SetFirstPlayer(players[seat]); Invoke(_boot, "StartPreparedMatch"); Refresh();
+        }
+
         private static void Capture(string name)
         {
             var canvas = Root.GetComponent<Canvas>(); var go = new GameObject("PolishPreviewCamera", typeof(Camera));

@@ -553,16 +553,16 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前行动方是否可以跳过本回合。
         ///
-        /// 规则：**只有两只手都是成型护盾时才可以跳过**（见 RULES.md §14）。
-        /// UI 用它决定是否显示"跳过回合"按钮。
+        /// 冻结、无合法运算、双盾或角色技能允许跳过；只能在尚未提交行动时使用。
+        /// UI 用它决定是否显示"跳过回合"按钮，不能用来越过攻击或防守抉择。
         /// </summary>
         public bool CanSkipTurn
             => !_game.IsGameOver
                && ActivePlayer != null
-               && Phase != BoardPhase.ChoosingDefenseShield
-               && Phase != BoardPhase.ChoosingLockTarget
-               && Phase != BoardPhase.ChoosingHealthSwapTarget
-               && Phase != BoardPhase.GameOver
+               && !BardChoicePending
+               && (Phase == BoardPhase.ChoosingAttackerHand
+                   || Phase == BoardPhase.ChoosingTargetHand
+                   || Phase == BoardPhase.ChoosingGamble)
                // ⚠️ 用带 GameManager 的重载：妖术师的跳过条件要查**别人**的体力，
                //    静态版传 null 会让它永远返回 false（按钮不显示）。
                && _game.CanSkipTurnFor(ActivePlayer);
@@ -583,7 +583,7 @@ namespace FingerDiceDuel.Assistant
 
             // 妖术师：先选目标，不立刻结束回合
             var hexer = ActivePlayer.Character as HexerLogic;
-            if (hexer != null)
+            if (hexer != null && StatusRules.CanAct(ActivePlayer))
             {
                 PlayerState victim = FindHealthSwapTarget();
                 if (victim != null)
@@ -596,7 +596,10 @@ namespace FingerDiceDuel.Assistant
                 // 找不到目标就退回"直接跳过"（正常不会发生：CanSkipTurn 已判过）
             }
 
-            _log.Add(CombatText.Skill(ActivePlayer, "跳过", "结束本回合"));
+            string reason = !StatusRules.CanAct(ActivePlayer) ? "冻结，无法行动"
+                : !_game.HasAnyLegalOperation(ActivePlayer) ? "无可用运算" : "结束本回合";
+            _log.Add(CombatText.Skill(ActivePlayer, "跳过", reason));
+            _statusTurnEndFor = ActivePlayer;
             _game.SkipTurn();
 
             SelectedHand = null;
@@ -650,6 +653,7 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️ 用"已校验"的版本：改完体力后"有人体力与我不同"这个条件
             //    就不再成立了，再校验一次会抛"非法跳过"（测试抓到）。
+            _statusTurnEndFor = ActivePlayer;
             _game.SkipTurnAlreadyValidated();
 
             SelectedHand = null;
@@ -1041,14 +1045,15 @@ namespace FingerDiceDuel.Assistant
             // 让它跨回合累积，定位完再移除即可。
 
             IReadOnlyList<LegalMove> moves = _game.GetLegalMoves(ActivePlayer);
+            Phase = BoardPhase.ChoosingAttackerHand;
             if (moves.Count == 0)
             {
-                Phase = BoardPhase.GameOver;
-                Hint = "没有可行的运算。";
+                Hint = !StatusRules.CanAct(ActivePlayer)
+                    ? $"{ActivePlayer.Name} 已冻结，无法行动，请跳过回合。"
+                    : $"{ActivePlayer.Name} 没有可行的运算，请跳过回合。";
                 return;
             }
 
-            Phase = BoardPhase.ChoosingAttackerHand;
             Hint = $"轮到 {ActivePlayer.Name}：请选择要用自己哪一只手。";
             AppendLockedHandNote();
         }
@@ -1091,7 +1096,7 @@ namespace FingerDiceDuel.Assistant
                     //    所以暗置的手在领域层已被拒绝，**界面上却仍然点得动**。
                     //
                     //    玩家原话："伏击的手不能主动发起运算，看上去和被锁是一样的。"
-                    return ActivePlayer.Owns(hand) && hand.CanBeOperated;
+                    return StatusRules.CanAct(ActivePlayer) && ActivePlayer.Owns(hand) && hand.CanBeOperated;
 
                 case BoardPhase.ChoosingGamble:
                     // 赌博阶段**只等点「开赌」**，手牌本身不再接受点击。
@@ -1329,6 +1334,7 @@ namespace FingerDiceDuel.Assistant
             if (player == null) return false;
             if (ActivePlayer == null) return false;
             if (ReferenceEquals(player, ActivePlayer)) return false;
+            if (!StatusRules.CanAttackTarget(ActivePlayer, player, _game)) return false;
 
             // ① 玩家要求：**所有模式队友都是合法攻击目标**（可以打队友）。
             //    1v1 没有队友；2v2 / 8 人阵营混战都可以主动打自己人。
@@ -3386,13 +3392,11 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool MakeAutomaticMove()
         {
-            // 冻结：没有行动，自动跳过，避免 AI 卡在无合法步。
-            if (ActivePlayer != null && !StatusRules.CanAct(ActivePlayer))
-                return SkipTurn();
-
+            if (_game.IsGameOver || Phase != BoardPhase.ChoosingAttackerHand) return false;
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
-            if (_game.IsGameOver) return false;
+            // 冻结、双锁、暗置与距离限制导致无运算时，AI 使用同一个跳过出口。
+            if (!_game.HasAnyLegalOperation(ActivePlayer) && CanSkipTurn) return SkipTurn();
 
             // ⚠️ AI 的妖术师要用"跳过回合改体力"这个技能。
             //
