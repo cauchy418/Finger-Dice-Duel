@@ -87,5 +87,31 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(0, ctx.AppliedDamage);
             Assert.AreEqual(1, ctx.HitCount);
         }
+
+        [Test]
+        public void Frozen_is_skippable_and_stunned_cannot_attack()
+        {
+            PlayerState a = Make();
+            PlayerState b = Make();
+            PlayerState c = Make();
+            PlayerState d = Make();
+            var providers = new List<IChoiceProvider>
+            {
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+                new SimpleChoiceProvider(), new SimpleChoiceProvider(),
+            };
+            GameManager game = GameManager.Create2v2(
+                new[] { a, b, c, d }, providers);
+
+            a.ApplyStatus(StatusEffect.Frozen);
+            Assert.False(StatusRules.CanAct(a));
+            Assert.True(game.CanSkipTurnFor(a),
+                "冻结角色应出现跳过回合出口。");
+
+            a.RemoveStatus(StatusEffect.Frozen);
+            a.ApplyStatus(StatusEffect.Stunned);
+            Assert.False(StatusRules.CanAttackTarget(a, b, game),
+                "震慑角色不能攻击。");
+        }
     }
 }

@@ -3386,6 +3386,10 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool MakeAutomaticMove()
         {
+            // 冻结：没有行动，自动跳过，避免 AI 卡在无合法步。
+            if (ActivePlayer != null && !StatusRules.CanAct(ActivePlayer))
+                return SkipTurn();
+
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
             if (_game.IsGameOver) return false;

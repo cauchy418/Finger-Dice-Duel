@@ -2928,6 +2928,7 @@ namespace FingerDiceDuel.Core
         public bool CanSkipTurnFor(PlayerState player)
         {
             if (player == null) return false;
+            if (!StatusRules.CanAct(player)) return true;
 
             // ⚠️ **两只手都被锁** -> 无手可用 -> 允许跳过。
             //
@@ -2967,6 +2968,7 @@ namespace FingerDiceDuel.Core
         public bool HasAnyLegalOperation(PlayerState actor)
         {
             if (actor == null || !actor.IsAlive) return false;
+            if (!StatusRules.CanAct(actor)) return false;
 
             Hand[] mine = { actor.LeftHand, actor.RightHand };
 

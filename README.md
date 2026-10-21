@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**997 项逻辑测试**。本轮 994 项通过、3 项既有失败（规则提示缺少「冲击」用词、术士对局停滞及其循环赛检查）；已在修改前版本分别复现。Unity 条件编译与表现层编译通过，秘法手册 13 项测试全部通过。详见 [状态图标接入验证](Art/Production/status-icons-v3/validation.md)。
+当前状态：**998 项逻辑测试**。本轮 995 项通过、3 项既有失败（规则提示缺少「冲击」用词、术士对局停滞及其循环赛检查）；已在修改前版本分别复现。Unity 条件编译与表现层编译通过，秘法手册 13 项测试全部通过。详见 [状态图标接入验证](Art/Production/status-icons-v3/validation.md)。
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
@@ -554,7 +554,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 997 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 998 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴
