@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -470,6 +470,7 @@ namespace FingerDiceDuel.Core
             if (victim == null || !victim.IsAlive) return;
 
             victim.ApplyStatus(status, PlayerState.StatusDurationTurns, Attacker);
+            manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {PlayerState.StatusDurationTurns} 回合");
         }
 
         /// <summary>
@@ -608,6 +609,7 @@ namespace FingerDiceDuel.Core
                 {
                     Defender = p;
                     WasRedirected = true;
+                    manager.NoteSkill(p, "代挡", $"代替 {original.Name} 承受攻击");
                     return;
                 }
             }
@@ -715,6 +717,7 @@ namespace FingerDiceDuel.Core
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;
+                        manager.NoteSkill(p, "取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
                         return true;
                     }
 
@@ -726,6 +729,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasCancelled = true;
                     CancelledBy = p.Name;
+                    manager.NoteSkill(p, "取消攻击", $"取消 {Attacker.Name} 的攻击");
                     return true;
                 }
             }
@@ -748,6 +752,7 @@ namespace FingerDiceDuel.Core
                 ActedHandValueBefore = SourceHandValueBefore,
                 TargetHandValueBefore = TargetHandValueBefore,
                 AutoResolveChoice = AutoResolveDodge,
+                Manager = manager,
                 Gatherer = ChoiceGatherer,
                 AiDecisionLookup = AiDecisionLookup,
             };

@@ -142,6 +142,7 @@ namespace FingerDiceDuel.Core
 
             other.ForceBreakShield();                   // 完整盾 -> 破碎
             RangeBreakCount++;
+            manager.NoteSkill(actor, "碎盾换射程", $"{CombatText.HandName(actor, other)}盾破碎，本次距离无限");
         }
 
         /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
@@ -261,6 +262,7 @@ namespace FingerDiceDuel.Core
                 if (candidates[i].Shield.State != ShieldState.Formed) return;   // 防御性
                 manager.BreakShieldAndNotify(candidates[i].Owner, candidates[i].Shield);
                 ChainBreakCount++;
+                manager.NoteSkill(owner, "连锁破盾", $"{candidates[i].Owner.Name} {CombatText.HandName(candidates[i].Owner, candidates[i].Shield)}盾破碎");
                 return;
             }
             // 选了一个不在候选里 / 已经碎掉的盾 -> 视为放弃
@@ -320,6 +322,7 @@ namespace FingerDiceDuel.Core
             if (otherHand != null && otherHand.State == ShieldState.Broken)
             {
                 otherHand.SetShieldState(ShieldState.Formed);
+                manager?.NoteSkill(owner, "修复盾牌", $"{CombatText.HandName(owner, otherHand)}碎盾修复");
             }
         }
 

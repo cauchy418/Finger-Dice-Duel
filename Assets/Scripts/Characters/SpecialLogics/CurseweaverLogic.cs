@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 咒术师（Curseweaver）特殊逻辑：
@@ -43,6 +43,7 @@ namespace FingerDiceDuel.Core
             // 核心能力：无视护盾（护盾不消耗、不破碎、不挡伤）
             context.IgnoreShield = true;
             context.IgnorePositiveDefense = true;
+            context.Manager?.NoteSkill(context.Attacker, "咒术穿透", "无视护盾、正防御与闪避");
 
             // 说明：不在此处修改 FinalDamage，
             // 保持"咒术师只改变结算路径，不改变伤害数值"的语义纯净性。
@@ -59,7 +60,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>默认攻击 -1（可被 CharacterDefinition.AttackBonus 覆盖）。</summary>
         public override int DefaultAttackBonus => -1;
-    
+
         /// <summary>
         /// 咒术师：**力场伤害**（玩家指定）。
         ///

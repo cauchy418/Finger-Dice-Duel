@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     using System.Collections.Generic;
 
@@ -81,6 +81,7 @@ namespace FingerDiceDuel.Core
             if (shieldHand.Value != TaichiValue) return;
 
             shieldHand.SetShieldState(ShieldState.Taichi);
+            manager?.NoteSkill(owner, "太极", "合成太极手");
         }
 
         // ============================================================
@@ -188,6 +189,7 @@ namespace FingerDiceDuel.Core
             totalReduced = reflect;
             totalReflect = reflect;
             stages = stagesUsed + 1;
+            context.Manager?.NoteSkill(owner, "太极", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {reflect}、反弹 {reflect}");
 
             // taken 不用回传：外层用"perHit - 累计减免"自己算。
             _ = taken;
@@ -368,7 +370,7 @@ namespace FingerDiceDuel.Core
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    
+
         /// <summary>
         /// 武僧：**钝击伤害**（玩家指定）。
         ///

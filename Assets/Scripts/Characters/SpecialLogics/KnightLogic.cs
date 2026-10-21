@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **骑士**（攻 0 / 防 −1，攻击距离 1）。
@@ -49,6 +49,7 @@ namespace FingerDiceDuel.Core
                                               GameManager manager)
         {
             _shieldBreaks++;
+            manager?.NoteSkill(owner, "碎盾成长", $"永久攻击／距离＋1（现 {BaseAttackRange}）");
         }
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>供测试与界面读取：已经碎过几次盾。</summary>
         public int ShieldBreakCount => _shieldBreaks;
-    
+
         /// <summary>骑士：**穿刺伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Piercing;

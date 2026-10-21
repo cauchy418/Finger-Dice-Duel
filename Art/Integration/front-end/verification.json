@@ -5,7 +5,7 @@
     "failed": 0
   },
   "headless": {
-    "passed": 979,
+    "passed": 991,
     "failed": 0
   },
   "unityTestDefineCompile": true,
@@ -13,18 +13,29 @@
   "date": "2026-10-21",
   "editorRefresh": {
     "warnings": 0,
-    "errors": 0
+    "errors": 1
   },
   "uiCompileAndComponentCheck": true,
   "notes": [
     "All captures use real runtime Unity Canvas; overview-contact is a resized contact sheet.",
     "Only Editor fixtures inject fixed critical rolls. Production dice still use existing controller randomness.",
-    "No scene or importer meta was hand-authored."
+    "No scene or importer meta was hand-authored.",
+    "Current refresh reports an unrelated editor PackageManager AssetStoreDownloadManager.OnBeforeSerialize exception; C# checks and runtime UI fixtures pass."
   ],
   "frontEnd": {
     "screenCaptures": 43,
-    "passed": 638,
+    "passed": 768,
     "failed": 0,
     "report": "validation.txt"
+  },
+  "skillUi": {
+    "failed": 0,
+    "passed": 762,
+    "report": "../ui-polish/validation.txt"
+  },
+  "multiplayer": {
+    "failed": 0,
+    "passed": 1815,
+    "report": "../multiplayer/validation.txt"
   }
 }

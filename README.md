@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**982 项逻辑测试**。2026-10-21 全量 982 项通过，Unity 条件编译与表现层编译通过。
+当前状态：**991 项逻辑测试**。2026-10-21 全量 991 项通过，Unity 条件编译与表现层编译通过。
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
@@ -553,7 +553,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 982 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 991 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴
@@ -596,3 +596,8 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 字体为 **思源黑体（Noto Sans CJK SC）**，采用 SIL Open Font License 1.1，
 详见 [`Assets/Resources/Fonts/README-字体许可.txt`](Assets/Resources/Fonts/README-字体许可.txt)。
 
+
+
+选将现使用可拖动的大徽记列表；战报与技能触发提示已统一，回复显示实际增量。
+圣武士 4／6 合盾只选择冲击目标，规则问号弹窗与图鉴操作说明同步更新。
+实际界面截图见 [前台验收](Art/Integration/front-end/README.md) 与 [技能验收](Art/Integration/ui-polish/README.md)。

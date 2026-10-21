@@ -361,7 +361,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             // 额外回复的目标由玩家在运算前选好
             PlayerState target = ResolveTarget(owner, manager, choiceSink,
                                                HandEffect.PriestExtraHealTarget);
+            int before = target?.Health ?? 0;
             target?.Heal(ExtraHealAmount);
+            manager?.NoteSkill(owner, "双九回复", $"{target?.Name} 回复 {(target?.Health ?? 0) - before}");
         }
 
         /// <summary>当前（运算后）是否双手同时为 9。</summary>
@@ -485,7 +487,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             => ResolveTarget(owner, manager, sink, HandEffect.PriestHealTarget);
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    
+
         /// <summary>
         /// 牧师：对**攻击距离 1** 的是钝击，**距离 1 以外**的是穿刺（玩家指定）。
         /// </summary>

@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -165,6 +165,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!IsStealthActive(context.Attacker)) return;
 
             context.FinalDamage += StealthBonusDamage;
+            context.Manager?.NoteSkill(context.Attacker, "潜行突袭", $"本次伤害＋{StealthBonusDamage}");
         }
 
         /// <summary>
@@ -206,6 +207,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 _stealthEntered = true;
                 _skipUsedThisStealth = false;
                 StealthEnterCount++;
+                manager?.NoteSkill(owner, "潜行", "双手为 7，进入潜行");
             }
         }
 
@@ -285,7 +287,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             _stealthEntered = false;    // 重开一局必须清空，否则带着上一局的潜行
             StealthEnterCount = 0;
         }
-    
+
         /// <summary>刺客：**穿刺伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Piercing;

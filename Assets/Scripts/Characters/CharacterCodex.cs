@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -183,9 +183,8 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.PaladinId, "Paladin", Alignment.LawfulGood,
                 shortSkill: "4/5/6 都合盾，且合盾 / 碎盾时额外打出 2 点冲击。",
-                playGuide: "4/5/6 三条路都通向护盾 + 冲击，所以你的选择比谁都多。"
-                         + "已经有一面完整的盾时，拿它当运算源去碰出下一面盾最赚"
-                         + "（一次运算换一次免费伤害）。",
+                playGuide: "选自己的手与加数后，4/5/6 直接合盾，只提示选择冲击目标。"
+                         + "用完整盾再合盾，会分别触发碎盾和合盾两次冲击。",
                 counter: "别让他合成 5，4/6 也要压 —— "
                        + "他每合一次盾就白赚一次冲击。",
                 interactions: new[]

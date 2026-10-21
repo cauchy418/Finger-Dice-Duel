@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -262,6 +262,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             context.Dodged = true;
             context.ConsumedHand = chosen;
+            context.Manager?.NoteSkill(self, "闪避", $"{CombatText.HandName(self, chosen)} 1→2，闪避第 {hitIndex + 1} 段");
         }
 
         /// <summary>
@@ -341,6 +342,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             // 先乘倍率、再算攻防加成（由 AttackContext.ApplyBonuses 保证顺序）
             context.DamageMultiplier = PowerMultiplier;
+            context.Manager?.NoteSkill(context.Attacker, "强化射击", $"{CombatText.HandName(context.Attacker, chosen)} 2→3，基础伤害×1.5、距离无限");
         }
 
         /// <summary>
@@ -387,7 +389,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// 提示永远不出现 —— 真实 bug。）
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
-    
+
         /// <summary>
         /// 游侠：普通是**挥砍**；用 2 强化的攻击是**穿刺**（玩家指定）。
         ///

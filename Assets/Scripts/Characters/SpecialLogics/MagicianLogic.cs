@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -134,6 +134,7 @@ namespace FingerDiceDuel.Core
             // 若不压，别的机制可能按 4 去分段（例如双将里配魔射手）。
             context.HitCount = 1;
             context.FinalDamage = MagicAttackValue;
+            context.Manager?.NoteSkill(context.Attacker, "魔术攻击", "运算出 2，转为攻击");
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
@@ -141,7 +142,7 @@ namespace FingerDiceDuel.Core
             SelfAddendCount = 0;
             _selfAddendMark = null;
         }
-    
+
         /// <summary>魔术师：**穿刺伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Piercing;

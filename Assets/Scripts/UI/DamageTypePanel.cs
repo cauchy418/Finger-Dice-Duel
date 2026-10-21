@@ -67,7 +67,7 @@ namespace FingerDiceDuel.UI
             Text title = MakeText(_root, "Title", new Vector2(0f, _root.sizeDelta.y / 2 - 27),
                                   new Vector2(_root.sizeDelta.x, 30f), 22,
                                   TextAnchor.MiddleCenter, Color.white);
-            title.text = "选择伤害类型（放弃本次攻击）";
+            title.text = "【附魔】选择下一次攻击的伤害类型";
             title.font = UiFont.Title;
             title.color = BattleArt.Gold;
 

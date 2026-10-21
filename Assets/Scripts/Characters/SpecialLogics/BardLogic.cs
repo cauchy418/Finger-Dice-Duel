@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -104,6 +104,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if (t == null) continue;
                 t.SetBardOffset(bard, attackOffset, defenseOffset);
                 applied++;
+                string effectName = attackOffset != 0 ? "攻击" : "防御";
+                int delta = attackOffset != 0 ? attackOffset : defenseOffset;
+                manager.NoteSkill(bard, "鼓舞／削弱", $"{t.Name} {effectName}{delta:+0;-0;0}，持续至下次发动或自身阵亡");
             }
 
             return applied;

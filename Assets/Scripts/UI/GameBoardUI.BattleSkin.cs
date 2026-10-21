@@ -66,7 +66,8 @@ namespace FingerDiceDuel.UI
                 CreatePaintedHandCard(area, new Vector2(120, -45))
             };
             var statuses = new StatusIconBar(area, _font, top, top ? "StatusIconsB" : "StatusIconsA");
-            statuses.SetBattleLayout(new Vector2(300, 195));
+            // 为回合高亮时姓名的放大动画预留间距。
+            statuses.SetBattleLayout(new Vector2(330, 195));
             if (top)
             {
                 _badgeB = badge; _healthTextB = hp; _hpBarFillB = fill;

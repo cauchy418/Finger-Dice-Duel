@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -519,7 +519,8 @@ namespace FingerDiceDuel.Core
         /// <see cref="TargetHandValueBefore"/>）—— 运算源在结算钩子里已经是结果值，
         /// 直接用当前手值会把效果算错（曾经算成 None，导致游侠闪避被整个跳过）。
         /// </summary>
-        public HandEffectType Effect => Hand.GetEffectType(EffectiveResult);
+        public HandEffectType Effect => CharacterBehaviors.FirstImplementer<IHandEffectDisplay>(Actor)
+            ?.DisplayedEffectOf(EffectiveResult) ?? Hand.GetEffectType(EffectiveResult);
 
         /// <summary>运算结果的权威值（优先用快照重算）。</summary>
         public int EffectiveResult

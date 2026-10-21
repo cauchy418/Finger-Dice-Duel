@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -123,6 +123,7 @@ namespace FingerDiceDuel.Core
             target.Lock();
             _lockMap[shieldHand] = target;
             LockCount++;
+            manager.NoteSkill(owner, "锁手", $"锁定 {opponent.Name} {CombatText.HandName(opponent, target)}");
         }
 
         /// <summary>
@@ -165,7 +166,7 @@ namespace FingerDiceDuel.Core
 
             _lockMap.Clear();
         }
-    
+
         /// <summary>野蛮人：**钝击伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Bludgeoning;

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -521,7 +521,7 @@ namespace FingerDiceDuel.Assistant
                             || effect == HandEffectType.Attack6
                             || effect == HandEffectType.Attack8;
 
-            _log.Add($"{ActivePlayer.Name} 开赌：掷出 {_pendingGambleRoll}。");
+
 
             if (!isAttack)
             {
@@ -547,8 +547,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>赌博没有合法攻击目标时的收尾（战报要说清是赌博）。</summary>
         private void NoteGambleGaveUp()
         {
-            _log.Add($"{ActivePlayer.Name} 开赌掷出 {_pendingGambleRoll}，" +
-                     $"但没有可攻击的目标 —— 本回合作罢。");
+            _log.Add(CombatText.Skill(ActivePlayer, "赌博", $"掷出 {_pendingGambleRoll}，无合法攻击目标"));
         }
 
         /// <summary>
@@ -597,7 +596,7 @@ namespace FingerDiceDuel.Assistant
                 // 找不到目标就退回"直接跳过"（正常不会发生：CanSkipTurn 已判过）
             }
 
-            _log.Add($"{ActivePlayer.Name} 选择跳过本回合。");
+            _log.Add(CombatText.Skill(ActivePlayer, "跳过", "结束本回合"));
             _game.SkipTurn();
 
             SelectedHand = null;
@@ -647,8 +646,7 @@ namespace FingerDiceDuel.Assistant
                 return false;
             }
 
-            _log.Add($"{ActivePlayer.Name}（妖术师）跳过回合，" +
-                     $"把 {target.Name} 的体力从 {before} 改成 {ActivePlayer.Health}。");
+            _log.Add(CombatText.Skill(ActivePlayer, "体力改写", $"{target.Name} 生命 {before}→{ActivePlayer.Health}，跳过回合"));
 
             // ⚠️ 用"已校验"的版本：改完体力后"有人体力与我不同"这个条件
             //    就不再成立了，再校验一次会抛"非法跳过"（测试抓到）。
@@ -867,6 +865,7 @@ namespace FingerDiceDuel.Assistant
 
         public void BeginTurn()
         {
+            FlushSkillLog();
             if (_game.IsGameOver)
             {
                 Phase = BoardPhase.GameOver;
@@ -900,6 +899,7 @@ namespace FingerDiceDuel.Assistant
             if (_statusTurnEndFor != null)
             {
                 _game.ResolveStatusTurnEnd(_statusTurnEndFor);
+                FlushSkillLog();
                 _statusTurnEndFor = null;
 
                 if (_game.IsGameOver)
@@ -920,6 +920,7 @@ namespace FingerDiceDuel.Assistant
             //    玩家确认：中毒可能**直接把他打死、跳过其行动** ——
             //    所以结算后要重新读一次当前行动者。
             _game.ResolveStatusTurnStart(ActivePlayer);
+            FlushSkillLog();
 
             if (_game.IsGameOver)
             {
@@ -932,6 +933,7 @@ namespace FingerDiceDuel.Assistant
             {
                 ActivePlayer = _game.CurrentPlayer;
                 _game.ResolveStatusTurnStart(ActivePlayer);
+                FlushSkillLog();
 
                 if (_game.IsGameOver)
                 {
@@ -1426,8 +1428,7 @@ namespace FingerDiceDuel.Assistant
             _thiefWantsSteal = true;
 
             Phase = BoardPhase.ChoosingStealTarget;
-            Hint = $"盗贼：请点一只手来偷（无限距离，可以偷队友）。" +
-                   $"偷来的数字不大于 {SelectedHand.Value} 才会生效。";
+            Hint = CombatText.Skill(ActivePlayer, "偷窃", $"选择他人一只手交换（无限距离）；偷得数字≤{SelectedHand.Value} 才触发效果。");
             return true;
         }
 
@@ -1705,7 +1706,7 @@ namespace FingerDiceDuel.Assistant
             {
                 Hint = $"{ActivePlayer.Name}（赌徒）上一回合做了正常运算，" +
                        $"本回合必须赌博 —— 不能选别人的手，请点自己的一只手后按「开赌」。";
-                _log.Add($"{ActivePlayer.Name} 本回合必须赌博，拒绝了选择他人手牌的点击。");
+
                 return false;
             }
 
@@ -1771,11 +1772,8 @@ namespace FingerDiceDuel.Assistant
                             $" lastRoll={LastTurn?.GambleRoll}");
 
                         Phase = BoardPhase.ChoosingGamble;
-                        _log.Add($"{ActivePlayer.Name}（赌徒）选定了" +
-                                 $"{SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
-                                 $"本回合必须赌博。");
-                        Hint = $"{ActivePlayer.Name}（赌徒）：上一回合做了正常运算，" +
-                               $"本回合必须赌博 —— 点「开赌」掷 1d9。";
+
+                        Hint = CombatText.Skill(ActivePlayer, "赌博", "本回合必须赌博，点击「开赌」投 1d9。");
                         return true;
                     }
 
@@ -2077,8 +2075,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (!CanGiveUpAttack) return false;
 
-            _log.Add($"{ActivePlayer.Name} 放弃攻击：运算照常、" +
-                     $"但不对 {TargetPlayer?.Name} 造成伤害（本回合作废）。");
+            _log.Add(CombatText.Skill(ActivePlayer, "放弃攻击", "保留运算结果，本次不造成伤害"));
 
             _giveUpAttack = true;
 
@@ -2214,6 +2211,7 @@ namespace FingerDiceDuel.Assistant
 
             bool activated = Characters.SpecialLogics.BardAi.TryActivate(bard, _game);
             bard.BardActivatedThisTurn = true;
+            FlushSkillLog();
             ClearBardChoice();
             return activated;
         }
@@ -2249,13 +2247,7 @@ namespace FingerDiceDuel.Assistant
 
                 _bardActor.BardActivatedThisTurn = true;      // 本回合不再问
 
-                if (applied > 0)
-                {
-                    var sb = new System.Text.StringBuilder();
-                    sb.Append(_bardActor.Name).Append(" 发动技能：").Append(kind);
-                    sb.Append("（").Append(targets != null ? targets.Count : 0).Append(" 个目标）");
-                    _log.Add(sb.ToString());
-                }
+                FlushSkillLog();
             }
 
             ClearBardChoice();
@@ -2608,7 +2600,7 @@ namespace FingerDiceDuel.Assistant
 
             int sum = Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
 
-            return sum == 4 || sum == 6 || sum == 8 ? sum : 0;
+            return new PreTurnChoiceContext(ActivePlayer, Defender, SelectedHand, _selectedTarget).IsAttack ? sum : 0;
         }
 
         /// <summary>
@@ -2960,7 +2952,7 @@ namespace FingerDiceDuel.Assistant
             Phase = _preTargetChoiceActive
                 ? BoardPhase.ChoosingPreTargetChoice
                 : BoardPhase.ChoosingPreTurnChoice;
-            Hint = request.Prompt;
+            Hint = CombatText.ChoicePrompt(request, _pendingChoiceDecider);
 
             ResolvePreTurnChoiceIfAi();
         }
@@ -4079,6 +4071,7 @@ namespace FingerDiceDuel.Assistant
             // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——
             // 单独把本回合的冲击记录补进战报（玩家要求能看见它是否发生）。
             foreach (string shock in _game.TakeShockLog()) _log.Add(shock);
+            foreach (string skill in _game.TakeSkillLog()) _log.Add(skill);
 
             // 回合真正结束 -> 副本可以清了（它只在回合内兜底用）
             _turnActedHand = null;
@@ -4149,7 +4142,7 @@ namespace FingerDiceDuel.Assistant
             if (acted == null || target == null) return false;
 
             int value = Hand.ComputeSum(acted.Value, target.Value);
-            if (!IsAttack(Hand.GetEffectType(value))) return false;
+            if (!new PreTurnChoiceContext(ActivePlayer, Defender, acted, target).IsAttack) return false;
 
             PlayerState defender = Defender;
             if (!defender.HasDoubleShield) return false;
@@ -4182,164 +4175,13 @@ namespace FingerDiceDuel.Assistant
         /// 把一次结算结果转成人话（可能**多行**，例如剑客的追加攻击单独一行）。
         /// 由 <see cref="ExecuteResolvedTurn"/> 逐行写进战报。
         /// </summary>
-        public static IReadOnlyList<string> DescribeTurnLines(TurnResult t)
+        private void FlushSkillLog()
         {
-            var lines = new List<string>(2);
-            if (t == null || t.Actor == null) return lines;
-
-            // 追加攻击发生在主攻击之前，所以先写它
-            if (t.ExtraAttack.HasValue)
-            {
-                ExtraAttackInfo extra = t.ExtraAttack.Value;
-                lines.Add(extra.WasBlocked
-                    ? $"{extra.ActorName}：【追加】{extra.Damage} 点固定伤害（无视攻防），被护盾挡下"
-                    : $"{extra.ActorName}：【追加】{extra.Damage} 点固定伤害（无视攻防），造成 {extra.Dealt} 点伤害");
-            }
-
-            lines.Add(DescribeTurn(t));
-            return lines;
+            foreach (string line in _game.TakeSkillLog()) _log.Add(line);
         }
 
-        /// <summary>
-        /// 多段攻击的结果描述（忍者）。
-        ///
-        /// 例："两段攻击：一段被护盾挡下，另一段造成 3 点伤害"
-        ///     "两段攻击：两段各造成 3 点伤害"
-        /// </summary>
-        private static string DescribeMultiHit(TurnResult t)
-        {
-            int hits = t.HitCount;
-            int landed = t.LandedHits;
-            int blocked = t.BlockedHits;
-            int dodged = t.DodgedHits;
+        public static IReadOnlyList<string> DescribeTurnLines(TurnResult t) => BattleTurnText.Lines(t);
 
-            var parts = new List<string>(3);
-            if (blocked > 0) parts.Add($"{CountWord(blocked)}被护盾挡下");
-            if (dodged > 0) parts.Add($"{CountWord(dodged)}被闪避");
-            if (landed > 0) parts.Add($"{CountWord(landed)}造成 {t.DamageDealt} 点伤害");
-
-            string result = parts.Count == 0 ? "全部落空" : string.Join("，", parts);
-            return $"{CountWord(hits)}攻击：{result}";
-        }
-
-        /// <summary>把段数说成"一段/两段/三段"。</summary>
-        private static string CountWord(int n)
-        {
-            switch (n)
-            {
-                case 1: return "一段";
-                case 2: return "两段";
-                case 3: return "三段";
-                case 4: return "四段";
-                default: return $"{n} 段";
-            }
-        }
-
-        /// <summary>把一次结算结果转成一句人话（单行，不含追加攻击）。</summary>
-        public static string DescribeTurn(TurnResult t)
-        {
-            if (t == null || t.Actor == null) return "";
-
-            string side = SideLabel(t.ActedHand, t.Actor);
-
-            // ⚠️ **赌博不是运算**，不能写成 "N + M = K" —— 那会让玩家以为
-            //    自己算了一手（赌博时根本没点他人的手）。
-            //    玩家要求战报里能看出这是赌博。
-            string head;
-            if (t.WasGamble)
-            {
-                head = $"{t.Actor.Name} 开赌：掷出 {t.GambleRoll}";
-            }
-            else
-            {
-                // ⚠️⚠️ **算式必须自洽**：`A + B = C` 里的 C 要等于 A、B 归一化后的和。
-                //
-                //    玩家实测看到过 `1 + 4 = 2（无效果）` —— 1+4 应当是 5。
-                //    根因是"运算源 / 被加数在快照之后又被改过"（某个效果改了手值），
-                //    于是 `ResultValue` 与两个操作数对不上。
-                //
-                //    战报是对玩家最直接的反馈，**不能自相矛盾**：
-                //    这里用快照的两个操作数**重算**一次显示用的结果；
-                //    与真实结果不一致时把真实结果也标出来，
-                //    这样既能读懂、又能保留"实际发生了什么"。
-                int shownResult = Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
-
-                string sum = shownResult == t.ResultValue
-                    ? shownResult.ToString()
-                    : $"{shownResult}（实际结算为 {t.ResultValue} —— 手值在运算中被改过）";
-
-                head = $"{t.Actor.Name} {side}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {sum}";
-            }
-
-            switch (t.Effect)
-            {
-                case HandEffectType.Attack4:
-                case HandEffectType.Attack6:
-                case HandEffectType.Attack8:
-                    // ⚠️ **被妖术师取消**要最先说 —— 玩家要求：
-                    //    "可以写被妖术师取消，造成 0 点伤害"。
-                    //    放在最前面，否则会被"造成 0 点伤害"那类分支抢先描述。
-                    if (t.WasCancelled)
-                    {
-                        string by = string.IsNullOrEmpty(t.CancelledBy)
-                            ? "妖术师"
-                            : t.CancelledBy;
-                        return head + $"（攻击，被{by}取消，造成 0 点伤害）";
-                    }
-
-                    // ⚠️ 牧师可以把 4/6/8 **当回复用**。
-                    // 那种情况下 `Effect` 仍然是 Attack4/6/8（运算结果没变），
-                    // 只是 `HealTarget` 被设上了 —— 所以必须**先**判回复，
-                    // 否则战斗记录会永远写成"攻击，造成 0 点伤害"（玩家实测 bug）。
-                    if (t.HealTarget != null)
-                    {
-                        int amount = t.HealAmount;
-
-                        if (ReferenceEquals(t.HealTarget, t.Actor))
-                            return head + $"（回复自己 {amount} 点生命）";
-
-                        return head + $"（回复 {t.HealTarget.Name} {amount} 点生命）";
-                    }
-
-                    if (t.WasDodged)
-                    {
-                        // 闪避与"潜行免伤"共用同一条通道，所以要说清是哪一种
-                        string reason = string.IsNullOrEmpty(t.DodgeReason)
-                            ? "被游侠闪避"
-                            : t.DodgeReason;
-                        return head + $"（攻击，{reason}）";
-                    }
-
-                    // 多段攻击（忍者）：说清"发动了几段、各是什么结果"
-                    if (t.HitCount > 1) return head + "（" + DescribeMultiHit(t) + "）";
-
-                    return t.WasBlocked
-                        ? head + "（攻击，被护盾挡下）"
-                        : head + $"（攻击，造成 {t.DamageDealt} 点伤害）";
-
-                case HandEffectType.Shield:
-                    return head + "（合拢手掌，形成护盾）";
-
-                case HandEffectType.Heal:
-                    {
-                        // 牧师可以把 9 回给别人
-                        bool toOther = t.HealTarget != null
-                                       && !ReferenceEquals(t.HealTarget, t.Actor);
-
-                        if (toOther)
-                            return head + $"（回复 {t.HealTarget.Name} {t.HealAmount} 点生命）";
-
-                        return t.Healed > 0
-                            ? head + $"（回复 {t.Healed} 点生命）"
-                            : head + $"（回复 {t.HealAmount} 点，但已满血 —— 本回合被浪费）";
-                    }
-
-                default:
-                    // 猎人伏击：效果类型本身没变（仍是无效果），
-                    // 但他把那只手**暗置**了 —— 战报必须说出来。
-                    if (t.EnteredAmbush) return head + "（进入伏击）";
-                    return head + "（无效果）";
-            }
-        }
+        public static string DescribeTurn(TurnResult t) => BattleTurnText.Describe(t);
     }
 }

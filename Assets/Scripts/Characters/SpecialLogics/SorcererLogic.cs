@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -113,6 +113,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             // 改写成元素 -> 伤害类型就是该元素（飘字颜色 / 图标一致）
             context.AttackType = AttackDamageTypes.FromDamageType(element);
+            context.Manager?.NoteSkill(context.Attacker, "元素掷骰", $"本次攻击改为{AttackDamageTypes.NameOf(context.AttackType)}");
 
             // 力场：与咒术师 / 法师同源 —— 穿盾、无视正向防御、不可闪避
             if (element == DamageType.Force)

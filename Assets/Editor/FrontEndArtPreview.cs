@@ -153,9 +153,33 @@ namespace FingerDiceDuel.EditorTools
             {
                 if (!card.name.StartsWith("Card")) continue;
                 var area = Bounds((RectTransform)card.transform);
-                Check(bounds.Contains(area.min) && bounds.Contains(area.max), field + " visible " + card.name);
+                Check(area.xMin >= bounds.xMin && area.xMax <= bounds.xMax, field + " within column bounds " + card.name);
+                Check(((RectTransform)card.transform.Find("Emblem")).sizeDelta.x >= 170, field + " enlarged emblem " + card.name);
                 Check(card.transform.Find("Emblem").GetComponent<Image>().sprite != null, field + " painted " + card.name);
             }
+            var scroll = roster.Root.GetComponent<ScrollRect>();
+            Check(scroll.content.rect.height > scroll.viewport.rect.height, field + " roster scrolls vertically");
+            scroll.verticalNormalizedPosition = 1;
+            Canvas.ForceUpdateCanvases();
+            var pointer = new PointerEventData(EventSystem.current) { position = RectTransformUtility.WorldToScreenPoint(null, roster.Root.position) };
+            scroll.OnInitializePotentialDrag(pointer);
+            scroll.OnBeginDrag(pointer);
+            pointer.position += new Vector2(0, 220);
+            scroll.OnDrag(pointer);
+            scroll.OnEndDrag(pointer);
+            Check(scroll.content.anchoredPosition.y > 50, field + " pointer drag moves roster");
+            scroll.StopMovement(); scroll.verticalNormalizedPosition = 1;
+        }
+
+        private static void RevealRosterCard(CharacterRosterView roster, int index)
+        {
+            var scroll = roster.Root.GetComponent<ScrollRect>();
+            var card = (RectTransform)roster.Root.Find("Content/Card" + index);
+            float top = -card.anchoredPosition.y - card.rect.height / 2;
+            float overflow = scroll.content.rect.height - scroll.viewport.rect.height;
+            scroll.StopMovement();
+            scroll.verticalNormalizedPosition = 1 - Mathf.Clamp01(top / overflow);
+            Canvas.ForceUpdateCanvases(); Capture(null);
         }
 
         private static void Prepare()
@@ -197,7 +221,9 @@ namespace FingerDiceDuel.EditorTools
             Add(() =>
             {
                 Roster("_rosterViewA", 24); Roster("_rosterViewB", 24);
+                RevealRosterCard(Field<CharacterRosterView>(_bootstrap, "_rosterViewA"), 23);
                 Click(Field<CharacterRosterView>(_bootstrap, "_rosterViewA").Root.Find("Content/Card23").GetComponent<Button>());
+                RevealRosterCard(Field<CharacterRosterView>(_bootstrap, "_rosterViewB"), 20);
                 Click(Field<CharacterRosterView>(_bootstrap, "_rosterViewB").Root.Find("Content/Card20").GetComponent<Button>());
                 Check(Field<CharacterRosterView>(_bootstrap, "_rosterViewA").SelectedIndex == 23, "last character can be selected");
                 Check(Field<Text>(_bootstrap, "_detailA").text.Contains("吟游诗人"), "selection detail reflects Bard");

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -144,6 +144,10 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public int HealAmount;
 
+        public int ActualHealed = -1;
+        public bool AttackSuppressed;
+        public bool OutOfRange;
+
         /// <summary>本次回复效果实际作用到谁（牧师可以回给对手）。非回复效果时为 null。</summary>
         public PlayerState HealTarget;
 
@@ -189,7 +193,7 @@ namespace FingerDiceDuel.Core
     ///   **只有行动方那只手的数值会改变**，对方的手值不变；
     ///   效果类型由行动方手的新值决定。
     /// </summary>
-    public class GameManager
+    public partial class GameManager
     {
         public PlayerState PlayerA { get; }
         public PlayerState PlayerB { get; }
@@ -1193,6 +1197,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            _skillLog.Clear();
             _brokenThisTurn.Clear();
             PlayerA.Reset();
             PlayerB.Reset();
@@ -1570,7 +1575,7 @@ namespace FingerDiceDuel.Core
                 }
             }
 
-            
+
 
             // ⚠️ **统一把选择落到法师身上**（界面路径也会调同一个方法，
             //    但那是"收集完就落"，这里是"结算时才落" —— 两条路径都幂等）。
@@ -1786,6 +1791,7 @@ namespace FingerDiceDuel.Core
                 StealTaken = outcome.Stolen,
                 StealEffective = outcome.Effective,
             };
+            NoteSkill(actor, "偷窃", $"{CombatText.HandName(actor, myHand)} {outcome.Original}↔{outcome.Stolen}，" + (outcome.Effective ? "触发偷得数字效果" : "仅交换，不触发效果"));
 
             // ⚠️ 无论生效与否，交换**已经发生**（在 ThiefLogic.Steal 里），
             //    所以这里只负责"要不要触发效果"。
@@ -1827,6 +1833,7 @@ namespace FingerDiceDuel.Core
                 int before = actor.Health;
                 actor.Heal(Hand.HealAmount);
                 result.Healed = actor.Health - before;
+                result.ActualHealed = result.Healed;
                 result.HealAmount = Hand.HealAmount;
                 result.HealTarget = actor;
             }
@@ -1965,6 +1972,7 @@ namespace FingerDiceDuel.Core
             if (poison > 0 && unstoppable)
             {
                 actor.TakeDamage(poison);
+                NoteSkill(actor, "中毒", $"失去 {poison} 生命（不可抵挡）");
                 LastStatusNote = $"{actor.Name} 中毒，受到 {poison} 点毒素伤害（不可抵挡）";
                 CheckGameOver();
                 if (IsGameOver) { SkipIfStatusKilled(actor); return; }
@@ -1984,6 +1992,7 @@ namespace FingerDiceDuel.Core
                     IgnoreStatBonuses = true,      // 闪电伤害是固定 1 点
                 };
                 ctx.Resolve(GetChoiceProvider(victim), this);
+                NoteSkill(victim, "感电", $"实际伤害 {ctx.AppliedDamage}");
 
                 if (string.IsNullOrEmpty(LastStatusNote))
                     LastStatusNote = $"{victim.Name} 感电，受到 {StatusRules.ShockDamagePerTurn} 点闪电伤害";
@@ -2043,6 +2052,7 @@ namespace FingerDiceDuel.Core
                     };
                     ctx.Resolve(GetChoiceProvider(actor), this);
 
+                    NoteSkill(actor, "燃烧", $"实际伤害 {ctx.AppliedDamage}");
                     LastStatusNote = $"{actor.Name} 燃烧，受到 {burn} 点火焰伤害";
                     CheckGameOver();
                 }
@@ -2440,7 +2450,7 @@ namespace FingerDiceDuel.Core
                                                                  HandEffect.PriestHealTarget);
             }
 
-            
+
 
             switch (effect)
             {
@@ -2460,6 +2470,7 @@ namespace FingerDiceDuel.Core
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
+                            result.ActualHealed = (target?.Health ?? before) - before;
                             result.HealAmount = amount;
                             result.HealTarget = target;
                             break;
@@ -2472,6 +2483,7 @@ namespace FingerDiceDuel.Core
                         //    运算本身是有效的，只是这一击不落实。
                         if (SuppressAttackDamage)
                         {
+                            result.AttackSuppressed = true;
                             result.WasBlocked = false;
                             result.WasDodged = false;
                             result.DamageDealt = 0;
@@ -2488,7 +2500,7 @@ namespace FingerDiceDuel.Core
                             //       结果就是"AI 法师铺了类型却永远挂不上状态"。
                             //       这里补一次 `ApplyAttackerStatus`，让放弃的那一击
                             //       也能正常消耗类型并挂状态（与普通命中同一套判定）。
-                            
+
                             ApplyMageStatusOnSuppressedAttack(actor, opponent, result);
                             break;
                         }
@@ -2511,6 +2523,7 @@ namespace FingerDiceDuel.Core
 
                         if (!inRange)
                         {
+                            result.OutOfRange = true;
                             result.WasBlocked = false;
                             result.WasDodged = false;
                             result.DamageDealt = 0;
@@ -2541,6 +2554,7 @@ namespace FingerDiceDuel.Core
                             template.LastAttackDistance = DistanceBetween(actor, opponent);
 
                         ctx.Resolve(oppChoice, this);
+                        result.Defender = ctx.Defender;
                         result.AttackType = ctx.AttackType;
                         result.WasBlocked = ctx.WasBlocked;
                         result.WasDodged = ctx.WasDodged;
@@ -2583,6 +2597,7 @@ namespace FingerDiceDuel.Core
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
+                            result.ActualHealed = (target?.Health ?? before) - before;
                             result.HealAmount = amount;
                             result.HealTarget = target;
                         }
@@ -2591,6 +2606,7 @@ namespace FingerDiceDuel.Core
                             int before = actor.Health;
                             actor.Heal(Hand.HealAmount);
                             result.Healed = actor.Health - before;
+                            result.ActualHealed = result.Healed;
                             result.HealAmount = Hand.HealAmount;
                             result.HealTarget = actor;
                         }
@@ -2653,6 +2669,8 @@ namespace FingerDiceDuel.Core
                 && actor?.Character is Characters.SpecialLogics.WizardLogic mageRestore)
             {
                 mageRestore.SetPendingDamageType(unspent);
+                NoteSkill(actor, "附魔", $"下一次攻击：{StatusNames.Of(unspent)}");
+                result.ChosenDamageType = unspent;
             }
 
             return result;
@@ -2870,15 +2888,16 @@ namespace FingerDiceDuel.Core
         ///    所以文案要反映实际结果，不能一律说"造成 N 点"。
         /// </summary>
         public void NoteShock(PlayerState source, PlayerState target,
-                              string reason, int damage)
+                              string reason, int damage, string outcome = null)
         {
             if (source == null || target == null) return;
 
             string result = damage > 0
-                ? $"造成 {damage} 点伤害"
-                : "被挡下（护盾或闪避）";
+                ? $"-{damage} 生命"
+                : outcome ?? "伤害 0";
 
-            _shockLog.Add($"{source.Name}（圣武士 {reason}）冲击 {target.Name}：{result}");
+            string trigger = reason == "合出盾牌" ? "合盾" : reason == "主动碎盾" ? "碎盾" : reason == "盾被打碎" ? "受击碎盾" : reason;
+            _shockLog.Add(CombatText.Skill(source, "冲击", $"{trigger}→{target.Name} {result}"));
         }
 
         private readonly List<string> _shockLog = new List<string>();

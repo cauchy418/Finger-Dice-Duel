@@ -50,10 +50,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             // 回复：生命上限的一半，向下取整；Heal 内部会夹到上限
             int healAmount = owner.MaximumHealth / 2;
+            int healthBefore = owner.Health;
             owner.Heal(healAmount);
 
             // 永久成长
             GrowStats(GrowthPerTrigger, GrowthPerTrigger);
+            manager?.NoteSkill(owner, "成长", $"回复 {owner.Health - healthBefore}，永久攻防＋1");
         }
 
         // 「凑 7 特别值钱」原本在这里硬编码（+200）。

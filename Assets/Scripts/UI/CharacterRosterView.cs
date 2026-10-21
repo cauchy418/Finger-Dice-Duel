@@ -15,7 +15,8 @@ namespace FingerDiceDuel.UI
         private readonly List<CharacterDefinition> _roster = new List<CharacterDefinition>();
         private readonly List<GameObject> _halos = new List<GameObject>();
         private int _selectedIndex = -1;
-        private int _columns = 6;
+        private int _columns = 4;
+        private float _rowHeight;
         private Vector2 _size = new Vector2(1120, 540);
         private Func<CharacterDefinition, string> _skillText;
         public event Action<int> SelectionChanged;
@@ -34,7 +35,7 @@ namespace FingerDiceDuel.UI
             SetRoster(roster, initialIndex);
         }
 
-        public void ConfigureGrid(Vector2 position, Vector2 size, int columns = 6)
+        public void ConfigureGrid(Vector2 position, Vector2 size, int columns = 4)
         {
             _size = size;
             _columns = columns;
@@ -60,7 +61,8 @@ namespace FingerDiceDuel.UI
             _roster.Clear();
             for (int i = 0; i < roster.Count; i++) _roster.Add(roster[i]);
             float width = (_size.x - 44) / _columns;
-            float height = (_size.y - 36) / 4;
+            float height = Mathf.Max(220, width * 0.94f);
+            _rowHeight = height;
             _content.sizeDelta = new Vector2(_size.x - 24, Mathf.Max(_size.y, Mathf.CeilToInt(roster.Count / (float)_columns) * height + 36));
             _content.anchoredPosition = Vector2.zero;
             for (int i = 0; i < roster.Count; i++)
@@ -71,7 +73,7 @@ namespace FingerDiceDuel.UI
                     new Vector2(width - 6, height - 4), "roster_tile");
                 var rect = (RectTransform)button.transform;
                 rect.anchorMin = rect.anchorMax = new Vector2(0, 1);
-                FrontEndArt.RoleTile(button, def.Id, def.DisplayName, 20);
+                FrontEndArt.RoleTile(button, def.Id, def.DisplayName, 26);
                 _halos.Add(rect.Find("SelectionHalo").gameObject);
                 string hint = _skillText != null ? _skillText(def) : Shorten(def.Description);
                 BattleTooltip.Set(button.GetComponent<Image>(), def.DisplayName + "　" + DescribeStats(def) + "\n" + hint);
@@ -82,6 +84,7 @@ namespace FingerDiceDuel.UI
             _selectedIndex = -1;
             if (selectIndex >= 0 && selectIndex < _cards.Count) Select(selectIndex, false);
             else for (int i = 0; i < _halos.Count; i++) _halos[i].SetActive(false);
+            ScrollToSelected();
         }
 
         public void Select(int index, bool notify = true)
@@ -103,8 +106,11 @@ namespace FingerDiceDuel.UI
             var scroll = _view.GetComponent<ScrollRect>();
             float overflow = _content.sizeDelta.y - _size.y;
             if (overflow <= 0) { scroll.verticalNormalizedPosition = 1; return; }
-            float height = (_size.y - 36) / 4;
-            scroll.verticalNormalizedPosition = 1 - Mathf.Clamp01((_selectedIndex / _columns * height - _size.y / 2 + height / 2) / overflow);
+            float top = _selectedIndex / _columns * _rowHeight + 18;
+            float offset = _content.anchoredPosition.y;
+            if (top < offset) offset = top;
+            else if (top + _rowHeight > offset + _size.y) offset = top + _rowHeight - _size.y;
+            scroll.verticalNormalizedPosition = 1 - Mathf.Clamp01(offset / overflow);
         }
 
         public static string DescribeStats(CharacterDefinition def) => CharacterCardText.DescribeStats(def);

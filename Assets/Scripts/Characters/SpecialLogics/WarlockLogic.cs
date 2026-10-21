@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -42,6 +42,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null || manager == null) return;
 
             manager.ApplyDistancePenalty(context.Attacker, context.Defender, DistancePenalty);
+            manager.NoteSkill(context.Attacker, "距离压制", $"{context.Defender.Name} 到自身的距离＋{DistancePenalty}");
         }
 
         /// <summary>普通攻击：距离 1 以内**挥砍**、1 以外**穿刺**。</summary>

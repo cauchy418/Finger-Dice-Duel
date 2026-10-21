@@ -114,11 +114,11 @@ namespace FingerDiceDuel.UI
 
         private void ConfigureFrontEndSelections()
         {
-            // 两名角色同时可见，每侧 6 × 4，24 个徽记无需横向寻找。
+            // 两侧各三列大徽记，纵向拖动 / 滚轮浏览完整名单。
             Place("玩家角色", -410, 365);
             Place("AI 角色", 410, 365);
-            _rosterViewA.ConfigureGrid(new Vector2(-410, 70), new Vector2(780, 540));
-            _rosterViewB.ConfigureGrid(new Vector2(410, 70), new Vector2(780, 540));
+            _rosterViewA.ConfigureGrid(new Vector2(-410, 70), new Vector2(780, 540), 3);
+            _rosterViewB.ConfigureGrid(new Vector2(410, 70), new Vector2(780, 540), 3);
             DetailLayout(_detailA, -410, -280, 780, 130);
             DetailLayout(_detailB, 410, -280, 780, 130);
             Place("Start", 230, -415); Place("SelectBack", -230, -415);
@@ -127,8 +127,10 @@ namespace FingerDiceDuel.UI
             Place("TtSeatSummary", 0, 286, 1600, 68);
             Place("我的角色", -410, 230);
             Place("队友角色（人机）", 410, 230);
-            _rosterView2Me.ConfigureGrid(new Vector2(-410, -25), new Vector2(780, 450));
-            _rosterView2Mate.ConfigureGrid(new Vector2(410, -25), new Vector2(780, 450));
+            _rosterView2Me.ConfigureGrid(new Vector2(-410, -25), new Vector2(780, 450), 3);
+            _rosterView2Mate.ConfigureGrid(new Vector2(410, -25), new Vector2(780, 450), 3);
+            foreach (string name in new[] { "玩家角色", "AI 角色", "我的角色", "队友角色（人机）" })
+                _selectRoot.Find(name).GetComponent<Text>().text = name + " · 拖动浏览";
             DetailLayout(_detail2Me, -410, -320, 780, 120);
             DetailLayout(_detail2Mate, 410, -320, 780, 120);
             Place("TtFoes", 0, -404, 1600, 34);

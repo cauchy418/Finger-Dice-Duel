@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **巨人**（攻 +2 / 防 +2，攻击距离 1）。
@@ -153,6 +153,7 @@ namespace FingerDiceDuel.Core
             //     每段只有 1 点基础伤害（测试当场抓到）。
             context.FinalDamage = _otherHandValueOfThisOperation * HitCount;
             context.HitCount = HitCount;
+            context.Manager?.NoteSkill(context.Attacker, "巨力连击", $"两段攻击，每段基础伤害 {_otherHandValueOfThisOperation}");
         }
 
         /// <summary>
@@ -253,7 +254,7 @@ namespace FingerDiceDuel.Core
         {
             _otherHandValueOfThisOperation = 0;
         }
-    
+
         /// <summary>巨人：**钝击伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Bludgeoning;

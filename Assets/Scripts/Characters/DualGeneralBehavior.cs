@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -217,6 +217,10 @@ namespace FingerDiceDuel.Characters
 
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
+            // 与结算采用同一个首位改写者；圣武士合盾不被另一名角色的普通攻击判定覆盖。
+            var rewriter = CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(context?.Actor);
+            if (rewriter != null && rewriter is IResultTargetProvider rewrittenTarget)
+                return rewrittenTarget.ResultNeedsTarget(context);
             for (int i = 0; i < _parts.Count; i++)
                 if (_parts[i] is IResultTargetProvider r && r.ResultNeedsTarget(context)) return true;
             return false;

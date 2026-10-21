@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -234,6 +234,7 @@ namespace FingerDiceDuel.Core
             totalReflect = 0;
 
             ReleaseAmbush();
+            context.Manager?.NoteSkill(owner, "伏击免伤", $"抵消本段 {segmentDamage} 伤害，解除伏击");
             return true;
         }
 
@@ -321,6 +322,7 @@ namespace FingerDiceDuel.Core
             if (chosen == null) return;
 
             EnterAmbush(candidate);
+            manager.NoteSkill(owner, "伏击", $"暗置{CombatText.HandName(owner, candidate)}，进入伏击");
 
             // 记到战报里 —— 否则玩家会看到"（无效果）"，而实际上他进了伏击。
             if (manager.LastTurnResult != null) manager.LastTurnResult.EnteredAmbush = true;
@@ -401,7 +403,7 @@ namespace FingerDiceDuel.Core
                 foreach (Hand h in owner.Hands) h?.Reveal();
             }
         }
-    
+
         /// <summary>
         /// 猎人：非伏击是**挥砍**，**伏击**是穿刺（玩家指定）。
         /// </summary>

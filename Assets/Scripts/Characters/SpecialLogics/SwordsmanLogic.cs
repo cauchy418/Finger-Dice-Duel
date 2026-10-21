@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -157,7 +157,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不追加
                 decider: context.Actor,
-                acceptLabel: $"发动追加（{value} 点）"));
+                acceptLabel: $"发动追加（{value} 点）", resultValue: value));
         }
 
         // ============================================================

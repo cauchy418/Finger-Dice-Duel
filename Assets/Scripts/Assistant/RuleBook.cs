@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
 
@@ -49,30 +49,29 @@ namespace FingerDiceDuel.Assistant
             var sb = new StringBuilder();
 
             sb.AppendLine("【一回合做什么】");
-            sb.AppendLine("每回合你必须用自己的一只手，和对手的一只手相加，做一次运算。");
-            sb.AppendLine("被操作的是你自己那只手：它的数字变成运算结果。");
+            sb.AppendLine("选自己一只手 → 选其他玩家一只手相加；只改变自己的手。攻击时再选受击角色，加数可以来自队友。");
+            sb.AppendLine("取和的个位，0 改为 1。如 3+9→2，2+8→1。锁定或暗置的手不能主动运算。");
             sb.AppendLine();
-            sb.AppendLine("【运算】");
-            sb.AppendLine("两数相加后取个位数；和为 10 则变成 1。");
-            sb.AppendLine("例：3 + 9 = 12 → 2　　2 + 8 = 10 → 1　　1 + 9 = 10 → 1");
-            sb.AppendLine();
-            sb.AppendLine("【结果代表什么】");
-            sb.AppendLine($"{AttackValues()} = 攻击，造成对应点数的伤害");
-            sb.AppendLine($"{Hand.HealAmount} = 回复 {Hand.HealAmount} 点生命（不超过上限）");
-            sb.AppendLine($"{ShieldValue()} = 合拢手掌形成护盾，可抵挡下一次攻击");
-            sb.AppendLine("其他数字 = 无效果");
+            sb.AppendLine("【数字效果】");
+            sb.AppendLine($"{AttackValues()}：攻击；{Hand.HealAmount}：回复 {Hand.HealAmount} 生命；{ShieldValue()}：合盾；其他数字无效果。");
+            sb.AppendLine("效果只在运算时触发一次；回复不超过上限，满血回复无收益。技能可改写数字效果。");
             sb.AppendLine();
             sb.AppendLine("【护盾与伤害】");
-            sb.AppendLine("护盾只能挡一次攻击，挡下后破碎。若双手都是护盾，");
-            sb.AppendLine("由防守方决定用哪一面去挡。");
+            sb.AppendLine("一面盾挡一段攻击，挡后破碎；双盾由防守方选。用成型盾运算，会先碎盾。初始 5 不算盾。");
+            sb.AppendLine("每段伤害 = max(0，基础伤害÷段数＋攻击加成－防御加成)。负防御会增伤；特殊伤害依技能说明。");
+            sb.AppendLine("攻击须在射程内；距离按存活座位环最短路径计算，阵亡者移出。闪避、护盾、免伤依技能结算。");
             sb.AppendLine();
-            sb.AppendLine("【攻防加成】");
-            sb.AppendLine("每次攻击的伤害 = 基础点数 ÷ 段数 + 攻方攻击加成 - 守方防御加成。");
-            sb.AppendLine("负的防御表示易伤：受到的伤害增加。");
+            sb.AppendLine("【开局与操作】");
+            sb.AppendLine("经典 1v1 各投 1d20：小点先分配手值，大点先行动；普通点数拆成两个 1～9。1 由对手分配，19 至少一手为 9，20 任意分配。初始手值不触发效果。");
+            sb.AppendLine("2v2 经典由掷骰定座位，按 4→3→2→1 分配，1 号位先行动（大失败先分，大成功后分）。入门使用预设开局。");
+            sb.AppendLine("技能触发时按提示选目标或不发动；圣武士 4／6 合盾只选冲击目标。满足条件可跳过回合。右上战斗记录可展开查看。");
             sb.AppendLine();
-            sb.AppendLine("【胜负】");
-            sb.AppendLine($"生命先归零者败。超过 {GameManager.DefaultRoundLimit} 轮"
-                        + $"（一轮 = 所有角色都经过一次行动）仍未分出胜负则判和局。");
+            sb.AppendLine("【胜负与模式】");
+            sb.AppendLine($"1v1 生命归零即败；2v2 一队全灭即败（1、4 同队，2、3 同队）。打满 {GameManager.DefaultRoundLimit} 轮，比个人／队伍总血量，相同平局。一轮为所有存活角色各行动一次。");
+            sb.AppendLine("8 人阵营局分守序／中立／混乱三队：3／3／2 人；最后存活阵营胜，50 轮后比阵营总血量。双将同时拥有两名角色的能力。");
+            sb.AppendLine("阵营局直接击杀敌方，可额外行动剩余敌方人数次；误杀队友，其他阵营各行动一次。奖惩不推进轮次。");
+            sb.AppendLine($"身份局：1 主公、2 忠臣、4 反贼、1 内奸，{GameManager.IdentityRoundLimit} 轮上限（到限未胜为平局）。主公上限＋10、攻防＋1；主忠消灭反贼与内奸即胜，内奸须独活。主公倒下通常反贼胜；若主公前三阵亡立即判反贼胜。内奸在剩 5 人时亮身份并强化；亮身份后主公倒下且仍有反贼，忠臣退场，内奸与反贼继续。忠臣可用替死待命救主公。");
+            sb.AppendLine("身份局击杀反贼可额外行动剩余反贼数次；主公误杀忠臣，存活反贼各行动一次。身份与技能细节见图鉴及局内提示。");
 
             return sb.ToString();
         }
@@ -110,7 +109,7 @@ namespace FingerDiceDuel.Assistant
             => BasicRules()
              + "\n【角色】\n"
              + "各角色的技能、操作指导与针对手段，详情见图鉴\n"
-             + "（主菜单右上角的「图」按钮）。";
+             + "（主菜单下方「角色图鉴」）。";
 
         /// <summary>
         /// **当前已经可以玩的模式**（玩家要求：

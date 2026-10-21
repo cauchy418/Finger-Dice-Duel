@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Core
     /// 所以**无视护盾与攻防加成**，直接扣 2 点。
     /// </summary>
     public sealed class PaladinLogic : CharacterTemplate, IPreTurnChoiceProvider,
-                                       FingerDiceDuel.Core.IHandEffectRewriter,
+                                       FingerDiceDuel.Core.IHandEffectRewriter, IHandEffectDisplay,
                                        IAttackRangeProvider,
                                        FingerDiceDuel.Core.IAttackRedirector,
                                        FingerDiceDuel.Core.IAiMoveAdvisor,
@@ -83,6 +83,17 @@ namespace FingerDiceDuel.Core
 
         /// <summary>攻击距离 1（与白板相同）。</summary>
         public override int BaseAttackRange => 1;
+
+        public HandEffectType DisplayedEffectOf(int resultValue)
+            => resultValue == 4 || resultValue == 6 ? HandEffectType.Shield : Hand.GetEffectType(resultValue);
+
+        /// <summary>4 / 6 合盾只询问冲击目标，不再额外确认一次普通攻击目标。</summary>
+        public override bool ResultNeedsTarget(PreTurnChoiceContext context)
+        {
+            if (context == null) return false;
+            if (context.ResultValue == 4 || context.ResultValue == 6) return false;
+            return base.ResultNeedsTarget(context);
+        }
 
         /// <summary>冲击造成的真实伤害。</summary>
         public const int ShockDamage = 2;
@@ -182,12 +193,13 @@ namespace FingerDiceDuel.Core
             if (picked == null) picked = candidates[0];   // 强制发动 -> 兜底第一个
 
             int before = picked.Health;
-            ResolveShockDamage(owner, sourceHand, picked, manager);
+            var attack = ResolveShockDamage(owner, sourceHand, picked, manager);
             int dealt = before - picked.Health;
 
             // 写进战报：这样"冲击到底有没有发生、扣了多少"一眼可见。
             // 光看血条分不清"被盾挡了"还是"根本没触发"（玩家实测报告过疑惑）。
-            manager?.NoteShock(owner, picked, reason, dealt);
+            manager?.NoteShock(owner, picked, reason, dealt, attack?.WasBlocked == true ? "被护盾挡下"
+                : attack?.WasDodged == true ? "被闪避" : attack?.WasCancelled == true ? "被取消" : null);
         }
 
         /// <summary>
@@ -204,13 +216,13 @@ namespace FingerDiceDuel.Core
         /// 但仍然标记为 <see cref="AttackContext.IsSpecialAttack"/>：
         /// 它的"攻击数字视为 0"，所以**妖术师无法取消它**（玩家此前确认过）。
         /// </summary>
-        private void ResolveShockDamage(PlayerState owner, Hand sourceHand,
+        private AttackContext ResolveShockDamage(PlayerState owner, Hand sourceHand,
                                         PlayerState target, GameManager manager)
         {
-            if (owner == null || target == null || !target.IsAlive) return;
+            if (owner == null || target == null || !target.IsAlive) return null;
 
             Hand hand = sourceHand ?? owner.LeftHand;
-            if (hand == null) return;
+            if (hand == null) return null;
 
             var ctx = new AttackContext(owner, target, hand, ShockDamage)
             {
@@ -226,6 +238,7 @@ namespace FingerDiceDuel.Core
             };
 
             ctx.Resolve(manager?.GetChoiceProvider(target), manager);
+            return ctx;
         }
 
         /// <summary>读回玩家选的冲击目标（收集阶段问过；没答过就返回 null）。</summary>
@@ -441,7 +454,7 @@ namespace FingerDiceDuel.Core
                 decider: owner,
                 variant: variant));              // 合盾 / 碎盾 各一份答案
         }
-    
+
         /// <summary>
         /// 圣武士：攻击与**盾牌冲击**都是**钝击**（玩家指定）。
         /// </summary>

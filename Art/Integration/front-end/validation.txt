@@ -227,103 +227,155 @@ PASS unobstructed raycast DiffEasy
 PASS navigation CharacterSelect
 PASS shared menu canvas stays active CharacterSelectInitial
 PASS _rosterViewA count 24
-PASS _rosterViewA visible Card0
+PASS _rosterViewA within column bounds Card0
+PASS _rosterViewA enlarged emblem Card0
 PASS _rosterViewA painted Card0
-PASS _rosterViewA visible Card1
+PASS _rosterViewA within column bounds Card1
+PASS _rosterViewA enlarged emblem Card1
 PASS _rosterViewA painted Card1
-PASS _rosterViewA visible Card2
+PASS _rosterViewA within column bounds Card2
+PASS _rosterViewA enlarged emblem Card2
 PASS _rosterViewA painted Card2
-PASS _rosterViewA visible Card3
+PASS _rosterViewA within column bounds Card3
+PASS _rosterViewA enlarged emblem Card3
 PASS _rosterViewA painted Card3
-PASS _rosterViewA visible Card4
+PASS _rosterViewA within column bounds Card4
+PASS _rosterViewA enlarged emblem Card4
 PASS _rosterViewA painted Card4
-PASS _rosterViewA visible Card5
+PASS _rosterViewA within column bounds Card5
+PASS _rosterViewA enlarged emblem Card5
 PASS _rosterViewA painted Card5
-PASS _rosterViewA visible Card6
+PASS _rosterViewA within column bounds Card6
+PASS _rosterViewA enlarged emblem Card6
 PASS _rosterViewA painted Card6
-PASS _rosterViewA visible Card7
+PASS _rosterViewA within column bounds Card7
+PASS _rosterViewA enlarged emblem Card7
 PASS _rosterViewA painted Card7
-PASS _rosterViewA visible Card8
+PASS _rosterViewA within column bounds Card8
+PASS _rosterViewA enlarged emblem Card8
 PASS _rosterViewA painted Card8
-PASS _rosterViewA visible Card9
+PASS _rosterViewA within column bounds Card9
+PASS _rosterViewA enlarged emblem Card9
 PASS _rosterViewA painted Card9
-PASS _rosterViewA visible Card10
+PASS _rosterViewA within column bounds Card10
+PASS _rosterViewA enlarged emblem Card10
 PASS _rosterViewA painted Card10
-PASS _rosterViewA visible Card11
+PASS _rosterViewA within column bounds Card11
+PASS _rosterViewA enlarged emblem Card11
 PASS _rosterViewA painted Card11
-PASS _rosterViewA visible Card12
+PASS _rosterViewA within column bounds Card12
+PASS _rosterViewA enlarged emblem Card12
 PASS _rosterViewA painted Card12
-PASS _rosterViewA visible Card13
+PASS _rosterViewA within column bounds Card13
+PASS _rosterViewA enlarged emblem Card13
 PASS _rosterViewA painted Card13
-PASS _rosterViewA visible Card14
+PASS _rosterViewA within column bounds Card14
+PASS _rosterViewA enlarged emblem Card14
 PASS _rosterViewA painted Card14
-PASS _rosterViewA visible Card15
+PASS _rosterViewA within column bounds Card15
+PASS _rosterViewA enlarged emblem Card15
 PASS _rosterViewA painted Card15
-PASS _rosterViewA visible Card16
+PASS _rosterViewA within column bounds Card16
+PASS _rosterViewA enlarged emblem Card16
 PASS _rosterViewA painted Card16
-PASS _rosterViewA visible Card17
+PASS _rosterViewA within column bounds Card17
+PASS _rosterViewA enlarged emblem Card17
 PASS _rosterViewA painted Card17
-PASS _rosterViewA visible Card18
+PASS _rosterViewA within column bounds Card18
+PASS _rosterViewA enlarged emblem Card18
 PASS _rosterViewA painted Card18
-PASS _rosterViewA visible Card19
+PASS _rosterViewA within column bounds Card19
+PASS _rosterViewA enlarged emblem Card19
 PASS _rosterViewA painted Card19
-PASS _rosterViewA visible Card20
+PASS _rosterViewA within column bounds Card20
+PASS _rosterViewA enlarged emblem Card20
 PASS _rosterViewA painted Card20
-PASS _rosterViewA visible Card21
+PASS _rosterViewA within column bounds Card21
+PASS _rosterViewA enlarged emblem Card21
 PASS _rosterViewA painted Card21
-PASS _rosterViewA visible Card22
+PASS _rosterViewA within column bounds Card22
+PASS _rosterViewA enlarged emblem Card22
 PASS _rosterViewA painted Card22
-PASS _rosterViewA visible Card23
+PASS _rosterViewA within column bounds Card23
+PASS _rosterViewA enlarged emblem Card23
 PASS _rosterViewA painted Card23
+PASS _rosterViewA roster scrolls vertically
+PASS _rosterViewA pointer drag moves roster
 PASS _rosterViewB count 24
-PASS _rosterViewB visible Card0
+PASS _rosterViewB within column bounds Card0
+PASS _rosterViewB enlarged emblem Card0
 PASS _rosterViewB painted Card0
-PASS _rosterViewB visible Card1
+PASS _rosterViewB within column bounds Card1
+PASS _rosterViewB enlarged emblem Card1
 PASS _rosterViewB painted Card1
-PASS _rosterViewB visible Card2
+PASS _rosterViewB within column bounds Card2
+PASS _rosterViewB enlarged emblem Card2
 PASS _rosterViewB painted Card2
-PASS _rosterViewB visible Card3
+PASS _rosterViewB within column bounds Card3
+PASS _rosterViewB enlarged emblem Card3
 PASS _rosterViewB painted Card3
-PASS _rosterViewB visible Card4
+PASS _rosterViewB within column bounds Card4
+PASS _rosterViewB enlarged emblem Card4
 PASS _rosterViewB painted Card4
-PASS _rosterViewB visible Card5
+PASS _rosterViewB within column bounds Card5
+PASS _rosterViewB enlarged emblem Card5
 PASS _rosterViewB painted Card5
-PASS _rosterViewB visible Card6
+PASS _rosterViewB within column bounds Card6
+PASS _rosterViewB enlarged emblem Card6
 PASS _rosterViewB painted Card6
-PASS _rosterViewB visible Card7
+PASS _rosterViewB within column bounds Card7
+PASS _rosterViewB enlarged emblem Card7
 PASS _rosterViewB painted Card7
-PASS _rosterViewB visible Card8
+PASS _rosterViewB within column bounds Card8
+PASS _rosterViewB enlarged emblem Card8
 PASS _rosterViewB painted Card8
-PASS _rosterViewB visible Card9
+PASS _rosterViewB within column bounds Card9
+PASS _rosterViewB enlarged emblem Card9
 PASS _rosterViewB painted Card9
-PASS _rosterViewB visible Card10
+PASS _rosterViewB within column bounds Card10
+PASS _rosterViewB enlarged emblem Card10
 PASS _rosterViewB painted Card10
-PASS _rosterViewB visible Card11
+PASS _rosterViewB within column bounds Card11
+PASS _rosterViewB enlarged emblem Card11
 PASS _rosterViewB painted Card11
-PASS _rosterViewB visible Card12
+PASS _rosterViewB within column bounds Card12
+PASS _rosterViewB enlarged emblem Card12
 PASS _rosterViewB painted Card12
-PASS _rosterViewB visible Card13
+PASS _rosterViewB within column bounds Card13
+PASS _rosterViewB enlarged emblem Card13
 PASS _rosterViewB painted Card13
-PASS _rosterViewB visible Card14
+PASS _rosterViewB within column bounds Card14
+PASS _rosterViewB enlarged emblem Card14
 PASS _rosterViewB painted Card14
-PASS _rosterViewB visible Card15
+PASS _rosterViewB within column bounds Card15
+PASS _rosterViewB enlarged emblem Card15
 PASS _rosterViewB painted Card15
-PASS _rosterViewB visible Card16
+PASS _rosterViewB within column bounds Card16
+PASS _rosterViewB enlarged emblem Card16
 PASS _rosterViewB painted Card16
-PASS _rosterViewB visible Card17
+PASS _rosterViewB within column bounds Card17
+PASS _rosterViewB enlarged emblem Card17
 PASS _rosterViewB painted Card17
-PASS _rosterViewB visible Card18
+PASS _rosterViewB within column bounds Card18
+PASS _rosterViewB enlarged emblem Card18
 PASS _rosterViewB painted Card18
-PASS _rosterViewB visible Card19
+PASS _rosterViewB within column bounds Card19
+PASS _rosterViewB enlarged emblem Card19
 PASS _rosterViewB painted Card19
-PASS _rosterViewB visible Card20
+PASS _rosterViewB within column bounds Card20
+PASS _rosterViewB enlarged emblem Card20
 PASS _rosterViewB painted Card20
-PASS _rosterViewB visible Card21
+PASS _rosterViewB within column bounds Card21
+PASS _rosterViewB enlarged emblem Card21
 PASS _rosterViewB painted Card21
-PASS _rosterViewB visible Card22
+PASS _rosterViewB within column bounds Card22
+PASS _rosterViewB enlarged emblem Card22
 PASS _rosterViewB painted Card22
-PASS _rosterViewB visible Card23
+PASS _rosterViewB within column bounds Card23
+PASS _rosterViewB enlarged emblem Card23
 PASS _rosterViewB painted Card23
+PASS _rosterViewB roster scrolls vertically
+PASS _rosterViewB pointer drag moves roster
 PASS clickable Card23
 PASS unobstructed raycast Card23
 PASS clickable Card20
@@ -364,103 +416,155 @@ PASS clickable ModeIntro
 PASS unobstructed raycast ModeIntro
 PASS navigation TwoOnTwoCharacter
 PASS _rosterView2Me count 24
-PASS _rosterView2Me visible Card0
+PASS _rosterView2Me within column bounds Card0
+PASS _rosterView2Me enlarged emblem Card0
 PASS _rosterView2Me painted Card0
-PASS _rosterView2Me visible Card1
+PASS _rosterView2Me within column bounds Card1
+PASS _rosterView2Me enlarged emblem Card1
 PASS _rosterView2Me painted Card1
-PASS _rosterView2Me visible Card2
+PASS _rosterView2Me within column bounds Card2
+PASS _rosterView2Me enlarged emblem Card2
 PASS _rosterView2Me painted Card2
-PASS _rosterView2Me visible Card3
+PASS _rosterView2Me within column bounds Card3
+PASS _rosterView2Me enlarged emblem Card3
 PASS _rosterView2Me painted Card3
-PASS _rosterView2Me visible Card4
+PASS _rosterView2Me within column bounds Card4
+PASS _rosterView2Me enlarged emblem Card4
 PASS _rosterView2Me painted Card4
-PASS _rosterView2Me visible Card5
+PASS _rosterView2Me within column bounds Card5
+PASS _rosterView2Me enlarged emblem Card5
 PASS _rosterView2Me painted Card5
-PASS _rosterView2Me visible Card6
+PASS _rosterView2Me within column bounds Card6
+PASS _rosterView2Me enlarged emblem Card6
 PASS _rosterView2Me painted Card6
-PASS _rosterView2Me visible Card7
+PASS _rosterView2Me within column bounds Card7
+PASS _rosterView2Me enlarged emblem Card7
 PASS _rosterView2Me painted Card7
-PASS _rosterView2Me visible Card8
+PASS _rosterView2Me within column bounds Card8
+PASS _rosterView2Me enlarged emblem Card8
 PASS _rosterView2Me painted Card8
-PASS _rosterView2Me visible Card9
+PASS _rosterView2Me within column bounds Card9
+PASS _rosterView2Me enlarged emblem Card9
 PASS _rosterView2Me painted Card9
-PASS _rosterView2Me visible Card10
+PASS _rosterView2Me within column bounds Card10
+PASS _rosterView2Me enlarged emblem Card10
 PASS _rosterView2Me painted Card10
-PASS _rosterView2Me visible Card11
+PASS _rosterView2Me within column bounds Card11
+PASS _rosterView2Me enlarged emblem Card11
 PASS _rosterView2Me painted Card11
-PASS _rosterView2Me visible Card12
+PASS _rosterView2Me within column bounds Card12
+PASS _rosterView2Me enlarged emblem Card12
 PASS _rosterView2Me painted Card12
-PASS _rosterView2Me visible Card13
+PASS _rosterView2Me within column bounds Card13
+PASS _rosterView2Me enlarged emblem Card13
 PASS _rosterView2Me painted Card13
-PASS _rosterView2Me visible Card14
+PASS _rosterView2Me within column bounds Card14
+PASS _rosterView2Me enlarged emblem Card14
 PASS _rosterView2Me painted Card14
-PASS _rosterView2Me visible Card15
+PASS _rosterView2Me within column bounds Card15
+PASS _rosterView2Me enlarged emblem Card15
 PASS _rosterView2Me painted Card15
-PASS _rosterView2Me visible Card16
+PASS _rosterView2Me within column bounds Card16
+PASS _rosterView2Me enlarged emblem Card16
 PASS _rosterView2Me painted Card16
-PASS _rosterView2Me visible Card17
+PASS _rosterView2Me within column bounds Card17
+PASS _rosterView2Me enlarged emblem Card17
 PASS _rosterView2Me painted Card17
-PASS _rosterView2Me visible Card18
+PASS _rosterView2Me within column bounds Card18
+PASS _rosterView2Me enlarged emblem Card18
 PASS _rosterView2Me painted Card18
-PASS _rosterView2Me visible Card19
+PASS _rosterView2Me within column bounds Card19
+PASS _rosterView2Me enlarged emblem Card19
 PASS _rosterView2Me painted Card19
-PASS _rosterView2Me visible Card20
+PASS _rosterView2Me within column bounds Card20
+PASS _rosterView2Me enlarged emblem Card20
 PASS _rosterView2Me painted Card20
-PASS _rosterView2Me visible Card21
+PASS _rosterView2Me within column bounds Card21
+PASS _rosterView2Me enlarged emblem Card21
 PASS _rosterView2Me painted Card21
-PASS _rosterView2Me visible Card22
+PASS _rosterView2Me within column bounds Card22
+PASS _rosterView2Me enlarged emblem Card22
 PASS _rosterView2Me painted Card22
-PASS _rosterView2Me visible Card23
+PASS _rosterView2Me within column bounds Card23
+PASS _rosterView2Me enlarged emblem Card23
 PASS _rosterView2Me painted Card23
+PASS _rosterView2Me roster scrolls vertically
+PASS _rosterView2Me pointer drag moves roster
 PASS _rosterView2Mate count 24
-PASS _rosterView2Mate visible Card0
+PASS _rosterView2Mate within column bounds Card0
+PASS _rosterView2Mate enlarged emblem Card0
 PASS _rosterView2Mate painted Card0
-PASS _rosterView2Mate visible Card1
+PASS _rosterView2Mate within column bounds Card1
+PASS _rosterView2Mate enlarged emblem Card1
 PASS _rosterView2Mate painted Card1
-PASS _rosterView2Mate visible Card2
+PASS _rosterView2Mate within column bounds Card2
+PASS _rosterView2Mate enlarged emblem Card2
 PASS _rosterView2Mate painted Card2
-PASS _rosterView2Mate visible Card3
+PASS _rosterView2Mate within column bounds Card3
+PASS _rosterView2Mate enlarged emblem Card3
 PASS _rosterView2Mate painted Card3
-PASS _rosterView2Mate visible Card4
+PASS _rosterView2Mate within column bounds Card4
+PASS _rosterView2Mate enlarged emblem Card4
 PASS _rosterView2Mate painted Card4
-PASS _rosterView2Mate visible Card5
+PASS _rosterView2Mate within column bounds Card5
+PASS _rosterView2Mate enlarged emblem Card5
 PASS _rosterView2Mate painted Card5
-PASS _rosterView2Mate visible Card6
+PASS _rosterView2Mate within column bounds Card6
+PASS _rosterView2Mate enlarged emblem Card6
 PASS _rosterView2Mate painted Card6
-PASS _rosterView2Mate visible Card7
+PASS _rosterView2Mate within column bounds Card7
+PASS _rosterView2Mate enlarged emblem Card7
 PASS _rosterView2Mate painted Card7
-PASS _rosterView2Mate visible Card8
+PASS _rosterView2Mate within column bounds Card8
+PASS _rosterView2Mate enlarged emblem Card8
 PASS _rosterView2Mate painted Card8
-PASS _rosterView2Mate visible Card9
+PASS _rosterView2Mate within column bounds Card9
+PASS _rosterView2Mate enlarged emblem Card9
 PASS _rosterView2Mate painted Card9
-PASS _rosterView2Mate visible Card10
+PASS _rosterView2Mate within column bounds Card10
+PASS _rosterView2Mate enlarged emblem Card10
 PASS _rosterView2Mate painted Card10
-PASS _rosterView2Mate visible Card11
+PASS _rosterView2Mate within column bounds Card11
+PASS _rosterView2Mate enlarged emblem Card11
 PASS _rosterView2Mate painted Card11
-PASS _rosterView2Mate visible Card12
+PASS _rosterView2Mate within column bounds Card12
+PASS _rosterView2Mate enlarged emblem Card12
 PASS _rosterView2Mate painted Card12
-PASS _rosterView2Mate visible Card13
+PASS _rosterView2Mate within column bounds Card13
+PASS _rosterView2Mate enlarged emblem Card13
 PASS _rosterView2Mate painted Card13
-PASS _rosterView2Mate visible Card14
+PASS _rosterView2Mate within column bounds Card14
+PASS _rosterView2Mate enlarged emblem Card14
 PASS _rosterView2Mate painted Card14
-PASS _rosterView2Mate visible Card15
+PASS _rosterView2Mate within column bounds Card15
+PASS _rosterView2Mate enlarged emblem Card15
 PASS _rosterView2Mate painted Card15
-PASS _rosterView2Mate visible Card16
+PASS _rosterView2Mate within column bounds Card16
+PASS _rosterView2Mate enlarged emblem Card16
 PASS _rosterView2Mate painted Card16
-PASS _rosterView2Mate visible Card17
+PASS _rosterView2Mate within column bounds Card17
+PASS _rosterView2Mate enlarged emblem Card17
 PASS _rosterView2Mate painted Card17
-PASS _rosterView2Mate visible Card18
+PASS _rosterView2Mate within column bounds Card18
+PASS _rosterView2Mate enlarged emblem Card18
 PASS _rosterView2Mate painted Card18
-PASS _rosterView2Mate visible Card19
+PASS _rosterView2Mate within column bounds Card19
+PASS _rosterView2Mate enlarged emblem Card19
 PASS _rosterView2Mate painted Card19
-PASS _rosterView2Mate visible Card20
+PASS _rosterView2Mate within column bounds Card20
+PASS _rosterView2Mate enlarged emblem Card20
 PASS _rosterView2Mate painted Card20
-PASS _rosterView2Mate visible Card21
+PASS _rosterView2Mate within column bounds Card21
+PASS _rosterView2Mate enlarged emblem Card21
 PASS _rosterView2Mate painted Card21
-PASS _rosterView2Mate visible Card22
+PASS _rosterView2Mate within column bounds Card22
+PASS _rosterView2Mate enlarged emblem Card22
 PASS _rosterView2Mate painted Card22
-PASS _rosterView2Mate visible Card23
+PASS _rosterView2Mate within column bounds Card23
+PASS _rosterView2Mate enlarged emblem Card23
 PASS _rosterView2Mate painted Card23
+PASS _rosterView2Mate roster scrolls vertically
+PASS _rosterView2Mate pointer drag moves roster
 PASS intro seat picker visible
 PASS clickable Seat4
 PASS unobstructed raycast Seat4
@@ -492,54 +596,80 @@ PASS clickable FactionAi
 PASS unobstructed raycast FactionAi
 PASS navigation FactionSelect
 PASS _fbRoster count 24
-PASS _fbRoster visible Card0
+PASS _fbRoster within column bounds Card0
+PASS _fbRoster enlarged emblem Card0
 PASS _fbRoster painted Card0
-PASS _fbRoster visible Card1
+PASS _fbRoster within column bounds Card1
+PASS _fbRoster enlarged emblem Card1
 PASS _fbRoster painted Card1
-PASS _fbRoster visible Card2
+PASS _fbRoster within column bounds Card2
+PASS _fbRoster enlarged emblem Card2
 PASS _fbRoster painted Card2
-PASS _fbRoster visible Card3
+PASS _fbRoster within column bounds Card3
+PASS _fbRoster enlarged emblem Card3
 PASS _fbRoster painted Card3
-PASS _fbRoster visible Card4
+PASS _fbRoster within column bounds Card4
+PASS _fbRoster enlarged emblem Card4
 PASS _fbRoster painted Card4
-PASS _fbRoster visible Card5
+PASS _fbRoster within column bounds Card5
+PASS _fbRoster enlarged emblem Card5
 PASS _fbRoster painted Card5
-PASS _fbRoster visible Card6
+PASS _fbRoster within column bounds Card6
+PASS _fbRoster enlarged emblem Card6
 PASS _fbRoster painted Card6
-PASS _fbRoster visible Card7
+PASS _fbRoster within column bounds Card7
+PASS _fbRoster enlarged emblem Card7
 PASS _fbRoster painted Card7
-PASS _fbRoster visible Card8
+PASS _fbRoster within column bounds Card8
+PASS _fbRoster enlarged emblem Card8
 PASS _fbRoster painted Card8
-PASS _fbRoster visible Card9
+PASS _fbRoster within column bounds Card9
+PASS _fbRoster enlarged emblem Card9
 PASS _fbRoster painted Card9
-PASS _fbRoster visible Card10
+PASS _fbRoster within column bounds Card10
+PASS _fbRoster enlarged emblem Card10
 PASS _fbRoster painted Card10
-PASS _fbRoster visible Card11
+PASS _fbRoster within column bounds Card11
+PASS _fbRoster enlarged emblem Card11
 PASS _fbRoster painted Card11
-PASS _fbRoster visible Card12
+PASS _fbRoster within column bounds Card12
+PASS _fbRoster enlarged emblem Card12
 PASS _fbRoster painted Card12
-PASS _fbRoster visible Card13
+PASS _fbRoster within column bounds Card13
+PASS _fbRoster enlarged emblem Card13
 PASS _fbRoster painted Card13
-PASS _fbRoster visible Card14
+PASS _fbRoster within column bounds Card14
+PASS _fbRoster enlarged emblem Card14
 PASS _fbRoster painted Card14
-PASS _fbRoster visible Card15
+PASS _fbRoster within column bounds Card15
+PASS _fbRoster enlarged emblem Card15
 PASS _fbRoster painted Card15
-PASS _fbRoster visible Card16
+PASS _fbRoster within column bounds Card16
+PASS _fbRoster enlarged emblem Card16
 PASS _fbRoster painted Card16
-PASS _fbRoster visible Card17
+PASS _fbRoster within column bounds Card17
+PASS _fbRoster enlarged emblem Card17
 PASS _fbRoster painted Card17
-PASS _fbRoster visible Card18
+PASS _fbRoster within column bounds Card18
+PASS _fbRoster enlarged emblem Card18
 PASS _fbRoster painted Card18
-PASS _fbRoster visible Card19
+PASS _fbRoster within column bounds Card19
+PASS _fbRoster enlarged emblem Card19
 PASS _fbRoster painted Card19
-PASS _fbRoster visible Card20
+PASS _fbRoster within column bounds Card20
+PASS _fbRoster enlarged emblem Card20
 PASS _fbRoster painted Card20
-PASS _fbRoster visible Card21
+PASS _fbRoster within column bounds Card21
+PASS _fbRoster enlarged emblem Card21
 PASS _fbRoster painted Card21
-PASS _fbRoster visible Card22
+PASS _fbRoster within column bounds Card22
+PASS _fbRoster enlarged emblem Card22
 PASS _fbRoster painted Card22
-PASS _fbRoster visible Card23
+PASS _fbRoster within column bounds Card23
+PASS _fbRoster enlarged emblem Card23
 PASS _fbRoster painted Card23
+PASS _fbRoster roster scrolls vertically
+PASS _fbRoster pointer drag moves roster
 PASS shared menu canvas stays active FactionSelect
 PASS clickable IdentityAi
 PASS unobstructed raycast IdentityAi
