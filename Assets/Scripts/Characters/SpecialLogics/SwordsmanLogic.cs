@@ -152,7 +152,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             requests.Add(new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp,
                 $"剑客双 {value}：可以在主攻击之前追加一次" +
-                $"固定 {value} 点伤害的攻击（无视双方攻防加成）。要发动吗？",
+                $"固定 {value} 点伤害的攻击（无视双方攻防加成，命中附流血 2 回合）。要发动吗？",
                 new List<Hand>(1) { GetOtherHand(context.Actor, context.ActedHand) },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不追加
@@ -193,6 +193,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var ctx = new AttackContext(owner, defender, actedHand, (int)effect)
             {
                 IgnoreStatBonuses = true,
+                InflictsBleed = true,
+                AutoResolveDodge = true,
 
                 // ⚠️ 追加攻击的"攻击数字视为 0"（玩家确认）——
                 //    因此**妖术师无法取消它**（任何手值都不可能等于 0）。
@@ -222,7 +224,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             var request = new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp,
-                "剑客：要追加一次固定伤害的攻击吗？",
+                "剑客：要追加一次固定伤害、命中附流血2回合的攻击吗？",
                 new List<Hand>(1) { other },
                 allowDecline: true,
                 declineResult: null,

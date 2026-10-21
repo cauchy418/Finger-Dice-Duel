@@ -186,7 +186,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 HandEffect.RangerPowerShot,
                 $"游侠攻击：另一只手是 2，可以把它变成 {PowerToValue}，" +
                 $"让这次攻击的基础值 ×{PowerMultiplier}（4→6、6→9、8→12），" +
-                $"并使本次攻击距离无限。要发动吗？",
+                $"并使本次攻击距离无限，命中附流血2回合。要发动吗？",
                 new List<Hand>(1) { other },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不加强
@@ -342,6 +342,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             // 先乘倍率、再算攻防加成（由 AttackContext.ApplyBonuses 保证顺序）
             context.DamageMultiplier = PowerMultiplier;
+            context.InflictsBleed = true;
             context.Manager?.NoteSkill(context.Attacker, "强化射击", $"{CombatText.HandName(context.Attacker, chosen)} 2→3，基础伤害×1.5、距离无限");
         }
 
@@ -366,7 +367,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 HandEffect.RangerPowerShot,
                 $"游侠攻击：另一只手是 2，可以把它变成 {PowerToValue}，" +
                 $"让这次攻击的基础值 ×{PowerMultiplier}（4→6、6→9、8→12），" +
-                $"并使本次攻击距离无限。要发动吗？",
+                $"并使本次攻击距离无限，命中附流血2回合。要发动吗？",
                 new List<Hand>(1) { other },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不强化

@@ -1968,13 +1968,15 @@ namespace FingerDiceDuel.Core
         {
             if (actor == null || !actor.IsAlive) return;
 
-            // ---- 中毒：不可被抵挡 ----
-            int poison = StatusRules.TurnStartDamage(actor, out bool unstoppable);
-            if (poison > 0 && unstoppable)
+            // ---- 中毒 / 流血：不可被抵挡，提示按真实状态命名 ----
+            int statusDamage = StatusRules.TurnStartDamage(actor, out bool unstoppable);
+            if (statusDamage > 0 && unstoppable)
             {
-                actor.TakeDamage(poison);
-                NoteSkill(actor, "中毒", $"失去 {poison} 生命（不可抵挡）");
-                LastStatusNote = $"{actor.Name} 中毒，受到 {poison} 点毒素伤害（不可抵挡）";
+                string statusName = actor.HasStatus(StatusEffect.Poison)
+                    ? (actor.HasStatus(StatusEffect.Bleed) ? "中毒／流血" : "中毒") : "流血";
+                actor.TakeDamage(statusDamage);
+                NoteSkill(actor, statusName, $"失去 {statusDamage} 生命（不可抵挡）");
+                LastStatusNote = $"{actor.Name} {statusName}，失去 {statusDamage} 点体力（不可抵挡）";
                 CheckGameOver();
                 if (IsGameOver) { SkipIfStatusKilled(actor); return; }
             }
@@ -2276,6 +2278,8 @@ namespace FingerDiceDuel.Core
             result.ActedHandValueBefore = actedHand.Value;
             result.TargetHandValue = targetValue;
 
+            bool startedFromStealth = CharacterBehaviors.FirstImplementer<AssassinLogic>(actor)?.IsStealthActive(actor) == true;
+
             // 1. 运算前破盾（自己用一面已成型的盾发起运算时，该盾先碎）
             result.ShieldBrokenBeforeOp = actedHand.BreakShieldBeforeOperation();
             if (result.ShieldBrokenBeforeOp)
@@ -2445,7 +2449,7 @@ namespace FingerDiceDuel.Core
             //   ① 前置抉择（**选目标手之前**）里玩家选的是"攻击"还是"回复"
             //   ② 若选了回复，再解析"回复给谁"（**选目标手之后**才问）
             PlayerState priestHealTarget = null;
-            if (actor.Character is PriestLogic && isAttackEffect(effect))
+            if (CharacterBehaviors.FirstImplementer<PriestLogic>(actor) != null && isAttackEffect(effect))
             {
                 var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
 
@@ -2469,7 +2473,7 @@ namespace FingerDiceDuel.Core
                             PlayerState target = priestHealTarget;
 
                             int before = target?.Health ?? 0;
-                            target?.Heal(amount);
+                            PriestLogic.CleanseAndHeal(actor, target, amount, this);
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -2523,7 +2527,11 @@ namespace FingerDiceDuel.Core
                         //    再检查距离 —— 否则"碎盾换无限距离"永远来不及生效。
                         //
                         // 只有结果是攻击时才需要这一步：非攻击不需要攻击距离。
+                        Hand rangeShield = actor.GetOtherHand(actedHand);
+                        bool hadRangeShield = rangeShield?.State == ShieldState.Formed;
                         (actor.Character as IRangeBreakEffect)?.ApplyRangeBreak(actor, actedHand, this);
+                        bool activelyBrokeShield = result.ShieldBrokenBeforeOp
+                            || (hadRangeShield && rangeShield.State == ShieldState.Broken);
                         //
                         // 攻击距离：只有"本次攻击在范围内"才落实伤害。
                         //   距离 1 的角色（战士等）在 2v2 里够不到环上对角的对手；
@@ -2543,6 +2551,8 @@ namespace FingerDiceDuel.Core
                         }
 
                         var ctx = new AttackContext(actor, opponent, actedHand, (int)effect);
+                        ctx.StartedFromStealth = startedFromStealth;
+                        ctx.InflictsBleed = activelyBrokeShield && CharacterBehaviors.FirstImplementer<FighterLogic>(actor) != null;
                         ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
@@ -2604,7 +2614,8 @@ namespace FingerDiceDuel.Core
                                 ? amountProvider.HealAmountOf(actor, this)
                                 : PriestLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
-                            target?.Heal(amount);
+                            if (healer is PriestLogic) PriestLogic.CleanseAndHeal(actor, target, amount, this);
+                            else target?.Heal(amount);
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before

@@ -920,31 +920,20 @@ namespace FingerDiceDuel.Assistant
             // 不清空会把"上一回合/上一局"的现场当成这一次的（我踩过两次）。
             ResetDiagnostics();
 
-            // ⚠️ **法师的状态：这一位的回合开始**（中毒 / 感电）。
-            //    玩家确认：中毒可能**直接把他打死、跳过其行动** ——
-            //    所以结算后要重新读一次当前行动者。
-            _game.ResolveStatusTurnStart(ActivePlayer);
-            FlushSkillLog();
-
-            if (_game.IsGameOver)
-            {
-                Phase = BoardPhase.GameOver;
-                Hint = WinMessage();
-                return;
-            }
-
-            if (!ReferenceEquals(_game.CurrentPlayer, ActivePlayer))
+            // 状态可能连续击倒多名行动者；逐个结算，直到轮到存活者或比赛结束。
+            while (true)
             {
                 ActivePlayer = _game.CurrentPlayer;
                 _game.ResolveStatusTurnStart(ActivePlayer);
                 FlushSkillLog();
-
                 if (_game.IsGameOver)
                 {
                     Phase = BoardPhase.GameOver;
                     Hint = WinMessage();
                     return;
                 }
+
+                if (ReferenceEquals(_game.CurrentPlayer, ActivePlayer)) break;
             }
 
             // 注意：这里**不**清空 LastTurn。它的语义是"最近一次已结算的回合"，
@@ -1180,7 +1169,7 @@ namespace FingerDiceDuel.Assistant
         /// 目前只有牧师用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
         /// 玩家要求的顺序就是这样 —— 先问，再选目标手。
         ///
-        /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTargetChoice"/>。
+        /// 返回 true 表示已接管抉择流程（AI 可能同步答完）。
         /// </summary>
         /// <summary>
         /// 进入"运算结果确定后、确认目标玩家之前的角色抉择"（若角色有这种问题）。
@@ -1194,7 +1183,7 @@ namespace FingerDiceDuel.Assistant
         /// 曾经在第 ① 步（点自己的手）就问，结果只能用替身猜，
         /// 出现"该提示不提示"与"提示的数字不对"两类真实 bug。
         ///
-        /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTargetChoice"/>。
+        /// 返回 true 表示已接管抉择流程（AI 可能同步答完）。
         /// </summary>
         private bool BeginPreTargetChoicesIfAny()
         {
@@ -1223,7 +1212,8 @@ namespace FingerDiceDuel.Assistant
 
             _preTargetChoiceActive = true;
             AdvanceCharacterChoice();
-            return Phase == BoardPhase.ChoosingPreTargetChoice;
+            // AI 可能同步答完并换人；已经接管流程就必须阻止调用方继续旧步骤。
+            return true;
         }
 
         /// <summary>当前是否停在"选目标手之前的抉择"。</summary>
@@ -2706,7 +2696,7 @@ namespace FingerDiceDuel.Assistant
         ///    <see cref="BoardController.ClickHand"/> 的选目标手分支调用。
         /// ② **4/6/8 选了回复**：在"攻击/回复"答完之后调用。
         ///
-        /// 返回 true 表示已经停在 <see cref="BoardPhase.ChoosingPreTurnChoice"/>。
+        /// 返回 true 表示已接管抉择流程（AI 可能同步答完）。
         /// </summary>
         private bool TryEnterHealTargetChoice()
         {
@@ -2797,8 +2787,8 @@ namespace FingerDiceDuel.Assistant
             // 攻击距离 / 法师类抉择已在上面的 hasNonHeal 分支置位，
             // 答完后会回到"确认目标"。
             AdvanceCharacterChoice();
-            return Phase == BoardPhase.ChoosingPreTurnChoice
-                || Phase == BoardPhase.ChoosingPreTargetChoice;
+            // AI 可能已完成回复、推进回合甚至结束比赛，不能继续旧的选目标流程。
+            return true;
         }
 
         /// <summary>

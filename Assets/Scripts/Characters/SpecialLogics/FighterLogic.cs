@@ -150,7 +150,7 @@ namespace FingerDiceDuel.Core
             => new ChoiceRequest(
                 HandEffect.FighterRangeBreak,
                 $"战士：另一只手是完整的盾牌。可以令它破碎，" +
-                $"使本次攻击距离无限（够到环上更远的对手）。要发动吗？",
+                $"使本次攻击距离无限，命中附流血2回合。要发动吗？",
                 new List<Hand>(1) { shield },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 保留盾

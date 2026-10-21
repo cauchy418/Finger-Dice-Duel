@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
@@ -271,9 +271,9 @@ namespace FingerDiceDuel.Tests
             board.ConfirmTargetPlayer();
 
             Assert.NotNull(board.LastTurn);
-            // 追加攻击固定 6（无视攻防）+ 主攻击 6 + 攻 2 = 8 -> 共 14
-            Assert.AreEqual(before - blank.Health, 14,
-                "追加 6（无视攻防）+ 主攻击 6+2(攻) = 14。");
+            // 追加 6 + 主攻击 6+2+1（流血降防）+ 下回合流血 1 = 16
+            Assert.AreEqual(16, before - blank.Health,
+                "追加 6 + 主攻击 9 + 回合开始流血 1 = 16。");
         }
 
         [Test]
@@ -632,7 +632,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.AcceptPendingChoice(), "点'发动'应生效。");
 
             // 强化：基础 4 -> 6；游侠攻 0、白板防 0 => 6
-            Assert.AreEqual(before - blank.Health, 6, "强化后 4 -> 6。");
+            Assert.AreEqual(7, before - blank.Health, "强化伤害 6 + 回合开始流血 1。");
             Assert.AreEqual(3, ranger.RightHand.Value, "另一只手 2 -> 3。");
         }
 
@@ -671,8 +671,8 @@ namespace FingerDiceDuel.Tests
             int before = blank.Health;
             Assert.True(board.AcceptPendingChoice(), "点'发动'应生效。");
 
-            // 追加 6（无视攻防）+ 主攻击 6 + 攻 2 = 14
-            Assert.AreEqual(before - blank.Health, 14, "追加 6 + 主攻击 6+2 = 14。");
+            // 追加 6 + 主攻击 9 + 下一回合流血 1 = 16
+            Assert.AreEqual(16, before - blank.Health, "追加 6 + 主攻击 9 + 回合开始流血 1 = 16。");
         }
 
         [Test]
@@ -924,7 +924,7 @@ namespace FingerDiceDuel.Tests
             int before = blank.Health;
             Assert.True(board.AcceptPendingChoice(), "强化应生效。");
 
-            Assert.AreEqual(before - blank.Health, 6, "强化后 4 -> 6。");
+            Assert.AreEqual(7, before - blank.Health, "强化伤害 6 + 回合开始流血 1。");
             Assert.AreEqual(3, ranger.RightHand.Value, "那只手 2 -> 3。");
         }
 

@@ -94,6 +94,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public int HitCount { get; set; } = 1;
 
+        /// <summary>本次技能攻击命中时附加两回合流血；只属于本次结算，不跨攻击保存。</summary>
+        public bool InflictsBleed { get; set; }
+
+        /// <summary>运算前已处于潜行，用于手值改变后的突袭判定。</summary>
+        public bool StartedFromStealth { get; set; }
+
         /// <summary>
         /// **本次攻击的伤害类型**（由攻击方角色声明）。
         ///
@@ -439,6 +445,7 @@ namespace FingerDiceDuel.Core
             //    ⚠️ 挂状态的是**攻击方**的角色（法师），挂到**被实际承受伤害的人**身上
             //       （圣武士可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
             ApplyAttackerStatus(manager);
+            ApplySkillBleed(manager);
 
             // 5. **命中后的通用钩子**（邪术师的距离修正走这里）。
             //    与挂状态同一个位置 —— 那一刻"算不算命中"已经确定
@@ -447,11 +454,18 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 把"已经命中"这件事通知攻击方角色（<see cref="IOnHitLanded"/>）。
-        ///
-        /// 与 <see cref="ApplyAttackerStatus"/> 的区别：那个专门管"挂负面状态"，
-        /// 这个给"命中后想做别的事"的角色用（邪术师加距离）。
+        /// 技能流血独立于元素状态，可同时附加；盾抵挡、太极减免与零伤害均算命中。
         /// </summary>
+        private void ApplySkillBleed(GameManager manager)
+        {
+            if (!InflictsBleed || WasCancelled || HitCount == 0) return;
+            if (LandedHits == 0 && BlockedHits == 0) return;
+            if (Defender == null || !Defender.IsAlive) return;
+            Defender.ApplyStatus(StatusEffect.Bleed, PlayerState.StatusDurationTurns, Attacker);
+            manager?.NoteSkill(Attacker, "流血", $"{Defender.Name}：{PlayerState.StatusDurationTurns} 回合");
+        }
+
+        /// <summary>把命中通知攻击方角色，用于邪术师距离修正等通用命中效果。</summary>
         private void ApplyAttackerHitEffect(GameManager manager)
         {
             if (Attacker == null) return;
@@ -786,6 +800,7 @@ namespace FingerDiceDuel.Core
                 ActedHandValueBefore = SourceHandValueBefore,
                 TargetHandValueBefore = TargetHandValueBefore,
                 AutoResolveChoice = AutoResolveDodge,
+                IsResolvingAttack = true,
                 Manager = manager,
                 Gatherer = ChoiceGatherer,
                 AiDecisionLookup = AiDecisionLookup,

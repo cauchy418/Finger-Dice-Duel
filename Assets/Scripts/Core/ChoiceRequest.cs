@@ -533,9 +533,12 @@ namespace FingerDiceDuel.Core
             }
         }
 
+        /// <summary>已进入攻击结算，包含没有普通运算快照的追加攻击。</summary>
+        public bool IsResolvingAttack { get; set; }
+
         /// <summary>这次效果是否是一次攻击。</summary>
         public bool IsAttack =>
-            Effect == HandEffectType.Attack4
+            IsResolvingAttack || Effect == HandEffectType.Attack4
             || Effect == HandEffectType.Attack6
             || Effect == HandEffectType.Attack8;
 

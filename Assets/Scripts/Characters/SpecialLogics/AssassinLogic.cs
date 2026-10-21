@@ -162,9 +162,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             // 出手时若仍在潜行，则这一击 +7（并随即破除潜行）
-            if (!IsStealthActive(context.Attacker)) return;
+            if (!context.StartedFromStealth && !IsStealthActive(context.Attacker)) return;
 
             context.FinalDamage += StealthBonusDamage;
+            context.InflictsBleed = true;
             context.Manager?.NoteSkill(context.Attacker, "潜行突袭", $"本次伤害＋{StealthBonusDamage}");
         }
 

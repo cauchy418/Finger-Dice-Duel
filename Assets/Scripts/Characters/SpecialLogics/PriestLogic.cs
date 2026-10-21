@@ -339,6 +339,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             return target;
         }
 
+        /// <summary>每段牧师回复先净化再回血；满血也净化，腐朽清除后不再阻止本次回复。</summary>
+        public static void CleanseAndHeal(PlayerState owner, PlayerState target, int amount, GameManager manager)
+        {
+            if (target == null) return;
+            int removed = target.Statuses.Count;
+            target.ClearStatuses();
+            target.Heal(amount);
+            if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态");
+        }
+
         // ============================================================
         // 结算：运算后（双手同为 9 -> 额外回复）
         // ============================================================
@@ -362,7 +372,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             PlayerState target = ResolveTarget(owner, manager, choiceSink,
                                                HandEffect.PriestExtraHealTarget);
             int before = target?.Health ?? 0;
-            target?.Heal(ExtraHealAmount);
+            CleanseAndHeal(owner, target, ExtraHealAmount, manager);
             manager?.NoteSkill(owner, "双九回复", $"{target?.Name} 回复 {(target?.Health ?? 0) - before}");
         }
 

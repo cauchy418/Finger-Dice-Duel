@@ -52,8 +52,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.FighterId, "Fighter", Alignment.LawfulNeutral,
-                shortSkill: "盾碎时可连锁打碎场上一面盾；"
-                          + "攻击时碎盾可换本次攻击距离无限。",
+                shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换无限距离。",
                 playGuide: "核心是主动合盾。"
                          + "攻击时若另一只手是完整盾，可碎它换本次攻击距离无限 ——"
                          + "够不到远处对手时这是解法；"
@@ -99,7 +98,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.PriestId, "Priest", Alignment.LawfulGood,
-                shortSkill: "9 回复（可给别人）；4/6/8 可选当攻击或回复；双 9 再回一次。",
+                shortSkill: "4/6/8 可转回复；回复先净化再回血；9 可给别人，双9再回一次。",
                 playGuide: "4/6/8 是二选一，所以它们比别的角色更灵活。"
                          + "危险时才回血，否则全部进攻 —— 只顾回血会打成僵局。"
                          + "2v2 里优先给一队血量最低的人回复。",
@@ -112,8 +111,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.RangerId, "Ranger", Alignment.NeutralGood,
-                shortSkill: "1 → 2 完全闪避一次攻击；"
-                          + "2 → 3 让攻击基础值 ×1.5 且本次攻击距离无限。",
+                shortSkill: "1→2闪避；2→3强化基础值×1.5、距离无限，命中附流血2回合。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。"
                          + "强化射击同时把距离变成无限 —— 够不到远处对手时这是解法。",
@@ -141,7 +139,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.SwordsmanId, "Swordsman", Alignment.LawfulNeutral,
-                shortSkill: "双手相同时，追加一次 4/6/8 的固定伤害。",
+                shortSkill: "双4/6/8时追加固定伤害，命中附流血2回合。",
                 playGuide: "要的是双手相同且为 4/6/8，一手做不出来 ——"
                          + "先用一手把一只手做成 4/6/8，下一手凑齐另一只。"
                          + "追加攻击不吃攻防，所以它是一笔稳定的额外伤害。",
@@ -169,7 +167,7 @@ namespace FingerDiceDuel.Characters
                 });
 
             Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticNeutral,
-                shortSkill: "经运算达成双 7 → 进入潜行：不能被攻击，出潜行 +7 伤害。",
+                shortSkill: "运算达成双7潜行，不能被攻击；出潜行攻击＋7，命中附流血2回合。",
                 playGuide: "要的是双 7，一手做不出来 ——"
                          + "先保留一只 7，再用另一只去凑 7。"
                          + "⚠️ 开局直接摆出的双 7 不算潜行，必须经运算达成。",

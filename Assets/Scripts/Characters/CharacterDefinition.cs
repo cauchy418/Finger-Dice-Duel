@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -92,7 +92,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Fighter { get; } = new CharacterDefinition(
             FighterId, "战士", SpecialLogicType.Fighter,
             attackBonus: 1,
-            description: "连锁破盾：己方盾碎时可击碎场上任意一面成型的盾；新合盾时可修复另一只手的碎盾。攻击 +1。");
+            description: "己方盾碎可连锁破盾，新合盾可修复另一手的碎盾；攻击主动碎盾命中附流血2回合。攻击 +1。");
 
         public static CharacterDefinition Curseweaver { get; } = new CharacterDefinition(
             CurseweaverId, "咒术师", SpecialLogicType.Curseweaver,
@@ -111,13 +111,13 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Priest { get; } = new CharacterDefinition(
             PriestId, "牧师", SpecialLogicType.Priest,
             attackBonus: -1, defenseBonus: -1,
-            description: "攻击可改为回复；回复可以给任何人（自己或对手）；双 9 额外回复。");
+            description: "攻击可改为回复；回复可给任何人，先清除全部负面状态再回血；双 9 额外回复。");
 
         public static CharacterDefinition Ranger { get; } = new CharacterDefinition(
             RangerId, "游侠", SpecialLogicType.Ranger,
             defenseBonus: -2,
             description: "被攻击时可用一只「1」变成 2 完全闪避（可放弃）；攻击时可用一只「2」变成 3，" +
-                         "让基础伤害 ×1.5（4→6、6→9、8→12）。攻防 0 / -2。");
+                         "让基础伤害 ×1.5，命中附流血2回合。攻防 0 / -2。");
 
         public static CharacterDefinition Werewolf { get; } = new CharacterDefinition(
             WerewolfId, "狼人", SpecialLogicType.Werewolf,
@@ -130,7 +130,7 @@ namespace FingerDiceDuel.Core
             SwordsmanId, "剑客", SpecialLogicType.Swordsman,
             attackBonus: 2, defenseBonus: -1,
             description: "运算出 4/6/8 时，若另一只手与该手数字相同（双 4/双 6/双 8），" +
-                         "则在主攻击前先追加一次固定 4/6/8 伤害的攻击，该攻击无视双方攻防加成。" +
+                         "则在主攻击前先追加一次固定 4/6/8 伤害、无视攻防的攻击，命中附流血2回合。" +
                          "攻防 +2 / -1。");
 
         public static CharacterDefinition Ninja { get; } = new CharacterDefinition(
@@ -143,7 +143,7 @@ namespace FingerDiceDuel.Core
             AssassinId, "刺客", SpecialLogicType.Assassin,
             attackBonus: 2, defenseBonus: -1,
             description: "两只手均为 7 时进入潜行：不能被攻击；每次潜行可以跳过一回合；" +
-                         "从潜行发起的攻击伤害 +7。攻防 +2 / -1。");
+                         "从潜行发起的攻击伤害 +7，命中附流血2回合。攻防 +2 / -1。");
 
         /// <summary>
         /// 圣武士：4/6 不再攻击，改为合盾；合盾与碎盾时对范围内一名角色
