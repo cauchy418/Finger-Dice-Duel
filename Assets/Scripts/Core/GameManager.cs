@@ -2346,7 +2346,7 @@ namespace FingerDiceDuel.Core
             if (actor != null
                 && (actor.HasStatus(StatusEffect.Frost)
                     || actor.HasStatus(StatusEffect.Wet)
-                    || actor.HasStatus(StatusEffect.Stunned)))
+                    || actor.HasStatus(StatusEffect.Dizzy)))
             {
                 int before = actedHand.Value;
                 int halved = StatusRules.ApplyResultModifiers(actor, before);

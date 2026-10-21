@@ -191,7 +191,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 > **太极反弹**继承打来那次攻击的类型。
 
-### 17 种负面效果
+### 18 种负面效果
 
 | 状态 | 效果 |
 |---|---|

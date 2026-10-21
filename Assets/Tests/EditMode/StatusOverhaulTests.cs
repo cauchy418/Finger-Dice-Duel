@@ -30,6 +30,14 @@ namespace FingerDiceDuel.Tests
             p.TickStatuses();
             Assert.IsTrue(p.HasStatus(StatusEffect.Wet),
                 "覆霜结束后应附加潮湿。");
+
+            p.RemoveStatus(StatusEffect.Wet);
+            p.ApplyStatus(StatusEffect.Dizzy);
+            Assert.AreEqual(0, StatusRules.ApplyResultModifiers(p, 9));
+            p.RemoveStatus(StatusEffect.Dizzy);
+            p.ApplyStatus(StatusEffect.Stunned);
+            Assert.AreEqual(9, StatusRules.ApplyResultModifiers(p, 9),
+                "震慑只是不能攻击，不改变运算结果。");
         }
 
         [Test]

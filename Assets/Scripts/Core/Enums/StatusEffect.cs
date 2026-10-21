@@ -100,6 +100,9 @@ namespace FingerDiceDuel.Core
 
         /// <summary>失能：攻击伤害改为 0，但保留攻击效果。</summary>
         Disabled = 17,
+
+        /// <summary>眩晕：本次运算结果无效，不触发技能。</summary>
+        Dizzy = 18,
     }
 
     /// <summary>
@@ -190,6 +193,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.KnockedDown: return "倒伏";
                 case StatusEffect.Charm: return "魅惑";
                 case StatusEffect.Disabled: return "失能";
+                case StatusEffect.Dizzy: return "眩晕";
                 default: return "无";
             }
         }
@@ -233,6 +237,8 @@ namespace FingerDiceDuel.Core
                     return "行动随机化（由 AI 随机选择合法行动）";
                 case StatusEffect.Disabled:
                     return "攻击伤害改为 0，但保留攻击效果";
+                case StatusEffect.Dizzy:
+                    return "本次运算结果无效，不触发任何技能";
                 default:
                     return "无";
             }
@@ -278,7 +284,7 @@ namespace FingerDiceDuel.Core
             StatusEffect.Frost, StatusEffect.Shock, StatusEffect.Panic,
             StatusEffect.Bleed, StatusEffect.Wet, StatusEffect.Frozen,
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
-            StatusEffect.Charm, StatusEffect.Disabled,
+            StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
         };
 
         /// <summary>
@@ -338,6 +344,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.KnockedDown: return 0xB8743A;  // 土褐
                 case StatusEffect.Charm: return 0xE05AA8;       // 魅紫
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
+                case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 default: return 0x9AA0AC;                       // 中性灰
 
                 // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
@@ -375,6 +382,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.KnockedDown: return "↩";  // ↩ 倒地
                 case StatusEffect.Charm: return "♡";        // ♡ 魅惑
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
+                case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
 
                 // △ 力场（玩家要求："把三角形标记移给力场"）
                 case StatusEffect.None: return "\u25b3";

@@ -98,7 +98,7 @@ namespace FingerDiceDuel.Core
                 result -= 1;
                 if (result < 1) result = 1;
             }
-            if (actor.HasStatus(StatusEffect.Stunned)) return 0;
+            if (actor.HasStatus(StatusEffect.Dizzy)) return 0;
             return result;
         }
 
@@ -233,7 +233,7 @@ namespace FingerDiceDuel.Core
                     if (target.HasStatus(StatusEffect.Resonance))
                     {
                         statusToClear = StatusEffect.Resonance;
-                        statusToApply = StatusEffect.Stunned;
+                        statusToApply = StatusEffect.Dizzy;
                     }
                     else statusToApply = StatusEffect.Resonance;
                     break;
