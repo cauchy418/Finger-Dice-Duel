@@ -471,7 +471,7 @@ namespace FingerDiceDuel.Core
     /// 角色实现"**本次回复量由我说了算**"（巨人的 9：回复量 = 另一只手点数 × 2）。
     ///
     /// 默认回复量是固定的 9（<see cref="Hand.HealAmount"/>），
-    /// 牧师按效果类型算（<c>PriestLogic.HealAmountFor</c>）。
+    /// 牧师按效果类型算（<c>ClericLogic.HealAmountFor</c>）。
     /// 巨人的回复量取决于**另一只手的当前值**，所以必须由角色自己算。
     ///
     /// 由 <see cref="GameManager"/> 在回复分支调用（与 <see cref="IHealOverride"/> 配合）。
@@ -697,6 +697,12 @@ namespace FingerDiceDuel.Core
     ///
     /// 目前的实现者：**圣武士**（攻击范围内的角色被攻击时可以把目标改成自己）。
     /// </summary>
+    /// <summary>角色根据战场状态刷新动态攻防（狂战士 / 浪客）。</summary>
+    public interface IDynamicStats
+    {
+        void RefreshDynamicStats(PlayerState owner, GameManager manager);
+    }
+
     public interface IAttackRedirector
     {
         /// <summary>

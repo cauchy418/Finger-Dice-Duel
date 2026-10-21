@@ -575,15 +575,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "priest",
+      "key": "cleric",
       "group": "Classes",
-      "path": "Classes/priest.png",
+      "path": "Classes/cleric.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/priest.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/cleric.png",
       "nativeWidth": 429,
       "nativeHeight": 430,
       "crop": {

@@ -497,7 +497,7 @@ PASS skill avoids hand SkipTurnButton
 PASS interactive SkipTurnButton
 PASS raycast reaches SkipTurnButton
 PASS hexer skip opens health target and applies same health
-PASS priest attack or heal request
+PASS cleric attack or heal request
 PASS action inside canvas DeclineButton
 PASS painted skill emblem DeclineButton
 PASS skill label fits DeclineButton
@@ -540,8 +540,8 @@ PASS skill avoids hand SkillChoice1
 PASS skill buttons do not overlap
 PASS interactive SkillChoice0
 PASS raycast reaches SkillChoice0
-PASS priest target button heals chosen player
-PASS priest extra-nine heal request
+PASS cleric target button heals chosen player
+PASS cleric extra-nine heal request
 PASS action inside canvas SkillChoice0
 PASS painted skill emblem SkillChoice0
 PASS skill label fits SkillChoice0

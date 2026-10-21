@@ -214,7 +214,7 @@ namespace FingerDiceDuel.Tests
             // 规则一栏里出现的数字（如"和 7"、"潜行 7"、"追加"）都应与逻辑类一致
             Assert.AreEqual(7, WerewolfLogic.TriggerSum, "狼人触发和应是 7。");
             Assert.AreEqual(7, AssassinLogic.StealthValue, "刺客潜行值应是 7。");
-            Assert.AreEqual(9, PriestLogic.DoubleNineValue, "牧师双 9 判定值是 9。");
+            Assert.AreEqual(9, ClericLogic.DoubleNineValue, "牧师双 9 判定值是 9。");
             Assert.AreEqual(1, RangerLogic.DodgeFromValue, "游侠闪避的来源值是 1。");
             Assert.AreEqual(2, RangerLogic.PowerFromValue, "游侠强化的来源值是 2。");
             Assert.AreEqual(2, NinjaLogic.HitCount, "忍者攻击是两段。");

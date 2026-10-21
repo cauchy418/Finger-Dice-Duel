@@ -246,7 +246,7 @@ namespace FingerDiceDuel.Tests
             {
                 // 守序善良：圣武士 牧师 骑士
                 { CharacterDefinition.PaladinId, Alignment.LawfulGood },
-                { CharacterDefinition.PriestId, Alignment.LawfulGood },
+                { CharacterDefinition.ClericId, Alignment.LawfulGood },
                 { CharacterDefinition.KnightId, Alignment.LawfulGood },
                 // 守序中立：剑客 战士
                 { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },

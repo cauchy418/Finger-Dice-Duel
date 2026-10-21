@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Healing_another_player_reports_actual_capped_health_gain()
         {
-            var actor = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var actor = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(8); other.SetHealthExact(19);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);

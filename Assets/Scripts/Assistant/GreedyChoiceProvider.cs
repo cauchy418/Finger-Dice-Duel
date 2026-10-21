@@ -439,7 +439,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 35% 大致对应"再挨一到两下就没了"。
         /// </summary>
-        public int PriestHealHealthPercent { get; set; } = 35;
+        public int ClericHealHealthPercent { get; set; } = 35;
 
         /// <summary>
         /// 当前对局（由 <see cref="BoardController"/> 在询问之前注入）。
@@ -1646,8 +1646,8 @@ namespace FingerDiceDuel.Assistant
                 case HandEffect.RangerDodge:
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
 
-                case HandEffect.PriestHealTarget:
-                case HandEffect.PriestExtraHealTarget:
+                case HandEffect.ClericHealTarget:
+                case HandEffect.ClericExtraHealTarget:
                     {
                         // 玩家给的规则：
                         //   只有 2v2 什么时候回给队友要写，
@@ -1674,7 +1674,7 @@ namespace FingerDiceDuel.Assistant
                         return c[0];
                     }
 
-                case HandEffect.PriestAttackOrHeal:
+                case HandEffect.ClericAttackOrHeal:
                     // 玩家给的规则：
                     //   "牧师只需要检查在**危险时刻优先给回血**，否则**全部进攻**"
                     //
@@ -1688,7 +1688,7 @@ namespace FingerDiceDuel.Assistant
                     if (decider == null) return null;
 
                     bool danger = decider.Health * 100
-                                  <= decider.MaximumHealth * PriestHealHealthPercent;
+                                  <= decider.MaximumHealth * ClericHealHealthPercent;
 
                     if (!danger) return null;      // 不危险 -> 全部进攻（放弃 = 当攻击打）
 

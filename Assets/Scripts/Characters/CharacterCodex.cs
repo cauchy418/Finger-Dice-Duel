@@ -97,7 +97,7 @@ namespace FingerDiceDuel.Characters
                     "与咒术师：咒术师无视护盾，但锁手仍然生效。",
                 });
 
-            Add(CharacterDefinition.PriestId, "Priest", Alignment.LawfulGood,
+            Add(CharacterDefinition.ClericId, "Cleric", Alignment.LawfulGood,
                 shortSkill: "4/6/8 可转回复；回复先净化再回血；9 可给别人，双9再回一次。",
                 playGuide: "4/6/8 是二选一，所以它们比别的角色更灵活。"
                          + "危险时才回血，否则全部进攻 —— 只顾回血会打成僵局。"
@@ -394,6 +394,25 @@ namespace FingerDiceDuel.Characters
                     "与法师体系：给目标削弱防御会与强酸 −2 叠加，等于双重破防。",
                     "与邪术师：被推开到距离 3 时，他的技能范围也跟着够不到远处的人。",
                 });
+
+            Add(CharacterDefinition.OathbreakerId, "Oathbreaker", Alignment.LawfulEvil,
+                shortSkill: "5 改为 5 点钝击攻击；被攻击时可把目标转给持完整盾者。",
+                playGuide: "5 不再是防御，而是稳定伤害。留 5 逼对手先处理你的盾。",
+                counter: "别让持盾者站在他身边；攻击时注意目标可能被转走。",
+                interactions: new[] { "与圣武士：转移后圣武士仍可代挡。" });
+
+            Add(CharacterDefinition.BerserkerId, "Berserker", Alignment.NeutralEvil,
+                shortSkill: "生命上限 +5；9 改为 9 点挥砍攻击；每少 5 血 +1/+1；造成伤害回一半。",
+                playGuide: "血量越低越强，但别把自己送进斩杀线；9 现在是主要输出。",
+                counter: "爆发要一次打死，别让他反复用伤害回血。",
+                interactions: new[] { "与流血/燃烧：持续掉血也会触发他的失血加成。" });
+
+            Add(CharacterDefinition.WandererId, "Wanderer", Alignment.ChaoticGood,
+                shortSkill: "按场上最高与最低体力差 ÷3 获得额外攻防；挥砍伤害。",
+                playGuide: "场上血量差越大越强，适合在残局或有人被集火时发力。",
+                counter: "尽量把双方血量拉平，削弱他的动态加成。",
+                interactions: new[] { "与狂战士：狂战士血量越低，浪客的差值可能越大。" });
+
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

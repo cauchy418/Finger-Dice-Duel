@@ -992,153 +992,153 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 牧师 Priest（-2 / 0）
+        // 牧师 Cleric（-2 / 0）
         // ============================================================
 
         [Test]
-        public void Priest_has_minus_one_attack_and_minus_one_defense()
+        public void Cleric_has_minus_one_attack_and_minus_one_defense()
         {
             // 规则变更：攻防从 -2 / 0 改为 **-1 / -1**
-            PlayerState priest = CharacterFactory.CreatePlayer("P", CharacterDefinition.Priest);
+            PlayerState cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
 
-            Assert.AreEqual(-1, priest.Character.AttackBonus);
-            Assert.AreEqual(-1, priest.Character.DefenseBonus);
-            Assert.AreEqual(PlayerState.DefaultMaxHealth, priest.MaximumHealth);
+            Assert.AreEqual(-1, cleric.Character.AttackBonus);
+            Assert.AreEqual(-1, cleric.Character.DefenseBonus);
+            Assert.AreEqual(PlayerState.DefaultMaxHealth, cleric.MaximumHealth);
         }
 
         [Test]
-        public void Priest_heal_goes_to_self_by_default()
+        public void Cleric_heal_goes_to_self_by_default()
         {
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);          // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(cleric.LeftHand, 8);          // 8 + 1 = 9 -> 回复
             blank.TakeDamage(10);
-            priest.TakeDamage(10);
+            cleric.TakeDamage(10);
 
-            int before = priest.Health;
-            _choiceA.Decline(HandEffect.PriestHealTarget);
+            int before = cleric.Health;
+            _choiceA.Decline(HandEffect.ClericHealTarget);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(before + 9, priest.Health, "放弃选择 = 回给自己。");
+            Assert.AreEqual(before + 9, cleric.Health, "放弃选择 = 回给自己。");
         }
 
         [Test]
-        public void Priest_can_redirect_heal_to_the_opponent()
+        public void Cleric_can_redirect_heal_to_the_opponent()
         {
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);          // 8 + 1 = 9 -> 回复
-            priest.TakeDamage(10);
+            TestSetup.SetHand(cleric.LeftHand, 8);          // 8 + 1 = 9 -> 回复
+            cleric.TakeDamage(10);
             blank.TakeDamage(18);                           // 对手残血
 
-            int priestBefore = priest.Health;
+            int clericBefore = cleric.Health;
             int blankBefore = blank.Health;
 
             // 选对手的一只手 = 把这次回复给对手
             _choiceA.ChooseHand(blank.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(priestBefore, priest.Health, "牧师自己不应回血。");
+            Assert.AreEqual(clericBefore, cleric.Health, "牧师自己不应回血。");
             Assert.AreEqual(blankBefore + 9, blank.Health, "对手应回 9 点。");
         }
 
         [Test]
-        public void Priest_heal_never_exceeds_max_health()
+        public void Cleric_heal_never_exceeds_max_health()
         {
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);
+            TestSetup.SetHand(cleric.LeftHand, 8);
             blank.TakeDamage(3);                            // 只差 3 点满血
 
             _choiceA.ChooseHand(blank.LeftHand);
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
             Assert.AreEqual(blank.MaximumHealth, blank.Health, "回复不应超过上限。");
         }
 
         [Test]
-        public void Priest_double_nine_after_operation_stacks_with_the_main_heal()
+        public void Cleric_double_nine_after_operation_stacks_with_the_main_heal()
         {
             // 触发条件是"**运算后**双手同时为 9"。
             //
             // 构造：运算源 8 + 目标 1 = 9（回复），另一只手也是 9 -> 运算后双 9。
             // 两次回复（额外 9 + 本次 9）各选各的目标；这里都回自己。
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);      // 8 + 1 = 9 -> 回复
-            TestSetup.SetHand(priest.RightHand, 9);
+            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(cleric.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            priest.TakeDamage(19);                      // 只剩 1
+            cleric.TakeDamage(19);                      // 只剩 1
 
-            _choiceA.SetChoice(HandEffect.PriestExtraHealTarget, priest.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericExtraHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(9, priest.LeftHand.Value, "8 + 1 = 9。");
-            Assert.AreEqual(9, priest.RightHand.Value, "另一只手是 9。");
-            Assert.True(PriestLogic.HasDoubleNineNow(priest), "运算后应双手同时为 9。");
-            Assert.AreEqual(1 + PriestLogic.ExtraHealAmount + PriestLogic.HealAmount,
-                priest.Health,
+            Assert.AreEqual(9, cleric.LeftHand.Value, "8 + 1 = 9。");
+            Assert.AreEqual(9, cleric.RightHand.Value, "另一只手是 9。");
+            Assert.True(ClericLogic.HasDoubleNineNow(cleric), "运算后应双手同时为 9。");
+            Assert.AreEqual(1 + ClericLogic.ExtraHealAmount + ClericLogic.HealAmount,
+                cleric.Health,
                 "额外回 9 + 本次 9 的回复 = 共 18。");
         }
 
         [Test]
-        public void Priest_double_nine_bonus_target_is_chosen_by_the_player()
+        public void Cleric_double_nine_bonus_target_is_chosen_by_the_player()
         {
             // 规则变更：双 9 的那次**额外**回复不再固定回自己，而是由玩家选目标。
             // 这里让额外回复给对手、本次 9 的回复给自己，验证两者互不干扰。
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);      // 8 + 1 = 9 -> 回复
-            TestSetup.SetHand(priest.RightHand, 9);
+            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(cleric.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            priest.TakeDamage(19);                      // 只剩 1
+            cleric.TakeDamage(19);                      // 只剩 1
             blank.TakeDamage(15);                       // 只剩 5
 
             // 顺序：先"额外回复给谁"，再"本次回复给谁"
-            _choiceA.SetChoice(HandEffect.PriestExtraHealTarget, blank.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericExtraHealTarget, blank.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(1 + PriestLogic.HealAmount, priest.Health,
+            Assert.AreEqual(1 + ClericLogic.HealAmount, cleric.Health,
                 "本次 9 的回复给了自己。");
-            Assert.AreEqual(5 + PriestLogic.ExtraHealAmount, blank.Health,
+            Assert.AreEqual(5 + ClericLogic.ExtraHealAmount, blank.Health,
                 "双 9 的**额外**回复这次给了对手（不再固定回自己）。");
         }
 
         [Test]
-        public void Priest_double_nine_extra_heal_defaults_to_self_when_not_chosen()
+        public void Cleric_double_nine_extra_heal_defaults_to_self_when_not_chosen()
         {
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            PlayerState priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            PlayerState cleric = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(priest.LeftHand, 8);
-            TestSetup.SetHand(priest.RightHand, 9);
+            TestSetup.SetHand(cleric.LeftHand, 8);
+            TestSetup.SetHand(cleric.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            priest.TakeDamage(19);
+            cleric.TakeDamage(19);
 
-            _choiceA.Decline(HandEffect.PriestExtraHealTarget);   // 不选 = 回自己
-            _choiceA.Decline(HandEffect.PriestHealTarget);
+            _choiceA.Decline(HandEffect.ClericExtraHealTarget);   // 不选 = 回自己
+            _choiceA.Decline(HandEffect.ClericHealTarget);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(1 + PriestLogic.HealAmount + PriestLogic.ExtraHealAmount,
-                priest.Health, "两次回复都回自己，共 18。");
+            Assert.AreEqual(1 + ClericLogic.HealAmount + ClericLogic.ExtraHealAmount,
+                cleric.Health, "两次回复都回自己，共 18。");
         }
 
         // ============================================================
@@ -1147,94 +1147,94 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         /// <summary>造一局：牧师（A）打白板（B），让运算结果为 attackValue。</summary>
-        private GameManager PriestAttacksWith(int attackValue, out PlayerState priest,
+        private GameManager ClericAttacksWith(int attackValue, out PlayerState cleric,
                                               out PlayerState blank)
         {
-            GameManager game = Match(CharacterDefinition.Priest, CharacterDefinition.Blank);
-            priest = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
+            cleric = game.PlayerA;
             blank = game.PlayerB;
 
             // 运算源 = attackValue - 1，目标手 = 1 -> 结果 = attackValue
-            TestSetup.SetHand(priest.LeftHand, attackValue - 1);
-            TestSetup.SetHand(priest.RightHand, 5);
+            TestSetup.SetHand(cleric.LeftHand, attackValue - 1);
+            TestSetup.SetHand(cleric.RightHand, 5);
             TestSetup.SetHand(blank.RightHand, 1);
             return game;
         }
 
         [Test]
-        public void Priest_choosing_heal_on_a_four_heals_four_and_deals_no_damage()
+        public void Cleric_choosing_heal_on_a_four_heals_four_and_deals_no_damage()
         {
-            GameManager game = PriestAttacksWith(4, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
 
-            TestSetup.SetHealth(priest, 10);
+            TestSetup.SetHealth(cleric, 10);
             int blankBefore = blank.Health;
 
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);   // 选"当回复用"
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);     // 回给自己
+            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);   // 选"当回复用"
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);     // 回给自己
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(10 + 4, priest.Health, "4 当回复用 -> 回 4 点。");
+            Assert.AreEqual(10 + 4, cleric.Health, "4 当回复用 -> 回 4 点。");
             Assert.AreEqual(blankBefore, blank.Health, "选择回复时不造成任何伤害。");
         }
 
         [Test]
-        public void Priest_choosing_heal_on_a_six_heals_six()
+        public void Cleric_choosing_heal_on_a_six_heals_six()
         {
-            GameManager game = PriestAttacksWith(6, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
 
-            TestSetup.SetHealth(priest, 8);
+            TestSetup.SetHealth(cleric, 8);
 
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(8 + 6, priest.Health, "6 当回复用 -> 回 6 点。");
+            Assert.AreEqual(8 + 6, cleric.Health, "6 当回复用 -> 回 6 点。");
         }
 
         [Test]
-        public void Priest_choosing_heal_on_an_eight_heals_eight()
+        public void Cleric_choosing_heal_on_an_eight_heals_eight()
         {
-            GameManager game = PriestAttacksWith(8, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(8, out PlayerState cleric, out PlayerState blank);
 
-            TestSetup.SetHealth(priest, 5);
+            TestSetup.SetHealth(cleric, 5);
 
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(5 + 8, priest.Health, "8 当回复用 -> 回 8 点。");
+            Assert.AreEqual(5 + 8, cleric.Health, "8 当回复用 -> 回 8 点。");
         }
 
         [Test]
-        public void Priest_heal_value_is_not_affected_by_attack_bonus()
+        public void Cleric_heal_value_is_not_affected_by_attack_bonus()
         {
             // 牧师的攻 -1 只作用于"攻击"，回复量固定等于该数字（不受攻防影响）。
-            GameManager game = PriestAttacksWith(6, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
 
-            TestSetup.SetHealth(priest, 8);
-            Assert.AreEqual(-1, priest.Character.AttackBonus, "牧师攻 -1（对照组）");
+            TestSetup.SetHealth(cleric, 8);
+            Assert.AreEqual(-1, cleric.Character.AttackBonus, "牧师攻 -1（对照组）");
 
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, priest.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(8 + 6, priest.Health, "回复 6 —— 不能被攻 -1 改成 5。");
+            Assert.AreEqual(8 + 6, cleric.Health, "回复 6 —— 不能被攻 -1 改成 5。");
         }
 
         [Test]
-        public void Priest_declining_heal_treats_it_as_a_normal_attack()
+        public void Cleric_declining_heal_treats_it_as_a_normal_attack()
         {
-            GameManager game = PriestAttacksWith(4, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
 
             int blankBefore = blank.Health;
 
-            _choiceA.Decline(HandEffect.PriestAttackOrHeal);   // 不回复 = 当攻击打
+            _choiceA.Decline(HandEffect.ClericAttackOrHeal);   // 不回复 = 当攻击打
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
             // 白板防 0、牧师攻 -1 -> 4 - 1 = 3
             Assert.AreEqual(blankBefore - 3, blank.Health,
@@ -1242,72 +1242,72 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Priest_can_heal_the_opponent_with_a_four_six_or_eight()
+        public void Cleric_can_heal_the_opponent_with_a_four_six_or_eight()
         {
             // 给他人回复是为多人玩法预留的辅助能力（不是 bug）。
-            GameManager game = PriestAttacksWith(6, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
 
             TestSetup.SetHealth(blank, 10);
-            int priestBefore = priest.Health;
+            int clericBefore = cleric.Health;
 
             // 目标与"攻击还是回复"分两段：
-            //   ① 选目标手之前 -> PriestAttackOrHeal（选回复）
-            //   ② 选目标手之后 -> PriestHealTarget（回给谁）
-            _choiceA.SetChoice(HandEffect.PriestAttackOrHeal, priest.LeftHand);
-            _choiceA.SetChoice(HandEffect.PriestHealTarget, blank.LeftHand);   // 回给对手
+            //   ① 选目标手之前 -> ClericAttackOrHeal（选回复）
+            //   ② 选目标手之后 -> ClericHealTarget（回给谁）
+            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.ClericHealTarget, blank.LeftHand);   // 回给对手
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
             Assert.AreEqual(10 + 6, blank.Health, "6 当回复用可以回给对手。");
-            Assert.AreEqual(priestBefore, priest.Health, "回给他人时自己不变。");
+            Assert.AreEqual(clericBefore, cleric.Health, "回给他人时自己不变。");
         }
 
         [Test]
-        public void Priest_gets_one_choice_per_stage_for_four_six_eight()
+        public void Cleric_gets_one_choice_per_stage_for_four_six_eight()
         {
             // 玩家要求的顺序：运算出 4 -> **先**弹出「攻击 / 回复」-> 选完再问目标。
             //
             // 所以"攻击还是回复"属于【选目标手之前】的抉择，
             // 而"回复给谁"属于【选目标手之后】的抉择，两者分开。
-            var priest = CharacterFactory.CreatePlayer("P", CharacterDefinition.Priest);
+            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(priest.LeftHand, 3);       // 3 + 1 = 4 -> 攻击/回复 二选一
-            TestSetup.SetHand(priest.RightHand, 5);
+            TestSetup.SetHand(cleric.LeftHand, 3);       // 3 + 1 = 4 -> 攻击/回复 二选一
+            TestSetup.SetHand(cleric.RightHand, 5);
             TestSetup.SetHand(blank.RightHand, 1);
 
-            var context = new PreTurnChoiceContext(priest, blank,
-                                                   priest.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(cleric, blank,
+                                                   cleric.LeftHand, blank.RightHand);
             Assert.AreEqual(HandEffectType.Attack4, context.Effect, "3 + 1 = 4");
 
             // ① 选目标手**之前**：只有一个"攻击还是回复"
             var pre = new List<ChoiceRequest>();
-            (priest.Character as ITargetHandChoiceProvider)
+            (cleric.Character as ITargetHandChoiceProvider)
                 ?.CollectPreTargetChoices(context, pre);
 
             Assert.AreEqual(1, pre.Count,
                 $"4/6/8 在选目标前应只有**一个**抉择。实际：{pre.Count}");
-            Assert.AreEqual(HandEffect.PriestAttackOrHeal, pre[0].Effect,
+            Assert.AreEqual(HandEffect.ClericAttackOrHeal, pre[0].Effect,
                 "那一个抉择应是「攻击还是回复」。");
             Assert.True(pre[0].DeclineResult == null,
                 "放弃应是'不回复'（当攻击打）。");
 
             // ② 选目标手**之后**：注入"选了回复"的答案 -> 应问一次"回复给谁"
             context.AnsweredLookup = (e, v) =>
-                e == HandEffect.PriestAttackOrHeal ? priest.LeftHand : null;
+                e == HandEffect.ClericAttackOrHeal ? cleric.LeftHand : null;
 
             var post = new List<ChoiceRequest>();
-            (priest.Character as IPreTurnChoiceProvider)
+            (cleric.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
 
             Assert.AreEqual(1, post.Count, "选了回复 -> 应问一次「回复给谁」。");
-            Assert.AreEqual(HandEffect.PriestHealTarget, post[0].Effect);
+            Assert.AreEqual(HandEffect.ClericHealTarget, post[0].Effect);
 
             // ③ 反向：答了攻击 -> 不该问回复目标
             context.AnsweredLookup = (e, v) => null;
 
             var post2 = new List<ChoiceRequest>();
-            (priest.Character as IPreTurnChoiceProvider)
+            (cleric.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post2);
 
             Assert.AreEqual(0, post2.Count,
@@ -1315,111 +1315,111 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Priest_declining_the_heal_question_does_not_ask_for_a_target()
+        public void Cleric_declining_the_heal_question_does_not_ask_for_a_target()
         {
             // 端到端回归：放弃"当回复用"之后，不应再停留在任何抉择阶段。
-            GameManager game = PriestAttacksWith(4, out PlayerState priest, out PlayerState blank);
+            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
 
             int blankBefore = blank.Health;
-            _choiceA.Decline(HandEffect.PriestAttackOrHeal);
+            _choiceA.Decline(HandEffect.ClericAttackOrHeal);
 
-            game.ExecuteTurn(priest, priest.LeftHand, blank.RightHand);
+            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
 
             Assert.AreEqual(blankBefore - 3, blank.Health,
                 "放弃回复 = 普通攻击（4 - 牧师攻1 - 白板防0 = 3），且不再追问目标。");
         }
 
         [Test]
-        public void Priest_heal_choice_is_offered_for_four_six_and_eight()
+        public void Cleric_heal_choice_is_offered_for_four_six_and_eight()
         {
-            var priest = CharacterFactory.CreatePlayer("P", CharacterDefinition.Priest);
+            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
             foreach (int value in new[] { 4, 6, 8 })
             {
-                TestSetup.SetHand(priest.LeftHand, value - 1);
-                TestSetup.SetHand(priest.RightHand, 5);
+                TestSetup.SetHand(cleric.LeftHand, value - 1);
+                TestSetup.SetHand(cleric.RightHand, 5);
                 TestSetup.SetHand(blank.RightHand, 1);
 
-                var context = new PreTurnChoiceContext(priest, blank,
-                                                       priest.LeftHand, blank.RightHand);
+                var context = new PreTurnChoiceContext(cleric, blank,
+                                                       cleric.LeftHand, blank.RightHand);
 
                 // 4/6/8 的「攻击还是回复」是**选目标手之前**的那一次抉择
                 var requests = new List<ChoiceRequest>();
-                (priest.Character as ITargetHandChoiceProvider)
+                (cleric.Character as ITargetHandChoiceProvider)
                     ?.CollectPreTargetChoices(context, requests);
 
                 bool hasChoice = false;
                 for (int i = 0; i < requests.Count; i++)
-                    if (requests[i].Effect == HandEffect.PriestAttackOrHeal) hasChoice = true;
+                    if (requests[i].Effect == HandEffect.ClericAttackOrHeal) hasChoice = true;
 
                 Assert.True(hasChoice, $"运算出 {value} 时应提供「攻击还是回复」的抉择。");
 
                 // 结果确实是该数字
                 Assert.AreEqual(value,
-                    Hand.ComputeSum(priest.LeftHand.Value, blank.RightHand.Value),
+                    Hand.ComputeSum(cleric.LeftHand.Value, blank.RightHand.Value),
                     $"运算结果应为 {value}。");
             }
         }
 
         [Test]
-        public void Priest_nine_does_not_offer_an_attack_or_heal_choice()
+        public void Cleric_nine_does_not_offer_an_attack_or_heal_choice()
         {
             // 出 9 时本次运算本身就是回复 -> 直接问"回复给谁"，
             // 没有"攻击还是回复"这一步（玩家要求的顺序）。
-            var priest = CharacterFactory.CreatePlayer("P", CharacterDefinition.Priest);
+            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(priest.LeftHand, 8);      // 8 + 1 = 9
+            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9
             TestSetup.SetHand(blank.RightHand, 1);
 
-            var context = new PreTurnChoiceContext(priest, blank,
-                                                   priest.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(cleric, blank,
+                                                   cleric.LeftHand, blank.RightHand);
             Assert.AreEqual(HandEffectType.Heal, context.Effect);
 
             var pre = new List<ChoiceRequest>();
-            (priest.Character as ITargetHandChoiceProvider)
+            (cleric.Character as ITargetHandChoiceProvider)
                 ?.CollectPreTargetChoices(context, pre);
             Assert.AreEqual(0, pre.Count, "出 9 时不该有'攻击还是回复'。");
 
             var post = new List<ChoiceRequest>();
-            (priest.Character as IPreTurnChoiceProvider)
+            (cleric.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
             Assert.AreEqual(1, post.Count, "出 9 应问一次'回复给谁'。");
-            Assert.AreEqual(HandEffect.PriestHealTarget, post[0].Effect);
+            Assert.AreEqual(HandEffect.ClericHealTarget, post[0].Effect);
             Assert.False(post[0].ShouldSkip(), "出 9 时必然要问回复目标。");
         }
 
         [Test]
-        public void Priest_double_nine_asks_for_two_heal_targets()
+        public void Cleric_double_nine_asks_for_two_heal_targets()
         {
             // 玩家要求：双 9 -> 选**两次**回复目标（先额外、再本次）
             //
             // 「双 9」在运算**前**就能预测：运算源 8 + 目标 1 = 9，
             // 另一只手本来就是 9 -> 运算后双手都是 9。
             // （这与剑客"追加攻击"的判定同类，都是运算前可算。）
-            var priest = CharacterFactory.CreatePlayer("P", CharacterDefinition.Priest);
+            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(priest.LeftHand, 8);      // 运算源（运算前是 8）
-            TestSetup.SetHand(priest.RightHand, 9);     // 另一只手是 9
+            TestSetup.SetHand(cleric.LeftHand, 8);      // 运算源（运算前是 8）
+            TestSetup.SetHand(cleric.RightHand, 9);     // 另一只手是 9
             TestSetup.SetHand(blank.RightHand, 1);      // 8 + 1 = 9
 
-            var context = new PreTurnChoiceContext(priest, blank,
-                                                   priest.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(cleric, blank,
+                                                   cleric.LeftHand, blank.RightHand);
 
-            Assert.True(PriestLogic.HasDoubleNineAfter(context),
+            Assert.True(ClericLogic.HasDoubleNineAfter(context),
                 "8 + 1 = 9 且另一只手是 9 -> 运算后应双 9（运算前可预测）。");
 
             var post = new List<ChoiceRequest>();
-            (priest.Character as IPreTurnChoiceProvider)
+            (cleric.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
 
             Assert.AreEqual(2, post.Count,
                 $"双 9 应问**两次**回复目标。实际：{post.Count}");
-            Assert.AreEqual(HandEffect.PriestExtraHealTarget, post[0].Effect,
+            Assert.AreEqual(HandEffect.ClericExtraHealTarget, post[0].Effect,
                 "第一次应问「额外回复」给谁（玩家要求先额外、再本次）。");
-            Assert.AreEqual(HandEffect.PriestHealTarget, post[1].Effect,
+            Assert.AreEqual(HandEffect.ClericHealTarget, post[1].Effect,
                 "第二次应问「本次回复」给谁。");
         }
         // 游侠 Ranger（0 / -2）
@@ -1712,7 +1712,7 @@ namespace FingerDiceDuel.Tests
                          CharacterDefinition.Blank,
                          CharacterDefinition.Fighter,
                          CharacterDefinition.Barbarian,
-                         CharacterDefinition.Priest,
+                         CharacterDefinition.Cleric,
                          CharacterDefinition.Werewolf,
                      })
             {

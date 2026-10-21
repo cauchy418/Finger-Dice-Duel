@@ -268,7 +268,7 @@ namespace FingerDiceDuel.Tests
                             hit = true;
                         break;
 
-                    case CharacterDefinition.PriestId:
+                    case CharacterDefinition.ClericId:
                         // 玩家给牧师的规则："危险时刻优先给回血，否则全部进攻"
                         // -> 打出攻击或回复都算在按规则行动
                         if (t.Effect == HandEffectType.Attack4
@@ -354,7 +354,7 @@ namespace FingerDiceDuel.Tests
                     // 开赌在回合内已经记录；这里兜底"从未开赌"
                     break;
 
-                case CharacterDefinition.PriestId:
+                case CharacterDefinition.ClericId:
                     // 危险时回血 / 否则进攻 —— 都在回合内判定
                     break;
 

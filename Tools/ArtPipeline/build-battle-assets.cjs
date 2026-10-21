@@ -84,7 +84,7 @@ async function icons(){
    ['fighter','战士',`<g transform="translate(17 20) scale(.7)">${shield}</g>`+sword],
    ['curseweaver','咒术师',line('M64 13L113 106H15Z',gold,4)+line('M38 75Q37 37 68 47 101 61 75 84 51 106 42 77 33 52 61 49 86 44 88 71',ivory,5)],
    ['barbarian','野蛮人',poly('M57 13H71V114H57Z')+poly('M56 27Q32 30 20 15L15 66Q39 55 56 57Z')+poly('M72 27Q96 30 108 15L113 66Q89 55 72 57Z')],
-   ['priest','牧师',line('M40 20L30 67H98L88 20 M64 10V37 M50 23H78 M35 67Q39 106 64 112 89 106 93 67 M21 78L13 85 M107 78L115 85',gold,5)+circ(64,80,10,gold,3)],
+   ['cleric','牧师',line('M40 20L30 67H98L88 20 M64 10V37 M50 23H78 M35 67Q39 106 64 112 89 106 93 67 M21 78L13 85 M107 78L115 85',gold,5)+circ(64,80,10,gold,3)],
    ['ranger','游侠',bow+poly('M15 92Q12 71 35 66 37 87 15 92Z')],
    ['werewolf','狼人',poly('M30 16L49 31 80 30 99 14 95 58 103 79 76 110H52L25 79 33 58Z')+line('M40 54L54 61 M88 54L74 61 M54 79L64 88 74 79 M64 88V98','#3E2C1B',5)],
    ['swordsman','剑客',`<g transform="translate(-10 3) rotate(-15 64 64)">${sword}</g><g transform="translate(24 -4) rotate(15 64 64) scale(.85)">${sword}</g>`],

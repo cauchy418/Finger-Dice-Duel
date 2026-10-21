@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Fighter] = () => new FighterLogic();
             _registry[SpecialLogicType.Curseweaver] = () => new CurseweaverLogic();
             _registry[SpecialLogicType.Barbarian] = () => new BarbarianLogic();
-            _registry[SpecialLogicType.Priest] = () => new PriestLogic();
+            _registry[SpecialLogicType.Cleric] = () => new ClericLogic();
             _registry[SpecialLogicType.Ranger] = () => new RangerLogic();
             _registry[SpecialLogicType.Werewolf] = () => new WerewolfLogic();
             _registry[SpecialLogicType.Swordsman] = () => new SwordsmanLogic();
@@ -62,6 +62,9 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Sorcerer] = () => new SorcererLogic();
             _registry[SpecialLogicType.Warlock] = () => new WarlockLogic();
             _registry[SpecialLogicType.Bard] = () => new BardLogic();
+            _registry[SpecialLogicType.Oathbreaker] = () => new OathbreakerLogic();
+            _registry[SpecialLogicType.Berserker] = () => new BerserkerLogic();
+            _registry[SpecialLogicType.Wanderer] = () => new WandererLogic();
         }
 
         /// <summary>

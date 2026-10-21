@@ -196,17 +196,17 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Decay_blocks_healing_during_a_turn()
         {
-            PlayerState priest = Make("牧", CharacterDefinition.Priest);
+            PlayerState cleric = Make("牧", CharacterDefinition.Cleric);
             PlayerState foe = Make("敌", CharacterDefinition.Soldier);
-            GameManager game = MakeGame(priest, foe);
+            GameManager game = MakeGame(cleric, foe);
 
-            priest.TakeDamage(10);
-            int hurt = priest.Health;
+            cleric.TakeDamage(10);
+            int hurt = cleric.Health;
 
-            priest.ApplyStatus(StatusEffect.Decay);
-            priest.Heal(9);
+            cleric.ApplyStatus(StatusEffect.Decay);
+            cleric.Heal(9);
 
-            Assert.AreEqual(hurt, priest.Health, "腐朽期间回血完全无效。");
+            Assert.AreEqual(hurt, cleric.Health, "腐朽期间回血完全无效。");
         }
 
         [Test]

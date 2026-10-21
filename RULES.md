@@ -252,7 +252,7 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 | 战士 Fighter | +1 / 0 | 1 | 连锁破盾、合盾修复；两种主动碎盾攻击附流血 2 回合，见 §8.8 |
 | 咒术师 Curseweaver | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成 |
 | 野蛮人 Barbarian | 0 / +1 | 1 | 合盾时可锁对手一只手，直到该盾破碎 |
-| 牧师 Priest | −1 / −1 | **∞** | 见 §8.1 |
+| 牧师 Cleric | −1 / −1 | **∞** | 见 §8.1 |
 | 游侠 Ranger | 0 / −2 | 1 | 见 §8.2 |
 | 狼人 Werewolf | −2 / −2 | 1 | 生命上限 +5（25）；运算后双手和为 7 时回复上限一半并永久 +1/+1 |
 | 剑客 Swordsman | +2 / −1 | 1 | 运算出 4/6/8 且**另一只手与该结果同值**时，主攻击前先追加一次固定 4/6/8 伤害、**无视双方攻防加成**的攻击，追加命中附流血 2 回合 |
@@ -272,6 +272,9 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 | 术士 Sorcerer | 0 / −1 | **∞** | 见 §8.24 |
 | 邪术师 Warlock | 0 / −1 | **∞** | 见 §8.25 |
 | 吟游诗人 Bard | 0 / −1 | **3** | 见 §8.26 |
+| 破誓者 Oathbreaker | +2 / 0 | 1 | 5 改为 5 点钝击攻击；被攻击时可转移给持盾者 |
+| 狂战士 Berserker | −1 / −2 | 1 | 生命 +5；9 改为 9 点挥砍攻击；失血每 5 点 +1/+1；伤害回一半 |
+| 浪客 Wanderer | +1 / −1 | 1 | 按场上最高/最低体力差 ÷3 获得动态攻防；挥砍 |
 
 > **攻击距离**：到对方在**座位环**上的最短距离（阵亡者从环上摘掉），见 §18.4。
 > 大多数角色是 1；**咒术师 / 牧师 / 妖术师 / 术士 / 邪术师无限**；
@@ -280,7 +283,7 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 > ⚠️ 「白板 Blank」已不再出现在角色选择里（由**士兵**取代），
 > 但它仍作为"未登记逻辑类型"的兜底定义保留。
 
-### 8.1 牧师 Priest
+### 8.1 牧师 Cleric
 
 - **4 / 6 / 8 二选一：当攻击打，还是当回复用。**
   - 回复量 = **该数字本身**（4 回 4、6 回 6、8 回 8），**不受攻防加成影响**。
@@ -656,7 +659,7 @@ AI 的走子评分是**字典序**（高优先级的档位压过一切低档位�
 
 ### 对手针对性价值修正
 
-**24 / 24 个角色**都有针对性配置（23 个有 `HandValueProfile`，骑士用对手侧修正），分三类：
+**27 / 27 个角色**都有针对性配置（23 个有 `HandValueProfile`，骑士用对手侧修正），分三类：
 
 1. **盾无效型**（咒术师）：5 减 50、1 减 55、8/9 各减 12
    - ⚠️ **武僧的 5 也要降**：太极对咒术师**完全失效**
@@ -1165,7 +1168,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**998 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**1036 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |

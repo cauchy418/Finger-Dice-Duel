@@ -2448,14 +2448,14 @@ namespace FingerDiceDuel.Core
             // 两步走（与交互顺序一致）：
             //   ① 前置抉择（**选目标手之前**）里玩家选的是"攻击"还是"回复"
             //   ② 若选了回复，再解析"回复给谁"（**选目标手之后**才问）
-            PlayerState priestHealTarget = null;
-            if (CharacterBehaviors.FirstImplementer<PriestLogic>(actor) != null && isAttackEffect(effect))
+            PlayerState clericHealTarget = null;
+            if (CharacterBehaviors.FirstImplementer<ClericLogic>(actor) != null && isAttackEffect(effect))
             {
                 var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
 
-                if (PriestLogic.ChoseToHeal(actor, this, sink, AnsweredLookup))
-                    priestHealTarget = PriestLogic.ResolveTarget(actor, this, sink,
-                                                                 HandEffect.PriestHealTarget);
+                if (ClericLogic.ChoseToHeal(actor, this, sink, AnsweredLookup))
+                    clericHealTarget = ClericLogic.ResolveTarget(actor, this, sink,
+                                                                 HandEffect.ClericHealTarget);
             }
 
 
@@ -2467,13 +2467,13 @@ namespace FingerDiceDuel.Core
                 case HandEffectType.Attack8:
                     {
                         // ① 牧师选择"当回复用" -> 不造成伤害，改为回复
-                        if (priestHealTarget != null)
+                        if (clericHealTarget != null)
                         {
-                            int amount = PriestLogic.HealAmountFor(effect);
-                            PlayerState target = priestHealTarget;
+                            int amount = ClericLogic.HealAmountFor(effect);
+                            PlayerState target = clericHealTarget;
 
                             int before = target?.Health ?? 0;
-                            PriestLogic.CleanseAndHeal(actor, target, amount, this);
+                            ClericLogic.CleanseAndHeal(actor, target, amount, this);
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -2612,9 +2612,9 @@ namespace FingerDiceDuel.Core
                             //    总量不是固定的 9（玩家规则），写死会让它的回复量永远错。
                             int amount = CharacterBehaviors.FirstImplementer<IHealAmountProvider>(actor) is IHealAmountProvider amountProvider
                                 ? amountProvider.HealAmountOf(actor, this)
-                                : PriestLogic.HealAmountFor(effect);
+                                : ClericLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
-                            if (healer is PriestLogic) PriestLogic.CleanseAndHeal(actor, target, amount, this);
+                            if (healer is ClericLogic) ClericLogic.CleanseAndHeal(actor, target, amount, this);
                             else target?.Heal(amount);
 
                             result.Healed = ReferenceEquals(target, actor)
@@ -3081,6 +3081,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void BeginTurn()
         {
+            RefreshDynamicStats();
             SuppressAttackDamage = false;
 
             if (CurrentPlayer?.Character
@@ -3099,6 +3100,18 @@ namespace FingerDiceDuel.Core
                 _players[i]?.ResetTurnFlags();
 
             SeedBrokenShields();
+        }
+
+        /// <summary>刷新狂战士 / 浪客等角色的动态攻防。</summary>
+        public void RefreshDynamicStats()
+        {
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null) continue;
+                if (p.Character is IDynamicStats dynamic)
+                    dynamic.RefreshDynamicStats(p, this);
+            }
         }
 
         /// <summary>

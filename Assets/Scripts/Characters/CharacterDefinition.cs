@@ -63,7 +63,10 @@ namespace FingerDiceDuel.Core
         public const string FighterId = "fighter";
         public const string CurseweaverId = "curseweaver";
         public const string BarbarianId = "barbarian";
-        public const string PriestId = "priest";
+        public const string ClericId = "cleric";
+
+        /// <summary>兼容旧存档 / 旧资源引用。</summary>
+        public const string PriestId = ClericId;
         public const string RangerId = "ranger";
         public const string WerewolfId = "werewolf";
         public const string SwordsmanId = "swordsman";
@@ -84,6 +87,9 @@ namespace FingerDiceDuel.Core
         public const string SorcererId = "sorcerer";
         public const string WarlockId = "warlock";
         public const string BardId = "bard";
+        public const string OathbreakerId = "oathbreaker";
+        public const string BerserkerId = "berserker";
+        public const string WandererId = "wanderer";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -108,10 +114,14 @@ namespace FingerDiceDuel.Core
         /// 牧师：攻击可改为回复；回复可以给任何人（自己或对手）；
         /// 双 9 额外回复。攻防 -1 / -1。
         /// </summary>
-        public static CharacterDefinition Priest { get; } = new CharacterDefinition(
-            PriestId, "牧师", SpecialLogicType.Priest,
+        public static CharacterDefinition Cleric { get; } = new CharacterDefinition(
+            ClericId, "牧师", SpecialLogicType.Cleric,
             attackBonus: -1, defenseBonus: -1,
+            englishName: "Cleric",
             description: "攻击可改为回复；回复可给任何人，先清除全部负面状态再回血；双 9 额外回复。");
+
+        /// <summary>兼容旧名。</summary>
+        public static CharacterDefinition Priest => Cleric;
 
         public static CharacterDefinition Ranger { get; } = new CharacterDefinition(
             RangerId, "游侠", SpecialLogicType.Ranger,
@@ -364,14 +374,33 @@ namespace FingerDiceDuel.Core
                          "持续到你下一次发动技能（旧的立即移除），或你死亡时立即清除。" +
                          "攻 0 / 防 -1，攻击距离 3，伤害类型穿刺。");
 
+        public static CharacterDefinition Oathbreaker { get; } = new CharacterDefinition(
+            OathbreakerId, "破誓者", SpecialLogicType.Oathbreaker,
+            attackBonus: 2, defenseBonus: 0,
+            englishName: "Oathbreaker",
+            description: "5 不再合盾，改为造成 5 点钝击伤害；攻击距离 1，攻防 +2/0。被攻击时可把目标转移给一名持完整盾牌的非攻击者（玩家自选）。");
+
+        public static CharacterDefinition Berserker { get; } = new CharacterDefinition(
+            BerserkerId, "狂战士", SpecialLogicType.Berserker,
+            attackBonus: -1, defenseBonus: -2,
+            englishName: "Berserker",
+            description: "生命上限 +5；9 不再回复，改为造成 9 点挥砍伤害；每少 5 点生命获得 +1/+1；造成伤害后回复伤害一半。攻防 -1/-2，攻击距离 1。");
+
+        public static CharacterDefinition Wanderer { get; } = new CharacterDefinition(
+            WandererId, "浪客", SpecialLogicType.Wanderer,
+            attackBonus: 1, defenseBonus: -1,
+            englishName: "Wanderer",
+            description: "额外获得 +X/+X，X = 场上最高与最低体力差 ÷ 3（向下取整）；挥砍伤害，攻防 +1/-1，攻击距离 1。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被士兵取代（玩家要求）—— 白板不再出现在选择列表里。
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
-            Soldier, Fighter, Curseweaver, Barbarian, Priest, Ranger, Werewolf,
+            Soldier, Fighter, Curseweaver, Barbarian, Cleric, Ranger, Werewolf,
             Swordsman, Ninja, Assassin, Paladin, Hexer, ArcaneArcher, Gambler, Knight,
-            Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer, Warlock, Bard
+            Monk, Giant, Thief, Hunter, Magician, Wizard, Sorcerer, Warlock, Bard,
+            Oathbreaker, Berserker, Wanderer
             // ⚠️ Warlock / Bard 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

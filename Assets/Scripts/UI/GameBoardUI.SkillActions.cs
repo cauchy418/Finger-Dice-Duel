@@ -64,8 +64,8 @@ namespace FingerDiceDuel.UI
             return a != null && a.Owns(hand) ? a : _cardsB?[0].Owner;
         }
 
-        private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.PriestHealTarget
-            || effect == HandEffect.PriestExtraHealTarget || effect == HandEffect.PaladinShockTarget;
+        private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.ClericHealTarget
+            || effect == HandEffect.ClericExtraHealTarget || effect == HandEffect.PaladinShockTarget;
 
         private string ChoiceLabel(HandEffect effect, Hand hand)
         {
@@ -80,8 +80,8 @@ namespace FingerDiceDuel.UI
                 case HandEffect.BarbarianLockTarget: return "锁定 · " + player + side;
                 case HandEffect.FighterChainBreak: return "破盾 · " + player + side;
                 case HandEffect.HexerCancel: return "取消攻击 · " + side + "+1";
-                case HandEffect.PriestHealTarget: return "回复 · " + player;
-                case HandEffect.PriestExtraHealTarget: return "额外回复 · " + player;
+                case HandEffect.ClericHealTarget: return "回复 · " + player;
+                case HandEffect.ClericExtraHealTarget: return "额外回复 · " + player;
                 case HandEffect.PaladinShockTarget: return "冲击 · " + player;
                 case HandEffect.ShieldBlock: return "抵挡 · " + side;
                 default: return "发动 · " + side;

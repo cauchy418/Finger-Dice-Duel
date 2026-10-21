@@ -107,7 +107,7 @@ namespace FingerDiceDuel.EditorTools
         {
             _boot.PlayerBIsAI = false; _boot.StartMatch(CharacterDefinition.Soldier, CharacterDefinition.Soldier);
             var definitions = new[] { CharacterDefinition.Soldier, CharacterDefinition.Fighter, CharacterDefinition.Wizard, CharacterDefinition.Ranger,
-                CharacterDefinition.Paladin, CharacterDefinition.Priest, CharacterDefinition.Assassin, CharacterDefinition.Bard };
+                CharacterDefinition.Paladin, CharacterDefinition.Cleric, CharacterDefinition.Assassin, CharacterDefinition.Bard };
             _players = new List<PlayerState>(); var sinks = new List<SimpleChoiceProvider>();
             var lookup = Field<Dictionary<PlayerState, SimpleChoiceProvider>>(_boot, "_sinkByPlayer"); lookup.Clear();
             for (int i = 0; i < count; i++)
@@ -238,11 +238,11 @@ namespace FingerDiceDuel.EditorTools
             Add(() => { _players[3].DisplayNameOverride = "吟游诗人＋圣武士"; Refresh(); Check(PanelOf(_players[3]).Find("Name").GetComponent<Text>().resizeTextForBestFit, "long dual name fits compact panel"); }); Shot("8p-long-name");
             Add(() =>
             {
-                Build(8, 5, CharacterDefinition.Priest); foreach (var p in _players) { p.LeftHand.SetValue(1); p.RightHand.SetValue(1); p.TakeDamage(5); }
+                Build(8, 5, CharacterDefinition.Cleric); foreach (var p in _players) { p.LeftHand.SetValue(1); p.RightHand.SetValue(1); p.TakeDamage(5); }
                 _me.LeftHand.SetValue(8); _me.RightHand.SetValue(9); Controller.BeginTurn(); Controller.ClickHand(_me.LeftHand); Controller.ClickHand(_players[0].LeftHand); Refresh();
-                Check(Controller.PendingEffect == HandEffect.PriestExtraHealTarget, "8p extra heal request");
+                Check(Controller.PendingEffect == HandEffect.ClericExtraHealTarget, "8p extra heal request");
                 Check(Root.GetComponentsInChildren<Button>().Count(b => b.name.StartsWith("SkillChoice")) == 8, "all eight heal targets exposed without duplicate hands");
-            }); Shot("8p-priest-targets"); Add(() => Click("SkillChoice7")); Add(() => Click("SkillChoice0"));
+            }); Shot("8p-cleric-targets"); Add(() => Click("SkillChoice7")); Add(() => Click("SkillChoice0"));
             Add(() => Check(Controller.PendingEffect == HandEffect.None, "eight-player heal buttons finish both requests"));
             Add(() =>
             {

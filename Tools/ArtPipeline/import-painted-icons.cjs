@@ -8,7 +8,7 @@ const dst=path.join(root,'Assets/Resources/Art/Battle/v1');
 const plans=[
  {group:'Damage',file:'damage-sheet.png',cols:5,rows:3,keys:['slashing','bludgeoning','piercing','thunder','acid','poison','radiant','necrotic','fire','cold','lightning','force','psychic']},
  {group:'Status',file:'status-sheet.png',cols:3,rows:3,keys:['resonance','acid','poison','blind','decay','burn','freeze','shock','stun']},
- {group:'Classes',file:'classes-a-sheet.png',cols:4,rows:2,keys:['soldier','fighter','curseweaver','barbarian','priest','ranger','werewolf','swordsman']},
+ {group:'Classes',file:'classes-a-sheet.png',cols:4,rows:2,keys:['soldier','fighter','curseweaver','barbarian','cleric','ranger','werewolf','swordsman']},
  {group:'Classes',file:'classes-b-sheet.png',cols:4,rows:2,keys:['ninja','assassin','paladin','hexer','arcane_archer','gambler','knight','monk']},
  {group:'Classes',file:'classes-c-sheet.png',cols:4,rows:2,keys:['giant','thief','hunter','magician','wizard','sorcerer','warlock','bard']}
 ];

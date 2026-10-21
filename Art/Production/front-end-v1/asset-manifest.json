@@ -1625,10 +1625,10 @@
       "path": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png"
     },
     {
-      "key": "priest",
+      "key": "cleric",
       "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/priest",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/priest.png"
+      "resourcesKey": "Art/Battle/v1/Classes/cleric",
+      "path": "Assets/Resources/Art/Battle/v1/Classes/cleric.png"
     },
     {
       "key": "ranger",

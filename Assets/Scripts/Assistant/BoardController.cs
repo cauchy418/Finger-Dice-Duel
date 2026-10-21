@@ -2760,8 +2760,8 @@ namespace FingerDiceDuel.Assistant
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
             {
                 ChoiceRequest r = _pendingRequests[i];
-                bool keep = r.Effect == HandEffect.PriestHealTarget
-                         || r.Effect == HandEffect.PriestExtraHealTarget
+                bool keep = r.Effect == HandEffect.ClericHealTarget
+                         || r.Effect == HandEffect.ClericExtraHealTarget
                          || r.Effect == HandEffect.RangerPowerShot
                          || r.Effect == HandEffect.RangerDodge
                          || r.Effect == HandEffect.WizardAbandonAttack
@@ -2800,7 +2800,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool ChoseHealInAttackOrHeal()
         {
-            if (!_answeredThisTurn.TryGetValue(AnswerKey(HandEffect.PriestAttackOrHeal, 0),
+            if (!_answeredThisTurn.TryGetValue(AnswerKey(HandEffect.ClericAttackOrHeal, 0),
                                                out Hand answer))
                 return false;
 

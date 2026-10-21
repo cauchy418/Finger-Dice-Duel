@@ -38,27 +38,27 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Priest_ai_heals_itself_and_never_the_opponent()
+        public void Cleric_ai_heals_itself_and_never_the_opponent()
         {
             // 这是修掉的真 bug：旧逻辑按"谁最缺血"选目标，
             // 于是对手更残血时，牧师会把 9 送给对手。
             var ai = new GreedyChoiceProvider();
-            var priest = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Priest);
+            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
             var opponent = CharacterFactory.CreatePlayer("乙", CharacterDefinition.Blank);
 
             // 自己满血、对手残血 —— 旧逻辑一定会选对手
-            TestSetup.SetHealth(priest, 20);
+            TestSetup.SetHealth(cleric, 20);
             TestSetup.SetHealth(opponent, 3);
 
-            var candidates = new List<Hand> { priest.LeftHand, priest.RightHand, opponent.LeftHand, opponent.RightHand };
+            var candidates = new List<Hand> { cleric.LeftHand, cleric.RightHand, opponent.LeftHand, opponent.RightHand };
             var request = new ChoiceRequest(
-                HandEffect.PriestHealTarget, "回给谁？", candidates,
-                allowDecline: false, declineResult: priest.LeftHand, decider: priest);
+                HandEffect.ClericHealTarget, "回给谁？", candidates,
+                allowDecline: false, declineResult: cleric.LeftHand, decider: cleric);
 
-            Hand chosen = ai.ChooseHandFor(request, priest);
+            Hand chosen = ai.ChooseHandFor(request, cleric);
 
-            Assert.True(ReferenceEquals(chosen, priest.LeftHand)
-                        || ReferenceEquals(chosen, priest.RightHand),
+            Assert.True(ReferenceEquals(chosen, cleric.LeftHand)
+                        || ReferenceEquals(chosen, cleric.RightHand),
                 "牧师 AI 必须回给自己，不能回给对手。");
         }
 
@@ -410,7 +410,7 @@ namespace FingerDiceDuel.Tests
         {
             var defs = new Dictionary<string, CharacterDefinition>
             {
-                { "牧师", CharacterDefinition.Priest },
+                { "牧师", CharacterDefinition.Cleric },
                 { "游侠", CharacterDefinition.Ranger },
                 { "狼人", CharacterDefinition.Werewolf },
                 { "剑客", CharacterDefinition.Swordsman },

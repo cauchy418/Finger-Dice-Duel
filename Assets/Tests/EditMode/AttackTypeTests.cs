@@ -115,12 +115,12 @@ namespace FingerDiceDuel.Tests
         // ---------------- 按距离分型 ----------------
 
         [Test]
-        public void Priest_is_bludgeoning_near_and_piercing_far()
+        public void Cleric_is_bludgeoning_near_and_piercing_far()
         {
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.PriestId, 1), "牧师 距离 1 = 钝击");
+                TypeOf(CharacterDefinition.ClericId, 1), "牧师 距离 1 = 钝击");
             Assert.AreEqual(AttackDamageType.Piercing,
-                TypeOf(CharacterDefinition.PriestId, 2), "牧师 距离 2 = 穿刺");
+                TypeOf(CharacterDefinition.ClericId, 2), "牧师 距离 2 = 穿刺");
         }
 
         [Test]

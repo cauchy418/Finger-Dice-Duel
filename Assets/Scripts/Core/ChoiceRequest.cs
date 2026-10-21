@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Core
 
         // ---------- 牧师 ----------
         /// <summary>牧师：9 的回复要回给谁。</summary>
-        PriestHealTarget,
+        ClericHealTarget,
 
         /// <summary>
         /// 牧师：运算出 4 / 6 / 8 时，选择"当攻击打"还是"当回复用"。
@@ -89,15 +89,15 @@ namespace FingerDiceDuel.Core
         /// 选回复时回复量就是该数字本身（4 回 4、6 回 6、8 回 8），
         /// **不受攻击加成影响**；目标可以是自己或对手（后者为多人玩法预留）。
         /// </summary>
-        PriestAttackOrHeal,
+        ClericAttackOrHeal,
 
         /// <summary>
         /// 牧师：双 9 触发的那次**额外**回复给谁。
         ///
-        /// 单独一个值（而不是复用 <see cref="PriestHealTarget"/>）是为了
+        /// 单独一个值（而不是复用 <see cref="ClericHealTarget"/>）是为了
         /// 让两次回复的选择互不覆盖 —— 否则双 9 时合计 17 点的两次回复会串味。
         /// </summary>
-        PriestExtraHealTarget,
+        ClericExtraHealTarget,
 
         // ---------- 游侠 ----------
         /// <summary>游侠：被攻击时是否用一只"1"闪避（以及用哪只手）。</summary>
@@ -624,7 +624,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>牧师本次 4/6/8 是否被选择"当回复用"。</summary>
         public bool ChoseToHeal()
-            => GetAnswered(HandEffect.PriestAttackOrHeal) != null;
+            => GetAnswered(HandEffect.ClericAttackOrHeal) != null;
 
         /// <summary>
         /// 运算源的**运算前**手值。默认取 <see cref="ActedHand"/> 的当前值，

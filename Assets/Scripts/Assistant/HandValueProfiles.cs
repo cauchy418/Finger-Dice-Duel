@@ -120,7 +120,7 @@ namespace FingerDiceDuel.Assistant
             // 9 = 回复 9 血（近半条命）；4/6/8 可选当攻击或回复。
             // ⚠️ 但**起手 9 打不出 9**（9+1=10→1）—— 所以要的是"手上能凑到 9"，
             // 而不是"手值是 9"。9 仍然高（锁定了一个 9），但不能高到离谱。
-            Own[CharacterDefinition.PriestId] = new HandValueProfile()
+            Own[CharacterDefinition.ClericId] = new HandValueProfile()
                 .Set(4, 74).Set(6, 74).Set(8, 76)   // 攻守兼备 —— 主力
                 .Set(9, 60)                          // 只回血，不推进战局，别排太高
                 .Set(7, 50)                          // 对牧师无用
@@ -529,7 +529,7 @@ namespace FingerDiceDuel.Assistant
             //
             // ⚠️ 只挡 9 与 5（4+5=9、3+6=9、2+7=9、1+8=9）——
             //    玩家说"回复较难阻止"，不值得为此把整张表都改掉。
-            OpponentAdjust[CharacterDefinition.PriestId] = new List<ValueAdjust>
+            OpponentAdjust[CharacterDefinition.ClericId] = new List<ValueAdjust>
             {
                 new ValueAdjust(9, -30),
                 new ValueAdjust(5, -12),

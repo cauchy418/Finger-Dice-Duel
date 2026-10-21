@@ -4,7 +4,7 @@ using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>
-    /// 牧师 Priest（攻防 **-1 / -1**）
+    /// 牧师 Cleric（攻防 **-1 / -1**）
     ///
     /// 技能：
     ///   1. **9 = 回复**：可以选择把这次回复给自己或对手（回复量 9）。
@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     ///
     /// 本角色没有跨回合状态。
     /// </summary>
-    public sealed class PriestLogic : CharacterTemplate, IPreTurnChoiceProvider,
+    public sealed class ClericLogic : CharacterTemplate, IPreTurnChoiceProvider,
                                       IHealOverride, IHealTargetAdvisor
     {
         /// <summary>9 的回复量（= 数字 9）。</summary>
@@ -132,7 +132,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (heal <= 0) return;
 
             requests.Add(new ChoiceRequest(
-                HandEffect.PriestAttackOrHeal,
+                HandEffect.ClericAttackOrHeal,
                 $"牧师运算出 {heal}：当攻击打（{heal} 点基础伤害，再算攻防），" +
                 $"还是当回复用（回复 {heal} 点，不受攻防影响）？",
                 new List<Hand>(1) { context.Actor.LeftHand },
@@ -168,10 +168,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                        IPreTurnChoiceSink sink,
                                        System.Func<HandEffect, int, Hand> answeredLookup)
         {
-            Hand viaLookup = answeredLookup?.Invoke(HandEffect.PriestAttackOrHeal, 0);
+            Hand viaLookup = answeredLookup?.Invoke(HandEffect.ClericAttackOrHeal, 0);
             if (viaLookup != null) return true;
 
-            Hand recorded = sink?.GetExplicitChoice(HandEffect.PriestAttackOrHeal);
+            Hand recorded = sink?.GetExplicitChoice(HandEffect.ClericAttackOrHeal);
             if (recorded != null) return true;
 
             // 没有记录时问一下抉择器（AI 的答案走这条）
@@ -179,7 +179,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (owner != null) candidates.Add(owner.LeftHand);
 
             var probe = new ChoiceRequest(
-                HandEffect.PriestAttackOrHeal,
+                HandEffect.ClericAttackOrHeal,
                 "牧师：这次当回复用吗？",
                 candidates,
                 allowDecline: true,
@@ -212,13 +212,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             // 用**预测**（运算后是否双 9），因为收集发生在运算之前。
             // 这与剑客"追加攻击"的判定同类：都是运算前可算的。
             if (HasDoubleNineAfter(context))
-                requests.Add(BuildTargetRequest(context, HandEffect.PriestExtraHealTarget,
+                requests.Add(BuildTargetRequest(context, HandEffect.ClericExtraHealTarget,
                     $"牧师双手都是 {DoubleNineValue}：额外回复 {ExtraHealAmount} 点给谁？"));
 
             // ② 本次运算出 9 -> 问这次回复给谁（**必选**）
             if (context.Effect == HandEffectType.Heal)
             {
-                requests.Add(BuildTargetRequest(context, HandEffect.PriestHealTarget,
+                requests.Add(BuildTargetRequest(context, HandEffect.ClericHealTarget,
                     $"牧师打出 {HealAmount}：这次回复给谁？"));
                 return;
             }
@@ -230,7 +230,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             {
                 if (!context.ChoseToHeal()) return;      // 选了攻击 -> 直接打，不问目标
 
-                requests.Add(BuildTargetRequest(context, HandEffect.PriestHealTarget,
+                requests.Add(BuildTargetRequest(context, HandEffect.ClericHealTarget,
                     $"牧师这次回复 {HealAmountFor(context.Effect)} 点给谁？"));
             }
         }
@@ -270,7 +270,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             AddOtherPlayersHands(candidates, owner, manager);
 
             var request = new ChoiceRequest(
-                HandEffect.PriestAttackOrHeal,
+                HandEffect.ClericAttackOrHeal,
                 "牧师：这次当回复用吗？",
                 candidates,
                 allowDecline: true,
@@ -335,7 +335,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// </summary>
         public PlayerState ApplyHeal(PlayerState owner, GameManager manager, IPreTurnChoiceSink sink)
         {
-            PlayerState target = ResolveTarget(owner, manager, sink, HandEffect.PriestHealTarget);
+            PlayerState target = ResolveTarget(owner, manager, sink, HandEffect.ClericHealTarget);
             return target;
         }
 
@@ -370,7 +370,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!HasDoubleNineNow(owner)) return;
             // 额外回复的目标由玩家在运算前选好
             PlayerState target = ResolveTarget(owner, manager, choiceSink,
-                                               HandEffect.PriestExtraHealTarget);
+                                               HandEffect.ClericExtraHealTarget);
             int before = target?.Health ?? 0;
             CleanseAndHeal(owner, target, ExtraHealAmount, manager);
             manager?.NoteSkill(owner, "双九回复", $"{target?.Name} 回复 {(target?.Health ?? 0) - before}");
@@ -494,7 +494,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>兼容旧调用：默认解析"本次回复"的目标。</summary>
         public static PlayerState ResolveTarget(PlayerState owner, GameManager manager,
                                                 IPreTurnChoiceSink sink)
-            => ResolveTarget(owner, manager, sink, HandEffect.PriestHealTarget);
+            => ResolveTarget(owner, manager, sink, HandEffect.ClericHealTarget);
 
         public override void OnMatchReset(PlayerState owner, GameManager manager) { }
 

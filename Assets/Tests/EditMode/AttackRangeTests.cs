@@ -66,11 +66,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Curseweaver_and_priest_have_infinite_range()
+        public void Curseweaver_and_cleric_have_infinite_range()
         {
             CharacterDefinition[] ranged =
             {
-                CharacterDefinition.Curseweaver, CharacterDefinition.Priest,
+                CharacterDefinition.Curseweaver, CharacterDefinition.Cleric,
             };
 
             for (int i = 0; i < ranged.Length; i++)

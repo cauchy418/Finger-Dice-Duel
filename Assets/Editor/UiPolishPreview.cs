@@ -266,11 +266,11 @@ namespace FingerDiceDuel.EditorTools
             Shot("hexer-cancel"); Add(() => Click("SkillChoice1")); Add(() => Check(Game.PlayerA.RightHand.Value == 5 && Game.PlayerA.Health == Game.PlayerA.MaximumHealth, "cancel button raises selected hand and prevents attack"));
             Add(() => { Start(CharacterDefinition.Hexer, CharacterDefinition.Soldier, 1, 1, 1, 1); Game.PlayerA.TakeDamage(4); Refresh(); });
             Shot("hexer-health"); Add(() => Click("SkipTurnButton")); Add(() => { Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Game.PlayerB.Health == Game.PlayerA.Health, "hexer skip opens health target and applies same health"); });
-            Add(() => { Start(CharacterDefinition.Priest, CharacterDefinition.Soldier, 3, 1, 1, 1); Game.PlayerA.TakeDamage(9); Operation(); Check(Controller.PendingEffect == HandEffect.PriestAttackOrHeal, "priest attack or heal request"); });
-            Shot("priest-attack-or-heal"); Add(() => Click("AcceptButton")); Shot("priest-heal-target"); Add(() => Click("SkillChoice0")); Add(() => Check(Game.PlayerA.Health > 11, "priest target button heals chosen player"));
-            Add(() => { Start(CharacterDefinition.Priest, CharacterDefinition.Soldier, 8, 9, 1, 1); Game.PlayerA.TakeDamage(15); Operation(); Check(Controller.PendingEffect == HandEffect.PriestExtraHealTarget, "priest extra-nine heal request"); });
-            Shot("priest-double-nine"); Add(() => Click("SkillChoice0"));
-            Add(() => { Check(Controller.PendingEffect == HandEffect.PriestHealTarget, "normal nine heal target also available"); }); Shot("priest-extra-heal"); Add(() => Click("SkillChoice0"));
+            Add(() => { Start(CharacterDefinition.Cleric, CharacterDefinition.Soldier, 3, 1, 1, 1); Game.PlayerA.TakeDamage(9); Operation(); Check(Controller.PendingEffect == HandEffect.ClericAttackOrHeal, "cleric attack or heal request"); });
+            Shot("cleric-attack-or-heal"); Add(() => Click("AcceptButton")); Shot("cleric-heal-target"); Add(() => Click("SkillChoice0")); Add(() => Check(Game.PlayerA.Health > 11, "cleric target button heals chosen player"));
+            Add(() => { Start(CharacterDefinition.Cleric, CharacterDefinition.Soldier, 8, 9, 1, 1); Game.PlayerA.TakeDamage(15); Operation(); Check(Controller.PendingEffect == HandEffect.ClericExtraHealTarget, "cleric extra-nine heal request"); });
+            Shot("cleric-double-nine"); Add(() => Click("SkillChoice0"));
+            Add(() => { Check(Controller.PendingEffect == HandEffect.ClericHealTarget, "normal nine heal target also available"); }); Shot("cleric-extra-heal"); Add(() => Click("SkillChoice0"));
             Add(() => { Start(CharacterDefinition.Swordsman, CharacterDefinition.Soldier, 3, 4, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.SwordsmanFollowUp, "swordsman follow-up request"); });
             Shot("swordsman-follow-up"); Add(() => Click("AcceptButton"));
             Add(() => { Start(CharacterDefinition.Hunter, CharacterDefinition.Soldier, 1, 2, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.HunterAmbush, "hunter ambush request"); });

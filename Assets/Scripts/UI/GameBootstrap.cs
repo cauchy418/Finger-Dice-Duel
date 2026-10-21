@@ -3551,7 +3551,7 @@ namespace FingerDiceDuel.UI
                 // 运算出 9 必须回复、双 9 两段都必须回复），
                 // 所以这里不会走到 —— 按钮根本不会出现。
                 // 点自己的手就是回自己、点对方的手就是回对方。
-                case HandEffect.PriestAttackOrHeal: return "攻击";
+                case HandEffect.ClericAttackOrHeal: return "攻击";
                 default: return "不发动";
             }
         }

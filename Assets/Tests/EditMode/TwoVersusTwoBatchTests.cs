@@ -37,7 +37,7 @@ namespace FingerDiceDuel.Tests
             CharacterDefinition.Werewolf,
             CharacterDefinition.Ranger,
             CharacterDefinition.Curseweaver,
-            CharacterDefinition.Priest,
+            CharacterDefinition.Cleric,
         };
 
         /// <summary>一局 2v2 的驱动结果（用于失败时报告现场）。</summary>
@@ -141,7 +141,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Four_ais_finish_a_two_versus_two_match()
         {
-            BatchResult r = PlayOne(CharacterDefinition.Fighter, CharacterDefinition.Priest,
+            BatchResult r = PlayOne(CharacterDefinition.Fighter, CharacterDefinition.Cleric,
                                     CharacterDefinition.Barbarian, CharacterDefinition.Ninja,
                                     4000, out GameManager game);
 

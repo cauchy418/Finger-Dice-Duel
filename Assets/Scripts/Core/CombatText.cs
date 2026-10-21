@@ -23,9 +23,9 @@
                 case HandEffect.PaladinRedirect: skill = "代挡"; action = "可替范围内的受击角色承受本次攻击。"; break;
                 case HandEffect.MonkTaichi: skill = "太极"; action = "可将一只太极手 5→0，减伤一半并反弹其余伤害。"; break;
                 case HandEffect.HexerCancel: skill = "取消攻击"; action = "可将同攻击数字的手永久＋1，取消本次攻击。"; break;
-                case HandEffect.PriestAttackOrHeal: skill = "攻击／回复"; action = "选择照常攻击，或将本次数字用于治疗。"; break;
-                case HandEffect.PriestHealTarget: skill = "治疗"; action = "选择一名角色回复生命（可选自己）。"; break;
-                case HandEffect.PriestExtraHealTarget: skill = "双九回复"; action = "双手为 9：选择一名角色，额外回复 9。"; break;
+                case HandEffect.ClericAttackOrHeal: skill = "攻击／回复"; action = "选择照常攻击，或将本次数字用于治疗。"; break;
+                case HandEffect.ClericHealTarget: skill = "治疗"; action = "选择一名角色回复生命（可选自己）。"; break;
+                case HandEffect.ClericExtraHealTarget: skill = "双九回复"; action = "双手为 9：选择一名角色，额外回复 9。"; break;
                 case HandEffect.RangerDodge: skill = "闪避"; action = "可选一只手 1→2，闪避本段攻击。"; break;
                 case HandEffect.RangerPowerShot: skill = "强化射击"; action = "可将另一只手 2→3，基础伤害×1.5，本次距离无限。"; break;
                 case HandEffect.SwordsmanFollowUp:

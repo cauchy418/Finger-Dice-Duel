@@ -5,7 +5,7 @@ PASS class emblem soldier
 PASS class emblem fighter
 PASS class emblem curseweaver
 PASS class emblem barbarian
-PASS class emblem priest
+PASS class emblem cleric
 PASS class emblem ranger
 PASS class emblem werewolf
 PASS class emblem swordsman

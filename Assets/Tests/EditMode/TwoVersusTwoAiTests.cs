@@ -61,23 +61,23 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Priest_heals_the_lowest_health_teammate_in_two_versus_two()
+        public void Cleric_heals_the_lowest_health_teammate_in_two_versus_two()
         {
-            GameManager game = Make2v2(CharacterDefinition.Priest, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
                                        CharacterDefinition.Soldier, CharacterDefinition.Soldier,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState priest = seated[0];          // P1 = 牧师
+            PlayerState cleric = seated[0];          // P1 = 牧师
             PlayerState mate = seated[3];            // P4 = 队友（1&4 一队）
 
-            Assert.True(game.IsTeammate(priest, mate), "前置：P1 与 P4 应是队友。");
+            Assert.True(game.IsTeammate(cleric, mate), "前置：P1 与 P4 应是队友。");
 
             // 队友掉血最多 -> 该回给队友
-            priest.TakeDamage(2);
+            cleric.TakeDamage(2);
             mate.TakeDamage(9);
 
-            PlayerState target = HealAdvisor(priest).BestHealTarget(priest, game);
+            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
 
             Assert.True(ReferenceEquals(target, mate),
                 $"应回给一队里血量最低的人（队友 {mate.Health} 血），" +
@@ -85,51 +85,51 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Priest_heals_itself_when_it_is_the_lowest_in_its_team()
+        public void Cleric_heals_itself_when_it_is_the_lowest_in_its_team()
         {
-            GameManager game = Make2v2(CharacterDefinition.Priest, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
                                        CharacterDefinition.Soldier, CharacterDefinition.Soldier,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState priest = seated[0];
+            PlayerState cleric = seated[0];
             PlayerState mate = seated[3];
 
-            priest.TakeDamage(11);
+            cleric.TakeDamage(11);
             mate.TakeDamage(3);
 
-            PlayerState target = HealAdvisor(priest).BestHealTarget(priest, game);
+            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
 
-            Assert.True(ReferenceEquals(target, priest),
+            Assert.True(ReferenceEquals(target, cleric),
                 "自己血最低时该回自己。");
         }
 
         [Test]
-        public void Priest_never_heals_an_enemy()
+        public void Cleric_never_heals_an_enemy()
         {
             // ⚠️ 关键守卫：敌人血最少也**不能**给他回血（那是自伤）
-            GameManager game = Make2v2(CharacterDefinition.Priest, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
                                        CharacterDefinition.Soldier, CharacterDefinition.Soldier,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState priest = seated[0];
+            PlayerState cleric = seated[0];
             PlayerState enemy = seated[1];           // P2 = 对手
 
-            priest.TakeDamage(3);
+            cleric.TakeDamage(3);
             enemy.TakeDamage(15);                    // 敌人血最少
 
-            PlayerState target = HealAdvisor(priest).BestHealTarget(priest, game);
+            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
 
             Assert.False(ReferenceEquals(target, enemy),
                 "不该给敌人回血（那会让对手回血）。");
         }
 
         [Test]
-        public void Priest_heals_itself_when_alone_in_one_versus_one()
+        public void Cleric_heals_itself_when_alone_in_one_versus_one()
         {
             // 1v1 没有队友 -> 回自己（玩家说"牧师回给对手基本没有实现价值"）
-            var a = CharacterFactory.CreatePlayer("牧", CharacterDefinition.Priest);
+            var a = CharacterFactory.CreatePlayer("牧", CharacterDefinition.Cleric);
             var b = CharacterFactory.CreatePlayer("兵", CharacterDefinition.Soldier);
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
@@ -213,7 +213,7 @@ namespace FingerDiceDuel.Tests
         /// <summary>
         /// 取"回复目标"的决策者。
         ///
-        /// ⚠️ 走 <see cref="IHealTargetAdvisor"/> 而不是直接取 PriestLogic ——
+        /// ⚠️ 走 <see cref="IHealTargetAdvisor"/> 而不是直接取 ClericLogic ——
         ///    测试层不能引用 Characters 层（项目分层约定），
         ///    而且这样也顺带验证了接口本身。
         /// </summary>

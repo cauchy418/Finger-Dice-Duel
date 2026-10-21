@@ -176,6 +176,16 @@ namespace FingerDiceDuel.Core
         public int IdentityAttackBonus { get; private set; }
         public int IdentityDefenseBonus { get; private set; }
 
+        /// <summary>角色按血量 / 场上差值实时计算出的攻防。</summary>
+        public int DynamicAttackBonus { get; private set; }
+        public int DynamicDefenseBonus { get; private set; }
+
+        public void SetDynamicBonuses(int attack, int defense)
+        {
+            DynamicAttackBonus = attack;
+            DynamicDefenseBonus = defense;
+        }
+
         public void AddIdentityBonus(int attack, int defense)
         {
             IdentityAttackBonus += attack;

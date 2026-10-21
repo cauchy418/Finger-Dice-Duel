@@ -545,13 +545,13 @@
       "color": "#AD8B50"
     },
     {
-      "key": "priest",
+      "key": "cleric",
       "group": "Classes",
-      "path": "Classes/priest.png",
+      "path": "Classes/cleric.png",
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Classes/priest.svg",
+      "source": "Art/Production/battle-v1/svg/Classes/cleric.svg",
       "label": "牧师",
       "color": "#AD8B50"
     },

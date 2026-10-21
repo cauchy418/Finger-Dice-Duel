@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// 角色行为模板：所有具体角色逻辑（Curseweaver / Fighter / Barbarian / Priest / ...）的基类。
+    /// 角色行为模板：所有具体角色逻辑（Curseweaver / Fighter / Barbarian / Cleric / ...）的基类。
     /// 默认所有钩子为空实现，子类按需重写。
     /// </summary>
     public abstract class CharacterTemplate : ICharacterBehavior, IPreTurnChoiceProvider,

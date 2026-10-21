@@ -199,49 +199,49 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Priest_nine_cleanses_all_eighteen_statuses_before_healing_decay()
+        public void Cleric_nine_cleanses_all_eighteen_statuses_before_healing_decay()
         {
-            var game = Match(CharacterDefinition.Priest, out var sink, out _);
+            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-            sink.SetChoice(HandEffect.PriestHealTarget, game.PlayerB.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
             Assert.AreEqual(19, game.PlayerB.Health);
             Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             Assert.Null(game.PlayerB.StatusSourceOf(StatusEffect.Panic));
         }
 
         [Test]
-        public void Priest_healing_cleanses_even_a_full_health_target_without_breaking_shields()
+        public void Cleric_healing_cleanses_even_a_full_health_target_without_breaking_shields()
         {
-            var game = Match(CharacterDefinition.Priest, out var sink, out _);
+            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); AllStatuses(game.PlayerB, game.PlayerA);
             game.PlayerB.RightHand.SetValue(5); game.PlayerB.RightHand.SetShieldState(ShieldState.Formed);
-            sink.SetChoice(HandEffect.PriestHealTarget, game.PlayerB.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
             Assert.AreEqual(20, game.PlayerB.Health); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             Assert.AreEqual(ShieldState.Formed, game.PlayerB.RightHand.State);
         }
 
         [Test]
-        public void Priest_converted_four_six_and_eight_all_cleanse_the_selected_target()
+        public void Cleric_converted_four_six_and_eight_all_cleanse_the_selected_target()
         {
             foreach (int result in new[] { 4, 6, 8 })
             {
-                var game = Match(CharacterDefinition.Priest, out var sink, out _);
+                var game = Match(CharacterDefinition.Cleric, out var sink, out _);
                 game.PlayerA.LeftHand.SetValue(result - 1); game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-                sink.SetChoice(HandEffect.PriestAttackOrHeal, game.PlayerA.LeftHand);
-                sink.SetChoice(HandEffect.PriestHealTarget, game.PlayerB.LeftHand); Attack(game);
+                sink.SetChoice(HandEffect.ClericAttackOrHeal, game.PlayerA.LeftHand);
+                sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
                 Assert.AreEqual(10 + result, game.PlayerB.Health); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             }
         }
 
         [Test]
-        public void Priest_double_nine_cleanses_both_independently_selected_targets()
+        public void Cleric_double_nine_cleanses_both_independently_selected_targets()
         {
-            var game = Match(CharacterDefinition.Priest, out var sink, out _);
+            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerA.RightHand.SetValue(9);
             game.PlayerA.TakeDamage(10); game.PlayerA.ApplyStatus(StatusEffect.Decay);
             game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-            sink.SetChoice(HandEffect.PriestExtraHealTarget, game.PlayerB.LeftHand);
-            sink.SetChoice(HandEffect.PriestHealTarget, game.PlayerA.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.ClericExtraHealTarget, game.PlayerB.LeftHand);
+            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerA.LeftHand); Attack(game);
             Assert.AreEqual(19, game.PlayerA.Health); Assert.AreEqual(19, game.PlayerB.Health);
             Assert.AreEqual(0, game.PlayerA.Statuses.Count); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
         }
@@ -255,16 +255,16 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Dual_priest_cleansing_works_with_priest_in_either_slot()
+        public void Dual_cleric_cleansing_works_with_cleric_in_either_slot()
         {
-            foreach (bool priestFirst in new[] { true, false })
+            foreach (bool clericFirst in new[] { true, false })
             {
-                var a = DualGeneralFactory.Create("双将", priestFirst ? CharacterDefinition.Priest : CharacterDefinition.Hunter,
-                    priestFirst ? CharacterDefinition.Hunter : CharacterDefinition.Priest);
+                var a = DualGeneralFactory.Create("双将", clericFirst ? CharacterDefinition.Cleric : CharacterDefinition.Hunter,
+                    clericFirst ? CharacterDefinition.Hunter : CharacterDefinition.Cleric);
                 var b = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
                 var sink = new SimpleChoiceProvider(); var game = new GameManager(a, b, sink, new SimpleChoiceProvider());
                 a.LeftHand.SetValue(3); b.TakeDamage(10); AllStatuses(b, a);
-                sink.SetChoice(HandEffect.PriestAttackOrHeal, a.LeftHand); sink.SetChoice(HandEffect.PriestHealTarget, b.LeftHand);
+                sink.SetChoice(HandEffect.ClericAttackOrHeal, a.LeftHand); sink.SetChoice(HandEffect.ClericHealTarget, b.LeftHand);
                 game.ExecuteTurn(a, a.LeftHand, b.LeftHand);
                 Assert.AreEqual(14, b.Health); Assert.AreEqual(0, b.Statuses.Count);
             }
@@ -301,7 +301,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ai_double_nine_does_not_overwrite_game_over_after_bleed_kills_the_next_player()
         {
-            var game = Match(CharacterDefinition.Priest, out var a, out var b);
+            var game = Match(CharacterDefinition.Cleric, out var a, out var b);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerA.RightHand.SetValue(9);
             game.PlayerA.TakeDamage(10);
             game.PlayerB.TakeDamage(19); game.PlayerB.ApplyStatus(StatusEffect.Bleed);

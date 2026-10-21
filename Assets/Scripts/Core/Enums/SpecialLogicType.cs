@@ -21,7 +21,10 @@ namespace FingerDiceDuel.Core
         Barbarian = 3,
 
         /// <summary>牧师：9 的回复可指定给自己或对手；双手同时为 9 时额外再回复一次。</summary>
-        Priest = 4,
+        Cleric = 4,
+
+        /// <summary>兼容旧名。</summary>
+        Priest = Cleric,
 
         /// <summary>游侠：可用"1"闪避攻击；可用"2"强化攻击基础伤害 ×1.5。</summary>
         Ranger = 5,
@@ -128,6 +131,15 @@ namespace FingerDiceDuel.Core
         /// 再选 1~3 个攻击范围内的角色，给他们的攻防加成 ±(4−X)。
         /// 持续到下次发动或死亡。
         /// </summary>
-        Bard = 24
+        Bard = 24,
+
+        /// <summary>破誓者：5 改为攻击；被攻击时可将目标转移给持完整盾者。</summary>
+        Oathbreaker = 25,
+
+        /// <summary>狂战士：9 改为攻击；失血越多攻防越高；造成伤害回复一半。</summary>
+        Berserker = 26,
+
+        /// <summary>浪客：按场上最高与最低体力差获得动态攻防。</summary>
+        Wanderer = 27
     }
 }
