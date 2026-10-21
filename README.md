@@ -32,13 +32,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**979 项逻辑测试**。2026-10-21 全量 979 项通过，Unity 条件编译与表现层编译通过。
+当前状态：**982 项逻辑测试**。2026-10-21 全量 982 项通过，Unity 条件编译与表现层编译通过。
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
 **主菜单／图鉴／选将已换肤**：新增 80 个独立 PNG（4 背景、6 绘画素材、46 UI 组件、24 工具图标），复用 51 张职业／伤害／状态／叠层资源；已接入主菜单、全部子菜单、五类选将、图鉴、规则弹窗与先攻界面。40+ 张运行时截图、638 条前台断言和 140 条 1v1 断言通过，详见 [前台接入记录](Art/Integration/front-end/README.md)。
 
-> 2v2 与 8 人局仍使用原环形手牌与坐标，尚未做多人战斗美术布局；这是当前主要剩余美工工作。
+**2v2 与 8 人战斗美术已接入**：绘画左右手型、职业徽记、血条与环形座位；负面状态位于各自名字旁。完整盾牌使用新的五指并拢 5，战斗记录默认收起，点击“返回标题”下方按钮查看。多人技能提供可滚动目标区，详见 [多人接入记录](Art/Integration/multiplayer/README.md)。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -553,7 +553,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 979 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 982 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

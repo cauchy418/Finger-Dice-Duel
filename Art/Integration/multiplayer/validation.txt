@@ -1,0 +1,1815 @@
+PASS formed shield uses closed five
+PASS ordinary five stays spread
+PASS broken shield and taichi keep ordinary gesture
+PASS paladin non-five shield preserves its actual hand number
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS history hidden initially
+PASS click reaches HistoryButton
+PASS history toggle opens log
+PASS opened log can scroll full history
+PASS earlier history retained
+PASS click reaches CloseHistory
+PASS close history button works
+PASS exactly 4 occupied panels at seat 1
+PASS painted hand count 8
+PASS self seat and relation preserved 1
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS history closed when entering multiplayer
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS exactly 4 occupied panels at seat 2
+PASS painted hand count 8
+PASS self seat and relation preserved 2
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS history closed when entering multiplayer
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS exactly 4 occupied panels at seat 3
+PASS painted hand count 8
+PASS self seat and relation preserved 3
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS history closed when entering multiplayer
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS exactly 4 occupied panels at seat 4
+PASS painted hand count 8
+PASS self seat and relation preserved 4
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS history closed when entering multiplayer
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS 2v2 real ranger defense request
+PASS multiplayer skills use action tray
+PASS complete skill label visible SkillChoice0
+PASS complete skill label visible SkillChoice1
+PASS complete skill label visible DeclineButton
+PASS click reaches SkillChoice1
+PASS 2v2 dodge button routes to right hand
+PASS exactly 8 occupied panels at seat 1
+PASS painted hand count 16
+PASS self seat and relation preserved 1
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 2
+PASS painted hand count 16
+PASS self seat and relation preserved 2
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 3
+PASS painted hand count 16
+PASS self seat and relation preserved 3
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 4
+PASS painted hand count 16
+PASS self seat and relation preserved 4
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 5
+PASS painted hand count 16
+PASS self seat and relation preserved 5
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 6
+PASS painted hand count 16
+PASS self seat and relation preserved 6
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 7
+PASS painted hand count 16
+PASS self seat and relation preserved 7
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS exactly 8 occupied panels at seat 8
+PASS painted hand count 16
+PASS self seat and relation preserved 8
+PASS panel inside canvas RingSelfBottom
+PASS history button avoids RingSelfBottom
+PASS hint clears RingSelfBottom
+PASS panels separated RingSelfBottom/RingUpperLeft
+PASS panels separated RingSelfBottom/RingUpperRight
+PASS panels separated RingSelfBottom/RingLowerLeft
+PASS panels separated RingSelfBottom/RingLowerRight
+PASS panels separated RingSelfBottom/RingTopCenter
+PASS panels separated RingSelfBottom/RingMiddleLeft
+PASS panels separated RingSelfBottom/RingMiddleRight
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS hand fits RingSelfBottom
+PASS hand sprite loaded RingSelfBottom
+PASS class emblem loaded RingSelfBottom
+PASS panel inside canvas RingUpperLeft
+PASS history button avoids RingUpperLeft
+PASS hint clears RingUpperLeft
+PASS panels separated RingUpperLeft/RingSelfBottom
+PASS panels separated RingUpperLeft/RingUpperRight
+PASS panels separated RingUpperLeft/RingLowerLeft
+PASS panels separated RingUpperLeft/RingLowerRight
+PASS panels separated RingUpperLeft/RingTopCenter
+PASS panels separated RingUpperLeft/RingMiddleLeft
+PASS panels separated RingUpperLeft/RingMiddleRight
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS hand fits RingUpperLeft
+PASS hand sprite loaded RingUpperLeft
+PASS class emblem loaded RingUpperLeft
+PASS panel inside canvas RingUpperRight
+PASS history button avoids RingUpperRight
+PASS hint clears RingUpperRight
+PASS panels separated RingUpperRight/RingSelfBottom
+PASS panels separated RingUpperRight/RingUpperLeft
+PASS panels separated RingUpperRight/RingLowerLeft
+PASS panels separated RingUpperRight/RingLowerRight
+PASS panels separated RingUpperRight/RingTopCenter
+PASS panels separated RingUpperRight/RingMiddleLeft
+PASS panels separated RingUpperRight/RingMiddleRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS hand fits RingUpperRight
+PASS hand sprite loaded RingUpperRight
+PASS class emblem loaded RingUpperRight
+PASS panel inside canvas RingLowerLeft
+PASS history button avoids RingLowerLeft
+PASS hint clears RingLowerLeft
+PASS panels separated RingLowerLeft/RingSelfBottom
+PASS panels separated RingLowerLeft/RingUpperLeft
+PASS panels separated RingLowerLeft/RingUpperRight
+PASS panels separated RingLowerLeft/RingLowerRight
+PASS panels separated RingLowerLeft/RingTopCenter
+PASS panels separated RingLowerLeft/RingMiddleLeft
+PASS panels separated RingLowerLeft/RingMiddleRight
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS hand fits RingLowerLeft
+PASS hand sprite loaded RingLowerLeft
+PASS class emblem loaded RingLowerLeft
+PASS panel inside canvas RingLowerRight
+PASS history button avoids RingLowerRight
+PASS hint clears RingLowerRight
+PASS panels separated RingLowerRight/RingSelfBottom
+PASS panels separated RingLowerRight/RingUpperLeft
+PASS panels separated RingLowerRight/RingUpperRight
+PASS panels separated RingLowerRight/RingLowerLeft
+PASS panels separated RingLowerRight/RingTopCenter
+PASS panels separated RingLowerRight/RingMiddleLeft
+PASS panels separated RingLowerRight/RingMiddleRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS hand fits RingLowerRight
+PASS hand sprite loaded RingLowerRight
+PASS class emblem loaded RingLowerRight
+PASS panel inside canvas RingTopCenter
+PASS history button avoids RingTopCenter
+PASS hint clears RingTopCenter
+PASS panels separated RingTopCenter/RingSelfBottom
+PASS panels separated RingTopCenter/RingUpperLeft
+PASS panels separated RingTopCenter/RingUpperRight
+PASS panels separated RingTopCenter/RingLowerLeft
+PASS panels separated RingTopCenter/RingLowerRight
+PASS panels separated RingTopCenter/RingMiddleLeft
+PASS panels separated RingTopCenter/RingMiddleRight
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS hand fits RingTopCenter
+PASS hand sprite loaded RingTopCenter
+PASS class emblem loaded RingTopCenter
+PASS panel inside canvas RingMiddleLeft
+PASS history button avoids RingMiddleLeft
+PASS hint clears RingMiddleLeft
+PASS panels separated RingMiddleLeft/RingSelfBottom
+PASS panels separated RingMiddleLeft/RingUpperLeft
+PASS panels separated RingMiddleLeft/RingUpperRight
+PASS panels separated RingMiddleLeft/RingLowerLeft
+PASS panels separated RingMiddleLeft/RingLowerRight
+PASS panels separated RingMiddleLeft/RingTopCenter
+PASS panels separated RingMiddleLeft/RingMiddleRight
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS hand fits RingMiddleLeft
+PASS hand sprite loaded RingMiddleLeft
+PASS class emblem loaded RingMiddleLeft
+PASS panel inside canvas RingMiddleRight
+PASS history button avoids RingMiddleRight
+PASS hint clears RingMiddleRight
+PASS panels separated RingMiddleRight/RingSelfBottom
+PASS panels separated RingMiddleRight/RingUpperLeft
+PASS panels separated RingMiddleRight/RingUpperRight
+PASS panels separated RingMiddleRight/RingLowerLeft
+PASS panels separated RingMiddleRight/RingLowerRight
+PASS panels separated RingMiddleRight/RingTopCenter
+PASS panels separated RingMiddleRight/RingMiddleLeft
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS hand fits RingMiddleRight
+PASS hand sprite loaded RingMiddleRight
+PASS class emblem loaded RingMiddleRight
+PASS history closed when entering multiplayer
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS identity visibility preserved 0
+PASS identity visibility preserved 1
+PASS identity visibility preserved 2
+PASS identity visibility preserved 3
+PASS identity visibility preserved 4
+PASS identity visibility preserved 5
+PASS identity visibility preserved 6
+PASS identity visibility preserved 7
+PASS long dual name fits compact panel
+PASS 8p extra heal request
+PASS all eight heal targets exposed without duplicate hands
+PASS complete skill label visible SkillChoice0
+PASS complete skill label visible SkillChoice1
+PASS complete skill label visible SkillChoice2
+PASS complete skill label visible SkillChoice3
+PASS complete skill label visible SkillChoice4
+PASS complete skill label visible SkillChoice5
+PASS complete skill label visible SkillChoice6
+PASS complete skill label visible SkillChoice7
+PASS click reaches SkillChoice7
+PASS click reaches SkillChoice0
+PASS eight-player heal buttons finish both requests
+PASS 8p real chain break request
+PASS many shield candidates collected
+PASS no multiplayer target truncated
+PASS complete skill label visible SkillChoice0
+PASS complete skill label visible SkillChoice1
+PASS complete skill label visible SkillChoice2
+PASS complete skill label visible SkillChoice3
+PASS complete skill label visible SkillChoice4
+PASS complete skill label visible SkillChoice5
+PASS complete skill label visible SkillChoice6
+PASS complete skill label visible SkillChoice7
+PASS complete skill label visible SkillChoice8
+PASS complete skill label visible SkillChoice9
+PASS complete skill label visible SkillChoice10
+PASS complete skill label visible SkillChoice11
+PASS complete skill label visible SkillChoice12
+PASS complete skill label visible SkillChoice13
+PASS complete skill label visible SkillChoice14
+PASS complete skill label visible DeclineButton
+PASS complete skill label visible SkillChoice0
+PASS complete skill label visible SkillChoice1
+PASS complete skill label visible SkillChoice2
+PASS complete skill label visible SkillChoice3
+PASS complete skill label visible SkillChoice4
+PASS complete skill label visible SkillChoice5
+PASS complete skill label visible SkillChoice6
+PASS complete skill label visible SkillChoice7
+PASS complete skill label visible SkillChoice8
+PASS complete skill label visible SkillChoice9
+PASS complete skill label visible SkillChoice10
+PASS complete skill label visible SkillChoice11
+PASS complete skill label visible SkillChoice12
+PASS complete skill label visible SkillChoice13
+PASS complete skill label visible SkillChoice14
+PASS complete skill label visible DeclineButton
+PASS click reaches SkillChoice14
+PASS last scrolled shield target can be clicked
+PASS click reaches HistoryButton
+PASS eight-player history opens
+PASS click reaches HistoryButton
+PASS history toggle closes drawer
+PASS 8p bard opens skill panel
+PASS click reaches Bard增幅攻击
+PASS click reaches Bard1 人  ±3
+PASS bard exposes back-row targets
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS bard targets clear confirm controls
+PASS click reaches BardTarget6
+PASS click reaches Bard确认
+PASS back-row bard target confirms correctly
+PASS 8p to 2v2 clears identity labels
+PASS switch back restores only four 1v1 hands
+PASS switch back clears ring tray and history

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -251,7 +251,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             for (int i = 0; i < all.Count; i++)
             {
                 PlayerState p = all[i];
-                if (p == null || ReferenceEquals(p, owner)) continue;
+                if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
 
                 AddOwnerHands(candidates, p);
             }
@@ -287,10 +287,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>把一只手翻译成它的主人；认不出来时返回 <paramref name="fallback"/>。</summary>
         private static PlayerState OwnerOf(Hand hand, PlayerState owner, GameManager manager)
         {
-            if (manager?.PlayerA != null && manager.PlayerA.Owns(hand)) return manager.PlayerA;
-            if (manager?.PlayerB != null && manager.PlayerB.Owns(hand)) return manager.PlayerB;
-
-            return owner;
+            return manager?.OwnerOfHand(hand) ?? owner;
         }
 
         /// <summary>
@@ -306,7 +303,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             var candidates = new List<Hand>(4);
             AddOwnerHands(candidates, context.Actor);
-            AddOwnerHands(candidates, context.Defender);
+            if (context.Manager != null) AddOtherPlayersHands(candidates, context.Actor, context.Manager);
+            else AddOwnerHands(candidates, context.Defender);
 
             return new ChoiceRequest(
                 effect,

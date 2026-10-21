@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -101,7 +101,7 @@ namespace FingerDiceDuel.Core
             Hand breaking = OwnShieldThatWillBreak(context);
             if (breaking == null) return;
 
-            var candidates = CollectFormedShields(context.Actor, context.Defender, exclude: breaking);
+            var candidates = CollectFormedShields(context.Actor, context.Defender, breaking, context.Manager);
             if (candidates.Count == 0) return;              // 没有其他完好的盾 -> 不问
 
             requests.Add(new ChoiceRequest(
@@ -243,7 +243,7 @@ namespace FingerDiceDuel.Core
         {
             if (manager == null || owner == null || brokenHand == null) return;
 
-            var candidates = CollectFormedShields(manager.PlayerA, manager.PlayerB, exclude: brokenHand);
+            var candidates = CollectFormedShields(manager.PlayerA, manager.PlayerB, brokenHand, manager);
             if (candidates.Count == 0) return;              // 没有其他完好的盾 -> 无事可做
 
             var provider = manager.GetChoiceProvider(owner);
@@ -277,9 +277,19 @@ namespace FingerDiceDuel.Core
                 decider: owner);
 
         /// <summary>收集场上所有 `Formed` 的盾（排除 <paramref name="exclude"/> 那一面）。</summary>
-        private static List<ChainBreakTarget> CollectFormedShields(PlayerState a, PlayerState b, Hand exclude)
+        private static List<ChainBreakTarget> CollectFormedShields(PlayerState a, PlayerState b, Hand exclude, GameManager manager = null)
         {
             var list = new List<ChainBreakTarget>(4);
+            if (manager != null)
+            {
+                foreach (var player in manager.Players)
+                {
+                    if (player == null || !player.IsAlive) continue;
+                    AddIfFormed(list, player, player.LeftHand, exclude);
+                    AddIfFormed(list, player, player.RightHand, exclude);
+                }
+                return list;
+            }
             if (a != null)
             {
                 AddIfFormed(list, a, a.LeftHand, exclude);

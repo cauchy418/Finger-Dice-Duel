@@ -2710,10 +2710,11 @@ namespace FingerDiceDuel.UI
             }
             else if (_isTwoOnTwo && _twoOnTwoSeated != null)
             {
-                _board.BindPlayersRing(_twoOnTwoSeated[0], _twoOnTwoSeated, _twoOnTwoMySeat);
-                _board.SetTitle($"2 v 2　我（{_twoOnTwoSeated[0].Name}）" +
-                                $"　队友（{_twoOnTwoSeated[1].Name}）" +
-                                $"　对手（{_twoOnTwoSeated[2].Name} / {_twoOnTwoSeated[3].Name}）");
+                PlayerState me = _twoOnTwoSeated[_twoOnTwoMeIndex];
+                PlayerState mate = _twoOnTwoSeated[SeatLayout.TeammateSeat(_twoOnTwoMySeat) - 1];
+                _board.BindPlayersRing(me, _twoOnTwoSeated, _twoOnTwoMySeat);
+                _board.SetTitle($"2 v 2　我（{me.Definition?.DisplayName ?? me.Name}）" +
+                                $"　队友（{mate.Definition?.DisplayName ?? mate.Name}）");
             }
             else
             {

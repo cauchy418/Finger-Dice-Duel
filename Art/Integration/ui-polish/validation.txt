@@ -235,15 +235,6 @@ PASS emblem centered 吟游诗人
 PASS emblem clears name 吟游诗人
 PASS readable bold name 吟游诗人
 PASS real ranger defense request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -253,12 +244,6 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
-PASS skill buttons do not overlap
-PASS interactive AcceptButton
-PASS raycast reaches AcceptButton
-PASS single dodge spends the selected one
-PASS single dodge prevents damage
-PASS real ranger defense request
 PASS action inside canvas DeclineButton
 PASS painted skill emblem DeclineButton
 PASS skill label fits DeclineButton
@@ -268,6 +253,12 @@ PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS single dodge spends the selected one
+PASS single dodge prevents damage
+PASS real ranger defense request
 PASS action inside canvas SkillChoice0
 PASS painted skill emblem SkillChoice0
 PASS skill label fits SkillChoice0
@@ -286,6 +277,15 @@ PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
@@ -298,15 +298,6 @@ PASS interactive DeclineButton
 PASS raycast reaches DeclineButton
 PASS declining dodge keeps the hand and takes damage
 PASS real power-shot request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -316,6 +307,15 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS interactive AcceptButton
 PASS raycast reaches AcceptButton
@@ -395,15 +395,6 @@ PASS battle emblem available 术士
 PASS battle emblem available 邪术师
 PASS battle emblem available 吟游诗人
 PASS barbarian lock request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas SkillChoice0
 PASS painted skill emblem SkillChoice0
 PASS skill label fits SkillChoice0
@@ -422,13 +413,6 @@ PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
-PASS skill buttons do not overlap
-PASS skill buttons do not overlap
-PASS skill buttons do not overlap
-PASS interactive SkillChoice1
-PASS raycast reaches SkillChoice1
-PASS lock button locks chosen hand
-PASS monk taichi request
 PASS action inside canvas DeclineButton
 PASS painted skill emblem DeclineButton
 PASS skill label fits DeclineButton
@@ -438,6 +422,13 @@ PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS skill buttons do not overlap
+PASS interactive SkillChoice1
+PASS raycast reaches SkillChoice1
+PASS lock button locks chosen hand
+PASS monk taichi request
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -447,11 +438,6 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
-PASS skill buttons do not overlap
-PASS interactive AcceptButton
-PASS raycast reaches AcceptButton
-PASS taichi button consumes five
-PASS hexer cancel request
 PASS action inside canvas DeclineButton
 PASS painted skill emblem DeclineButton
 PASS skill label fits DeclineButton
@@ -461,6 +447,11 @@ PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS taichi button consumes five
+PASS hexer cancel request
 PASS action inside canvas SkillChoice0
 PASS painted skill emblem SkillChoice0
 PASS skill label fits SkillChoice0
@@ -479,6 +470,15 @@ PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
 PASS skill avoids hand SkillChoice1
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
@@ -498,15 +498,6 @@ PASS interactive SkipTurnButton
 PASS raycast reaches SkipTurnButton
 PASS hexer skip opens health target and applies same health
 PASS priest attack or heal request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -516,6 +507,15 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS interactive AcceptButton
 PASS raycast reaches AcceptButton
@@ -586,15 +586,6 @@ PASS skill buttons do not overlap
 PASS interactive SkillChoice0
 PASS raycast reaches SkillChoice0
 PASS swordsman follow-up request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -604,19 +595,19 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS interactive AcceptButton
 PASS raycast reaches AcceptButton
 PASS hunter ambush request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -626,6 +617,15 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS interactive AcceptButton
 PASS raycast reaches AcceptButton
@@ -644,15 +644,6 @@ PASS interactive SkillChoice0
 PASS raycast reaches SkillChoice0
 PASS shock target button deals damage
 PASS fighter range request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -662,10 +653,6 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
-PASS skill buttons do not overlap
-PASS interactive AcceptButton
-PASS raycast reaches AcceptButton
-PASS fighter multi-target chain request
 PASS action inside canvas DeclineButton
 PASS painted skill emblem DeclineButton
 PASS skill label fits DeclineButton
@@ -675,6 +662,10 @@ PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
 PASS skill avoids hand DeclineButton
+PASS skill buttons do not overlap
+PASS interactive AcceptButton
+PASS raycast reaches AcceptButton
+PASS fighter multi-target chain request
 PASS action inside canvas SkillChoice0
 PASS painted skill emblem SkillChoice0
 PASS skill label fits SkillChoice0
@@ -702,6 +693,15 @@ PASS skill avoids hand SkillChoice2
 PASS skill avoids hand SkillChoice2
 PASS skill avoids hand SkillChoice2
 PASS skill avoids hand SkillChoice2
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
 PASS skill buttons do not overlap
@@ -712,15 +712,6 @@ PASS interactive SkillChoice2
 PASS raycast reaches SkillChoice2
 PASS chain button breaks selected shield
 PASS wizard enchant request
-PASS action inside canvas DeclineButton
-PASS painted skill emblem DeclineButton
-PASS skill label fits DeclineButton
-PASS skill avoids log DeclineButton
-PASS skill avoids hint DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
-PASS skill avoids hand DeclineButton
 PASS action inside canvas AcceptButton
 PASS painted skill emblem AcceptButton
 PASS skill label fits AcceptButton
@@ -730,6 +721,15 @@ PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
 PASS skill avoids hand AcceptButton
+PASS action inside canvas DeclineButton
+PASS painted skill emblem DeclineButton
+PASS skill label fits DeclineButton
+PASS skill avoids log DeclineButton
+PASS skill avoids hint DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
+PASS skill avoids hand DeclineButton
 PASS skill buttons do not overlap
 PASS interactive AcceptButton
 PASS raycast reaches AcceptButton

@@ -38,17 +38,24 @@ namespace FingerDiceDuel.UI
         /// <summary>1v1 姓名前放大图标；多人模式仍保留紧凑布局。</summary>
         public void SetBattleLayout(Vector2 position)
         {
-            const float size = 42f, gap = 4f;
+            SetGridLayout(position, 42, 4, 9);
+        }
+
+        public void SetGridLayout(Vector2 position, float size, float gap, int columns)
+        {
             _root.anchorMin = _root.anchorMax = new Vector2(0.5f, 0.5f);
+            _root.pivot = new Vector2(0, 0.5f);
             _root.anchoredPosition = position;
-            _root.sizeDelta = new Vector2(MaxIcons * (size + gap), size);
+            _root.sizeDelta = new Vector2(columns * (size + gap), size);
             for (int i = 0; i < _icons.Count; i++)
             {
                 _icons[i].rectTransform.sizeDelta = new Vector2(size, size);
-                _icons[i].rectTransform.anchoredPosition = new Vector2(i * (size + gap), 0);
-                _turns[i].rectTransform.anchoredPosition = new Vector2(14, -14);
+                _icons[i].rectTransform.anchoredPosition = new Vector2(i % columns * (size + gap), -(i / columns) * (size + gap));
+                _turns[i].rectTransform.anchoredPosition = new Vector2(size / 2 - 3, -size / 2 + 3);
                 _turns[i].rectTransform.sizeDelta = new Vector2(22, 20);
-                _turns[i].fontSize = 14;
+                _turns[i].fontSize = size >= 34 ? 14 : 11;
+                var counter = _icons[i].transform.Find("Counter") as RectTransform;
+                if (counter != null) counter.sizeDelta = Vector2.one * (size >= 34 ? 19 : 14);
             }
         }
 

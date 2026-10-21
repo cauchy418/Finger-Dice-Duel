@@ -134,7 +134,7 @@ PASS bound right hand value 9
 PASS combat log grows beyond masked viewport
 PASS combat log retains earlier entries for scrolling
 PASS ring switch hides painted player areas
-PASS ring switch restores button size and hand-relative anchor
-PASS ring switch restores bottom log width
+PASS ring switch places skill button in scrollable action tray
+PASS ring switch keeps history closed by default
 PASS return to 1v1 restores painted player areas
 PASS return to 1v1 restores right log width

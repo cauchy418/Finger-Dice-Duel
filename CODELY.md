@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **979 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
+| 测试 | **982 项**无头测试，约 60 秒（含三套统计 + 86,400 局集火实验） |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
@@ -83,6 +83,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 前台美术验收菜单：`Finger Dice Duel/Preview/All Front End Art`。覆盖主菜单、全部子菜单、五类选将、图鉴与先攻，输出 `Art/Integration/front-end/`。
 
 技能与居中验收菜单：`Finger Dice Duel/Preview/UI Alignment and Skills`。核对 24 个角色入口，检查骰面字形、徽记与名字间隔，并实际点击主动 / 防御技能、法师与吟游诗人面板。截图及角色入口清单见 [`Art/Integration/ui-polish/README.md`](Art/Integration/ui-polish/README.md)。
+
+多人战斗验收菜单：`Finger Dice Duel/Preview/Multiplayer Battle Art`。覆盖 2v2 四个主视角与 8 人八个主视角、绘画手牌和徽记、盾牌专用并拢 5、名字旁的负面状态、战斗记录抽屉及多人技能目标；截图见 [`Art/Integration/multiplayer/README.md`](Art/Integration/multiplayer/README.md)。战斗记录在所有模式默认收起，入口位于“返回标题”下方。
 
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。

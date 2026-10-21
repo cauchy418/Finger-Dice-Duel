@@ -9,17 +9,18 @@ namespace FingerDiceDuel.UI
     {
         private HandEffect _skillEffect;
         private PlayerState _skillActor;
-        private readonly Button[] _skillChoiceButtons = new Button[4];
-        private readonly Hand[] _skillHands = new Hand[4];
+        private readonly Button[] _skillChoiceButtons = new Button[16];
+        private readonly Hand[] _skillHands = new Hand[16];
 
         /// <summary>绑定全部技能抉择；目标按钮等价于点击对应的高亮手牌。</summary>
         public void SetSkillActionContext(HandEffect effect, PlayerState chooser, PlayerState actor,
             IReadOnlyList<Hand> candidates, bool hasAcceptButton)
         {
+            bool changed = _skillEffect != effect || !ReferenceEquals(_battleChoiceOwner, chooser);
             _skillEffect = effect;
             _skillActor = actor;
             _battleChoiceOwner = chooser;
-            bool chooseHand = _paintedBattle && chooser != null && effect != HandEffect.None
+            bool chooseHand = chooser != null && effect != HandEffect.None
                 && effect != HandEffect.WizardDamageType && candidates != null
                 && (!hasAcceptButton || (effect == HandEffect.FighterChainBreak && candidates.Count > 1));
             if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
@@ -51,11 +52,14 @@ namespace FingerDiceDuel.UI
                 _skillChoiceButtons[i].gameObject.SetActive(visible);
                 if (visible) _skillChoiceButtons[i].GetComponentInChildren<Text>().text = ChoiceLabel(effect, _skillHands[i]);
             }
-            if (_paintedBattle) LayoutBattleActions();
+            LayoutBattleActions();
+            if (changed && _ringActionScroll != null) _ringActionScroll.verticalNormalizedPosition = 1;
         }
 
         private PlayerState OwnerOf(Hand hand)
         {
+            if (!_paintedBattle)
+                foreach (var panel in _ringPanels) if (panel.Owner != null && panel.Owner.Owns(hand)) return panel.Owner;
             var a = _cardsA?[0].Owner;
             return a != null && a.Owns(hand) ? a : _cardsB?[0].Owner;
         }
@@ -67,7 +71,8 @@ namespace FingerDiceDuel.UI
         {
             var owner = OwnerOf(hand);
             string side = ReferenceEquals(owner?.LeftHand, hand) ? "左手" : "右手";
-            string player = ReferenceEquals(owner, _cardsA?[0].Owner) ? "我方" : "对手";
+            string player = !_paintedBattle ? SeatName(FindPanelOf(owner)?.Seat ?? 0) + "号"
+                : ReferenceEquals(owner, _cardsA?[0].Owner) ? "我方" : "对手";
             switch (effect)
             {
                 case HandEffect.RangerDodge: return "闪避" + side + " · 1→2";
@@ -124,20 +129,22 @@ namespace FingerDiceDuel.UI
 
         private static bool Visible(Button button) => button != null && button.gameObject.activeSelf;
 
-        private void DecorateSkillAction(Button button, PlayerState owner, Vector2 position, float height)
+        private void DecorateSkillAction(Button button, PlayerState owner, Vector2 position, float height, float width = 250)
         {
-            Position((RectTransform)button.transform, position, new Vector2(250, height));
+            Position((RectTransform)button.transform, position, new Vector2(width, height));
             BattleArt.Button(button);
             var icon = button.transform.Find("SkillIcon")?.GetComponent<Image>();
             if (icon == null) icon = ArtImage((RectTransform)button.transform, "SkillIcon", "Classes/soldier", new Vector2(-88, 0), new Vector2(48, 48));
             icon.gameObject.SetActive(true);
+            icon.rectTransform.anchoredPosition = new Vector2(-width / 2 + 37, 0);
             string id = owner?.Definition?.Id ?? "soldier";
             icon.sprite = BattleArt.Get("Classes/" + (id == "blank" ? "soldier" : id));
             icon.preserveAspect = true;
             var label = button.GetComponentInChildren<Text>();
             label.font = UiFont.Bold;
-            label.fontSize = 20;
-            label.rectTransform.sizeDelta = new Vector2(154, height - 8);
+            label.fontSize = _paintedBattle ? 20 : 18;
+            if (!_paintedBattle) label.text = label.text.Replace(" · ", "\n");
+            label.rectTransform.sizeDelta = new Vector2(width - 96, height - 8);
             label.rectTransform.anchoredPosition = new Vector2(15, 0);
             label.verticalOverflow = VerticalWrapMode.Truncate;
             UiInkAlignment.Center(label, new Vector2(15, 0));

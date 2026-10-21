@@ -112,8 +112,8 @@ namespace FingerDiceDuel.UI
                 _candidateLabels[i] = _candidateButtons[i].GetComponentInChildren<Text>();
             }
 
-            _confirm = MakeButton("确认", new Vector2(-105f, -150f), Confirm);
-            _decline = MakeButton("不发动", new Vector2(105f, -150f), Decline);
+            _confirm = MakeButton("确认", new Vector2(-105f, -165f), Confirm);
+            _decline = MakeButton("不发动", new Vector2(105f, -165f), Decline);
 
             go.SetActive(false);
         }

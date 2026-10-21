@@ -181,18 +181,21 @@ namespace FingerDiceDuel.EditorTools
             var history = new List<string>();
             for (int i = 0; i < 80; i++) history.Add("战报滚动检查 " + i);
             board.SetLog(history);
+            board.SetHistoryOpen(true);
             Canvas.ForceUpdateCanvases();
             var scroll = Field<ScrollRect>(board, "_battleLogScroll");
             Check(scroll.content.rect.height > scroll.viewport.rect.height, "combat log grows beyond masked viewport");
             Check(Field<Text>(board, "_logText").text.Contains("战报滚动检查 0"), "combat log retains earlier entries for scrolling");
+            board.SetHistoryOpen(false);
             // 真正切换多人布局再回到 1v1，防止右侧战报与两人面板残留到多人场景。
             var players = new[] { game.PlayerA, game.PlayerB, new PlayerState("队友"), new PlayerState("对手") };
             board.BindPlayersRing(game.PlayerA, players, 1);
             Check(!areaA.gameObject.activeSelf && !areaB.gameObject.activeSelf, "ring switch hides painted player areas");
             board.RefreshRing(players, null, showSkipButton: true);
+            board.SetSkillActionContext(HandEffect.None, game.PlayerA, game.PlayerA, null, false);
             var ringSkip = Field<Button>(board, "_skipButton").GetComponent<RectTransform>();
-            Check(ringSkip.pivot.x == 0 && ringSkip.sizeDelta.x == 180, "ring switch restores button size and hand-relative anchor");
-            Check(Field<RectTransform>(board, "_battleLog").sizeDelta.x == 1520, "ring switch restores bottom log width");
+            Check(ringSkip.parent.name == "Content", "ring switch places skill button in scrollable action tray");
+            Check(!board.IsHistoryOpen, "ring switch keeps history closed by default");
             board.BindPlayers(game.PlayerA, game.PlayerB);
             Check(areaA.gameObject.activeSelf && areaB.gameObject.activeSelf, "return to 1v1 restores painted player areas");
             Check(Field<RectTransform>(board, "_battleLog").sizeDelta.x == 460, "return to 1v1 restores right log width");

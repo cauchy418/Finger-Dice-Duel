@@ -1,0 +1,25 @@
+{
+  "source": "shield-left.source.png",
+  "reference": "Assets/Resources/Art/Battle/v1/Hands/hand_left_5.png",
+  "processing": "Alpha bounds crop, uniform resize to original five height, transparent padding, horizontal mirror for right hand.",
+  "originalBounds": {
+    "left": 71,
+    "top": 105,
+    "width": 370,
+    "height": 505
+  },
+  "outputs": [
+    {
+      "name": "hand_left_5_shield.png",
+      "width": 512,
+      "height": 640,
+      "sha256": "fd04ca8943fcb668cdeccf41172ae5bd55dc5c212b000a4a1c6273ae38f819f1"
+    },
+    {
+      "name": "hand_right_5_shield.png",
+      "width": 512,
+      "height": 640,
+      "sha256": "bd07806d4076ff5997bbc001a0db66a6aae63175ccd89abf2694fb768143f02a"
+    }
+  ]
+}

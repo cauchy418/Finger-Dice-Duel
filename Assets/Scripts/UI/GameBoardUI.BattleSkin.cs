@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace FingerDiceDuel.UI
 {
-    /// <summary>1v1 的绘制素材与布局；环形模式继续使用原有手牌与坐标。</summary>
+    /// <summary>所有战斗模式的绘画素材；1v1 与多人分别排版，共用手牌和反馈。</summary>
     public sealed partial class GameBoardUI
     {
         private bool _paintedBattle = true;
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.UI
                 CreatePaintedHandCard(area, new Vector2(120, -45))
             };
             var statuses = new StatusIconBar(area, _font, top, top ? "StatusIconsB" : "StatusIconsA");
-            statuses.SetBattleLayout(new Vector2(-300, 121));
+            statuses.SetBattleLayout(new Vector2(300, 195));
             if (top)
             {
                 _badgeB = badge; _healthTextB = hp; _hpBarFillB = fill;
@@ -118,11 +118,12 @@ namespace FingerDiceDuel.UI
         private static void RefreshPaintedHand(HandCard card, Hand hand, HandVisual.OutlineState outline)
         {
             bool left = ReferenceEquals(hand, card.Owner.LeftHand);
-            card.Gesture.sprite = BattleArt.Get("Hands/hand_" + (left ? "left_" : "right_") + hand.Value);
-            card.Gesture.color = hand.IsConcealed ? new Color(0.65f, 0.80f, 0.80f) : Color.white;
+            string gesture = hand.IsShield && hand.Value == 5 ? "5_shield" : hand.Value.ToString();
+            card.Gesture.sprite = BattleArt.Get("Hands/hand_" + (left ? "left_" : "right_") + gesture);
+            card.Gesture.color = !card.Owner.IsAlive ? new Color(0.45f, 0.45f, 0.45f) : hand.IsConcealed ? new Color(0.65f, 0.80f, 0.80f) : Color.white;
             string frame = outline == HandVisual.OutlineState.Highlighted ? "selected"
                 : outline == HandVisual.OutlineState.Available ? "available"
-                : hand.IsLocked || hand.IsConcealed ? "disabled" : "normal";
+                : hand.IsLocked || hand.IsConcealed || !card.Owner.IsAlive ? "disabled" : "normal";
             BattleArt.Apply(card.Outline, "UI/hand_frame_" + frame, true);
             card.Outline.enabled = true;
             card.Background.color = Color.white;
@@ -186,55 +187,43 @@ namespace FingerDiceDuel.UI
             _paintedBattle = painted;
             if (_battleHint == null) return;
             _battleChoiceOwner = null;
-            _canvasRoot.GetComponent<CanvasScaler>().screenMatchMode = painted
-                ? CanvasScaler.ScreenMatchMode.Expand : CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            _canvasRoot.GetComponent<CanvasScaler>().screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             if (_battleBackground != null)
             {
-                _battleBackground.sprite = painted ? BattleArt.Get("Backgrounds/battle_table") : null;
-                _battleBackground.color = painted ? Color.white : BgColor;
+                _battleBackground.sprite = BattleArt.Get("Backgrounds/battle_table");
+                _battleBackground.color = Color.white;
             }
-            Position(_battleHint, painted ? new Vector2(-80, 0) : new Vector2(0, 56),
-                painted ? new Vector2(1000, 132) : new Vector2(1600, 108));
-            _hintText.rectTransform.sizeDelta = painted ? new Vector2(920, 112) : new Vector2(1560, 96);
-            _hintText.fontSize = painted ? 24 : 30;
+            Position(_battleHint, painted ? new Vector2(-80, 0) : new Vector2(0, 72),
+                painted ? new Vector2(1000, 132) : new Vector2(990, 96));
+            _hintText.rectTransform.sizeDelta = painted ? new Vector2(920, 112) : new Vector2(940, 88);
+            _hintText.fontSize = painted ? 24 : 21;
             _hintText.color = BattleArt.Gold;
-            Position(_battleLog, painted ? new Vector2(670, -10) : new Vector2(0, -462),
-                painted ? new Vector2(460, 670) : new Vector2(1520, 130));
-            _logHeading.gameObject.SetActive(painted);
-            _battleLog.Find("Divider").gameObject.SetActive(painted);
-            Position(_battleLogScroll.viewport, painted ? new Vector2(0, -26) : Vector2.zero,
-                painted ? new Vector2(390, 530) : new Vector2(1480, 104));
+            Position(_battleLog, new Vector2(670, -10), new Vector2(460, 670));
+            Position(_battleLogScroll.viewport, new Vector2(0, -26), new Vector2(390, 530));
             _battleSubtitle.gameObject.SetActive(painted);
-            Position(_titleText.rectTransform, painted ? new Vector2(-650, 477) : new Vector2(0, -30),
-                painted ? new Vector2(480, 56) : new Vector2(1200, 50));
-            _titleText.fontSize = painted ? 30 : 36;
-            _titleText.alignment = painted ? TextAnchor.MiddleLeft : TextAnchor.MiddleCenter;
-            _titleText.font = painted ? UiFont.Title : UiFont.Bold;
+            Position(_titleText.rectTransform, painted ? new Vector2(-650, 477) : new Vector2(-330, 493),
+                painted ? new Vector2(480, 56) : new Vector2(1140, 48));
+            _titleText.fontSize = painted ? 30 : 26;
+            _titleText.alignment = TextAnchor.MiddleLeft;
+            _titleText.font = UiFont.Title;
             _titleText.fontStyle = FontStyle.Normal;
-            _titleText.color = painted ? BattleArt.Gold : TextColor;
+            _titleText.color = BattleArt.Gold;
             if (painted) Position(_turnText.rectTransform, new Vector2(-650, 340), new Vector2(480, 48));
             else
             {
-                _turnText.rectTransform.anchorMin = _turnText.rectTransform.anchorMax = new Vector2(0, 1);
-                _turnText.rectTransform.pivot = new Vector2(0, 1);
-                _turnText.rectTransform.anchoredPosition = new Vector2(110, -40);
-                _turnText.rectTransform.sizeDelta = new Vector2(240, 48);
+                Position(_turnText.rectTransform, new Vector2(-750, 449), new Vector2(300, 26));
             }
-            _turnText.color = painted ? BattleArt.Gold : TextColor;
+            _turnText.fontSize = painted ? 26 : 22;
+            _turnText.color = BattleArt.Gold;
             _logText.rectTransform.anchoredPosition = Vector2.zero;
             _battleLogScroll.verticalNormalizedPosition = 0;
             if (_skipButton != null) _skipButton.gameObject.SetActive(false);
             if (_gambleButton != null) _gambleButton.gameObject.SetActive(false);
             if (_stealButton != null) _stealButton.gameObject.SetActive(false);
-            if (!painted)
-            {
-                HideSkillChoices();
-                RestoreAction(_acceptButton, new Vector2(ChoiceButtonX, ChoiceAcceptY), new Vector2(ChoiceButtonWidth, ChoiceButtonHeight));
-                RestoreAction(_declineButton, new Vector2(ChoiceButtonX, ChoiceDeclineY), new Vector2(ChoiceButtonWidth, ChoiceButtonHeight));
-                RestoreAction(_skipButton, Vector2.zero, new Vector2(180, 56));
-                RestoreAction(_gambleButton, Vector2.zero, new Vector2(160, 56));
-                RestoreAction(_stealButton, Vector2.zero, new Vector2(160, 56));
-            }
+            HideSkillChoices();
+            if (painted) RestoreSkillParents();
+            if (_exitButton != null) { var rect = (RectTransform)_exitButton.transform; rect.anchoredPosition = new Vector2(-30, -30); rect.sizeDelta = new Vector2(180, 56); }
+            SetHistoryOpen(false);
             LayoutBattleActions();
         }
 
@@ -273,13 +262,12 @@ namespace FingerDiceDuel.UI
 
         private void LateUpdate()
         {
-            if (_paintedBattle) LayoutBattleActions();
+            LayoutBattleActions();
         }
 
         private void LayoutBattleActions()
         {
-            if (!_paintedBattle) return;
-            LayoutSkillActions();
+            if (_paintedBattle) LayoutSkillActions(); else LayoutRingActions();
             BattleArt.Button(_exitButton);
         }
 
