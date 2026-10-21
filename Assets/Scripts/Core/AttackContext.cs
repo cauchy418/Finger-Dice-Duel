@@ -234,6 +234,10 @@ namespace FingerDiceDuel.Core
 
             FinalDamage = ApplyBonuses(FinalDamage);
 
+            // 失能：攻击伤害归零，但后续命中、状态与技能效果照常结算。
+            if (Attacker != null && Attacker.HasStatus(StatusEffect.Disabled))
+                FinalDamage = 0;
+
             // ⚠️ 顺序要点：
             //   "把目标改成自己"必须排在**攻击方钩子之后**（伤害已定），
             //   但排在**闪避与护盾判定之前** —— 因为那两件事都取决于"谁来承受"。

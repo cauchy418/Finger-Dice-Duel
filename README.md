@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**994 项逻辑测试**。2026-10-21 全量 994 项通过，Unity 条件编译与表现层编译通过。
+当前状态：**995 项逻辑测试**。2026-10-21 全量 995 项通过，Unity 条件编译与表现层编译通过。
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
@@ -191,7 +191,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 > **太极反弹**继承打来那次攻击的类型。
 
-### 16 种负面效果
+### 17 种负面效果
 
 | 状态 | 效果 |
 |---|---|
@@ -212,6 +212,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | **跛脚** | 攻击距离减半，至少 1 |
 | **倒伏** | 受到伤害 ×1.5 |
 | **魅惑** | 玩家的回合交给 AI 随机合法行动 |
+| **失能** | 攻击伤害改为 0，但保留攻击效果 |
 
 > 状态默认持续 **2 回合**，重复施加只刷新时长，不叠加强度。
 > 伤害类型联动只在攻击实际命中后触发；×1.5 在常规伤害计算后向上取整。
@@ -551,7 +552,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 994 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 995 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

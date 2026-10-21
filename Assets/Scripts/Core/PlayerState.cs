@@ -68,7 +68,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        private const int MaxStatusValue = 16;
+        private const int MaxStatusValue = 17;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)

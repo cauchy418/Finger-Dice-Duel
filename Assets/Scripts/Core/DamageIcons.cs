@@ -272,6 +272,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Limp: return "piercing";
                 case StatusEffect.KnockedDown: return "bludgeoning";
                 case StatusEffect.Charm: return "psychic";
+                case StatusEffect.Disabled: return "force";
                 default: return "force";
             }
         }

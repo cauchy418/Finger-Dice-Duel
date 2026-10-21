@@ -939,6 +939,7 @@ AI 挑中死者的手 → 打一个没有意义的空位 → **局面永远推�
 | 跛脚 | 攻击距离减半，至少 1 |
 | 倒伏 | 受到伤害 ×1.5 |
 | 魅惑 | 玩家的回合交给 AI 随机合法行动 |
+| 失能 | 攻击伤害改为 0，但保留攻击效果 |
 
 **状态持续 2 回合，重复施加只刷新时间，不叠加。**
 **状态联动只在攻击实际命中后触发；伤害 ×1.5 在常规伤害计算后向上取整。**
@@ -1155,7 +1156,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**994 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**995 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |

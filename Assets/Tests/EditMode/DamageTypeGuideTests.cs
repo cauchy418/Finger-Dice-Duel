@@ -27,8 +27,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_the_full_sixteen_status_pool()
         {
-            Assert.AreEqual(16, StatusNames.AllStatuses.Length,
-                "旧 7 种保留，加上新增状态，共 16 种。");
+            Assert.AreEqual(17, StatusNames.AllStatuses.Length,
+                "旧 7 种保留，加上新增状态，共 17 种。");
         }
 
         [Test]

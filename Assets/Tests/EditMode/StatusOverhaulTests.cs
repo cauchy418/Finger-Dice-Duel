@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -61,6 +62,22 @@ namespace FingerDiceDuel.Tests
                 out status, out _);
             Assert.AreEqual(6, fire);
             Assert.AreEqual(StatusEffect.None, status);
+        }
+
+        [Test]
+        public void Disabled_sets_attack_damage_to_zero_but_keeps_the_attack()
+        {
+            PlayerState attacker = Make();
+            PlayerState defender = Make();
+            attacker.ApplyStatus(StatusEffect.Disabled);
+            attacker.LeftHand.SetValue(3);
+            defender.LeftHand.SetValue(1);
+
+            var ctx = new AttackContext(attacker, defender, attacker.LeftHand, 6);
+            ctx.Resolve(new SimpleChoiceProvider(), null);
+
+            Assert.AreEqual(0, ctx.AppliedDamage);
+            Assert.AreEqual(1, ctx.HitCount);
         }
     }
 }

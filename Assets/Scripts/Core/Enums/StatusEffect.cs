@@ -97,6 +97,9 @@ namespace FingerDiceDuel.Core
 
         /// <summary>魅惑：行动随机化（由 AI 随机合法行动）。</summary>
         Charm = 16,
+
+        /// <summary>失能：攻击伤害改为 0，但保留攻击效果。</summary>
+        Disabled = 17,
     }
 
     /// <summary>
@@ -186,6 +189,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Limp: return "跛脚";
                 case StatusEffect.KnockedDown: return "倒伏";
                 case StatusEffect.Charm: return "魅惑";
+                case StatusEffect.Disabled: return "失能";
                 default: return "无";
             }
         }
@@ -227,6 +231,8 @@ namespace FingerDiceDuel.Core
                     return "受到伤害 ×1.5";
                 case StatusEffect.Charm:
                     return "行动随机化（由 AI 随机选择合法行动）";
+                case StatusEffect.Disabled:
+                    return "攻击伤害改为 0，但保留攻击效果";
                 default:
                     return "无";
             }
@@ -272,7 +278,7 @@ namespace FingerDiceDuel.Core
             StatusEffect.Frost, StatusEffect.Shock, StatusEffect.Panic,
             StatusEffect.Bleed, StatusEffect.Wet, StatusEffect.Frozen,
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
-            StatusEffect.Charm,
+            StatusEffect.Charm, StatusEffect.Disabled,
         };
 
         /// <summary>
@@ -331,6 +337,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Limp: return 0x8C8C8C;        // 灰
                 case StatusEffect.KnockedDown: return 0xB8743A;  // 土褐
                 case StatusEffect.Charm: return 0xE05AA8;       // 魅紫
+                case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 default: return 0x9AA0AC;                       // 中性灰
 
                 // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
@@ -367,6 +374,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Limp: return "↯";         // ↯ 腿伤
                 case StatusEffect.KnockedDown: return "↩";  // ↩ 倒地
                 case StatusEffect.Charm: return "♡";        // ♡ 魅惑
+                case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
 
                 // △ 力场（玩家要求："把三角形标记移给力场"）
                 case StatusEffect.None: return "\u25b3";
