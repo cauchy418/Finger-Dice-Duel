@@ -37,6 +37,9 @@ namespace FingerDiceDuel.Tests
             oath.LeftHand.SetValue(5);
             Assert.AreEqual(HandEffectType.Attack4,
                 new OathbreakerLogic().RewriteEffect(oath, oath.LeftHand, 1, null));
+            Assert.AreEqual(HandEffectType.Attack4,
+                new OathbreakerLogic().DisplayedEffectOf(5),
+                "AI/界面都必须把破誓者的 5 识别为攻击。");
             Assert.AreEqual(2, oath.Character.AttackBonus);
 
             PlayerState berserk = CharacterFactory.CreatePlayer(
@@ -48,6 +51,9 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(4, berserk.DynamicAttackBonus);
             Assert.AreEqual(4, berserk.DynamicDefenseBonus);
             Assert.AreEqual(-1 + 4, StatusRules.EffectiveAttackBonus(berserk));
+            Assert.AreEqual(HandEffectType.Attack4,
+                new BerserkerLogic().DisplayedEffectOf(9),
+                "AI/界面都必须把狂战士的 9 识别为攻击。");
         }
     }
 }

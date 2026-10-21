@@ -355,6 +355,29 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 58).Set(2, 58).Set(3, 58)
                 .Set(7, 50)
                 .AddCombo(ComboRule.ContainsAll(60, "有 9 就能回血并触发增益", 9));
+
+            // ---- 破誓者（攻 +2 / 防 0）----
+            // 5 不再合盾，而是 5 点攻击；留 5 的价值大幅提高。
+            Own[CharacterDefinition.OathbreakerId] = new HandValueProfile()
+                .Set(5, 88)
+                .Set(8, 78).Set(6, 70).Set(4, 62)
+                .Set(9, 50)
+                .AddCombo(ComboRule.ContainsAll(70, "有 5 就能转成攻击", 5));
+
+            // ---- 狂战士（攻 -1 / 防 -2，生命 25）----
+            // 9 改为 9 点攻击；失血越多，攻防动态提高。
+            Own[CharacterDefinition.BerserkerId] = new HandValueProfile()
+                .Set(9, 90)
+                .Set(8, 76).Set(6, 70).Set(4, 64)
+                .Set(5, 54)
+                .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48)
+                .AddCombo(ComboRule.ContainsAll(70, "有 9 就能转成攻击", 9));
+
+            // ---- 浪客（攻 +1 / 防 -1）----
+            // 没有固定套路，沿用基线；动态攻防由场况决定。
+            Own[CharacterDefinition.WandererId] = new HandValueProfile()
+                .Set(8, 70).Set(6, 64).Set(4, 58).Set(5, 54).Set(9, 56)
+                .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48);
         }
 
         // ============================================================

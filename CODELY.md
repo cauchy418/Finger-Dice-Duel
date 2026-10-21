@@ -102,6 +102,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 - 牧师相关抉择入口在收集到候选后返回“已接管流程”；AI 同步答完也须停止调用方旧步骤，避免重复运算、覆盖胜负界面。
 - `BoardController.BeginTurn` 连续处理回合开始状态致死，直到轮到存活者或比赛结束；不可只重读一次行动者，否则多人连续流血致死会停在已阵亡角色上。
 
+- 三名新角色的 AI 价值表已补齐：破誓者重视 5、狂战士重视 9，浪客沿用通用表；破誓者转移使用 `OathbreakerTransfer`。
 - 破誓者通过 `IAttackTransfer` 在圣武士代挡前转移整次攻击；运算前由防守者选择持盾角色，后续抉择交给 `ChoiceRequest.Decider` 对应角色生成，补收实际目标的防御与圣武士代挡。结算重新验证持 5、存活、完整盾、非自己／攻击者；使用实际目标的抉择器。按钮按角色去重，8 人最多 6 名候选，保留【不发动】。`OathbreakerTransferTests` 覆盖 12 项真实流程与非法／过期目标回归。
 
 - `Assistant/BattleTurnText.cs` 只格式化结算快照；回复显示实际增量，放弃攻击不写成零伤害命中。

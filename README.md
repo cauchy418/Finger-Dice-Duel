@@ -152,6 +152,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | **狂战士 Berserker** | −1 / −2 | 1 | 生命上限 +5；9 改为 **9 点挥砍攻击**；每少 5 点生命获得 **+1/+1**；造成伤害后回复伤害一半（向下取整） |
 | **浪客 Wanderer** | +1 / −1 | 1 | 额外获得 **+X/+X**，X = 场上最高与最低体力差 ÷3（向下取整）；挥砍伤害 |
 
+**新角色 AI 与技能检测**：
+
+- 破誓者：`HandValueProfile` 把 5 视为高价值攻击；被攻击时 AI 用 `OathbreakerTransfer` 优先选择敌方持盾者。
+- 狂战士：9 由 `IHandEffectDisplay` 标记为攻击，AI 价值表把 9 列为最高档；失血动态攻防实时刷新。
+- 浪客：无固定连招，沿用通用价值表，动态攻防来自场上体力差。
+- 三名角色均能进入 AI 轮询、图鉴和选将；破誓者转移已有真实按钮/点击验收。
+
 > **技能流血**：上述四类技能攻击未被闪避或取消即附加，护盾抵挡、太极减免或零伤害也算命中；持续目标自己的 **2 个回合**，刷新不叠加，可与元素状态并存。流血使攻防 −1，回合开始失去 1 点体力。牧师满血回复仍净化，清除腐朽后可正常回血。
 
 ### 吟游诗人触发验证
@@ -361,7 +368,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ### 对手针对性价值修正
 
-**27 / 27 个角色**都有针对性配置（23 个有 `HandValueProfile`，骑士用对手侧修正）。
+**27 / 27 个角色**都有针对性配置（26 个有 `HandValueProfile`，骑士用对手侧修正）。
 
 - **法师**：4/6/8 = 72/76/80（攻击 + 可铺类型），5 = 72（防 −1）。
 - **术士**：8/6/4 = 82/74/68（无限射程打元素），5 = 76，**9 = 62**（保命，且不低于 1/2/3/7）。
@@ -560,7 +567,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 
 ## 工程结构
 
-`Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
+`Core`（规则内核）/ `Characters`（27 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
 依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1048 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
