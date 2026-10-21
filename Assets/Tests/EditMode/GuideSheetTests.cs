@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Tests
     /// **速查表（伤害类型 / 状态一览）**测试。
     ///
     /// 玩家要求（本轮）：
-    ///   · "伤害类型和状态还是分成两页" -> 第 1 页「伤害类型」，第 2 页「状态一览」
+    ///   · 第 1 页「伤害类型」、第 2 页「状态一览」、第 3 页「元素反应」
     ///   · 第 1 页写"雷鸣：附加两回合残响状态"
     ///   · 第 2 页再解释"残响"具体做什么
     ///   · "-> 的部分删除没有意义" -> 文案里不再出现 →
@@ -23,17 +23,18 @@ namespace FingerDiceDuel.Tests
     public class GuideSheetTests
     {
         [Test]
-        public void There_are_two_pages_in_order()
+        public void There_are_three_pages_in_order()
         {
             List<GuideSheet> sheets = GuideSheets.All();
 
-            Assert.AreEqual(2, sheets.Count, "玩家要求分成两页。");
+            Assert.AreEqual(3, sheets.Count, "元素反应应独立成第三页。");
             Assert.AreEqual("伤害类型", sheets[0].TitleZh, "第 1 页应当是伤害类型。");
             Assert.AreEqual("状态一览", sheets[1].TitleZh, "第 2 页应当是状态一览。");
+            Assert.AreEqual("元素反应", sheets[2].TitleZh);
         }
 
         [Test]
-        public void Page_one_has_two_groups_magic_then_physical()
+        public void Page_one_keeps_only_magic_and_physical_damage_groups()
         {
             GuideSheet s = GuideSheets.DamageTypes();
 
@@ -45,7 +46,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(10, s.Groups[0].Entries.Count, "魔法伤害 10 种。");
             Assert.AreEqual(3, s.Groups[1].Entries.Count, "物理伤害 3 种。");
-            Assert.AreEqual(13, s.Lines.Count, "合计 13 行。");
+            Assert.AreEqual(13, s.Lines.Count, "伤害页仅保留 13 种伤害。");
         }
 
         [Test]
@@ -104,7 +105,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Page_two_lists_nine_statuses_with_png_icons()
+        public void Page_two_lists_all_eighteen_statuses_with_distinct_png_icons()
         {
             GuideSheet s = GuideSheets.Statuses();
 
@@ -112,12 +113,16 @@ namespace FingerDiceDuel.Tests
             //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
             Assert.AreEqual(1, s.Groups.Count);
-            Assert.AreEqual(9, s.Groups[0].Entries.Count, "9 种负面状态。");
+            Assert.AreEqual(18, s.Groups[0].Entries.Count, "18 种负面状态。");
+            var uniqueKeys = new HashSet<string>();
 
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
                 GuideEntry e = s.Groups[0].Entries[i];
+                Assert.AreEqual(st, e.Status, "手册必须保留真实状态，不能用重复的伤害图标键推测。");
+                Assert.IsTrue(uniqueKeys.Add(e.IconKey), "不同状态不能共用手册资源键：" + e.IconKey);
+                Assert.AreEqual(StatusNames.IconKeyOf(st), e.IconKey);
 
                 Assert.IsTrue(e.Text.Contains(StatusNames.Of(st)),
                     $"状态表里缺少「{StatusNames.Of(st)}」。");
@@ -127,6 +132,36 @@ namespace FingerDiceDuel.Tests
                     $"「{StatusNames.Of(st)}」应当有图标键（PNG）。");
                 Assert.IsTrue(e.Color != 0, $"「{StatusNames.Of(st)}」应当有颜色。");
             }
+        }
+
+        [Test]
+        public void Status_aliases_preserve_distinct_freezing_and_disabling_meanings()
+        {
+            Assert.AreEqual("frost", StatusNames.IconKeyOf(StatusEffect.Freeze));
+            Assert.AreEqual("panic", StatusNames.IconKeyOf(StatusEffect.Stun));
+            Assert.AreEqual("frozen", StatusNames.IconKeyOf(StatusEffect.Frozen));
+            Assert.AreEqual("stunned", StatusNames.IconKeyOf(StatusEffect.Stunned));
+            Assert.AreEqual("dizzy", StatusNames.IconKeyOf(StatusEffect.Dizzy));
+            Assert.AreEqual("disabled", StatusNames.IconKeyOf(StatusEffect.Disabled));
+            Assert.IsTrue(StatusNames.Describe(StatusEffect.Stunned).Contains("不能攻击"));
+            Assert.IsTrue(StatusNames.Describe(StatusEffect.Dizzy).Contains("不触发任何技能"));
+            Assert.IsTrue(StatusNames.Describe(StatusEffect.Disabled).Contains("保留攻击效果"));
+            Assert.IsTrue(GuideSheets.Statuses().Note.Contains("自己的 2 个完整回合"));
+        }
+
+        [Test]
+        public void Interaction_group_exposes_the_current_element_combinations()
+        {
+            string text = string.Join("\n", GuideSheets.InteractionLines());
+            foreach (string phrase in new[] { "眩晕", "冻结", "不附加燃烧", "保留潮湿", "×1.5" })
+                Assert.IsTrue(text.Contains(phrase), phrase);
+            GuideSheet page = GuideSheets.ElementReactions();
+            Assert.AreEqual(6, page.Lines.Count);
+            Assert.AreEqual(6, page.Groups[0].Entries.Count);
+            Assert.IsFalse(text.Contains("心灵"));
+            Assert.IsFalse(text.Contains("50%"));
+            Assert.IsTrue(page.Note.Contains("向上取整"));
+            Assert.IsTrue(GuideSheets.MagicLinePlain(DamageType.Psychic).Contains("50%"), "心灵概率仍属于伤害类型说明。");
         }
 
         [Test]

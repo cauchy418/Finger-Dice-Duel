@@ -1601,7 +1601,7 @@ namespace FingerDiceDuel.UI
         /// **魔法球入口**：直接跳到「伤害类型指引」那一页。
         ///
         /// 复用图鉴的翻页器（不另做一套界面），但**换一套卡片集**：
-        /// 魔法球 -&gt; 两张指南页（且**不显示**阵营筛选）；
+        /// 魔法球 -&gt; 伤害、状态、元素反应三张指南页（不显示阵营筛选）；
         /// 「图」-&gt; 角色图鉴（可筛选）。
         /// </summary>
         private void OnMagicOrbClicked()
@@ -1694,7 +1694,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// **魔法球入口**的卡片集：只有两张指南页。
+        /// 魔法球入口的卡片集：伤害类型、状态一览、元素反应。
         ///
         /// 玩家要求："把伤害类型指引和状态一览单独放进魔法球入口"。
         /// 顺序：① 伤害类型指引 ② 状态一览。
@@ -1729,6 +1729,7 @@ namespace FingerDiceDuel.UI
                 NameEn = sheet.TitleEn,
                 IsGuide = true,
                 TwoColumnItems = sheet.TwoColumn,
+                GuideNote = sheet.Note,
 
                 // 显式全部留空 —— CodexScreen 靠"内容为空"跳过那些小节与标签
                 Alignment = "",
@@ -1761,6 +1762,7 @@ namespace FingerDiceDuel.UI
                         dst.Entries.Add(new CodexCardData.CodexGuideEntry
                         {
                             IconKey = e.IconKey,
+                            Status = e.Status,
                             Color = e.Color,
                             Text = e.Text,
                         });

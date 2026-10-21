@@ -74,17 +74,7 @@ namespace FingerDiceDuel.UI
             if (label != null) label.color = Gold;
         }
 
-        public static string StatusKey(StatusEffect status)
-        {
-            // 使用枚举名称对应资源键；震慑与心灵状态的资源命名在这里显式转换。
-            string key = status.ToString().ToLowerInvariant();
-            switch (key)
-            {
-                case "resonance": case "acid": case "poison": case "blind":
-                case "decay": case "burn": case "freeze": case "shock": case "stun": return key;
-                default: return null;
-            }
-        }
+        public static string StatusKey(StatusEffect status) => StatusNames.IconKeyOf(status);
 
         public static string DamageKey(DamageType type)
             => AttackDamageTypes.IconKeyOf(AttackDamageTypes.FromDamageType(type));

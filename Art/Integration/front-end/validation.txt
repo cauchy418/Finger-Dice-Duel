@@ -753,16 +753,56 @@ PASS unobstructed raycast Close
 PASS navigation MainMenu
 PASS clickable MagicOrb
 PASS unobstructed raycast MagicOrb
-PASS magic guide remains separate from characters
+PASS handbook has three pages separate from characters
 PASS magic guide has no alignment filter
-PASS all 13 painted damage icons
+PASS all 13 distinct painted damage icons
+PASS damage page does not duplicate reactions
+PASS damage page explains hit rules
 PASS shared menu canvas stays active DamageGuide
 PASS damage guide scroll exposes physical types
 PASS shared menu canvas stays active DamageGuideBottom
 PASS clickable Next
 PASS unobstructed raycast Next
-PASS all 9 painted status icons
+PASS all 18 distinct painted status icons
+PASS correct icon for 残响
+PASS correct icon for 强酸
+PASS correct icon for 中毒
+PASS correct icon for 目盲
+PASS correct icon for 腐朽
+PASS correct icon for 燃烧
+PASS correct icon for 覆霜
+PASS correct icon for 感电
+PASS correct icon for 恐慌
+PASS correct icon for 流血
+PASS correct icon for 潮湿
+PASS correct icon for 冻结
+PASS correct icon for 震慑
+PASS correct icon for 跛脚
+PASS correct icon for 倒伏
+PASS correct icon for 魅惑
+PASS correct icon for 失能
+PASS correct icon for 眩晕
+PASS status duration and refresh rule visible
 PASS shared menu canvas stays active StatusGuide
+PASS shared menu canvas stays active StatusGuideMiddle
+PASS shared menu canvas stays active StatusGuideBottom
+PASS last status reachable by scrolling
+PASS clickable Next
+PASS unobstructed raycast Next
+PASS element reactions have their own third page
+PASS exactly six element reactions
+PASS psychic is absent from reactions
+PASS reaction page explains damage rounding
+PASS reaction visible 雷鸣＋残响：清除残响，附加 2 回合眩晕
+PASS reaction visible 寒冷＋覆霜／潮湿：清除这两种状态，附加 2 回合冻结
+PASS reaction visible 寒冷＋冻结：伤害 ×1.5，保留冻结，不附加覆霜
+PASS reaction visible 寒冷＋燃烧：清除燃烧，伤害 ×1.5，不附加覆霜
+PASS reaction visible 火焰＋覆霜／潮湿：清除这两种状态，伤害 ×1.5，不附加燃烧
+PASS reaction visible 闪电＋潮湿：伤害 ×1.5，保留潮湿，照常附加感电
+PASS shared menu canvas stays active ElementReactions
+PASS clickable Next
+PASS unobstructed raycast Next
+PASS handbook wraps after reaction page
 PASS clickable Close
 PASS unobstructed raycast Close
 PASS navigation MainMenu

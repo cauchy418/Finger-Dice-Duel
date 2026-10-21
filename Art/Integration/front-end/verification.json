@@ -5,8 +5,10 @@
     "failed": 0
   },
   "headless": {
-    "passed": 991,
-    "failed": 0
+    "passed": 994,
+    "failed": 3,
+    "total": 997,
+    "report": "../../Production/status-icons-v3/validation.md"
   },
   "unityTestDefineCompile": true,
   "engine": "Tuanjie 2022.3.62t15",
@@ -23,8 +25,8 @@
     "Current refresh reports an unrelated editor PackageManager AssetStoreDownloadManager.OnBeforeSerialize exception; C# checks and runtime UI fixtures pass."
   ],
   "frontEnd": {
-    "screenCaptures": 43,
-    "passed": 768,
+    "screenCaptures": 46,
+    "passed": 808,
     "failed": 0,
     "report": "validation.txt"
   },
@@ -35,7 +37,14 @@
   },
   "multiplayer": {
     "failed": 0,
-    "passed": 1815,
+    "passed": 3089,
     "report": "../multiplayer/validation.txt"
+  },
+  "statusIcons": {
+    "elementReactions": 6,
+    "newPaintings": 9,
+    "manifest": "../../Production/status-icons-v3/manifest.json",
+    "total": 18,
+    "handbookPages": 3
   }
 }

@@ -48,6 +48,7 @@ namespace FingerDiceDuel.UI
         /// ⚠️ 有这个时，界面走分组渲染（不再用 <see cref="Interactions"/> 的纯文字）。
         /// </summary>
         public List<CodexGuideGroup> Groups;
+        public string GuideNote;
 
         /// <summary>分组里的一个分类。</summary>
         public sealed class CodexGuideGroup
@@ -60,6 +61,7 @@ namespace FingerDiceDuel.UI
         public sealed class CodexGuideEntry
         {
             public string IconKey;
+            public StatusEffect Status;
             public int Color;
             public string Text;
         }
@@ -320,6 +322,13 @@ namespace FingerDiceDuel.UI
             float y = 0;
             TopText(_guideContent, "GuideTitle", c.NameZh + "   " + c.NameEn, 0, y, 1580, 54, 34, true);
             y += 82;
+            if (!string.IsNullOrEmpty(c.GuideNote))
+            {
+                var note = TopText(_guideContent, "GuideNote", c.GuideNote, 0, y, 1560, 100, 23);
+                float noteHeight = Mathf.Max(40, note.preferredHeight);
+                note.rectTransform.sizeDelta = new Vector2(1560, noteHeight);
+                y += noteHeight + 28;
+            }
             if (c.Groups != null && c.Groups.Count > 0)
             {
                 foreach (var group in c.Groups)
@@ -334,10 +343,8 @@ namespace FingerDiceDuel.UI
                             var entry = group.Entries[i + col];
                             float x = col * 810;
                             string key = entry.IconKey;
-                            string resource = "Damage/" + key;
-                            if (group.Title == "负面状态")
-                                foreach (StatusEffect status in StatusNames.AllStatuses)
-                                    if (DamageIcons.KeyOfStatus(status) == key) resource = "Status/" + BattleArt.StatusKey(status);
+                            string resource = entry.Status == StatusEffect.None ? "Damage/" + key
+                                : "Status/" + BattleArt.StatusKey(entry.Status);
                             var icon = FrontEndArt.Rect(_guideContent, "PaintedIcon_" + key, new Vector2(x + 56, -y - 56), new Vector2(112, 112)).gameObject.AddComponent<Image>();
                             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0, 1);
                             icon.sprite = BattleArt.Get(resource);

@@ -166,6 +166,9 @@ namespace FingerDiceDuel.EditorTools
         {
             var name = panel.Find("Name") as RectTransform;
             var bar = panel.GetComponentsInChildren<Image>().Where(i => i.name.StartsWith("Status") && i.name != "StatusIconsA" && i.name != "StatusIconsB").ToArray();
+            Check(bar.Length == StatusNames.AllStatuses.Length, "all 18 statuses visible " + panel.name);
+            foreach (var status in StatusNames.AllStatuses)
+                Check(bar.Any(i => i.sprite != null && i.sprite.name == "Status/" + StatusNames.IconKeyOf(status)), "correct painted status " + StatusNames.Of(status) + " " + panel.name);
             foreach (var icon in bar)
             {
                 var rect = Bounds(icon.rectTransform);
@@ -173,6 +176,8 @@ namespace FingerDiceDuel.EditorTools
                 Check(!rect.Overlaps(Bounds(name)), "status clears name " + panel.name);
                 Check(Bounds(Root).Contains(rect.min) && Bounds(Root).Contains(rect.max), "status inside canvas " + panel.name);
                 Check(icon.transform.Find("Turns").GetComponent<Text>().text == "2", "status duration visible " + panel.name);
+                foreach (var hand in panel.GetComponentsInChildren<Button>().Where(b => b.name == "PaintedHandCard"))
+                    Check(!rect.Overlaps(Bounds((RectTransform)hand.transform)), "status clears hand " + panel.name);
             }
         }
         private static void Prepare()

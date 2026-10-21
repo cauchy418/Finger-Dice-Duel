@@ -74,7 +74,7 @@ namespace FingerDiceDuel.UI
             Position(panel.HpText.rectTransform, Vector2.zero, new Vector2(size.x - 190, 26));
             Position(panel.StatusText.rectTransform, new Vector2(38, top - 104), new Vector2(size.x - 110, 22));
             Position(panel.IdentityText.rectTransform, new Vector2(-size.x / 2 + 40, top - 104), new Vector2(70, 22));
-            panel.StatusIcons.SetGridLayout(new Vector2(size.x / 2 - 82, top - 28), 23, 2, 3);
+            panel.StatusIcons.SetGridLayout(new Vector2(size.x / 2 - 74, top - 28), 22, 1, 3);
             float scale = eight ? (self ? 0.51f : 0.47f) : 0.65f;
             float x = eight ? 60 : 85;
             for (int i = 0; i < 2; i++)

@@ -28,6 +28,7 @@ namespace FingerDiceDuel.EditorTools
         private static bool _screenshotPending;
         private static int _frameRetries;
         private static bool _savedBackground;
+        private static bool _pumpingFrame;
         private sealed class AwaitCanvasFrame : Exception { public AwaitCanvasFrame(string message) : base(message) { } }
 
         static FrontEndArtPreview() { EditorApplication.update += Update; }
@@ -44,10 +45,17 @@ namespace FingerDiceDuel.EditorTools
 
         private static void Update()
         {
-            if (!SessionState.GetBool(Pending, false) || !EditorApplication.isPlaying ||
+            if (_pumpingFrame || !SessionState.GetBool(Pending, false) || !EditorApplication.isPlaying ||
                 EditorApplication.isCompiling || EditorApplication.timeSinceStartup < _after) return;
             try
             {
+                // 最小化窗口时只会运行 Editor update，协程可能没有真实游戏帧；显式推进引擎一帧。
+                if (!UnityEditorInternal.InternalEditorUtility.isApplicationActive)
+                {
+                    _pumpingFrame = true;
+                    try { EditorApplication.Step(); EditorApplication.isPaused = false; }
+                    finally { _pumpingFrame = false; }
+                }
                 if (!_prepared)
                 {
                     _bootstrap = UnityEngine.Object.FindObjectOfType<GameBootstrap>();
@@ -79,11 +87,11 @@ namespace FingerDiceDuel.EditorTools
             catch (AwaitCanvasFrame pending)
             {
                 // 编辑器的离屏截图会临时切换 Canvas 模式；等真实渲染帧恢复深度和裁剪，再做射线断言。
-                if (++_frameRetries <= 6)
+                if (++_frameRetries <= 120)
                 {
                     EditorApplication.QueuePlayerLoopUpdate();
                     UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
-                    _after = EditorApplication.timeSinceStartup + 0.5;
+                    _after = EditorApplication.timeSinceStartup + 0.1;
                     return;
                 }
                 SessionState.SetBool(Pending, false);
@@ -239,6 +247,7 @@ namespace FingerDiceDuel.EditorTools
             Add(() =>
             {
                 var screen = Field<DiceRollScreen>(_bootstrap, "_diceRoll");
+                if (Field<bool>(screen, "_animating")) throw new AwaitCanvasFrame("1v1 dice animation still running");
                 var controller = Field<MatchStartController>(screen, "_controller");
                 Check(Field<D20DieView>(screen, "_dieA").Face == controller.RollA && Field<D20DieView>(screen, "_dieB").Face == controller.RollB, "1v1 painted dice match controller rolls");
                 _bootstrap.ShowScreen(GameScreen.DiceRoll);
@@ -254,6 +263,7 @@ namespace FingerDiceDuel.EditorTools
             Add(() =>
             {
                 var screen = Field<DiceRollScreen>(_bootstrap, "_diceRoll");
+                if (Field<bool>(screen, "_animating")) throw new AwaitCanvasFrame("critical dice animation still running");
                 Check(Field<D20DieView>(screen, "_dieA").Face == 20 && Field<D20DieView>(screen, "_dieB").Face == 1, "critical result numerals remain accurate");
                 Check(Field<RectTransform>(screen, "_optionsRoot").GetComponentsInChildren<Button>().Length == 45, "all 45 critical split choices available");
                 var first = Field<RectTransform>(screen, "_optionsRoot").Find("Split0").GetComponent<Button>();
@@ -307,6 +317,7 @@ namespace FingerDiceDuel.EditorTools
                 var screen = Field<TwoOnTwoInitiativeScreen>(_bootstrap, "_screenTwoOnTwoInitiative");
                 var controller = Field<TwoOnTwoStartController>(screen, "_controller");
                 var dice = Field<D20DieView[]>(screen, "_dice");
+                if (Field<Coroutine>(screen, "_rollAnimation") != null) throw new AwaitCanvasFrame("2v2 dice animation still running");
                 for (int i = 0; i < 4; i++) Check(dice[i].Face == controller.RollOf(controller.PlayerAtSeat(i + 1)), "2v2 painted die result at seat " + (i + 1));
                 Check(Field<RectTransform>(screen, "_optionsRoot").GetComponentsInChildren<Button>().Length == 45, "2v2 critical split choices available");
                 var first = Field<RectTransform>(screen, "_optionsRoot").Find("Split0") as RectTransform;
@@ -364,9 +375,11 @@ namespace FingerDiceDuel.EditorTools
             Add(() =>
             {
                 var codex = Field<CodexScreen>(_bootstrap, "_codex");
-                Check(codex.PageCount == 2, "magic guide remains separate from characters");
+                Check(codex.PageCount == 3, "handbook has three pages separate from characters");
                 Check(!Field<Button>(codex, "_filterToggle").gameObject.activeSelf, "magic guide has no alignment filter");
-                Check(codex.Root.GetComponentsInChildren<Image>().Count(i => i.name.StartsWith("PaintedIcon_") && i.sprite != null) == 13, "all 13 painted damage icons");
+                Check(codex.Root.GetComponentsInChildren<Image>().Where(i => i.name.StartsWith("PaintedIcon_") && i.sprite != null).Select(i => i.sprite.name).Distinct().Count() == 13, "all 13 distinct painted damage icons");
+                Check(!codex.Root.GetComponentsInChildren<Text>().Any(t => t.name == "GroupTitle" && t.text == "元素反应"), "damage page does not duplicate reactions");
+                Check(codex.Root.GetComponentsInChildren<Text>().Any(t => t.name == "GuideNote" && t.text.Contains("闪避")), "damage page explains hit rules");
             }); Shot("DamageGuide");
             Add(() =>
             {
@@ -375,8 +388,40 @@ namespace FingerDiceDuel.EditorTools
                 Check(scroll.content.rect.height > scroll.viewport.rect.height, "damage guide scroll exposes physical types");
             }); Shot("DamageGuideBottom");
             Add(() => Click("Next"));
-            Add(() => Check(Field<CodexScreen>(_bootstrap, "_codex").Root.GetComponentsInChildren<Image>().Count(i => i.name.StartsWith("PaintedIcon_") && i.sprite != null && i.sprite.name.StartsWith("Status/")) == 9, "all 9 painted status icons"));
+            Add(() =>
+            {
+                var codex = Field<CodexScreen>(_bootstrap, "_codex");
+                var icons = codex.Root.GetComponentsInChildren<Image>().Where(i => i.name.StartsWith("PaintedIcon_") && i.sprite != null && i.sprite.name.StartsWith("Status/")).ToArray();
+                Check(icons.Length == 18 && icons.Select(i => i.sprite.name).Distinct().Count() == 18, "all 18 distinct painted status icons");
+                foreach (var status in StatusNames.AllStatuses)
+                    Check(icons.Any(i => i.sprite.name == "Status/" + StatusNames.IconKeyOf(status)), "correct icon for " + StatusNames.Of(status));
+                Check(codex.Root.GetComponentsInChildren<Text>().Any(t => t.name == "GuideNote" && t.text.Contains("只刷新")), "status duration and refresh rule visible");
+            });
             Shot("StatusGuide");
+            Add(() => Field<ScrollRect>(Field<CodexScreen>(_bootstrap, "_codex"), "_guideScroll").verticalNormalizedPosition = 0.5f);
+            Shot("StatusGuideMiddle");
+            Add(() => Field<ScrollRect>(Field<CodexScreen>(_bootstrap, "_codex"), "_guideScroll").verticalNormalizedPosition = 0);
+            Shot("StatusGuideBottom");
+            Add(() =>
+            {
+                var codex = Field<CodexScreen>(_bootstrap, "_codex");
+                var scroll = Field<ScrollRect>(codex, "_guideScroll");
+                var final = scroll.content.Find("Entry_dizzy") as RectTransform;
+                Check(final != null && Bounds(scroll.viewport).Contains(Bounds(final).center), "last status reachable by scrolling");
+            });
+            Add(() => Click("Next"));
+            Add(() =>
+            {
+                var codex = Field<CodexScreen>(_bootstrap, "_codex");
+                Check(codex.PageNumber == 3, "element reactions have their own third page");
+                var entries = codex.Root.GetComponentsInChildren<Text>().Where(t => t.name.StartsWith("Entry_")).ToArray();
+                Check(entries.Length == 6, "exactly six element reactions");
+                Check(entries.All(t => !t.text.Contains("心灵")), "psychic is absent from reactions");
+                Check(codex.Root.GetComponentsInChildren<Text>().Any(t => t.name == "GuideNote" && t.text.Contains("向上取整")), "reaction page explains damage rounding");
+                var scroll = Field<ScrollRect>(codex, "_guideScroll");
+                foreach (var entry in entries) Check(Bounds(scroll.viewport).Contains(Bounds(entry.rectTransform).center), "reaction visible " + entry.text);
+            }); Shot("ElementReactions");
+            Add(() => { Click("Next"); Check(Field<CodexScreen>(_bootstrap, "_codex").PageNumber == 1, "handbook wraps after reaction page"); });
             Add(() => Click("Close"));
             Add(() =>
             {

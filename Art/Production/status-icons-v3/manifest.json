@@ -1,0 +1,206 @@
+{
+  "version": 3,
+  "statusCount": 18,
+  "newPaintings": 9,
+  "tool": "Built-in image_gen",
+  "assets": [
+    {
+      "key": "resonance",
+      "name": "残响",
+      "path": "Assets/Resources/Art/Battle/v1/Status/resonance.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "f843d0bb75859b0223c682882213e9ddcfbde34fc54e46034acea1b1fc3e21a1",
+      "source": "Art/Production/painted-icons-v2/native/Status/resonance.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "acid",
+      "name": "强酸",
+      "path": "Assets/Resources/Art/Battle/v1/Status/acid.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "8db58dc0a1f74c1b32d1830e1e57b1bf2d1f41f5c9c0692f850f0eab21ed6496",
+      "source": "Art/Production/painted-icons-v2/native/Status/acid.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "poison",
+      "name": "中毒",
+      "path": "Assets/Resources/Art/Battle/v1/Status/poison.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "e45d00172d9e4ec864d7500a987b331a4a98d5a8eeb81d4b1fefef686857cf45",
+      "source": "Art/Production/painted-icons-v2/native/Status/poison.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "blind",
+      "name": "目盲",
+      "path": "Assets/Resources/Art/Battle/v1/Status/blind.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "5d80c36c80fb781df545ed2df6e7ce8517ad738290ab0614d51e07732eb734af",
+      "source": "Art/Production/painted-icons-v2/native/Status/blind.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "decay",
+      "name": "腐朽",
+      "path": "Assets/Resources/Art/Battle/v1/Status/decay.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "8595069e2967270146e91f62053407b99b94e05c301645e0d0aff9c08170de7f",
+      "source": "Art/Production/painted-icons-v2/native/Status/decay.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "burn",
+      "name": "燃烧",
+      "path": "Assets/Resources/Art/Battle/v1/Status/burn.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "c2eff3814a4ff6276b74427fdfee38f239222380c459117e04d3e43857523c1d",
+      "source": "Art/Production/painted-icons-v2/native/Status/burn.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "frost",
+      "name": "覆霜",
+      "path": "Assets/Resources/Art/Battle/v1/Status/frost.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "94262c0133c6620a22a356230524864e527c78939785547329156fc64cac8618",
+      "source": "Art/Production/status-icons-v3/source/frost.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "shock",
+      "name": "感电",
+      "path": "Assets/Resources/Art/Battle/v1/Status/shock.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "f795facb2c0871908aa64b87a6b06fa899a538429639548bcd33c315e5747b87",
+      "source": "Art/Production/painted-icons-v2/native/Status/shock.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "panic",
+      "name": "恐慌",
+      "path": "Assets/Resources/Art/Battle/v1/Status/panic.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "e7129c26dbce8d96e6371b3752fe7a3db5ff81ae48cc17290a2455884465f70e",
+      "source": "Assets/Resources/Art/Battle/v1/Status/stun.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "bleed",
+      "name": "流血",
+      "path": "Assets/Resources/Art/Battle/v1/Status/bleed.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "604f1c5a9e9688c742db09cbd520dd9657f7c22ee0aa3633faa04ba923623e14",
+      "source": "Art/Production/status-icons-v3/source/bleed.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "wet",
+      "name": "潮湿",
+      "path": "Assets/Resources/Art/Battle/v1/Status/wet.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "1f614011e199b2e13d11adf948c6e981f4c6f566c4a2f2126c2fd73d3d4c8d61",
+      "source": "Art/Production/status-icons-v3/source/wet.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "frozen",
+      "name": "冻结",
+      "path": "Assets/Resources/Art/Battle/v1/Status/frozen.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "a07428e3896e139aadcf83ad229b652f0aa9ff978071a8337fb498286a8a0a69",
+      "source": "Assets/Resources/Art/Battle/v1/Status/freeze.png",
+      "method": "Existing painted icon preserved; canonical status resource key",
+      "frameIncluded": true
+    },
+    {
+      "key": "stunned",
+      "name": "震慑",
+      "path": "Assets/Resources/Art/Battle/v1/Status/stunned.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "b475b004b0e34d7a5dc820529600e6dc25d5b46239b80e51dbd98250a0715518",
+      "source": "Art/Production/status-icons-v3/source/stunned.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "limp",
+      "name": "跛脚",
+      "path": "Assets/Resources/Art/Battle/v1/Status/limp.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "3ee45100a39f2d19e4f5805cc1290a468de7f9eaf79c525702ff05041cfd4c42",
+      "source": "Art/Production/status-icons-v3/source/limp.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "knocked_down",
+      "name": "倒伏",
+      "path": "Assets/Resources/Art/Battle/v1/Status/knocked_down.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "6cfbf7bfcec54defdcd060ffe4d3b31107e7fafbfd85168e45a7942522e3bb8b",
+      "source": "Art/Production/status-icons-v3/source/knocked_down.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "charm",
+      "name": "魅惑",
+      "path": "Assets/Resources/Art/Battle/v1/Status/charm.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "91cab6c5fdc00b4041b51cc442f534659c153ea9d6d4aec653a0b25cdbf48b9f",
+      "source": "Art/Production/status-icons-v3/source/charm.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "disabled",
+      "name": "失能",
+      "path": "Assets/Resources/Art/Battle/v1/Status/disabled.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "c5c2f17eab8c8e90ca8da220ed691d8215733ea2a4837c30264d18431740991e",
+      "source": "Art/Production/status-icons-v3/source/disabled.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    },
+    {
+      "key": "dizzy",
+      "name": "眩晕",
+      "path": "Assets/Resources/Art/Battle/v1/Status/dizzy.png",
+      "width": 512,
+      "height": 512,
+      "sha256": "b03e2b60965c604ce4b38e1be380d229fd678121dbd15515711cde20100678eb",
+      "source": "Art/Production/status-icons-v3/source/dizzy.png",
+      "method": "Built-in image_gen, alpha crop and uniform resize",
+      "frameIncluded": true
+    }
+  ]
+}

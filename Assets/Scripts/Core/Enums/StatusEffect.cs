@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **法师（Wizard）的负面状态**。
@@ -152,6 +152,33 @@ namespace FingerDiceDuel.Core
     /// <summary>伤害类型 / 状态的中文名与说明（界面与图鉴共用，保证只有一处真相）。</summary>
     public static class StatusNames
     {
+        /// <summary>绘画图标的唯一资源键；显式处理旧枚举别名，避免 ToString 结果不确定。</summary>
+        public static string IconKeyOf(StatusEffect status)
+        {
+            switch (status)
+            {
+                case StatusEffect.Resonance: return "resonance";
+                case StatusEffect.Acid: return "acid";
+                case StatusEffect.Poison: return "poison";
+                case StatusEffect.Blind: return "blind";
+                case StatusEffect.Decay: return "decay";
+                case StatusEffect.Burn: return "burn";
+                case StatusEffect.Frost: return "frost";
+                case StatusEffect.Shock: return "shock";
+                case StatusEffect.Panic: return "panic";
+                case StatusEffect.Bleed: return "bleed";
+                case StatusEffect.Wet: return "wet";
+                case StatusEffect.Frozen: return "frozen";
+                case StatusEffect.Stunned: return "stunned";
+                case StatusEffect.Limp: return "limp";
+                case StatusEffect.KnockedDown: return "knocked_down";
+                case StatusEffect.Charm: return "charm";
+                case StatusEffect.Disabled: return "disabled";
+                case StatusEffect.Dizzy: return "dizzy";
+                default: return null;
+            }
+        }
+
         /// <summary>伤害类型的中文名。</summary>
         public static string Of(DamageType type)
         {
@@ -276,7 +303,7 @@ namespace FingerDiceDuel.Core
             DamageType.Force, DamageType.Psychic,
         };
 
-        /// <summary>**全部 9 种状态**（按枚举顺序，便于界面稳定显示）。</summary>
+        /// <summary>全部 18 种状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -393,7 +420,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 图鉴「伤害类型指引」里那一行的文字（带图标）：
-        /// `◎ 雷鸣 → 残响：只能攻击与自己距离 1 的角色`；
+        /// `◎ 雷鸣：附加两回合残响状态`；
         /// 力场没有状态，写成 `○ 力场：穿盾、无视正向防御、不可闪避（不挂状态）`。
         ///
         /// 放在 Core 是为了让**界面与测试共用同一份文案**（只有一处真相）。
@@ -401,16 +428,7 @@ namespace FingerDiceDuel.Core
         public static string GuideLine(DamageType type)
         {
             StatusEffect st = StatusOf(type);
-
-            if (st == StatusEffect.None)
-                return Colorize(GlyphOf(StatusEffect.None), ForceColor) + " " + Of(type)
-                     + "：穿盾、无视正向防御、不可闪避（不挂状态）";
-
-            // ⚠️ 玩家要求**去掉 `→`**（"-> 的部分删除没有意义"），
-            //    并直接写明"附加两回合XX状态" —— 这样一页就说清了
-            //    "这个类型会挂上什么、挂多久"。
-            return Colorize(GlyphOf(st), st) + " " + Of(type)
-                 + "：附加两回合" + Of(st) + "状态";
+            return Colorize(GlyphOf(st), GuideColorOf(type)) + " " + GuideSheets.MagicLinePlain(type);
         }
 
         /// <summary>

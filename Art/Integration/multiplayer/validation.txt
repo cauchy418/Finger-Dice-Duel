@@ -2,78 +2,260 @@ PASS formed shield uses closed five
 PASS ordinary five stays spread
 PASS broken shield and taichi keep ordinary gesture
 PASS paladin non-five shield preserves its actual hand number
+PASS all 18 statuses visible AreaA
+PASS correct painted status 残响 AreaA
+PASS correct painted status 强酸 AreaA
+PASS correct painted status 中毒 AreaA
+PASS correct painted status 目盲 AreaA
+PASS correct painted status 腐朽 AreaA
+PASS correct painted status 燃烧 AreaA
+PASS correct painted status 覆霜 AreaA
+PASS correct painted status 感电 AreaA
+PASS correct painted status 恐慌 AreaA
+PASS correct painted status 流血 AreaA
+PASS correct painted status 潮湿 AreaA
+PASS correct painted status 冻结 AreaA
+PASS correct painted status 震慑 AreaA
+PASS correct painted status 跛脚 AreaA
+PASS correct painted status 倒伏 AreaA
+PASS correct painted status 魅惑 AreaA
+PASS correct painted status 失能 AreaA
+PASS correct painted status 眩晕 AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
 PASS negative status beside name AreaA
 PASS status clears name AreaA
 PASS status inside canvas AreaA
 PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS negative status beside name AreaA
+PASS status clears name AreaA
+PASS status inside canvas AreaA
+PASS status duration visible AreaA
+PASS status clears hand AreaA
+PASS status clears hand AreaA
+PASS all 18 statuses visible AreaB
+PASS correct painted status 残响 AreaB
+PASS correct painted status 强酸 AreaB
+PASS correct painted status 中毒 AreaB
+PASS correct painted status 目盲 AreaB
+PASS correct painted status 腐朽 AreaB
+PASS correct painted status 燃烧 AreaB
+PASS correct painted status 覆霜 AreaB
+PASS correct painted status 感电 AreaB
+PASS correct painted status 恐慌 AreaB
+PASS correct painted status 流血 AreaB
+PASS correct painted status 潮湿 AreaB
+PASS correct painted status 冻结 AreaB
+PASS correct painted status 震慑 AreaB
+PASS correct painted status 跛脚 AreaB
+PASS correct painted status 倒伏 AreaB
+PASS correct painted status 魅惑 AreaB
+PASS correct painted status 失能 AreaB
+PASS correct painted status 眩晕 AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS negative status beside name AreaB
 PASS status clears name AreaB
 PASS status inside canvas AreaB
 PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
+PASS negative status beside name AreaB
+PASS status clears name AreaB
+PASS status inside canvas AreaB
+PASS status duration visible AreaB
+PASS status clears hand AreaB
+PASS status clears hand AreaB
 PASS history hidden initially
 PASS click reaches HistoryButton
 PASS history toggle opens log
@@ -129,42 +311,133 @@ PASS hand fits RingLowerLeft
 PASS hand sprite loaded RingLowerLeft
 PASS class emblem loaded RingLowerLeft
 PASS history closed when entering multiplayer
+PASS all 18 statuses visible RingSelfBottom
+PASS correct painted status 残响 RingSelfBottom
+PASS correct painted status 强酸 RingSelfBottom
+PASS correct painted status 中毒 RingSelfBottom
+PASS correct painted status 目盲 RingSelfBottom
+PASS correct painted status 腐朽 RingSelfBottom
+PASS correct painted status 燃烧 RingSelfBottom
+PASS correct painted status 覆霜 RingSelfBottom
+PASS correct painted status 感电 RingSelfBottom
+PASS correct painted status 恐慌 RingSelfBottom
+PASS correct painted status 流血 RingSelfBottom
+PASS correct painted status 潮湿 RingSelfBottom
+PASS correct painted status 冻结 RingSelfBottom
+PASS correct painted status 震慑 RingSelfBottom
+PASS correct painted status 跛脚 RingSelfBottom
+PASS correct painted status 倒伏 RingSelfBottom
+PASS correct painted status 魅惑 RingSelfBottom
+PASS correct painted status 失能 RingSelfBottom
+PASS correct painted status 眩晕 RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS exactly 4 occupied panels at seat 2
 PASS painted hand count 8
 PASS self seat and relation preserved 2
@@ -213,42 +486,133 @@ PASS hand fits RingLowerRight
 PASS hand sprite loaded RingLowerRight
 PASS class emblem loaded RingLowerRight
 PASS history closed when entering multiplayer
+PASS all 18 statuses visible RingSelfBottom
+PASS correct painted status 残响 RingSelfBottom
+PASS correct painted status 强酸 RingSelfBottom
+PASS correct painted status 中毒 RingSelfBottom
+PASS correct painted status 目盲 RingSelfBottom
+PASS correct painted status 腐朽 RingSelfBottom
+PASS correct painted status 燃烧 RingSelfBottom
+PASS correct painted status 覆霜 RingSelfBottom
+PASS correct painted status 感电 RingSelfBottom
+PASS correct painted status 恐慌 RingSelfBottom
+PASS correct painted status 流血 RingSelfBottom
+PASS correct painted status 潮湿 RingSelfBottom
+PASS correct painted status 冻结 RingSelfBottom
+PASS correct painted status 震慑 RingSelfBottom
+PASS correct painted status 跛脚 RingSelfBottom
+PASS correct painted status 倒伏 RingSelfBottom
+PASS correct painted status 魅惑 RingSelfBottom
+PASS correct painted status 失能 RingSelfBottom
+PASS correct painted status 眩晕 RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS exactly 4 occupied panels at seat 3
 PASS painted hand count 8
 PASS self seat and relation preserved 3
@@ -297,42 +661,133 @@ PASS hand fits RingLowerLeft
 PASS hand sprite loaded RingLowerLeft
 PASS class emblem loaded RingLowerLeft
 PASS history closed when entering multiplayer
+PASS all 18 statuses visible RingSelfBottom
+PASS correct painted status 残响 RingSelfBottom
+PASS correct painted status 强酸 RingSelfBottom
+PASS correct painted status 中毒 RingSelfBottom
+PASS correct painted status 目盲 RingSelfBottom
+PASS correct painted status 腐朽 RingSelfBottom
+PASS correct painted status 燃烧 RingSelfBottom
+PASS correct painted status 覆霜 RingSelfBottom
+PASS correct painted status 感电 RingSelfBottom
+PASS correct painted status 恐慌 RingSelfBottom
+PASS correct painted status 流血 RingSelfBottom
+PASS correct painted status 潮湿 RingSelfBottom
+PASS correct painted status 冻结 RingSelfBottom
+PASS correct painted status 震慑 RingSelfBottom
+PASS correct painted status 跛脚 RingSelfBottom
+PASS correct painted status 倒伏 RingSelfBottom
+PASS correct painted status 魅惑 RingSelfBottom
+PASS correct painted status 失能 RingSelfBottom
+PASS correct painted status 眩晕 RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS exactly 4 occupied panels at seat 4
 PASS painted hand count 8
 PASS self seat and relation preserved 4
@@ -381,42 +836,133 @@ PASS hand fits RingLowerRight
 PASS hand sprite loaded RingLowerRight
 PASS class emblem loaded RingLowerRight
 PASS history closed when entering multiplayer
+PASS all 18 statuses visible RingSelfBottom
+PASS correct painted status 残响 RingSelfBottom
+PASS correct painted status 强酸 RingSelfBottom
+PASS correct painted status 中毒 RingSelfBottom
+PASS correct painted status 目盲 RingSelfBottom
+PASS correct painted status 腐朽 RingSelfBottom
+PASS correct painted status 燃烧 RingSelfBottom
+PASS correct painted status 覆霜 RingSelfBottom
+PASS correct painted status 感电 RingSelfBottom
+PASS correct painted status 恐慌 RingSelfBottom
+PASS correct painted status 流血 RingSelfBottom
+PASS correct painted status 潮湿 RingSelfBottom
+PASS correct painted status 冻结 RingSelfBottom
+PASS correct painted status 震慑 RingSelfBottom
+PASS correct painted status 跛脚 RingSelfBottom
+PASS correct painted status 倒伏 RingSelfBottom
+PASS correct painted status 魅惑 RingSelfBottom
+PASS correct painted status 失能 RingSelfBottom
+PASS correct painted status 眩晕 RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS 2v2 real ranger defense request
 PASS multiplayer skills use action tray
 PASS complete skill label visible SkillChoice0
@@ -1416,294 +1962,1022 @@ PASS hand fits RingMiddleRight
 PASS hand sprite loaded RingMiddleRight
 PASS class emblem loaded RingMiddleRight
 PASS history closed when entering multiplayer
+PASS all 18 statuses visible RingLowerRight
+PASS correct painted status 残响 RingLowerRight
+PASS correct painted status 强酸 RingLowerRight
+PASS correct painted status 中毒 RingLowerRight
+PASS correct painted status 目盲 RingLowerRight
+PASS correct painted status 腐朽 RingLowerRight
+PASS correct painted status 燃烧 RingLowerRight
+PASS correct painted status 覆霜 RingLowerRight
+PASS correct painted status 感电 RingLowerRight
+PASS correct painted status 恐慌 RingLowerRight
+PASS correct painted status 流血 RingLowerRight
+PASS correct painted status 潮湿 RingLowerRight
+PASS correct painted status 冻结 RingLowerRight
+PASS correct painted status 震慑 RingLowerRight
+PASS correct painted status 跛脚 RingLowerRight
+PASS correct painted status 倒伏 RingLowerRight
+PASS correct painted status 魅惑 RingLowerRight
+PASS correct painted status 失能 RingLowerRight
+PASS correct painted status 眩晕 RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
 PASS negative status beside name RingLowerRight
 PASS status clears name RingLowerRight
 PASS status inside canvas RingLowerRight
 PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS negative status beside name RingLowerRight
+PASS status clears name RingLowerRight
+PASS status inside canvas RingLowerRight
+PASS status duration visible RingLowerRight
+PASS status clears hand RingLowerRight
+PASS status clears hand RingLowerRight
+PASS all 18 statuses visible RingMiddleRight
+PASS correct painted status 残响 RingMiddleRight
+PASS correct painted status 强酸 RingMiddleRight
+PASS correct painted status 中毒 RingMiddleRight
+PASS correct painted status 目盲 RingMiddleRight
+PASS correct painted status 腐朽 RingMiddleRight
+PASS correct painted status 燃烧 RingMiddleRight
+PASS correct painted status 覆霜 RingMiddleRight
+PASS correct painted status 感电 RingMiddleRight
+PASS correct painted status 恐慌 RingMiddleRight
+PASS correct painted status 流血 RingMiddleRight
+PASS correct painted status 潮湿 RingMiddleRight
+PASS correct painted status 冻结 RingMiddleRight
+PASS correct painted status 震慑 RingMiddleRight
+PASS correct painted status 跛脚 RingMiddleRight
+PASS correct painted status 倒伏 RingMiddleRight
+PASS correct painted status 魅惑 RingMiddleRight
+PASS correct painted status 失能 RingMiddleRight
+PASS correct painted status 眩晕 RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
 PASS negative status beside name RingMiddleRight
 PASS status clears name RingMiddleRight
 PASS status inside canvas RingMiddleRight
 PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS negative status beside name RingMiddleRight
+PASS status clears name RingMiddleRight
+PASS status inside canvas RingMiddleRight
+PASS status duration visible RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS status clears hand RingMiddleRight
+PASS all 18 statuses visible RingUpperRight
+PASS correct painted status 残响 RingUpperRight
+PASS correct painted status 强酸 RingUpperRight
+PASS correct painted status 中毒 RingUpperRight
+PASS correct painted status 目盲 RingUpperRight
+PASS correct painted status 腐朽 RingUpperRight
+PASS correct painted status 燃烧 RingUpperRight
+PASS correct painted status 覆霜 RingUpperRight
+PASS correct painted status 感电 RingUpperRight
+PASS correct painted status 恐慌 RingUpperRight
+PASS correct painted status 流血 RingUpperRight
+PASS correct painted status 潮湿 RingUpperRight
+PASS correct painted status 冻结 RingUpperRight
+PASS correct painted status 震慑 RingUpperRight
+PASS correct painted status 跛脚 RingUpperRight
+PASS correct painted status 倒伏 RingUpperRight
+PASS correct painted status 魅惑 RingUpperRight
+PASS correct painted status 失能 RingUpperRight
+PASS correct painted status 眩晕 RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
 PASS negative status beside name RingUpperRight
 PASS status clears name RingUpperRight
 PASS status inside canvas RingUpperRight
 PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS negative status beside name RingUpperRight
+PASS status clears name RingUpperRight
+PASS status inside canvas RingUpperRight
+PASS status duration visible RingUpperRight
+PASS status clears hand RingUpperRight
+PASS status clears hand RingUpperRight
+PASS all 18 statuses visible RingTopCenter
+PASS correct painted status 残响 RingTopCenter
+PASS correct painted status 强酸 RingTopCenter
+PASS correct painted status 中毒 RingTopCenter
+PASS correct painted status 目盲 RingTopCenter
+PASS correct painted status 腐朽 RingTopCenter
+PASS correct painted status 燃烧 RingTopCenter
+PASS correct painted status 覆霜 RingTopCenter
+PASS correct painted status 感电 RingTopCenter
+PASS correct painted status 恐慌 RingTopCenter
+PASS correct painted status 流血 RingTopCenter
+PASS correct painted status 潮湿 RingTopCenter
+PASS correct painted status 冻结 RingTopCenter
+PASS correct painted status 震慑 RingTopCenter
+PASS correct painted status 跛脚 RingTopCenter
+PASS correct painted status 倒伏 RingTopCenter
+PASS correct painted status 魅惑 RingTopCenter
+PASS correct painted status 失能 RingTopCenter
+PASS correct painted status 眩晕 RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
 PASS negative status beside name RingTopCenter
 PASS status clears name RingTopCenter
 PASS status inside canvas RingTopCenter
 PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS negative status beside name RingTopCenter
+PASS status clears name RingTopCenter
+PASS status inside canvas RingTopCenter
+PASS status duration visible RingTopCenter
+PASS status clears hand RingTopCenter
+PASS status clears hand RingTopCenter
+PASS all 18 statuses visible RingUpperLeft
+PASS correct painted status 残响 RingUpperLeft
+PASS correct painted status 强酸 RingUpperLeft
+PASS correct painted status 中毒 RingUpperLeft
+PASS correct painted status 目盲 RingUpperLeft
+PASS correct painted status 腐朽 RingUpperLeft
+PASS correct painted status 燃烧 RingUpperLeft
+PASS correct painted status 覆霜 RingUpperLeft
+PASS correct painted status 感电 RingUpperLeft
+PASS correct painted status 恐慌 RingUpperLeft
+PASS correct painted status 流血 RingUpperLeft
+PASS correct painted status 潮湿 RingUpperLeft
+PASS correct painted status 冻结 RingUpperLeft
+PASS correct painted status 震慑 RingUpperLeft
+PASS correct painted status 跛脚 RingUpperLeft
+PASS correct painted status 倒伏 RingUpperLeft
+PASS correct painted status 魅惑 RingUpperLeft
+PASS correct painted status 失能 RingUpperLeft
+PASS correct painted status 眩晕 RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
 PASS negative status beside name RingUpperLeft
 PASS status clears name RingUpperLeft
 PASS status inside canvas RingUpperLeft
 PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS negative status beside name RingUpperLeft
+PASS status clears name RingUpperLeft
+PASS status inside canvas RingUpperLeft
+PASS status duration visible RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS status clears hand RingUpperLeft
+PASS all 18 statuses visible RingMiddleLeft
+PASS correct painted status 残响 RingMiddleLeft
+PASS correct painted status 强酸 RingMiddleLeft
+PASS correct painted status 中毒 RingMiddleLeft
+PASS correct painted status 目盲 RingMiddleLeft
+PASS correct painted status 腐朽 RingMiddleLeft
+PASS correct painted status 燃烧 RingMiddleLeft
+PASS correct painted status 覆霜 RingMiddleLeft
+PASS correct painted status 感电 RingMiddleLeft
+PASS correct painted status 恐慌 RingMiddleLeft
+PASS correct painted status 流血 RingMiddleLeft
+PASS correct painted status 潮湿 RingMiddleLeft
+PASS correct painted status 冻结 RingMiddleLeft
+PASS correct painted status 震慑 RingMiddleLeft
+PASS correct painted status 跛脚 RingMiddleLeft
+PASS correct painted status 倒伏 RingMiddleLeft
+PASS correct painted status 魅惑 RingMiddleLeft
+PASS correct painted status 失能 RingMiddleLeft
+PASS correct painted status 眩晕 RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
 PASS negative status beside name RingMiddleLeft
 PASS status clears name RingMiddleLeft
 PASS status inside canvas RingMiddleLeft
 PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS negative status beside name RingMiddleLeft
+PASS status clears name RingMiddleLeft
+PASS status inside canvas RingMiddleLeft
+PASS status duration visible RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS status clears hand RingMiddleLeft
+PASS all 18 statuses visible RingLowerLeft
+PASS correct painted status 残响 RingLowerLeft
+PASS correct painted status 强酸 RingLowerLeft
+PASS correct painted status 中毒 RingLowerLeft
+PASS correct painted status 目盲 RingLowerLeft
+PASS correct painted status 腐朽 RingLowerLeft
+PASS correct painted status 燃烧 RingLowerLeft
+PASS correct painted status 覆霜 RingLowerLeft
+PASS correct painted status 感电 RingLowerLeft
+PASS correct painted status 恐慌 RingLowerLeft
+PASS correct painted status 流血 RingLowerLeft
+PASS correct painted status 潮湿 RingLowerLeft
+PASS correct painted status 冻结 RingLowerLeft
+PASS correct painted status 震慑 RingLowerLeft
+PASS correct painted status 跛脚 RingLowerLeft
+PASS correct painted status 倒伏 RingLowerLeft
+PASS correct painted status 魅惑 RingLowerLeft
+PASS correct painted status 失能 RingLowerLeft
+PASS correct painted status 眩晕 RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
 PASS negative status beside name RingLowerLeft
 PASS status clears name RingLowerLeft
 PASS status inside canvas RingLowerLeft
 PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS negative status beside name RingLowerLeft
+PASS status clears name RingLowerLeft
+PASS status inside canvas RingLowerLeft
+PASS status duration visible RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS status clears hand RingLowerLeft
+PASS all 18 statuses visible RingSelfBottom
+PASS correct painted status 残响 RingSelfBottom
+PASS correct painted status 强酸 RingSelfBottom
+PASS correct painted status 中毒 RingSelfBottom
+PASS correct painted status 目盲 RingSelfBottom
+PASS correct painted status 腐朽 RingSelfBottom
+PASS correct painted status 燃烧 RingSelfBottom
+PASS correct painted status 覆霜 RingSelfBottom
+PASS correct painted status 感电 RingSelfBottom
+PASS correct painted status 恐慌 RingSelfBottom
+PASS correct painted status 流血 RingSelfBottom
+PASS correct painted status 潮湿 RingSelfBottom
+PASS correct painted status 冻结 RingSelfBottom
+PASS correct painted status 震慑 RingSelfBottom
+PASS correct painted status 跛脚 RingSelfBottom
+PASS correct painted status 倒伏 RingSelfBottom
+PASS correct painted status 魅惑 RingSelfBottom
+PASS correct painted status 失能 RingSelfBottom
+PASS correct painted status 眩晕 RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS negative status beside name RingSelfBottom
 PASS status clears name RingSelfBottom
 PASS status inside canvas RingSelfBottom
 PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS negative status beside name RingSelfBottom
+PASS status clears name RingSelfBottom
+PASS status inside canvas RingSelfBottom
+PASS status duration visible RingSelfBottom
+PASS status clears hand RingSelfBottom
+PASS status clears hand RingSelfBottom
 PASS identity visibility preserved 0
 PASS identity visibility preserved 1
 PASS identity visibility preserved 2

@@ -32,13 +32,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**995 项逻辑测试**。2026-10-21 全量 995 项通过，Unity 条件编译与表现层编译通过。
+当前状态：**997 项逻辑测试**。本轮 994 项通过、3 项既有失败（规则提示缺少「冲击」用词、术士对局停滞及其循环赛检查）；已在修改前版本分别复现。Unity 条件编译与表现层编译通过，秘法手册 13 项测试全部通过。详见 [状态图标接入验证](Art/Production/status-icons-v3/validation.md)。
 
 **1v1 战斗美术已接入**：直接按正常流程开局即可查看暗色桌面、左右手型、职业徽记与绘画状态图标。编辑器菜单 `Finger Dice Duel → Preview → 1v1 Battle Art` 可运行接入检查并输出截图，详见 [接入记录](Art/Integration/1v1/README.md)。
 
 **主菜单／图鉴／选将已换肤**：新增 80 个独立 PNG（4 背景、6 绘画素材、46 UI 组件、24 工具图标），复用 51 张职业／伤害／状态／叠层资源；已接入主菜单、全部子菜单、五类选将、图鉴、规则弹窗与先攻界面。40+ 张运行时截图、638 条前台断言和 140 条 1v1 断言通过，详见 [前台接入记录](Art/Integration/front-end/README.md)。
 
 **2v2 与 8 人战斗美术已接入**：绘画左右手型、职业徽记、血条与环形座位；负面状态位于各自名字旁。完整盾牌使用新的五指并拢 5，战斗记录默认收起，点击“返回标题”下方按钮查看。多人技能提供可滚动目标区，详见 [多人接入记录](Art/Integration/multiplayer/README.md)。
+
+**18 种状态绘画图标与秘法手册已更新**：新增 9 张同风格绘画，覆霜／冻结、恐慌／震慑均有独立图案；手册补齐持续时间、刷新规则与元素联动。原图、导出脚本和提示词见 [状态图标第三版](Art/Production/status-icons-v3/README.md)。
 
 > 💡 游戏内置 **Console 详细日志**（默认开启）：每回合的抉择现场、
 > 以及"结算被拦截"这类异常都会打 `[FDD…]` 前缀的日志。
@@ -214,7 +216,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | **魅惑** | 玩家的回合交给 AI 随机合法行动 |
 | **失能** | 攻击伤害改为 0，但保留攻击效果 |
 
-> 状态默认持续 **2 回合**，重复施加只刷新时长，不叠加强度。
+> 状态默认持续目标自己的 **2 个完整回合**，重复施加只刷新时长，不叠加强度。
 > 伤害类型联动只在攻击实际命中后触发；×1.5 在常规伤害计算后向上取整。
 
 
@@ -552,7 +554,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（24 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 995 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 997 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

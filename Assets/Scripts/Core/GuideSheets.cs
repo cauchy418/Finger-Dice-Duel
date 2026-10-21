@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -30,16 +30,18 @@ namespace FingerDiceDuel.Core
         ///    界面按组渲染标题，组内每行前面画**代码绘制的图标**。
         /// </summary>
         public IReadOnlyList<GuideGroup> Groups { get; }
+        public string Note { get; }
 
         public GuideSheet(string titleZh, string titleEn,
                           IReadOnlyList<string> lines, bool twoColumn,
-                          IReadOnlyList<GuideGroup> groups = null)
+                          IReadOnlyList<GuideGroup> groups = null, string note = "")
         {
             TitleZh = titleZh;
             TitleEn = titleEn;
             Lines = lines;
             TwoColumn = twoColumn;
             Groups = groups;
+            Note = note;
         }
 
         /// <summary>本页是否有分组。</summary>
@@ -73,12 +75,14 @@ namespace FingerDiceDuel.Core
 
         /// <summary>条目文字。</summary>
         public string Text { get; }
+        public StatusEffect Status { get; }
 
-        public GuideEntry(string iconKey, int color, string text)
+        public GuideEntry(string iconKey, int color, string text, StatusEffect status = StatusEffect.None)
         {
             IconKey = iconKey;
             Color = color;
             Text = text;
+            Status = status;
         }
     }
 
@@ -205,13 +209,12 @@ namespace FingerDiceDuel.Core
 
         /// <summary>魔法球入口要显示的全部速查表（顺序即翻页顺序）。</summary>
         public static List<GuideSheet> All()
-            => new List<GuideSheet> { DamageTypes(), Statuses() };
+            => new List<GuideSheet> { DamageTypes(), Statuses(), ElementReactions() };
 
         /// <summary>
         /// **第 1 页「伤害类型」**：10 种类型，各自"附加两回合XX状态"。
         ///
-        /// ⚠️ 玩家要求分两页：第 1 页只说"这个类型挂什么状态"，
-        ///    第 2 页再解释"那个状态具体做什么"。所以这一页**不带状态效果说明**。
+        /// 第 1 页说明伤害附加的状态，第 2 页解释状态，第 3 页单独列出元素反应。
         /// </summary>
         public static GuideSheet DamageTypes()
         {
@@ -219,15 +222,13 @@ namespace FingerDiceDuel.Core
             var lines = new List<string>();
             lines.AddRange(MagicLines());
             lines.AddRange(PhysicalLines());
-            lines.Add("【状态联动】");
-            lines.AddRange(InteractionLines());
 
             return new GuideSheet("伤害类型", "Damage Types", lines, twoColumn: false,
                                   groups: new List<GuideGroup>
                                   {
                                       MagicGroup(),
                                       PhysicalGroup(),
-                                  });
+                                  }, note: "状态在命中后附加；护盾／太极抵挡仍算命中，闪避／取消不算。元素反应见第 3 页。");
         }
 
         /// <summary>「魔法伤害」这一组：10 种，沿用现有配色。</summary>
@@ -263,7 +264,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **第 2 页「状态一览」**：9 种负面状态各自的效果。
+        /// 第 2 页「状态一览」：18 种负面状态各自的效果。
         ///
         /// ⚠️ 玩家要求："状态一览里同步用 png 替换掉字符"——
         ///    所以这一页也走**分组渲染**（含 PNG 图标），不再用字符符号。
@@ -281,16 +282,16 @@ namespace FingerDiceDuel.Core
                 // 只用"名称：效果"，不带字符符号（图标由 PNG 负责）
                 lines.Add(StatusNames.Of(st) + "：" + StatusNames.Describe(st));
 
-                entries.Add(new GuideEntry(DamageIcons.KeyOfStatus(st),
+                entries.Add(new GuideEntry(StatusNames.IconKeyOf(st),
                                            StatusNames.StatusColorOf(st),
-                                           StatusNames.Of(st) + "：" + StatusNames.Describe(st)));
+                                           StatusNames.Of(st) + "：" + StatusNames.Describe(st), st));
             }
 
             return new GuideSheet("状态一览", "Status Effects", lines, twoColumn: false,
                                   groups: new List<GuideGroup>
                                   {
                                       new GuideGroup("负面状态", entries),
-                                  });
+                                  }, note: "共 18 种负面状态，持续目标自己的 2 个完整回合；重复施加只刷新时间，不叠加强度。覆霜到期后再附加 2 回合潮湿。");
         }
 
         /// <summary>
@@ -302,16 +303,8 @@ namespace FingerDiceDuel.Core
         {
             switch (t)
             {
-                case DamageType.Thunder:
-                    return "雷鸣：附加 2 回合残响；若目标已有残响，清除残响并改为 2 回合眩晕";
-                case DamageType.Fire:
-                    return "火焰：附加 2 回合燃烧；若目标有覆霜/潮湿，清除状态并伤害 ×1.5";
-                case DamageType.Cold:
-                    return "寒冷：附加 2 回合覆霜；对覆霜/潮湿改为冻结；对冻结/燃烧伤害 ×1.5";
-                case DamageType.Lightning:
-                    return "闪电：附加 2 回合感电；对潮湿目标伤害 ×1.5，保留潮湿";
                 case DamageType.Psychic:
-                    return "心灵：50% 附加 2 回合恐慌，50% 附加 2 回合震慑";
+                    return "心灵：附加两回合状态：恐慌／震慑各 50%";
                 default:
                     StatusEffect st = StatusNames.StatusOf(t);
                     return st == StatusEffect.None
@@ -325,14 +318,29 @@ namespace FingerDiceDuel.Core
         {
             return new List<string>
             {
-                "雷鸣 → 残响目标：清除残响，附加 2 回合眩晕",
-                "寒冷 → 覆霜/潮湿目标：清除状态，附加 2 回合冻结",
-                "寒冷 → 冻结目标：伤害 ×1.5，保留冻结",
-                "寒冷 → 燃烧目标：清除燃烧，伤害 ×1.5",
-                "火焰 → 覆霜/潮湿目标：清除状态，伤害 ×1.5",
-                "闪电 → 潮湿目标：伤害 ×1.5，保留潮湿，仍附加感电",
-                "心灵：50% 恐慌 / 50% 震慑",
+                "雷鸣＋残响：清除残响，附加 2 回合眩晕",
+                "寒冷＋覆霜／潮湿：清除这两种状态，附加 2 回合冻结",
+                "寒冷＋冻结：伤害 ×1.5，保留冻结，不附加覆霜",
+                "寒冷＋燃烧：清除燃烧，伤害 ×1.5，不附加覆霜",
+                "火焰＋覆霜／潮湿：清除这两种状态，伤害 ×1.5，不附加燃烧",
+                "闪电＋潮湿：伤害 ×1.5，保留潮湿，照常附加感电",
             };
         }
+
+        public static GuideGroup InteractionGroup()
+        {
+            var lines = InteractionLines();
+            var types = new[] { DamageType.Thunder, DamageType.Cold, DamageType.Cold,
+                DamageType.Cold, DamageType.Fire, DamageType.Lightning };
+            var entries = new List<GuideEntry>();
+            for (int i = 0; i < lines.Count; i++)
+                entries.Add(new GuideEntry(IconKeyOf(types[i]), ColorOf(types[i]), lines[i]));
+            return new GuideGroup("元素反应", entries);
+        }
+
+        public static GuideSheet ElementReactions()
+            => new GuideSheet("元素反应", "Elemental Reactions", InteractionLines(), twoColumn: false,
+                groups: new List<GuideGroup> { InteractionGroup() },
+                note: "只在命中后触发；护盾／太极抵挡仍算命中，闪避／取消不算。增伤按常规伤害 ×1.5 向上取整。");
     }
 }
