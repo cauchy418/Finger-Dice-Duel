@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -701,6 +701,12 @@ namespace FingerDiceDuel.Core
     public interface IDynamicStats
     {
         void RefreshDynamicStats(PlayerState owner, GameManager manager);
+    }
+
+    /// <summary>受攻击者先选择把整次攻击转移给另一名合法角色，再允许圣武士代挡。</summary>
+    public interface IAttackTransfer
+    {
+        PlayerState TransferAttack(AttackContext context, GameManager manager);
     }
 
     public interface IAttackRedirector

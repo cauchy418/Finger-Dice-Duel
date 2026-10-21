@@ -1,0 +1,116 @@
+PASS emblem loaded soldier
+PASS emblem loaded fighter
+PASS emblem loaded curseweaver
+PASS emblem loaded barbarian
+PASS emblem loaded cleric
+PASS emblem loaded ranger
+PASS emblem loaded werewolf
+PASS emblem loaded swordsman
+PASS emblem loaded ninja
+PASS emblem loaded assassin
+PASS emblem loaded paladin
+PASS emblem loaded hexer
+PASS emblem loaded arcane_archer
+PASS emblem loaded gambler
+PASS emblem loaded knight
+PASS emblem loaded monk
+PASS emblem loaded giant
+PASS emblem loaded thief
+PASS emblem loaded hunter
+PASS emblem loaded magician
+PASS emblem loaded wizard
+PASS emblem loaded sorcerer
+PASS emblem loaded warlock
+PASS emblem loaded bard
+PASS emblem loaded oathbreaker
+PASS emblem loaded berserker
+PASS emblem loaded wanderer
+PASS rewritten attack label oathbreaker
+PASS rewritten attack label berserker
+PASS selection contains all 27 roles
+PASS raycast reaches Card24
+PASS new role selectable 24
+PASS new selection emblem 24
+PASS raycast reaches Card25
+PASS new role selectable 25
+PASS new selection emblem 25
+PASS raycast reaches Card26
+PASS new role selectable 26
+PASS new selection emblem 26
+PASS 27 roles occupy three overview pages
+PASS overview visible tile count page 1
+PASS large overview tile CodexTile0
+PASS overview emblem CodexTile0
+PASS large overview tile CodexTile1
+PASS overview emblem CodexTile1
+PASS large overview tile CodexTile2
+PASS overview emblem CodexTile2
+PASS large overview tile CodexTile3
+PASS overview emblem CodexTile3
+PASS large overview tile CodexTile4
+PASS overview emblem CodexTile4
+PASS large overview tile CodexTile5
+PASS overview emblem CodexTile5
+PASS large overview tile CodexTile6
+PASS overview emblem CodexTile6
+PASS large overview tile CodexTile7
+PASS overview emblem CodexTile7
+PASS large overview tile CodexTile8
+PASS overview emblem CodexTile8
+PASS large overview tile CodexTile9
+PASS overview emblem CodexTile9
+PASS large overview tile CodexTile10
+PASS overview emblem CodexTile10
+PASS large overview tile CodexTile11
+PASS overview emblem CodexTile11
+PASS raycast reaches Next
+PASS overview visible tile count page 2
+PASS large overview tile CodexTile12
+PASS overview emblem CodexTile12
+PASS large overview tile CodexTile13
+PASS overview emblem CodexTile13
+PASS large overview tile CodexTile14
+PASS overview emblem CodexTile14
+PASS large overview tile CodexTile15
+PASS overview emblem CodexTile15
+PASS large overview tile CodexTile16
+PASS overview emblem CodexTile16
+PASS large overview tile CodexTile17
+PASS overview emblem CodexTile17
+PASS large overview tile CodexTile18
+PASS overview emblem CodexTile18
+PASS large overview tile CodexTile19
+PASS overview emblem CodexTile19
+PASS large overview tile CodexTile20
+PASS overview emblem CodexTile20
+PASS large overview tile CodexTile21
+PASS overview emblem CodexTile21
+PASS large overview tile CodexTile22
+PASS overview emblem CodexTile22
+PASS large overview tile CodexTile23
+PASS overview emblem CodexTile23
+PASS raycast reaches Next
+PASS overview visible tile count page 3
+PASS large overview tile CodexTile24
+PASS overview emblem CodexTile24
+PASS large overview tile CodexTile25
+PASS overview emblem CodexTile25
+PASS large overview tile CodexTile26
+PASS overview emblem CodexTile26
+PASS raycast reaches CodexTile24
+PASS overview opens correct detail 24
+PASS large new emblem 24
+PASS raycast reaches Overview
+PASS return preserves selected overview page
+PASS raycast reaches CodexTile25
+PASS overview opens correct detail 25
+PASS large new emblem 25
+PASS raycast reaches Overview
+PASS return preserves selected overview page
+PASS raycast reaches CodexTile26
+PASS overview opens correct detail 26
+PASS large new emblem 26
+PASS raycast reaches Overview
+PASS return preserves selected overview page
+PASS filter resets page
+PASS clearing filter restores all pages

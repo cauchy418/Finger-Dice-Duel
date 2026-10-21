@@ -65,7 +65,8 @@ namespace FingerDiceDuel.UI
         }
 
         private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.ClericHealTarget
-            || effect == HandEffect.ClericExtraHealTarget || effect == HandEffect.PaladinShockTarget;
+            || effect == HandEffect.ClericExtraHealTarget || effect == HandEffect.PaladinShockTarget
+            || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.PaladinRedirect;
 
         private string ChoiceLabel(HandEffect effect, Hand hand)
         {
@@ -83,6 +84,8 @@ namespace FingerDiceDuel.UI
                 case HandEffect.ClericHealTarget: return "回复 · " + player;
                 case HandEffect.ClericExtraHealTarget: return "额外回复 · " + player;
                 case HandEffect.PaladinShockTarget: return "冲击 · " + player;
+                case HandEffect.OathbreakerTransfer: return "转移至 · " + player + (owner?.Definition?.DisplayName ?? "角色");
+                case HandEffect.PaladinRedirect: return "代挡 · 由我承受";
                 case HandEffect.ShieldBlock: return "抵挡 · " + side;
                 default: return "发动 · " + side;
             }

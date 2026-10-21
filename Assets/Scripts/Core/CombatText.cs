@@ -20,6 +20,7 @@
                 case HandEffect.FighterRangeBreak: skill = "碎盾换射程"; action = "可打碎另一只手的盾，使本次攻击距离无限。"; break;
                 case HandEffect.PaladinShockTarget:
                     skill = "冲击"; action = (request.Variant == 1 ? "碎盾" : "合盾") + "触发：选择范围内一名角色，固定伤害 2，可格挡或闪避。"; break;
+                case HandEffect.OathbreakerTransfer: skill = "转移攻击"; action = "持有5：选择一名持完整盾的非攻击者承受整次攻击，或不发动。"; break;
                 case HandEffect.PaladinRedirect: skill = "代挡"; action = "可替范围内的受击角色承受本次攻击。"; break;
                 case HandEffect.MonkTaichi: skill = "太极"; action = "可将一只太极手 5→0，减伤一半并反弹其余伤害。"; break;
                 case HandEffect.HexerCancel: skill = "取消攻击"; action = "可将同攻击数字的手永久＋1，取消本次攻击。"; break;

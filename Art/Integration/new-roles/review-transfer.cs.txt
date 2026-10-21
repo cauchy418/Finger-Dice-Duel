@@ -1,0 +1,54 @@
+﻿// Execute through execute_csharp_script after the editor has imported current source/art.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/new-roles");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+var preview=typeof(FingerDiceDuel.EditorTools.MultiplayerArtPreview);var stat=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static;preview.GetField("_boot",stat).SetValue(null,boot);
+System.Action<string,int,int> shot=(name,w,h)=>{invoke(boot,"RefreshView",new object[0]);UnityEngine.Canvas.ForceUpdateCanvases();preview.GetMethod("Capture",stat).Invoke(null,new object[]{name==null?null:System.IO.Path.Combine(output,name+".png"),w,h});};
+System.Func<UnityEngine.RectTransform> root=()=> (UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot");
+System.Func<UnityEngine.UI.Button[]> buttons=()=>root().GetComponentsInChildren<UnityEngine.UI.Button>().Where(b=>b.gameObject.activeInHierarchy&&b.name.StartsWith("SkillChoice")).ToArray();
+System.Action<UnityEngine.UI.Button> click=(button)=>{shot(null,1920,1080);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);check(hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name);UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);};
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Soldier,FingerDiceDuel.Core.CharacterDefinition.Soldier);
+var defs=new[]{FingerDiceDuel.Core.CharacterDefinition.Soldier,FingerDiceDuel.Core.CharacterDefinition.Oathbreaker,FingerDiceDuel.Core.CharacterDefinition.Wanderer,FingerDiceDuel.Core.CharacterDefinition.Paladin};
+var ps=defs.Select((d,i)=>FingerDiceDuel.Characters.CharacterFactory.CreatePlayer(i==1?"我":d.DisplayName,d)).ToList();
+var sinks=ps.Select(p=>new FingerDiceDuel.Assistant.SimpleChoiceProvider()).ToList();
+var lookup=(System.Collections.Generic.Dictionary<FingerDiceDuel.Core.PlayerState,FingerDiceDuel.Assistant.SimpleChoiceProvider>)field(boot,"_sinkByPlayer");lookup.Clear();for(int i=0;i<4;i++)lookup[ps[i]]=sinks[i];
+ps[0].LeftHand.SetValue(3);ps[1].RightHand.SetValue(5);ps[2].LeftHand.SetValue(5);ps[2].LeftHand.SetShieldState(FingerDiceDuel.Core.ShieldState.Formed);
+set(boot,"_isTwoOnTwo",true);set(boot,"_isEightPlayer",false);set(boot,"_isIdentity",false);set(boot,"_isDualGeneral",false);
+invoke(boot,"BuildTwoOnTwoMatch",new object[]{ps,sinks,1,ps[0]});
+var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");for(int i=0;i<4;i++)controller.BindPlayer(ps[i],null,sinks[i]);
+controller.SetFirstPlayer(ps[0]);invoke(boot,"StartPreparedMatch",new object[0]);
+controller.ClickHand(ps[0].LeftHand);controller.ClickHand(ps[1].LeftHand);controller.ConfirmTargetPlayer();shot(null,1920,1080);
+check(controller.PendingEffect==FingerDiceDuel.Core.HandEffect.OathbreakerTransfer,"human oathbreaker transfer is pending");
+check(controller.Chooser==ps[1],"defender owns the transfer choice");check(buttons().Length==1,"one target button per shield holder");
+var transfer=buttons().Single();check(transfer.GetComponentInChildren<UnityEngine.UI.Text>().text.Contains("转移至"),"named transfer target button");
+check(transfer.transform.Find("SkillIcon").GetComponent<UnityEngine.UI.Image>().sprite.name=="Classes/oathbreaker","transfer button uses oathbreaker emblem");
+shot("transfer-2v2",1920,1080);shot("transfer-2v2-1366",1366,768);click(transfer);shot(null,1920,1080);
+check(controller.PendingEffect==FingerDiceDuel.Core.HandEffect.PaladinRedirect,"paladin follow-up is visible after selecting recipient");check(controller.Chooser==ps[3],"paladin owns subsequent choice");
+shot("transfer-paladin",1920,1080);
+var decline=root().GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name=="DeclineButton"&&b.gameObject.activeInHierarchy);click(decline);shot(null,1920,1080);
+check(ps[1].Health==20,"oathbreaker takes no transferred damage");check(ps[2].LeftHand.State==FingerDiceDuel.Core.ShieldState.Broken,"recipient shield actually blocks the transferred attack");
+// Eight occupied seats, six distinct eligible shield holders, scrollable action tray.
+preview.GetMethod("Build",stat).Invoke(null,new object[]{8,1,FingerDiceDuel.Core.CharacterDefinition.Oathbreaker,false});
+var eight=(System.Collections.Generic.List<FingerDiceDuel.Core.PlayerState>)preview.GetField("_players",stat).GetValue(null);controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+eight[0].LeftHand.SetValue(3);eight[1].LeftHand.SetValue(1);eight[1].RightHand.SetValue(5);
+for(int i=2;i<8;i++){eight[i].LeftHand.SetValue(5);eight[i].LeftHand.SetShieldState(FingerDiceDuel.Core.ShieldState.Formed);}
+controller.SetFirstPlayer(eight[0]);controller.BeginTurn();controller.ClickHand(eight[0].LeftHand);controller.ClickHand(eight[1].LeftHand);controller.ConfirmTargetPlayer();shot(null,1920,1080);
+check(controller.PendingEffect==FingerDiceDuel.Core.HandEffect.OathbreakerTransfer,"eight-player transfer phase");check(buttons().Length==6,"six unique recipient buttons across eight seats");
+foreach(var b in buttons()){var label=b.GetComponentInChildren<UnityEngine.UI.Text>();check(label.preferredHeight<=label.rectTransform.rect.height+1,"eight-player label fits "+b.name);check(b.transform.Find("SkillIcon").GetComponent<UnityEngine.UI.Image>().sprite!=null,"eight-player skill emblem "+b.name);}
+shot("transfer-8p",1920,1080);shot("transfer-8p-1366",1366,768);click(buttons()[0]);
+check(controller.PendingEffect!=FingerDiceDuel.Core.HandEffect.OathbreakerTransfer,"recipient click advances eight-player flow");
+// Shared battle presentation must load each new class emblem in the 1v1 skin too.
+foreach(var role in new[]{FingerDiceDuel.Core.CharacterDefinition.Oathbreaker,FingerDiceDuel.Core.CharacterDefinition.Berserker,FingerDiceDuel.Core.CharacterDefinition.Wanderer}){
+ boot.StartMatch(role,FingerDiceDuel.Core.CharacterDefinition.Soldier);
+ var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");game.PlayerA.LeftHand.SetValue(role.Id=="oathbreaker"?5:role.Id=="berserker"?9:4);
+ shot(null,1920,1080);
+ check(root().GetComponentsInChildren<UnityEngine.UI.Image>().Any(i=>i.sprite!=null&&i.sprite.name=="Classes/"+role.Id),"1v1 battle emblem "+role.Id);
+ shot("battle-"+role.Id,1920,1080);
+}
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"transfer-validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.AiThinkSeconds=2f;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);UnityEngine.Application.runInBackground=false;
+return string.Join("\n",checks);

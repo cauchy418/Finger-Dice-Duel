@@ -275,6 +275,17 @@ namespace FingerDiceDuel.Core
         // 把目标改成自己
         // ============================================================
 
+        /// <summary>破誓者转移确定后，先收集圣武士是否愿意代挡，不在结算中弹窗。</summary>
+        public void CollectRedirectChoice(PlayerState owner, PlayerState attacker, PlayerState target,
+            GameManager manager, IList<ChoiceRequest> requests)
+        {
+            if (owner == null || !owner.IsAlive || ReferenceEquals(owner, attacker)
+                || ReferenceEquals(owner, target) || !manager.CanReach(owner, target)) return;
+            requests.Add(new ChoiceRequest(HandEffect.PaladinRedirect,
+                $"圣武士【代挡】：攻击已转移至 {target.Name}，是否由自己承受？",
+                new List<Hand> { owner.LeftHand, owner.RightHand }, true, null, owner));
+        }
+
         /// <summary>
         /// 攻击范围内的角色被攻击时，圣武士可以把目标改成自己。
         ///
@@ -305,9 +316,12 @@ namespace FingerDiceDuel.Core
                 declineResult: null,             // 放弃 = 不改
                 decider: owner);
 
-            Hand chosen = PreTurnChoiceReader.Read(
-                manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
-                manager.GetChoiceProvider(owner), request, owner);
+            // 控制器的答案仅本回合有效，不能读取第三方 sink 里上一回合留下的同意。
+            Hand chosen = manager.AnsweredLookupFor != null
+                ? manager.AnsweredLookupFor(owner, HandEffect.PaladinRedirect, 0)
+                : PreTurnChoiceReader.Read(
+                    manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
+                    manager.GetChoiceProvider(owner), request, owner);
 
             return chosen != null;               // 选了任一只手 = 同意改成自己
         }

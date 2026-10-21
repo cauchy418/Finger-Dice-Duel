@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace FingerDiceDuel.UI
 {
@@ -111,9 +111,9 @@ namespace FingerDiceDuel.UI
 
             switch (EffectOf(hand, owner))
             {
-                case Core.HandEffectType.Attack4: return "攻击 4";
-                case Core.HandEffectType.Attack6: return "攻击 6";
-                case Core.HandEffectType.Attack8: return "攻击 8";
+                case Core.HandEffectType.Attack4:
+                case Core.HandEffectType.Attack6:
+                case Core.HandEffectType.Attack8: return "攻击 " + hand.Value;
                 case Core.HandEffectType.Heal: return "回复 9";
                 default: return "—";
             }

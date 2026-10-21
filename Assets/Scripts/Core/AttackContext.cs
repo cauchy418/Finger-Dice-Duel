@@ -250,7 +250,10 @@ namespace FingerDiceDuel.Core
             //
             //   本来想放在最前面，但攻击方钩子可能改写 IgnoreShield 之类的标记，
             //   而代挡者应当承受**最终确定下来**的那一击。
+            PlayerState intendedDefender = Defender;
             TryRedirectDefender(manager);
+            if (!ReferenceEquals(intendedDefender, Defender))
+                defenderChoice = manager.GetChoiceProvider(Defender);
 
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
             if (manager != null && AttackType != AttackDamageType.None)
@@ -643,6 +646,16 @@ namespace FingerDiceDuel.Core
 
             PlayerState original = Defender;
             if (original == null) return;
+
+            var transfer = CharacterBehaviors.FirstImplementer<IAttackTransfer>(original);
+            PlayerState transferred = transfer?.TransferAttack(this, manager);
+            if (transferred != null && !ReferenceEquals(transferred, original))
+            {
+                Defender = transferred;
+                WasRedirected = true;
+                manager.NoteSkill(original, "转移攻击", $"由 {transferred.Name} 承受整次攻击");
+                original = transferred;
+            }
 
             IReadOnlyList<PlayerState> all = manager.Players;
             for (int i = 0; i < all.Count; i++)

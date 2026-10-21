@@ -43,6 +43,7 @@ async function main(){
  }
  const manifest={version:2,tool:'Built-in image_gen; authorized grid slicing and sizing with sharp.',assets};
  await fs.writeFile(path.join(art,'painted-manifest.json'),JSON.stringify(manifest,null,2));
+ await require('./import-new-role-icons.cjs').importNewRoleIcons();
  console.log(`Imported ${assets.length} painted icons at stable resource paths; .meta untouched.`);
 }
 main().catch(e=>{console.error(e);process.exitCode=1;});

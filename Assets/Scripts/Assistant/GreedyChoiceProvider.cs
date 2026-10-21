@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -1626,6 +1626,15 @@ namespace FingerDiceDuel.Assistant
 
                         return best;
                     }
+
+                case HandEffect.OathbreakerTransfer:
+                    // 优先转移给敌方持盾者；只剩队友可选时仍可自行承受。
+                    for (int i = 0; i < c.Count; i++)
+                    {
+                        PlayerState target = Game?.OwnerOfHand(c[i]);
+                        if (target != null && !Game.IsTeammate(decider, target)) return c[i];
+                    }
+                    return request.DeclineResult;
 
                 case HandEffect.RangerPowerShot:
                     return c[0];       // 每次都给强化，白赚

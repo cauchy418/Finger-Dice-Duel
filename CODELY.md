@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1036 项全部通过**（2026-10-22，含三套统计 + 86,400 局集火实验）；新增 21 项在编辑器内同样通过；既有跳过／放弃真实界面 264 项检查通过 |
+| 测试 | **1047 项通过、1 项既有双将模拟强停**（2026-10-22，含三套统计 + 86,400 局集火实验）；新增转移回归 12 项通过；新角色真实界面 146 项检查通过（既有跳过／放弃专项另有 264 项） |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
@@ -91,6 +91,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，按「伤害类型／状态一览／元素反应」分三页，第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
+新角色美术：正式 `Classes/oathbreaker`、`berserker`、`wanderer` 已导入；野蛮人换用用户选定的兽角图腾，原斧徽记用于狂战士。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
+
 ## 战报与提示
 
 - 回合出口统一由 `BoardController` 管理：无合法运算不等于结束比赛，冻结／双手不可用时保留选手阶段并提供跳过；AI 自动跳过。所有跳过路径设置待结算的回合结束者，燃烧与状态时长照常推进。震慑保留合法运算，攻击目标按 `StatusRules.CanAttackTarget` 过滤，无合法攻击目标才提供放弃。编辑器菜单 `Finger Dice Duel/Preview/Turn Skip and Give Up` 验证实际按钮，记录见 [`Art/Integration/turn-exits/README.md`](Art/Integration/turn-exits/README.md)。
@@ -99,6 +101,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 - 牧师的 4/6/8 转回复、9 和双 9 额外回复统一走 `ClericLogic.CleanseAndHeal`：先清所有状态再回血，满血也净化，腐朽不阻止这次回复；双将两种位置同样生效。其他角色回复保留原判定。
 - 牧师相关抉择入口在收集到候选后返回“已接管流程”；AI 同步答完也须停止调用方旧步骤，避免重复运算、覆盖胜负界面。
 - `BoardController.BeginTurn` 连续处理回合开始状态致死，直到轮到存活者或比赛结束；不可只重读一次行动者，否则多人连续流血致死会停在已阵亡角色上。
+
+- 破誓者通过 `IAttackTransfer` 在圣武士代挡前转移整次攻击；运算前由防守者选择持盾角色，后续抉择交给 `ChoiceRequest.Decider` 对应角色生成，补收实际目标的防御与圣武士代挡。结算重新验证持 5、存活、完整盾、非自己／攻击者；使用实际目标的抉择器。按钮按角色去重，8 人最多 6 名候选，保留【不发动】。`OathbreakerTransferTests` 覆盖 12 项真实流程与非法／过期目标回归。
 
 - `Assistant/BattleTurnText.cs` 只格式化结算快照；回复显示实际增量，放弃攻击不写成零伤害命中。
 - `Core/CombatText.cs` 统一“角色【技能】操作／结果”。技能实际生效后调用 `GameManager.NoteSkill`；不要把收集抉择、点击候选或 AI 意图记成已发动。

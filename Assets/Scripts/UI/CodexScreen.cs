@@ -100,13 +100,16 @@ namespace FingerDiceDuel.UI
         private ScrollRect _bodyScroll, _guideScroll, _listScroll;
         private Text _heading, _title, _stats, _alignmentLabel, _body, _page, _filterLabel;
         private Image _emblem;
-        private Button _filterToggle, _overviewButton;
+        private Button _filterToggle, _overviewButton, _prevButton, _nextButton;
         private GameObject _filterPanel;
         private readonly List<CodexCardData> _all = new List<CodexCardData>();
         private readonly List<CodexCardData> _filtered = new List<CodexCardData>();
         private readonly Dictionary<string, Button> _lawButtons = new Dictionary<string, Button>();
         private readonly Dictionary<string, Button> _goodButtons = new Dictionary<string, Button>();
-        private int _index;
+        private int _index, _overviewPage;
+        public const int OverviewPageSize = 12;
+        public int OverviewPageCount => Mathf.Max(1, Mathf.CeilToInt(_filtered.Count / (float)OverviewPageSize));
+        public int OverviewPageNumber => _overviewPage + 1;
         private string _lawAxis, _goodAxis;
         private bool _allowFilter = true, _overview = true;
         public event Action CloseRequested;
@@ -128,7 +131,7 @@ namespace FingerDiceDuel.UI
             var close = FrontEndArt.Button(_root, "Close", "返回", new Vector2(760, 440), new Vector2(180, 60));
             close.onClick.AddListener(() => CloseRequested?.Invoke());
             _overviewButton = FrontEndArt.Button(_root, "Overview", "图鉴总览", new Vector2(-200, 440), new Vector2(220, 60));
-            _overviewButton.onClick.AddListener(() => { _overview = true; Refresh(); });
+            _overviewButton.onClick.AddListener(() => { _overview = true; _overviewPage = _index / OverviewPageSize; RebuildNavigation(); Refresh(); });
             var divider = FrontEndArt.Image(_root, "Divider", "UI/divider_horizontal", new Vector2(0, 393), new Vector2(1710, 24));
             _overviewRoot = FrontEndArt.Rect(_root, "OverviewContent", Vector2.zero, Vector2.zero);
             _detailRoot = FrontEndArt.Rect(_root, "CharacterDetail", Vector2.zero, Vector2.zero);
@@ -143,7 +146,9 @@ namespace FingerDiceDuel.UI
             BuildAxis(new[] { "守序", "中立", "混乱" }, _lawButtons, 8, true);
             BuildAxis(new[] { "善良", "中立", "邪恶" }, _goodButtons, -53, false);
             var prev = FrontEndArt.Button(_root, "Prev", "上一张", new Vector2(-250, -455), new Vector2(170, 56), fontSize: 22);
+            _prevButton = prev;
             var next = FrontEndArt.Button(_root, "Next", "下一张", new Vector2(250, -455), new Vector2(170, 56), fontSize: 22);
+            _nextButton = next;
             prev.onClick.AddListener(() => Step(-1));
             next.onClick.AddListener(() => Step(1));
             _page = FrontEndArt.Text(_root, "Page", "", new Vector2(0, -455), new Vector2(280, 48), 22);
@@ -213,12 +218,20 @@ namespace FingerDiceDuel.UI
             foreach (var c in _all)
                 if (c.IsGuide || ((_lawAxis == null || c.LawAxis == _lawAxis) && (_goodAxis == null || c.GoodAxis == _goodAxis))) _filtered.Add(c);
             _index = 0;
+            _overviewPage = 0;
             RebuildNavigation();
             Refresh();
         }
         public void Step(int delta)
         {
             if (_filtered.Count == 0) return;
+            if (_overview)
+            {
+                _overviewPage = ((_overviewPage + delta) % OverviewPageCount + OverviewPageCount) % OverviewPageCount;
+                RebuildNavigation();
+                Refresh();
+                return;
+            }
             _index = (_index + delta) % _filtered.Count;
             if (_index < 0) _index += _filtered.Count;
             _overview = false;
@@ -256,9 +269,15 @@ namespace FingerDiceDuel.UI
             {
                 var c = _filtered[i];
                 int index = i;
-                var tile = FrontEndArt.Button(_overviewRoot, "CodexTile" + i, "", new Vector2(-750 + i % 6 * 200, 242 - i / 6 * 172), new Vector2(170, 160), "roster_tile");
-                FrontEndArt.RoleTile(tile, c.Id, c.NameZh, 24);
-                tile.onClick.AddListener(() => GoTo(index));
+                int pageIndex = i - _overviewPage * OverviewPageSize;
+                if (pageIndex >= 0 && pageIndex < OverviewPageSize)
+                {
+                    var tile = FrontEndArt.Button(_overviewRoot, "CodexTile" + i, "",
+                        new Vector2(-670 + pageIndex % 4 * 280, 208 - pageIndex / 4 * 236),
+                        new Vector2(236, 218), "roster_tile");
+                    FrontEndArt.RoleTile(tile, c.Id, c.NameZh, 27);
+                    tile.onClick.AddListener(() => GoTo(index));
+                }
                 var row = FrontEndArt.Button(_listContent, "RoleRow" + i, c.NameZh,
                     new Vector2(122, -40 - i * 76), new Vector2(244, 68), "list_row", 20);
                 ((RectTransform)row.transform).anchorMin = ((RectTransform)row.transform).anchorMax = new Vector2(0, 1);
@@ -277,7 +296,9 @@ namespace FingerDiceDuel.UI
             _detailRoot.gameObject.SetActive(!_overview && !guide);
             _guideRoot.gameObject.SetActive(guide);
             _heading.text = guide ? "秘法手册" : _overview ? "图鉴总览" : "角色图鉴";
-            _page.text = _overview ? _filtered.Count + " 名角色" : PageNumber + " / " + PageCount;
+            _page.text = _overview ? OverviewPageNumber + " / " + OverviewPageCount + " · " + _filtered.Count + " 名角色" : PageNumber + " / " + PageCount;
+            _prevButton.GetComponentInChildren<Text>().text = _overview ? "上一页" : "上一张";
+            _nextButton.GetComponentInChildren<Text>().text = _overview ? "下一页" : "下一张";
             _filterLabel.text = "阵营：" + (_lawAxis ?? "任意") + " · " + (_goodAxis ?? "任意") + "（再点一次取消）";
             foreach (var kv in _lawButtons) FrontEndArt.StyleButton(kv.Value, "tab", kv.Key == _lawAxis);
             foreach (var kv in _goodButtons) FrontEndArt.StyleButton(kv.Value, "tab", kv.Key == _goodAxis);

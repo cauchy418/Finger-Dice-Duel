@@ -397,8 +397,8 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.OathbreakerId, "Oathbreaker", Alignment.LawfulEvil,
                 shortSkill: "5 改为 5 点钝击攻击；被攻击时可把目标转给持完整盾者。",
-                playGuide: "5 不再是防御，而是稳定伤害。留 5 逼对手先处理你的盾。",
-                counter: "别让持盾者站在他身边；攻击时注意目标可能被转走。",
+                playGuide: "5 既能进攻，也保留转移资格。被攻击时点持盾角色的转移按钮，或选不发动。",
+                counter: "先破掉场上的完整盾；他没有5或场上没有合适持盾者时无法转移。",
                 interactions: new[] { "与圣武士：转移后圣武士仍可代挡。" });
 
             Add(CharacterDefinition.BerserkerId, "Berserker", Alignment.NeutralEvil,

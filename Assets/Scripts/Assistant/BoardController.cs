@@ -2967,7 +2967,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (answered.Decider == null && ActivePlayer == null) return;
 
-            var provider = ActivePlayer?.Character as IPreTurnChoiceProvider;
+            var provider = (answered.Decider ?? ActivePlayer)?.Character as IPreTurnChoiceProvider;
             if (provider == null) return;
 
             int before = _pendingRequests.Count;

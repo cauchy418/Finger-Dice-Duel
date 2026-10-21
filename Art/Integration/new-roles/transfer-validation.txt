@@ -1,0 +1,30 @@
+PASS human oathbreaker transfer is pending
+PASS defender owns the transfer choice
+PASS one target button per shield holder
+PASS named transfer target button
+PASS transfer button uses oathbreaker emblem
+PASS raycast reaches SkillChoice0
+PASS paladin follow-up is visible after selecting recipient
+PASS paladin owns subsequent choice
+PASS raycast reaches DeclineButton
+PASS oathbreaker takes no transferred damage
+PASS recipient shield actually blocks the transferred attack
+PASS eight-player transfer phase
+PASS six unique recipient buttons across eight seats
+PASS eight-player label fits SkillChoice0
+PASS eight-player skill emblem SkillChoice0
+PASS eight-player label fits SkillChoice1
+PASS eight-player skill emblem SkillChoice1
+PASS eight-player label fits SkillChoice2
+PASS eight-player skill emblem SkillChoice2
+PASS eight-player label fits SkillChoice3
+PASS eight-player skill emblem SkillChoice3
+PASS eight-player label fits SkillChoice4
+PASS eight-player skill emblem SkillChoice4
+PASS eight-player label fits SkillChoice5
+PASS eight-player skill emblem SkillChoice5
+PASS raycast reaches SkillChoice0
+PASS recipient click advances eight-player flow
+PASS 1v1 battle emblem oathbreaker
+PASS 1v1 battle emblem berserker
+PASS 1v1 battle emblem wanderer

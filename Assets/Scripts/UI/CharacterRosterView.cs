@@ -63,7 +63,7 @@ namespace FingerDiceDuel.UI
             float width = (_size.x - 44) / _columns;
             float height = Mathf.Max(220, width * 0.94f);
             _rowHeight = height;
-            _content.sizeDelta = new Vector2(_size.x - 24, Mathf.Max(_size.y, Mathf.CeilToInt(roster.Count / (float)_columns) * height + 36));
+            _content.sizeDelta = new Vector2(_size.x - 24, Mathf.Max(_size.y, Mathf.CeilToInt(roster.Count / (float)_columns) * height + 64));
             _content.anchoredPosition = Vector2.zero;
             for (int i = 0; i < roster.Count; i++)
             {
@@ -108,8 +108,10 @@ namespace FingerDiceDuel.UI
             if (overflow <= 0) { scroll.verticalNormalizedPosition = 1; return; }
             float top = _selectedIndex / _columns * _rowHeight + 18;
             float offset = _content.anchoredPosition.y;
-            if (top < offset) offset = top;
-            else if (top + _rowHeight > offset + _size.y) offset = top + _rowHeight - _size.y;
+            const float edgePadding = 24;
+            if (top < offset + edgePadding) offset = Mathf.Max(0, top - edgePadding);
+            else if (top + _rowHeight > offset + _size.y - edgePadding)
+                offset = top + _rowHeight - _size.y + edgePadding;
             scroll.verticalNormalizedPosition = 1 - Mathf.Clamp01(offset / overflow);
         }
 

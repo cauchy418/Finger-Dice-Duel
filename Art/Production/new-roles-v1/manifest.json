@@ -1,0 +1,78 @@
+{
+  "tool": "built-in image_gen",
+  "processing": "User-authorized alpha crop, centering and Lanczos resize; source artwork unchanged.",
+  "assets": [
+    {
+      "id": "oathbreaker",
+      "source": "Art/Production/new-roles-v1/source/oathbreaker.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/oathbreaker.png",
+      "sourceBounds": [
+        0,
+        7,
+        1246,
+        1254
+      ],
+      "size": [
+        512,
+        512
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sha256": "9ca1c82bebbce4bc1ac1d124e40ddfbcd29e7c940671516041e328e11f5b37a3",
+      "status": "integrated",
+      "runtime": "Assets/Resources/Art/Battle/v1/Classes/oathbreaker.png"
+    },
+    {
+      "id": "barbarian",
+      "source": "Art/Production/new-roles-v1/source/barbarian.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/barbarian.png",
+      "sourceBounds": [
+        0,
+        1,
+        1254,
+        1254
+      ],
+      "size": [
+        512,
+        512
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sha256": "946e05137a7589665bc8b55a04e29bb104e75b153834094c555dbeee49d44e7b",
+      "status": "integrated",
+      "runtime": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png"
+    },
+    {
+      "id": "wanderer",
+      "source": "Art/Production/new-roles-v1/source/wanderer.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/wanderer.png",
+      "sourceBounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "size": [
+        512,
+        512
+      ],
+      "sourceSize": [
+        1254,
+        1254
+      ],
+      "sha256": "689e8fa59925d47642c7f302b5b51da53081b4166bce46abeb0e2a67ee10337e",
+      "status": "integrated",
+      "runtime": "Assets/Resources/Art/Battle/v1/Classes/wanderer.png"
+    }
+  ],
+  "userSelection": "New horned totem for barbarian; original barbarian double axe reassigned to berserker.",
+  "reused": {
+    "id": "berserker",
+    "source": "Art/Production/new-roles-v1/candidates/berserker-original-axe.png",
+    "runtime": "Assets/Resources/Art/Battle/v1/Classes/berserker.png"
+  }
+}
