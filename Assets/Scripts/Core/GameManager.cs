@@ -2831,9 +2831,10 @@ namespace FingerDiceDuel.Core
             // 通知角色"跳过已发生"（刺客用它消耗掉潜行的那次跳过机会）
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
+            PlayerState skippedActor = CurrentPlayer;
             TurnCount++;
-            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
-            AdvanceRoundAfter(CurrentPlayer);
+            CurrentPlayer = NextPlayerAfter(skippedActor);
+            AdvanceRoundAfter(skippedActor);
             CheckTurnLimit();   // 跳过同样计入回合数上限
         }
 
@@ -2854,9 +2855,10 @@ namespace FingerDiceDuel.Core
             _brokenThisTurn.Clear();
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
+            PlayerState skippedActor = CurrentPlayer;
             TurnCount++;
-            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
-            AdvanceRoundAfter(CurrentPlayer);
+            CurrentPlayer = NextPlayerAfter(skippedActor);
+            AdvanceRoundAfter(skippedActor);
             CheckTurnLimit();
         }
         ///
@@ -2873,9 +2875,10 @@ namespace FingerDiceDuel.Core
             PlayerState opponent = GetOpponent(CurrentPlayer);
             _brokenThisTurn.Clear();
 
+            PlayerState skippedActor = CurrentPlayer;
             TurnCount++;
-            CurrentPlayer = NextPlayerAfter(CurrentPlayer);
-            AdvanceRoundAfter(CurrentPlayer);
+            CurrentPlayer = NextPlayerAfter(skippedActor);
+            AdvanceRoundAfter(skippedActor);
 
             CheckTurnLimit();
         }

@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1047 项逻辑测试通过、1 项既有双将模拟强停**（2026-10-22）。Unity 条件编译、表现层编译通过；本次新增 12 项转移回归通过，真实界面 146 项检查通过；既有真实界面跳过／放弃按钮专项 264 项检查通过。详见 [新角色接入验收](Art/Integration/new-roles/README.md)。
+当前状态：**1048 项逻辑测试全部通过**（2026-10-22）。Unity 条件编译、表现层编译通过；新增双将轮次推进回归通过，真实界面 146 项检查通过；既有真实界面跳过／放弃按钮专项 264 项检查通过。详见 [新角色接入验收](Art/Integration/new-roles/README.md)。
 
 **新角色美术已接入**：破誓者、狂战士、浪客可在选将、图鉴和战斗中显示正式徽记；野蛮人使用新版兽角图腾，原双刃斧移交狂战士。图鉴总览每页 12 名角色（4×3，可翻页），共 3 页。破誓者持 5 被攻击时，可点持盾角色的【转移至】按钮或【不发动】，随后圣武士仍可代挡。截图与实际点击检查见 [新角色接入验收](Art/Integration/new-roles/README.md)。
 

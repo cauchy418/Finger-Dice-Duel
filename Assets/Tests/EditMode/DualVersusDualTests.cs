@@ -50,5 +50,30 @@ namespace FingerDiceDuel.Tests
                 // 写不出来也不该让测试失败
             }
         }
+
+        [Test]
+        public void Seed_21639_skipping_turns_still_advances_rounds()
+        {
+            var a = FindDual("咒术师", "巨人");
+            var b = FindDual("野蛮人", "妖术师");
+
+            for (int swap = 0; swap < 2; swap++)
+            {
+                var outcome = DualVersusDualHarness.Play(a, b, swap == 0, 21639);
+                Assert.True(outcome.Error == null, "该种子不应抛异常：" + outcome.Error);
+                Assert.False(outcome.HitLimit,
+                    $"座位方向 {swap} 不应被 MaxTurns 强停；turns={outcome.Turns}, reached={outcome.ReachedLimit}");
+            }
+        }
+
+        private static DualVersusDualHarness.Dual FindDual(string primary, string secondary)
+        {
+            var all = DualVersusDualHarness.AllDuals();
+            for (int i = 0; i < all.Count; i++)
+                if (all[i].Primary.DisplayName == primary
+                    && all[i].Secondary.DisplayName == secondary)
+                    return all[i];
+            throw new AssertionException($"找不到双将 {primary}+{secondary}");
+        }
     }
 }
