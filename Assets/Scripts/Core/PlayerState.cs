@@ -184,6 +184,36 @@ namespace FingerDiceDuel.Core
         public int LordAttackBonus { get; private set; }
         public int LordDefenseBonus { get; private set; }
 
+        private bool _physicalResistance;
+        private readonly System.Collections.Generic.HashSet<AttackDamageType> _elementResistances
+            = new System.Collections.Generic.HashSet<AttackDamageType>();
+
+        public bool HasPhysicalResistance => _physicalResistance;
+        public bool HasResistance(AttackDamageType type)
+        {
+            if (type == AttackDamageType.Bludgeoning
+                || type == AttackDamageType.Piercing
+                || type == AttackDamageType.Slashing)
+                return _physicalResistance;
+            return _elementResistances.Contains(type);
+        }
+
+        public void AddResistance(AttackDamageType type)
+        {
+            if (type == AttackDamageType.Bludgeoning
+                || type == AttackDamageType.Piercing
+                || type == AttackDamageType.Slashing)
+                _physicalResistance = true;
+            else if (type != AttackDamageType.None)
+                _elementResistances.Add(type);
+        }
+
+        public void ClearResistances()
+        {
+            _physicalResistance = false;
+            _elementResistances.Clear();
+        }
+
         public void SetLordBonuses(int attack, int defense)
         {
             LordAttackBonus = attack;
@@ -403,6 +433,7 @@ namespace FingerDiceDuel.Core
             Health = MaximumHealth;
             LeftHand.Reset(1);
             RightHand.Reset(1);
+            ClearResistances();
         }
 
         public override string ToString() => $"{Name}(HP={Health}/{MaximumHealth})";

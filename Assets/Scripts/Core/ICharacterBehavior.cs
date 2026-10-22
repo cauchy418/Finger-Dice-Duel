@@ -72,6 +72,38 @@ namespace FingerDiceDuel.Core
         int DefenseBonus { get; }
     }
 
+    /// <summary>有玩家死亡后通知（法师·死灵学派的换牌）。对局结束时不调用。</summary>
+    public interface IPlayerDeathListener
+    {
+        void OnPlayerDied(PlayerState dead, GameManager manager);
+    }
+
+    /// <summary>在伤害计算完成后吸收伤害（法师·防护学派的奥术屏障）。</summary>
+    public interface IIncomingDamageBarrier
+    {
+        int AbsorbDamage(PlayerState target, int damage, AttackContext context, GameManager manager);
+    }
+
+    /// <summary>受到攻击时用一只 2 变 1 完全挡下一段（法师·死灵学派）。</summary>
+    public interface IAttackBlocker
+    {
+        bool TryBlockAttack(AttackContext context, GameManager manager, int hitIndex);
+    }
+
+    /// <summary>在行动结算前判断是否应整次无效（法师·预言学派）。</summary>
+    public interface IActionInvalidator
+    {
+        bool TryInvalidateAction(PlayerState owner, PlayerState actor,
+                                 Hand actedHand, Hand targetHand,
+                                 GameManager manager, out string reason);
+    }
+
+    /// <summary>回合开始通知（法师·预言学派用于结束自己的 7 窗口）。</summary>
+    public interface ITurnStartHook
+    {
+        void OnTurnStarted(PlayerState owner, GameManager manager);
+    }
+
     /// <summary>
     /// **攻击命中后要给目标挂状态**的角色实现本接口（法师·塑能学派）。
     ///

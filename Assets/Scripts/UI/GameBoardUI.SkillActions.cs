@@ -83,6 +83,7 @@ namespace FingerDiceDuel.UI
                 case HandEffect.BreakerChainBreak: return "破盾 · " + player + side;
                 case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
                 case HandEffect.SchoolOfConjurationCastling: return "换位 · " + player;
+                case HandEffect.SchoolOfAbjurationBarrier: return "存储屏障 · " + side;
                 case HandEffect.LifeDomainHealTarget: return "回复 · " + player;
                 case HandEffect.LifeDomainExtraHealTarget: return "额外回复 · " + player;
                 case HandEffect.OathOfDevotionShockTarget: return "冲击 · " + player;

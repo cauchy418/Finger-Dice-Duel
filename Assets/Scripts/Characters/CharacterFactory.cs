@@ -65,6 +65,9 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Oathbreaker] = () => new OathbreakerLogic();
             _registry[SpecialLogicType.PathOfTheBerserker] = () => new PathOfTheBerserkerLogic();
             _registry[SpecialLogicType.Tactician] = () => new TacticianLogic();
+            _registry[SpecialLogicType.SchoolOfDivination] = () => new SchoolOfDivinationLogic();
+            _registry[SpecialLogicType.SchoolOfNecromancy] = () => new SchoolOfNecromancyLogic();
+            _registry[SpecialLogicType.SchoolOfAbjuration] = () => new SchoolOfAbjurationLogic();
         }
 
         /// <summary>

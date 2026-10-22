@@ -317,6 +317,14 @@ namespace FingerDiceDuel.Core
             return (damage * 3 + 1) / 2;
         }
 
+        /// <summary>抗性：向上取整减半；物理抗性覆盖三种物理伤害。</summary>
+        public static int ApplyResistance(PlayerState defender, int damage, AttackDamageType type)
+        {
+            if (defender == null || damage <= 0 || type == AttackDamageType.None) return damage;
+            if (!defender.HasResistance(type)) return damage;
+            return (damage + 1) / 2;
+        }
+
         /// <summary>**感电**：自己与环上相邻的玩家都要吃 1 点闪电伤害。</summary>
         public static List<PlayerState> ShockVictims(PlayerState p, GameManager game)
         {

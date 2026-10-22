@@ -66,6 +66,10 @@ namespace FingerDiceDuel.Core
         public int DamageDealt;
         public bool WasBlocked;
 
+        /// <summary>本次行动被法师·预言学派整次无效。</summary>
+        public bool ActionInvalidated;
+        public string InvalidatedBy;
+
         /// <summary>
         /// **本次攻击的伤害类型**（玩家要求："把所有攻击都标记上攻击类型"）。
         ///
@@ -223,6 +227,7 @@ namespace FingerDiceDuel.Core
             = new Dictionary<PlayerState, IdentityRole>();
 
         private readonly HashSet<PlayerState> _attackedLord = new HashSet<PlayerState>();
+        private readonly HashSet<PlayerState> _deathNotified = new HashSet<PlayerState>();
 
         /// <summary>反贼嫌疑值（0~10，公开行为推断，不代表真实身份）。</summary>
         public const int MajorRebelSuspicion = 5;
@@ -1273,6 +1278,7 @@ namespace FingerDiceDuel.Core
             ClearAllStatuses();
 
             IsGameOver = false;
+            _deathNotified.Clear();
             Winner = null;
             TurnCount = 0;
             RoundCount = 0;
@@ -2285,6 +2291,44 @@ namespace FingerDiceDuel.Core
             }
         }
 
+        private bool TryInvalidateAction(PlayerState actor, Hand actedHand, Hand targetHand,
+                                         out string reason)
+        {
+            reason = null;
+            if (actor == null) return false;
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || !p.IsAlive || ReferenceEquals(p, actor)) continue;
+                if (p.Character is IActionInvalidator invalidator
+                    && invalidator.TryInvalidateAction(p, actor, actedHand, targetHand, this, out reason))
+                    return true;
+            }
+            return false;
+        }
+
+        private TurnResult ResolveInvalidatedAction(TurnResult result, PlayerState actor,
+                                                    Hand actedHand, Hand targetHand, string reason,
+                                                    bool extraAction)
+        {
+            result.ActedHand = actedHand;
+            result.TargetHand = targetHand;
+            result.ResultValue = 0;
+            result.Effect = HandEffectType.None;
+            result.ActionInvalidated = true;
+            result.InvalidatedBy = reason;
+            NoteSkill(actor, "预言无效", reason ?? "本回合行动被无效");
+            if (!extraAction)
+            {
+                BumpOwnTurnOrdinal(actor);
+                TurnCount++;
+                CurrentPlayer = NextPlayerAfter(actor);
+                AdvanceRoundAfter(actor);
+                CheckTurnLimit();
+            }
+            return result;
+        }
+
         private TurnResult ResolveTurnCore(PlayerState actor, Hand actedHand, int targetValue,
                                            Hand targetHand, int gambleResult, bool extraAction)
         {
@@ -2294,6 +2338,11 @@ namespace FingerDiceDuel.Core
                 TargetHand = targetHand,
                 IsExtraAction = extraAction,
             };
+
+            if (TryInvalidateAction(actor, actedHand, targetHand, out string invalidReason))
+                return ResolveInvalidatedAction(result, actor, actedHand, targetHand,
+                                                invalidReason, extraAction);
+
             _brokenThisTurn.Clear();
 
             // ⚠️ "本回合放弃攻击"的标记在 `ResolveMageStatusIntent` 里清零 ——
@@ -3156,6 +3205,9 @@ namespace FingerDiceDuel.Core
         public void BeginTurn()
         {
             RefreshDynamicStats();
+            for (int i = 0; i < _players.Count; i++)
+                if (_players[i]?.Character is ITurnStartHook hook)
+                    hook.OnTurnStarted(_players[i], this);
             SuppressAttackDamage = false;
 
             if (CurrentPlayer?.Character
@@ -3287,12 +3339,41 @@ namespace FingerDiceDuel.Core
         /// <summary>界面/测试用：立即重新判定一次胜负。</summary>
         public void RefreshGameOver() => CheckGameOver();
 
+        private List<PlayerState> CollectNewDeaths()
+        {
+            var list = new List<PlayerState>();
+            for (int i = 0; i < _players.Count; i++)
+            {
+                PlayerState p = _players[i];
+                if (p == null || p.IsAlive || _deathNotified.Contains(p)) continue;
+                _deathNotified.Add(p);
+                list.Add(p);
+            }
+            return list;
+        }
+
+        private void NotifyDeaths(List<PlayerState> dead)
+        {
+            if (dead == null || dead.Count == 0 || IsGameOver) return;
+            for (int d = 0; d < dead.Count; d++)
+                for (int i = 0; i < _players.Count; i++)
+                {
+                    PlayerState listener = _players[i];
+                    if (listener == null || !listener.IsAlive) continue;
+                    if (listener.Character is IPlayerDeathListener hook)
+                        hook.OnPlayerDied(dead[d], this);
+                }
+        }
+
         private void CheckGameOver()
         {
+            List<PlayerState> newlyDead = CollectNewDeaths();
+
             if (IsIdentityMode)
             {
                 RefreshIdentityLordBonus();
                 CheckIdentityGameOver();
+                if (!IsGameOver) NotifyDeaths(newlyDead);
                 return;
             }
 
@@ -3318,8 +3399,8 @@ namespace FingerDiceDuel.Core
                 if (team >= 0) allTeams.Add(team);
             }
 
-            if (aliveTeams.Count > 1) return;
-            if (allTeams.Count <= 1) return;      // 只有一队时不算"分出胜负"
+            if (aliveTeams.Count > 1) { NotifyDeaths(newlyDead); return; }
+            if (allTeams.Count <= 1) { NotifyDeaths(newlyDead); return; }      // 只有一队时不算"分出胜负"
 
             IsGameOver = true;
 

@@ -140,6 +140,15 @@
         PathOfTheBerserker = 26,
 
         /// <summary>战士·战术家：按场上最高与最低体力差获得动态攻防。</summary>
-        Tactician = 27
+        Tactician = 27,
+
+        /// <summary>法师·预言学派：7 后的窗口内，符合手值条件的行动无效。</summary>
+        SchoolOfDivination = 28,
+
+        /// <summary>法师·死灵学派：2 抵挡、回合开始暗蚀攻击、死亡换牌。</summary>
+        SchoolOfNecromancy = 29,
+
+        /// <summary>法师·防护学派：抗性、奥术屏障。</summary>
+        SchoolOfAbjuration = 30
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -39,11 +39,14 @@ namespace FingerDiceDuel.Tests
             "werewolf|barbarian_path_of_the_beast|野蛮人·野兽道途|barbarian|Path of the Beast|-2|-2|25|1",
             "gambler|rogue_gambler|游荡者·赌徒|rogue|Gambler|0|0|20|1",
             "wanderer|fighter_tactician|战士·战术家|fighter|Tactician|1|-1|20|1",
+            "divination|wizard_school_of_divination|法师·预言学派|wizard|School of Divination|0|-1|20|2147483647",
+            "necromancy|wizard_school_of_necromancy|法师·死灵学派|wizard|School of Necromancy|0|-1|20|2147483647",
+            "abjuration|wizard_school_of_abjuration|法师·防护学派|wizard|School of Abjuration|0|-1|20|2147483647",
         };
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(27, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(30, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -70,7 +73,7 @@ namespace FingerDiceDuel.Tests
         {
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
-            int[] counts = { 5, 3, 1, 2, 2, 1, 1, 5, 1, 2, 4, 0 };
+            int[] counts = { 5, 3, 1, 5, 2, 1, 1, 5, 1, 2, 4, 0 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

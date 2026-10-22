@@ -409,6 +409,24 @@ namespace FingerDiceDuel.Characters
                 counter: "尽量把双方血量拉平，削弱他的动态加成。",
                 interactions: new[] { "与狂战士道途：狂战士道途血量越低，战术家的差值可能越大。" });
 
+            Add(CharacterDefinition.SchoolOfDivinationId, "School of Divination", Alignment.TrueNeutral,
+                shortSkill: "7 后开启一轮窗口：他人行动时手牌等于你另一手快照则整次行动无效。",
+                playGuide: "先用 7 铺设窗口，再围绕快照数字安排自己的手牌；7 本身不产生攻击。",
+                counter: "在窗口内避免留下与预言快照相同的手值，或用额外行动/跳过规避。",
+                interactions: new[] { "与死灵学派：免费暗蚀攻击不是正常行动，不触发预言窗口。" });
+
+            Add(CharacterDefinition.SchoolOfNecromancyId, "School of Necromancy", Alignment.NeutralEvil,
+                shortSkill: "2→1 挡一段；回合开始可免费打 1 点暗蚀并附腐朽；死亡后可换 0~2 只数字。",
+                playGuide: "保留 2 防守，1 用来开回合暗蚀；死亡换牌优先补高价值手值。",
+                counter: "力场攻击无视 2 抵挡；用多段攻击消耗多个 2。",
+                interactions: new[] { "与防护学派：屏障在 2 抵挡之后才生效。" });
+
+            Add(CharacterDefinition.SchoolOfAbjurationId, "School of Abjuration", Alignment.LawfulGood,
+                shortSkill: "2 附物理/元素抗性；攻击数字可存屏障，受伤后消耗全部屏障吸收。",
+                playGuide: "先存屏障再保护关键角色；抗性只持续到下一次实际伤害。",
+                counter: "用多段攻击/不同伤害类型先消耗抗性与屏障。",
+                interactions: new[] { "与死灵学派：2 抵挡先于屏障，屏障只处理剩余伤害。" });
+
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

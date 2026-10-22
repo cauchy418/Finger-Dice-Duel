@@ -32,9 +32,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1094 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
+当前状态：**1099 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式；新增三所法师学派与专项测试。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
 
-**职业·子职**：27 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
+**职业·子职**：30 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
 
 **新角色美术已接入**：圣武士·破誓者、野蛮人·狂战士道途、战士·战术家可在选将、图鉴和战斗中显示正式徽记；野蛮人·守望者道途使用新版兽角图腾，原双刃斧移交野蛮人·狂战士道途。图鉴总览每页 12 名角色（4×3，可翻页），共 3 页。圣武士·破誓者持 5 被攻击时，可点持盾角色的【转移至】按钮或【不发动】，随后圣武士·奉献之誓仍可代挡。截图与实际点击检查见 [新角色接入验收](Art/Integration/new-roles/README.md)。
 
@@ -124,7 +124,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ---
 
-## 27 名角色
+## 30 名角色
 
 **勇士调整（2026-10-23）**：攻防 **+1 / 0**，生命20、距离1。十点重击按运算后的双手点数直接相加判定（不是取个位），基础4/6/8变6/9/12后再算攻防；追加、冲击、反弹不触发。双将的另一技能改手不影响发起攻击时的判定。新金狮徽记、原图和提示词见 [制作与验收记录](Art/Production/champion-heavy-strike-v1/README.md)。
 
@@ -158,6 +158,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | **圣武士·破誓者 Oathbreaker** | +2 / 0 | 1 | 5 不再合盾，改为 **5 点钝击伤害**；被攻击时若有 5，可把整次攻击转移给一名持完整盾牌的非攻击者，转移后圣武士·奉献之誓仍可代挡 |
 | **野蛮人·狂战士道途 Path of the Berserker** | −1 / −2 | 1 | 生命上限 +5；9 改为 **9 点挥砍攻击**；每少 5 点生命获得 **+1/+1**；造成伤害后回复伤害一半（向下取整） |
 | **战士·战术家 Tactician** | +1 / −1 | 1 | 额外获得 **+X/+X**，X = 场上最高与最低体力差 ÷3（向下取整）；挥砍伤害 |
+| **法师·预言学派 School of Divination** | 0 / −1 | **∞** | 7 后开启窗口：其他角色行动时若手牌数字等于你另一手快照，行动直接无效；距离 1 内钝击、外穿刺 |
+| **法师·死灵学派 School of Necromancy** | 0 / −1 | **∞** | 2→1 挡一段；回合开始有 1 可免费打 1 点暗蚀并附腐朽；死亡后换 0~2 只数字；距离 1 内钝击、外穿刺 |
+| **法师·防护学派 School of Abjuration** | 0 / −1 | **∞** | 2 附加物理/元素抗性；攻击数字可存奥术屏障，受伤后消耗全部屏障吸收；距离 1 内钝击、外穿刺 |
+
+> 三名新法师学派的正式身份为 `法师·预言学派 / 死灵学派 / 防护学派`；美术徽记后续由 Codex 补齐。
 
 **新角色 AI 与技能检测**：
 

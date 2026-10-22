@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,6 +42,9 @@ namespace FingerDiceDuel.Tests
             "Oathbreaker|LawfulEvil",
             "PathOfTheBerserker|NeutralEvil",
             "Tactician|ChaoticGood",
+            "SchoolOfDivination|TrueNeutral",
+            "SchoolOfNecromancy|NeutralEvil",
+            "SchoolOfAbjuration|LawfulGood",
         };
         private static PlayerState Solo(CharacterDefinition d) => CharacterFactory.CreatePlayer(d.DisplayName,d);
         private static bool Attack(HandEffectType effect) => effect==HandEffectType.Attack4 || effect==HandEffectType.Attack6 || effect==HandEffectType.Attack8;
@@ -64,7 +67,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_27_alignments_match_the_latest_assignment_and_cancelled_berserker_move()
         {
-            Assert.AreEqual(27,Expected.Length);
+            Assert.AreEqual(30,Expected.Length);
             foreach(string row in Expected)
             {
                 var v=row.Split('|');
@@ -81,10 +84,10 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void New_axis_populations_produce_111_pairs_and_both_orders_can_be_built()
         {
-            Assert.AreEqual(10,CharacterCodex.Filter("守序",null).Count);
-            Assert.AreEqual(7,CharacterCodex.Filter("中立",null).Count);
+            Assert.AreEqual(11,CharacterCodex.Filter("守序",null).Count);
+            Assert.AreEqual(9,CharacterCodex.Filter("中立",null).Count);
             Assert.AreEqual(10,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(111,all.Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(136,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -94,7 +97,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(222,built);
+            Assert.AreEqual(272,built);
         }
 
         [Test]
@@ -273,7 +276,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(1332,operations);
+            Assert.AreEqual(1632,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

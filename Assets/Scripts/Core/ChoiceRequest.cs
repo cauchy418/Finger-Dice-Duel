@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -11,6 +11,8 @@ namespace FingerDiceDuel.Core
         /// <summary>圣武士·破誓者持有5时，把整次攻击转移给持完整盾牌的非攻击者。</summary>
         OathbreakerTransfer = 100,
         SchoolOfConjurationCastling = 101,
+        /// <summary>法师·防护学派：是否放弃攻击存储奥术屏障。</summary>
+        SchoolOfAbjurationBarrier = 102,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>

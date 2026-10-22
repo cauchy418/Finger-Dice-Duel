@@ -140,6 +140,9 @@ namespace FingerDiceDuel.Core
         /// <summary>本次攻击是否被改写成「力场」（术士·狂野魔法掷到力场时用）。</summary>
         public bool IsForceElement => ElementOverride == DamageType.Force;
 
+        /// <summary>法师·死灵学派的免费 1 点暗蚀攻击。</summary>
+        public bool IsNecromancyFreeAttack { get; set; }
+
         /// <summary>
         /// 结算过程中询问玩家的回调。**由上层（BoardController）注入**。
         ///
@@ -333,6 +336,15 @@ namespace FingerDiceDuel.Core
                     continue;
                 }
 
+                // 2a-bis. 法师·死灵学派：2→1 完全挡下一段（力场除外）。
+                if (Defender?.Character is IAttackBlocker blocker
+                    && blocker.TryBlockAttack(this, manager, i))
+                {
+                    WasBlocked = true;
+                    BlockedHits++;
+                    continue;
+                }
+
                 // 2b. 护盾：一面盾只能挡下这一段
                 if (TryConsumeShield(defenderChoice, manager))
                 {
@@ -375,6 +387,24 @@ namespace FingerDiceDuel.Core
                 if (i == 0) perHitReduction = reductionThisSegment;
 
                 dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
+                dealt = StatusRules.ApplyResistance(Defender, dealt, AttackType);
+
+                // 法师·防护学派：在护盾/抗性之后、实际扣血之前吸收。
+                if (manager != null && dealt > 0)
+                {
+                    for (int mi = 0; mi < manager.Players.Count; mi++)
+                    {
+                        PlayerState protector = manager.Players[mi];
+                        if (protector == null || !protector.IsAlive) continue;
+                        if (protector.Character is IIncomingDamageBarrier barrier)
+                        {
+                            int before = dealt;
+                            dealt = barrier.AbsorbDamage(Defender, dealt, this, manager);
+                            if (dealt != before)
+                                manager.NoteSkill(protector, "奥术屏障", $"吸收 {before - dealt}，剩余 {dealt}");
+                        }
+                    }
+                }
 
                 // 主公即将受到致命伤害：忠臣可以选择替死，取消这次攻击。
                 if (LethalLoyalistSacrifice != null)
@@ -392,6 +422,10 @@ namespace FingerDiceDuel.Core
                 AppliedDamage += dealt;
                 LandedHits++;
             }
+
+            // 抗性在整次攻击结束时统一消耗；被盾/闪避挡下不会消耗。
+            if (LandedHits > 0 && Defender != null)
+                Defender.ClearResistances();
 
             // 保持旧行为：第一段的最终伤害写入属性（供诊断与测试读）
             if (taichiUsed) MitigatedPerHit = perHit - perHitReduction;

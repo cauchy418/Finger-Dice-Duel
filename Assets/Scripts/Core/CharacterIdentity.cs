@@ -43,6 +43,9 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("werewolf", "barbarian_path_of_the_beast", "barbarian", "野兽道途", "Path of the Beast"),
             new CharacterIdentity("gambler", "rogue_gambler", "rogue", "赌徒", "Gambler"),
             new CharacterIdentity("wanderer", "fighter_tactician", "fighter", "战术家", "Tactician"),
+            new CharacterIdentity("divination", "wizard_school_of_divination", "wizard", "预言学派", "School of Divination"),
+            new CharacterIdentity("necromancy", "wizard_school_of_necromancy", "wizard", "死灵学派", "School of Necromancy"),
+            new CharacterIdentity("abjuration", "wizard_school_of_abjuration", "wizard", "防护学派", "School of Abjuration"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();
         private static Dictionary<string, CharacterIdentity> BuildIndex()

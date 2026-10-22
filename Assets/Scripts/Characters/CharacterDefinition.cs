@@ -103,6 +103,9 @@ namespace FingerDiceDuel.Core
         public const string OathbreakerId = "paladin_oathbreaker";
         public const string PathOfTheBerserkerId = "barbarian_path_of_the_berserker";
         public const string TacticianId = "fighter_tactician";
+        public const string SchoolOfDivinationId = "wizard_school_of_divination";
+        public const string SchoolOfNecromancyId = "wizard_school_of_necromancy";
+        public const string SchoolOfAbjurationId = "wizard_school_of_abjuration";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -405,6 +408,24 @@ namespace FingerDiceDuel.Core
             englishName: "Tactician",
             description: "额外获得 +X/+X，X = 场上最高与最低体力差 ÷ 3（向下取整）；挥砍伤害，攻防 +1/-1，攻击距离 1。");
 
+        public static CharacterDefinition SchoolOfDivination { get; } = new CharacterDefinition(
+            SchoolOfDivinationId, "法师·预言学派", SpecialLogicType.SchoolOfDivination,
+            attackBonus: 0, defenseBonus: -1,
+            englishName: "School of Divination",
+            description: "攻击距离无限，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，该行动直接无效、不触发技能。");
+
+        public static CharacterDefinition SchoolOfNecromancy { get; } = new CharacterDefinition(
+            SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,
+            attackBonus: 0, defenseBonus: -1,
+            englishName: "School of Necromancy",
+            description: "攻击距离无限，距离1内钝击、1外穿刺。受到攻击时可用2→1完全挡下一段（力场除外）。回合开始若有1，可免费对任意角色发起1点暗蚀攻击并附加2回合腐朽。玩家死亡后可与死者交换0~2只手的数字。");
+
+        public static CharacterDefinition SchoolOfAbjuration { get; } = new CharacterDefinition(
+            SchoolOfAbjurationId, "法师·防护学派", SpecialLogicType.SchoolOfAbjuration,
+            attackBonus: 0, defenseBonus: -1,
+            englishName: "School of Abjuration",
+            description: "攻击距离无限，距离1内钝击、1外穿刺。打出2可为一名角色附加物理或元素抗性；攻击数字可存储奥术屏障，在伤害后吸收。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -413,7 +434,8 @@ namespace FingerDiceDuel.Core
             Champion, Breaker, SchoolOfConjuration, PathOfTheWarden, LifeDomain, Swashbuckler, PathOfTheBeast,
             Swordsman, WayOfTheNinja, Assassin, OathOfDevotion, TheArchfey, ArcaneArcher, Gambler, OathOfTheCrown,
             WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
-            Oathbreaker, PathOfTheBerserker, Tactician
+            Oathbreaker, PathOfTheBerserker, Tactician,
+            SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。
