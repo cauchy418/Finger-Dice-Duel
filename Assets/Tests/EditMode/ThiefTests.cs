@@ -690,8 +690,8 @@ namespace FingerDiceDuel.Tests
 
             game.ResolvePendingStealAttack(thief, foe);
 
-            // 游荡者·盗贼 攻0、战士·勇士 防+1 -> 4 - 1 = 3
-            Assert.AreEqual(3, before - foe.Health, "4 点攻击 - 战士·勇士防御 1 = 3 点伤害。");
+            // 游荡者·盗贼 攻0、战士·勇士 防0 -> 4 - 0 = 4
+            Assert.AreEqual(4, before - foe.Health, "4 点攻击 - 战士·勇士防御 0 = 4 点伤害。");
         }
 
         [Test]

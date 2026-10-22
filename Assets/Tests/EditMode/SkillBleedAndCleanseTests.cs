@@ -192,7 +192,7 @@ namespace FingerDiceDuel.Tests
         public void Zero_damage_landed_hits_still_apply_bleed()
         {
             var game = Match(CharacterDefinition.Champion, out _, out _, CharacterDefinition.Champion);
-            var ctx = new AttackContext(game.PlayerA, game.PlayerB, game.PlayerA.LeftHand, 0) { InflictsBleed = true };
+            var ctx = new AttackContext(game.PlayerA, game.PlayerB, game.PlayerA.LeftHand, 0) { InflictsBleed = true, IgnoreStatBonuses = true };
             ctx.Resolve(game.ChoiceProviderB, game);
             Assert.AreEqual(0, ctx.AppliedDamage);
             Assert.True(game.PlayerB.HasStatus(StatusEffect.Bleed));

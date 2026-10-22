@@ -442,7 +442,7 @@ namespace FingerDiceDuel.Tests
             TurnResult r = game.ExecuteTurn(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(5, r.ResultValue, "前置：结果应是 5。");
-            Assert.AreEqual(8, foeBefore - foe.Health,
+            Assert.AreEqual(10, foeBefore - foe.Health,
                 $"诊断：HitCount={r.HitCount} LandedHits={r.LandedHits}" +
                 $" DamageDealt={r.DamageDealt} Effect={r.Effect}" +
                 $" 野蛮人·巨人道途其他手={((PathOfTheGiantLogic)pathOfTheGiant.Character).OtherHandValueThisOperation}" +

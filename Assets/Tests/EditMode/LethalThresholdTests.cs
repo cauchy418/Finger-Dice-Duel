@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Tests
         public void Base_lethal_is_result_plus_attack_minus_defense()
         {
             // 玩家原话："斩杀线即为最大伤害加上攻防加成之后的值"
-            // 战士·勇士 攻+1 防+1；打战士·勇士 8 点 -> 8 + 1 - 1 = 8
+            // 战士·勇士 攻+1 防0；未凑10时打战士·勇士 8 点 -> 8 + 1 - 0 = 9
             var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Champion);
             var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
@@ -53,8 +53,8 @@ namespace FingerDiceDuel.Tests
             SetHealth(foe, 8);
             var move = new LegalMove(me, me.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(8, ai.TotalLethalDamage(move, me, foe, 8),
-                "战士·勇士 8 点攻击对战士·勇士：8 + 1 - 1 = 8。");
+            Assert.AreEqual(9, ai.TotalLethalDamage(move, me, foe, 8),
+                "战士·勇士 8 点攻击对战士·勇士：8 + 1 - 0 = 9。");
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Tests
 
             GreedyChoiceProvider ai = Ai(me, foe, out GameManager game);
 
-            // 野蛮人·守望者道途 攻0 防+1；战士·勇士 防+1
+            // 野蛮人·守望者道途 攻0 防+1；战士·勇士 防0
             SetHealth(foe, 4);       // 4 点就能斩杀
 
             // 4 是能斩杀的攻击（4 + 0 - 1 = 3 … 不够）-> 用 5 点手值构造
@@ -92,23 +92,23 @@ namespace FingerDiceDuel.Tests
         {
             // 玩家要求："游荡者·风流剑客在有 2 的情况下斩杀线会对应提升"
             // 乘风突刺：基础值 ×1.5，**之后再**加攻防
-            // 游荡者·风流剑客 攻0 防0；打战士·勇士 防+1
+            // 游荡者·风流剑客 攻0 防0；打战士·勇士 防0
             var swashbuckler = CharacterFactory.CreatePlayer("游", CharacterDefinition.Swashbuckler);
             var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(swashbuckler, foe, out GameManager game);
 
-            // 结果是 4；另一只手是 2 -> 4 * 1.5 = 6 -> 6 + 0 - 1 = 5
+            // 结果是 4；另一只手是 2 -> 4 * 1.5 = 6 -> 6 + 0 - 0 = 6
             swashbuckler.RightHand.SetValue(2);
             var withTwo = new LegalMove(swashbuckler, swashbuckler.LeftHand, foe.LeftHand);
             int boosted = ai.TotalLethalDamage(withTwo, swashbuckler, foe, 4);
 
-            // 另一只手不是 2 -> 普通 4 + 0 - 1 = 3
+            // 另一只手不是 2 -> 普通 4 + 0 - 0 = 4
             swashbuckler.RightHand.SetValue(3);
             int plain = ai.TotalLethalDamage(withTwo, swashbuckler, foe, 4);
 
-            Assert.AreEqual(5, boosted, "有 2 时：4 × 1.5 = 6，再 +0 −1 = 5。");
-            Assert.AreEqual(3, plain, "没有 2 时：4 + 0 − 1 = 3。");
+            Assert.AreEqual(6, boosted, "有 2 时：4 × 1.5 = 6，再 +0 −0 = 6。");
+            Assert.AreEqual(4, plain, "没有 2 时：4 + 0 − 0 = 4。");
             Assert.True(boosted > plain, "斩杀线必须提升。");
         }
 
@@ -128,17 +128,17 @@ namespace FingerDiceDuel.Tests
 
             var move = new LegalMove(sword, sword.LeftHand, foe.LeftHand);
 
-            // 战士·剑士 攻+2；战士·勇士 防+1
-            // 双手都是 8 -> 主攻击 8+2-1 = 9，追加 8 -> 共 17
+            // 战士·剑士 攻+2；战士·勇士 防0
+            // 双手都是 8 -> 主攻击 8+2-0 = 10，追加 8 -> 共 18
             sword.RightHand.SetValue(8);
             int doubled = ai.TotalLethalDamage(move, sword, foe, 8);
 
-            // 另一只手不是 8 -> 只有主攻击 9
+            // 另一只手不是 8 -> 只有主攻击 10
             sword.RightHand.SetValue(7);
             int plain = ai.TotalLethalDamage(move, sword, foe, 8);
 
-            Assert.AreEqual(17, doubled, "双 8：主攻击 9 + 追加 8 = 17。");
-            Assert.AreEqual(9, plain, "非双持：只有主攻击 9。");
+            Assert.AreEqual(18, doubled, "双 8：主攻击 10 + 追加 8 = 18。");
+            Assert.AreEqual(10, plain, "非双持：只有主攻击 10。");
         }
 
         // ============================================================
@@ -157,13 +157,13 @@ namespace FingerDiceDuel.Tests
 
             var move = new LegalMove(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
-            // 野蛮人·巨人道途 攻+2；战士·勇士 防+1
-            // 另一只手 3 -> 每段 3+2-1 = 4，两段共 8
+            // 野蛮人·巨人道途 攻+2；战士·勇士 防0
+            // 另一只手 3 -> 每段 3+2-0 = 5，两段共 10
             pathOfTheGiant.RightHand.SetValue(3);
             int dmg = ai.TotalLethalDamage(move, pathOfTheGiant, foe, 5);
 
-            Assert.AreEqual(8, dmg,
-                "野蛮人·巨人道途打 5、另一只手 3：两段各 4，共 8（不是 5+2-1=6）。");
+            Assert.AreEqual(10, dmg,
+                "野蛮人·巨人道途打 5、另一只手 3：两段各 5，共 10（不是 5+2-0=7）。");
         }
 
         [Test]
@@ -281,7 +281,7 @@ namespace FingerDiceDuel.Tests
             GreedyChoiceProvider ai = Ai(assassin, foe, out GameManager game);
             var move = new LegalMove(assassin, assassin.LeftHand, foe.LeftHand);
 
-            // 不在潜行：游荡者·刺客 攻+2；战士·勇士 防+1 -> 8 + 2 - 1 = 9
+            // 不在潜行：游荡者·刺客 攻+2；战士·勇士 防0 -> 8 + 2 - 0 = 10
             int plain = ai.TotalLethalDamage(move, assassin, foe, 8);
 
             // 进入潜行（测试专用入口，需要强制进入）
@@ -293,7 +293,7 @@ namespace FingerDiceDuel.Tests
 
             int stealthed = ai.TotalLethalDamage(move, assassin, foe, 8);
 
-            Assert.AreEqual(9, plain, "不在潜行时：8 + 2 − 1 = 9。");
+            Assert.AreEqual(10, plain, "不在潜行时：8 + 2 − 0 = 10。");
             Assert.True(stealthed > plain,
                 $"潜行中斩杀线应更高（{stealthed} 应大于 {plain}）。");
         }

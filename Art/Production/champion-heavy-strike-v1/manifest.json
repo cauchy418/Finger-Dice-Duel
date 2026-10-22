@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-23",
+  "tool": "built-in image_gen",
+  "id": "fighter_champion",
+  "source": "Art/Production/champion-heavy-strike-v1/source.png",
+  "prompt": "Art/Production/champion-heavy-strike-v1/prompt.txt",
+  "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_champion.png",
+  "sha256": "f737f182bb922022086df1b70e31ddedae72374f52cbb067aba1f20ffdf6b4e5",
+  "processing": "Authorized alpha crop, resize and centering only"
+}

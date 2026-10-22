@@ -1,0 +1,7 @@
+2026-10-23 Champion heavy strike / defense balance
+DOTNET_TieredCompilation=0, Tools/HeadlessTests/run-tests.ps1 -Quiet: PASS 1061 / FAIL 0.
+ChampionHeavyStrikeTests: PASS 9 / FAIL 0 (headless and in the actual editor).
+Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS -Quiet: compile passed.
+Tools/UiCompileCheck/check-ui.ps1 -Quiet: passed.
+Actual editor integration: PASS 28.
+Two default .NET6 tiered-JIT pressure runs aborted with native AccessViolationException in managed AI hot paths. A complete run with tiered compilation disabled passed without reducing test coverage or changing assertions. This environment option is scoped to the test process.

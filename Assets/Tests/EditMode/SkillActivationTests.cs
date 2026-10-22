@@ -331,9 +331,8 @@ namespace FingerDiceDuel.Tests
             switch (hero.Id)
             {
                 case CharacterDefinition.ChampionId:
-                    // 玩家指示："战士·勇士无需检查，因为没有特殊技能"
-                    // -> 只要求它会正常打出效果即可（不可能是 0）
-                    hit = true;
+                    // 勇士已新增十点重击，必须按实际发动计数衡量。
+                    hit = pA.Character is ISkillUseCounter champion && champion.SkillUseCount > 0;
                     break;
 
                 case CharacterDefinition.SchoolOfConjurationId:

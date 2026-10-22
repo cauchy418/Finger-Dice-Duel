@@ -10,9 +10,9 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class ProfessionContractTests
     {
-        // User-approved naming plus actual pre-import player statistics, captured before refactoring.
+        // User-approved naming plus pre-import statistics plus the approved later Champion defense adjustment.
         private static readonly string[] Before = {
-            "soldier|fighter_champion|战士·勇士|fighter|Champion|1|1|20|1",
+            "soldier|fighter_champion|战士·勇士|fighter|Champion|1|0|20|1",
             "fighter|fighter_breaker|战士·破阵者|fighter|Breaker|1|0|20|1",
             "arcane_archer|fighter_arcane_archer|战士·魔射手|fighter|Arcane Archer|0|-1|20|3",
             "knight|paladin_oath_of_the_crown|圣武士·王冠之誓|paladin|Oath of the Crown|1|-1|20|1",
@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Tests
             "wanderer|fighter_tactician|战士·战术家|fighter|Tactician|1|-1|20|1",
         };
         [Test]
-        public void All_27_identities_keep_their_original_stats_and_legacy_aliases()
+        public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
             Assert.AreEqual(27, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();

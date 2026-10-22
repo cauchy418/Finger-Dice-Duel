@@ -32,9 +32,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1052 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式。详见 [最新接入验收](Art/Integration/profession-subclass/README.md)。
+当前状态：**1061 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式。详见 [最新接入验收](Art/Integration/profession-subclass/README.md)。
 
-**职业·子职**：27 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；本次只调整名称、设定、美术和显示，玩法保持不变。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
+**职业·子职**：27 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
 
 **新角色美术已接入**：圣武士·破誓者、野蛮人·狂战士道途、战士·战术家可在选将、图鉴和战斗中显示正式徽记；野蛮人·守望者道途使用新版兽角图腾，原双刃斧移交野蛮人·狂战士道途。图鉴总览每页 12 名角色（4×3，可翻页），共 3 页。圣武士·破誓者持 5 被攻击时，可点持盾角色的【转移至】按钮或【不发动】，随后圣武士·奉献之誓仍可代挡。截图与实际点击检查见 [新角色接入验收](Art/Integration/new-roles/README.md)。
 
@@ -126,9 +126,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ## 27 名角色
 
+**勇士调整（2026-10-23）**：攻防 **+1 / 0**，生命20、距离1。十点重击按运算后的双手点数直接相加判定（不是取个位），基础4/6/8变6/9/12后再算攻防；追加、冲击、反弹不触发。双将的另一技能改手不影响发起攻击时的判定。新金狮徽记、原图和提示词见 [制作与验收记录](Art/Production/champion-heavy-strike-v1/README.md)。
+
+
 | 角色 | 攻 / 防 | 距离 | 特性 |
 |---|:---:|:---:|---|
-| 战士·勇士 Champion | +1 / +1 | 1 | 无特性，扎实的基础角色（**取代了原来的白板**） |
+| 战士·勇士 Champion | +1 / 0 | 1 | **十点重击**：运算后双手和为10，发起攻击的基础伤害×1.5，再算攻防；自动触发 |
 | 战士·破阵者 Breaker | +1 / 0 | 1 | 己方盾碎可连锁破盾；主动以完整盾运算、或碎另一盾换无限距离后攻击，命中附流血 2 回合 |
 | 法师·咒法学派 School of Conjuration | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成；**并穿透伏击（游侠·幽域追踪者的伏击挡不住、也不会被解除）** |
 | 野蛮人·守望者道途 Path of the Warden | 0 / +1 | 1 | 合盾时可锁对手一只手，直到该盾破碎（**仅剩两人时**限制生效） |
@@ -387,7 +390,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 ### 平衡实测（1v1 经典循环赛）
 
 > 统计口径：1v1 / 2v2 / 双将 1v1 为无头 AI 直接驱动 `GameManager`；
-> **击杀奖惩只在 8 人阵营混战启用**；以下胜率均为最新 27 角色版本。
+> **击杀奖惩只在 8 人阵营混战启用**。本节旧表与对比为勇士本次调整前的历史采样；调整后的最新完整结果见 [1v1](Tools/1v1-report.txt)、[2v2](Tools/2v2-report.txt)、[双将](Tools/dual-report.txt)、[集火实验](Tools/focus-report.txt)。旧表不作为当前平衡结论。
 
 **27 名角色**两两配对、每对 **80 局**、双方交替先手，共 **28,080 局**，
 平均 **17.7** 回合，**0 局模拟器强停**；**951 局**打满轮次上限。
@@ -576,7 +579,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（27 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1049 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1061 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

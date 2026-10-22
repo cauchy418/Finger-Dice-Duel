@@ -215,10 +215,10 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(1);              // 3 + 1 = 4 -> 4 点伤害
             TurnResult t = game.ExecuteTurn(collegeOfValor, collegeOfValor.LeftHand, foe.LeftHand);
 
-            // 吟游诗人·勇气学院攻 0、战士·勇士防 +1；被削弱防御 3 -> 净防御 -2
-            // 伤害 = 4 + 0 - (-2) = 6（不削弱时是 4 + 0 - 1 = 3）
-            Assert.AreEqual(6, t.DamageDealt,
-                "削弱防御 3 之后这一击应当从 3 变成 6。");
+            // 吟游诗人·勇气学院攻 0、战士·勇士防 0；被削弱防御 3 -> 净防御 -3
+            // 伤害 = 4 + 0 - (-3) = 7（不削弱时是 4 + 0 - 0 = 4）
+            Assert.AreEqual(7, t.DamageDealt,
+                "削弱防御 3 之后这一击应当从 4 变成 7。");
         }
     }
 }

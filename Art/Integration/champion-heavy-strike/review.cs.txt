@@ -1,0 +1,54 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/champion-heavy-strike");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button> click=(button)=>{shot(front,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);check(hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name);UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);};
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+var def=FingerDiceDuel.Core.CharacterDefinition.Champion;
+check(def.AttackBonus==1&&def.DefenseBonus==0&&def.MaxHealth==20,"Champion definition +1/0 HP20");
+check(FingerDiceDuel.Core.GameManager.BaseRangeOf(FingerDiceDuel.Core.CharacterFactory.CreatePlayer("check",def))==1,"range unchanged at one");
+check(def.Description.Contains("十点重击")&&FingerDiceDuel.Assistant.RuleBook.BasicRules().Contains("技能倍率先乘基础伤害"),"runtime description and guide current");
+var testType=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.Tests.ChampionHeavyStrikeTests")).FirstOrDefault(t=>t!=null);
+check(testType!=null,"new test fixture imported into editor");
+var fixture=System.Activator.CreateInstance(testType);
+foreach(var m in testType.GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.DeclaredOnly)){
+ if(m.GetParameters().Length!=0)continue;
+ try{m.Invoke(fixture,null);check(true,"engine regression "+m.Name);}catch(System.Reflection.TargetInvocationException e){throw e.InnerException;}
+}
+var art=FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+def.Id);check(art!=null&&art.texture.width==512,"new lion resource loaded");
+check(art==FingerDiceDuel.UI.BattleArt.Get("Classes/soldier"),"legacy art alias maps to new lion");
+invoke(boot,"GoToCharacterSelect",new object[0]);var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_rosterViewA");roster.Select(0);roster.ScrollToSelected();
+var cards=(System.Collections.Generic.List<UnityEngine.UI.Button>)field(roster,"_cards");click(cards[0]);
+var detail=(UnityEngine.UI.Text)field(boot,"_detailA");check(detail.text.Contains("十点重击"),"selection describes passive skill");
+check(cards[0].transform.Find("Emblem").GetComponent<UnityEngine.UI.Image>().sprite==art,"selection uses lion emblem");shot(front,"selection");
+invoke(boot,"OnCodexClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");codex.GoTo(0);
+check(((UnityEngine.UI.Text)field(codex,"_stats")).text.Contains("防 0"),"codex defense is zero");
+check(((UnityEngine.UI.Text)field(codex,"_body")).text.Contains("十点重击"),"codex skill current");
+check(((UnityEngine.UI.Image)field(codex,"_emblem")).sprite==art,"codex uses lion emblem");shot(front,"codex");
+boot.StartMatch(def,def);
+var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+game.PlayerA.LeftHand.SetValue(1);game.PlayerA.RightHand.SetValue(6);game.PlayerB.LeftHand.SetValue(3);game.PlayerB.RightHand.SetValue(1);
+controller.SetFirstPlayer(game.PlayerA);controller.BeginTurn();invoke(boot,"RefreshView",new object[0]);
+controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);check(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer,"ordinary attack confirmation still used");
+controller.ConfirmTargetPlayer();invoke(boot,"RefreshView",new object[0]);
+check(controller.LastTurn!=null&&controller.LastTurn.DamageDealt==7,"real board operation deals 4x1.5+1-0=7");
+check(game.PlayerB.Health==13&&game.PlayerA.LeftHand.Value==4&&game.PlayerA.RightHand.Value==6,"real board hand values and remaining HP");
+check(controller.Phase!=FingerDiceDuel.Assistant.BoardPhase.ChoosingPreTurnChoice,"passive adds no skill choice");
+check(((UnityEngine.UI.Text)field(board,"_logText")).text.Contains("十点重击"),"battle log records named skill activation");
+check(((UnityEngine.UI.Text)field(board,"_statusTextA")).text.Contains("防 0"),"battle defense display current");
+check(((UnityEngine.UI.Image)field(board,"_badgeA")).sprite==art,"battle uses new lion emblem");
+board.SetHistoryOpen(true);shot(((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponent<UnityEngine.Canvas>(),"battle-heavy-strike");
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+return "Passed "+checks.Count+" Champion engine checks. Evidence: "+output;

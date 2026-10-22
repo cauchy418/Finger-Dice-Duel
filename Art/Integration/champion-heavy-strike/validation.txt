@@ -1,0 +1,28 @@
+PASS Champion definition +1/0 HP20
+PASS range unchanged at one
+PASS runtime description and guide current
+PASS new test fixture imported into editor
+PASS engine regression Real_operation_uses_post_operation_sum_and_multiplies_before_stats
+PASS engine regression Pre_operation_sum_ten_does_not_trigger_if_attack_sum_is_not_ten
+PASS engine regression Four_six_and_eight_scale_to_six_nine_and_twelve_before_attack_and_defense
+PASS engine regression Attack_snapshot_and_independent_multiplier_survive_other_hooks_changing_hands
+PASS engine regression Dual_champion_and_swashbuckler_stack_in_both_orders
+PASS engine regression Champion_bonus_does_not_make_an_unempowered_dual_swashbuckler_attack_piercing
+PASS engine regression Shield_still_blocks_heavy_strike_and_extra_attacks_do_not_gain_it
+PASS engine regression Multiplier_does_not_leak_into_next_attack_and_match_reset_clears_count
+PASS engine regression Ai_projects_result_plus_other_hand_and_uses_same_damage_order
+PASS new lion resource loaded
+PASS legacy art alias maps to new lion
+PASS raycast reaches Card0
+PASS selection describes passive skill
+PASS selection uses lion emblem
+PASS codex defense is zero
+PASS codex skill current
+PASS codex uses lion emblem
+PASS ordinary attack confirmation still used
+PASS real board operation deals 4x1.5+1-0=7
+PASS real board hand values and remaining HP
+PASS passive adds no skill choice
+PASS battle log records named skill activation
+PASS battle defense display current
+PASS battle uses new lion emblem

@@ -35,6 +35,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public float DamageMultiplier { get; set; } = 1f;
 
+        /// <summary>独立技能的额外基础倍率，与 DamageMultiplier 相乘，统一取整后再算攻防。</summary>
+        public float AdditionalBaseDamageMultiplier { get; set; } = 1f;
+
+        /// <summary>本次攻击建立时的双手点数和；不受后续攻击钩子改手影响。</summary>
+        public int AttackerHandSumAtStart { get; }
+
         /// <summary>本次攻击是否被闪避（游荡者·风流剑客）。闪避完全免伤，且不消耗护盾。</summary>
         public bool WasDodged { get; private set; }
 
@@ -175,6 +181,7 @@ namespace FingerDiceDuel.Core
         public AttackContext(PlayerState attacker, PlayerState defender, Hand sourceHand, int rawDamage)
         {
             Attacker = attacker;
+            AttackerHandSumAtStart = attacker == null ? 0 : attacker.LeftHand.Value + attacker.RightHand.Value;
             Defender = defender;
             SourceHand = sourceHand;
             RawDamage = rawDamage;
@@ -830,7 +837,7 @@ namespace FingerDiceDuel.Core
         /// <summary>原始伤害经过倍率后的值（尚未叠加攻防加成）。</summary>
         private int RawDamageScaled()
             => (int)System.Math.Round(
-                RawDamage * DamageMultiplier, System.MidpointRounding.AwayFromZero);
+                RawDamage * DamageMultiplier * AdditionalBaseDamageMultiplier, System.MidpointRounding.AwayFromZero);
 
         /// <summary>给一段伤害叠加攻防修正。</summary>
         private int ApplyStatBonuses(int damage)
@@ -922,6 +929,6 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private int ApplyBonuses(int baseDamage)
             => (int)System.Math.Round(
-                baseDamage * DamageMultiplier, System.MidpointRounding.AwayFromZero);
+                baseDamage * DamageMultiplier * AdditionalBaseDamageMultiplier, System.MidpointRounding.AwayFromZero);
     }
 }

@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Tests
     /// <summary>
     /// **战士·勇士 / 圣武士·王冠之誓**的行为。
     ///
-    /// 战士·勇士：取代白板的基础角色（攻防 +1）。
+    /// 战士·勇士：十点重击，攻+1 / 防0。
     /// 圣武士·王冠之誓：自己的盾碎后攻击距离永久 +1，且**攻击加成恒等于距离**。
     /// </summary>
     [TestFixture]
@@ -35,12 +35,12 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Champion_has_plus_one_attack_and_defense()
+        public void Champion_has_plus_one_attack_and_zero_defense()
         {
             PlayerState s = Make("士", CharacterDefinition.Champion);
 
             Assert.AreEqual(1, s.Character.AttackBonus);
-            Assert.AreEqual(1, s.Character.DefenseBonus);
+            Assert.AreEqual(0, s.Character.DefenseBonus);
             Assert.AreEqual(1, GameManager.BaseRangeOf(s), "战士·勇士攻击距离 1。");
         }
 

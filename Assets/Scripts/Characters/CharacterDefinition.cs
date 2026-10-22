@@ -206,15 +206,15 @@ namespace FingerDiceDuel.Core
                          "攻防 0 / -1，攻击距离 3。");
 
         /// <summary>
-        /// 战士·勇士：攻 +1 / 防 +1，攻击距离 1，没有特殊能力。
+        /// 战士·勇士：攻 +1 / 防 0，距离 1；攻击时双手和为 10，基础伤害 ×1.5。
         ///
         /// 玩家要求用它取代白板进入角色选择 ——
         /// 白板没有强度，作为可选角色没有意义。
         /// </summary>
         public static CharacterDefinition Champion { get; } = new CharacterDefinition(
             ChampionId, "战士·勇士", SpecialLogicType.Champion,
-            attackBonus: 1, defenseBonus: 1,
-            description: "没有特殊能力，但攻防各 +1、攻击距离 1 —— 扎实的基础角色。");
+            attackBonus: 1, defenseBonus: 0,
+            description: "十点重击：运算后双手和为10时，发起攻击的基础伤害×1.5，再计算攻防。攻+1 / 防0，距离1。");
 
         /// <summary>
         /// 游荡者·赌徒：攻 0 / 防 0，攻击距离 1。

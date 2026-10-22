@@ -40,15 +40,13 @@ namespace FingerDiceDuel.Characters
         static CharacterCodex()
         {
             Add(CharacterDefinition.ChampionId, "Champion", Alignment.TrueNeutral,
-                shortSkill: "攻防各 +1 的白板基准。",
-                playGuide: "没有技能，全靠攻防各 +1 的底子。用它练基本功："
-                         + "优先凑 4/6/8 打输出，血量健康时不必急着合盾。",
-                counter: "没有可针对的机制，正常对拼即可。"
-                       + "注意他的攻防各 +1，换血时你会略亏，尽量用技能换回节奏。",
+                shortSkill: "十点重击：运算后双手和10，发起攻击的基础伤害×1.5。",
+                playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
+                counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
                 interactions: new[]
                 {
-                    "与咒法学派：他的攻击无视护盾与正向防御 —— 勇士的防 +1 会被吃掉。",
-                    "与巨人道途：巨人道途攻 +2 且两段，勇士的防 +1 吃不消。",
+                    "与咒法学派：勇士防0，没有正向防御可被无视；护盾仍挡不住空间刃。",
+                    "与风流剑客双将：乘风突刺与十点重击的倍率相乘，按发起攻击时的手值判定。",
                 });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulNeutral,

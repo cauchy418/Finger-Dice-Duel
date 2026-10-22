@@ -18,10 +18,10 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1052 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过** |
+| 测试 | **1061 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过** |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
-> 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
+> 当前统计规模：1v1 **28,080** 局、2v2 **44,928** 局、双将 **138,672** 局、集火实验 **97,200** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
 
 ## 职业与子职（2026-10-23）
@@ -30,7 +30,15 @@
 
 大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 39 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
-图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
+图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。职业迁移阶段技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
+
+## 勇士十点重击（2026-10-23 后续平衡调整）
+
+`Champion` 当前攻防 **+1/0**，生命20、距离1；取 `AttackContext.AttackerHandSumAtStart`（运算后、攻击建立时的双手和），等于10则自动令 `AdditionalBaseDamageMultiplier` 乘1.5。该独立倍率与既有 `DamageMultiplier` 相乘，统一四舍五入后再计算攻防，不覆盖乘风突刺或误改其伤害类型。特殊攻击与反弹不触发；不新增按钮。`ChampionLogic` 提供技能计数、战报和斩杀估算，重开清空计数。
+
+`ChampionHeavyStrikeTests` 9项覆盖真实运算时点、倍率顺序、三种攻击数字、快照、双将主副顺序、伤害类型、护盾、特殊攻击隔离、跨次清理及AI估算。迁移前基础快照保持历史原值；`ProfessionContractTests` 中勇士防御按本次明确调整改为0。新金狮徽记及验收见 [记录](Art/Production/champion-heavy-strike-v1/README.md)。
+
+本次勇士完整测试在独立 PowerShell 进程内设置 `$env:DOTNET_TieredCompilation='0'` 后运行：本机 .NET6 分层JIT在长时间统计中两次出现原生 `AccessViolationException`，关闭分层JIT后1061项完整通过；不改测试断言或游戏规则。团结编辑器另执行9项专项及真实界面操作，共28项通过。该环境变量仅对测试进程生效，不影响游戏。
 
 ## 目录结构
 

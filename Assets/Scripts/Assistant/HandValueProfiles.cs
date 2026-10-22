@@ -67,7 +67,7 @@ namespace FingerDiceDuel.Assistant
 
         private static void BuildOwn()
         {
-            // ---- 战士·勇士（攻防各 +1，取代了原来的白板）：只用基线 ----
+            // ---- 战士·勇士（攻+1 / 防0，十点重击）：基础权重；斩杀线由 ChampionLogic 按运算后和10估算 ----
             Own[CharacterDefinition.ChampionId] = new HandValueProfile();
 
             // ---- 战士·破阵者（攻 +1）----
