@@ -42,7 +42,7 @@ namespace FingerDiceDuel.UI
                 new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new Vector2(1000, 430), Color.clear, new Vector2(-80, top ? 285 : -315));
             area.GetComponent<Image>().raycastTarget = false;
-            var badge = ArtImage(area, "ClassEmblem", "Classes/soldier",
+            var badge = ArtImage(area, "SubclassEmblem", "Subclasses/fighter_champion",
                 new Vector2(-230, 181), new Vector2(112, 112));
             badge.preserveAspect = true;
             ArtImage(area, "NamePlate", "UI/label_strip", new Vector2(70, 195), new Vector2(460, 44), true);
@@ -50,6 +50,7 @@ namespace FingerDiceDuel.UI
                 28, TextAnchor.MiddleCenter, BattleArt.Gold);
             name.font = UiFont.Title;
             name.fontStyle = FontStyle.Normal;
+            name.resizeTextForBestFit = true; name.resizeTextMinSize = 18; name.resizeTextMaxSize = 28;
             status = CreateText(area, "Stats", new Vector2(70, 119), new Vector2(600, 30),
                 20, TextAnchor.MiddleCenter, BattleArt.Ink);
             var track = ArtImage(area, "HpBar", "UI/health_track", new Vector2(70, 155), new Vector2(360, 34), true);
@@ -203,8 +204,11 @@ namespace FingerDiceDuel.UI
             Position(_battleLogScroll.viewport, new Vector2(0, -26), new Vector2(390, 530));
             _battleSubtitle.gameObject.SetActive(painted);
             Position(_titleText.rectTransform, painted ? new Vector2(-650, 477) : new Vector2(-330, 493),
-                painted ? new Vector2(480, 56) : new Vector2(1140, 48));
+                painted ? new Vector2(480, 36) : new Vector2(1140, 48));
             _titleText.fontSize = painted ? 30 : 26;
+            _titleText.resizeTextForBestFit = true; _titleText.resizeTextMinSize = 16; _titleText.resizeTextMaxSize = painted ? 30 : 26;
+            _titleText.verticalOverflow = VerticalWrapMode.Truncate;
+            _titleText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _titleText.alignment = TextAnchor.MiddleLeft;
             _titleText.font = UiFont.Title;
             _titleText.fontStyle = FontStyle.Normal;
@@ -248,16 +252,16 @@ namespace FingerDiceDuel.UI
             var name = top ? _nameTextB : _nameTextA;
             string display = !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride
                 : player.Definition != null ? player.Definition.DisplayName : player.Name;
-            name.text = display + "（" + player.Name + "）";
+            name.text = player.Name == display ? display : display + "（" + player.Name + "）";
             var stats = top ? _statusTextB : _statusTextA;
             int range = GameManager.BaseRangeOf(player);
             stats.text = "攻 " + Signed(StatusRules.EffectiveAttackBonus(player)) + "    防 " +
                 Signed(StatusRules.EffectiveDefenseBonus(player)) + "    距 " + (range == int.MaxValue ? "∞" : range.ToString())
                 + "    " + HandVisual.ShieldSummary(player);
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
-            string id = player.Definition != null ? player.Definition.Id : "soldier";
-            if (id == "blank") id = "soldier";
-            (top ? _badgeB : _badgeA).sprite = BattleArt.Get("Classes/" + id);
+            string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
+            if (id == "blank") id = "fighter_champion";
+            (top ? _badgeB : _badgeA).sprite = BattleArt.Get("Subclasses/" + id);
             BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));
         }
 

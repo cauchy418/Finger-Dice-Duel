@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **赌徒**的核心：1d9 的结果直接作为本次行动结果。
+    /// **游荡者·赌徒**的核心：1d9 的结果直接作为本次行动结果。
     ///
     /// 规则（玩家逐条确认）：
     ///   4/6/8 攻击、9 回血、5 合盾，其余无效果。
@@ -50,7 +50,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(0, g.Character.AttackBonus);
             Assert.AreEqual(0, g.Character.DefenseBonus);
-            Assert.AreEqual(1, GameManager.BaseRangeOf(g), "赌徒攻击距离 1。");
+            Assert.AreEqual(1, GameManager.BaseRangeOf(g), "游荡者·赌徒攻击距离 1。");
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace FingerDiceDuel.Tests
         {
             foreach (int roll in new[] { 4, 6, 8 })
             {
-                GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+                GameManager game = Match(CharacterDefinition.Champion, out _, out _);
                 PlayerState gambler = game.PlayerA;
                 PlayerState foe = game.PlayerB;
 
@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Gamble_five_forms_a_shield()
         {
-            GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+            GameManager game = Match(CharacterDefinition.Champion, out _, out _);
             PlayerState gambler = game.PlayerA;
 
             TurnResult r = null;
@@ -102,7 +102,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Gamble_nine_heals_instead_of_attacking()
         {
-            GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+            GameManager game = Match(CharacterDefinition.Champion, out _, out _);
             PlayerState gambler = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Tests
             // 其余数字按既有规则就是"无效果"，所以不该造成任何伤害。
             foreach (int roll in new[] { 1, 2, 3, 7 })
             {
-                GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+                GameManager game = Match(CharacterDefinition.Champion, out _, out _);
                 PlayerState gambler = game.PlayerA;
                 PlayerState foe = game.PlayerB;
 
@@ -159,7 +159,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Voluntary_gamble_lets_the_player_choose_a_normal_operation()
         {
-            // ⚠️ **非强制**时赌徒有两条路（玩家确认："当然也可以继续赌"）：
+            // ⚠️ **非强制**时游荡者·赌徒有两条路（玩家确认："当然也可以继续赌"）：
             //      · 点他人的手 -> 正常运算
             //      · 点「开赌」   -> 赌博
             //
@@ -171,7 +171,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -196,7 +196,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -223,7 +223,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -253,7 +253,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -277,20 +277,20 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Normal_operation_makes_the_next_turn_a_forced_gamble()
         {
-            // 玩家确认的规则："若赌徒上一个自己的回合进行了正常的运算（非赌博），
+            // 玩家确认的规则："若游荡者·赌徒上一个自己的回合进行了正常的运算（非赌博），
             // 那么这一回合就必须赌博"；"赌完就解除"。
             var providers = new List<SimpleChoiceProvider>
             {
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
             board.BeginTurn();
 
-            // ⚠️ 赌徒点自己的手**总是**进赌博阶段（那是他的正常路径），
+            // ⚠️ 游荡者·赌徒点自己的手**总是**进赌博阶段（那是他的正常路径），
             //    所以想"做一次正常运算"要临时放行 ——
             //    这也符合实机：新开一局时 MustGamble 就是 false。
             board.ForceAllowNormalOperationForTest(true);
@@ -304,10 +304,10 @@ namespace FingerDiceDuel.Tests
             Assert.NotNull(board.LastTurn, "应完成一次结算。");
             Assert.False(board.LastTurn.WasGamble, "这次应是正常运算，不是赌博。");
             Assert.True(game.PlayerA.MustGamble,
-                "做了正常运算后，赌徒应进入强制赌博状态。");
+                "做了正常运算后，游荡者·赌徒应进入强制赌博状态。");
 
             // ⚠️ 一次结算后行动方**已经换成对手**了（回合一交替），
-            //    所以要让对手也走一步，回合才会回到赌徒身上。
+            //    所以要让对手也走一步，回合才会回到游荡者·赌徒身上。
             board.ForceAllowNormalOperationForTest(false);
             board.BeginTurn();
             Assert.AreEqual(game.PlayerB, board.ActivePlayer,
@@ -316,9 +316,9 @@ namespace FingerDiceDuel.Tests
             // 对手随便走一步（用引擎直调，避免依赖对手的交互细节）
             game.ExecuteTurn(game.PlayerB, game.PlayerB.LeftHand, game.PlayerA.LeftHand);
 
-            // 回合回到赌徒 -> 他必须赌博
+            // 回合回到游荡者·赌徒 -> 他必须赌博
             board.BeginTurn();
-            Assert.AreEqual(game.PlayerA, board.ActivePlayer, "前置：应轮回赌徒。");
+            Assert.AreEqual(game.PlayerA, board.ActivePlayer, "前置：应轮回游荡者·赌徒。");
             Assert.True(game.PlayerA.MustGamble, "此时仍应是强制赌博状态。");
 
             board.GambleRng = new FixedRandom(3);
@@ -345,7 +345,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -394,8 +394,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Gamble_roll_happens_once_not_again_at_resolution()
         {
-            // 玩家实测："先说投出了 4，点战士时又说投出 2 无效果。
-            //            疑似点攻击时赌徒又重新赌了一次。"
+            // 玩家实测："先说投出了 4，点战士·破阵者时又说投出 2 无效果。
+            //            疑似点攻击时游荡者·赌徒又重新赌了一次。"
             //
             // 根因：掷出攻击（4/6/8）时流程是"开赌掷点 -> 选打谁 -> 结算"，
             // 掷点与结算**分属两次调用**；结算那次又调了 ExecuteGamble，
@@ -407,7 +407,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -439,7 +439,7 @@ namespace FingerDiceDuel.Tests
         {
             // 玩家要求战报能看出这是赌博 —— 不能写成 "N + M = K"，
             // 那会让玩家以为自己做了一次运算（赌博时根本没点他人的手）。
-            GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+            GameManager game = Match(CharacterDefinition.Champion, out _, out _);
             PlayerState gambler = game.PlayerA;
 
             TurnResult r = game.ExecuteGamble(gambler, gambler.LeftHand,
@@ -472,7 +472,7 @@ namespace FingerDiceDuel.Tests
                     new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 };
                 var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                           Make("B", CharacterDefinition.Soldier),
+                                           Make("B", CharacterDefinition.Champion),
                                            providers[0], providers[1]);
 
                 var board = new BoardController(game, providers[0], providers[1],
@@ -481,7 +481,7 @@ namespace FingerDiceDuel.Tests
                 board.BeginTurn();
 
                 // ⚠️ 置成**强制**状态，AI 才会走赌博流程 ——
-                //    非强制时赌徒可以自选正常运算（那是玩家的选择，
+                //    非强制时游荡者·赌徒可以自选正常运算（那是玩家的选择，
                 //    AI 目前按"走正常运算"处理，所以不会掷点）。
                 game.PlayerA.MustGamble = true;
 
@@ -508,7 +508,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1]);
@@ -542,11 +542,11 @@ namespace FingerDiceDuel.Tests
         public void Ai_gambler_gambles_when_no_operation_gives_a_useful_result()
         {
             // 玩家给的策略："在无法运算出有效数字如 4/5/6/8/9 时，
-            // 赌徒会非常倾向于开赌。"
+            // 游荡者·赌徒会非常倾向于开赌。"
             //
-            // 局面：赌徒 2/1，对手 3/1 ——
+            // 局面：游荡者·赌徒 2/1，对手 3/1 ——
             //   2+3=5（有效！）… 所以要把所有组合都弄成无效。
-            // 改成：赌徒 2/1，对手 3/1，但**用 1+3=4** 也是有效…
+            // 改成：游荡者·赌徒 2/1，对手 3/1，但**用 1+3=4** 也是有效…
             // 干脆让两边都是 1：1+1=2（无效果），怎么配都是 2。
             var ai = new GreedyChoiceProvider();
             var providers = new List<SimpleChoiceProvider>
@@ -554,7 +554,7 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1], aiForA: ai);
@@ -569,14 +569,14 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(board.MakeAutomaticMove(), "AI 应走完这一步。");
             Assert.True(board.LastGambleRoll > 0,
-                "没有任何有用运算时，AI 赌徒应该开赌。");
+                "没有任何有用运算时，AI 游荡者·赌徒应该开赌。");
         }
 
         [Test]
         public void Ai_gambler_prefers_normal_operation_when_a_useful_result_exists()
         {
             // ⚠️ 规则在 2025 年被玩家收紧了：
-            //    "赌徒在**无法运算出高价值点数**时优先赌。"
+            //    "游荡者·赌徒在**无法运算出高价值点数**时优先赌。"
             //
             //    这里的高价值 = **能推进战局**的 4/6/8 攻击。
             //    合盾（5）与纯回复（9）**不算** —— 它们不改变局面，
@@ -590,14 +590,14 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var game = new GameManager(Make("赌", CharacterDefinition.Gambler),
-                                       Make("B", CharacterDefinition.Soldier),
+                                       Make("B", CharacterDefinition.Champion),
                                        providers[0], providers[1]);
 
             var board = new BoardController(game, providers[0], providers[1], aiForA: ai);
             board.GambleRng = new FixedRandom(2);      // 万一赌了，点数会是 2（无效果）
             board.BeginTurn();
 
-            // 赌徒 1/1，对手 3/3 -> 1+3=**4**（攻击，高价值）-> 不赌
+            // 游荡者·赌徒 1/1，对手 3/3 -> 1+3=**4**（攻击，高价值）-> 不赌
             TestSetup.SetHand(game.PlayerA.LeftHand, 1);
             TestSetup.SetHand(game.PlayerA.RightHand, 1);
             TestSetup.SetHand(game.PlayerB.LeftHand, 3);
@@ -611,8 +611,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Only_gamblers_can_gamble()
         {
-            GameManager game = new GameManager(Make("士", CharacterDefinition.Soldier),
-                                               Make("B", CharacterDefinition.Soldier),
+            GameManager game = new GameManager(Make("士", CharacterDefinition.Champion),
+                                               Make("B", CharacterDefinition.Champion),
                                                new SimpleChoiceProvider(),
                                                new SimpleChoiceProvider());
 
@@ -626,14 +626,14 @@ namespace FingerDiceDuel.Tests
                 threw = true;
             }
 
-            Assert.True(threw, "非赌徒不该能赌博。");
+            Assert.True(threw, "非游荡者·赌徒不该能赌博。");
         }
 
         [Test]
         public void Must_gamble_flag_resets_on_a_new_match()
         {
             // 强制赌博是跨回合状态，但新开一局必须清零
-            GameManager game = Match(CharacterDefinition.Soldier, out _, out _);
+            GameManager game = Match(CharacterDefinition.Champion, out _, out _);
             PlayerState gambler = game.PlayerA;
 
             gambler.MustGamble = true;

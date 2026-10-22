@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -28,43 +28,43 @@ namespace FingerDiceDuel.Tests
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
-            // 照拄现有的 ArrangeHumanRangerDodge：攻方用 Blank
+            // 照拄现有的 ArrangeHumanSwashbucklerDodge：攻方用 Blank
             var game = new GameManager(Make("A", CharacterDefinition.Blank),
-                                       Make("B", CharacterDefinition.Ranger),
+                                       Make("B", CharacterDefinition.Swashbuckler),
                                        choiceA, choiceB);
             var board = new BoardController(game, choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
 
-            TestSetup.SetAllHands(blank, ranger, 1);
+            TestSetup.SetAllHands(blank, swashbuckler, 1);
             TestSetup.SetHand(blank.LeftHand, 3);        // 3 + 1 = 4 -> 攻击
 
-            // 游侠：**左手是 1（闪避资源）**、右手是太极。
+            // 游荡者·风流剑客：**左手是 1（闪避资源）**、右手是太极。
             // 闪避消耗后左手变成 2 —— 可直接断言。
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            ranger.RightHand.SetValue(5);
-            ranger.RightHand.SetShieldState(ShieldState.Taichi);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
+            swashbuckler.RightHand.SetValue(5);
+            swashbuckler.RightHand.SetShieldState(ShieldState.Taichi);
 
             board.BeginTurn();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
 
             // 收集阶段：先回答闪避（点那张 1），再回答太极（点右手）
             for (int guard = 0; guard < 6 && board.Phase == BoardPhase.ChoosingPreTurnChoice; guard++)
             {
-                if (board.PendingRequest?.Effect == HandEffect.RangerDodge)
-                    board.ClickHand(ranger.LeftHand);
+                if (board.PendingRequest?.Effect == HandEffect.SwashbucklerDodge)
+                    board.ClickHand(swashbuckler.LeftHand);
                 else
-                    board.ClickHand(ranger.RightHand);
+                    board.ClickHand(swashbuckler.RightHand);
             }
 
-            // 闪避先消耗 -> 那张 1 变成 2（游侠闪避规则：1 变 2）
-            Assert.AreEqual(2, ranger.LeftHand.Value,
+            // 闪避先消耗 -> 那张 1 变成 2（游荡者·风流剑客闪避规则：1 变 2）
+            Assert.AreEqual(2, swashbuckler.LeftHand.Value,
                 "闪避应先于太极生效并消耗掉那张 1"
-                + $" （实际 {ranger.LeftHand.Value}, phase={board.Phase}）。");
+                + $" （实际 {swashbuckler.LeftHand.Value}, phase={board.Phase}）。");
         }
     }
 }

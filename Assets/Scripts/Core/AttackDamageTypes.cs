@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -7,7 +7,7 @@ namespace FingerDiceDuel.Core
     ///
     /// 分成两大类：
     ///   · **物理**：挥砍 / 钝击 / 穿刺（图标为灰色）
-    ///   · **魔法**：法师那 10 种（图标沿用各自配色；力场为深红）
+    ///   · **魔法**：法师·塑能学派那 10 种（图标沿用各自配色；力场为深红）
     ///
     /// ⚠️ 为什么用一个**统一枚举**而不是"物理一套 + 魔法一套"：
     ///    一次攻击只会有一个类型，而飘字颜色、图标、以及太极反弹的"继承"
@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Core
         /// <summary>穿刺：远程武器或刺剑类。</summary>
         Piercing = 3,
 
-        // ---------- 魔法（数值与法师的 DamageType 对齐，便于互转）----------
+        // ---------- 魔法（数值与法师·塑能学派的 DamageType 对齐，便于互转）----------
         Thunder = 11,
         Acid = 12,
         Poison = 13,
@@ -87,7 +87,7 @@ namespace FingerDiceDuel.Core
         {
             if (!IsMagic(t)) return PhysicalColor;
 
-            // 魔法类型复用法师体系的颜色表（唯一一份）
+            // 魔法类型复用法师·塑能学派体系的颜色表（唯一一份）
             return StatusNames.GuideColorOf(ToDamageType(t));
         }
 
@@ -104,7 +104,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        /// <summary>魔法类型 -> 法师的 <see cref="DamageType"/>（物理返回 None）。</summary>
+        /// <summary>魔法类型 -> 法师·塑能学派的 <see cref="DamageType"/>（物理返回 None）。</summary>
         public static DamageType ToDamageType(AttackDamageType t)
         {
             switch (t)
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        /// <summary>法师的 <see cref="DamageType"/> -> 攻击类型。</summary>
+        /// <summary>法师·塑能学派的 <see cref="DamageType"/> -> 攻击类型。</summary>
         public static AttackDamageType FromDamageType(DamageType t)
         {
             switch (t)
@@ -154,7 +154,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        /// <summary>全部魔法类型（顺序与法师的 AllTypes 一致）。</summary>
+        /// <summary>全部魔法类型（顺序与法师·塑能学派的 AllTypes 一致）。</summary>
         public static readonly AttackDamageType[] AllMagic =
         {
             AttackDamageType.Thunder, AttackDamageType.Acid, AttackDamageType.Poison,

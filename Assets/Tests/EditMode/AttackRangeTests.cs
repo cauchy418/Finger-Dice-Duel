@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -9,14 +9,14 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **攻击距离**与两个"换射程"技能（战士碎盾 / 游侠强化）。
+    /// **攻击距离**与两个"换射程"技能（战士·破阵者碎盾 / 游荡者·风流剑客强化）。
     ///
     /// 玩家确认的规则：
     ///   · 合法攻击目标 = 处于**攻击范围内**的其他角色（自己除外；队友也是合法目标）
     ///   · 攻击距离 = 座位环上的最短距离（阵亡者从环上摘掉）
-    ///   · 白板与战士/野蛮人/刺客/剑客/忍者/狼人/游侠 = 1；**咒术师 / 牧师 = 无限**
-    ///   · 战士：发起攻击时若另一只手是完整盾牌，可令其破碎 -> 本次攻击距离无限
-    ///   · 游侠：2 变 3 强化攻击时 -> 本次攻击距离无限
+    ///   · 白板与战士·破阵者/野蛮人·守望者道途/游荡者·刺客/战士·剑士/武僧·忍宗/野蛮人·野兽道途/游荡者·风流剑客 = 1；**法师·咒法学派 / 牧师·生命领域 = 无限**
+    ///   · 战士·破阵者：发起攻击时若另一只手是完整盾牌，可令其破碎 -> 本次攻击距离无限
+    ///   · 游荡者·风流剑客：2 变 3 强化攻击时 -> 本次攻击距离无限
     ///
     /// ⚠️ 距离只在 2v2 / 8 人局有意义：1v1 两人相邻，距离恒为 1。
     /// </summary>
@@ -51,10 +51,10 @@ namespace FingerDiceDuel.Tests
         {
             CharacterDefinition[] melee =
             {
-                CharacterDefinition.Blank, CharacterDefinition.Fighter,
-                CharacterDefinition.Barbarian, CharacterDefinition.Assassin,
-                CharacterDefinition.Swordsman, CharacterDefinition.Ninja,
-                CharacterDefinition.Werewolf, CharacterDefinition.Ranger,
+                CharacterDefinition.Blank, CharacterDefinition.Breaker,
+                CharacterDefinition.PathOfTheWarden, CharacterDefinition.Assassin,
+                CharacterDefinition.Swordsman, CharacterDefinition.WayOfTheNinja,
+                CharacterDefinition.PathOfTheBeast, CharacterDefinition.Swashbuckler,
             };
 
             for (int i = 0; i < melee.Length; i++)
@@ -66,11 +66,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Curseweaver_and_cleric_have_infinite_range()
+        public void SchoolOfConjuration_and_cleric_have_infinite_range()
         {
             CharacterDefinition[] ranged =
             {
-                CharacterDefinition.Curseweaver, CharacterDefinition.Cleric,
+                CharacterDefinition.SchoolOfConjuration, CharacterDefinition.LifeDomain,
             };
 
             for (int i = 0; i < ranged.Length; i++)
@@ -103,7 +103,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Infinite_range_can_reach_anyone_in_the_ring()
         {
-            GameManager game = Match2v2(CharacterDefinition.Curseweaver,
+            GameManager game = Match2v2(CharacterDefinition.SchoolOfConjuration,
                                         CharacterDefinition.Blank);
 
             Assert.True(game.CanReach(game.PlayerA, game.PlayerB));
@@ -219,135 +219,135 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 战士：碎盾换射程
+        // 战士·破阵者：碎盾换射程
         // ============================================================
 
         [Test]
-        public void Fighter_range_break_is_offered_on_an_attack_with_a_formed_other_hand()
+        public void Breaker_range_break_is_offered_on_an_attack_with_a_formed_other_hand()
         {
-            GameManager game = Match2v2(CharacterDefinition.Fighter,
+            GameManager game = Match2v2(CharacterDefinition.Breaker,
                                         CharacterDefinition.Blank);
             TestSetup.SetAllFourHands(game, 1);
 
-            PlayerState fighter = game.PlayerA;
-            TestSetup.SetHand(fighter.LeftHand, 4);       // 4 + 4 = 8 -> 攻击
-            TestSetup.SetHand(fighter.RightHand, 5);      // 另一只手：完整盾牌
+            PlayerState breaker = game.PlayerA;
+            TestSetup.SetHand(breaker.LeftHand, 4);       // 4 + 4 = 8 -> 攻击
+            TestSetup.SetHand(breaker.RightHand, 5);      // 另一只手：完整盾牌
             TestSetup.SetHand(game.PlayerB.LeftHand, 4);  // 被加数 4 -> 结果 8
-            fighter.RightHand.SetShieldState(ShieldState.Formed);
+            breaker.RightHand.SetShieldState(ShieldState.Formed);
 
-            var context = new PreTurnChoiceContext(fighter, game.PlayerB,
-                                                   fighter.LeftHand, game.PlayerB.LeftHand);
+            var context = new PreTurnChoiceContext(breaker, game.PlayerB,
+                                                   breaker.LeftHand, game.PlayerB.LeftHand);
 
             var requests = new List<ChoiceRequest>();
-            (fighter.Character as IPreTurnChoiceProvider)
+            (breaker.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, requests);
 
             bool offered = false;
             for (int i = 0; i < requests.Count; i++)
-                if (requests[i].Effect == HandEffect.FighterRangeBreak) offered = true;
+                if (requests[i].Effect == HandEffect.BreakerRangeBreak) offered = true;
 
             Assert.True(offered,
                 "攻击且另一只手是完整盾牌时，应提供「碎盾换射程」。" +
                 $"现场：isAttack={context.IsAttack} effect={context.Effect} " +
                 $"acted={context.ActedHand?.Value} target={context.TargetHand?.Value} " +
-                $"other={fighter.RightHand.Value}/{fighter.RightHand.State} " +
+                $"other={breaker.RightHand.Value}/{breaker.RightHand.State} " +
                 $"requestCount={requests.Count}");
         }
 
         [Test]
-        public void Fighter_range_break_is_not_offered_without_a_formed_other_hand()
+        public void Breaker_range_break_is_not_offered_without_a_formed_other_hand()
         {
-            GameManager game = Match2v2(CharacterDefinition.Fighter,
+            GameManager game = Match2v2(CharacterDefinition.Breaker,
                                         CharacterDefinition.Blank);
             TestSetup.SetAllFourHands(game, 1);
 
-            PlayerState fighter = game.PlayerA;
-            TestSetup.SetHand(fighter.LeftHand, 4);       // 攻击
-            TestSetup.SetHand(fighter.RightHand, 3);      // 不是盾牌
+            PlayerState breaker = game.PlayerA;
+            TestSetup.SetHand(breaker.LeftHand, 4);       // 攻击
+            TestSetup.SetHand(breaker.RightHand, 3);      // 不是盾牌
             TestSetup.SetHand(game.PlayerB.LeftHand, 4);  // 被加数 4 -> 结果 8
 
-            var context = new PreTurnChoiceContext(fighter, game.PlayerB,
-                                                   fighter.LeftHand, game.PlayerB.LeftHand);
+            var context = new PreTurnChoiceContext(breaker, game.PlayerB,
+                                                   breaker.LeftHand, game.PlayerB.LeftHand);
 
             var requests = new List<ChoiceRequest>();
-            (fighter.Character as IPreTurnChoiceProvider)
+            (breaker.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, requests);
 
             for (int i = 0; i < requests.Count; i++)
-                Assert.False(requests[i].Effect == HandEffect.FighterRangeBreak,
+                Assert.False(requests[i].Effect == HandEffect.BreakerRangeBreak,
                     "另一只手不是完整盾牌时不该提供「碎盾换射程」。");
         }
 
         [Test]
-        public void Fighter_range_break_is_not_offered_for_a_non_attack()
+        public void Breaker_range_break_is_not_offered_for_a_non_attack()
         {
             // 非攻击不需要攻击距离 -> 不该打扰玩家
-            GameManager game = Match2v2(CharacterDefinition.Fighter,
+            GameManager game = Match2v2(CharacterDefinition.Breaker,
                                         CharacterDefinition.Blank);
             TestSetup.SetAllFourHands(game, 1);
 
-            PlayerState fighter = game.PlayerA;
-            TestSetup.SetHand(fighter.LeftHand, 1);       // 1 + 1 = 2 -> 无效果
-            TestSetup.SetHand(fighter.RightHand, 5);
-            fighter.RightHand.SetShieldState(ShieldState.Formed);
+            PlayerState breaker = game.PlayerA;
+            TestSetup.SetHand(breaker.LeftHand, 1);       // 1 + 1 = 2 -> 无效果
+            TestSetup.SetHand(breaker.RightHand, 5);
+            breaker.RightHand.SetShieldState(ShieldState.Formed);
 
-            var context = new PreTurnChoiceContext(fighter, game.PlayerB,
-                                                   fighter.LeftHand, game.PlayerB.LeftHand);
+            var context = new PreTurnChoiceContext(breaker, game.PlayerB,
+                                                   breaker.LeftHand, game.PlayerB.LeftHand);
 
             var requests = new List<ChoiceRequest>();
-            (fighter.Character as IPreTurnChoiceProvider)
+            (breaker.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, requests);
 
             for (int i = 0; i < requests.Count; i++)
-                Assert.False(requests[i].Effect == HandEffect.FighterRangeBreak,
+                Assert.False(requests[i].Effect == HandEffect.BreakerRangeBreak,
                     "非攻击时不该提供「碎盾换射程」。");
         }
 
         [Test]
-        public void Fighter_range_break_breaks_the_shield_when_chosen()
+        public void Breaker_range_break_breaks_the_shield_when_chosen()
         {
             // 玩家选了"发动" -> 那面完整盾牌应被打碎（这是换射程的代价）
             var sink = new ScriptedChoiceProvider();
 
-            GameManager game = Match2v2(CharacterDefinition.Fighter,
+            GameManager game = Match2v2(CharacterDefinition.Breaker,
                                         CharacterDefinition.Blank, sink);
             TestSetup.SetAllFourHands(game, 1);
 
-            PlayerState fighter = game.PlayerA;
-            TestSetup.SetHand(fighter.LeftHand, 4);       // 4 + 4 = 8 -> 攻击
-            TestSetup.SetHand(fighter.RightHand, 5);
+            PlayerState breaker = game.PlayerA;
+            TestSetup.SetHand(breaker.LeftHand, 4);       // 4 + 4 = 8 -> 攻击
+            TestSetup.SetHand(breaker.RightHand, 5);
             TestSetup.SetHand(game.PlayerB.LeftHand, 4);
-            fighter.RightHand.SetShieldState(ShieldState.Formed);
+            breaker.RightHand.SetShieldState(ShieldState.Formed);
 
-            sink.SetChoice(HandEffect.FighterRangeBreak, fighter.RightHand);
+            sink.SetChoice(HandEffect.BreakerRangeBreak, breaker.RightHand);
 
             // 直接跑结算：距离 1 的对手（B），确保攻击走到分派
-            game.ExecuteTurn(fighter, fighter.LeftHand, game.PlayerB.LeftHand);
+            game.ExecuteTurn(breaker, breaker.LeftHand, game.PlayerB.LeftHand);
 
-            Assert.AreEqual(ShieldState.Broken, fighter.RightHand.State,
+            Assert.AreEqual(ShieldState.Broken, breaker.RightHand.State,
                 "选了「碎盾换射程」后，另一只手的盾应被打碎。");
         }
 
         [Test]
-        public void Fighter_range_break_keeps_the_shield_when_declined()
+        public void Breaker_range_break_keeps_the_shield_when_declined()
         {
             var sink = new ScriptedChoiceProvider();
 
-            GameManager game = Match2v2(CharacterDefinition.Fighter,
+            GameManager game = Match2v2(CharacterDefinition.Breaker,
                                         CharacterDefinition.Blank, sink);
             TestSetup.SetAllFourHands(game, 1);
 
-            PlayerState fighter = game.PlayerA;
-            TestSetup.SetHand(fighter.LeftHand, 4);
-            TestSetup.SetHand(fighter.RightHand, 5);
+            PlayerState breaker = game.PlayerA;
+            TestSetup.SetHand(breaker.LeftHand, 4);
+            TestSetup.SetHand(breaker.RightHand, 5);
             TestSetup.SetHand(game.PlayerB.LeftHand, 4);
-            fighter.RightHand.SetShieldState(ShieldState.Formed);
+            breaker.RightHand.SetShieldState(ShieldState.Formed);
 
-            sink.Decline(HandEffect.FighterRangeBreak);
+            sink.Decline(HandEffect.BreakerRangeBreak);
 
-            game.ExecuteTurn(fighter, fighter.LeftHand, game.PlayerB.LeftHand);
+            game.ExecuteTurn(breaker, breaker.LeftHand, game.PlayerB.LeftHand);
 
-            Assert.AreEqual(ShieldState.Formed, fighter.RightHand.State,
+            Assert.AreEqual(ShieldState.Formed, breaker.RightHand.State,
                 "放弃换射程时应保留那面盾。");
         }
     }

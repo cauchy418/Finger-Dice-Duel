@@ -17,9 +17,9 @@ namespace FingerDiceDuel.Tests
         public void Factory_maps_logic_type_to_behavior()
         {
             Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.None) is DataDrivenCharacter);
-            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Fighter) is FighterLogic);
-            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Curseweaver) is CurseweaverLogic);
-            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Barbarian) is BarbarianLogic);
+            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.Breaker) is BreakerLogic);
+            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.SchoolOfConjuration) is SchoolOfConjurationLogic);
+            Assert.True(CharacterFactory.CreateBehavior(SpecialLogicType.PathOfTheWarden) is PathOfTheWardenLogic);
         }
 
         [Test]
@@ -46,16 +46,16 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Definition_stats_are_injected_into_the_behavior()
         {
-            var fighter = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Fighter);
-            Assert.AreEqual(1, fighter.AttackBonus, "战士攻击 +1");
-            Assert.AreEqual(0, fighter.DefenseBonus);
+            var breaker = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Breaker);
+            Assert.AreEqual(1, breaker.AttackBonus, "战士·破阵者攻击 +1");
+            Assert.AreEqual(0, breaker.DefenseBonus);
 
-            var curseweaver = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Curseweaver);
-            Assert.AreEqual(-1, curseweaver.AttackBonus, "咒术师攻击 -1");
+            var schoolOfConjuration = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.SchoolOfConjuration);
+            Assert.AreEqual(-1, schoolOfConjuration.AttackBonus, "法师·咒法学派攻击 -1");
 
-            var barbarian = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Barbarian);
-            Assert.AreEqual(0, barbarian.AttackBonus);
-            Assert.AreEqual(1, barbarian.DefenseBonus, "野蛮人防御 +1");
+            var pathOfTheWarden = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.PathOfTheWarden);
+            Assert.AreEqual(0, pathOfTheWarden.AttackBonus);
+            Assert.AreEqual(1, pathOfTheWarden.DefenseBonus, "野蛮人·守望者道途防御 +1");
 
             var blank = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Blank);
             Assert.AreEqual(0, blank.AttackBonus);
@@ -65,9 +65,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Definition_overrides_the_code_default()
         {
-            // 数据层可以把战士改成攻击 +3，而无需改 FighterLogic
-            var tuned = new CharacterDefinition("fighter_plus3", "超级战士",
-                SpecialLogicType.Fighter, attackBonus: 3);
+            // 数据层可以把战士·破阵者改成攻击 +3，而无需改 BreakerLogic
+            var tuned = new CharacterDefinition("fighter_plus3", "超级战士·破阵者",
+                SpecialLogicType.Breaker, attackBonus: 3);
 
             var behavior = (CharacterTemplate)CharacterFactory.CreateBehavior(tuned);
             Assert.AreEqual(3, behavior.AttackBonus, "数据层应覆盖代码里的默认值。");
@@ -77,9 +77,9 @@ namespace FingerDiceDuel.Tests
         public void Default_stats_are_used_when_no_definition_is_applied()
         {
             // 直接 new 出来的角色走代码默认值，方便单测角色逻辑
-            Assert.AreEqual(1, new FighterLogic().AttackBonus);
-            Assert.AreEqual(-1, new CurseweaverLogic().AttackBonus);
-            Assert.AreEqual(1, new BarbarianLogic().DefenseBonus);
+            Assert.AreEqual(1, new BreakerLogic().AttackBonus);
+            Assert.AreEqual(-1, new SchoolOfConjurationLogic().AttackBonus);
+            Assert.AreEqual(1, new PathOfTheWardenLogic().DefenseBonus);
         }
 
         [Test]
@@ -112,12 +112,12 @@ namespace FingerDiceDuel.Tests
         public void CreateMatch_builds_a_ready_game()
         {
             GameManager game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Fighter, CharacterDefinition.Barbarian);
+                CharacterDefinition.Breaker, CharacterDefinition.PathOfTheWarden);
 
             Assert.AreEqual(20, game.PlayerA.Health);
             Assert.AreEqual(20, game.PlayerB.Health);
-            Assert.True(game.PlayerA.Character is FighterLogic);
-            Assert.True(game.PlayerB.Character is BarbarianLogic);
+            Assert.True(game.PlayerA.Character is BreakerLogic);
+            Assert.True(game.PlayerB.Character is PathOfTheWardenLogic);
             Assert.False(game.IsGameOver);
             Assert.AreEqual(4, game.GetLegalMoves(game.PlayerA).Count);
         }

@@ -16,7 +16,7 @@
 | 测试 | 失败原因 | 修改前复现 |
 |---|---|---|
 | `BattleReadabilityTests.Rules_describe_current_opening_modes_and_health_tiebreak` | 规则提示缺少「冲击」用词 | 相同用词断言失败 |
-| `MatchTests.Full_character_matrix_can_all_be_played_to_completion` | soldier vs sorcerer 未能在模拟上限内结束 | 相同配对失败 |
+| `MatchTests.Full_character_matrix_can_all_be_played_to_completion` | champion vs wildMagic 未能在模拟上限内结束 | 相同配对失败 |
 | `CharacterBalanceTests.All_characters_round_robin_win_rates` | 循环赛出现模拟器强停 | 修改前 243 局、本轮 249 局；随机赛数字会变化 |
 
 未改动角色技能、状态结算、模拟器或放宽这些断言。测试产生的随机统计战报已恢复，避免把临时随机结果当成规则或平衡变更。

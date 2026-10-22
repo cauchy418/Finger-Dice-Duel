@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **三个新角色的核心行为**：圣武士 / 妖术师 / 魔射手。
+    /// **三个新角色的核心行为**：圣武士·奉献之誓 / 邪术师·至高妖精 / 战士·魔射手。
     ///
     /// 规则都由玩家逐条确认过，这里把"每条规则"钉成断言 ——
     /// 尤其是容易写反的地方（代挡判据、攻击数字的取值、两段伤害怎么分）。
@@ -34,65 +34,65 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 圣武士
+        // 圣武士·奉献之誓
         // ============================================================
 
         [Test]
-        public void Paladin_stats_and_range()
+        public void OathOfDevotion_stats_and_range()
         {
-            PlayerState p = Make("圣", CharacterDefinition.Paladin);
+            PlayerState p = Make("圣", CharacterDefinition.OathOfDevotion);
 
             Assert.AreEqual(0, p.Character.AttackBonus);
             Assert.AreEqual(1, p.Character.DefenseBonus,
-                "圣武士恢复为 0 / +1（玩家要求）。");
-            Assert.AreEqual(1, GameManager.BaseRangeOf(p), "圣武士攻击距离 1。");
+                "圣武士·奉献之誓恢复为 0 / +1（玩家要求）。");
+            Assert.AreEqual(1, GameManager.BaseRangeOf(p), "圣武士·奉献之誓攻击距离 1。");
         }
 
         [Test]
-        public void Paladin_turns_four_and_six_into_shields()
+        public void OathOfDevotion_turns_four_and_six_into_shields()
         {
             // 玩家确认："4 和 6 不能攻击，改为合成盾牌"
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
             // 4 + 1 = 5 -> 本身就是护盾，不是最好的例子；
             // 用"结果 = 4"验证改写：0+4? 不行，手值最小 1。
             // 1 + 3 = 4 -> 结果是 4（原本是 Attack4）
-            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
 
-            TurnResult r = game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+            TurnResult r = game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(4, r.ResultValue, "运算结果应为 4。");
             Assert.AreEqual(HandEffectType.Shield, r.Effect,
-                "圣武士的 4 应被改写为护盾（不再是攻击）。");
-            Assert.AreEqual(ShieldState.Formed, paladin.LeftHand.State,
+                "圣武士·奉献之誓的 4 应被改写为护盾（不再是攻击）。");
+            Assert.AreEqual(ShieldState.Formed, oathOfDevotion.LeftHand.State,
                 "改写后手牌应处于成型护盾状态。");
             Assert.AreEqual(0, r.DamageDealt, "改写成护盾后不应造成攻击伤害。");
         }
 
         [Test]
-        public void Paladin_turns_six_into_a_shield()
+        public void OathOfDevotion_turns_six_into_a_shield()
         {
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
             // 2 + 4 = 6 -> 原本 Attack6
-            TestSetup.SetHand(paladin.LeftHand, 2);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 2);
             TestSetup.SetHand(foe.LeftHand, 4);
 
-            TurnResult r = game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+            TurnResult r = game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(6, r.ResultValue);
-            Assert.AreEqual(HandEffectType.Shield, r.Effect, "圣武士的 6 也应改为护盾。");
+            Assert.AreEqual(HandEffectType.Shield, r.Effect, "圣武士·奉献之誓的 6 也应改为护盾。");
         }
 
         [Test]
-        public void Paladin_shock_uses_a_different_variant_for_forming_and_breaking()
+        public void OathOfDevotion_shock_uses_a_different_variant_for_forming_and_breaking()
         {
             // 玩家要求："从一面盾牌到合成另一面盾牌要提示两次冲击目标，
             //            碎裂时提示一次，合成时再提示一次"
@@ -101,13 +101,13 @@ namespace FingerDiceDuel.Tests
             // 于是两条抉择能各读各的答案，不会被彼此的作答顶掉。
             // （构造"同一次运算里旧盾碎 + 新盾成"的完整局面在单元测试里
             //   很难摆准，而 variant 分离才是这件事成立的关键。）
-            Assert.AreNotEqual(PaladinLogic.ShockVariantForm,
-                               PaladinLogic.ShockVariantBreak,
+            Assert.AreNotEqual(OathOfDevotionLogic.ShockVariantForm,
+                               OathOfDevotionLogic.ShockVariantBreak,
                 "合盾与碎盾必须是不同的 variant。");
         }
 
         [Test]
-        public void Paladin_asks_for_a_shock_target_when_forming_a_five_shield()
+        public void OathOfDevotion_asks_for_a_shock_target_when_forming_a_five_shield()
         {
             // 玩家实测：1+4=5 合出护盾时**没有提示选目标**，而是自动打了人。
             // 根因：WillFormShield 只判了 4 和 6，漏了 5 —— 于是没收集抉择，
@@ -115,19 +115,19 @@ namespace FingerDiceDuel.Tests
             //
             // 这条测试直接验证"收集阶段确实产出了抉择"，
             // 这才是"会不会提示"的判据（只测血量下降分不出"问了"和"自动打"）。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
             TestSetup.SetHand(foe.RightHand, 4);        // 1 + 4 = 5
 
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
             board.BeginTurn();
 
-            Assert.True(board.ClickHand(paladin.LeftHand), "选运算源");
+            Assert.True(board.ClickHand(oathOfDevotion.LeftHand), "选运算源");
             Assert.True(board.ClickHand(foe.RightHand), "选被加数");
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
@@ -135,63 +135,63 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(board.PendingRequests.Count > 0,
                 "收集阶段应产出冲击目标抉择。");
-            Assert.AreEqual(HandEffect.PaladinShockTarget,
+            Assert.AreEqual(HandEffect.OathOfDevotionShockTarget,
                             board.PendingRequests[0].Effect,
                 "产出的应是冲击目标抉择。");
         }
 
         [Test]
-        public void Paladin_shock_fires_when_the_formed_shield_value_is_five()
+        public void OathOfDevotion_shock_fires_when_the_formed_shield_value_is_five()
         {
-            // 玩家报告："圣武士 5 去合成盾牌…似乎没有正常提示冲击"
+            // 玩家报告："圣武士·奉献之誓 5 去合成盾牌…似乎没有正常提示冲击"
             //
             // 运算结果 = 5 也是"形成护盾"，所以合盾冲击必须照常触发。
             // 这条测试专门覆盖"结果是 5"这条路（与 4 / 6 分开）。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
             int before = foe.Health;
 
             // 2 + 3 = 5 -> 合出护盾（值就是 5）
-            TestSetup.SetHand(paladin.LeftHand, 2);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 2);
             TestSetup.SetHand(foe.LeftHand, 3);
 
-            game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+            game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(ShieldState.Formed, paladin.LeftHand.State,
+            Assert.AreEqual(ShieldState.Formed, oathOfDevotion.LeftHand.State,
                 "结果 5 也应形成护盾。");
-            Assert.AreEqual(before - PaladinLogic.ShockDamage, foe.Health,
+            Assert.AreEqual(before - OathOfDevotionLogic.ShockDamage, foe.Health,
                 "合出值为 5 的护盾同样应触发冲击（造成 2 点）。");
         }
 
         [Test]
-        public void Paladin_shock_fires_when_its_five_shield_is_broken_by_an_attack()
+        public void OathOfDevotion_shock_fires_when_its_five_shield_is_broken_by_an_attack()
         {
             // 玩家报告：盾牌被破坏时似乎没有正常提示冲击
             //
             // ⚠️ 这条只断言"冲击确实发生"（血量下降），不精确断言下降多少 ——
             //    这个局面里同时还有普通攻击的伤害，两者混在一起，
             //    精确数值留给专门隔离冲击的测试（见 fixed_two 那几条）。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            // 圣武士有一面成型的盾（值 5）
-            paladin.RightHand.SetValue(5);
-            paladin.RightHand.SetShieldState(ShieldState.Formed);
+            // 圣武士·奉献之誓有一面成型的盾（值 5）
+            oathOfDevotion.RightHand.SetValue(5);
+            oathOfDevotion.RightHand.SetShieldState(ShieldState.Formed);
 
             int foeBefore = foe.Health;
 
-            // 对手用 4 的攻击打圣武士 -> 盾被打碎 -> 圣武士触发冲击
+            // 对手用 4 的攻击打圣武士·奉献之誓 -> 盾被打碎 -> 圣武士·奉献之誓触发冲击
             foe.LeftHand.SetValue(3);
-            TestSetup.SetHand(paladin.LeftHand, 1);     // 3 + 1 = 4
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);     // 3 + 1 = 4
 
-            game.ExecuteTurn(foe, foe.LeftHand, paladin.LeftHand);
+            game.ExecuteTurn(foe, foe.LeftHand, oathOfDevotion.LeftHand);
 
-            Assert.AreEqual(ShieldState.Broken, paladin.RightHand.State,
+            Assert.AreEqual(ShieldState.Broken, oathOfDevotion.RightHand.State,
                 "盾应被打碎。");
             Assert.True(foe.Health < foeBefore,
                 "盾被打碎时应触发冲击（对范围内目标造成伤害）。");
@@ -200,7 +200,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_shock_damage_is_a_fixed_two_regardless_of_bonuses()
+        public void OathOfDevotion_shock_damage_is_a_fixed_two_regardless_of_bonuses()
         {
             // 玩家确认："冲击不保留攻防加成，造成固定两点伤害"
             //
@@ -209,43 +209,43 @@ namespace FingerDiceDuel.Tests
             // 两者都要成立，缺一不可。
             foreach (CharacterDefinition foeDef in new[]
                      {
-                         CharacterDefinition.Ranger,     // 防 −2（易伤）
-                         CharacterDefinition.Barbarian,  // 防 +1（减伤）
+                         CharacterDefinition.Swashbuckler,     // 防 −2（易伤）
+                         CharacterDefinition.PathOfTheWarden,  // 防 +1（减伤）
                          CharacterDefinition.Blank,      // 防 0
                      })
             {
-                GameManager game = Match(CharacterDefinition.Paladin, foeDef,
+                GameManager game = Match(CharacterDefinition.OathOfDevotion, foeDef,
                                          out _, out _);
-                PlayerState paladin = game.PlayerA;
+                PlayerState oathOfDevotion = game.PlayerA;
                 PlayerState foe = game.PlayerB;
 
                 int before = foe.Health;
 
                 // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击，
                 // 所以扣血量就是冲击本身的伤害）
-                TestSetup.SetHand(paladin.LeftHand, 1);
+                TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
                 foe.RightHand.SetValue(5);
 
-                game.ExecuteTurn(paladin, paladin.LeftHand, foe.RightHand);
+                game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.RightHand);
 
                 int dealt = before - foe.Health;
-                Assert.AreEqual(PaladinLogic.ShockDamage, dealt,
+                Assert.AreEqual(OathOfDevotionLogic.ShockDamage, dealt,
                     $"对 {foeDef.DisplayName}（防 {foeDef.DefenseBonus}）冲击应固定 " +
-                    $"造成 {PaladinLogic.ShockDamage} 点，实际 {dealt} 点。");
+                    $"造成 {OathOfDevotionLogic.ShockDamage} 点，实际 {dealt} 点。");
             }
         }
 
         [Test]
-        public void Paladin_shock_is_blocked_by_a_shield()
+        public void OathOfDevotion_shock_is_blocked_by_a_shield()
         {
             // ⚠️ 规则**已按玩家要求改动**：冲击不再是"真实伤害"，
-            //    而是走正常攻击结算 —— **可以被盾牌挡下 / 被游侠闪避**。
-            //    理由（玩家原话）："不然圣武士冲击强度太高了"。
+            //    而是走正常攻击结算 —— **可以被盾牌挡下 / 被游荡者·风流剑客闪避**。
+            //    理由（玩家原话）："不然圣武士·奉献之誓冲击强度太高了"。
             //
             //    我原来那条"不该被挡住"的测试因此作废，改成断言"会被挡住"。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
             // 目标有一面成型盾 -> 冲击应被它挡下
@@ -255,9 +255,9 @@ namespace FingerDiceDuel.Tests
             int before = foe.Health;
 
             // 1 + 3 = 4 -> 合盾 -> 触发冲击
-            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
-            game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+            game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(before, foe.Health, "冲击应被护盾挡下（不再无视护盾）。");
             Assert.AreEqual(ShieldState.Broken, foe.RightHand.State,
@@ -265,23 +265,23 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_shock_hits_when_the_target_has_no_shield()
+        public void OathOfDevotion_shock_hits_when_the_target_has_no_shield()
         {
             // 没有盾时冲击照常造成 2 点伤害
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Blank,
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
+            PlayerState oathOfDevotion = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
             int before = foe.Health;
 
             // 1 + 3 = 4 -> 合盾 -> 触发冲击
-            TestSetup.SetHand(paladin.LeftHand, 1);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
-            game.ExecuteTurn(paladin, paladin.LeftHand, foe.LeftHand);
+            game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(before - PaladinLogic.ShockDamage, foe.Health,
-                $"无盾时应造成 {PaladinLogic.ShockDamage} 点伤害。");
+            Assert.AreEqual(before - OathOfDevotionLogic.ShockDamage, foe.Health,
+                $"无盾时应造成 {OathOfDevotionLogic.ShockDamage} 点伤害。");
 
             // 战报里必须能看到冲击（否则光看血条分不清是否触发）
             var lines = new List<string>(game.ShockLog);
@@ -289,46 +289,46 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_shock_is_dodgeable_by_the_ranger()
+        public void OathOfDevotion_shock_is_dodgeable_by_the_ranger()
         {
-            // 玩家明确要求"可以被游侠闪避"。
+            // 玩家明确要求"可以被游荡者·风流剑客闪避"。
             //
-            // ⚠️ 局面必须让**只有冲击**造成伤害：圣武士的 4/6 会变成护盾（不攻击）。
-            //    我第一次把游侠右手设成 3（1+3=4），结果 4 也被改写成护盾 ——
+            // ⚠️ 局面必须让**只有冲击**造成伤害：圣武士·奉献之誓的 4/6 会变成护盾（不攻击）。
+            //    我第一次把游荡者·风流剑客右手设成 3（1+3=4），结果 4 也被改写成护盾 ——
             //    对！所以不该有普通攻击伤害，除非目标手是 4。
-            //    这次把游侠右手设成 5：1+5=6 -> 仍是护盾，且**没有普通攻击**。
-            GameManager game = Match(CharacterDefinition.Paladin, CharacterDefinition.Ranger,
+            //    这次把游荡者·风流剑客右手设成 5：1+5=6 -> 仍是护盾，且**没有普通攻击**。
+            GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Swashbuckler,
                                      out _, out _);
-            PlayerState paladin = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState oathOfDevotion = game.PlayerA;
+            PlayerState swashbuckler = game.PlayerB;
 
-            // 游侠两手都是 1 -> 有能力(1 变 2)闪避
-            ranger.LeftHand.SetValue(1);
-            ranger.RightHand.SetValue(1);
+            // 游荡者·风流剑客两手都是 1 -> 有能力(1 变 2)闪避
+            swashbuckler.LeftHand.SetValue(1);
+            swashbuckler.RightHand.SetValue(1);
 
-            int before = ranger.Health;
+            int before = swashbuckler.Health;
 
             // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击）
-            TestSetup.SetHand(paladin.LeftHand, 1);
-            ranger.RightHand.SetValue(5);
+            TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
+            swashbuckler.RightHand.SetValue(5);
 
-            game.ExecuteTurn(paladin, paladin.LeftHand, ranger.RightHand);
+            game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, swashbuckler.RightHand);
 
             // 冲击是**固定 2 点**，不叠加攻防加成（玩家确认）——
-            // 所以对游侠（防 −2）也仍然是 2 点，而不是 4 点。
-            int dealt = before - ranger.Health;
+            // 所以对游荡者·风流剑客（防 −2）也仍然是 2 点，而不是 4 点。
+            int dealt = before - swashbuckler.Health;
 
-            Assert.True(dealt == 0 || dealt == PaladinLogic.ShockDamage,
-                $"冲击要么被闪避/挡下(0)，要么固定造成 {PaladinLogic.ShockDamage} 点" +
+            Assert.True(dealt == 0 || dealt == OathOfDevotionLogic.ShockDamage,
+                $"冲击要么被闪避/挡下(0)，要么固定造成 {OathOfDevotionLogic.ShockDamage} 点" +
                 $"（不叠加攻防加成），实际扣了 {dealt}。");
         }
 
         [Test]
-        public void Paladin_redirect_requires_the_intended_target_in_range()
+        public void OathOfDevotion_redirect_requires_the_intended_target_in_range()
         {
             // 玩家澄清：判据是"**挨打的人**在自己攻击距离内"，
             // 而不是"攻击者在距离内"。
-            var paladin = Make("圣", CharacterDefinition.Paladin);
+            var oathOfDevotion = Make("圣", CharacterDefinition.OathOfDevotion);
             var attacker = Make("攻", CharacterDefinition.Blank);
             var victim = Make("受", CharacterDefinition.Blank);
 
@@ -337,58 +337,58 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var seated = new List<PlayerState> { paladin, attacker, victim,
+            var seated = new List<PlayerState> { oathOfDevotion, attacker, victim,
                                                  Make("闲", CharacterDefinition.Blank) };
             GameManager game = GameManager.Create2v2(seated, providers);
 
-            var logic = paladin.Character as IAttackRedirector;
-            Assert.NotNull(logic, "圣武士应实现代挡接口。");
+            var logic = oathOfDevotion.Character as IAttackRedirector;
+            Assert.NotNull(logic, "圣武士·奉献之誓应实现代挡接口。");
 
-            // 圣武士在 1 号位：距离 1 的是 2 号位(attacker)与 4 号位(闲)；
+            // 圣武士·奉献之誓在 1 号位：距离 1 的是 2 号位(attacker)与 4 号位(闲)；
             // 3 号位(victim)距离 2 -> 超出距离 1
-            Assert.AreEqual(2, game.DistanceBetween(paladin, victim),
+            Assert.AreEqual(2, game.DistanceBetween(oathOfDevotion, victim),
                 "前置：3 号位对 1 号位的距离应为 2。");
 
-            Assert.False(logic.TryRedirectToSelf(paladin, attacker, victim, game),
+            Assert.False(logic.TryRedirectToSelf(oathOfDevotion, attacker, victim, game),
                 "挨打的人超出攻击距离 -> 不能代挡。");
 
             // 4 号位（距离 1）挨打时可以代挡
             PlayerState near = seated[3];
-            Assert.AreEqual(1, game.DistanceBetween(paladin, near));
+            Assert.AreEqual(1, game.DistanceBetween(oathOfDevotion, near));
             // 没有 sink 记录时默认不发动，所以这里只断言"判据放行"
             // （真正的发动由玩家/抉择器决定）
         }
 
         // ============================================================
-        // 妖术师
+        // 邪术师·至高妖精
         // ============================================================
 
         [Test]
-        public void Hexer_stats_and_infinite_range()
+        public void TheArchfey_stats_and_infinite_range()
         {
-            PlayerState w = Make("邪", CharacterDefinition.Hexer);
+            PlayerState w = Make("邪", CharacterDefinition.TheArchfey);
 
             Assert.AreEqual(0, w.Character.AttackBonus);
             Assert.AreEqual(-1, w.Character.DefenseBonus);
             Assert.AreEqual(int.MaxValue, GameManager.BaseRangeOf(w),
-                "妖术师攻击距离无限。");
+                "邪术师·至高妖精攻击距离无限。");
         }
 
         [Test]
-        public void Hexer_cancels_an_attack_matching_one_of_its_hands()
+        public void TheArchfey_cancels_an_attack_matching_one_of_its_hands()
         {
             // 玩家确认：攻击数字与自己某只手相同 -> 把那只手 +1 取消这次攻击
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            // 妖术师手上有一个 4
-            TestSetup.SetHand(hexer.LeftHand, 4);
-            TestSetup.SetHand(hexer.RightHand, 1);
+            // 邪术师·至高妖精手上有一个 4
+            TestSetup.SetHand(theArchfey.LeftHand, 4);
+            TestSetup.SetHand(theArchfey.RightHand, 1);
 
             // 直接构造一次 4 的攻击，验证取消
-            var ctx = new AttackContext(attacker, hexer, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, theArchfey, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,      // 1 + 3 = 4 -> 攻击数字 4
@@ -396,24 +396,24 @@ namespace FingerDiceDuel.Tests
 
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
-            Assert.True(ctx.WasCancelled, "妖术师应取消这次攻击。");
-            Assert.AreEqual(5, hexer.LeftHand.Value,
+            Assert.True(ctx.WasCancelled, "邪术师·至高妖精应取消这次攻击。");
+            Assert.AreEqual(5, theArchfey.LeftHand.Value,
                 "取消的代价是那只手 +1（永久）。");
         }
 
         [Test]
-        public void Hexer_cancel_is_permanent_and_updates_the_shield_state()
+        public void TheArchfey_cancel_is_permanent_and_updates_the_shield_state()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
             // 手里是一个"成型的 5"，而攻击数字也是 5 -> 取消后变成 6
-            TestSetup.SetHand(hexer.LeftHand, 5);
-            hexer.LeftHand.SetShieldState(ShieldState.Formed);
+            TestSetup.SetHand(theArchfey.LeftHand, 5);
+            theArchfey.LeftHand.SetShieldState(ShieldState.Formed);
 
-            var ctx = new AttackContext(attacker, hexer, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, theArchfey, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 2,
                 TargetHandValueBefore = 3,      // 2 + 3 = 5
@@ -421,23 +421,23 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.True(ctx.WasCancelled);
-            Assert.AreEqual(6, hexer.LeftHand.Value);
-            Assert.AreEqual(ShieldState.None, hexer.LeftHand.State,
+            Assert.AreEqual(6, theArchfey.LeftHand.Value);
+            Assert.AreEqual(ShieldState.None, theArchfey.LeftHand.State,
                 "手值不再是 5 就不该继续挂着护盾状态。");
         }
 
         [Test]
-        public void Hexer_does_not_cancel_when_no_hand_matches()
+        public void TheArchfey_does_not_cancel_when_no_hand_matches()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            TestSetup.SetHand(hexer.LeftHand, 2);
-            TestSetup.SetHand(hexer.RightHand, 3);
+            TestSetup.SetHand(theArchfey.LeftHand, 2);
+            TestSetup.SetHand(theArchfey.RightHand, 3);
 
-            var ctx = new AttackContext(attacker, hexer, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, theArchfey, attacker.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,      // 攻击数字 4，手上没有 4
@@ -445,21 +445,21 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "没有匹配的手 -> 不取消。");
-            Assert.AreEqual(2, hexer.LeftHand.Value, "不取消就不该改手值。");
+            Assert.AreEqual(2, theArchfey.LeftHand.Value, "不取消就不该改手值。");
         }
 
         [Test]
-        public void Hexer_cannot_cancel_special_attacks()
+        public void TheArchfey_cannot_cancel_special_attacks()
         {
-            // 玩家确认：剑客追加攻击与圣武士冲击的"攻击数字视为 0" -> 不可被取消
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            // 玩家确认：战士·剑士追加攻击与圣武士·奉献之誓冲击的"攻击数字视为 0" -> 不可被取消
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            TestSetup.SetHand(hexer.LeftHand, 4);
+            TestSetup.SetHand(theArchfey.LeftHand, 4);
 
-            var ctx = new AttackContext(attacker, hexer, attacker.LeftHand, 4)
+            var ctx = new AttackContext(attacker, theArchfey, attacker.LeftHand, 4)
             {
                 IsSpecialAttack = true,         // 追加攻击 / 冲击
             };
@@ -471,59 +471,59 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Hexer_cannot_skip_when_everyone_has_the_same_health()
+        public void TheArchfey_cannot_skip_when_everyone_has_the_same_health()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            var logic = hexer.Character as ITurnSkipRule;
+            var logic = theArchfey.Character as ITurnSkipRule;
             Assert.NotNull(logic);
 
             // 双方都满血 = 体力一致 -> 无法发动（改了也没变化）
-            Assert.False(logic.CanSkip(hexer, game),
+            Assert.False(logic.CanSkip(theArchfey, game),
                 "所有人血量一致时无法发动（改了也不会有变化）。");
         }
 
         [Test]
-        public void Hexer_can_skip_only_when_hurt_and_health_differs()
+        public void TheArchfey_can_skip_only_when_hurt_and_health_differs()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            var logic = hexer.Character as ITurnSkipRule;
-            Assert.NotNull(logic, "妖术师应实现跳过回合接口。");
+            var logic = theArchfey.Character as ITurnSkipRule;
+            Assert.NotNull(logic, "邪术师·至高妖精应实现跳过回合接口。");
 
             // 满血 -> 不能发动（限制保留；玩家确认过）
-            Assert.False(logic.CanSkip(hexer, game), "满血不能发动。");
+            Assert.False(logic.CanSkip(theArchfey, game), "满血不能发动。");
 
             // 受伤，且对手体力不同 -> 可以发动
-            hexer.TakeDamage(5);
-            Assert.True(logic.CanSkip(hexer, game),
+            theArchfey.TakeDamage(5);
+            Assert.True(logic.CanSkip(theArchfey, game),
                 "体力不满且有人体力与自己不同 -> 可以发动。");
         }
 
         [Test]
-        public void Hexer_health_swap_sets_exact_values()
+        public void TheArchfey_health_swap_sets_exact_values()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState foe = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            hexer.TakeDamage(7);              // 妖术师 13
-            Assert.AreEqual(13, hexer.Health);
+            theArchfey.TakeDamage(7);              // 邪术师·至高妖精 13
+            Assert.AreEqual(13, theArchfey.Health);
 
-            Assert.True(HexerLogic.ApplyHealthSwap(hexer, foe),
+            Assert.True(TheArchfeyLogic.ApplyHealthSwap(theArchfey, foe),
                 "应能把对手的体力改成与自己一致。");
-            Assert.AreEqual(13, foe.Health, "对手体力应被改成与妖术师一致。");
+            Assert.AreEqual(13, foe.Health, "对手体力应被改成与邪术师·至高妖精一致。");
         }
 
         [Test]
-        public void Hexer_cancels_a_multi_hit_attack_entirely_not_per_hit()
+        public void TheArchfey_cancels_a_multi_hit_attack_entirely_not_per_hit()
         {
-            // 玩家要求："忍者和魔射手的二段攻击，妖术师需要可以一次性全部抵消"
+            // 玩家要求："武僧·忍宗和战士·魔射手的二段攻击，邪术师·至高妖精需要可以一次性全部抵消"
             //
             // 实现上这件事是**天然成立**的：取消发生在 AttackContext.Resolve
             // 的最开头，段数（HitCount = 2）此时还没进入循环 ——
@@ -531,21 +531,21 @@ namespace FingerDiceDuel.Tests
             // 这条测试把这个性质钉住，防止以后有人把取消挪进循环里。
             foreach (CharacterDefinition attackerDef in new[]
                      {
-                         CharacterDefinition.Ninja,          // 4 -> 两段各 2
+                         CharacterDefinition.WayOfTheNinja,          // 4 -> 两段各 2
                          CharacterDefinition.ArcaneArcher,   // 4 -> 两段各 4
                      })
             {
-                GameManager game = Match(attackerDef, CharacterDefinition.Hexer,
+                GameManager game = Match(attackerDef, CharacterDefinition.TheArchfey,
                                          out _, out _);
                 PlayerState attacker = game.PlayerA;
-                PlayerState hexer = game.PlayerB;
+                PlayerState theArchfey = game.PlayerB;
 
-                TestSetup.SetHand(hexer.LeftHand, 4);      // 手上有 4 -> 能取消
-                TestSetup.SetHand(hexer.RightHand, 1);
+                TestSetup.SetHand(theArchfey.LeftHand, 4);      // 手上有 4 -> 能取消
+                TestSetup.SetHand(theArchfey.RightHand, 1);
 
-                int before = hexer.Health;
+                int before = theArchfey.Health;
 
-                var ctx = new AttackContext(attacker, hexer, attacker.LeftHand, 4)
+                var ctx = new AttackContext(attacker, theArchfey, attacker.LeftHand, 4)
                 {
                     SourceHandValueBefore = 1,
                     TargetHandValueBefore = 3,               // 攻击数字 4
@@ -558,21 +558,21 @@ namespace FingerDiceDuel.Tests
                     $"{attackerDef.DisplayName}：取消后**一段都不该打**。");
                 Assert.AreEqual(0, ctx.LandedHits, "不应有任何一段命中。");
                 Assert.AreEqual(0, ctx.AppliedDamage, "两段合计应为 0 伤害。");
-                Assert.AreEqual(before, hexer.Health,
+                Assert.AreEqual(before, theArchfey.Health,
                     "被完全取消的攻击不该扣血。");
 
                 // 只能 +1 一次（一只手的数字只匹配一次）
-                Assert.AreEqual(5, hexer.LeftHand.Value,
+                Assert.AreEqual(5, theArchfey.LeftHand.Value,
                     "取消的代价只付一次（+1），不是每段各付一次。");
             }
         }
 
         // ============================================================
-        // 妖术师的交互（跳过回合 -> 点一个人的手改体力）
+        // 邪术师·至高妖精的交互（跳过回合 -> 点一个人的手改体力）
         // ============================================================
 
         [Test]
-        public void Hexer_skip_enters_target_selection_then_swaps_health()
+        public void TheArchfey_skip_enters_target_selection_then_swaps_health()
         {
             // 玩家要求的交互："在右侧显示跳过回合，然后点击一个人的手发动技能"
             var providers = new List<IChoiceProvider>
@@ -580,12 +580,12 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
             var a = Make("A", CharacterDefinition.Blank);
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
 
-            // ⚠️ 妖术师必须是**当前行动方** —— 第一个参数是先手。
-            //    （我第一次写成 (a, hexer)，于是 CanSkipTurn 检查的是 A，
+            // ⚠️ 邪术师·至高妖精必须是**当前行动方** —— 第一个参数是先手。
+            //    （我第一次写成 (a, theArchfey)，于是 CanSkipTurn 检查的是 A，
             //      诊断为 active=A hp=20 才看出来。）
-            var game = new GameManager(hexer, a, providers[0], providers[1]);
+            var game = new GameManager(theArchfey, a, providers[0], providers[1]);
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
             board.BeginTurn();
@@ -593,7 +593,7 @@ namespace FingerDiceDuel.Tests
             // 满血 -> 不能跳过（技能要求体力不满）
             Assert.False(board.CanSkipTurn, "满血时不该出现跳过回合按钮。");
 
-            hexer.TakeDamage(7);
+            theArchfey.TakeDamage(7);
             Assert.True(board.CanSkipTurn,
                 "体力不满且对手体力不同 -> 应出现跳过回合按钮。");
 
@@ -602,38 +602,38 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingHealthSwapTarget, board.Phase,
                 "应停在'选一个人改体力'这一步。");
 
-            int hexerHealth = hexer.Health;
+            int hexerHealth = theArchfey.Health;
 
-            // 点对手的手 -> 那人体力被改成与妖术师一致，回合结束
+            // 点对手的手 -> 那人体力被改成与邪术师·至高妖精一致，回合结束
             Assert.True(board.ClickHand(a.LeftHand), "点目标的手应成功发动。");
 
             Assert.AreEqual(hexerHealth, a.Health,
-                "对手体力应被改成与妖术师一致。");
+                "对手体力应被改成与邪术师·至高妖精一致。");
             Assert.True(board.Phase != BoardPhase.ChoosingHealthSwapTarget,
                 "发动后应离开选目标相位。");
         }
 
         [Test]
-        public void Hexer_skip_rejects_a_target_whose_health_already_matches()
+        public void TheArchfey_skip_rejects_a_target_whose_health_already_matches()
         {
             // 体力本来就一样的人不是合法目标 —— 点头上不该让它浪费回合
             var providers = new List<IChoiceProvider>
             {
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var a = Make("A", CharacterDefinition.Blank);
 
-            var game = new GameManager(hexer, a, providers[0], providers[1]);
+            var game = new GameManager(theArchfey, a, providers[0], providers[1]);
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
             board.BeginTurn();
 
-            hexer.TakeDamage(7);
+            theArchfey.TakeDamage(7);
             Assert.True(board.SkipTurn());
 
-            // 强行把对手体力设成与妖术师一致 -> 该目标变非法
-            a.SetHealthExact(hexer.Health);
+            // 强行把对手体力设成与邪术师·至高妖精一致 -> 该目标变非法
+            a.SetHealthExact(theArchfey.Health);
 
             Assert.False(board.ClickHand(a.LeftHand),
                 "体力已一致的人不该是合法目标。");
@@ -644,20 +644,20 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Human_hexer_cancels_only_after_clicking_the_matching_hand()
         {
-            // 玩家要求：人类的妖术师改成"右侧给按钮询问是否发动，
+            // 玩家要求：人类的邪术师·至高妖精改成"右侧给按钮询问是否发动，
             //            然后点击对应数字触发"。
             // 所以"点了那只手 = 取消"，"没点（选了不发动）= 放行"。
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(foe, hexer, new SimpleChoiceProvider(),
+            var game = new GameManager(foe, theArchfey, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                            new SimpleChoiceProvider());
 
-            // 妖术师手上有一个 4；对手发起 3 + 1 = 4 的攻击
-            TestSetup.SetHand(hexer.LeftHand, 4);
-            TestSetup.SetHand(hexer.RightHand, 1);
+            // 邪术师·至高妖精手上有一个 4；对手发起 3 + 1 = 4 的攻击
+            TestSetup.SetHand(theArchfey.LeftHand, 4);
+            TestSetup.SetHand(theArchfey.RightHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
 
             board.BeginTurn();
@@ -665,54 +665,54 @@ namespace FingerDiceDuel.Tests
             // 第 ① 步：对手选自己的手
             Assert.True(board.ClickHand(foe.LeftHand));
 
-            // 第 ② 步：对手选目标手（妖术师的右手 1）-> 进入"确认目标玩家"
-            Assert.True(board.ClickHand(hexer.RightHand));
+            // 第 ② 步：对手选目标手（邪术师·至高妖精的右手 1）-> 进入"确认目标玩家"
+            Assert.True(board.ClickHand(theArchfey.RightHand));
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
 
             // 第 ③ 步：确认目标 -> 这时才收集"是否取消"的抉择
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "应停下来问妖术师是否取消这次攻击。");
+                "应停下来问邪术师·至高妖精是否取消这次攻击。");
 
             // 候选就是那只与攻击数字相同的手（"点对应数字触发"）
-            Assert.True(board.IsChoiceCandidate(hexer.LeftHand),
+            Assert.True(board.IsChoiceCandidate(theArchfey.LeftHand),
                 "与攻击数字相同的那只手应可点。");
 
             // 玩家点它 -> 取消成立
-            Assert.True(board.ClickHand(hexer.LeftHand), "点对应数字应能发动。");
+            Assert.True(board.ClickHand(theArchfey.LeftHand), "点对应数字应能发动。");
 
             Assert.True(board.LastTurn?.WasCancelled == true,
                 "点了对应数字后，这次攻击应被取消。");
-            Assert.AreEqual(5, hexer.LeftHand.Value,
+            Assert.AreEqual(5, theArchfey.LeftHand.Value,
                 "取消的代价是那只手 +1（永久）。");
         }
 
         [Test]
         public void Ai_hexer_still_cancels_automatically_without_being_asked()
         {
-            // AI 的妖术师不该被"询问"流程挡住 —— 它没被问过，
+            // AI 的邪术师·至高妖精不该被"询问"流程挡住 —— 它没被问过，
             // 应当仍然自动取消（否则技能在 AI 手里失效）。
             var ai = new GreedyChoiceProvider();
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var foe = Make("敌", CharacterDefinition.Blank);
 
             var sinks = new SimpleChoiceProvider[] { new SimpleChoiceProvider(),
                                                      new SimpleChoiceProvider() };
-            var game = new GameManager(foe, hexer, sinks[0], sinks[1]);
+            var game = new GameManager(foe, theArchfey, sinks[0], sinks[1]);
             var board = new BoardController(game, sinks[0], sinks[1],
-                                           aiForB: ai);   // 妖术师是 B = AI
-            board.BindPlayer(hexer, ai, sinks[1]);
+                                           aiForB: ai);   // 邪术师·至高妖精是 B = AI
+            board.BindPlayer(theArchfey, ai, sinks[1]);
 
-            TestSetup.SetHand(hexer.LeftHand, 4);
-            TestSetup.SetHand(hexer.RightHand, 1);
+            TestSetup.SetHand(theArchfey.LeftHand, 4);
+            TestSetup.SetHand(theArchfey.RightHand, 1);
             TestSetup.SetHand(foe.LeftHand, 3);
 
             board.BeginTurn();
             board.MakeAutomaticMove();     // AI 走完自己的回合
 
-            // 换对手行动：AI 妖术师没有被问过，应仍能自动取消
-            var ctx = new AttackContext(foe, hexer, foe.LeftHand, 4)
+            // 换对手行动：AI 邪术师·至高妖精没有被问过，应仍能自动取消
+            var ctx = new AttackContext(foe, theArchfey, foe.LeftHand, 4)
             {
                 SourceHandValueBefore = 3,
                 TargetHandValueBefore = 1,      // 3 + 1 = 4
@@ -720,21 +720,21 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.True(ctx.WasCancelled,
-                "没被问过的 AI 妖术师应仍自动取消。");
+                "没被问过的 AI 邪术师·至高妖精应仍自动取消。");
         }
 
         [Test]
-        public void Hexer_never_cancels_its_own_attack()
+        public void TheArchfey_never_cancels_its_own_attack()
         {
-            // 玩家实测抓到：妖术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
-            GameManager game = Match(CharacterDefinition.Hexer, CharacterDefinition.Blank,
+            // 玩家实测抓到：邪术师·至高妖精取消了自己的攻击 —— 设计上他只能取消**他人**的攻击
+            GameManager game = Match(CharacterDefinition.TheArchfey, CharacterDefinition.Blank,
                                      out _, out _);
-            PlayerState hexer = game.PlayerA;
+            PlayerState theArchfey = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            TestSetup.SetHand(hexer.LeftHand, 4);      // 手上有 4，攻击数字也是 4
+            TestSetup.SetHand(theArchfey.LeftHand, 4);      // 手上有 4，攻击数字也是 4
 
-            var ctx = new AttackContext(hexer, foe, hexer.LeftHand, 4)
+            var ctx = new AttackContext(theArchfey, foe, theArchfey.LeftHand, 4)
             {
                 SourceHandValueBefore = 1,
                 TargetHandValueBefore = 3,               // 攻击数字 4
@@ -742,15 +742,15 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "不能取消自己发起的攻击。");
-            Assert.AreEqual(4, hexer.LeftHand.Value,
+            Assert.AreEqual(4, theArchfey.LeftHand.Value,
                 "不取消就不该改自己的手值。");
         }
 
         [Test]
-        public void Hexer_never_cancels_a_teammates_attack()
+        public void TheArchfey_never_cancels_a_teammates_attack()
         {
-            // 玩家要求：多人游戏里妖术师不要取消队友发起的攻击
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            // 玩家要求：多人游戏里邪术师·至高妖精不要取消队友发起的攻击
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var mate = Make("友", CharacterDefinition.Blank);
             var foe1 = Make("敌1", CharacterDefinition.Blank);
             var foe2 = Make("敌2", CharacterDefinition.Blank);
@@ -760,14 +760,14 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var seated = new List<PlayerState> { hexer, mate, foe1, foe2 };
+            var seated = new List<PlayerState> { theArchfey, mate, foe1, foe2 };
             GameManager game = GameManager.Create2v2(seated, providers);
 
-            // 座位 1&4 一队、2&3 一队 -> 妖术师(1) 与 foe2(4) 是队友
-            Assert.True(game.IsTeammate(hexer, foe2),
+            // 座位 1&4 一队、2&3 一队 -> 邪术师·至高妖精(1) 与 foe2(4) 是队友
+            Assert.True(game.IsTeammate(theArchfey, foe2),
                 "前置：1 号位与 4 号位应是队友。");
 
-            TestSetup.SetHand(hexer.LeftHand, 4);
+            TestSetup.SetHand(theArchfey.LeftHand, 4);
 
             // 队友 foe2 发起攻击数字 4
             var ctx = new AttackContext(foe2, foe1, foe2.LeftHand, 4)
@@ -778,7 +778,7 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             Assert.False(ctx.WasCancelled, "不能取消队友发起的攻击。");
-            Assert.AreEqual(4, hexer.LeftHand.Value,
+            Assert.AreEqual(4, theArchfey.LeftHand.Value,
                 "不取消就不该改手值。");
         }
 
@@ -788,10 +788,10 @@ namespace FingerDiceDuel.Tests
             // 玩家要求：敌人血量更少时也不要跳过回合
             // （否则是"把对方血量改高"= 帮对方回血）
             var ai = new GreedyChoiceProvider();
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(hexer, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(theArchfey, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -799,8 +799,8 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            // 妖术师受伤到 13，敌人也被打到 5（**比妖术师少**）
-            hexer.TakeDamage(7);
+            // 邪术师·至高妖精受伤到 13，敌人也被打到 5（**比邪术师·至高妖精少**）
+            theArchfey.TakeDamage(7);
             foe.SetHealthExact(5);
 
             // 人可以选（条件只是"有人体力不同"），但 AI **不该**用
@@ -812,12 +812,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Hexer_skip_button_appears_in_two_versus_two()
+        public void TheArchfey_skip_button_appears_in_two_versus_two()
         {
-            // 玩家实测：2v2 里妖术师**没有**跳过回合按钮。
+            // 玩家实测：2v2 里邪术师·至高妖精**没有**跳过回合按钮。
             // 这条测试先把"控制器层到底给不给按钮"钉住，
             // 好区分是规则判错还是界面没画。
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var mate = Make("友", CharacterDefinition.Blank);
             var foe1 = Make("敌1", CharacterDefinition.Blank);
             var foe2 = Make("敌2", CharacterDefinition.Blank);
@@ -827,8 +827,8 @@ namespace FingerDiceDuel.Tests
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
                 new SimpleChoiceProvider(), new SimpleChoiceProvider(),
             };
-            var seated = new List<PlayerState> { hexer, mate, foe1, foe2 };
-            // 妖术师坐 1 号位 -> 先手就是他
+            var seated = new List<PlayerState> { theArchfey, mate, foe1, foe2 };
+            // 邪术师·至高妖精坐 1 号位 -> 先手就是他
             GameManager game = GameManager.Create2v2(
                 seated, new List<IChoiceProvider>(sinks));
 
@@ -839,12 +839,12 @@ namespace FingerDiceDuel.Tests
             board.BindPlayer(foe2, null, sinks[3]);
 
             board.BeginTurn();
-            Assert.AreEqual(hexer, board.ActivePlayer, "前置：妖术师应是当前行动方。");
+            Assert.AreEqual(theArchfey, board.ActivePlayer, "前置：邪术师·至高妖精应是当前行动方。");
 
             // 满血 -> 没有按钮
             Assert.False(board.CanSkipTurn, "满血时不该有跳过回合按钮。");
 
-            hexer.TakeDamage(10);
+            theArchfey.TakeDamage(10);
             Assert.True(board.CanSkipTurn,
                 $"2v2 里体力不满且别人体力不同，应有跳过回合按钮。" +
                 $"[诊断 active={board.ActivePlayer?.Name}" +
@@ -856,34 +856,34 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Battle_log_says_the_attack_was_cancelled_by_the_hexer()
         {
-            // 玩家要求："把妖术师取消攻击也写到战报里，
-            //            可以写被妖术师取消，造成 0 点伤害"
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Hexer,
+            // 玩家要求："把邪术师·至高妖精取消攻击也写到战报里，
+            //            可以写被邪术师·至高妖精取消，造成 0 点伤害"
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey,
                                      out _, out _);
             PlayerState attacker = game.PlayerA;
-            PlayerState hexer = game.PlayerB;
+            PlayerState theArchfey = game.PlayerB;
 
-            TestSetup.SetHand(hexer.LeftHand, 4);      // 手上有 4 -> 能取消
-            TestSetup.SetHand(hexer.RightHand, 1);
+            TestSetup.SetHand(theArchfey.LeftHand, 4);      // 手上有 4 -> 能取消
+            TestSetup.SetHand(theArchfey.RightHand, 1);
             TestSetup.SetHand(attacker.LeftHand, 3);     // 3 + 1 = 4 -> 攻击数字 4
 
             // 用真实的回合流程产出 TurnResult（战报由它渲染）
-            TurnResult r = game.ExecuteTurn(attacker, attacker.LeftHand, hexer.RightHand);
+            TurnResult r = game.ExecuteTurn(attacker, attacker.LeftHand, theArchfey.RightHand);
 
             // ⚠️ 必须**无条件**断言取消发生了 ——
             //    写成"如果被取消才检查文案"会让测试在没取消时静默通过（假绿）。
-            Assert.True(r.WasCancelled, "这次攻击应被妖术师取消（手上有一个 4）。");
+            Assert.True(r.WasCancelled, "这次攻击应被邪术师·至高妖精取消（手上有一个 4）。");
             Assert.AreEqual(0, r.DamageDealt, "被取消的攻击造成 0 点伤害。");
 
             string line = BoardController.DescribeTurn(r);
 
-            // 战报用**取消者的名字**（这里妖术师叫 "B"），
+            // 战报用**取消者的名字**（这里邪术师·至高妖精叫 "B"），
             // 所以断言"含取消 + 含 0 点伤害 + 含取消者名字"，
-            // 而不是写死"被妖术师取消"。
+            // 而不是写死"被邪术师·至高妖精取消"。
             Assert.True(line.Contains("取消"),
                 $"战报应写明被取消。实际：{line}");
-            Assert.True(line.Contains(hexer.Name),
-                $"战报应写明是谁取消的（{hexer.Name}）。实际：{line}");
+            Assert.True(line.Contains(theArchfey.Name),
+                $"战报应写明是谁取消的（{theArchfey.Name}）。实际：{line}");
             Assert.True(line.Contains("0 点伤害"),
                 $"战报应写明造成 0 点伤害。实际：{line}");
         }
@@ -892,12 +892,12 @@ namespace FingerDiceDuel.Tests
         public void Ai_hexer_uses_the_skip_skill_on_its_own()
         {
             // AI 没有"点击"，必须自己在 MakeAutomaticMove 里走完这个技能 ——
-            // 否则 AI 的妖术师永远不会用它（等于技能在 AI 手里不存在）。
+            // 否则 AI 的邪术师·至高妖精永远不会用它（等于技能在 AI 手里不存在）。
             var ai = new GreedyChoiceProvider();
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(hexer, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(theArchfey, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -905,7 +905,7 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            // ⚠️ 按玩家给的 AI 策略，妖术师只在
+            // ⚠️ 按玩家给的 AI 策略，邪术师·至高妖精只在
             //    "**安全**（自己血够多）**且**与对手血量相差 **8 以上**"时才跳。
             //
             //    场面要同时满足：
@@ -913,11 +913,11 @@ namespace FingerDiceDuel.Tests
             //      · 对手 20（10 + 8 = 18 <= 20，差值够）
             //    ⚠️ 我第一版让自己 13，那要求对手 >= 21 —— 超过生命上限 20，
             //       永远摆不出来（测试当场抓到）。
-            hexer.TakeDamage(10);                    // 妖术师 10 / 20
-            Assert.AreEqual(10, hexer.Health);
+            theArchfey.TakeDamage(10);                    // 邪术师·至高妖精 10 / 20
+            Assert.AreEqual(10, theArchfey.Health);
             Assert.AreEqual(20, foe.Health);
 
-            int hexerHealth = hexer.Health;
+            int hexerHealth = theArchfey.Health;
 
             Assert.True(board.MakeAutomaticMove(), "AI 应该自己走完这一步。");
             Assert.AreEqual(hexerHealth, foe.Health,
@@ -931,10 +931,10 @@ namespace FingerDiceDuel.Tests
         {
             // 玩家给的阈值是 8：差值不够时**不跳**（宁可正常打）。
             var ai = new GreedyChoiceProvider();
-            var hexer = Make("邪", CharacterDefinition.Hexer);
+            var theArchfey = Make("邪", CharacterDefinition.TheArchfey);
             var foe = Make("敌", CharacterDefinition.Blank);
 
-            var game = new GameManager(hexer, foe, new SimpleChoiceProvider(),
+            var game = new GameManager(theArchfey, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game,
                                            new SimpleChoiceProvider(),
@@ -942,7 +942,7 @@ namespace FingerDiceDuel.Tests
                                            aiForA: ai);
             board.BeginTurn();
 
-            hexer.TakeDamage(7);                     // 妖术师 13，对手 20 -> 差 7 < 8
+            theArchfey.TakeDamage(7);                     // 邪术师·至高妖精 13，对手 20 -> 差 7 < 8
 
             Assert.True(board.MakeAutomaticMove(), "AI 应能正常行动。");
             Assert.AreEqual(20, foe.Health,
@@ -950,7 +950,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 魔射手
+        // 战士·魔射手
         // ============================================================
 
         [Test]
@@ -960,7 +960,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(0, a.Character.AttackBonus);
             Assert.AreEqual(-1, a.Character.DefenseBonus);
-            Assert.AreEqual(3, GameManager.BaseRangeOf(a), "魔射手攻击距离 3。");
+            Assert.AreEqual(3, GameManager.BaseRangeOf(a), "战士·魔射手攻击距离 3。");
         }
 
         [Test]
@@ -982,7 +982,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(2, ctx.HitCount, "4 应拆成两段。");
             Assert.AreEqual(2, ctx.LandedHits, "没有盾时应两段都命中。");
             Assert.AreEqual(8, ctx.AppliedDamage,
-                "两段各 4 -> 总伤害 8（而不是忍者的 2+2=4）。");
+                "两段各 4 -> 总伤害 8（而不是武僧·忍宗的 2+2=4）。");
         }
 
         [Test]
@@ -1035,13 +1035,13 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Archer_eight_is_still_dodgeable()
         {
-            // 玩家确认："但可以被游侠闪避邪术取消等" —— 只是无视盾牌
+            // 玩家确认："但可以被游荡者·风流剑客闪避邪术取消等" —— 只是无视盾牌
             GameManager game = Match(CharacterDefinition.ArcaneArcher,
-                                     CharacterDefinition.Ranger, out _, out _);
+                                     CharacterDefinition.Swashbuckler, out _, out _);
             PlayerState archer = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
 
-            var ctx = new AttackContext(archer, ranger, archer.LeftHand, 8)
+            var ctx = new AttackContext(archer, swashbuckler, archer.LeftHand, 8)
             {
                 SourceHandValueBefore = 3,
                 TargetHandValueBefore = 5,
@@ -1050,7 +1050,7 @@ namespace FingerDiceDuel.Tests
             ctx.Resolve(new SimpleChoiceProvider(), game);
 
             // 8 只改"无视盾牌"，**不改闪避通道** ——
-            // 没有 sink 记录时游侠不会自动闪避，所以这里只验证
+            // 没有 sink 记录时游荡者·风流剑客不会自动闪避，所以这里只验证
             // "要么造成伤害、要么被闪避"，二者必有其一（说明闪避判定仍然在跑）。
             Assert.True(ctx.AppliedDamage > 0 || ctx.WasDodged,
                 "8 要么造成伤害、要么被闪避，二者必有其一。");

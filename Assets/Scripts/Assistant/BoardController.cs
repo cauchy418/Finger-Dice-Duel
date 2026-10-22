@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Assistant
         /// 现在 1v1 也要求点这一次，是为了**多人模式不去走捷径** ——
         /// 否则多人上线后流程会变，玩家要重新学。
         ///
-        /// 若此刻**没有合法攻击目标**（刺客潜行、日后的攻击距离不足等），
+        /// 若此刻**没有合法攻击目标**（游荡者·刺客潜行、日后的攻击距离不足等），
         /// 界面改为提供"放弃攻击"（见 <see cref="CanGiveUpAttack"/>）。
         /// </summary>
         ChoosingTargetPlayer = 5,
@@ -33,14 +33,14 @@ namespace FingerDiceDuel.Assistant
         ChoosingDefenseShield = 2,
 
         /// <summary>
-        /// 回答角色提出的"运算前抉择"（野蛮人锁手、牧师回血目标、游侠闪避 / 强化射击……）。
+        /// 回答角色提出的"运算前抉择"（野蛮人·守望者道途锁手、牧师·生命领域回血目标、游荡者·风流剑客闪避 / 乘风突刺……）。
         /// 由角色通过 <see cref="IPreTurnChoiceProvider"/> 自己声明，
         /// 控制器不认识任何具体角色类型。
         /// </summary>
         ChoosingPreTurnChoice = 3,
 
         /// <summary>
-        /// 回答"选定目标手**之前**"的角色抉择（牧师的 4/6/8 攻击/回复二选一）。
+        /// 回答"选定目标手**之前**"的角色抉择（牧师·生命领域的 4/6/8 攻击/回复二选一）。
         ///
         /// 玩家要求的顺序：运算出 4 -> 右侧弹出攻击/回复 -> 选完再点目标手。
         /// </summary>
@@ -50,15 +50,15 @@ namespace FingerDiceDuel.Assistant
         GameOver = 4,
 
         /// <summary>
-        /// 等待**妖术师**点一个人的手，把那人的体力改成与自己一致。
+        /// 等待**邪术师·至高妖精**点一个人的手，把那人的体力改成与自己一致。
         ///
-        /// 这是妖术师"跳过回合"技能的目标选择步骤：
+        /// 这是邪术师·至高妖精"跳过回合"技能的目标选择步骤：
         /// 点右侧「跳过回合」进入本相位，再点目标的手发动。
         /// </summary>
         ChoosingHealthSwapTarget = 7,
 
         /// <summary>
-        /// 等待**赌徒**点「开赌」。
+        /// 等待**游荡者·赌徒**点「开赌」。
         ///
         /// 玩家确认的流程：先点自己一只手 -> 再点右侧「开赌」掷 1d9。
         /// 掷出的点数**直接作为本次行动结果**（4/6/8 攻击、9 回血、5 合盾）。
@@ -67,7 +67,7 @@ namespace FingerDiceDuel.Assistant
         ChoosingGamble = 8,
 
         /// <summary>
-        /// 等待**盗贼**点"要被偷的那只手"。
+        /// 等待**游荡者·盗贼**点"要被偷的那只手"。
         ///
         /// 玩家确认的流程：点自己的手 -> 点右侧「偷窃」按钮 -> 点别人的手。
         /// 无限距离、可以偷队友。
@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Assistant
     /// 每个玩家各有一个实现（见 <see cref="SimpleChoiceProvider"/>），
     /// <see cref="BoardController"/> 按**抉择的归属玩家**路由：
     ///   · 选盾 → 路由给**防守方**；
-    ///   · 锁手 → 路由给**行动方**（野蛮人自己）。
+    ///   · 锁手 → 路由给**行动方**（野蛮人·守望者道途自己）。
     ///
     /// 之所以不能只接一个 sink：防守方可能是 A 也可能是 B，
     /// 只有一个通道的话，B 当防守方时选盾结果永远传不进 GameManager
@@ -179,7 +179,7 @@ namespace FingerDiceDuel.Assistant
         private Hand _selectedTarget;
         private Hand _chosenDefenseShield;
 
-        // ---- 赌徒的赌博 ----
+        // ---- 游荡者·赌徒的赌博 ----
         /// <summary>
         /// 本回合已经掷出的赌博点数（0 = 还没掷）。
         ///
@@ -247,16 +247,16 @@ namespace FingerDiceDuel.Assistant
             // 让结算能读到"本回合先前已问过的答案"（分阶段抉择用）。
             // 必须在构造函数里接上 —— 只在 AI 决策路径赋值的话，
             // 人类玩家的前置抉择就传不到结算（真实 bug：
-            // 牧师选了回复却按攻击结算）。
+            // 牧师·生命领域选了回复却按攻击结算）。
             _game.AnsweredLookup = GetAnsweredChoice;
 
-            // 带**玩家参数**的版本：妖术师是场上的第三方，
-            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectHexerCancelChoices）。
+            // 带**玩家参数**的版本：邪术师·至高妖精是场上的第三方，
+            // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectTheArchfeyCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
-            _game.AskedCancelLookup = WasAskedHexerCancel;
+            _game.AskedCancelLookup = WasAskedTheArchfeyCancel;
         }
 
         /// <summary>方便测试：双方共用同一个抉择器对象。</summary>
@@ -302,8 +302,8 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 用途：界面只应在"**本回合刚刚结算过**"时显示上一手摘要。
         /// 否则新回合刚开始时会显示**上一位行动者**的旧结算 ——
-        /// 玩家实测看到的正是这个问题：轮到圣武士，摘要却写着"游侠 左手 …"
-        /// （那是上一回合游侠打的那一手）。
+        /// 玩家实测看到的正是这个问题：轮到圣武士·奉献之誓，摘要却写着"游荡者·风流剑客 左手 …"
+        /// （那是上一回合游荡者·风流剑客打的那一手）。
         /// </summary>
         public int LastTurnNumber { get; private set; } = -1;
 
@@ -322,7 +322,7 @@ namespace FingerDiceDuel.Assistant
         public IReadOnlyList<Hand> DefenseShieldChoices => _shieldChoices;
 
         /// <summary>
-        /// 当前待回答的"角色抉择"的可选项（野蛮人锁手、牧师回血目标、游侠闪避 / 强化……）。
+        /// 当前待回答的"角色抉择"的可选项（野蛮人·守望者道途锁手、牧师·生命领域回血目标、游荡者·风流剑客闪避 / 强化……）。
         /// 空表示当前不在角色抉择阶段。
         /// </summary>
         public IReadOnlyList<Hand> ChoiceCandidates => _pendingChoiceCandidates;
@@ -336,7 +336,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前是否停在"回答角色抉择"的阶段。
         ///
-        /// ⚠️ 有**两个**这样的阶段：选定目标手**之前**（牧师的攻击/回复）
+        /// ⚠️ 有**两个**这样的阶段：选定目标手**之前**（牧师·生命领域的攻击/回复）
         /// 与**之后**（闪避 / 强化 / 锁手 / 回复目标）。
         /// 漏掉任何一个都会让 UI 拿不到 <see cref="PendingRequest"/>、
         /// 按钮不出现 —— 新增阶段时必须回来这里补。
@@ -385,9 +385,9 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingDefenseShield:
                         return Defender;
 
-                    // 角色抉择的归属者**不一定是行动方**（游侠的闪避属于防守方），
+                    // 角色抉择的归属者**不一定是行动方**（游荡者·风流剑客的闪避属于防守方），
                     // 必须用收集阶段定下来的 _pendingChoiceDecider。
-                    // 这里曾经错误地返回 ActivePlayer，导致"游侠被攻击时闪避选项点不到"。
+                    // 这里曾经错误地返回 ActivePlayer，导致"游荡者·风流剑客被攻击时闪避选项点不到"。
                     case BoardPhase.ChoosingPreTurnChoice:
                     // "选目标手之前"的抉择同理，也看 _pendingChoiceDecider
                     case BoardPhase.ChoosingPreTargetChoice:
@@ -398,7 +398,7 @@ namespace FingerDiceDuel.Assistant
                     // "确认目标玩家"同样由**行动方**决定（他来决定打谁）。
                     // ⚠️ 漏掉这个分支会导致 chooser=null -> IsHumanChooser=false
                     // -> UI 丢弃玩家的点击 -> **游戏在第一步就卡住**（真实 bug：
-                    //    玩家实测"战士打战士后第一步就卡住，显示 AI 正在思考"）。
+                    //    玩家实测"战士·破阵者打战士·破阵者后第一步就卡住，显示 AI 正在思考"）。
                     case BoardPhase.ChoosingTargetPlayer:
                         return ActivePlayer;
 
@@ -406,11 +406,11 @@ namespace FingerDiceDuel.Assistant
                     case BoardPhase.ChoosingGamble:
                         return ActivePlayer;
 
-                    // 妖术师改体力的目标由**行动方自己**点（他发动技能）
+                    // 邪术师·至高妖精改体力的目标由**行动方自己**点（他发动技能）
                     case BoardPhase.ChoosingHealthSwapTarget:
                         return ActivePlayer;
 
-                    // ⚠️ **盗贼的偷窃目标也由行动方自己点。**
+                    // ⚠️ **游荡者·盗贼的偷窃目标也由行动方自己点。**
                     //
                     //    我第一版漏了这个分支，于是 chooser=null ->
                     //    IsHumanChooser=false -> UI 把玩家点手牌**全丢了**
@@ -456,7 +456,7 @@ namespace FingerDiceDuel.Assistant
         /// 两个时机：
         ///   · <see cref="BoardPhase.ChoosingGamble"/> —— 强制赌博时（上一回合做了正常运算）
         ///   · <see cref="BoardPhase.ChoosingTargetHand"/> —— **非强制**时也允许：
-        ///     赌徒点完自己的手后，可以点他人的手走正常运算，
+        ///     游荡者·赌徒点完自己的手后，可以点他人的手走正常运算，
         ///     也可以直接点「开赌」改走赌博（玩家确认"当然也可以继续赌"）
         /// </summary>
         public bool CanGamble
@@ -470,10 +470,10 @@ namespace FingerDiceDuel.Assistant
                ;
 
         /// <summary>
-        /// **测试钩子**：临时让赌徒绕过"强制赌博"，好让测试能走一次完整流程
+        /// **测试钩子**：临时让游荡者·赌徒绕过"强制赌博"，好让测试能走一次完整流程
         /// 来验证"正常运算 -> 下一回合强制赌博"这条规则。
         ///
-        /// 为什么需要它：控制器对赌徒**总是**走赌博分岔（那是他的正常路径），
+        /// 为什么需要它：控制器对游荡者·赌徒**总是**走赌博分岔（那是他的正常路径），
         /// 所以从控制器层面根本进不去"正常运算"，也就无法验证它设了强制标志。
         /// 而直接调引擎（GameManager.ExecuteTurn）会绕过控制器，
         /// 同样测不到标志 —— 两头都够不着，才开这个口子。
@@ -559,11 +559,11 @@ namespace FingerDiceDuel.Assistant
         public bool CanSkipTurn
             => !_game.IsGameOver
                && ActivePlayer != null
-               && !BardChoicePending
+               && !CollegeOfValorChoicePending
                && (Phase == BoardPhase.ChoosingAttackerHand
                    || Phase == BoardPhase.ChoosingTargetHand
                    || Phase == BoardPhase.ChoosingGamble)
-               // ⚠️ 用带 GameManager 的重载：妖术师的跳过条件要查**别人**的体力，
+               // ⚠️ 用带 GameManager 的重载：邪术师·至高妖精的跳过条件要查**别人**的体力，
                //    静态版传 null 会让它永远返回 false（按钮不显示）。
                && _game.CanSkipTurnFor(ActivePlayer);
 
@@ -572,8 +572,8 @@ namespace FingerDiceDuel.Assistant
         /// 仅在 <see cref="CanSkipTurn"/> 为 true 时有效。
         ///
         /// ⚠️ 两种角色共用这个按钮，但**流程不同**：
-        ///   · 刺客（潜行）/ 双盾在手 -> 直接跳过
-        ///   · **妖术师** -> 先进入"选一个人的手"，把那人**体力改成与自己一致**，
+        ///   · 游荡者·刺客（潜行）/ 双盾在手 -> 直接跳过
+        ///   · **邪术师·至高妖精** -> 先进入"选一个人的手"，把那人**体力改成与自己一致**，
         ///     选完才真正跳过（玩家要求的交互：
         ///     "在右侧显示跳过回合，然后点击一个人的手发动技能"）
         /// </summary>
@@ -581,15 +581,15 @@ namespace FingerDiceDuel.Assistant
         {
             if (!CanSkipTurn) return false;
 
-            // 妖术师：先选目标，不立刻结束回合
-            var hexer = ActivePlayer.Character as HexerLogic;
-            if (hexer != null && StatusRules.CanAct(ActivePlayer))
+            // 邪术师·至高妖精：先选目标，不立刻结束回合
+            var theArchfey = ActivePlayer.Character as TheArchfeyLogic;
+            if (theArchfey != null && StatusRules.CanAct(ActivePlayer))
             {
                 PlayerState victim = FindHealthSwapTarget();
                 if (victim != null)
                 {
                     Phase = BoardPhase.ChoosingHealthSwapTarget;
-                    Hint = $"{ActivePlayer.Name}（妖术师）：点一个人的手，" +
+                    Hint = $"{ActivePlayer.Name}（邪术师·至高妖精）：点一个人的手，" +
                            $"把那个人的体力改成与自己一致（{ActivePlayer.Health}）。";
                     return true;
                 }
@@ -612,7 +612,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 妖术师改体力的目标：**场上任意一名体力与自己不同的存活角色**。
+        /// 邪术师·至高妖精改体力的目标：**场上任意一名体力与自己不同的存活角色**。
         ///
         /// 返回 null 表示没有可改的人（此时技能无意义）。
         /// </summary>
@@ -634,7 +634,7 @@ namespace FingerDiceDuel.Assistant
             return null;
         }
 
-        /// <summary>落实"把某人体力改成与自己一致"并结束本回合（妖术师）。</summary>
+        /// <summary>落实"把某人体力改成与自己一致"并结束本回合（邪术师·至高妖精）。</summary>
         public bool ApplyHealthSwapAndEndTurn(PlayerState target)
         {
             if (target == null || ActivePlayer == null) return false;
@@ -642,7 +642,7 @@ namespace FingerDiceDuel.Assistant
 
             int before = target.Health;
 
-            if (!HexerLogic.ApplyHealthSwap(ActivePlayer, target))
+            if (!TheArchfeyLogic.ApplyHealthSwap(ActivePlayer, target))
             {
                 // 目标体力本来就一样（或已阵亡）-> 退回选择，不浪费回合
                 Hint = "那个人的体力已经与你一致，请另选一个人。";
@@ -762,13 +762,13 @@ namespace FingerDiceDuel.Assistant
         /// 用 <c>GetChoice</c> 会套用抉择自身的回退值，于是
         /// "玩家选了攻击"（记录为 null）被误判成"选了回复"（回退值是自己）。
         ///
-        /// 先查行动方（牧师的 4/6/8 攻击/回复是他答的），再查防守方。
+        /// 先查行动方（牧师·生命领域的 4/6/8 攻击/回复是他答的），再查防守方。
         /// </summary>
         private Hand GetAnsweredChoice(HandEffect effect, int variant)
         {
             // ⚠️ **先读控制器自己保存的本回合答案**。
             //
-            // 牧师的 4/6/8 有两段抉择，中间隔着"选目标手"，
+            // 牧师·生命领域的 4/6/8 有两段抉择，中间隔着"选目标手"，
             // 而那段流程会重建抉择队列、并可能在回合边界清空 sink。
             // sink 里的答案因此可能读不到（实测：结算时读到 null，
             // 于是"选了回复"被当成"选攻击"）。
@@ -792,16 +792,16 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 读回"**某位玩家**对某抉择的作答"（带玩家参数）。
         ///
-        /// 妖术师是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
+        /// 邪术师·至高妖精是场上的第三方，所以不能复用 <see cref="GetAnsweredChoice"/>
         /// （那个按"行动方 / 防守方"找）。
         ///
-        /// ⚠️ 用 <c>_askedHexerCancel</c> 的**键是否存在**表达"问过"，
+        /// ⚠️ 用 <c>_askedTheArchfeyCancel</c> 的**键是否存在**表达"问过"，
         ///    这样"问过但选了不发动"（值为 null）与"没问过"能区分开。
         /// </summary>
         private Hand GetAnsweredChoiceFor(PlayerState player, HandEffect effect, int variant)
         {
-            if (player != null && effect == HandEffect.HexerCancel
-                && _askedHexerCancel.TryGetValue(player, out Hand answer))
+            if (player != null && effect == HandEffect.TheArchfeyCancel
+                && _askedTheArchfeyCancel.TryGetValue(player, out Hand answer))
             {
                 return answer;      // 可能是 null（玩家选了不发动）
             }
@@ -815,20 +815,20 @@ namespace FingerDiceDuel.Assistant
         /// 与 <see cref="GetAnsweredChoiceFor"/> 配套：
         /// 返回 true 表示"问过"，此时 null 答案意味着"玩家选了不发动"。
         /// </summary>
-        public bool WasAskedHexerCancel(PlayerState player)
-            => player != null && _askedHexerCancel.ContainsKey(player);
+        public bool WasAskedTheArchfeyCancel(PlayerState player)
+            => player != null && _askedTheArchfeyCancel.ContainsKey(player);
 
         /// <summary>
         /// 本回合"**问过谁是否取消攻击**"（键 = 玩家）。
         ///
-        /// 为什么需要单独记一份：妖术师的取消是**第三方**的抉择，
+        /// 为什么需要单独记一份：邪术师·至高妖精的取消是**第三方**的抉择，
         /// 而且必须区分两种"没选"：
         ///   · **没问过**（AI，或条件不成立）-> 走自动取消
         ///   · **问过但选了「不发动」** -> 放行这次攻击
         /// `_answeredThisTurn` 在答案为 null 时是"删除键"，分不出这两者；
         /// 这里用"键是否存在"表达"问过"，值为答案（可为 null）。
         /// </summary>
-        private readonly Dictionary<PlayerState, Hand> _askedHexerCancel =
+        private readonly Dictionary<PlayerState, Hand> _askedTheArchfeyCancel =
             new Dictionary<PlayerState, Hand>();
 
         private static string AnswerKey(HandEffect effect, int variant)
@@ -880,25 +880,25 @@ namespace FingerDiceDuel.Assistant
             // ⚠️⚠️ **必须调一次 Core 的 `BeginTurn()`。**
             //
             //    它是"只属于本回合的标记"的**唯一复位点**：
-            //      · `SuppressAttackDamage`（法师放弃攻击）
-            //      · 法师的 `WantsToAbandonThisTurn`
-            //      · 吟游诗人的 `TookDamageThisTurn` / `HealedThisTurn`
-            //        / **`BardActivatedThisTurn`**
+            //      · `SuppressAttackDamage`（法师·塑能学派放弃攻击）
+            //      · 法师·塑能学派的 `WantsToAbandonThisTurn`
+            //      · 吟游诗人·勇气学院的 `TookDamageThisTurn` / `HealedThisTurn`
+            //        / **`CollegeOfValorActivatedThisTurn`**
             //
-            //    玩家实测 bug："吟游诗人在发动技能后再受伤没有触发面板" ——
-            //    因为界面路径一直没调它，`BardActivatedThisTurn` 永远是 true，
+            //    玩家实测 bug："吟游诗人·勇气学院在发动技能后再受伤没有触发面板" ——
+            //    因为界面路径一直没调它，`CollegeOfValorActivatedThisTurn` 永远是 true，
             //    发动过一次之后就再也不弹面板。
             //    （无头路径由 `MatchRunner` 每次循环调，所以测试发现不了。）
             _game.BeginTurn();
 
-            // ⚠️ **法师的状态：先结算"上一位的回合结束"**（燃烧 + 状态计数递减）。
+            // ⚠️ **法师·塑能学派的状态：先结算"上一位的回合结束"**（燃烧 + 状态计数递减）。
             //
             //    为什么放在这里：`BeginTurn` 是**每次换人行动**的唯一入口，
             //    所以"上一位的回合结束"与"这一位的回合开始"天然相邻。
             //
             //    ⚠️ 用**独立哨兵字段**而不是读 `LastTurn` ——
             //       `LastTurn` 的赋值时机在部分路径上是"先 BeginTurn 再赋值"
-            //       （盗贼偷窃那两处），读它会漏结算或重复结算。
+            //       （游荡者·盗贼偷窃那两处），读它会漏结算或重复结算。
             //       哨兵保证：同一次行动只结算一次回合结束。
             if (_statusTurnEndFor != null)
             {
@@ -943,13 +943,13 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **待结算"回合结束"的那位玩家**（法师的状态体系用）。
+        /// **待结算"回合结束"的那位玩家**（法师·塑能学派的状态体系用）。
         ///
         /// 由"某位玩家的行动刚结算完"的那几处写入，由 <see cref="BeginTurn"/>
         /// 在下一次换人时消费并清空。
         ///
         /// 为什么用独立字段而不是读 <c>LastTurn</c>：
-        /// 后者在盗贼偷窃那两条路径上是"先 BeginTurn 再赋值"，读它会错。
+        /// 后者在游荡者·盗贼偷窃那两条路径上是"先 BeginTurn 再赋值"，读它会错。
         /// </summary>
         private PlayerState _statusTurnEndFor;
 
@@ -961,14 +961,14 @@ namespace FingerDiceDuel.Assistant
             _shieldChoices.Clear();
             TargetPlayer = null;      // 目标玩家每个回合重新确认
 
-            // 盗贼的"想偷"标记也属于"本回合的一次行动"，同样在第一步清掉
+            // 游荡者·盗贼的"想偷"标记也属于"本回合的一次行动"，同样在第一步清掉
             _thiefWantsSteal = false;
 
-            // ⚠️ **法师的"本回合放弃攻击"标记也必须清掉** ——
+            // ⚠️ **法师·塑能学派的"本回合放弃攻击"标记也必须清掉** ——
             //    它的语义是"这一次行动放弃攻击"，
             //    留在身上会让下一回合的普通攻击也被静默抑制（打不出伤害）。
             if (ActivePlayer?.Character
-                is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mageReset)
+                is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mageReset)
             {
                 mageReset.WantsToAbandonThisTurn = false;
             }
@@ -981,7 +981,7 @@ namespace FingerDiceDuel.Assistant
             //    放在这里才能保证每个回合开局就干净（诊断字段跨回合残留我踩过多次）。
             _pendingGambleRoll = 0;
 
-            // ⚠️ **法师"放弃攻击"已作答**的标记也必须每回合复位。
+            // ⚠️ **法师·塑能学派"放弃攻击"已作答**的标记也必须每回合复位。
             //
             //    它只用来防止"确认目标"时把已经答完的「是否放弃攻击」
             //    再问一遍（玩家实测的无限循环）。跨回合残留会让下一回合
@@ -991,7 +991,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 必须把**抉择队列也复位**。
             //
             // 曾经这里只清了 _shieldChoices，留下 _pendingRequestIndex 不管。
-            // 上个回合接受过一个抉择（例如游侠闪避）后 idx 会变成 1；
+            // 上个回合接受过一个抉择（例如游荡者·风流剑客闪避）后 idx 会变成 1；
             // 下个回合 BeginCharacterChoices 把队列清空重建、长度可能只有 1，
             // 而 idx 仍是 1 -> `1 >= 1` 被判成"全部问完了"，
             // 于是**新回合的强化/闪避提示根本不弹**（真实 bug，玩家实测反馈）。
@@ -1007,12 +1007,12 @@ namespace FingerDiceDuel.Assistant
             // 表现为"AI / 玩家明明选了技能，结算却按旧记录走" ——
             // 玩家实测反馈的"AI 从不发动技能"就是这个原因。
             //
-            // 但**回合中途不能清**：牧师的 4/6/8 有两段抉择，中间隔着"选目标手" ——
+            // 但**回合中途不能清**：牧师·生命领域的 4/6/8 有两段抉择，中间隔着"选目标手" ——
             //   ① 选目标手之前：攻击还是回复（存在 sink 里）
             //   ② 选目标手之后：回复给谁 / 结算
             // 而第 ② 段开头（CommitMove -> BeginCharacterChoices -> 这里）
             // 会把第 ① 段的答案抹掉，结算时 ChoseToHeal() 读到 null，
-            // 表现为"牧师选了回复却按攻击结算"（真实 bug）。
+            // 表现为"牧师·生命领域选了回复却按攻击结算"（真实 bug）。
             if (IsTurnBoundary)
             {
                 _sinkA?.ClearChoices();
@@ -1075,7 +1075,7 @@ namespace FingerDiceDuel.Assistant
                     // ⚠️ 必须用 `Hand.CanBeOperated`（= 未锁 **且** 未暗置），
                     //    不能只查 `!IsLocked`。
                     //
-                    //    玩家实测的 bug：猎人**用已暗置（伏击）的手主动发起了运算**，
+                    //    玩家实测的 bug：游侠·幽域追踪者**用已暗置（伏击）的手主动发起了运算**，
                     //    于是伏击被破除、那只手随即变成合法的被加数，
                     //    接着对手就能拿它当加数了。
                     //
@@ -1093,13 +1093,13 @@ namespace FingerDiceDuel.Assistant
                     return false;
 
                 case BoardPhase.ChoosingStealTarget:
-                    // 盗贼：可以点**任何其他人**的手（无限距离、可以偷队友）。
+                    // 游荡者·盗贼：可以点**任何其他人**的手（无限距离、可以偷队友）。
                     // 自己除外 —— 偷自己没有意义。
                     return !ActivePlayer.Owns(hand);
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
-                    // 妖术师：可以点**任何其他人**的手（体力与自己不同的才有意义）。
+                    // 邪术师·至高妖精：可以点**任何其他人**的手（体力与自己不同的才有意义）。
                     // 自己除外 —— "把场上一人的体力改成与自己一致"，自己不在"场上"。
                     PlayerState owner = OwnerOf(hand);
                     if (owner == null) return false;
@@ -1124,12 +1124,12 @@ namespace FingerDiceDuel.Assistant
                     //    我上一轮在这里多加了 `!hand.IsLocked`，于是
                     //    AI 选中一只被锁的手时 `ClickHand` 会被拒 ->
                     //    `MakeAutomaticMove` 返回 false -> **对局卡死**
-                    //    （玩家实测"经典里战士攻击卡住了"，批量测试复现）。
+                    //    （玩家实测"经典里战士·破阵者攻击卡住了"，批量测试复现）。
                     if (!ActivePlayer.Owns(hand)) return true;
 
-                    // ⚠️ **魔术师例外：他可以碰自己的另一只手。**
+                    // ⚠️ **游荡者·魔术师例外：他可以碰自己的另一只手。**
                     //
-                    //    玩家实测的 bug："魔术师的手选择后无法触碰自己的手运算"。
+                    //    玩家实测的 bug："游荡者·魔术师的手选择后无法触碰自己的手运算"。
                     //    上面那句 `!ActivePlayer.Owns(hand)` 把它一手挡住了 ——
                     //    领域层（GetLegalMoves / IsLegalMove）早就放行，
                     //    界面这层又漏了一处（与"暗置的手还能点"同一类错误）。
@@ -1166,7 +1166,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 进入"选目标手**之前**的角色抉择"（若角色有这种问题）。
         ///
-        /// 目前只有牧师用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
+        /// 目前只有牧师·生命领域用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
         /// 玩家要求的顺序就是这样 —— 先问，再选目标手。
         ///
         /// 返回 true 表示已接管抉择流程（AI 可能同步答完）。
@@ -1174,7 +1174,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 进入"运算结果确定后、确认目标玩家之前的角色抉择"（若角色有这种问题）。
         ///
-        /// 目前只有牧师用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
+        /// 目前只有牧师·生命领域用：运算出 4/6/8 时先问"当攻击打还是当回复用"。
         ///
         /// ⚠️ **调用时机**：必须在"运算源（目标手）已经选定"之后。
         /// 因为结果 = 自己那只手 + 对手那只手，运算源没定时结果是不确定的。
@@ -1202,7 +1202,7 @@ namespace FingerDiceDuel.Assistant
 
             provider.CollectPreTargetChoices(context, _pendingRequests);
 
-            // 过滤空候选（牧师 4/6/8 的"攻击还是回复"等）。
+            // 过滤空候选（牧师·生命领域 4/6/8 的"攻击还是回复"等）。
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
                 if (_pendingRequests[i].Candidates == null
                     || _pendingRequests[i].Candidates.Count == 0)
@@ -1220,14 +1220,14 @@ namespace FingerDiceDuel.Assistant
         private bool _preTargetChoiceActive;
 
         /// <summary>
-        /// 回答完游侠强化 / 战士换射程后，仍需回到"确认攻击目标"。
+        /// 回答完游荡者·风流剑客强化 / 战士·破阵者换射程后，仍需回到"确认攻击目标"。
         /// 与 `_preTargetChoiceActive` 分开：这些抉择本身仍属于普通
         /// `ChoosingPreTurnChoice`（阶段名不改成 PreTarget）。
         /// </summary>
         private bool _returnToTargetAfterChoice;
 
         /// <summary>
-        /// 盗贼已经按过「偷窃」按钮（本回合）。
+        /// 游荡者·盗贼已经按过「偷窃」按钮（本回合）。
         ///
         /// ⚠️ 为什么需要一个标记而不是只看 Phase：
         ///    点完自己的手后控制器会**自动推进**到"选加数"，
@@ -1237,7 +1237,7 @@ namespace FingerDiceDuel.Assistant
         private bool _thiefWantsSteal;
 
         /// <summary>
-        /// 盗贼 AI 走到哪一步了（**独立字段**，不会被别的诊断覆盖）。
+        /// 游荡者·盗贼 AI 走到哪一步了（**独立字段**，不会被别的诊断覆盖）。
         ///
         /// ⚠️ 存在的理由：上一轮我把它写进 LastAiMoveDiagnostic，
         ///    而普通运算的 FAIL-STEP2 会**后写覆盖**它 ——
@@ -1256,7 +1256,7 @@ namespace FingerDiceDuel.Assistant
         /// 它是否成立取决于调用顺序（`CommitMove` 恰好在 `BeginCharacterChoices`
         /// 之前给 `_pendingActedHand` 赋值）。一旦顺序变化，"回合中途"就会被
         /// 误判成"新回合"，把同回合刚答的抉择清掉，表现为
-        /// "牧师选了回复却按攻击结算"。
+        /// "牧师·生命领域选了回复却按攻击结算"。
         ///
         /// 用"行动方是否变化"表达**意图本身**：与调用顺序无关，永远正确。
         /// </summary>
@@ -1274,8 +1274,8 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
         // 合法攻击目标
         //
-        // 判据是"**有没有合法的攻击目标**"，而不是"对手是不是刺客" ——
-        // 刺客的潜行只是**当前唯一的**一种"令自己无法成为目标"的原因。
+        // 判据是"**有没有合法的攻击目标**"，而不是"对手是不是游荡者·刺客" ——
+        // 游荡者·刺客的潜行只是**当前唯一的**一种"令自己无法成为目标"的原因。
         // 日后的多人模式还有"攻击距离不足"等，都走同一判据。
         // ============================================================
 
@@ -1283,8 +1283,8 @@ namespace FingerDiceDuel.Assistant
         /// 这次攻击目前申请到的**距离覆盖**（-1 = 用角色基础距离）。
         ///
         /// 目前两个来源（都是"本次攻击距离无限"）：
-        ///   · 战士碎盾换射程（<see cref="HandEffect.FighterRangeBreak"/>）
-        ///   · 游侠强化射击（<see cref="HandEffect.RangerPowerShot"/>）
+        ///   · 战士·破阵者碎盾换射程（<see cref="HandEffect.BreakerRangeBreak"/>）
+        ///   · 游荡者·风流剑客乘风突刺（<see cref="HandEffect.SwashbucklerDuelistThrust"/>）
         ///
         /// 判定必须**同时看 sink 与控制器记录**：
         /// 人类玩家的答案在 sink 里，AI 的答案在 <c>_answeredThisTurn</c> 里 ——
@@ -1298,8 +1298,8 @@ namespace FingerDiceDuel.Assistant
             if (!_pendingIsAttack) return -1;
             if (ActivePlayer == null) return -1;
 
-            if (RangeBreakChosen(HandEffect.FighterRangeBreak)) return int.MaxValue;
-            if (RangeBreakChosen(HandEffect.RangerPowerShot)) return int.MaxValue;
+            if (RangeBreakChosen(HandEffect.BreakerRangeBreak)) return int.MaxValue;
+            if (RangeBreakChosen(HandEffect.SwashbucklerDuelistThrust)) return int.MaxValue;
 
             return -1;
         }
@@ -1329,16 +1329,16 @@ namespace FingerDiceDuel.Assistant
             // ① 玩家要求：**所有模式队友都是合法攻击目标**（可以打队友）。
             //    1v1 没有队友；2v2 / 8 人阵营混战都可以主动打自己人。
 
-            // ② 必须在**攻击距离**内（咒术师 / 牧师无限，其余 1）。
+            // ② 必须在**攻击距离**内（法师·咒法学派 / 牧师·生命领域无限，其余 1）。
             //    距离按座位环算，阵亡者从环上摘掉 —— 都在 GameManager 里。
             //
-            //    "本次攻击距离无限"由两个抉择提供（战士碎盾 / 游侠强化），
+            //    "本次攻击距离无限"由两个抉择提供（战士·破阵者碎盾 / 游荡者·风流剑客强化），
             //    这里用**实时计算**而不是缓存字段 —— 因为玩家的答案随时可能到达
             //    （人类点按钮、AI 被代答），缓存会读到过期值。
             if (!_game.CanReach(ActivePlayer, player, CurrentRangeOverride()))
                 return false;
 
-            // ③ 角色可以令自己免疫（刺客潜行 -> IsImmuneToAttack）。
+            // ③ 角色可以令自己免疫（游荡者·刺客潜行 -> IsImmuneToAttack）。
             //    控制器不认识任何具体角色：Assistant 层不能引用 Characters 层。
             if (player.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(player))
                 return false;
@@ -1350,7 +1350,7 @@ namespace FingerDiceDuel.Assistant
         /// 当前是否存在**合法的攻击目标**。
         ///
         /// 1v1 里只有一位对手，所以等价于"对手能不能被打"；
-        /// 目前**只有刺客潜行**会导致没有合法目标。
+        /// 目前**只有游荡者·刺客潜行**会导致没有合法目标。
         /// </summary>
         public bool HasAnyLegalTarget
         {
@@ -1376,13 +1376,13 @@ namespace FingerDiceDuel.Assistant
         /// 曾经这里只看当前的 <see cref="Defender"/>，2v2 里会因为
         /// "另一位对手在范围内"而漏判 -> 该放弃时不给按钮。
         ///
-        /// 所以判据是 <see cref="HasAnyLegalTarget"/>，不是"对手是刺客"。
+        /// 所以判据是 <see cref="HasAnyLegalTarget"/>，不是"对手是游荡者·刺客"。
         /// </summary>
         public bool DefenderCannotBeAttacked
             => Phase == BoardPhase.ChoosingTargetPlayer && !HasAnyLegalTarget;
 
         // ============================================================
-        // 盗贼：偷窃的三步流程
+        // 游荡者·盗贼：偷窃的三步流程
         // ============================================================
         //
         // 玩家给的交互："操作为先点击自己的手，点击右侧按钮偷窃，
@@ -1445,7 +1445,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, SelectedHand, target);
-            _statusTurnEndFor = LastTurn?.Actor;       // 法师状态：换人时结算回合结束
+            _statusTurnEndFor = LastTurn?.Actor;       // 法师·塑能学派状态：换人时结算回合结束
 
                 // ⚠️ 偷出**攻击数字**时，伤害不能在这里结算 ——
                 //    玩家要求"要再次点击目标才可以攻击"，
@@ -1455,7 +1455,7 @@ namespace FingerDiceDuel.Assistant
                 {
                     Phase = BoardPhase.ChoosingTargetPlayer;
                     TargetPlayer = null;
-                    Hint = $"{ActivePlayer.Name}（盗贼）偷到了 " +
+                    Hint = $"{ActivePlayer.Name}（游荡者·盗贼）偷到了 " +
                            $"{_game.PendingStealAttackValue}：请选择攻击目标。";
 
                     if (!BeginTargetPlayerChoice())
@@ -1474,7 +1474,7 @@ namespace FingerDiceDuel.Assistant
                 //
                 //    我第一版只调了 SetupFirstStep()，于是
                 //    `game.CurrentPlayer` 已经换成对手、而 `ActivePlayer`
-                //    还停在盗贼身上 —— 表现为**盗贼像连动两个回合**
+                //    还停在游荡者·盗贼身上 —— 表现为**游荡者·盗贼像连动两个回合**
                 //    （玩家实测："偷窃之后会跳过对方回合"）。
                 BeginTurn();
                 ResolvePendingAiChoices();
@@ -1489,7 +1489,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **盗贼 AI**（玩家给的策略）：
+        /// **游荡者·盗贼 AI**（玩家给的策略）：
         ///
         /// > "能成功偷到并触发**高价值数字**就偷；不能偷则尽量
         /// >   **合成更大点数的高价值数字**，**8 和 9 价值上升**。"
@@ -1498,7 +1498,7 @@ namespace FingerDiceDuel.Assistant
         ///   ① 存在一个"判定生效（原先 ≥ 偷来的）且偷来的是**高价值数字**"
         ///      的目标 -> 偷其中**最好**的那个
         ///   ② 否则**不偷**，回去走正常运算 ——
-        ///      而正常运算的偏好由盗贼的价值表负责
+        ///      而正常运算的偏好由游荡者·盗贼的价值表负责
         ///      （8 > 9 > 6 > 5 > 4，见 HandValueProfiles）
         ///
         /// ⚠️ 我第一版是"只要有得分 > 0 的机会就偷"，
@@ -1515,7 +1515,7 @@ namespace FingerDiceDuel.Assistant
 
             if (!(ActivePlayer?.Character is ThiefLogic))
             {
-                _thiefAiTrace = "exit:不是盗贼";
+                _thiefAiTrace = "exit:不是游荡者·盗贼";
                 return false;
             }
 
@@ -1595,7 +1595,7 @@ namespace FingerDiceDuel.Assistant
             try
             {
                 LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
-                _statusTurnEndFor = LastTurn?.Actor;   // 法师状态：换人时结算回合结束
+                _statusTurnEndFor = LastTurn?.Actor;   // 法师·塑能学派状态：换人时结算回合结束
                 BeginTurn();          // 必须刷新 ActivePlayer（见 CompleteSteal 的注释）
                 ResolvePendingAiChoices();
                 _thiefAiTrace += " / 偷窃成功";
@@ -1610,13 +1610,13 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 偷来这个数字值多少（盗贼 AI 用）。
+        /// 偷来这个数字值多少（游荡者·盗贼 AI 用）。
         ///
         /// **只有高价值数字才有分**（4/5/6/8/9）——
         /// 1/2/3/7 返回 0，表示"不值得为它用掉这个回合"。
         ///
         /// 梯度按玩家要求："**8 和 9 价值上升**"，
-        /// 与盗贼价值表里的 8 > 9 > 6 > 5 > 4 保持一致。
+        /// 与游荡者·盗贼价值表里的 8 > 9 > 6 > 5 > 4 保持一致。
         /// </summary>
         private static int StealScore(int stolen)
             => StealScore(stolen, stolen);
@@ -1625,7 +1625,7 @@ namespace FingerDiceDuel.Assistant
         /// 偷窃的划算程度（玩家给的两条规则）。
         ///
         /// 规则原话：
-        ///   · "盗贼在**没法凑出高价值数字**时，用**小数字偷大数字**的价值**小幅度提升**（偷 8、9）"
+        ///   · "游荡者·盗贼在**没法凑出高价值数字**时，用**小数字偷大数字**的价值**小幅度提升**（偷 8、9）"
         ///   · "在没法凑出高价值数字时用**大数字偷到有效数字**的价值**大幅度提升**"
         ///
         /// 两条都在说同一件事的两端：**这一偷让我的手值提升了多少**。
@@ -1700,7 +1700,7 @@ namespace FingerDiceDuel.Assistant
                 && ActivePlayer.MustGamble
                 && !ActivePlayer.Owns(hand))
             {
-                Hint = $"{ActivePlayer.Name}（赌徒）上一回合做了正常运算，" +
+                Hint = $"{ActivePlayer.Name}（游荡者·赌徒）上一回合做了正常运算，" +
                        $"本回合必须赌博 —— 不能选别人的手，请点自己的一只手后按「开赌」。";
 
                 return false;
@@ -1710,7 +1710,7 @@ namespace FingerDiceDuel.Assistant
 
             switch (Phase)
             {
-                // ---- 盗贼：第三步，点"要被偷的那只手"----
+                // ---- 游荡者·盗贼：第三步，点"要被偷的那只手"----
                 // 放在最前面，因为它与"选运算源 / 选加数"完全无关
                 // （偷窃是**放弃运算**的另一条路）。
                 case BoardPhase.ChoosingStealTarget:
@@ -1731,7 +1731,7 @@ namespace FingerDiceDuel.Assistant
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
-                    // 妖术师：点谁的手就把谁的体力改成与自己一致，然后结束回合
+                    // 邪术师·至高妖精：点谁的手就把谁的体力改成与自己一致，然后结束回合
                     PlayerState owner = OwnerOf(hand);
                     return ApplyHealthSwapAndEndTurn(owner);
                 }
@@ -1739,12 +1739,12 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingAttackerHand:
                     SelectedHand = hand;
 
-                    // ⚠️ **赌徒走另一条路**：点自己的手之后不进"选被加数"，
+                    // ⚠️ **游荡者·赌徒走另一条路**：点自己的手之后不进"选被加数"，
                     //    而是停在"等点开赌"。
                     //
                     //    玩家确认的流程："先点击自己一只手，然后点击右侧按钮开赌"
                     //    —— 赌博**不需要**点他人的手。
-                    // ⚠️ **赌徒的两条路**（玩家确认的规则）：
+                    // ⚠️ **游荡者·赌徒的两条路**（玩家确认的规则）：
                     //
                     //   · **本回合必须赌博**（上一回合做了正常运算）
                     //     -> 点自己的手之后直接进赌博阶段，不给别的选择
@@ -1758,10 +1758,10 @@ namespace FingerDiceDuel.Assistant
                         && !_allowNormalOperationForTest
                         && ActivePlayer.MustGamble)
                     {
-                        // 诊断：赌徒的强制状态与"上一次结算是不是赌博"一起打出来。
+                        // 诊断：游荡者·赌徒的强制状态与"上一次结算是不是赌博"一起打出来。
                         // 玩家报"上一回合已经赌过了但仍被强制赌博"——
                         // 光看界面提示分不清是 MustGamble 没被清，
-                        // 还是"赌徒本来就总是进赌博流程"（后者是设计）。
+                        // 还是"游荡者·赌徒本来就总是进赌博流程"（后者是设计）。
                         _advanceTrace.Add(
                             $"GAMBLER-ENTER must={ActivePlayer.MustGamble}" +
                             $" lastWasGamble={LastTurn?.WasGamble}" +
@@ -1783,8 +1783,8 @@ namespace FingerDiceDuel.Assistant
                     // 而"选目标手"就是选运算源 —— 第 ① 步之后还不知道会出 4 还是 6。
                     //
                     // 曾经在第 ① 步就问，于是"运算出 N"只能用**替身**或**候选里的第一个**
-                    // 去猜。玩家实测：牧师手 5/8、战士手 6/8 时点自己的 8，
-                    // 打战士的 6 出 4、打 8 出 6 —— 提示却写死成「回复 4」（真实 bug）。
+                    // 去猜。玩家实测：牧师·生命领域手 5/8、战士·破阵者手 6/8 时点自己的 8，
+                    // 打战士·破阵者的 6 出 4、打 8 出 6 —— 提示却写死成「回复 4」（真实 bug）。
                     Phase = BoardPhase.ChoosingTargetHand;
                     Hint = $"已选择 {SideLabel(hand, ActivePlayer)}（{hand.Value}）。" +
                            $"请选择要打 {Defender.Name} 的哪一只手（再点一次已选的手可取消）。";
@@ -1822,7 +1822,7 @@ namespace FingerDiceDuel.Assistant
                         return false;
                     }
 
-                    // ⚠️ **盗贼**：在"选加数"这一步点**别人的手**时，
+                    // ⚠️ **游荡者·盗贼**：在"选加数"这一步点**别人的手**时，
                     //    如果已经按过「偷窃」按钮（或他本来就是来偷的），
                     //    就走偷窃而不是加法运算。
                     //
@@ -1849,7 +1849,7 @@ namespace FingerDiceDuel.Assistant
                     TargetPlayer = OwnerOf(hand) ?? Defender;
 
                     // 立刻记下这次运算的两只手 —— 后面的"角色抉择"阶段
-                    // （游侠强化、牧师攻击/回复/治疗目标）都要用到它们，
+                    // （游荡者·风流剑客强化、牧师·生命领域攻击/回复/治疗目标）都要用到它们，
                     // 而这些抉择发生在 ConfirmTargetPlayer（CommitMove）**之前**。
                     //
                     // ⚠️ 曾经只在这里设 `_selectedTarget`，`_pendingActedHand` /
@@ -1869,7 +1869,7 @@ namespace FingerDiceDuel.Assistant
                         SelectedHand, hand).IsAttack;
 
                     // 第 ③ 步：运算源已经定了 -> 结果已知 -> 这时才能问得准确。
-                    // 牧师运算出 4/6/8 时先问"当攻击还是当回复"。
+                    // 牧师·生命领域运算出 4/6/8 时先问"当攻击还是当回复"。
                     if (BeginPreTargetChoicesIfAny())
                         return true;
 
@@ -1883,7 +1883,7 @@ namespace FingerDiceDuel.Assistant
                     //
                     // 1 + 1 = 2（无效果）、或合出护盾（作用于自己）都不需要 ——
                     // 否则每一次运算都会被追问"打谁"，纯属打扰（玩家实测反馈：
-                    // "战士 1+1 运算出 2 都要求选择目标，会出现很多无意义询问"）。
+                    // "战士·破阵者 1+1 运算出 2 都要求选择目标，会出现很多无意义询问"）。
                     if (!NeedsTargetAfterOperation())
                     {
                         // 仍然记下目标玩家（多人模式要用这个概念），但不打断玩家
@@ -1938,7 +1938,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 这次运算的结果是否会产生**指向某人的效果**（攻击 / 回复 / 牧师把 4/6/8 当回复……），
+        /// 这次运算的结果是否会产生**指向某人的效果**（攻击 / 回复 / 牧师·生命领域把 4/6/8 当回复……），
         /// 从而需要玩家"再点一次手牌确认目标"。
         ///
         /// 判断交给角色自己（<see cref="IResultTargetProvider"/>），
@@ -2041,8 +2041,8 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前是否"没有合法攻击目标"，应当提供**放弃攻击**。
         ///
-        /// **只在面对潜行中的刺客时出现。**
-        /// 玩家实测要求："放弃攻击在 1v1 中应只在面对刺客潜行时会出现" ——
+        /// **只在面对潜行中的游荡者·刺客时出现。**
+        /// 玩家实测要求："放弃攻击在 1v1 中应只在面对游荡者·刺客潜行时会出现" ——
         /// 其余情况下不该给这个按钮（否则会被用来规避正常战斗）。
         ///
         /// 日后若加入"攻击距离不足"等规则，在这里一并判断即可。
@@ -2086,7 +2086,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         // ============================================================
-        // 吟游诗人：**回合结束后的四步抉择**
+        // 吟游诗人·勇气学院：**回合结束后的四步抉择**
         // ============================================================
         //
         // 玩家确认的流程：
@@ -2098,31 +2098,31 @@ namespace FingerDiceDuel.Assistant
         // ⚠️ 这是**第一个"运算之后才问"**的技能，所以它不走
         //    `CollectPreTurnChoices`（那套是"运算前收集齐"）。
         //    这里只暴露一个**不依赖 BoardPhase** 的小流程：
-        //    界面在每次刷新后调 `OfferBardChoiceIfAny()`，
-        //    拿到 true 就按 ②③④ 把答案交给 `ApplyBardChoice(...)`。
+        //    界面在每次刷新后调 `OfferCollegeOfValorChoiceIfAny()`，
+        //    拿到 true 就按 ②③④ 把答案交给 `ApplyCollegeOfValorChoice(...)`。
         //    这样不会碰既有的阶段机（阶段机有四处必须同步登记，改它风险高）。
 
-        /// <summary>当前是否有待答的吟游诗人抉择。</summary>
-        public bool BardChoicePending { get; private set; }
+        /// <summary>当前是否有待答的吟游诗人·勇气学院抉择。</summary>
+        public bool CollegeOfValorChoicePending { get; private set; }
 
-        /// <summary>正在等谁做吟游诗人抉择（没有则为 null）。</summary>
-        public PlayerState BardActor => _bardActor;
+        /// <summary>正在等谁做吟游诗人·勇气学院抉择（没有则为 null）。</summary>
+        public PlayerState CollegeOfValorActor => _bardActor;
 
         /// <summary>此刻可选的**角色**候选（含自己；受攻击距离限制）。</summary>
-        public IReadOnlyList<PlayerState> BardCandidates
+        public IReadOnlyList<PlayerState> CollegeOfValorCandidates
             => _bardCandidates ?? (IReadOnlyList<PlayerState>)System.Array.Empty<PlayerState>();
 
         private List<PlayerState> _bardCandidates;
         private PlayerState _bardActor;
 
         /// <summary>
-        /// **结算那一刻**快照下来的"可以发动的吟游诗人"。
+        /// **结算那一刻**快照下来的"可以发动的吟游诗人·勇气学院"。
         /// 不能等到刷新时再读标记 —— 那时已经被下一次 `BeginTurn()` 清零了。
         /// </summary>
         private readonly List<PlayerState> _bardEligible = new List<PlayerState>();
 
-        /// <summary>结算完立刻调用：记下这一刻谁满足吟游诗人的发动条件。</summary>
-        private void SnapshotBardEligibility()
+        /// <summary>结算完立刻调用：记下这一刻谁满足吟游诗人·勇气学院的发动条件。</summary>
+        private void SnapshotCollegeOfValorEligibility()
         {
             _bardEligible.Clear();
             if (_game == null) return;
@@ -2132,22 +2132,22 @@ namespace FingerDiceDuel.Assistant
             {
                 PlayerState p = all[i];
                 if (p == null || !p.IsAlive) continue;
-                if (!(p.Character is Characters.SpecialLogics.BardLogic)) continue;
-                if (p.BardActivatedThisTurn) continue;
-                if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
+                if (!(p.Character is Characters.SpecialLogics.CollegeOfValorLogic)) continue;
+                if (p.CollegeOfValorActivatedThisTurn) continue;
+                if (!Characters.SpecialLogics.CollegeOfValorLogic.CanActivateFor(p)) continue;
 
                 _bardEligible.Add(p);
             }
         }
 
         /// <summary>
-        /// 若有吟游诗人可以发动，就开出这个抉择；返回 true 表示**界面该弹面板**了。
+        /// 若有吟游诗人·勇气学院可以发动，就开出这个抉择；返回 true 表示**界面该弹面板**了。
         ///
-        /// 故意不自动应用 —— 人类要自己选，AI 走 `BardAi.TryActivate`。
+        /// 故意不自动应用 —— 人类要自己选，AI 走 `CollegeOfValorAi.TryActivate`。
         /// </summary>
-        public bool OfferBardChoiceIfAny()
+        public bool OfferCollegeOfValorChoiceIfAny()
         {
-            if (BardChoicePending) return true;          // 已经在问了
+            if (CollegeOfValorChoicePending) return true;          // 已经在问了
             if (_game == null || _game.IsGameOver) return false;
 
             // ① 谁可以发动：用**结算那一刻的快照**
@@ -2156,7 +2156,7 @@ namespace FingerDiceDuel.Assistant
             {
                 PlayerState p = _bardEligible[i];
                 if (p == null || !p.IsAlive) continue;
-                if (p.BardActivatedThisTurn) continue;          // 本回合已经答过了
+                if (p.CollegeOfValorActivatedThisTurn) continue;          // 本回合已经答过了
                 found = p;
                 break;
             }
@@ -2172,9 +2172,9 @@ namespace FingerDiceDuel.Assistant
                 {
                     PlayerState p = all[i];
                     if (p == null || !p.IsAlive) continue;
-                    if (!(p.Character is Characters.SpecialLogics.BardLogic)) continue;
-                    if (p.BardActivatedThisTurn) continue;
-                    if (!Characters.SpecialLogics.BardLogic.CanActivateFor(p)) continue;
+                    if (!(p.Character is Characters.SpecialLogics.CollegeOfValorLogic)) continue;
+                    if (p.CollegeOfValorActivatedThisTurn) continue;
+                    if (!Characters.SpecialLogics.CollegeOfValorLogic.CanActivateFor(p)) continue;
                     found = p;
                     break;
                 }
@@ -2182,84 +2182,84 @@ namespace FingerDiceDuel.Assistant
 
             if (found == null) return false;
 
-            var logic = (Characters.SpecialLogics.BardLogic)found.Character;
+            var logic = (Characters.SpecialLogics.CollegeOfValorLogic)found.Character;
             List<PlayerState> cands = logic.EligibleTargets(found, _game);
             if (cands.Count == 0) return false;
 
             _bardActor = found;
             _bardCandidates = cands;
-            BardChoicePending = true;
+            CollegeOfValorChoicePending = true;
             return true;
         }
 
         /// <summary>
-        /// **AI 的吟游诗人由 AI 自己选完**，不要弹玩家面板。
+        /// **AI 的吟游诗人·勇气学院由 AI 自己选完**，不要弹玩家面板。
         ///
-        /// 界面在 `OfferBardChoiceIfAny()` 返回 true 后先判断归属者：
-        /// 人类 -> 弹面板；AI -> 调本方法，让 `BardAi` 直接决策。
+        /// 界面在 `OfferCollegeOfValorChoiceIfAny()` 返回 true 后先判断归属者：
+        /// 人类 -> 弹面板；AI -> 调本方法，让 `CollegeOfValorAi` 直接决策。
         /// 无论 AI 是否真的发动，本回合都标记为"已答"，避免反复询问。
         /// </summary>
-        public bool AutoResolveAiBardChoice()
+        public bool AutoResolveAiCollegeOfValorChoice()
         {
-            if (!BardChoicePending) return false;
-            PlayerState bard = _bardActor;
-            if (bard == null) { ClearBardChoice(); return false; }
+            if (!CollegeOfValorChoicePending) return false;
+            PlayerState collegeOfValor = _bardActor;
+            if (collegeOfValor == null) { ClearCollegeOfValorChoice(); return false; }
 
-            bool activated = Characters.SpecialLogics.BardAi.TryActivate(bard, _game);
-            bard.BardActivatedThisTurn = true;
+            bool activated = Characters.SpecialLogics.CollegeOfValorAi.TryActivate(collegeOfValor, _game);
+            collegeOfValor.CollegeOfValorActivatedThisTurn = true;
             FlushSkillLog();
-            ClearBardChoice();
+            ClearCollegeOfValorChoice();
             return activated;
         }
 
         /// <summary>最多能选几个目标（1~3，且不超过候选人数）。</summary>
-        public int BardMaxTargetCount
+        public int CollegeOfValorMaxTargetCount
         {
             get
             {
                 int n = _bardCandidates?.Count ?? 0;
-                if (n > Characters.SpecialLogics.BardLogic.MaxTargets)
-                    n = Characters.SpecialLogics.BardLogic.MaxTargets;
+                if (n > Characters.SpecialLogics.CollegeOfValorLogic.MaxTargets)
+                    n = Characters.SpecialLogics.CollegeOfValorLogic.MaxTargets;
                 return n;
             }
         }
 
         /// <summary>按目标数算出的强度（界面上显示 ±N 用）。</summary>
-        public static int BardStrengthFor(int targetCount)
-            => Characters.SpecialLogics.BardLogic.StrengthFor(targetCount);
+        public static int CollegeOfValorStrengthFor(int targetCount)
+            => Characters.SpecialLogics.CollegeOfValorLogic.StrengthFor(targetCount);
 
         /// <summary>
-        /// 落实一次吟游诗人抉择（②③④ 的答案一起交上来）。
+        /// 落实一次吟游诗人·勇气学院抉择（②③④ 的答案一起交上来）。
         /// </summary>
         /// <returns>实际生效的目标数；0 表示没有合法目标。</returns>
-        public int ApplyBardChoice(Characters.SpecialLogics.BardLogic.BuffKind kind,
+        public int ApplyCollegeOfValorChoice(Characters.SpecialLogics.CollegeOfValorLogic.BuffKind kind,
                                    IReadOnlyList<PlayerState> targets)
         {
             int applied = 0;
             if (_bardActor != null)
             {
-                var logic = _bardActor.Character as Characters.SpecialLogics.BardLogic;
+                var logic = _bardActor.Character as Characters.SpecialLogics.CollegeOfValorLogic;
                 if (logic != null) applied = logic.Activate(_bardActor, _game, kind, targets);
 
-                _bardActor.BardActivatedThisTurn = true;      // 本回合不再问
+                _bardActor.CollegeOfValorActivatedThisTurn = true;      // 本回合不再问
 
                 FlushSkillLog();
             }
 
-            ClearBardChoice();
+            ClearCollegeOfValorChoice();
             return applied;
         }
 
         /// <summary>放弃这次发动（等同于①选"不发动"）。</summary>
-        public void DeclineBardChoice()
+        public void DeclineCollegeOfValorChoice()
         {
-            if (_bardActor != null) _bardActor.BardActivatedThisTurn = true;   // 答过"不发动"也算
-            ClearBardChoice();
+            if (_bardActor != null) _bardActor.CollegeOfValorActivatedThisTurn = true;   // 答过"不发动"也算
+            ClearCollegeOfValorChoice();
         }
 
-        private void ClearBardChoice()
+        private void ClearCollegeOfValorChoice()
         {
-            BardChoicePending = false;
+            CollegeOfValorChoicePending = false;
             _bardActor = null;
             _bardCandidates = null;
         }
@@ -2377,13 +2377,13 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️⚠️ **本回合的角色抉择只收集一次。**
             //
-            //    玩家实测的死循环（法师）：
+            //    玩家实测的死循环（法师·塑能学派）：
             //      点自己的手 -> 点对手的手 -> 收集到「是否放弃攻击」(idx=0/2)
             //      -> 点「不发动」-> 进入"确认目标" (idx=2/2)
             //      -> 点目标的手 -> 又回到这里 -> **重新收集** -> idx 归 0
             //      -> **又弹「是否放弃攻击」** -> 无限循环。
             //
-            // ⚠️⚠️ **法师在「是否放弃攻击」上答过之后，确认目标时不能再收集一遍。**
+            // ⚠️⚠️ **法师·塑能学派在「是否放弃攻击」上答过之后，确认目标时不能再收集一遍。**
             //
             //    玩家实测的死循环：
             //      点自己的手 -> 点对手的手 -> 收集到「是否放弃攻击」(idx=0/2)
@@ -2395,9 +2395,9 @@ namespace FingerDiceDuel.Assistant
             //    `_pendingRequestIndex` **一起复位**，于是"已经把抉择答完"
             //    这个事实被抹掉了，玩家被问了第二遍。
             //
-            //    ⚠️ 闸门刻意做得**很窄**（只认"法师放弃攻击已答"）：
+            //    ⚠️ 闸门刻意做得**很窄**（只认"法师·塑能学派放弃攻击已答"）：
             //       正常流程里"确认目标"发生在**收集之前**，所以不能一概跳过收集
-            //       —— 那样会把闪避 / 太极 / 妖术师取消全部问不到（我试过，
+            //       —— 那样会把闪避 / 太极 / 邪术师·至高妖精取消全部问不到（我试过，
             //       一次红 17 条测试）。
             if (_wizardDeclineAnswered)
             {
@@ -2409,12 +2409,12 @@ namespace FingerDiceDuel.Assistant
             //
             // 因为闪避在结算里优先于护盾（`AttackContext.Resolve` 先判闪避再判盾），
             // 所以询问顺序也必须一致。曾经这里先问选盾、问完直接结算，
-            // 结果"有盾的游侠"根本问不到闪避 —— 表现为"优先碎盾而不是询问是否闪避"。
+            // 结果"有盾的游荡者·风流剑客"根本问不到闪避 —— 表现为"优先碎盾而不是询问是否闪避"。
             BeginCharacterChoices(BuildChoiceContext());
         }
 
         /// <summary>
-        /// **法师的「是否放弃攻击」本回合已经答过**（每回合在 <see cref="SetupFirstStep"/> 复位）。
+        /// **法师·塑能学派的「是否放弃攻击」本回合已经答过**（每回合在 <see cref="SetupFirstStep"/> 复位）。
         ///
         /// ⚠️ 存在的唯一理由：防止"确认目标"时把已经答完的这个问题**再收集一遍**，
         ///    那会让玩家被同一个问题问第二次（玩家实测的无限循环）。
@@ -2461,7 +2461,7 @@ namespace FingerDiceDuel.Assistant
         /// 构造"运算前"的局面信息。
         ///
         /// 顺便把 <see cref="PreTurnChoiceContext.IsAttack"/> 缓存下来 ——
-        /// 它是所有"攻击类抉择"（游侠强化/闪避、剑客追加）的前置条件，
+        /// 它是所有"攻击类抉择"（游荡者·风流剑客强化/闪避、战士·剑士追加）的前置条件，
         /// 请求没生成时第一个要查的就是它，所以在诊断里能直接读。
         /// </summary>
         private PreTurnChoiceContext BuildChoiceContext()
@@ -2471,7 +2471,7 @@ namespace FingerDiceDuel.Assistant
             _pendingIsAttack = context.IsAttack;
 
             // 让角色能读到"本回合先前已问过的答案"（分阶段抉择需要）：
-            // 牧师的 4/6/8 先问攻击/回复（选目标手之前），
+            // 牧师·生命领域的 4/6/8 先问攻击/回复（选目标手之前），
             // 之后再据此决定"要不要问回复目标"。
             context.AnsweredLookup = GetAnsweredChoice;
 
@@ -2483,7 +2483,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 这里是"角色专属 UI 提示"的**通用**入口：控制器不需要认识任何具体角色类型，
         /// 只遍历 <see cref="IPreTurnChoiceProvider"/>。
-        /// （此前是 <c>is BarbarianLogic</c> 这种硬编码，每加一个带抉择的角色都要改控制器。）
+        /// （此前是 <c>is PathOfTheWardenLogic</c> 这种硬编码，每加一个带抉择的角色都要改控制器。）
         /// </summary>
         private void BeginCharacterChoices(PreTurnChoiceContext context)
         {
@@ -2508,14 +2508,14 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 每回合清空"问过谁取消攻击" ——
             //    残留会让下一回合变成"问过但没答"，于是玩家的意图被误读
             //    （选了发动却被当成不发动）。我踩过同类坑（诊断字段跨回合残留）。
-            _askedHexerCancel.Clear();
+            _askedTheArchfeyCancel.Clear();
 
             CollectFrom(context.Actor, context);
             CollectFrom(context.Defender, context);
 
-            // 妖术师的"是否取消这次攻击"：取消者是**场上的第三方**，
+            // 邪术师·至高妖精的"是否取消这次攻击"：取消者是**场上的第三方**，
             // 不属于上面的行动方/防守方，所以单独收集。
-            CollectHexerCancelChoices();
+            CollectTheArchfeyCancelChoices();
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
             // 注意：不能用会被回合边界清空的容器 —— 上一个回合的作答
@@ -2545,12 +2545,12 @@ namespace FingerDiceDuel.Assistant
 
         private void CollectFrom(PlayerState player, PreTurnChoiceContext context)
         {
-            // 填"场上存活人数" —— "仅剩两人才生效"的规则（野蛮人锁手）需要它。
+            // 填"场上存活人数" —— "仅剩两人才生效"的规则（野蛮人·守望者道途锁手）需要它。
             // 只有控制器知道完整名单，所以在这里统一填，不依赖各调用点自己记得。
             if (context != null && _game != null)
             {
                 context.AlivePlayerCount = _game.AlivePlayerCount;
-                // 候选可能要看攻击距离（圣武士的冲击目标）
+                // 候选可能要看攻击距离（圣武士·奉献之誓的冲击目标）
                 context.Manager = _game;
             }
 
@@ -2563,10 +2563,10 @@ namespace FingerDiceDuel.Assistant
             {
                 int before = _pendingRequests.Count;
                 provider.CollectPreTurnChoices(context, _pendingRequests);
-            // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
+            // ⚠️ **法师·塑能学派：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mage
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -2600,7 +2600,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 收集"**人类**妖术师是否要取消这次攻击"的抉择。
+        /// 收集"**人类**邪术师·至高妖精是否要取消这次攻击"的抉择。
         ///
         /// 玩家要求的交互：右侧给按钮询问是否发动，然后**点对应数字**触发。
         /// 所以候选就是"与攻击数字相同的那只手" —— 点它即发动。
@@ -2608,14 +2608,14 @@ namespace FingerDiceDuel.Assistant
         /// ⚠️ 为什么要在**攻击结算之前**问：
         ///    整个回合是一次性跑完的（`ExecuteResolvedTurn` 里同步结算），
         ///    没法在结算中途停下来等玩家点击。所以抉择必须提前收集。
-        ///    AI 的妖术师不走这里 —— 它在结算时自动取消（见 AttackContext）。
+        ///    AI 的邪术师·至高妖精不走这里 —— 它在结算时自动取消（见 AttackContext）。
         ///
         /// ⚠️ 三条限制（都已由玩家确认）：
         ///    · 不能取消**自己**发起的攻击
         ///    · 多人模式里不能取消**队友**发起的攻击
         ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
         /// </summary>
-        private void CollectHexerCancelChoices()
+        private void CollectTheArchfeyCancelChoices()
         {
             int attackValue = PredictedAttackValue();
             if (attackValue <= 0) return;
@@ -2627,8 +2627,8 @@ namespace FingerDiceDuel.Assistant
                 PlayerState p = all[i];
                 if (p == null || !p.IsAlive) continue;
 
-                // 只有人类妖术师才问 —— AI 在结算时自动取消
-                if (!(p.Character is HexerLogic)) continue;
+                // 只有人类邪术师·至高妖精才问 —— AI 在结算时自动取消
+                if (!(p.Character is TheArchfeyLogic)) continue;
                 if (GetAi(p) != null) continue;
 
                 if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
@@ -2645,10 +2645,10 @@ namespace FingerDiceDuel.Assistant
 
                 // 先登记"**问过这个人**"（值为 null 表示"还没答/答了不发动"）——
                 // 结算时靠它区分"问过但选了不发动"与"根本没问过（AI）"。
-                _askedHexerCancel[p] = null;
+                _askedTheArchfeyCancel[p] = null;
 
                 _pendingRequests.Add(new ChoiceRequest(
-                    HandEffect.HexerCancel,
+                    HandEffect.TheArchfeyCancel,
                     $"{ActivePlayer.Name} 发起 {attackValue} 的攻击：" +
                     $"要用手上那个 {attackValue}（+1，永久）取消它吗？",
                     candidates,
@@ -2656,7 +2656,7 @@ namespace FingerDiceDuel.Assistant
                     declineResult: null,
                     decider: p));
 
-                _lastCollectInfo += $" +妖术师取消({p.Name}, 攻击值{attackValue})";
+                _lastCollectInfo += $" +邪术师·至高妖精取消({p.Name}, 攻击值{attackValue})";
             }
         }
 
@@ -2680,7 +2680,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 进入"选治疗目标"（牧师）。点一只手 = 治疗那只手的主人。
+        /// 进入"选治疗目标"（牧师·生命领域）。点一只手 = 治疗那只手的主人。
         ///
         /// ## 为什么这一步存在
         ///
@@ -2707,9 +2707,9 @@ namespace FingerDiceDuel.Assistant
             var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
 
-            // ⚠️ 必须挂上"本回合已答"的查询 —— 牧师的 4/6/8 靠它读
+            // ⚠️ 必须挂上"本回合已答"的查询 —— 牧师·生命领域的 4/6/8 靠它读
             // "玩家刚才选了回复还是攻击"（`ChoseToHeal` 的 AnsweredLookup 路径）。
-            // 漏了它，牧师会把"选了回复"读成"没选" -> 不问治疗目标 ->
+            // 漏了它，牧师·生命领域会把"选了回复"读成"没选" -> 不问治疗目标 ->
             // 阶段退回 ChoosingTargetPlayer（真实 bug）。
             context.AnsweredLookup = GetAnsweredChoice;
 
@@ -2727,16 +2727,16 @@ namespace FingerDiceDuel.Assistant
             if (_game != null) context.AlivePlayerCount = _game.AlivePlayerCount;
 
             // 也要挂上 GameManager：有些抉择的候选要**按攻击距离过滤**
-            // （圣武士的冲击目标只能在范围内），没有它就算不出距离。
+            // （圣武士·奉献之誓的冲击目标只能在范围内），没有它就算不出距离。
             if (_game != null) context.Manager = _game;
 
             provider.CollectPreTurnChoices(context, _pendingRequests);
 
 
-            // ⚠️ **法师：把抉择器记下的选择读回自己身上。**
+            // ⚠️ **法师·塑能学派：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.WizardLogic mage
+            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -2744,34 +2744,34 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️⚠️ **这里只能收"确认目标之前就必须回答"的抉择。**
             //
-            //    以前这里不过滤：剑客的追加、游侠的强化、野蛮人的锁手……
+            //    以前这里不过滤：战士·剑士的追加、游荡者·风流剑客的强化、野蛮人·守望者道途的锁手……
             //    全被当成"回复目标"在**确认攻击目标之前**问掉了。
             //    1v1 只有一个目标，所以看不出来；8 人局有多个目标时，
             //    玩家点完加数就直接进这些抉择，目标被默认成"加数手主"，
-            //    表现为"剑客主攻击和追加都不让我选目标"（玩家实测）。
+            //    表现为"战士·剑士主攻击和追加都不让我选目标"（玩家实测）。
             //
             //    保留在这里的只有：
-            //      · 回血目标（9 / 牧师）；
-            //      · 会改变本次攻击射程的游侠强化 / 战士碎盾换射程；
-            //      · 法师放弃攻击 / 选伤害类型；
-            //      · 防守方游侠闪避（必须在结算前收集）。
-            //    其余（剑客追加、野蛮人锁手、猎人伏击……）留到目标确认后。
+            //      · 回血目标（9 / 牧师·生命领域）；
+            //      · 会改变本次攻击射程的游荡者·风流剑客强化 / 战士·破阵者碎盾换射程；
+            //      · 法师·塑能学派放弃攻击 / 选伤害类型；
+            //      · 防守方游荡者·风流剑客闪避（必须在结算前收集）。
+            //    其余（战士·剑士追加、野蛮人·守望者道途锁手、游侠·幽域追踪者伏击……）留到目标确认后。
             bool hasNonHeal = false;
             for (int i = _pendingRequests.Count - 1; i >= 0; i--)
             {
                 ChoiceRequest r = _pendingRequests[i];
-                bool keep = r.Effect == HandEffect.ClericHealTarget
-                         || r.Effect == HandEffect.ClericExtraHealTarget
-                         || r.Effect == HandEffect.RangerPowerShot
-                         || r.Effect == HandEffect.RangerDodge
-                         || r.Effect == HandEffect.WizardAbandonAttack
-                         || r.Effect == HandEffect.WizardDamageType
-                         || r.Effect == HandEffect.FighterRangeBreak;
+                bool keep = r.Effect == HandEffect.LifeDomainHealTarget
+                         || r.Effect == HandEffect.LifeDomainExtraHealTarget
+                         || r.Effect == HandEffect.SwashbucklerDuelistThrust
+                         || r.Effect == HandEffect.SwashbucklerDodge
+                         || r.Effect == HandEffect.SchoolOfEvocationAbandonAttack
+                         || r.Effect == HandEffect.SchoolOfEvocationDamageType
+                         || r.Effect == HandEffect.BreakerRangeBreak;
                 if (!keep || r.Candidates == null || r.Candidates.Count == 0)
                     _pendingRequests.RemoveAt(i);
-                else if (r.Effect == HandEffect.RangerPowerShot
-                      || r.Effect == HandEffect.RangerDodge
-                      || r.Effect == HandEffect.FighterRangeBreak)
+                else if (r.Effect == HandEffect.SwashbucklerDuelistThrust
+                      || r.Effect == HandEffect.SwashbucklerDodge
+                      || r.Effect == HandEffect.BreakerRangeBreak)
                     hasNonHeal = true;
             }
 
@@ -2784,7 +2784,7 @@ namespace FingerDiceDuel.Assistant
                 _returnToTargetAfterChoice = true;
 
             // 纯回复目标不设 `_preTargetChoiceActive`（答完直接结算）；
-            // 攻击距离 / 法师类抉择已在上面的 hasNonHeal 分支置位，
+            // 攻击距离 / 法师·塑能学派类抉择已在上面的 hasNonHeal 分支置位，
             // 答完后会回到"确认目标"。
             AdvanceCharacterChoice();
             // AI 可能已完成回复、推进回合甚至结束比赛，不能继续旧的选目标流程。
@@ -2800,7 +2800,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool ChoseHealInAttackOrHeal()
         {
-            if (!_answeredThisTurn.TryGetValue(AnswerKey(HandEffect.ClericAttackOrHeal, 0),
+            if (!_answeredThisTurn.TryGetValue(AnswerKey(HandEffect.LifeDomainAttackOrHeal, 0),
                                                out Hand answer))
                 return false;
 
@@ -2834,7 +2834,7 @@ namespace FingerDiceDuel.Assistant
                     return;
                 }
 
-                // ①-0 游侠强化 / 战士换射程：回答完先回到"确认目标玩家"。
+                // ①-0 游荡者·风流剑客强化 / 战士·破阵者换射程：回答完先回到"确认目标玩家"。
                 if (_returnToTargetAfterChoice)
                 {
                     _returnToTargetAfterChoice = false;
@@ -2868,7 +2868,7 @@ namespace FingerDiceDuel.Assistant
                 {
                     _preTargetChoiceActive = false;
 
-                    // ①-a 牧师 4/6/8 选了「回复」：
+                    // ①-a 牧师·生命领域 4/6/8 选了「回复」：
                     //   运算**已经结束**，接下来点一只手就是选**治疗目标**
                     //   （点自己的手 = 回自己，点对方的手 = 回对方）。
                     //
@@ -2918,7 +2918,7 @@ namespace FingerDiceDuel.Assistant
 
             // ① 这一次根本不用问（分阶段抉择的后一步）-> 按放弃值落地后继续。
             //
-            // 典型：牧师的 4/6/8 要先问"攻击还是回复"，选了攻击就**不该再问**
+            // 典型：牧师·生命领域的 4/6/8 要先问"攻击还是回复"，选了攻击就**不该再问**
             // "回复给谁"。后一步是提前收集的（ExecuteTurn 要求运算前收集齐），
             // 靠 ShouldSkip() 在这里被静默跳过 ——
             // 避免"选了攻击却被追问回复目标"（玩家实测 bug）。
@@ -2939,7 +2939,7 @@ namespace FingerDiceDuel.Assistant
             _pendingChoiceDecider = DeciderFor(request);
 
             // ⚠️ 两种"运算前抉择阶段"必须分清：
-            //   · ChoosingPreTargetChoice —— 在**选目标手之前**问（牧师 4/6/8 攻击还是回复）
+            //   · ChoosingPreTargetChoice —— 在**选目标手之前**问（牧师·生命领域 4/6/8 攻击还是回复）
             //   · ChoosingPreTurnChoice    —— 其余所有（含**治疗目标**）
             //
             // 治疗目标发生在"运算源已定"之后，**不属于**"选目标手之前"。
@@ -2958,7 +2958,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 为什么需要：`GameManager.ExecuteTurn` 一次跑完整个回合，
         /// 所有抉择都必须在运算前收集齐；但有些问题**依赖前一个答案**
-        /// （例如牧师先选"攻击还是回复"，选回复才需要问"回复给谁"）。
+        /// （例如牧师·生命领域先选"攻击还是回复"，选回复才需要问"回复给谁"）。
         ///
         /// 控制器不参与判断 —— 它只把"刚答完的请求 + 玩家的答案"交给角色，
         /// 由角色自己决定要不要追加。返回 null 表示没有后续问题。
@@ -2984,7 +2984,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 判断某个抉择该由谁回答。
         /// 角色可以在收集时用 <see cref="ChoiceRequest.Decider"/> 显式指定
-        /// （例如游侠的闪避属于**防守方**）；未指定则由行动方回答。
+        /// （例如游荡者·风流剑客的闪避属于**防守方**）；未指定则由行动方回答。
         /// </summary>
         private PlayerState DeciderFor(ChoiceRequest request)
             => request.Decider ?? ActivePlayer;
@@ -3066,7 +3066,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 诊断用：本次运算是否会被判定为"攻击"。
         ///
-        /// 角色的抉择（游侠强化/闪避、剑客追加……）都以它为前置条件，
+        /// 角色的抉择（游荡者·风流剑客强化/闪避、战士·剑士追加……）都以它为前置条件，
         /// 请求没生成时第一步就要看这个值。
         /// </summary>
         public bool PendingIsAttack => _pendingIsAttack;
@@ -3086,37 +3086,37 @@ namespace FingerDiceDuel.Assistant
 
             SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand);
 
-            // 妖术师的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
-            // `_askedHexerCancel` —— 结算时靠它决定放行还是取消。
-            if (request.Effect == HandEffect.HexerCancel && _pendingChoiceDecider != null
+            // 邪术师·至高妖精的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
+            // `_askedTheArchfeyCancel` —— 结算时靠它决定放行还是取消。
+            if (request.Effect == HandEffect.TheArchfeyCancel && _pendingChoiceDecider != null
                 && hand != null && _pendingChoiceDecider.Owns(hand))
             {
-                _askedHexerCancel[_pendingChoiceDecider] = hand;
+                _askedTheArchfeyCancel[_pendingChoiceDecider] = hand;
             }
 
             // 统一定点：控制器自己保存一份本回合的答案。
             //
             // 这样后续阶段与**结算**一定能读到它，完全不依赖 sink 是否被清空。
-            // （牧师的 4/6/8 两段抉择之间会走 SetupFirstStep 清 sink，
+            // （牧师·生命领域的 4/6/8 两段抉择之间会走 SetupFirstStep 清 sink，
             //   只靠 sink 回读会导致"选了回复却按攻击结算"。）
             RecordAnswer(request.Effect, request.Variant, hand);
 
-            // 让角色按"刚收到的答案"追加后续问题（例如牧师选了回复才问给谁）。
+            // 让角色按"刚收到的答案"追加后续问题（例如牧师·生命领域选了回复才问给谁）。
             // 必须**先记答案再追加** —— 后一步的 SkipWhen 要读得到前一步的答案。
             _pendingRequestIndex++;
 
-            // ⚠️⚠️ **法师在「是否放弃攻击」上点了「不发动」= 照常攻击。**
+            // ⚠️⚠️ **法师·塑能学派在「是否放弃攻击」上点了「不发动」= 照常攻击。**
             //
             //    这时必须重新立起"本次抉择属于选目标手之前"，
             //    让它走 ①-b（`NeedsTargetAfterOperation` -> 确认目标玩家）。
             //    否则会一路走到 `ExecuteResolvedTurn()` ——
             //    **没让玩家确认攻击目标就直接打了**
-            //    （玩家实测："法师点击不发动后没有选择攻击目标就自动攻击了"）。
+            //    （玩家实测："法师·塑能学派点击不发动后没有选择攻击目标就自动攻击了"）。
             //
             //    ⚠️ 为什么不能靠原生的 `_preTargetChoiceActive`：
             //       进 `AdvanceCharacterChoice` 的中间步骤会把它清掉，
             //       实测到那一刻它已经是 false，于是走了结算。
-            if (request.Effect == HandEffect.WizardAbandonAttack && hand == null)
+            if (request.Effect == HandEffect.SchoolOfEvocationAbandonAttack && hand == null)
             {
                 _preTargetChoiceActive = true;
 
@@ -3140,7 +3140,7 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️⚠️ **阶段守卫：只有"角色抉择"阶段才能用「不发动」。**
             //
-            //    玩家实测的死循环：法师「不发动」之后进入 `ChoosingTargetPlayer`
+            //    玩家实测的死循环：法师·塑能学派「不发动」之后进入 `ChoosingTargetPlayer`
             //    （该点哪位目标），此时界面上**仍留着「放弃攻击」按钮**；
             //    再点一次 -> 走到这里 -> `ApplyPreTurnChoiceAndContinue`
             //    按一个**过期**的 `_pendingRequestIndex` 推进，
@@ -3170,7 +3170,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前待问的抉择**是哪一种**（UI 用来决定弹哪个面板）。
         ///
-        /// 目前主要给法师用：轮到 <see cref="HandEffect.WizardDamageType"/> 时
+        /// 目前主要给法师·塑能学派用：轮到 <see cref="HandEffect.SchoolOfEvocationDamageType"/> 时
         /// 要弹出"10 种伤害类型"的选择面板，而不是普通的"发动 / 不发动"。
         /// </summary>
         public HandEffect PendingEffect
@@ -3179,7 +3179,7 @@ namespace FingerDiceDuel.Assistant
                : HandEffect.None;
 
         /// <summary>
-        /// **法师：为下一次攻击记下伤害类型。**
+        /// **法师·塑能学派：为下一次攻击记下伤害类型。**
         ///
         /// 由界面在玩家点了类型面板之后调用。记完之后把这一步抉择标为已答，
         /// 流程继续（下一步就是选攻击目标）。
@@ -3187,9 +3187,9 @@ namespace FingerDiceDuel.Assistant
         public bool ChooseDamageType(DamageType type)
         {
             if (type == DamageType.None) return false;
-            if (PendingEffect != HandEffect.WizardDamageType) return false;
+            if (PendingEffect != HandEffect.SchoolOfEvocationDamageType) return false;
 
-            // ⚠️⚠️ **必须把类型记到法师身上，不能只写进抉择器。**
+            // ⚠️⚠️ **必须把类型记到法师·塑能学派身上，不能只写进抉择器。**
             //
             //    我第一版写成"先从 `SinkFor(ActivePlayer)` 取 sink（要求实现
             //    `IDamageTypeChoiceSink`），再 `mage.ReadFromSink(sink)`" ——
@@ -3198,9 +3198,9 @@ namespace FingerDiceDuel.Assistant
             //    于是 `sink == null` -> 直接返回 false ->
             //    **面板点了没反应（玩家实测的"卡住"）**。
             //
-            //    正确的做法：**法师自己就是答案的归属者**，直接写给他。
+            //    正确的做法：**法师·塑能学派自己就是答案的归属者**，直接写给他。
             //    （抉择器那条路是给 AI 用的，两者互不冲突。）
-            var mage = ActivePlayer?.Character as Characters.SpecialLogics.WizardLogic;
+            var mage = ActivePlayer?.Character as Characters.SpecialLogics.SchoolOfEvocationLogic;
             if (mage == null) return false;
 
             mage.SetPendingDamageType(type);
@@ -3220,7 +3220,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// "发动"按钮的文案（空 = 不显示）。
         ///
-        /// 有些抉择只有一个候选（剑客的追加攻击、游侠的强化射击），
+        /// 有些抉择只有一个候选（战士·剑士的追加攻击、游荡者·风流剑客的乘风突刺），
         /// 让玩家去点手牌很别扭，所以给一个明确的发动按钮。
         /// </summary>
         public string PendingAcceptLabel
@@ -3241,7 +3241,7 @@ namespace FingerDiceDuel.Assistant
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];
             if (string.IsNullOrEmpty(request.AcceptLabel)) return false;
 
-            // ⚠️⚠️ **法师：玩家在界面点了"放弃攻击"，要当场把标记落到法师身上。**
+            // ⚠️⚠️ **法师·塑能学派：玩家在界面点了"放弃攻击"，要当场把标记落到法师·塑能学派身上。**
             //
             //    否则下一步「选伤害类型」会被 `skipWhen` 跳过 ——
             //    那个条件是 `!WantsToAbandonThisTurn`，而这个标记
@@ -3251,9 +3251,9 @@ namespace FingerDiceDuel.Assistant
             //    而结算时又因为没走"选类型"这一步而没有类型可选。
             //
             //    ⚠️ 只有**真的被接受**时才标记；被拒绝时不能留下脏标记。
-            if (request.Effect == HandEffect.WizardAbandonAttack
+            if (request.Effect == HandEffect.SchoolOfEvocationAbandonAttack
                 && ActivePlayer?.Character
-                   is Characters.SpecialLogics.WizardLogic mage
+                   is Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && mage.WantsToAbandonThisTurn == false)
             {
                 mage.WantsToAbandonThisTurn = true;
@@ -3269,10 +3269,10 @@ namespace FingerDiceDuel.Assistant
             // ⚠️⚠️ **多个候选时也要能用。**
             //
             //    原来的写法是 `if (request.Candidates.Count != 1) return false;`，
-            //    于是法师的「放弃攻击」——它是**是非题**（候选是法师自己的两只手，
+            //    于是法师·塑能学派的「放弃攻击」——它是**是非题**（候选是法师·塑能学派自己的两只手，
             //    只用来占位）——点了"发动"按钮会被**静默拒绝**，
             //    界面毫无反应，玩家看到的就是**卡住**
-            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //    （玩家实测："法师·塑能学派点击放弃攻击后卡住"）。
             //
             //    对"是非题"来说，候选填什么都不重要（真正要选的是
             //    "放弃 / 不放弃"，答案存在 sink 里）。所以取第一个候选即可。
@@ -3341,7 +3341,7 @@ namespace FingerDiceDuel.Assistant
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];
             IChoiceProvider provider = GetChoice(_pendingChoiceDecider);
 
-            // ⚠️ 注入对局引用：有些抉择要看全场信息（牧师该给谁回血），
+            // ⚠️ 注入对局引用：有些抉择要看全场信息（牧师·生命领域该给谁回血），
             //    而 ChooseHandFor 的入参里没有 game。
             if (provider is GreedyChoiceProvider greedy) greedy.Game = _game;
 
@@ -3377,7 +3377,7 @@ namespace FingerDiceDuel.Assistant
         /// 这样 AI 与人类走的是**完全相同**的代码路径，不会出现"AI 能走通、
         /// 人类走不通"或反过来的分歧（这类分歧正是之前选盾 bug 的成因）。
         ///
-        /// 如果过程中进入了需要 AI 自己抉择的阶段（野蛮人锁手 / 防守方是 AI），
+        /// 如果过程中进入了需要 AI 自己抉择的阶段（野蛮人·守望者道途锁手 / 防守方是 AI），
         /// 会同步代它决定，随后流程自然继续。
         /// </summary>
         public bool MakeAutomaticMove()
@@ -3388,25 +3388,25 @@ namespace FingerDiceDuel.Assistant
             // 冻结、双锁、暗置与距离限制导致无运算时，AI 使用同一个跳过出口。
             if (!_game.HasAnyLegalOperation(ActivePlayer) && CanSkipTurn) return SkipTurn();
 
-            // ⚠️ AI 的妖术师要用"跳过回合改体力"这个技能。
+            // ⚠️ AI 的邪术师·至高妖精要用"跳过回合改体力"这个技能。
             //
             // 人类玩家是"点跳过回合 -> 点一个人的手"，AI 没有点击，
             // 所以要在这里自己走完 —— 否则 AI 永远不用这个技能。
             //
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
-            if (TryAiHexerSkip()) return true;
+            if (TryAiTheArchfeySkip()) return true;
 
-            // ---- 盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
+            // ---- 游荡者·盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
             //
             // ⚠️⚠️ **必须放在普通运算之前**。
             //
             //    我第一版把它放在普通运算的 ClickHand **之后**，
-            //    于是普通运算**先执行了**、盗贼那一块**永远走不到** ——
+            //    于是普通运算**先执行了**、游荡者·盗贼那一块**永远走不到** ——
             //    表现为"AI 从不偷"（两条测试失败，而且我加的诊断
             //    一次都没打印，因为方法根本没被调用）。
             //
             //    判据是"值不值得偷"：不值得才回去走正常运算
-            //    （正常运算的偏好由盗贼价值表负责合成更大点数）。
+            //    （正常运算的偏好由游荡者·盗贼价值表负责合成更大点数）。
             if (Phase == BoardPhase.ChoosingAttackerHand
                 && ActivePlayer?.Character is ThiefLogic
                 && TryAiThiefSteal())
@@ -3417,8 +3417,8 @@ namespace FingerDiceDuel.Assistant
             LegalMove move = ai.ChooseMove(_game, ActivePlayer);
             if (move.Actor == null) return false;
 
-            // ⚠️ **AI 赌徒的策略**（玩家给的规则）：
-            //    "在无法运算出有效数字如 4/5/6/8/9 时，赌徒会非常倾向于开赌。"
+            // ⚠️ **AI 游荡者·赌徒的策略**（玩家给的规则）：
+            //    "在无法运算出有效数字如 4/5/6/8/9 时，游荡者·赌徒会非常倾向于开赌。"
             //
             //    必须在**点手之前**判断：一旦点了自己的手，
             //    强制状态下就直接进赌博阶段了，就来不及比较"运算 vs 赌博"。
@@ -3468,10 +3468,10 @@ namespace FingerDiceDuel.Assistant
                 return false;
             }
 
-            // 走到这里可能已经停在"选锁手"阶段（合盾且是野蛮人）
+            // 走到这里可能已经停在"选锁手"阶段（合盾且是野蛮人·守望者道途）
             ResolvePendingAiChoices();
 
-            // ⚠️ **AI 赌徒**：点完自己的手会停在"等开赌"，而 AI 不会点按钮 ——
+            // ⚠️ **AI 游荡者·赌徒**：点完自己的手会停在"等开赌"，而 AI 不会点按钮 ——
             //    不处理就会**卡死在 ChoosingGamble**（我在实现时预判到的风险）。
             //
             //    这里直接代它点一次「开赌」，并**立刻**处理它可能带来的后续阶段：
@@ -3523,7 +3523,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             // 第 ③ 步：AI 也要走完"确认目标玩家"。
-            // 没有合法目标（刺客潜行）时直接放弃本回合。
+            // 没有合法目标（游荡者·刺客潜行）时直接放弃本回合。
             if (Phase == BoardPhase.ChoosingTargetPlayer)
             {
                 if (DefenderCannotBeAttacked) GiveUpAttack();
@@ -3536,10 +3536,10 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// AI 的妖术师：**安全**且对手体力比自己高 **8 以上**时跳过回合，
+        /// AI 的邪术师·至高妖精：**安全**且对手体力比自己高 **8 以上**时跳过回合，
         /// 把对手的体力拉低到与自己一致。
         ///
-        /// 玩家给的策略："妖术师会在安全的情况下，和对手血量相差 8 以上时
+        /// 玩家给的策略："邪术师·至高妖精会在安全的情况下，和对手血量相差 8 以上时
         /// 跳过回合（让对手血量减少）"。
         ///
         /// 三条判据：
@@ -3548,9 +3548,9 @@ namespace FingerDiceDuel.Assistant
         ///     的危险区间 —— 低于 <see cref="AiDangerHealth"/> 时不跳
         ///   · 对手必须比自己血多（否则这一改是**帮对方回血**，见下一个注释）
         /// </summary>
-        private bool TryAiHexerSkip()
+        private bool TryAiTheArchfeySkip()
         {
-            if (!(ActivePlayer?.Character is HexerLogic)) return false;
+            if (!(ActivePlayer?.Character is TheArchfeyLogic)) return false;
             if (!CanSkipTurn) return false;
 
             // ⚠️ **安全性**：跳过 = 白送一个回合给对方。
@@ -3564,7 +3564,7 @@ namespace FingerDiceDuel.Assistant
             // ① 优先把**危险的队友**拉上来（玩家要求）：
             //    "队友血量若处于危险值且自己体力比队友多大于 9 则大幅度倾向于拉队友"
             PlayerState teammate = FindDangerousTeammate(ActivePlayer);
-            if (teammate != null) return DoHexerSkip(teammate);
+            if (teammate != null) return DoTheArchfeySkip(teammate);
 
             // ② 否则拉一个"血量比自己多至少 maxDamage"的对手
             PlayerState best = null;
@@ -3583,11 +3583,11 @@ namespace FingerDiceDuel.Assistant
 
             if (best == null) return false;
 
-            return DoHexerSkip(best);
+            return DoTheArchfeySkip(best);
         }
 
         /// <summary>进入相位并发动跳过（复用人类那条路径，避免两套逻辑漂移）。</summary>
-        private bool DoHexerSkip(PlayerState target)
+        private bool DoTheArchfeySkip(PlayerState target)
         {
             if (target == null) return false;
             if (!SkipTurn()) return false;
@@ -3595,7 +3595,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **我这一手能打出的最大伤害**（妖术师的跳过判据用它）。
+        /// **我这一手能打出的最大伤害**（邪术师·至高妖精的跳过判据用它）。
         ///
         /// 估算方式：手值里最高的那个直接当攻击数字（4/6/8 才是攻击，
         /// 所以取"能凑到的最好的攻击值"），再加攻防。
@@ -3637,7 +3637,7 @@ namespace FingerDiceDuel.Assistant
                 if (p.Health > AiDangerHealth) continue;
 
                 // 自己比队友多 9 以上（否则拉上来等于把自己拉下去，不划算）
-                if (me.Health - p.Health <= HexerTeammatePullGap) continue;
+                if (me.Health - p.Health <= TheArchfeyTeammatePullGap) continue;
 
                 if (best == null || p.Health < best.Health) best = p;
             }
@@ -3646,14 +3646,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>拉队友的血量差门槛（玩家给的数：9）。</summary>
-        public int HexerTeammatePullGap { get; set; } = 9;
+        public int TheArchfeyTeammatePullGap { get; set; } = 9;
 
         /// <summary>
-        /// 妖术师 AI 跳过的**血量差阈值**（玩家给的数：8）。
+        /// 邪术师·至高妖精 AI 跳过的**血量差阈值**（玩家给的数：8）。
         ///
         /// 调平衡改这里 —— 调大 = 更保守（更少跳），调小 = 更激进。
         /// </summary>
-        public int HexerSkipHealthGap { get; set; } = 8;
+        public int TheArchfeySkipHealthGap { get; set; } = 8;
 
         /// <summary>
         /// AI 认为"自己血太少、不该白送回合"的血量线。
@@ -3664,10 +3664,10 @@ namespace FingerDiceDuel.Assistant
         public int AiDangerHealth { get; set; } = 8;
 
         /// <summary>
-        /// **赌徒是否应该赌博**（AI 策略）。
+        /// **游荡者·赌徒是否应该赌博**（AI 策略）。
         ///
         /// 玩家给的策略："在无法运算出有效数字如 4/5/6/8/9 时，
-        /// 赌徒会**非常倾向于**开赌。"
+        /// 游荡者·赌徒会**非常倾向于**开赌。"
         ///
         /// 判据：枚举当前所有合法运算，看有没有哪一步的结果落在
         /// 有效数字集合 {4,5,6,8,9} 里。**一个都没有** -> 开赌。
@@ -3683,12 +3683,12 @@ namespace FingerDiceDuel.Assistant
             IReadOnlyList<LegalMove> moves = _game.GetLegalMoves(actor);
             if (moves.Count == 0) return true;      // 连运算都做不了 -> 赌
 
-            // 玩家给的规则："赌徒在**无法运算出高价值点数**时优先赌。"
+            // 玩家给的规则："游荡者·赌徒在**无法运算出高价值点数**时优先赌。"
             //
             // ⚠️ 判据是**高价值**，不是"有效果"。
             //    我原来用的是"有没有产生效果"（4/5/6/8/9 都算），
             //    而那个条件在实战里几乎总成立（4/6/8 攻击、5 合盾、9 回复），
-            //    于是赌徒**从不主动开赌** —— 30 局发动率 0%。
+            //    于是游荡者·赌徒**从不主动开赌** —— 30 局发动率 0%。
             //
             //    高价值 = **能推进战局**的：4/6/8 的攻击。
             //    合盾（5）与纯回复（9）不算 —— 它们不改变局面，
@@ -3943,19 +3943,19 @@ namespace FingerDiceDuel.Assistant
             // 用 GameManager 的开关在分派攻击时短路，而不是跳过整个回合 ——
             // 跳过整个回合会让手值回退（玩家实测报的 bug）。
             //
-            // ⚠️ **法师的"放弃攻击"也走这条开关，但它在别处设。**
+            // ⚠️ **法师·塑能学派的"放弃攻击"也走这条开关，但它在别处设。**
             //
             //    玩家确认：放弃攻击 = "运算照常、手值照常改变，但不造成伤害"，
             //    只是**多了一个副作用**：为下一次攻击记下伤害类型。
             //
-            //    ⚠️ 但**不能在这里读法师的标记** —— 此处是 ResolveTurn 的**入口**，
+            //    ⚠️ 但**不能在这里读法师·塑能学派的标记** —— 此处是 ResolveTurn 的**入口**，
             //       结果还没算出来、`GameManager.ResolveMageStatusIntent`
-            //       还没跑，标记必然是 false（实测 24961 次法师回合里
+            //       还没跑，标记必然是 false（实测 24961 次法师·塑能学派回合里
             //       suppress 一次都不成立）。真正的设置点在
             //       `GameManager.ResolveMageStatusIntent`（结果算完之后）。
             _game.SuppressAttackDamage = _giveUpAttack;
 
-            // 本次攻击的距离覆盖（战士碎盾换射程 / 游侠强化）。
+            // 本次攻击的距离覆盖（战士·破阵者碎盾换射程 / 游荡者·风流剑客强化）。
             // 必须与 CanBeAttacked 看到的是同一个值，否则会出现
             // "界面允许选、结算却打不到"的不一致。
             _game.RangeOverride = CurrentRangeOverride();
@@ -3989,7 +3989,7 @@ namespace FingerDiceDuel.Assistant
                 //    掷点与结算**分属两次调用** ——
                 //    这里若调 ExecuteGamble 会重新掷，玩家看到的点数
                 //    与实际结算的点数就不同了
-                //    （玩家实测："先说投出了 4，点战士时又说投出 2 无效果"）。
+                //    （玩家实测："先说投出了 4，点战士·破阵者时又说投出 2 无效果"）。
                 result = _pendingGambleRoll > 0
                     ? _game.ExecuteGambleWithRoll(ActivePlayer, acted,
                                                   _pendingGambleRoll, _selectedTarget,
@@ -3997,14 +3997,14 @@ namespace FingerDiceDuel.Assistant
                     : _game.ExecuteTurn(ActivePlayer, acted, target,
                                         extraAction: wasExtra);
 
-                // ⚠️⚠️ **就在这一刻把"谁可以发动吟游诗人技能"记下来。**
+                // ⚠️⚠️ **就在这一刻把"谁可以发动吟游诗人·勇气学院技能"记下来。**
                 //
                 //    `TookDamageThisTurn` / `HealedThisTurn` 会在**下一次
                 //    `BeginTurn()`**（换人时）被清掉，而换人发生在
                 //    `ExecuteResolvedTurn` 的收尾 —— 早于界面的 `RefreshView`。
                 //    所以刷新时再去读标记，伤害早就被清干净了
                 //    （玩家实测："第一次受伤也没跳出提示"）。
-                SnapshotBardEligibility();
+                SnapshotCollegeOfValorEligibility();
             }
             catch (InvalidOperationException ex)
             {
@@ -4049,11 +4049,11 @@ namespace FingerDiceDuel.Assistant
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
 
-            // 法师的状态体系：记下"这一位的回合该在换人时结算结束"
+            // 法师·塑能学派的状态体系：记下"这一位的回合该在换人时结算结束"
             _statusTurnEndFor = result.Actor;
 
-            // ⚠️ **赌徒的强制赌博状态**（玩家确认的规则）：
-            //    "若赌徒上一个自己的回合进行了正常的运算（非赌博），
+            // ⚠️ **游荡者·赌徒的强制赌博状态**（玩家确认的规则）：
+            //    "若游荡者·赌徒上一个自己的回合进行了正常的运算（非赌博），
             //     那么这一回合就必须赌博"；"赌完就解除"。
             //
             //    跳过回合**不算**正常运算（不触发强制）——
@@ -4066,7 +4066,7 @@ namespace FingerDiceDuel.Assistant
             string extraPrefix = result.IsExtraAction ? "【额外行动】" : "";
             foreach (string line in DescribeTurnLines(result)) _log.Add(extraPrefix + line);
 
-            // 圣武士的冲击不占一次运算，所以不在 TurnResult 里 ——
+            // 圣武士·奉献之誓的冲击不占一次运算，所以不在 TurnResult 里 ——
             // 单独把本回合的冲击记录补进战报（玩家要求能看见它是否发生）。
             foreach (string shock in _game.TakeShockLog()) _log.Add(shock);
             foreach (string skill in _game.TakeSkillLog()) _log.Add(skill);
@@ -4113,8 +4113,8 @@ namespace FingerDiceDuel.Assistant
             BeginTurn();
         }
 
-        // 注：此前这里有一个 RequiresLockChoice()，用 `is BarbarianLogic` 硬编码判断
-        //     "野蛮人是否需要额外问一次锁手"。现已改为由角色自己通过
+        // 注：此前这里有一个 RequiresLockChoice()，用 `is PathOfTheWardenLogic` 硬编码判断
+        //     "野蛮人·守望者道途是否需要额外问一次锁手"。现已改为由角色自己通过
         //     IPreTurnChoiceProvider 声明（见 BeginCharacterChoices），
         //     控制器不再认识任何具体角色类型。
 
@@ -4131,7 +4131,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 这次运算是否需要先问"用哪面盾挡"。
         /// 只有在"会打出一次攻击"且"防守方两面都是成型盾"时才需要。
-        /// 咒术师无视护盾时多问一次是无害的 —— 护盾不会被消费。
+        /// 法师·咒法学派无视护盾时多问一次是无害的 —— 护盾不会被消费。
         /// </summary>
         private bool RequiresDefenseChoice(Hand acted, Hand target, out List<Hand> shields)
         {
@@ -4170,7 +4170,7 @@ namespace FingerDiceDuel.Assistant
             => owner != null && ReferenceEquals(hand, owner.LeftHand) ? "左手" : "右手";
 
         /// <summary>
-        /// 把一次结算结果转成人话（可能**多行**，例如剑客的追加攻击单独一行）。
+        /// 把一次结算结果转成人话（可能**多行**，例如战士·剑士的追加攻击单独一行）。
         /// 由 <see cref="ExecuteResolvedTurn"/> 逐行写进战报。
         /// </summary>
         private void FlushSkillLog()

@@ -25,15 +25,15 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_four_and_six_only_ask_for_shock_then_form_a_shield()
+        public void OathOfDevotion_four_and_six_only_ask_for_shock_then_form_a_shield()
         {
             foreach (int value in new[] { 4, 6 })
             {
-                var actor = CharacterFactory.CreatePlayer("圣武士", CharacterDefinition.Paladin);
+                var actor = CharacterFactory.CreatePlayer("圣武士·奉献之誓", CharacterDefinition.OathOfDevotion);
                 var board = Board(actor, out var other, out _);
                 actor.LeftHand.SetValue(value - 1);
                 board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
-                Assert.AreEqual(HandEffect.PaladinShockTarget, board.PendingEffect);
+                Assert.AreEqual(HandEffect.OathOfDevotionShockTarget, board.PendingEffect);
                 Assert.IsTrue(board.Hint.Contains("【冲击】"));
                 Assert.IsFalse(board.Phase == BoardPhase.ChoosingTargetPlayer);
                 board.ClickHand(other.LeftHand);
@@ -45,9 +45,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_breaking_and_forming_a_shield_keeps_both_shock_choices()
+        public void OathOfDevotion_breaking_and_forming_a_shield_keeps_both_shock_choices()
         {
-            var actor = CharacterFactory.CreatePlayer("圣武士", CharacterDefinition.Paladin);
+            var actor = CharacterFactory.CreatePlayer("圣武士·奉献之誓", CharacterDefinition.OathOfDevotion);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(4); actor.LeftHand.SetShieldState(ShieldState.Formed);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
@@ -60,9 +60,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Paladin_eight_still_requires_an_attack_target()
+        public void OathOfDevotion_eight_still_requires_an_attack_target()
         {
-            var actor = CharacterFactory.CreatePlayer("圣武士", CharacterDefinition.Paladin);
+            var actor = CharacterFactory.CreatePlayer("圣武士·奉献之誓", CharacterDefinition.OathOfDevotion);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(7);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
@@ -72,11 +72,11 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Dual_paladin_does_not_restore_the_redundant_attack_question()
         {
-            var actor = DualGeneralFactory.Create("双将", CharacterDefinition.Paladin, CharacterDefinition.Knight);
+            var actor = DualGeneralFactory.Create("双将", CharacterDefinition.OathOfDevotion, CharacterDefinition.OathOfTheCrown);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(3);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
-            Assert.AreEqual(HandEffect.PaladinShockTarget, board.PendingEffect);
+            Assert.AreEqual(HandEffect.OathOfDevotionShockTarget, board.PendingEffect);
             board.ClickHand(other.LeftHand);
             Assert.AreEqual(HandEffectType.Shield, board.LastTurn.Effect);
         }
@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Healing_another_player_reports_actual_capped_health_gain()
         {
-            var actor = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var actor = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(8); other.SetHealthExact(19);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
@@ -96,7 +96,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Declining_power_shot_does_not_log_it_as_activated()
         {
-            var actor = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var actor = CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler);
             var board = Board(actor, out var other, out _);
             actor.LeftHand.SetValue(3); actor.RightHand.SetValue(2);
             board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
@@ -107,14 +107,14 @@ namespace FingerDiceDuel.Tests
                 else break;
             }
             Assert.NotNull(board.LastTurn);
-            Assert.IsFalse(string.Join("\n", board.Log).Contains("【强化射击】"));
+            Assert.IsFalse(string.Join("\n", board.Log).Contains("【乘风突刺】"));
             Assert.AreEqual(2, actor.RightHand.Value);
         }
 
         [Test]
         public void Pending_steal_attack_never_claims_an_electrified_status()
         {
-            var actor = CharacterFactory.CreatePlayer("盗贼", CharacterDefinition.Thief);
+            var actor = CharacterFactory.CreatePlayer("游荡者·盗贼", CharacterDefinition.Thief);
             var board = Board(actor, out var other, out var game);
             actor.LeftHand.SetValue(4); other.LeftHand.SetValue(4);
             game.ExecuteSteal(actor, actor.LeftHand, other.LeftHand);

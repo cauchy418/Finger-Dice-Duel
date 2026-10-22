@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **法师的伤害类型 / 状态指引数据**测试。
+    /// **法师·塑能学派的伤害类型 / 状态指引数据**测试。
     ///
     /// ⚠️ 这些文字原来是写死在 UI 层（`GameBootstrap.BuildDamageTypeCard`）的，
     ///    而 **UI 是叶子层、测试项目引用不到**（分层铁律），于是没法测。
@@ -247,7 +247,7 @@ namespace FingerDiceDuel.Tests
         {
             string line = StatusNames.GuideLine(DamageType.Force);
 
-            Assert.IsTrue(line.Contains("不可闪避"), "玩家确认：力场同咒术师，无法被任何方式抵挡/闪避。");
+            Assert.IsTrue(line.Contains("不可闪避"), "玩家确认：力场同法师·咒法学派，无法被任何方式抵挡/闪避。");
             Assert.IsTrue(line.Contains("不挂状态"), "力场不附带任何持续状态，必须写明。");
         }
 

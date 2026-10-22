@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
@@ -86,7 +86,7 @@ namespace FingerDiceDuel.Tests
             HandSplit split = new DiceSplitAdvisor().Choose(player.Definition, null, splits);
             player.LeftHand.SetValue(split.Left);
             player.RightHand.SetValue(split.Right);
-            MonkLogic.ApplyTaichiToFives(player);
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(player);
         }
 
         [Test]
@@ -268,7 +268,7 @@ namespace FingerDiceDuel.Tests
 
                 game.ResolveStatusTurnEnd(actor);
                 for (int i = 0; i < game.Players.Count; i++)
-                    BardAi.TryActivate(game.Players[i], game);
+                    CollegeOfValorAi.TryActivate(game.Players[i], game);
             }
         }
 
@@ -314,7 +314,7 @@ namespace FingerDiceDuel.Tests
 
                 game.ResolveStatusTurnEnd(actor);
                 for (int i = 0; i < game.Players.Count; i++)
-                    BardAi.TryActivate(game.Players[i], game);
+                    CollegeOfValorAi.TryActivate(game.Players[i], game);
             }
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -13,16 +13,16 @@ namespace FingerDiceDuel.Tests
     /// **所有攻击都要有伤害类型**（玩家要求）——逐条钉住每个角色的规则。
     ///
     /// 玩家原话：
-    ///   "现在把所有攻击都标记上攻击类型，士兵攻击是挥砍攻击，
-    ///    战士攻击和碎盾无距离限制攻击都是挥砍，咒术师是力场伤害，
-    ///    野蛮人是钝击伤害，牧师对攻击距离为1的是钝击伤害，对攻击距离1以外的是穿刺伤害，
-    ///    游侠普通情况是挥砍，用2强化的攻击是穿刺伤害，狼人是挥砍，
-    ///    剑客攻击和追加攻击都是挥砍，忍者是挥砍，刺客是穿刺，
-    ///    圣武士攻击和盾牌冲击都是钝击，妖术师对距离为1是钝击，1以外是穿刺，
-    ///    魔射手是穿刺，赌徒是挥砍，骑士是穿刺，武僧是钝击，
-    ///    太极反弹的伤害类型由该伤害决定，巨人是钝击，盗贼是挥砍，
-    ///    猎人非伏击是挥砍，伏击是穿刺，魔术师是穿刺，
-    ///    法师附加效果后由附加决定，没附加距离1是钝击，1以外是穿刺。"
+    ///   "现在把所有攻击都标记上攻击类型，战士·勇士攻击是挥砍攻击，
+    ///    战士·破阵者攻击和碎盾无距离限制攻击都是挥砍，法师·咒法学派是力场伤害，
+    ///    野蛮人·守望者道途是钝击伤害，牧师·生命领域对攻击距离为1的是钝击伤害，对攻击距离1以外的是穿刺伤害，
+    ///    游荡者·风流剑客普通情况是挥砍，用2强化的攻击是穿刺伤害，野蛮人·野兽道途是挥砍，
+    ///    战士·剑士攻击和追加攻击都是挥砍，武僧·忍宗是挥砍，游荡者·刺客是穿刺，
+    ///    圣武士·奉献之誓攻击和盾牌冲击都是钝击，邪术师·至高妖精对距离为1是钝击，1以外是穿刺，
+    ///    战士·魔射手是穿刺，游荡者·赌徒是挥砍，圣武士·王冠之誓是穿刺，武僧·太极宗是钝击，
+    ///    太极反弹的伤害类型由该伤害决定，野蛮人·巨人道途是钝击，游荡者·盗贼是挥砍，
+    ///    游侠·幽域追踪者非伏击是挥砍，伏击是穿刺，游荡者·魔术师是穿刺，
+    ///    法师·塑能学派附加效果后由附加决定，没附加距离1是钝击，1以外是穿刺。"
     /// </summary>
     [TestFixture]
     public class AttackTypeTests
@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Tests
             Assert.NotNull(def, "找不到角色：" + id);
 
             PlayerState self = CharacterFactory.CreatePlayer("自己", def);
-            PlayerState foe = CharacterFactory.CreatePlayer("对手", CharacterDefinition.Soldier);
+            PlayerState foe = CharacterFactory.CreatePlayer("对手", CharacterDefinition.Champion);
 
             var tmpl = (CharacterTemplate)self.Character;
             tmpl.LastAttackDistance = distance;
@@ -57,20 +57,20 @@ namespace FingerDiceDuel.Tests
         public void Slashing_characters()
         {
             // 玩家明确点名的挥砍角色
-            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.SoldierId),
-                "士兵 = 挥砍");
-            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.FighterId),
-                "战士（含碎盾无距离限制攻击）= 挥砍");
-            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.WerewolfId),
-                "狼人 = 挥砍");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.ChampionId),
+                "战士·勇士 = 挥砍");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.BreakerId),
+                "战士·破阵者（含碎盾无距离限制攻击）= 挥砍");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.PathOfTheBeastId),
+                "野蛮人·野兽道途 = 挥砍");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.SwordsmanId),
-                "剑客（含追加攻击）= 挥砍");
-            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.NinjaId),
-                "忍者 = 挥砍");
+                "战士·剑士（含追加攻击）= 挥砍");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.WayOfTheNinjaId),
+                "武僧·忍宗 = 挥砍");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.GamblerId),
-                "赌徒 = 挥砍");
+                "游荡者·赌徒 = 挥砍");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.ThiefId),
-                "盗贼 = 挥砍");
+                "游荡者·盗贼 = 挥砍");
         }
 
         // ---------------- 钝击 ----------------
@@ -78,14 +78,14 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Bludgeoning_characters()
         {
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.BarbarianId),
-                "野蛮人 = 钝击");
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.PaladinId),
-                "圣武士（含盾牌冲击）= 钝击");
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.MonkId),
-                "武僧 = 钝击（太极反弹继承同类型）");
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.GiantId),
-                "巨人 = 钝击");
+            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.PathOfTheWardenId),
+                "野蛮人·守望者道途 = 钝击");
+            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.OathOfDevotionId),
+                "圣武士·奉献之誓（含盾牌冲击）= 钝击");
+            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.WayOfTheTaiChiId),
+                "武僧·太极宗 = 钝击（太极反弹继承同类型）");
+            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.PathOfTheGiantId),
+                "野蛮人·巨人道途 = 钝击");
         }
 
         // ---------------- 穿刺 ----------------
@@ -94,71 +94,71 @@ namespace FingerDiceDuel.Tests
         public void Piercing_characters()
         {
             Assert.AreEqual(AttackDamageType.Piercing, TypeOf(CharacterDefinition.AssassinId),
-                "刺客 = 穿刺");
+                "游荡者·刺客 = 穿刺");
             Assert.AreEqual(AttackDamageType.Piercing, TypeOf(CharacterDefinition.ArcaneArcherId),
-                "魔射手 = 穿刺");
-            Assert.AreEqual(AttackDamageType.Piercing, TypeOf(CharacterDefinition.KnightId),
-                "骑士 = 穿刺");
+                "战士·魔射手 = 穿刺");
+            Assert.AreEqual(AttackDamageType.Piercing, TypeOf(CharacterDefinition.OathOfTheCrownId),
+                "圣武士·王冠之誓 = 穿刺");
             Assert.AreEqual(AttackDamageType.Piercing, TypeOf(CharacterDefinition.MagicianId),
-                "魔术师 = 穿刺");
+                "游荡者·魔术师 = 穿刺");
         }
 
         // ---------------- 力场 ----------------
 
         [Test]
-        public void Curseweaver_is_force()
+        public void SchoolOfConjuration_is_force()
         {
-            Assert.AreEqual(AttackDamageType.Force, TypeOf(CharacterDefinition.CurseweaverId),
-                "咒术师 = 力场伤害");
+            Assert.AreEqual(AttackDamageType.Force, TypeOf(CharacterDefinition.SchoolOfConjurationId),
+                "法师·咒法学派 = 力场伤害");
         }
 
         // ---------------- 按距离分型 ----------------
 
         [Test]
-        public void Cleric_is_bludgeoning_near_and_piercing_far()
+        public void LifeDomain_is_bludgeoning_near_and_piercing_far()
         {
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.ClericId, 1), "牧师 距离 1 = 钝击");
+                TypeOf(CharacterDefinition.LifeDomainId, 1), "牧师·生命领域 距离 1 = 钝击");
             Assert.AreEqual(AttackDamageType.Piercing,
-                TypeOf(CharacterDefinition.ClericId, 2), "牧师 距离 2 = 穿刺");
+                TypeOf(CharacterDefinition.LifeDomainId, 2), "牧师·生命领域 距离 2 = 穿刺");
         }
 
         [Test]
-        public void Hexer_is_bludgeoning_near_and_piercing_far()
+        public void TheArchfey_is_bludgeoning_near_and_piercing_far()
         {
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.HexerId, 1), "妖术师 距离 1 = 钝击");
+                TypeOf(CharacterDefinition.TheArchfeyId, 1), "邪术师·至高妖精 距离 1 = 钝击");
             Assert.AreEqual(AttackDamageType.Piercing,
-                TypeOf(CharacterDefinition.HexerId, 2), "妖术师 距离 2 = 穿刺");
+                TypeOf(CharacterDefinition.TheArchfeyId, 2), "邪术师·至高妖精 距离 2 = 穿刺");
         }
 
         [Test]
-        public void Wizard_falls_back_to_distance_when_nothing_is_pending()
+        public void SchoolOfEvocation_falls_back_to_distance_when_nothing_is_pending()
         {
-            CharacterDefinition def = Find(CharacterDefinition.WizardId);
+            CharacterDefinition def = Find(CharacterDefinition.SchoolOfEvocationId);
             PlayerState self = CharacterFactory.CreatePlayer("法", def);
-            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
             var tmpl = (CharacterTemplate)self.Character;
 
             // 没有附加类型 -> 按距离
             tmpl.LastAttackDistance = 1;
             Assert.AreEqual(AttackDamageType.Bludgeoning,
                 tmpl.AttackTypeOf(new AttackContext(self, foe, self.LeftHand, 4)),
-                "法师 无附加 + 距离 1 = 钝击");
+                "法师·塑能学派 无附加 + 距离 1 = 钝击");
 
             tmpl.LastAttackDistance = 2;
             Assert.AreEqual(AttackDamageType.Piercing,
                 tmpl.AttackTypeOf(new AttackContext(self, foe, self.LeftHand, 4)),
-                "法师 无附加 + 距离 2 = 穿刺");
+                "法师·塑能学派 无附加 + 距离 2 = 穿刺");
         }
 
         [Test]
-        public void Wizard_uses_the_pending_type_when_it_has_one()
+        public void SchoolOfEvocation_uses_the_pending_type_when_it_has_one()
         {
-            CharacterDefinition def = Find(CharacterDefinition.WizardId);
+            CharacterDefinition def = Find(CharacterDefinition.SchoolOfEvocationId);
             PlayerState self = CharacterFactory.CreatePlayer("法", def);
-            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
-            var logic = (WizardLogic)self.Character;
+            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
+            var logic = (SchoolOfEvocationLogic)self.Character;
 
             // 每个魔法类型都要变成对应的攻击类型
             AttackDamageType[] all = AttackDamageTypes.AllMagic;
@@ -172,43 +172,43 @@ namespace FingerDiceDuel.Tests
 
                 Assert.AreEqual(expected,
                     logic.AttackTypeOf(new AttackContext(self, foe, self.LeftHand, 4)),
-                    "法师有附加类型时，由附加的类型决定（" + expected + "）");
+                    "法师·塑能学派有附加类型时，由附加的类型决定（" + expected + "）");
             }
         }
 
-        // ---------------- 游侠 / 猎人 ----------------
+        // ---------------- 游荡者·风流剑客 / 游侠·幽域追踪者 ----------------
 
         [Test]
-        public void Ranger_is_slashing_normally_and_piercing_when_empowered()
+        public void Swashbuckler_is_slashing_normally_and_piercing_when_empowered()
         {
-            CharacterDefinition def = Find(CharacterDefinition.RangerId);
+            CharacterDefinition def = Find(CharacterDefinition.SwashbucklerId);
             PlayerState self = CharacterFactory.CreatePlayer("游", def);
-            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
             var tmpl = (CharacterTemplate)self.Character;
 
             var normal = new AttackContext(self, foe, self.LeftHand, 4);
             Assert.AreEqual(AttackDamageType.Slashing, tmpl.AttackTypeOf(normal),
-                "游侠 普通 = 挥砍");
+                "游荡者·风流剑客 普通 = 挥砍");
 
             var empowered = new AttackContext(self, foe, self.LeftHand, 4)
             {
-                DamageMultiplier = 1.5f,      // 强化射击就是这么标记的
+                DamageMultiplier = 1.5f,      // 乘风突刺就是这么标记的
             };
             Assert.AreEqual(AttackDamageType.Piercing, tmpl.AttackTypeOf(empowered),
-                "游侠 用 2 强化 = 穿刺");
+                "游荡者·风流剑客 用 2 强化 = 穿刺");
         }
 
         [Test]
-        public void Hunter_is_slashing_normally_and_piercing_when_ambushing()
+        public void GloomStalker_is_slashing_normally_and_piercing_when_ambushing()
         {
-            CharacterDefinition def = Find(CharacterDefinition.HunterId);
+            CharacterDefinition def = Find(CharacterDefinition.GloomStalkerId);
             PlayerState self = CharacterFactory.CreatePlayer("猎", def);
-            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            PlayerState foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
             var logic = (CharacterTemplate)self.Character;
             var ctx = new AttackContext(self, foe, self.LeftHand, 4);
 
             Assert.AreEqual(AttackDamageType.Slashing, logic.AttackTypeOf(ctx),
-                "猎人 非伏击 = 挥砍");
+                "游侠·幽域追踪者 非伏击 = 挥砍");
         }
 
         // ---------------- 颜色的唯一真相 ----------------
@@ -219,26 +219,26 @@ namespace FingerDiceDuel.Tests
         public void A_preset_attack_type_is_not_overridden_by_the_attacker()
         {
             // 玩家原话：
-            //   "武僧的太极反弹根据反弹的攻击定，
+            //   "武僧·太极宗的太极反弹根据反弹的攻击定，
             //    比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害。"
             //
             // 实现要点：反弹是"内部再开一个 AttackContext"，
-            // 那一刻**武僧成了攻击方**。若弹回去时再问一次攻击方类型，
-            // 问到的是武僧自己的**钝击** —— 那就永远弹回去钝击了。
+            // 那一刻**武僧·太极宗成了攻击方**。若弹回去时再问一次攻击方类型，
+            // 问到的是武僧·太极宗自己的**钝击** —— 那就永远弹回去钝击了。
             // 所以 `Resolve` 里加了「已经带了类型就不再推导」的守卫。
             //
             // 这条测试直接钉住那个守卫：把一个【寒冷】预置给
-            // **以武僧为攻击方**的上下文，结算后它必须还是寒冷。
-            PlayerState monk = CharacterFactory.CreatePlayer(
-                "僧", Find(CharacterDefinition.MonkId));
+            // **以武僧·太极宗为攻击方**的上下文，结算后它必须还是寒冷。
+            PlayerState wayOfTheTaiChi = CharacterFactory.CreatePlayer(
+                "僧", Find(CharacterDefinition.WayOfTheTaiChiId));
             PlayerState foe = CharacterFactory.CreatePlayer(
-                "敌", Find(CharacterDefinition.SoldierId));
+                "敌", Find(CharacterDefinition.ChampionId));
 
-            var game = new GameManager(monk, foe,
+            var game = new GameManager(wayOfTheTaiChi, foe,
                                        new FingerDiceDuel.Assistant.SimpleChoiceProvider(),
                                        new FingerDiceDuel.Assistant.SimpleChoiceProvider());
 
-            var ctx = new AttackContext(monk, foe, monk.LeftHand, 4)
+            var ctx = new AttackContext(wayOfTheTaiChi, foe, wayOfTheTaiChi.LeftHand, 4)
             {
                 AttackType = AttackDamageType.Cold,     // 模拟"打来的那次是寒冷"
             };
@@ -247,17 +247,17 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(AttackDamageType.Cold, ctx.AttackType,
                 "预置的攻击类型不能被攻击方覆盖 —— 否则太极反弹"
-                + "永远会变成武僧自己的钝击。");
+                + "永远会变成武僧·太极宗自己的钝击。");
         }
 
         [Test]
-        public void Monk_attacking_normally_is_still_bludgeoning()
+        public void WayOfTheTaiChi_attacking_normally_is_still_bludgeoning()
         {
-            // 反向保证：武僧**自己**出手时仍然是钝击
+            // 反向保证：武僧·太极宗**自己**出手时仍然是钝击
             // （守卫只影响"已经预置类型"的那种上下文，不影响正常攻击）。
             Assert.AreEqual(AttackDamageType.Bludgeoning,
-                TypeOf(CharacterDefinition.MonkId),
-                "武僧主动攻击 = 钝击");
+                TypeOf(CharacterDefinition.WayOfTheTaiChiId),
+                "武僧·太极宗主动攻击 = 钝击");
         }
 
         [Test]
@@ -311,9 +311,9 @@ namespace FingerDiceDuel.Tests
         public void Damage_and_block_floats_take_the_attack_type_colour()
         {
             PlayerState actor = CharacterFactory.CreatePlayer(
-                "甲", CharacterDefinition.Soldier);
+                "甲", CharacterDefinition.Champion);
             PlayerState defender = CharacterFactory.CreatePlayer(
-                "乙", CharacterDefinition.Soldier);
+                "乙", CharacterDefinition.Champion);
 
             var result = new TurnResult
             {

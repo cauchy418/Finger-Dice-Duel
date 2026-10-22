@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **物理伤害**（玩家本轮新增的三类）。
     ///
-    /// 与法师的 10 种"魔法伤害类型"（<see cref="DamageType"/>）并列，
+    /// 与法师·塑能学派的 10 种"魔法伤害类型"（<see cref="DamageType"/>）并列，
     /// 构成速查表上的**三大类**：
     ///   · 魔法伤害（10 种，见 <see cref="DamageType"/>）
     ///   · 物理伤害（3 种，见本枚举）

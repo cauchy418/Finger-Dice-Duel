@@ -1,9 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **法师状态体系的规则中心**。
+    /// **法师·塑能学派状态体系的规则中心**。
     ///
     /// 为什么要有这个类：状态挂在 <see cref="PlayerState"/> 上，但用到它的地方有三处
     ///   · <see cref="AttackContext"/>（伤害结算：强酸降防、震慑降攻）
@@ -26,8 +26,8 @@ namespace FingerDiceDuel.Core
             if (p != null && p.HasStatus(StatusEffect.Panic)) bonus -= PanicAttackPenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
-            // 吟游诗人的加成与"角色自身加成"**同层相加**（可正可负）
-            if (p != null) bonus += p.BardAttackOffset;
+            // 吟游诗人·勇气学院的加成与"角色自身加成"**同层相加**（可正可负）
+            if (p != null) bonus += p.CollegeOfValorAttackOffset;
             if (p != null) bonus += p.IdentityAttackBonus;
             if (p != null) bonus += p.DynamicAttackBonus;
             if (p != null) bonus += p.LordAttackBonus;
@@ -41,8 +41,8 @@ namespace FingerDiceDuel.Core
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
-            // 吟游诗人的加成（与强酸同层相加）
-            if (p != null) bonus += p.BardDefenseOffset;
+            // 吟游诗人·勇气学院的加成（与强酸同层相加）
+            if (p != null) bonus += p.CollegeOfValorDefenseOffset;
             if (p != null) bonus += p.IdentityDefenseBonus;
             if (p != null) bonus += p.DynamicDefenseBonus;
             if (p != null) bonus += p.LordDefenseBonus;
@@ -83,7 +83,7 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 必须在"归一化之后、查效果表之前"应用 —— 否则 9 已经先被当成回复处理了。
         ///
         /// ⚠️⚠️ **下限是 1，不能是 0。**
-        ///    玩家实测报的 bug："战士被冰冻影响出现了 0，不行，最小是 1"。
+        ///    玩家实测报的 bug："战士·破阵者被冰冻影响出现了 0，不行，最小是 1"。
         ///    根因：算出 1 时 `1 / 2 == 0`，而 **0 在手牌里是"空手"的意思** ——
         ///    于是那一格变成不能用的死格（界面上显示 `0` 与 `—`）。
         ///    冰冻的正确语义是"削弱"，不是"把手废掉"，所以钳到 1。
@@ -164,7 +164,7 @@ namespace FingerDiceDuel.Core
         /// **目盲**：计算时只能选择与**自己距离 1** 的手当被加数。
         ///
         /// 自己两只手的距离是 0（<see cref="GameManager.DistanceBetween"/> 对自己返回 0），
-        /// 所以魔术师那种"自加"**不受目盲限制**。
+        /// 所以游荡者·魔术师那种"自加"**不受目盲限制**。
         /// </summary>
         public static bool CanUseHandAsAddend(PlayerState actor, Hand hand, GameManager game)
         {

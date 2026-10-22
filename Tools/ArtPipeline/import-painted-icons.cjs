@@ -8,9 +8,9 @@ const dst=path.join(root,'Assets/Resources/Art/Battle/v1');
 const plans=[
  {group:'Damage',file:'damage-sheet.png',cols:5,rows:3,keys:['slashing','bludgeoning','piercing','thunder','acid','poison','radiant','necrotic','fire','cold','lightning','force','psychic']},
  {group:'Status',file:'status-sheet.png',cols:3,rows:3,keys:['resonance','acid','poison','blind','decay','burn','freeze','shock','stun']},
- {group:'Classes',file:'classes-a-sheet.png',cols:4,rows:2,keys:['soldier','fighter','curseweaver','barbarian','cleric','ranger','werewolf','swordsman']},
- {group:'Classes',file:'classes-b-sheet.png',cols:4,rows:2,keys:['ninja','assassin','paladin','hexer','arcane_archer','gambler','knight','monk']},
- {group:'Classes',file:'classes-c-sheet.png',cols:4,rows:2,keys:['giant','thief','hunter','magician','wizard','sorcerer','warlock','bard']}
+ {group:'Subclasses',file:'classes-a-sheet.png',cols:4,rows:2,keys:['fighter_champion','fighter_breaker','wizard_school_of_conjuration','barbarian_path_of_the_warden','cleric_life_domain','rogue_swashbuckler','barbarian_path_of_the_beast','fighter_swordsman']},
+ {group:'Subclasses',file:'classes-b-sheet.png',cols:4,rows:2,keys:['monk_way_of_the_ninja','rogue_assassin','paladin_oath_of_devotion','warlock_the_archfey','fighter_arcane_archer','rogue_gambler','paladin_oath_of_the_crown','monk_way_of_the_tai_chi']},
+ {group:'Subclasses',file:'classes-c-sheet.png',cols:4,rows:2,keys:['barbarian_path_of_the_giant','rogue_thief','ranger_gloom_stalker','rogue_magician','wizard_school_of_evocation','sorcerer_wild_magic','warlock_the_great_old_one','bard_college_of_valor']}
 ];
 async function main(){
  const assets=[],prepared=[];
@@ -27,7 +27,7 @@ async function main(){
      const crop=await sharp(source).extract({left,top,width,height}).png().toBuffer();
      await fs.writeFile(path.join(native,`${key}.png`),crop);
      let finalCrop=crop,specklesRemoved=0;
-     if(plan.group==='Classes'){
+     if(plan.group==='Subclasses'){
        const {data,info}=await sharp(crop).ensureAlpha().raw().toBuffer({resolveWithObject:true});
        const rr=Math.pow(Math.min(width,height)*.47,2);
        for(let y=0;y<height;y++)for(let x=0;x<width;x++){

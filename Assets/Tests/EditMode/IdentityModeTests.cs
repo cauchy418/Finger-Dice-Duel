@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -49,13 +49,13 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Lord_titles_and_bonuses_follow_alignment_and_alive_units()
         {
-            MatchWith(CharacterDefinition.Paladin, out GameManager lawful, out List<PlayerState> lp);
+            MatchWith(CharacterDefinition.OathOfDevotion, out GameManager lawful, out List<PlayerState> lp);
             Assert.AreEqual("明主", lawful.IdentityLordTitle);
             Assert.AreEqual(25, lp[0].MaximumHealth);
-            Assert.AreEqual(10, StatusRules.EffectiveDefenseBonus(lp[0]), "圣武士基础防御 +1、主公 +1、明主 8 人 +8。");
+            Assert.AreEqual(10, StatusRules.EffectiveDefenseBonus(lp[0]), "圣武士·奉献之誓基础防御 +1、主公 +1、明主 8 人 +8。");
             Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(lp[0]));
 
-            MatchWith(CharacterDefinition.Barbarian, out GameManager chaotic, out List<PlayerState> cp);
+            MatchWith(CharacterDefinition.PathOfTheWarden, out GameManager chaotic, out List<PlayerState> cp);
             Assert.AreEqual("暴君", chaotic.IdentityLordTitle);
             Assert.AreEqual(20 + 5 + 8 * 5, cp[0].MaximumHealth, "基础 +5，每个混乱单位再 +5。");
             Assert.AreEqual(cp[0].MaximumHealth, cp[0].Health);

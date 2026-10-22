@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Tests
         public void Full_health_is_ratio_one()
         {
             Assert.AreEqual(1f, AnimationDirector.HealthRatio(20, 20));
-            Assert.AreEqual(1f, AnimationDirector.HealthRatio(25, 25), "狼人上限 25");
+            Assert.AreEqual(1f, AnimationDirector.HealthRatio(25, 25), "野蛮人·野兽道途上限 25");
         }
 
         [Test]
@@ -66,9 +66,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Werewolf_25_max_health_bar_uses_its_own_max()
+        public void PathOfTheBeast_25_max_health_bar_uses_its_own_max()
         {
-            // 狼人上限 25：满血应是满条，而不是 20/25 那种"看起来缺一块"
+            // 野蛮人·野兽道途上限 25：满血应是满条，而不是 20/25 那种"看起来缺一块"
             const float full = 220f;
 
             Assert.AreEqual(full, AnimationDirector.HealthBarFillWidth(full, 25, 25));

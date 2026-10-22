@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
 
@@ -24,8 +24,8 @@ namespace FingerDiceDuel.Tests
             for (int g = 0; g < games; g++)
             {
                 TwoVersusTwoHarness.Outcome r = TwoVersusTwoHarness.Play(
-                    CharacterDefinition.Soldier, CharacterDefinition.Soldier,
-                    CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                    CharacterDefinition.Champion, CharacterDefinition.Champion,
+                    CharacterDefinition.Champion, CharacterDefinition.Champion,
                     g, 400, out _);
 
                 if (r.Error != null) errors++;
@@ -48,8 +48,8 @@ namespace FingerDiceDuel.Tests
             for (int g = 0; g < games; g++)
             {
                 TwoVersusTwoHarness.Outcome r = TwoVersusTwoHarness.Play(
-                    CharacterDefinition.Soldier, CharacterDefinition.Soldier,
-                    CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                    CharacterDefinition.Champion, CharacterDefinition.Champion,
+                    CharacterDefinition.Champion, CharacterDefinition.Champion,
                     g, 400, out _);
 
                 if (r.Error != null) errors++;
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(0, errors, "测试台出错。");
             Assert.True(decided > 0,
-                $"四个士兵对打 {games} 局里一局都没分出胜负（平 {drew}）");
+                $"四个战士·勇士对打 {games} 局里一局都没分出胜负（平 {drew}）");
         }
 
 

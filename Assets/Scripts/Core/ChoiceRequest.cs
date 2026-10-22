@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public enum HandEffect
     {
-        /// <summary>破誓者持有5时，把整次攻击转移给持完整盾牌的非攻击者。</summary>
+        /// <summary>圣武士·破誓者持有5时，把整次攻击转移给持完整盾牌的非攻击者。</summary>
         OathbreakerTransfer = 100,
         None = 0,
 
@@ -16,74 +16,74 @@ namespace FingerDiceDuel.Core
         ShieldBlock,
 
         // ---------- 已有角色 ----------
-        /// <summary>野蛮人：合出护盾后，选择锁住对手哪一只手。</summary>
-        BarbarianLockTarget,
+        /// <summary>野蛮人·守望者道途：合出护盾后，选择锁住对手哪一只手。</summary>
+        PathOfTheWardenLockTarget,
 
         /// <summary>
-        /// 战士：自己的盾破碎后，选择把场上哪一面**完好**的盾一起打碎。
+        /// 战士·破阵者：自己的盾破碎后，选择把场上哪一面**完好**的盾一起打碎。
         ///
         /// 规则：盾碎时**先看场上还有没有完好的盾** —— 没有就静默跳过、不弹选择；
         /// 有则弹「是否发动」，同意后**点那面完好的盾**作为目标。
         ///
-        /// ⚠️ 与野蛮人锁手同一模式：**必须在运算前收集**。
+        /// ⚠️ 与野蛮人·守望者道途锁手同一模式：**必须在运算前收集**。
         /// 结算一旦开始就一次跑完，没法中途问人类玩家
         /// （这正是本技能曾经对人类玩家"不生效"的原因）。
         /// </summary>
-        FighterChainBreak,
+        BreakerChainBreak,
 
         /// <summary>
-        /// 战士：发起攻击时，若**另一只手是完整的盾牌**，可以让它破碎，
+        /// 战士·破阵者：发起攻击时，若**另一只手是完整的盾牌**，可以让它破碎，
         /// 使**本次攻击距离无限**（玩家新增的技能）。
         ///
         /// 为什么需要它：攻击距离只影响 2v2 / 8 人局 ——
-        /// 距离 1 的战士够不到"环上对角"的对手（2v2 里相隔 2），
+        /// 距离 1 的战士·破阵者够不到"环上对角"的对手（2v2 里相隔 2），
         /// 用一面盾换这一次的无限距离就是他的解法。
         ///
         /// ⚠️ 这是**可选**的（"可以让它破碎"）——允许放弃（放弃 = 保留盾）。
         /// 与其它抉择一样必须**在运算前收集**。
         /// </summary>
-        FighterRangeBreak,
+        BreakerRangeBreak,
 
-        // ---------- 圣武士 ----------
+        // ---------- 圣武士·奉献之誓 ----------
         /// <summary>
-        /// 圣武士：冲击的目标（攻击范围内一名角色，含队友）。
+        /// 圣武士·奉献之誓：冲击的目标（攻击范围内一名角色，含队友）。
         ///
         /// **强制发动**（`allowDecline = false`）—— 玩家只选目标，不能放弃。
         /// 在运算前收集（合盾 / 碎盾都可能在结算里发生）。
         /// </summary>
-        PaladinShockTarget,
+        OathOfDevotionShockTarget,
 
         /// <summary>
-        /// 圣武士：范围内的角色被攻击时，是否把目标改成自己。
+        /// 圣武士·奉献之誓：范围内的角色被攻击时，是否把目标改成自己。
         ///
         /// 允许放弃（放弃 = 不改目标）。
         /// </summary>
-        PaladinRedirect,
+        OathOfDevotionRedirect,
 
         /// <summary>
-        /// 武僧：被攻击时是否用**太极**化解（把 5 变 0、受一半、反弹一半）。
+        /// 武僧·太极宗：被攻击时是否用**太极**化解（把 5 变 0、受一半、反弹一半）。
         ///
         /// **可选发动**（玩家要求"也要给按钮选择是否发动"）：
         /// 点候选（那只太极的手）即发动，点「不发动」就正常吃满伤害。
         /// </summary>
-        MonkTaichi,
+        WayOfTheTaiChiTaichi,
 
-        // ---------- 妖术师 ----------        /// <summary>
-        /// 妖术师：是否用某只手（+1，永久）取消这次攻击。
+        // ---------- 邪术师·至高妖精 ----------        /// <summary>
+        /// 邪术师·至高妖精：是否用某只手（+1，永久）取消这次攻击。
         ///
         /// **候选就是"与攻击数字相同的那只手"** —— 玩家点它即发动，
         /// 点「不发动」即放行。所以界面天然满足"点对应数字触发"。
         ///
-        /// ⚠️ 只在妖术师是**人类**时创建；AI 走自动取消（见 AttackContext）。
+        /// ⚠️ 只在邪术师·至高妖精是**人类**时创建；AI 走自动取消（见 AttackContext）。
         /// </summary>
-        HexerCancel,
+        TheArchfeyCancel,
 
-        // ---------- 牧师 ----------
-        /// <summary>牧师：9 的回复要回给谁。</summary>
-        ClericHealTarget,
+        // ---------- 牧师·生命领域 ----------
+        /// <summary>牧师·生命领域：9 的回复要回给谁。</summary>
+        LifeDomainHealTarget,
 
         /// <summary>
-        /// 牧师：运算出 4 / 6 / 8 时，选择"当攻击打"还是"当回复用"。
+        /// 牧师·生命领域：运算出 4 / 6 / 8 时，选择"当攻击打"还是"当回复用"。
         ///
         /// ⚠️ 这一步发生在**选目标手之前**（玩家要求的顺序）：
         /// 先问攻击还是回复，选了之后再点目标手。
@@ -91,43 +91,43 @@ namespace FingerDiceDuel.Core
         /// 选回复时回复量就是该数字本身（4 回 4、6 回 6、8 回 8），
         /// **不受攻击加成影响**；目标可以是自己或对手（后者为多人玩法预留）。
         /// </summary>
-        ClericAttackOrHeal,
+        LifeDomainAttackOrHeal,
 
         /// <summary>
-        /// 牧师：双 9 触发的那次**额外**回复给谁。
+        /// 牧师·生命领域：双 9 触发的那次**额外**回复给谁。
         ///
-        /// 单独一个值（而不是复用 <see cref="ClericHealTarget"/>）是为了
+        /// 单独一个值（而不是复用 <see cref="LifeDomainHealTarget"/>）是为了
         /// 让两次回复的选择互不覆盖 —— 否则双 9 时合计 17 点的两次回复会串味。
         /// </summary>
-        ClericExtraHealTarget,
+        LifeDomainExtraHealTarget,
 
-        // ---------- 游侠 ----------
-        /// <summary>游侠：被攻击时是否用一只"1"闪避（以及用哪只手）。</summary>
-        RangerDodge,
+        // ---------- 游荡者·风流剑客 ----------
+        /// <summary>游荡者·风流剑客：被攻击时是否用一只"1"闪避（以及用哪只手）。</summary>
+        SwashbucklerDodge,
 
-        /// <summary>游侠：攻击时是否把一只"2"变成 3 来让基础伤害 ×1.5。</summary>
-        RangerPowerShot,
+        /// <summary>游荡者·风流剑客：攻击时是否把一只"2"变成 3 来让基础伤害 ×1.5。</summary>
+        SwashbucklerDuelistThrust,
 
-        // ---------- 剑客 ----------
-        /// <summary>剑客：双 4/6/8 时是否发动"无视攻防加成"的追加攻击。</summary>
+        // ---------- 战士·剑士 ----------
+        /// <summary>战士·剑士：双 4/6/8 时是否发动"无视攻防加成"的追加攻击。</summary>
         SwordsmanFollowUp,
 
         /// <summary>
-        /// 猎人：运算后若两只手同时是 1/2/3 且数字相同，
+        /// 游侠·幽域追踪者：运算后若两只手同时是 1/2/3 且数字相同，
         /// 是否把参与运算的那只手暗置（进入伏击）。
         ///
         /// 玩家确认这是**主动选择**（"旁边给按钮"），
-        /// 所以走与剑客追加攻击**同一条**拉择通道。
+        /// 所以走与战士·剑士追加攻击**同一条**拉择通道。
         /// </summary>
-        HunterAmbush,
+        GloomStalkerAmbush,
 
-        // ---------- 狼人 ----------
-        /// <summary>狼人：是否发动"双手和为 7"的回复与成长（预留）。</summary>
-        WerewolfSurge,
+        // ---------- 野蛮人·野兽道途 ----------
+        /// <summary>野蛮人·野兽道途：是否发动"双手和为 7"的回复与成长（预留）。</summary>
+        PathOfTheBeastSurge,
 
-        // ---------- 法师 ----------
+        // ---------- 法师·塑能学派 ----------
         /// <summary>
-        /// 法师：运算出攻击数字（4/6/8）时，是否**放弃本次攻击**，
+        /// 法师·塑能学派：运算出攻击数字（4/6/8）时，是否**放弃本次攻击**，
         /// 改为给**下一次**攻击指定一种伤害类型。
         ///
         /// 玩家确认的顺序：
@@ -139,14 +139,14 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 每次算出攻击数字**都要问**（玩家明确要求）。
         /// </summary>
-        WizardAbandonAttack,
+        SchoolOfEvocationAbandonAttack,
 
         /// <summary>
-        /// 法师：选择哪一种**伤害类型**（10 选 1）。
+        /// 法师·塑能学派：选择哪一种**伤害类型**（10 选 1）。
         ///
         /// 玩家确认：连打多次时**只保留最新的选择**（后选的覆盖先选的）。
         /// </summary>
-        WizardDamageType,
+        SchoolOfEvocationDamageType,
     }
 
     /// <summary>
@@ -169,19 +169,19 @@ namespace FingerDiceDuel.Core
         /// 只返回**玩家显式记录**过的答案；没记录过时返回 null
         /// （**绝不套用任何回退值**）。
         ///
-        /// 用于**分阶段抉择**的判断，例如"牧师这次选了攻击还是回复"：
+        /// 用于**分阶段抉择**的判断，例如"牧师·生命领域这次选了攻击还是回复"：
         ///   · 选了攻击   -> 记录为 null
         ///   · 选了回复   -> 记录为一只手（哪怕目标就是自己）
         ///
         /// 若用 <see cref="GetChoice"/>，第二种情况会拿到非 null 的回退值，
         /// 于是"选了攻击"被误判成"选了回复" —— 真实 bug：
-        /// 牧师选了攻击仍被追问回复目标。
+        /// 牧师·生命领域选了攻击仍被追问回复目标。
         /// </summary>
         Hand GetExplicitChoice(HandEffect effect, int variant = 0);
     }
 
     /// <summary>
-    /// **法师的伤害类型选择**结果的存放处。
+    /// **法师·塑能学派的伤害类型选择**结果的存放处。
     ///
     /// 为什么不复用 <see cref="IPreTurnChoiceSink"/>：
     /// 那个接口的返回值是 <see cref="Hand"/>（"选哪只手"），
@@ -189,7 +189,7 @@ namespace FingerDiceDuel.Core
     /// 硬塞进 Hand 会变成"用值当前缀的假手牌"，语义脏且容易出错。
     ///
     /// 由 Assistant 层的抉择器实现（那个对象同时是 AI / 脚本 / 界面玩家的答案来源），
-    /// <see cref="Characters.SpecialLogics.WizardLogic"/> 在结算时回读。
+    /// <see cref="Characters.SpecialLogics.SchoolOfEvocationLogic"/> 在结算时回读。
     /// </summary>
     public interface IDamageTypeChoiceSink
     {
@@ -206,7 +206,7 @@ namespace FingerDiceDuel.Core
         ///    而它的 `Game` 属性原本**只在 `BoardController` 里被赋值** ——
         ///    无头路径（`MatchRunner` / 测试 harness）从不设置，
         ///    于是 AI 的分支第一句 `if (Game == null) return null;` 直接放弃，
-        ///    表现成"AI 法师从不在无头对局里铺状态"。
+        ///    表现成"AI 法师·塑能学派从不在无头对局里铺状态"。
         ///
         ///    用接口而不是反射：反射在 IL2CPP 下有裁剪风险，
         ///    而这里已经有现成的实现类型可以声明。
@@ -215,10 +215,10 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// **法师的跨回合状态**（待用的伤害类型）。
+    /// **法师·塑能学派的跨回合状态**（待用的伤害类型）。
     ///
     /// 为什么要这个接口：AI（Assistant 层）需要知道
-    /// "法师是不是已经铺好一个类型了" —— 铺好了就不该再放弃攻击。
+    /// "法师·塑能学派是不是已经铺好一个类型了" —— 铺好了就不该再放弃攻击。
     /// 而 **Assistant 不能引用 Characters 层**（架构铁律），
     /// 所以状态必须通过 Core 接口暴露。
     /// </summary>
@@ -248,7 +248,7 @@ namespace FingerDiceDuel.Core
     /// <summary>
     /// "结算过程中还需要问玩家"的回调 —— 由上层（BoardController）实现。
     ///
-    /// 为什么需要它：多段攻击（忍者两段、剑客追加）的每一段都要单独问一次闪避，
+    /// 为什么需要它：多段攻击（武僧·忍宗两段、战士·剑士追加）的每一段都要单独问一次闪避，
     /// 而"要闪几段"只有执行时才知道。所以结算过程必须能在中途把问题抛出来，
     /// 由上层暂停、问玩家、再继续。
     ///
@@ -272,7 +272,7 @@ namespace FingerDiceDuel.Core
     ///     所以**先回读 sink**；
     ///   · 直接调 <c>GameManager.ExecuteTurn</c> 的场景（测试、脚本化对局）没有收集步骤，
     ///     sink 里没有记录，此时必须**当场询问抉择器**，否则角色的抉择会静默失效 ——
-    ///     这个坑踩过一次（野蛮人锁手全部失灵）。
+    ///     这个坑踩过一次（野蛮人·守望者道途锁手全部失灵）。
     /// </summary>
     public static class PreTurnChoiceReader
     {
@@ -282,9 +282,9 @@ namespace FingerDiceDuel.Core
             // ① 先问抉择器 —— 只有它知道"这一次"该选谁。
             //
             //    必须**优先**于回读 sink：sink 里存的是上一次的选择，
-            //    而一次攻击可能有多段（忍者的两段、剑客的追加），
+            //    而一次攻击可能有多段（武僧·忍宗的两段、战士·剑士的追加），
             //    每段都要各自的答案。曾经先回读 sink，导致：
-            //      · 游侠第二段拿到的是第一段用过的那只手（已变成 2）→ 第二段闪不掉；
+            //      · 游荡者·风流剑客第二段拿到的是第一段用过的那只手（已变成 2）→ 第二段闪不掉；
             //      · 强化时也拿到过期的手 → 无法发动强化。
             if (provider != null)
             {
@@ -334,22 +334,22 @@ namespace FingerDiceDuel.Core
         public bool AllowDecline { get; }
 
         /// <summary>
-        /// 放弃时对应的回读结果（<see cref="HandEffect.BarbarianLockTarget"/> 用 null 表示不锁）。
+        /// 放弃时对应的回读结果（<see cref="HandEffect.PathOfTheWardenLockTarget"/> 用 null 表示不锁）。
         /// </summary>
         public Hand DeclineResult { get; }
 
         /// <summary>
         /// 该由谁回答这个抉择。null 表示"由行动方回答"。
         ///
-        /// 大部分抉择是行动方自己的事（锁手、强化射击），但有些属于防守方
-        /// （游侠的闪避）—— 所以不能一律用行动方。由角色在收集时显式指定。
+        /// 大部分抉择是行动方自己的事（锁手、乘风突刺），但有些属于防守方
+        /// （游荡者·风流剑客的闪避）—— 所以不能一律用行动方。由角色在收集时显式指定。
         /// </summary>
         public PlayerState Decider { get; }
 
         /// <summary>
         /// "发动"按钮的文案。非空时 UI 会在"不发动"左侧显示一个发动按钮。
         ///
-        /// 有些抉择只有唯一一个候选（例如剑客的追加攻击、游侠的强化射击），
+        /// 有些抉择只有唯一一个候选（例如战士·剑士的追加攻击、游荡者·风流剑客的乘风突刺），
         /// 这时让玩家去点手牌是很别扭的 —— 给一个明确的按钮更直观。
         /// </summary>
         public string AcceptLabel { get; }
@@ -357,7 +357,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// true 表示这是"一次攻击中的第 N 段"，不需要再问玩家、直接自动选择。
         ///
-        /// 用于多段攻击：忍者一次攻击有两段，剑客的追加攻击也算独立一次。
+        /// 用于多段攻击：武僧·忍宗一次攻击有两段，战士·剑士的追加攻击也算独立一次。
         /// 让玩家为每一段单独点一次手牌是不现实的（点完第一段就没了），
         /// 所以这类"顺手再闪一下"由系统自动完成，并把结果写进战报。
         /// </summary>
@@ -366,7 +366,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 同类抉择的序号（第几段攻击就取第几个答案）。
         ///
-        /// 一次性攻击只有一个闪避抉择；忍者两段就需要两个（0、1）。
+        /// 一次性攻击只有一个闪避抉择；武僧·忍宗两段就需要两个（0、1）。
         /// sink 用 <c>effect#variant</c> 作键分别存放，避免互相覆盖。
         /// </summary>
         public int Variant { get; }
@@ -374,7 +374,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 可选：判定"这一次是否根本不用问"。
         ///
-        /// 用途：**分阶段的抉择**。例如牧师的 4/6/8 要先问"攻击还是回复"，
+        /// 用途：**分阶段的抉择**。例如牧师·生命领域的 4/6/8 要先问"攻击还是回复"，
         /// 选了攻击就**不该再问**"回复给谁"。
         /// 上层在推进时会调用它，返回 true 就直接按 <see cref="DeclineResult"/> 落地、
         /// 不打扰玩家。
@@ -387,7 +387,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **触发这次抉择的运算结果**（0 = 未知）。
         ///
-        /// ⚠️ 为什么需要它：法师的"要不要放弃攻击"取决于**合出了几**
+        /// ⚠️ 为什么需要它：法师·塑能学派的"要不要放弃攻击"取决于**合出了几**
         ///    （玩家策略：4 倾向放弃、6 不一定、8 基本不放弃）。
         ///    抉择本身发生在结算前，抉择器手上只有 <see cref="ChoiceRequest"/>，
         ///    所以结果值必须随请求一起带过去。
@@ -430,7 +430,7 @@ namespace FingerDiceDuel.Core
     ///
     /// 这样 <see cref="Assistant.BoardController"/> 不需要认识任何具体角色类型：
     /// 它只遍历 <see cref="ICharacterBehavior"/>，谁实现了本接口就问谁。
-    /// （在引入本接口之前，控制器里写的是 <c>is BarbarianLogic</c> 这种硬编码判断，
+    /// （在引入本接口之前，控制器里写的是 <c>is PathOfTheWardenLogic</c> 这种硬编码判断，
     /// 每加一个角色就要改控制器，不可扩展。）
     /// </summary>
     public interface IPreTurnChoiceProvider
@@ -446,7 +446,7 @@ namespace FingerDiceDuel.Core
         ///
         /// 为什么需要：`GameManager.ExecuteTurn` 一次跑完整个回合，
         /// 抉择必须在运算前收集齐；但有些问题**依赖前一个答案**
-        /// （例如牧师先选"攻击还是回复"，选了回复才需要问"回复给谁"）。
+        /// （例如牧师·生命领域先选"攻击还是回复"，选了回复才需要问"回复给谁"）。
         /// 控制器不参与判断 —— 它只把"刚答完的请求 + 答案"交给角色。
         /// </summary>
         void CollectFollowUpChoices(ChoiceRequest answered, Hand answer,
@@ -456,7 +456,7 @@ namespace FingerDiceDuel.Core
     /// <summary>
     /// 角色声明"需要在**选定目标手之前**先问的问题"。
     ///
-    /// 目前只有牧师：运算出 4/6/8 时先问"当攻击打还是当回复用"，
+    /// 目前只有牧师·生命领域：运算出 4/6/8 时先问"当攻击打还是当回复用"，
     /// 选了之后再点目标手（玩家要求的顺序）。
     ///
     /// 与 <see cref="IPreTurnChoiceProvider"/> 的区别只是**时机**：
@@ -478,7 +478,7 @@ namespace FingerDiceDuel.Core
     /// 时，才让玩家"再点一次手牌确认打谁"。
     /// 否则 1 + 1 = 2 这种**无效果**的运算也会被追问目标，纯属打扰（玩家实测反馈）。
     ///
-    /// 角色可以重写（例如牧师：他的 4/6/8 可以改成回复，同样需要选人）。
+    /// 角色可以重写（例如牧师·生命领域：他的 4/6/8 可以改成回复，同样需要选人）。
     /// </summary>
     public interface IResultTargetProvider
     {
@@ -510,7 +510,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 可写：构造时按"两手的和"算出来，但**发起运算的那只手在结算中
         ///    会先被改写成结果值**，所以"结算中途"问的抉择要重新填一次
-        ///    （法师的"结果是不是 4/6/8"就依赖它 —— 填错会永远问不出东西）。
+        ///    （法师·塑能学派的"结果是不是 4/6/8"就依赖它 —— 填错会永远问不出东西）。
         /// </summary>
         public int ResultValue { get; set; }
 
@@ -519,7 +519,7 @@ namespace FingerDiceDuel.Core
         ///
         /// 计算时优先使用"运算前的手值快照"（<see cref="ActedHandValueBefore"/> /
         /// <see cref="TargetHandValueBefore"/>）—— 运算源在结算钩子里已经是结果值，
-        /// 直接用当前手值会把效果算错（曾经算成 None，导致游侠闪避被整个跳过）。
+        /// 直接用当前手值会把效果算错（曾经算成 None，导致游荡者·风流剑客闪避被整个跳过）。
         /// </summary>
         public HandEffectType Effect => CharacterBehaviors.FirstImplementer<IHandEffectDisplay>(Actor)
             ?.DisplayedEffectOf(EffectiveResult) ?? Hand.GetEffectType(EffectiveResult);
@@ -578,7 +578,7 @@ namespace FingerDiceDuel.Core
         /// **场上还活着几名玩家**（由 <see cref="GameManager"/> 在构造上下文时填）。
         ///
         /// 用途：有些规则**只在场上仅剩两人时**生效 ——
-        /// 例如野蛮人的"同时只能控制对手一只手"。
+        /// 例如野蛮人·守望者道途的"同时只能控制对手一只手"。
         ///
         /// 取 <see cref="UnknownAliveCount"/> 表示"没填"（单元测试直连时），
         /// 这时按**保守**方式处理（当作 1v1，限制生效），
@@ -592,7 +592,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 当前对局（由 <see cref="Assistant.BoardController"/> 在收集前填入）。
         ///
-        /// 用途：有些抉择的**候选必须按距离过滤**（圣武士的冲击目标
+        /// 用途：有些抉择的**候选必须按距离过滤**（圣武士·奉献之誓的冲击目标
         /// 只能在攻击范围内）—— 没有 GameManager 就算不出距离。
         ///
         /// 直连单元测试时可能为 null，此时各角色应退化为"不按距离过滤"。
@@ -610,7 +610,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 查询"本回合**先前已经问过**的抉择的答案"（由上层注入）。
         ///
-        /// 用途：**分阶段的抉择**。牧师的 4/6/8 先问"攻击还是回复"
+        /// 用途：**分阶段的抉择**。牧师·生命领域的 4/6/8 先问"攻击还是回复"
         /// （在选目标手之前），之后再决定"要不要问回复目标" ——
         /// 后者必须能读到前者的答案。
         ///
@@ -624,9 +624,9 @@ namespace FingerDiceDuel.Core
         public Hand GetAnswered(HandEffect effect, int variant = 0)
             => AnsweredLookup?.Invoke(effect, variant);
 
-        /// <summary>牧师本次 4/6/8 是否被选择"当回复用"。</summary>
+        /// <summary>牧师·生命领域本次 4/6/8 是否被选择"当回复用"。</summary>
         public bool ChoseToHeal()
-            => GetAnswered(HandEffect.ClericAttackOrHeal) != null;
+            => GetAnswered(HandEffect.LifeDomainAttackOrHeal) != null;
 
         /// <summary>
         /// 运算源的**运算前**手值。默认取 <see cref="ActedHand"/> 的当前值，
@@ -658,7 +658,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 闪避/免伤的原因，供战报显示。
-        /// 例如刺客潜行时是"无法被攻击"，而不是"被游侠闪避"。
+        /// 例如游荡者·刺客潜行时是"无法被攻击"，而不是"被游荡者·风流剑客闪避"。
         /// </summary>
         public string DodgeReason { get; set; }
 
@@ -685,7 +685,7 @@ namespace FingerDiceDuel.Core
         /// 连带填好"场上存活人数"的构造。
         ///
         /// 由 <see cref="GameManager"/> 一侧调用 —— 只有它知道还剩几个人，
-        /// 而"仅剩两人才生效"的规则（野蛮人锁手）需要这个信息。
+        /// 而"仅剩两人才生效"的规则（野蛮人·守望者道途锁手）需要这个信息。
         /// </summary>
         public PreTurnChoiceContext(PlayerState actor, PlayerState defender,
                                     Hand actedHand, Hand targetHand,

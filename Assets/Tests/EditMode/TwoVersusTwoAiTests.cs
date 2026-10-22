@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -9,10 +9,10 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **2v2 的 AI 行为**：牧师该给谁回血、该打谁。
+    /// **2v2 的 AI 行为**：牧师·生命领域该给谁回血、该打谁。
     ///
     /// 玩家给的规则：
-    ///   · 牧师"目前写成**优先给一队血量最低的人回复**"
+    ///   · 牧师·生命领域"目前写成**优先给一队血量最低的人回复**"
     ///   · 攻击目标按这个顺序：
     ///     ① 自己和队友都能打到的 ② 血量更低的
     ///     ③ 没有防御（护盾 / 闪避 / 太极）的 ④ 防御更低的 ⑤ 攻击更高的
@@ -57,27 +57,27 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 牧师：优先给自己这一队血量最低的
+        // 牧师·生命领域：优先给自己这一队血量最低的
         // ============================================================
 
         [Test]
-        public void Cleric_heals_the_lowest_health_teammate_in_two_versus_two()
+        public void LifeDomain_heals_the_lowest_health_teammate_in_two_versus_two()
         {
-            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
-                                       CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.LifeDomain, CharacterDefinition.Champion,
+                                       CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState cleric = seated[0];          // P1 = 牧师
+            PlayerState lifeDomain = seated[0];          // P1 = 牧师·生命领域
             PlayerState mate = seated[3];            // P4 = 队友（1&4 一队）
 
-            Assert.True(game.IsTeammate(cleric, mate), "前置：P1 与 P4 应是队友。");
+            Assert.True(game.IsTeammate(lifeDomain, mate), "前置：P1 与 P4 应是队友。");
 
             // 队友掉血最多 -> 该回给队友
-            cleric.TakeDamage(2);
+            lifeDomain.TakeDamage(2);
             mate.TakeDamage(9);
 
-            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
+            PlayerState target = HealAdvisor(lifeDomain).BestHealTarget(lifeDomain, game);
 
             Assert.True(ReferenceEquals(target, mate),
                 $"应回给一队里血量最低的人（队友 {mate.Health} 血），" +
@@ -85,52 +85,52 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_heals_itself_when_it_is_the_lowest_in_its_team()
+        public void LifeDomain_heals_itself_when_it_is_the_lowest_in_its_team()
         {
-            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
-                                       CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.LifeDomain, CharacterDefinition.Champion,
+                                       CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState cleric = seated[0];
+            PlayerState lifeDomain = seated[0];
             PlayerState mate = seated[3];
 
-            cleric.TakeDamage(11);
+            lifeDomain.TakeDamage(11);
             mate.TakeDamage(3);
 
-            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
+            PlayerState target = HealAdvisor(lifeDomain).BestHealTarget(lifeDomain, game);
 
-            Assert.True(ReferenceEquals(target, cleric),
+            Assert.True(ReferenceEquals(target, lifeDomain),
                 "自己血最低时该回自己。");
         }
 
         [Test]
-        public void Cleric_never_heals_an_enemy()
+        public void LifeDomain_never_heals_an_enemy()
         {
             // ⚠️ 关键守卫：敌人血最少也**不能**给他回血（那是自伤）
-            GameManager game = Make2v2(CharacterDefinition.Cleric, CharacterDefinition.Soldier,
-                                       CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.LifeDomain, CharacterDefinition.Champion,
+                                       CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out _, out _, out _, out _);
 
-            PlayerState cleric = seated[0];
+            PlayerState lifeDomain = seated[0];
             PlayerState enemy = seated[1];           // P2 = 对手
 
-            cleric.TakeDamage(3);
+            lifeDomain.TakeDamage(3);
             enemy.TakeDamage(15);                    // 敌人血最少
 
-            PlayerState target = HealAdvisor(cleric).BestHealTarget(cleric, game);
+            PlayerState target = HealAdvisor(lifeDomain).BestHealTarget(lifeDomain, game);
 
             Assert.False(ReferenceEquals(target, enemy),
                 "不该给敌人回血（那会让对手回血）。");
         }
 
         [Test]
-        public void Cleric_heals_itself_when_alone_in_one_versus_one()
+        public void LifeDomain_heals_itself_when_alone_in_one_versus_one()
         {
-            // 1v1 没有队友 -> 回自己（玩家说"牧师回给对手基本没有实现价值"）
-            var a = CharacterFactory.CreatePlayer("牧", CharacterDefinition.Cleric);
-            var b = CharacterFactory.CreatePlayer("兵", CharacterDefinition.Soldier);
+            // 1v1 没有队友 -> 回自己（玩家说"牧师·生命领域回给对手基本没有实现价值"）
+            var a = CharacterFactory.CreatePlayer("牧", CharacterDefinition.LifeDomain);
+            var b = CharacterFactory.CreatePlayer("兵", CharacterDefinition.Champion);
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
@@ -152,8 +152,8 @@ namespace FingerDiceDuel.Tests
             // 规则第 ② 条：优先攻击血量更低的对手
             // 造一个"两个对手都能打到、防御/攻击都相同"的局面，
             // 唯一的差别是血量 -> 必须选血少的那个。
-            GameManager game = Make2v2(CharacterDefinition.Soldier, CharacterDefinition.Soldier,
-                                       CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.Champion, CharacterDefinition.Champion,
+                                       CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out GreedyChoiceProvider ai1, out _, out _, out _);
 
@@ -183,8 +183,8 @@ namespace FingerDiceDuel.Tests
         public void Ai_prefers_the_enemy_without_defense()
         {
             // 规则第 ③ 条：优先攻击没有防御（护盾 / 太极）的对手
-            GameManager game = Make2v2(CharacterDefinition.Soldier, CharacterDefinition.Soldier,
-                                       CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+            GameManager game = Make2v2(CharacterDefinition.Champion, CharacterDefinition.Champion,
+                                       CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out GreedyChoiceProvider ai1, out _, out _, out _);
 
@@ -213,7 +213,7 @@ namespace FingerDiceDuel.Tests
         /// <summary>
         /// 取"回复目标"的决策者。
         ///
-        /// ⚠️ 走 <see cref="IHealTargetAdvisor"/> 而不是直接取 ClericLogic ——
+        /// ⚠️ 走 <see cref="IHealTargetAdvisor"/> 而不是直接取 LifeDomainLogic ——
         ///    测试层不能引用 Characters 层（项目分层约定），
         ///    而且这样也顺带验证了接口本身。
         /// </summary>

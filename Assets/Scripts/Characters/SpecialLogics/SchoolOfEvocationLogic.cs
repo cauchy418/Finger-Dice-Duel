@@ -1,0 +1,274 @@
+﻿namespace FingerDiceDuel.Characters.SpecialLogics
+{
+    using System.Collections.Generic;
+    using FingerDiceDuel.Core;
+
+    /// <summary>
+    /// **法师·塑能学派（SchoolOfEvocation）**：攻 0 / 防 −1，攻击距离 **1**。
+    ///
+    /// 玩家设计的核心机制：
+    ///   运算出**攻击数字（4/6/8）**时，可以选择**放弃这次攻击**，
+    ///   改为给**下一次**攻击指定一种**伤害类型**（10 选 1）。
+    ///   命中的那一次攻击会给目标挂上对应的**负面状态**（持续目标自己的 2 个回合）。
+    ///
+    /// ## 为什么是"放弃一次换下一次"
+    ///
+    /// 玩家原话："运算出攻击数字时，可以选择放弃攻击，将**下一次**攻击改为..."
+    /// 所以这是一个**两回合的铺垫**：第一回合白扔一次攻击、只为设定类型；
+    /// 第二回合真正打出去、才挂上状态。
+    ///
+    /// ⚠️ 玩家确认：**连续放弃时只保留最新的选择**（后选的覆盖先选的）。
+    ///
+    /// ⚠️ 玩家确认：若下一次攻击**没命中**（被闪避 / 被取消），
+    ///    那么这次的**放弃也白费** —— 类型**作废**，
+    ///    法师·塑能学派必须**再放弃一次攻击、重新选**才能再次附加。
+    ///    （见 <see cref="ConsumeDamageType"/>。）
+    ///
+    /// ## 力场
+    ///
+    /// 第 10 种"力场"**不挂状态** —— 它只是"这一击按法师·咒法学派的方式穿透"：
+    /// 无视护盾、无视正向防御、不可被闪避。
+    /// 玩家表示之后可以把法师·咒法学派的描述改成"伤害改为力场伤害"。
+    /// </summary>
+    public sealed class SchoolOfEvocationLogic : CharacterTemplate,
+        IStatusApplyingAttack, IDodgeBlocker, IMageState, IPreTurnChoiceProvider
+    {
+        /// <summary>法师·塑能学派能"放弃攻击"的数字（与其他角色一致，2 不是攻击）。</summary>
+        public const int MinAttackValue = 4;
+
+        public override string DisplayName => "法师·塑能学派";
+
+        // ============================================================
+        // 伤害类型（跨回合状态）
+        // ============================================================
+
+        /// <summary>
+        /// 已选定的伤害类型（<see cref="DamageType.None"/> = 没选）。
+        ///
+        /// 这是**跨回合**的：本次放弃攻击设定它，下一次攻击消耗它。
+        /// </summary>
+        public DamageType PendingDamageType { get; private set; } = DamageType.None;
+
+        /// <summary>本次放弃攻击时**曾经选过**类型（用于战报 / 测试）。</summary>
+        public bool HasPendingType => PendingDamageType != DamageType.None;
+
+        /// <summary>
+        /// 设定伤害类型（覆盖旧的 —— 玩家确认"只保留最新的选择"）。
+        /// </summary>
+        public void SetPendingDamageType(DamageType type)
+        {
+            PendingDamageType = type;
+        }
+
+        /// <summary>清掉待用的伤害类型（没命中 / 已用掉）。</summary>
+        public void ClearPendingDamageType() => PendingDamageType = DamageType.None;
+
+        /// <summary>
+        /// 把待用类型**取走并清空**（攻击结算命中时调用）。
+        ///
+        /// ⚠️ 玩家确认："若没命中就作废" —— 所以**无论命中与否都要清空**，
+        ///    没命中时清掉就等于作废（法师·塑能学派要重新放弃一次攻击才能再挂）。
+        /// </summary>
+        public DamageType ConsumeDamageType()
+        {
+            DamageType t = PendingDamageType;
+            PendingDamageType = DamageType.None;
+            return t;
+        }
+
+        // ============================================================
+        // 抉择收集（玩家确认的顺序：先问放弃 -> 选类型 -> 再选目标）
+        // ============================================================
+
+        /// <summary>
+        /// 运算结果是攻击数字（4/6/8）时，登记两个抉择。
+        ///
+        /// 玩家确认的顺序：
+        ///   ① 先问"是否放弃攻击"
+        ///   ② 选"放弃" -> 弹 10 种伤害类型
+        ///   ③ 选完类型 -> 再选攻击目标
+        ///
+        /// ⚠️ 每次算出攻击数字**都要问**（玩家明确要求）。
+        ///    所以要放在"用结果值判断"的地方，而不是"每回合只问一次"。
+        ///
+        /// ⚠️ 与游侠·幽域追踪者/战士·剑士同一模式：必须在**运算前收集**，
+        ///    结算一旦开始就一次跑完，没法中途问人类玩家。
+        /// </summary>
+        /// ⚠️⚠️ 签名必须与基类**完全一致**：`IList<ChoiceRequest>` 而不是
+        ///     `List<ChoiceRequest>`。
+        ///
+        ///     我第一版写成了 `List<ChoiceRequest>`（也没有 `override`），
+        ///     于是它**没有覆盖基类方法**，只是一个名字相同的新方法 ——
+        ///     通过 `IPreTurnChoiceProvider` 调用时走的是基类的**空实现**，
+        ///     表现成"法师·塑能学派从来不问要不要放弃攻击、AI 从不挂状态"。
+        ///     C# 9 没有默认接口成员，所以这种签名不匹配**不会报错**，只会静默失效。
+        public override void CollectPreTurnChoices(PreTurnChoiceContext context,
+                                                   IList<ChoiceRequest> requests)
+        {
+            
+
+            if (context == null || requests == null) return;
+
+            
+
+            // 归属校验：双将容器里可能挂着别的角色，别替别人登记
+            if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
+
+            // 只有"结果落在攻击数字上"才问
+            if (!IsAttackResult(context.ResultValue)) return;
+
+            // ⚠️⚠️ **引擎永远都问"要不要放弃"，不因"已有待用类型"而拦截。**
+            //
+            //    玩家澄清（重要）：
+            //      "在消耗前应该要是可以弹是否放弃的，
+            //       只是让 AI 算法不要重复选，
+            //       玩家实操可以自己决定是否要重复放弃。"
+            //
+            //    所以"不重复放弃"是 **AI 的策略**，不是规则。
+            //    我原来在这里写了 `if (HasPendingType) return;`，
+            //    那等于**替玩家做决定**（会少一个可选操作），是错的。
+            //
+            //    AI 的克制放在 `GreedyChoiceProvider.SchoolOfEvocationShouldAbandon`
+            //    里（那里已经会把"已有待用类型"判成不放弃）。
+            var abandon = new ChoiceRequest(
+                HandEffect.SchoolOfEvocationAbandonAttack,
+                "是否放弃这次攻击？放弃后可以为下一次攻击指定一种伤害类型。",
+                new List<Hand>(context.Actor.Hands),
+                allowDecline: true,
+                declineResult: null,                     // 放弃 = 放弃"放弃" = 照常攻击
+                decider: context.Actor,
+                acceptLabel: "放弃攻击",
+                // ⚠️ 把结果带过去 —— AI 的"要不要放弃"取决于**合出了几**
+                //    （玩家策略：4 倾向放弃、6 不一定、8 基本不放弃）。
+                //    抉择器手上只有 ChoiceRequest，所以必须随请求一起带。
+                resultValue: context.ResultValue);
+            requests.Add(abandon);
+
+            // ② 10 种伤害类型。候选先填好，玩家选了"放弃"才有意义 ——
+            //    但它必须**同时登记**，因为收集阶段只有这一次机会。
+            //
+            //    ⚠️ `skipWhen`：玩家没选"放弃"时这一步自动跳过，
+            //       不会出现"选了照常攻击却被追问类型"。
+            var pick = new ChoiceRequest(
+                HandEffect.SchoolOfEvocationDamageType,
+                "选择伤害类型（10 选 1）",
+                new List<Hand>(context.Actor.Hands),
+                allowDecline: true,
+                declineResult: null,
+                decider: context.Actor,
+                acceptLabel: "就选它",
+                skipWhen: () => !WantsToAbandonThisTurn);
+            requests.Add(pick);
+
+            
+        }
+
+        /// <summary>
+        /// 本次是否已经决定"放弃攻击"（由 sink 回读，供 <c>skipWhen</c> 用）。
+        /// </summary>
+        public bool WantsToAbandonThisTurn { get; set; }
+
+        /// <summary>
+        /// 从抉择器（AI / 脚本 / 界面）**回读**这一次的选择并落到自己身上。
+        ///
+        /// 由上层在"收集完抉择之后、真正结算之前"调用。
+        ///
+        /// 规则：
+        ///   · 玩家选了"放弃攻击" -> 记下类型（**覆盖旧的**，只保留最新）
+        ///   · 玩家没放弃           -> 什么都不做（照常攻击）
+        /// </summary>
+        public void ReadFromSink(IDamageTypeChoiceSink sink)
+        {
+            if (sink == null) return;
+
+            // ⚠️⚠️ **只有抉择器"确实表过态"时才覆盖本回合的标记。**
+            //
+            //    人类玩家的抉择器是 `SimpleChoiceProvider` —— 它**没有实现**
+            //    `IDamageTypeChoiceSink`，`WantsToAbandonAttack` 恒为 false。
+            //    而界面（`BoardController.AcceptPendingChoice` /
+            //    `ChooseDamageType`）已经把标记**直接写到法师·塑能学派身上**了，
+            //    这里若无条件覆盖，就会把它**读回 false** ——
+            //    表现为"玩家点了放弃攻击，却仍然造成伤害"（玩家实测报的 bug）。
+            //
+            //    所以：抉择器说"要放弃" -> 采纳；
+            //          抉择器说"不放弃"**但法师·塑能学派身上已经有待用类型** -> 保留法师·塑能学派的判断。
+            if (sink.WantsToAbandonAttack)
+            {
+                WantsToAbandonThisTurn = true;
+            }
+            else if (!HasPendingType)
+            {
+                WantsToAbandonThisTurn = false;
+            }
+
+            if (!WantsToAbandonThisTurn) return;
+
+            if (sink.ChosenDamageType != DamageType.None)
+                SetPendingDamageType(sink.ChosenDamageType);
+        }
+
+        /// <summary>结果值是不是"攻击数字"（4/6/8）。</summary>
+        public static bool IsAttackResult(int value)
+            => value == 4 || value == 6 || value == 8;
+
+        // ============================================================
+        // 攻击命中 -> 挂状态
+        // ============================================================
+
+        /// <summary>
+        /// 本次攻击要挂上的状态。
+        ///
+        /// 归零规则：
+        ///   · 没选类型（<see cref="DamageType.None"/>）-> 不挂
+        ///   · 力场 -> 不挂（它只有穿透）
+        ///   · 其余 9 种 -> 挂对应的状态
+        ///
+        /// ⚠️ 这里**只读不改** —— 真正的"取走并清空"由 <see cref="ConsumeDamageType"/>
+        ///    在结算结束时做，因为只有那时才知道有没有命中。
+        /// </summary>
+        public StatusEffect StatusToApplyOnHit(AttackContext context)
+            => StatusNames.StatusOf(PendingDamageType);
+
+        // ============================================================
+        // 力场：同法师·咒法学派
+        // ============================================================
+
+        /// <summary>
+        /// 力场按法师·咒法学派的方式结算（穿透护盾、无视正向防御、不可闪避）。
+        /// </summary>
+        public override void OnResolveAttack(AttackContext context)
+        {
+            if (context == null) return;
+            if (!IsForceAttack) return;
+
+            context.IgnoreShield = true;
+            context.IgnorePositiveDefense = true;
+        }
+
+        /// <summary>当前待用的是不是"力场"。</summary>
+        public bool IsForceAttack => PendingDamageType == DamageType.Force;
+
+        /// <summary>力场攻击不可被闪避（与法师·咒法学派同源）。</summary>
+        public bool PreventsDodge => IsForceAttack;
+
+        // ============================================================
+        // 开局复位
+        // ============================================================
+
+        public override void OnMatchReset(PlayerState owner, GameManager manager)
+            => PendingDamageType = DamageType.None;
+    
+        /// <summary>
+        /// 法师·塑能学派：**有附加效果时由附加的类型决定**；
+        /// 没有附加时，距离 1 内是**钝击**、距离 1 以外是**穿刺**（玩家指定）。
+        /// </summary>
+        public override AttackDamageType AttackTypeOf(AttackContext context)
+        {
+            if (HasPendingType)
+                return AttackDamageTypes.FromDamageType(PendingDamageType);
+
+            return ByDistance(AttackDamageType.Bludgeoning, AttackDamageType.Piercing);
+        }
+
+}
+}

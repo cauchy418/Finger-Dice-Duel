@@ -3,13 +3,13 @@ using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>破誓者：5 改为攻击；持5可把整次来袭攻击转移给持完整盾的角色。</summary>
+    /// <summary>圣武士·破誓者：5 改为攻击；持5可把整次来袭攻击转移给持完整盾的角色。</summary>
     public sealed class OathbreakerLogic : CharacterTemplate,
         IHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IPreTurnChoiceProvider, IAttackTransfer
     {
         public const int AttackValue = 5;
 
-        public override string DisplayName => "破誓者";
+        public override string DisplayName => "圣武士·破誓者";
         public override int DefaultAttackBonus => 2;
         public override int DefaultDefenseBonus => 0;
         public override int BaseAttackRange => 1;
@@ -61,7 +61,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                         hands.Add(p.LeftHand); hands.Add(p.RightHand);
                     }
             return new ChoiceRequest(HandEffect.OathbreakerTransfer,
-                "破誓者【转移攻击】：选择一名持完整盾牌的角色承受整次攻击，或不发动。保留手中的5。",
+                "圣武士·破誓者【转移攻击】：选择一名持完整盾牌的角色承受整次攻击，或不发动。保留手中的5。",
                 hands, allowDecline: true, declineResult: null, decider: owner);
         }
 
@@ -93,7 +93,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             foreach (var request in defenses)
                 if (request.Effect != HandEffect.OathbreakerTransfer) requests.Add(request);
             foreach (var p in manager.Players)
-                CharacterBehaviors.FirstImplementer<PaladinLogic>(p)
+                CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(p)
                     ?.CollectRedirectChoice(p, context.Actor, target, manager, requests);
         }
 

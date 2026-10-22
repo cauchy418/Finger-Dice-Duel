@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
@@ -109,10 +109,10 @@ namespace FingerDiceDuel.Tests
 
                 // ⚠⚠ **回合上限必须放宽到 300**。
                 //
-                //    默认上限是 50，而实测：只要双方都有巨人（各 +2 防、+5 生命），
+                //    默认上限是 50，而实测：只要双方都有野蛮人·巨人道途（各 +2 防、+5 生命），
                 //    互相打不动，平均需要 **166 回合**才分出胜负。
                 //    限在 50 会把它们全部截断成平局，而平局在胜率里算半负 ——
-                //    于是“狼人+巨人”看起来只有 23.7%，放开后实际是 98.8% 胜。
+                //    于是“野蛮人·野兽道途+野蛮人·巨人道途”看起来只有 23.7%，放开后实际是 98.8% 胜。
                 // 玩家要求：所有模式的轮次上限统一为 50 轮。
                 game.RoundLimit = GameManager.DefaultRoundLimit;
 
@@ -165,8 +165,8 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(player.LeftHand, best.Left);
             TestSetup.SetHand(player.RightHand, best.Right);
 
-            // 武僧的 5 要进入太极（与实机一致：开局那个 5 就是太极）
-            MonkLogic.ApplyTaichiToFives(player);
+            // 武僧·太极宗的 5 要进入太极（与实机一致：开局那个 5 就是太极）
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(player);
         }
 
         /// <summary>累计战绩。</summary>

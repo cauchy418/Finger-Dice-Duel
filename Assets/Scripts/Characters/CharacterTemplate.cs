@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色数值（攻防修正 + 可选最大生命）。
@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// 角色行为模板：所有具体角色逻辑（Curseweaver / Fighter / Barbarian / Cleric / ...）的基类。
+    /// 角色行为模板：所有具体角色逻辑（SchoolOfConjuration / Breaker / PathOfTheWarden / LifeDomain / ...）的基类。
     /// 默认所有钩子为空实现，子类按需重写。
     /// </summary>
     public abstract class CharacterTemplate : ICharacterBehavior, IPreTurnChoiceProvider,
@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Core
         // ============================================================
 
         /// <summary>
-        /// 默认没有"选目标手之前"的问题。牧师的 4/6/8 攻击/回复二选一重写它。
+        /// 默认没有"选目标手之前"的问题。牧师·生命领域的 4/6/8 攻击/回复二选一重写它。
         /// </summary>
         public virtual void CollectPreTargetChoices(PreTurnChoiceContext context,
                                                     System.Collections.Generic.IList<ChoiceRequest> requests)
@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Core
         /// 默认规则：**只有会指向别人的效果**才需要指定目标 —— 即攻击（4/6/8）。
         ///
         /// 9 的回复**默认自动回给自己**（见 <see cref="GameManager"/> 的默认治疗），
-        /// 所以不需要问；能改写回复目标的角色（牧师，实现了
+        /// 所以不需要问；能改写回复目标的角色（牧师·生命领域，实现了
         /// <see cref="IHealOverride"/>）自己重写成需要问。
         ///
         /// 无效果（1/2/3/7）与护盾（5，作用于自己）同样不需要 ——
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.Core
         // IPreTurnChoiceProvider 的默认实现
         //
         // 放在基类是为了不必让每个角色都写一遍空方法 ——
-        // 只有真正需要抉择的（牧师 / 游侠 / 剑客 / 野蛮人）才重写。
+        // 只有真正需要抉择的（牧师·生命领域 / 游荡者·风流剑客 / 战士·剑士 / 野蛮人·守望者道途）才重写。
         // ============================================================
 
         /// <summary>默认不提出任何抉择。</summary>
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 默认没有"依赖前一个答案"的后续问题。
-        /// 分阶段抉择的角色（例如牧师：选了回复才问给谁）自己重写。
+        /// 分阶段抉择的角色（例如牧师·生命领域：选了回复才问给谁）自己重写。
         /// </summary>
         public virtual void CollectFollowUpChoices(ChoiceRequest answered, Hand answer,
                                                    System.Collections.Generic.IList<ChoiceRequest> requests)
@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Core
         public virtual string DisplayName => GetType().Name;
 
         /// <summary>
-        /// 额外生命上限加成（狼人 +5）。默认 0。
+        /// 额外生命上限加成（野蛮人·野兽道途 +5）。默认 0。
         /// 由 <see cref="CharacterFactory"/> 在建角色时叠加到玩家最大生命上。
         /// </summary>
         public virtual int MaxHealthBonus => 0;
@@ -122,21 +122,21 @@ namespace FingerDiceDuel.Core
                                                    GameManager manager, IPreTurnChoiceSink choiceSink)
         { }
 
-        /// <summary>某只手参与运算并结算完成后触发（"运算后"的角色机制，例如狼人）。</summary>
+        /// <summary>某只手参与运算并结算完成后触发（"运算后"的角色机制，例如野蛮人·野兽道途）。</summary>
         public virtual void OnOperationResolved(PlayerState owner, Hand actedHand, int actedHandValueBefore,
                                                 int targetValue, HandEffectType effect, GameManager manager,
                                                 IPreTurnChoiceSink choiceSink)
         { }
 
-        /// <summary>自身护盾被击碎时触发（战士连锁破盾等在此实现）。</summary>
+        /// <summary>自身护盾被击碎时触发（战士·破阵者连锁破盾等在此实现）。</summary>
         public virtual void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager) { }
 
-        /// <summary>承受攻击时触发。默认不闪避；游侠等角色重写本方法。</summary>
+        /// <summary>承受攻击时触发。默认不闪避；游荡者·风流剑客等角色重写本方法。</summary>
         public virtual void TryDodge(PreTurnChoiceContext context, IPreTurnChoiceSink sink, int hitIndex) { }
 
         /// <summary>
         /// 整场比赛开始时触发。持有跨回合状态的子类**必须**重写本方法并清空状态，
-        /// 否则重开一局会残留上一局的效果（例如野蛮人的锁手、狼人的成长加成）。
+        /// 否则重开一局会残留上一局的效果（例如野蛮人·守望者道途的锁手、野蛮人·野兽道途的成长加成）。
         /// </summary>
         public virtual void OnMatchReset(PlayerState owner, GameManager manager) { }
 
@@ -154,7 +154,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 角色可以**接管**攻击加成的计算（默认不介入）。
         ///
-        /// 用途：骑士的"攻击加成恒等于攻击距离" —— 那个值随碎盾次数变化，
+        /// 用途：圣武士·王冠之誓的"攻击加成恒等于攻击距离" —— 那个值随碎盾次数变化，
         /// 不是一个固定数字，所以要在每次读取时算。
         ///
         /// ⚠️ 与 <see cref="DefaultAttackBonus"/> 的区别：
@@ -184,7 +184,7 @@ namespace FingerDiceDuel.Core
         public void ApplyStats(CharacterStats stats) => ApplyStats(stats.AttackBonus, stats.DefenseBonus);
 
         /// <summary>
-        /// 永久提升攻防（狼人的成长机制用）。
+        /// 永久提升攻防（野蛮人·野兽道途的成长机制用）。
         /// 会先确保当前数值已"落定"（未注入过数据时先取子类默认值），再累加。
         /// </summary>
         public void GrowStats(int attackDelta, int defenseDelta)
@@ -204,7 +204,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 把攻防恢复到"本局开始时的基准值"，丢弃所有成长累计。
-        /// 持有永久成长的角色（狼人）**必须**在 <see cref="OnMatchReset"/> 里调用它，
+        /// 持有永久成长的角色（野蛮人·野兽道途）**必须**在 <see cref="OnMatchReset"/> 里调用它，
         /// 否则重开一局会带着上一局的加成继续长。
         /// </summary>
         public void ResetStats()
@@ -222,7 +222,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 基础**攻击距离**（只影响 2v2 / 8 人局；1v1 两人相邻，距离恒为 1）。
         ///
-        /// 默认 **1**（白板与大多数角色）。咒术师、牧师重写为无限。
+        /// 默认 **1**（白板与大多数角色）。法师·咒法学派、牧师·生命领域重写为无限。
         /// </summary>
         public virtual int BaseAttackRange => 1;
 
@@ -230,13 +230,13 @@ namespace FingerDiceDuel.Core
         /// 自身护盾**被别人打碎**时触发（区别于 <see cref="OnOwnShieldBroken"/>
         /// 的"自己主动破盾"）。
         ///
-        /// 目的是让"被动碎盾也要触发效果"的角色（圣武士的冲击）有地方挂。
+        /// 目的是让"被动碎盾也要触发效果"的角色（圣武士·奉献之誓的冲击）有地方挂。
         /// </summary>
         public virtual void OnOtherShieldBroken(PlayerState owner, Hand brokenHand,
                                                GameManager manager) { }
 
         /// <summary>
-        /// 默认没有"碎盾换射程"这类副作用。战士重写它。
+        /// 默认没有"碎盾换射程"这类副作用。战士·破阵者重写它。
         /// </summary>
         public virtual void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager) { }
 
@@ -248,7 +248,7 @@ namespace FingerDiceDuel.Core
         ///
         /// 默认 0 —— 大多数角色的即时收益已经由 AI 的效果档位分数覆盖了
         /// （4/6/8 = 攻击、5 = 合盾、9 = 回复）。
-        /// 狼人（凑 7）与剑客（双持）会重写它。
+        /// 野蛮人·野兽道途（凑 7）与战士·剑士（双持）会重写它。
         /// </summary>
         public virtual int ScoreMoveBonus(MoveValueContext context) => 0;
 
@@ -272,7 +272,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 为什么要从外面设：`AttackContext` 刻意**不持有对局引用**
         ///    （它只是"这一击"的数据），而"距离 1 内 / 外"是玩家规则里
-        ///    好几个角色的分型依据（牧师 / 妖术师 / 法师）。
+        ///    好几个角色的分型依据（牧师·生命领域 / 邪术师·至高妖精 / 法师·塑能学派）。
         ///    让 GameManager 在发起攻击时写一次距离，比给上下文塞
         ///    GameManager 依赖干净得多。
         /// </summary>

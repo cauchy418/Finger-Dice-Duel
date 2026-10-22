@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Tests
     ///   · "-> 的部分删除没有意义" -> 文案里不再出现 →
     ///
     /// ⚠️ 数据放在 Core（不是 UI）：**UI 是叶子层、测试项目引用不到**，
-    ///    写在那里就没法测。而且它不只服务法师，日后的 PvE 冒险也要用。
+    ///    写在那里就没法测。而且它不只服务法师·塑能学派，日后的 PvE 冒险也要用。
     /// </summary>
     [TestFixture]
     public class GuideSheetTests

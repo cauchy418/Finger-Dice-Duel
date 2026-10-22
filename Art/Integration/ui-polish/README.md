@@ -1,3 +1,5 @@
+> 历史接入记录：截图与日志保留该阶段旧名。2026-10-23 的职业·子职重构验收见 [最新记录](../profession-subclass/README.md)。
+
 # 1v1 技能按钮与居中修正
 
 运行编辑器菜单 `Finger Dice Duel/Preview/UI Alignment and Skills`，在真实运行时界面检查并截图。本目录的 PNG 由引擎渲染，非概念图。

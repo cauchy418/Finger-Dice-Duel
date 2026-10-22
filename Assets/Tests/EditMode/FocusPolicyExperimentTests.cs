@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Tests
     ///
     /// 口径（玩家要求）：
     ///   · 每个角色每段种子 600 局，共 **2 段**（0..599 / 10,000,000..10,000,599）；
-    ///   · 同一局的三组共享**完全相同**的阵容、初始手值与术士骰子；
+    ///   · 同一局的三组共享**完全相同**的阵容、初始手值与术士·狂野魔法骰子；
     ///   · 只有**受试角色**的 AI 切换集火策略，其余三个座位始终 baseline；
     ///   · 受试角色的队伍胜 = 胜；平局 / 异常不计胜（平局率单独报）。
     ///
@@ -202,7 +202,7 @@ namespace FingerDiceDuel.Tests
             var sb = new StringBuilder();
             sb.AppendLine("=== 2v2 集火策略对照实验 ===");
             sb.AppendLine($"口径：每角色每段 {GamesPerSegment} 局 × 2 段种子（共 {GamesPerSegment * 2} 局/组）；");
-            sb.AppendLine("      同局三组共享阵容 / 初始手值 / 术士骰子；只有受试角色的 AI 切换策略。");
+            sb.AppendLine("      同局三组共享阵容 / 初始手值 / 术士·狂野魔法骰子；只有受试角色的 AI 切换策略。");
             sb.AppendLine("      胜率 = 受试角色所在队伍的胜局 / 有效局；平局与异常不计胜。");
             sb.AppendLine();
             sb.AppendLine("角色        射程   基线      集火Self  集火Mate   ΔSelf      ΔMate      判定");
@@ -399,15 +399,15 @@ namespace FingerDiceDuel.Tests
         /// <summary>
         /// 把角色自带的随机源换成**按局固定**的种子。
         ///
-        /// 术士每次攻击掷 1d100；用默认 `new Random()` 会让三组实验的骰子不同，
+        /// 术士·狂野魔法每次攻击掷 1d100；用默认 `new Random()` 会让三组实验的骰子不同，
         /// 把"集火的效果"淹没在骰子噪声里（三份正式 report 每次跑也都会小幅漂移）。
         /// </summary>
         private static void SeedRandomSources(IReadOnlyList<PlayerState> seated, int gameSeed)
         {
             for (int i = 0; i < seated.Count; i++)
             {
-                if (seated[i].Character is SorcererLogic sorcerer)
-                    sorcerer.Rng = new Random(unchecked(gameSeed * 31 + i * 97 + 1));
+                if (seated[i].Character is WildMagicLogic wildMagic)
+                    wildMagic.Rng = new Random(unchecked(gameSeed * 31 + i * 97 + 1));
             }
         }
 

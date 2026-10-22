@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
 {
@@ -61,7 +62,7 @@ namespace FingerDiceDuel.Characters
                           IReadOnlyList<string> interactions)
         {
             Id = id;
-            EnglishName = englishName;
+            EnglishName = CharacterIdentity.Find(id)?.SubclassNameEn ?? englishName;
             Alignment = alignment;
             ShortSkill = shortSkill;
             DetailSkill = detailSkill;

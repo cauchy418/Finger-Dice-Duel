@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -9,20 +9,20 @@ namespace FingerDiceDuel.Assistant
     ///
     /// 数据来源：[`Tools/focus-report.txt`](../../../Tools/focus-report.txt)
     ///   24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局；
-    ///   同局三组共享阵容 / 初始手值 / 术士骰子，只有受试角色的 AI 切换策略。
+    ///   同局三组共享阵容 / 初始手值 / 术士·狂野魔法骰子，只有受试角色的 AI 切换策略。
     ///
     /// 结论（focusSelf = 优先打离自己最近的敌人）：
     ///   · **总体 +3.2 点**（49.8% -> 53.0%），14 个角色显著提升、3 个显著下降；
-    ///   · 提升最大的：邪术师 +17.7、刺客 +9.2、忍者 +7.3、野蛮人 +6.8、
-    ///     战士 +6.3、武僧 +6.3、游侠 +4.4、士兵 +3.9；
-    ///   · 显著变差：**狼人 -4.1**、法师 -3.3、猎人 -2.7；
-    ///     巨人 -2.5 但未达显著。
+    ///   · 提升最大的：邪术师·旧日支配者 +17.7、游荡者·刺客 +9.2、武僧·忍宗 +7.3、野蛮人·守望者道途 +6.8、
+    ///     战士·破阵者 +6.3、武僧·太极宗 +6.3、游荡者·风流剑客 +4.4、战士·勇士 +3.9；
+    ///   · 显著变差：**野蛮人·野兽道途 -4.1**、法师·塑能学派 -3.3、游侠·幽域追踪者 -2.7；
+    ///     野蛮人·巨人道途 -2.5 但未达显著。
     ///   · **focusMate 总体只有 +0.1**，远弱于 Self，且没有必须用的理由 —— 不采用。
     ///
     /// 生产策略因此改成**黑名单**：
     ///   · 默认所有角色都用 `Self`；
-    ///   · 猎人 / 狼人 / 魔术师保持 baseline（实验里它们用 Self 更差）；
-    ///   · **邪术师也保持 baseline**：它自己用 Self 是 +17.7，但 2v2 已经是 **62.5% 胜率 / 8.7% 平局**；
+    ///   · 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师保持 baseline（实验里它们用 Self 更差）；
+    ///   · **邪术师·旧日支配者也保持 baseline**：它自己用 Self 是 +17.7，但 2v2 已经是 **62.5% 胜率 / 8.7% 平局**；
     ///     先把平局问题单独处理，暂不叠加集火。
     ///
     /// 1v1 只有一位对手，`ResolveFocusTarget` 直接返回 null，
@@ -33,15 +33,15 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 不启用 focusSelf 的角色。
         ///
-        /// 猎人 / 狼人 / 魔术师是实验里 Self 更差的；邪术师要先处理 8.7% 的 2v2 平局率。
+        /// 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师是实验里 Self 更差的；邪术师·旧日支配者要先处理 8.7% 的 2v2 平局率。
         /// 改名单前请先重跑 <c>FocusPolicyExperimentTests</c>。
         /// </summary>
         private static readonly HashSet<string> NoFocusRoleIds =
             new HashSet<string>(StringComparer.Ordinal)
             {
-                CharacterDefinition.WarlockId,     // 2v2 62.5% / 8.7% 平局，先处理平局
-                CharacterDefinition.HunterId,      // Self -2.7（显著变差）
-                CharacterDefinition.WerewolfId,    // Self -4.1（显著）
+                CharacterDefinition.TheGreatOldOneId,     // 2v2 62.5% / 8.7% 平局，先处理平局
+                CharacterDefinition.GloomStalkerId,      // Self -2.7（显著变差）
+                CharacterDefinition.PathOfTheBeastId,    // Self -4.1（显著）
                 CharacterDefinition.MagicianId,    // Self -3.3（显著变差）
             };
 

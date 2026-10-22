@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Tests
     /// **战报里的算式必须自洽**：`A + B = C`，其中 C 必须等于 A 与 B 归一化后的和。
     ///
     /// 玩家实测（附日志）：
-    ///   "战士 左手：1 + 4 = 2（无效果）"  —— 1 + 4 应当是 5，不是 2。
+    ///   "战士·破阵者 左手：1 + 4 = 2（无效果）"  —— 1 + 4 应当是 5，不是 2。
     /// </summary>
     [TestFixture]
     public class TurnLogArithmeticTests
@@ -23,8 +23,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Basic_operation_log_is_self_consistent()
         {
-            PlayerState a = Make("战士", CharacterDefinition.Fighter);
-            PlayerState b = Make("法师", CharacterDefinition.Wizard);
+            PlayerState a = Make("战士·破阵者", CharacterDefinition.Breaker);
+            PlayerState b = Make("法师·塑能学派", CharacterDefinition.SchoolOfEvocation);
 
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
@@ -52,8 +52,8 @@ namespace FingerDiceDuel.Tests
             {
                 for (int right = 1; right <= 9; right++)
                 {
-                    PlayerState a = Make("甲", CharacterDefinition.Fighter);
-                    PlayerState b = Make("乙", CharacterDefinition.Wizard);
+                    PlayerState a = Make("甲", CharacterDefinition.Breaker);
+                    PlayerState b = Make("乙", CharacterDefinition.SchoolOfEvocation);
 
                     var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                                new SimpleChoiceProvider());

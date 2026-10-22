@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -16,22 +16,22 @@ namespace FingerDiceDuel.Core
         Hand AskWhichShieldToBlock(PlayerState defender, Hand shieldA, Hand shieldB, AttackContext context);
 
         /// <summary>
-        /// 战士连锁破盾：从候选盾中选一面击碎。
+        /// 战士·破阵者连锁破盾：从候选盾中选一面击碎。
         /// 返回 <c>default(ChainBreakTarget)</c>（其 Shield 为 null）表示放弃发动。
         /// </summary>
-        ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter, IReadOnlyList<ChainBreakTarget> candidates);
+        ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker, IReadOnlyList<ChainBreakTarget> candidates);
 
         /// <summary>
         /// 通用抉择入口：回答一个角色提出的 <see cref="ChoiceRequest"/>。
         /// 返回 null 表示"放弃 / 不发动"。
         ///
-        /// 牧师的回血目标、游侠的闪避与增伤、野蛮人的锁手都走这里，
+        /// 牧师·生命领域的回血目标、游荡者·风流剑客的闪避与增伤、野蛮人·守望者道途的锁手都走这里，
         /// 这样新增角色时不需要再往本接口上加方法。
         /// </summary>
         Hand ChooseHandFor(ChoiceRequest request, PlayerState decider);
     }
 
-    /// <summary>战士连锁破盾的候选目标：某玩家某一只处于 Formed 状态的盾。</summary>
+    /// <summary>战士·破阵者连锁破盾的候选目标：某玩家某一只处于 Formed 状态的盾。</summary>
     public readonly struct ChainBreakTarget
     {
         public PlayerState Owner { get; }

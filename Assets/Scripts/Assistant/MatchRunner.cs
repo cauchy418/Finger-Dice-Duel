@@ -87,16 +87,16 @@ namespace FingerDiceDuel.Assistant
 
                 // ⚠️⚠️ **回合开始：清掉"只属于本回合"的标记。**
                 //
-                //    `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
-                //    与 `WizardLogic.WantsToAbandonThisTurn` 原来都**没有每回合重置**：
+                //    `SuppressAttackDamage`（法师·塑能学派放弃攻击 = 这一击不造成伤害）
+                //    与 `SchoolOfEvocationLogic.WantsToAbandonThisTurn` 原来都**没有每回合重置**：
                 //    界面路径自己清了，无头路径从不清 ——
-                //    后果是法师第一次放弃之后**永久**被抑制、再也打不出伤害，
+                //    后果是法师·塑能学派第一次放弃之后**永久**被抑制、再也打不出伤害，
                 //    于是"放弃换来的类型"永远用不掉，状态永远挂不上。
                 //
                 //    统一走 `GameManager.BeginTurn()`，界面与无头一套逻辑。
                 game.BeginTurn();
 
-                // ⚠️ **法师的状态：轮到某人之前先结算他的"回合开始"**
+                // ⚠️ **法师·塑能学派的状态：轮到某人之前先结算他的"回合开始"**
                 //    （中毒 / 感电）。中毒可能直接把他打死、跳过其行动，
                 //    所以结算后要重新读一次当前行动者。
                 //
@@ -122,11 +122,11 @@ namespace FingerDiceDuel.Assistant
                     //    于是"两手都不能运算"的玩家会让整局**卡在这里**。
                     //
                     //    实测触发场景（玩家早就指出过）：
-                    //      猎人进**伏击**会暗置一只手；若另一只手随后被锁
-                    //      （野蛮人锁手），他就两只手都不能运算 -> 无合法步。
+                    //      游侠·幽域追踪者进**伏击**会暗置一只手；若另一只手随后被锁
+                    //      （野蛮人·守望者道途锁手），他就两只手都不能运算 -> 无合法步。
                     //      我一度把"AI 自动接受伏击"打开，于是：
                     //        全角色循环赛 5 处卡死、双将交叉对战失败、
-                    //        "hunter vs barbarian 应在回合上限内结束"失败。
+                    //        "gloomStalker vs pathOfTheWarden 应在回合上限内结束"失败。
                     //    补上这一段之后，那些局面就会**正常跳过**而不是卡住。
                     if (game.CanSkipTurnFor(actor))
                     {
@@ -154,19 +154,19 @@ namespace FingerDiceDuel.Assistant
                 if (RecordHistory) result.History.Add(turn);
                 OnTurnResolved?.Invoke(turn);
 
-                // ⚠️ **法师的状态：这一位的"回合结束"**（燃烧 + 状态计数递减）。
+                // ⚠️ **法师·塑能学派的状态：这一位的"回合结束"**（燃烧 + 状态计数递减）。
                 //    无头路径没有"换人事件"，所以在行动结算之后**立刻**结算 ——
                 //    下一次循环开头就会轮到下一位，时序与界面路径一致。
                 game.ResolveStatusTurnEnd(actor);
 
-                // ⚠️ **吟游诗人：本回合受过伤 / 实际回过血 -> 这一手结算完立刻发动。**
+                // ⚠️ **吟游诗人·勇气学院：本回合受过伤 / 实际回过血 -> 这一手结算完立刻发动。**
                 //
                 //    玩家确认的时机是"每次行动结算完检查"，所以放在
                 //    `ResolveStatusTurnEnd` **之后**（燃烧那种回合结束伤害也要算进"受过伤"）。
                 //    对**双方**都试一次 —— 受伤的往往不是行动者。
                 //    标记在 `GameManager.BeginTurn()` 里统一复位，所以不会重复触发。
-                Characters.SpecialLogics.BardAi.TryActivate(actor, game);
-                Characters.SpecialLogics.BardAi.TryActivate(game.GetOpponent(actor), game);
+                Characters.SpecialLogics.CollegeOfValorAi.TryActivate(actor, game);
+                Characters.SpecialLogics.CollegeOfValorAi.TryActivate(game.GetOpponent(actor), game);
             }
 
             // ⚠️ `HitTurnLimit` **保持原义**：模拟器被 `MaxTurns` 强行中断
@@ -178,7 +178,7 @@ namespace FingerDiceDuel.Assistant
             // 与"模拟器被迫中断"是两回事。
             //
             // 为什么需要区分：统计胜率时，把这种局当成"负"会严重误导 ——
-            // 实测"狼人+巨人"在 50 回合上限下 96% 都是这种局，
+            // 实测"野蛮人·野兽道途+野蛮人·巨人道途"在 50 回合上限下 96% 都是这种局，
             // 被算成半负后排倒数第一；把上限放开到 300，它是 98.8% 胜。
             result.ReachedTurnLimit = game.RoundCount >= game.RoundLimit;
 

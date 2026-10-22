@@ -1,0 +1,1006 @@
+{
+  "baseline": "ab4edff",
+  "changedTextFiles": [
+    "Art/Concepts/dark-fantasy-v1/PROMPT-hands-v2.md",
+    "Art/Concepts/dark-fantasy-v1/PROMPTS.md",
+    "Art/Concepts/dark-fantasy-v1/README.md",
+    "Art/Integration/1v1/README.md",
+    "Art/Integration/front-end/README.md",
+    "Art/Integration/multiplayer/README.md",
+    "Art/Integration/new-roles/README.md",
+    "Art/Integration/new-roles/review-front-end.cs.txt",
+    "Art/Integration/new-roles/review-transfer.cs.txt",
+    "Art/Integration/turn-exits/README.md",
+    "Art/Integration/ui-polish/README.md",
+    "Art/Production/battle-v1/README.md",
+    "Art/Production/battle-v1/asset-manifest.json",
+    "Art/Production/battle-v1/validation-report.json",
+    "Art/Production/battle-v1/vector-manifest.json",
+    "Art/Production/front-end-v1/README.md",
+    "Art/Production/front-end-v1/asset-manifest.json",
+    "Art/Production/new-roles-v1/README.md",
+    "Art/Production/new-roles-v1/manifest.json",
+    "Art/Production/painted-icons-v2/README.md",
+    "Art/Production/painted-icons-v2/painted-manifest.json",
+    "Art/Production/shield-hand-v1/README.md",
+    "Art/Production/status-icons-v3/prompts.json",
+    "Art/Production/status-icons-v3/validation.md",
+    "Assets/Editor/BattleArtPreview.cs",
+    "Assets/Editor/FrontEndArtPreview.cs",
+    "Assets/Editor/MultiplayerArtPreview.cs",
+    "Assets/Editor/UiPolishPreview.cs",
+    "Assets/Scripts/Assistant/AbstractChoiceProvider.cs",
+    "Assets/Scripts/Assistant/AnimationDirector.cs",
+    "Assets/Scripts/Assistant/BattleTurnText.cs",
+    "Assets/Scripts/Assistant/BoardController.cs",
+    "Assets/Scripts/Assistant/CharacterCardText.cs",
+    "Assets/Scripts/Assistant/DiceRollSetup.cs",
+    "Assets/Scripts/Assistant/DiceSplitAdvisor.cs",
+    "Assets/Scripts/Assistant/FocusPolicies.cs",
+    "Assets/Scripts/Assistant/GreedyChoiceProvider.cs",
+    "Assets/Scripts/Assistant/HandValueProfile.cs",
+    "Assets/Scripts/Assistant/HandValueProfiles.cs",
+    "Assets/Scripts/Assistant/MatchRunner.cs",
+    "Assets/Scripts/Assistant/MatchStartController.cs",
+    "Assets/Scripts/Assistant/RandomChoiceProvider.cs",
+    "Assets/Scripts/Assistant/RuleBook.cs",
+    "Assets/Scripts/Assistant/ScriptedChoiceProvider.cs",
+    "Assets/Scripts/Assistant/SimpleChoiceProvider.cs",
+    "Assets/Scripts/Assistant/SoundDirector.cs",
+    "Assets/Scripts/Characters/CharacterCodex.cs",
+    "Assets/Scripts/Characters/CharacterDefinition.cs",
+    "Assets/Scripts/Characters/CharacterFactory.cs",
+    "Assets/Scripts/Characters/CharacterTemplate.cs",
+    "Assets/Scripts/Characters/DualGeneralBehavior.cs",
+    "Assets/Scripts/Characters/SpecialLogics/ArcaneArcherLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/AssassinLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/BarbarianLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/BardAi.cs",
+    "Assets/Scripts/Characters/SpecialLogics/BardLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/BerserkerLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/ClericLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/CurseweaverLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/FighterLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/GamblerLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/GiantLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/HexerLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/HunterLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/KnightLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/MagicianLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/MonkLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/NinjaLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/OathbreakerLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/PaladinLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/RangerLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/SoldierLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/SorcererLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/SwordsmanLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/ThiefLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/WandererLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/WarlockLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/WerewolfLogic.cs",
+    "Assets/Scripts/Characters/SpecialLogics/WizardLogic.cs",
+    "Assets/Scripts/Core/AttackContext.cs",
+    "Assets/Scripts/Core/AttackDamageTypes.cs",
+    "Assets/Scripts/Core/ChoiceRequest.cs",
+    "Assets/Scripts/Core/CombatText.cs",
+    "Assets/Scripts/Core/DamageIcons.cs",
+    "Assets/Scripts/Core/Enums/ShieldState.cs",
+    "Assets/Scripts/Core/Enums/SpecialLogicType.cs",
+    "Assets/Scripts/Core/Enums/StatusEffect.cs",
+    "Assets/Scripts/Core/GameManager.cs",
+    "Assets/Scripts/Core/GuideSheets.cs",
+    "Assets/Scripts/Core/Hand.cs",
+    "Assets/Scripts/Core/ICharacterBehavior.cs",
+    "Assets/Scripts/Core/IChoiceProvider.cs",
+    "Assets/Scripts/Core/PlayerState.cs",
+    "Assets/Scripts/Core/StatusRules.cs",
+    "Assets/Scripts/UI/BardChoicePanel.cs",
+    "Assets/Scripts/UI/CodexScreen.cs",
+    "Assets/Scripts/UI/DamageTypePanel.cs",
+    "Assets/Scripts/UI/DiceRollScreen.cs",
+    "Assets/Scripts/UI/FrontEndArt.cs",
+    "Assets/Scripts/UI/GameBoardUI.BattleSkin.cs",
+    "Assets/Scripts/UI/GameBoardUI.MultiplayerSkin.cs",
+    "Assets/Scripts/UI/GameBoardUI.SkillActions.cs",
+    "Assets/Scripts/UI/GameBoardUI.cs",
+    "Assets/Scripts/UI/GameBootstrap.FrontEnd.cs",
+    "Assets/Scripts/UI/GameBootstrap.cs",
+    "Assets/Scripts/UI/HandVisual.cs",
+    "Assets/Scripts/UI/StatusIconBar.cs",
+    "Assets/Tests/EditMode/AiCharacterTests.cs",
+    "Assets/Tests/EditMode/AiChoiceProviderRoutingTests.cs",
+    "Assets/Tests/EditMode/AnimationDirectorTests.cs",
+    "Assets/Tests/EditMode/AttackRangeTests.cs",
+    "Assets/Tests/EditMode/AttackTypeTests.cs",
+    "Assets/Tests/EditMode/BarbarianLockTests.cs",
+    "Assets/Tests/EditMode/BardChoiceFlowTests.cs",
+    "Assets/Tests/EditMode/BardTests.cs",
+    "Assets/Tests/EditMode/BardTriggerTests.cs",
+    "Assets/Tests/EditMode/BattleReadabilityTests.cs",
+    "Assets/Tests/EditMode/BoardControllerTests.cs",
+    "Assets/Tests/EditMode/CharacterBalanceTests.cs",
+    "Assets/Tests/EditMode/CharacterFactoryTests.cs",
+    "Assets/Tests/EditMode/CharacterLogicTests.cs",
+    "Assets/Tests/EditMode/CharacterRosterTests.cs",
+    "Assets/Tests/EditMode/CodexTests.cs",
+    "Assets/Tests/EditMode/ConcealedHandCannotOperateTests.cs",
+    "Assets/Tests/EditMode/DamageTypeGuideTests.cs",
+    "Assets/Tests/EditMode/DiceRollSetupTests.cs",
+    "Assets/Tests/EditMode/DiceSplitAdvisorTests.cs",
+    "Assets/Tests/EditMode/DodgeBeforeTaichiTests.cs",
+    "Assets/Tests/EditMode/DualClericDoubleNineTests.cs",
+    "Assets/Tests/EditMode/DualGeneralTests.cs",
+    "Assets/Tests/EditMode/DualVersusDualHarness.cs",
+    "Assets/Tests/EditMode/DualVersusDualTests.cs",
+    "Assets/Tests/EditMode/EightPlayerFactionTests.cs",
+    "Assets/Tests/EditMode/EightPlayerTests.cs",
+    "Assets/Tests/EditMode/FocusPolicyExperimentTests.cs",
+    "Assets/Tests/EditMode/FocusPolicyTests.cs",
+    "Assets/Tests/EditMode/GamblerTests.cs",
+    "Assets/Tests/EditMode/GuideSheetTests.cs",
+    "Assets/Tests/EditMode/HealthBarTests.cs",
+    "Assets/Tests/EditMode/HunterAmbushTriggerTests.cs",
+    "Assets/Tests/EditMode/HunterTests.cs",
+    "Assets/Tests/EditMode/IdentityBalanceTests.cs",
+    "Assets/Tests/EditMode/IdentityModeTests.cs",
+    "Assets/Tests/EditMode/InitialFiveIsBrokenShieldTests.cs",
+    "Assets/Tests/EditMode/KillRewardTests.cs",
+    "Assets/Tests/EditMode/LethalThresholdTests.cs",
+    "Assets/Tests/EditMode/MagicianTests.cs",
+    "Assets/Tests/EditMode/MonkAndGiantTests.cs",
+    "Assets/Tests/EditMode/MultiplayerTargetChoiceTests.cs",
+    "Assets/Tests/EditMode/NewCharacterBatchTests.cs",
+    "Assets/Tests/EditMode/NewCharacterTests.cs",
+    "Assets/Tests/EditMode/NewThreeCharacterTests.cs",
+    "Assets/Tests/EditMode/NoLegalMoveAllowsSkipTests.cs",
+    "Assets/Tests/EditMode/OathbreakerTransferTests.cs",
+    "Assets/Tests/EditMode/PaladinShockRangeTests.cs",
+    "Assets/Tests/EditMode/PreTurnChoiceIndexResetTests.cs",
+    "Assets/Tests/EditMode/RangerDodgeThenPowerShotTests.cs",
+    "Assets/Tests/EditMode/RangerPowerShotUiSceneTests.cs",
+    "Assets/Tests/EditMode/RangerReuseTests.cs",
+    "Assets/Tests/EditMode/RangerSkillAcrossTurnsTests.cs",
+    "Assets/Tests/EditMode/RuleBookTests.cs",
+    "Assets/Tests/EditMode/ScreenFlowTests.cs",
+    "Assets/Tests/EditMode/ShieldTests.cs",
+    "Assets/Tests/EditMode/SkillActivationTests.cs",
+    "Assets/Tests/EditMode/SkillBleedAndCleanseTests.cs",
+    "Assets/Tests/EditMode/SkipTurnRuleTests.cs",
+    "Assets/Tests/EditMode/SoldierAndKnightTests.cs",
+    "Assets/Tests/EditMode/SorcererTests.cs",
+    "Assets/Tests/EditMode/SoundDirectorTests.cs",
+    "Assets/Tests/EditMode/TaichiDamageTests.cs",
+    "Assets/Tests/EditMode/ThiefTests.cs",
+    "Assets/Tests/EditMode/TurnLogArithmeticTests.cs",
+    "Assets/Tests/EditMode/TwoVersusTwoAiTests.cs",
+    "Assets/Tests/EditMode/TwoVersusTwoBalanceTests.cs",
+    "Assets/Tests/EditMode/TwoVersusTwoBatchTests.cs",
+    "Assets/Tests/EditMode/TwoVersusTwoHarness.cs",
+    "Assets/Tests/EditMode/TwoVersusTwoTests.cs",
+    "Assets/Tests/EditMode/WarlockDistanceTests.cs",
+    "Assets/Tests/EditMode/WizardDeclineKeepsTargetStepTests.cs",
+    "Assets/Tests/EditMode/WizardStatusFlowTests.cs",
+    "Assets/Tests/EditMode/WizardStatusTests.cs",
+    "Assets/Tests/EditMode/WizardUiFlowTests.cs",
+    "CODE-STYLE.md",
+    "CODELY.md",
+    "README.md",
+    "RULES.md",
+    "Tools/1v1-report.txt",
+    "Tools/2v2-report.txt",
+    "Tools/8p-report.txt",
+    "Tools/ArtPipeline/build-battle-assets.cjs",
+    "Tools/ArtPipeline/build-front-end-assets.cjs",
+    "Tools/ArtPipeline/import-new-role-icons.cjs",
+    "Tools/ArtPipeline/import-painted-icons.cjs",
+    "Tools/ArtPipeline/preview-battle-assets.cjs",
+    "Tools/ArtPipeline/preview-front-end-assets.cjs",
+    "Tools/ArtPipeline/validate-front-end-assets.cjs",
+    "Tools/ArtPipeline/validate-pack.cjs",
+    "Tools/dual-report.txt",
+    "Tools/focus-report.txt",
+    "Tools/identity-report.txt"
+  ],
+  "renamedFiles": [
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/arcane_archer.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/fighter_arcane_archer.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/assassin.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/rogue_assassin.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/barbarian.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/barbarian_path_of_the_warden.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/bard.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/bard_college_of_valor.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/cleric.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/cleric_life_domain.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/curseweaver.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/wizard_school_of_conjuration.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/fighter.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/fighter_breaker.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/gambler.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/rogue_gambler.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/giant.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/barbarian_path_of_the_giant.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/hexer.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/warlock_the_archfey.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/hunter.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/ranger_gloom_stalker.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/knight.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/paladin_oath_of_the_crown.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/magician.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/rogue_magician.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/monk.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/monk_way_of_the_tai_chi.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/ninja.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/monk_way_of_the_ninja.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/paladin.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/paladin_oath_of_devotion.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/ranger.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/rogue_swashbuckler.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/soldier.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/fighter_champion.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/sorcerer.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/sorcerer_wild_magic.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/swordsman.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/fighter_swordsman.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/thief.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/rogue_thief.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/warlock.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/warlock_the_great_old_one.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/werewolf.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/barbarian_path_of_the_beast.svg"
+    },
+    {
+      "from": "Art/Production/battle-v1/svg/Classes/wizard.svg",
+      "to": "Art/Production/battle-v1/svg/Subclasses/wizard_school_of_evocation.svg"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/candidates/barbarian.png",
+      "to": "Art/Production/new-roles-v1/candidates/barbarian_path_of_the_warden.png"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/candidates/oathbreaker.png",
+      "to": "Art/Production/new-roles-v1/candidates/paladin_oathbreaker.png"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/candidates/wanderer.png",
+      "to": "Art/Production/new-roles-v1/candidates/fighter_tactician.png"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/prompts/barbarian.txt",
+      "to": "Art/Production/new-roles-v1/prompts/barbarian_path_of_the_warden.txt"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/prompts/oathbreaker.txt",
+      "to": "Art/Production/new-roles-v1/prompts/paladin_oathbreaker.txt"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/prompts/wanderer.txt",
+      "to": "Art/Production/new-roles-v1/prompts/fighter_tactician.txt"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/source/barbarian.png",
+      "to": "Art/Production/new-roles-v1/source/barbarian_path_of_the_warden.png"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/source/oathbreaker.png",
+      "to": "Art/Production/new-roles-v1/source/paladin_oathbreaker.png"
+    },
+    {
+      "from": "Art/Production/new-roles-v1/source/wanderer.png",
+      "to": "Art/Production/new-roles-v1/source/fighter_tactician.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/arcane_archer.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/fighter_arcane_archer.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/assassin.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/rogue_assassin.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/barbarian.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_warden.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/bard.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/bard_college_of_valor.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/cleric.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/cleric_life_domain.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/curseweaver.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/wizard_school_of_conjuration.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/fighter.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/fighter_breaker.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/gambler.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/rogue_gambler.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/giant.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_giant.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/hexer.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/warlock_the_archfey.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/hunter.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/ranger_gloom_stalker.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/knight.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_the_crown.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/magician.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/rogue_magician.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/monk.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/monk_way_of_the_tai_chi.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/ninja.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/monk_way_of_the_ninja.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/paladin.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_devotion.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/ranger.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/rogue_swashbuckler.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/soldier.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/fighter_champion.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/sorcerer.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/sorcerer_wild_magic.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/swordsman.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/fighter_swordsman.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/thief.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/rogue_thief.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/warlock.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/warlock_the_great_old_one.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/werewolf.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_beast.png"
+    },
+    {
+      "from": "Art/Production/painted-icons-v2/native/Classes/wizard.png",
+      "to": "Art/Production/painted-icons-v2/native/Subclasses/wizard_school_of_evocation.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/arcane_archer.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_arcane_archer.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/arcane_archer.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_arcane_archer.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/assassin.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_assassin.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/assassin.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_assassin.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/bard.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/bard.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/berserker.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_berserker.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/berserker.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_berserker.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/cleric.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_life_domain.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/cleric.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_life_domain.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/curseweaver.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_conjuration.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/curseweaver.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_conjuration.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/fighter.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_breaker.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/fighter.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_breaker.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/gambler.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_gambler.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/gambler.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_gambler.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/giant.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_giant.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/giant.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_giant.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/hexer.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_archfey.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/hexer.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_archfey.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/hunter.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_gloom_stalker.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/hunter.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_gloom_stalker.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/knight.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_crown.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/knight.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_crown.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/magician.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_magician.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/magician.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_magician.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/monk.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_tai_chi.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/monk.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_tai_chi.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/ninja.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_ninja.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/ninja.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_ninja.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/oathbreaker.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oathbreaker.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/oathbreaker.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oathbreaker.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/paladin.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_devotion.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/paladin.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_devotion.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/ranger.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_swashbuckler.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/ranger.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_swashbuckler.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/soldier.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_champion.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/soldier.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_champion.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/sorcerer.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_wild_magic.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/sorcerer.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_wild_magic.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/swordsman.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_swordsman.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/swordsman.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_swordsman.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/thief.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_thief.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/thief.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_thief.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/wanderer.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_tactician.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/wanderer.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_tactician.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/warlock.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_great_old_one.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/warlock.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_great_old_one.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/werewolf.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_beast.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/werewolf.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_beast.png.meta"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/wizard.png",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png"
+    },
+    {
+      "from": "Assets/Resources/Art/Battle/v1/Classes/wizard.png.meta",
+      "to": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BarbarianLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheWardenLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BarbarianLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheWardenLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BardAi.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/CollegeOfValorAi.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BardAi.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/CollegeOfValorAi.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BardLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/CollegeOfValorLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BardLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/CollegeOfValorLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BerserkerLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheBerserkerLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/BerserkerLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheBerserkerLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/ClericLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/LifeDomainLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/ClericLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/LifeDomainLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/CurseweaverLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SchoolOfConjurationLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/CurseweaverLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SchoolOfConjurationLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/FighterLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/BreakerLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/FighterLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/BreakerLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/GiantLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheGiantLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/GiantLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheGiantLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/HexerLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TheArchfeyLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/HexerLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TheArchfeyLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/HunterLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/GloomStalkerLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/HunterLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/GloomStalkerLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/KnightLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/OathOfTheCrownLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/KnightLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/OathOfTheCrownLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/MonkLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WayOfTheTaiChiLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/MonkLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WayOfTheTaiChiLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/NinjaLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WayOfTheNinjaLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/NinjaLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WayOfTheNinjaLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/PaladinLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/OathOfDevotionLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/PaladinLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/OathOfDevotionLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/RangerLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SwashbucklerLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/RangerLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SwashbucklerLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/SoldierLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/ChampionLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/SoldierLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/ChampionLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/SorcererLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WildMagicLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/SorcererLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/WildMagicLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WandererLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TacticianLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WandererLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TacticianLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WarlockLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TheGreatOldOneLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WarlockLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/TheGreatOldOneLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WerewolfLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheBeastLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WerewolfLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/PathOfTheBeastLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WizardLogic.cs",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SchoolOfEvocationLogic.cs"
+    },
+    {
+      "from": "Assets/Scripts/Characters/SpecialLogics/WizardLogic.cs.meta",
+      "to": "Assets/Scripts/Characters/SpecialLogics/SchoolOfEvocationLogic.cs.meta"
+    },
+    {
+      "from": "Assets/Scripts/UI/BardChoicePanel.cs",
+      "to": "Assets/Scripts/UI/CollegeOfValorChoicePanel.cs"
+    },
+    {
+      "from": "Assets/Scripts/UI/BardChoicePanel.cs.meta",
+      "to": "Assets/Scripts/UI/CollegeOfValorChoicePanel.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BarbarianLockTests.cs",
+      "to": "Assets/Tests/EditMode/PathOfTheWardenLockTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BarbarianLockTests.cs.meta",
+      "to": "Assets/Tests/EditMode/PathOfTheWardenLockTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardChoiceFlowTests.cs",
+      "to": "Assets/Tests/EditMode/CollegeOfValorChoiceFlowTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardChoiceFlowTests.cs.meta",
+      "to": "Assets/Tests/EditMode/CollegeOfValorChoiceFlowTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardTests.cs",
+      "to": "Assets/Tests/EditMode/CollegeOfValorTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardTests.cs.meta",
+      "to": "Assets/Tests/EditMode/CollegeOfValorTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardTriggerTests.cs",
+      "to": "Assets/Tests/EditMode/CollegeOfValorTriggerTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/BardTriggerTests.cs.meta",
+      "to": "Assets/Tests/EditMode/CollegeOfValorTriggerTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/DualClericDoubleNineTests.cs",
+      "to": "Assets/Tests/EditMode/DualLifeDomainDoubleNineTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/DualClericDoubleNineTests.cs.meta",
+      "to": "Assets/Tests/EditMode/DualLifeDomainDoubleNineTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/HunterAmbushTriggerTests.cs",
+      "to": "Assets/Tests/EditMode/GloomStalkerAmbushTriggerTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/HunterAmbushTriggerTests.cs.meta",
+      "to": "Assets/Tests/EditMode/GloomStalkerAmbushTriggerTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/HunterTests.cs",
+      "to": "Assets/Tests/EditMode/GloomStalkerTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/HunterTests.cs.meta",
+      "to": "Assets/Tests/EditMode/GloomStalkerTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/MonkAndGiantTests.cs",
+      "to": "Assets/Tests/EditMode/WayOfTheTaiChiAndPathOfTheGiantTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/MonkAndGiantTests.cs.meta",
+      "to": "Assets/Tests/EditMode/WayOfTheTaiChiAndPathOfTheGiantTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/PaladinShockRangeTests.cs",
+      "to": "Assets/Tests/EditMode/OathOfDevotionShockRangeTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/PaladinShockRangeTests.cs.meta",
+      "to": "Assets/Tests/EditMode/OathOfDevotionShockRangeTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerDodgeThenPowerShotTests.cs",
+      "to": "Assets/Tests/EditMode/SwashbucklerDodgeThenDuelistThrustTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerDodgeThenPowerShotTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SwashbucklerDodgeThenDuelistThrustTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerPowerShotUiSceneTests.cs",
+      "to": "Assets/Tests/EditMode/SwashbucklerDuelistThrustUiSceneTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerPowerShotUiSceneTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SwashbucklerDuelistThrustUiSceneTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerReuseTests.cs",
+      "to": "Assets/Tests/EditMode/SwashbucklerReuseTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerReuseTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SwashbucklerReuseTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerSkillAcrossTurnsTests.cs",
+      "to": "Assets/Tests/EditMode/SwashbucklerSkillAcrossTurnsTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/RangerSkillAcrossTurnsTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SwashbucklerSkillAcrossTurnsTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/SoldierAndKnightTests.cs",
+      "to": "Assets/Tests/EditMode/ChampionAndOathOfTheCrownTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/SoldierAndKnightTests.cs.meta",
+      "to": "Assets/Tests/EditMode/ChampionAndOathOfTheCrownTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/SorcererTests.cs",
+      "to": "Assets/Tests/EditMode/WildMagicTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/SorcererTests.cs.meta",
+      "to": "Assets/Tests/EditMode/WildMagicTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WarlockDistanceTests.cs",
+      "to": "Assets/Tests/EditMode/TheGreatOldOneDistanceTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WarlockDistanceTests.cs.meta",
+      "to": "Assets/Tests/EditMode/TheGreatOldOneDistanceTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardDeclineKeepsTargetStepTests.cs",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationDeclineKeepsTargetStepTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardDeclineKeepsTargetStepTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationDeclineKeepsTargetStepTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardStatusFlowTests.cs",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationStatusFlowTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardStatusFlowTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationStatusFlowTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardStatusTests.cs",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationStatusTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardStatusTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationStatusTests.cs.meta"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardUiFlowTests.cs",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationUiFlowTests.cs"
+    },
+    {
+      "from": "Assets/Tests/EditMode/WizardUiFlowTests.cs.meta",
+      "to": "Assets/Tests/EditMode/SchoolOfEvocationUiFlowTests.cs.meta"
+    }
+  ],
+  "professionBadgeReuse": {
+    "barbarian": "barbarian",
+    "bard": "bard",
+    "cleric": "cleric",
+    "fighter": "soldier",
+    "monk": "monk",
+    "paladin": "paladin",
+    "ranger": "ranger",
+    "rogue": "thief",
+    "sorcerer": "sorcerer",
+    "warlock": "hexer",
+    "wizard": "wizard"
+  },
+  "metaPolicy": "Existing .meta files moved byte-for-byte, never authored or rewritten.",
+  "professionBadgeReusePhase": "Initial migration copy; nine profession badges were subsequently repainted. Only ranger and warlock remain reused, their corresponding subclasses were redrawn."
+}

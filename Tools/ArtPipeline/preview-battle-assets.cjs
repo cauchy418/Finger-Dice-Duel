@@ -22,22 +22,22 @@ async function contact(group,keys,cols,cellW,cellH,imgW,imgH,filename){
 }
 async function assembly(){
  const p=[];
- let paintedClasses=false;try{paintedClasses=JSON.parse(await fs.readFile(path.join(root,'Art/Production/painted-icons-v2/painted-manifest.json'),'utf8')).assets.some(a=>a.group==='Classes');}catch(e){if(e.code!=='ENOENT')throw e;}
+ let paintedClasses=false;try{paintedClasses=JSON.parse(await fs.readFile(path.join(root,'Art/Production/painted-icons-v2/painted-manifest.json'),'utf8')).assets.some(a=>a.group==='Subclasses');}catch(e){if(e.code!=='ENOENT')throw e;}
  async function add(rel,x,y,w,h){p.push({input:await sharp(path.join(dst,rel)).resize(w,h,{fit:'fill'}).png().toBuffer(),left:x,top:y});}
  async function text(t,x,y,size=24,c){p.push({input:await label(t,size,c),left:x,top:y});}
  await add('UI/d20_sigil.png',592,330,500,500);
  await add('UI/panel_log.png',1410,215,450,560);
  await text('战报',1445,246,30);
  await add('UI/divider.png',1440,290,390,24);
- for(const [i,t] of ['法师运算结果为 6','士兵受到 4 点伤害','法师的回合结束','轮到士兵行动'].entries())await text(t,1450,340+i*65,21);
+ for(const [i,t] of ['法师·塑能学派运算结果为 6','战士·勇士受到 4 点伤害','法师·塑能学派的回合结束','轮到战士·勇士行动'].entries())await text(t,1450,340+i*65,21);
  await text('手指骰子对决',70,58,48);
  await text('第 3 轮',115,144,28);
- for(const [y,key,name,hp] of [[30,'wizard','法师','18 / 20'],[628,'soldier','士兵','16 / 20']]){
-   if(paintedClasses)await add(`Classes/${key}.png`,685,y-5,118,118);
-   else{await add('UI/badge_ring.png',690,y,108,108);await add(`Classes/${key}.png`,703,y+13,82,82);}
+ for(const [y,key,name,hp] of [[30,'wizard_school_of_evocation','法师·塑能学派','18 / 20'],[628,'fighter_champion','战士·勇士','16 / 20']]){
+   if(paintedClasses)await add(`Subclasses/${key}.png`,685,y-5,118,118);
+   else{await add('UI/badge_ring.png',690,y,108,108);await add(`Subclasses/${key}.png`,703,y+13,82,82);}
    await text(name,820,y+7,29);
    await add('UI/health_track.png',814,y+55,340,33);
-   await add('UI/health_fill.png',826,y+61,key==='wizard'?288:255,20);
+   await add('UI/health_fill.png',826,y+61,key==='wizard_school_of_evocation'?288:255,20);
    await text(hp,939,y+62,17,'#F5E9CD');
  }
  for(const [x,y,side,n,state] of [[740,148,'left',3,'available'],[958,148,'right',5,'normal'],[740,742,'left',4,'selected'],[958,742,'right',2,'normal']]){
@@ -58,10 +58,10 @@ async function main(){
  await fs.mkdir(art,{recursive:true});
  await contact('Hands',[...Array.from({length:10},(_,i)=>`hand_left_${i}`),...Array.from({length:10},(_,i)=>`hand_right_${i}`)],10,160,240,154,193,'hands-contact.png');
  const m=JSON.parse(await fs.readFile(path.join(art,'vector-manifest.json'),'utf8'));
- for(const g of ['Classes','Damage','Status','Overlay'])await contact(g,m.assets.filter(a=>a.group===g).map(a=>a.key),6,176,180,132,132,`${g.toLowerCase()}-contact.png`);
+ for(const g of ['Subclasses','Damage','Status','Overlay'])await contact(g,m.assets.filter(a=>a.group===g).map(a=>a.key),6,176,180,132,132,`${g.toLowerCase()}-contact.png`);
  const ui=m.assets.filter(a=>a.group==='UI');
  await contact('UI',ui.map(a=>a.key),4,300,220,264,168,'ui-contact.png');
- const tiny=m.assets.filter(a=>['Damage','Status','Classes'].includes(a.group)),parts=[];
+ const tiny=m.assets.filter(a=>['Damage','Status','Subclasses'].includes(a.group)),parts=[];
  for(let i=0;i<tiny.length;i++){
    const x=i%8*200,y=Math.floor(i/8)*112;
    for(const [j,size]of [28,40,64].entries())parts.push({input:await sharp(path.join(dst,tiny[i].path)).resize(size,size).png().toBuffer(),left:x+[8,49,104][j],top:y+12+(64-size)});

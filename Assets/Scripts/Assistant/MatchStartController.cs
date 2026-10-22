@@ -34,7 +34,7 @@ namespace FingerDiceDuel.Assistant
     /// ## 重要语义
     ///
     /// 初始手值**不触发任何效果** —— 只写数值，绝不写护盾状态。
-    /// 初始 5 不是盾、刺客初始双 7 不进潜行。
+    /// 初始 5 不是盾、游荡者·刺客初始双 7 不进潜行。
     /// </summary>
     public sealed class MatchStartController
     {

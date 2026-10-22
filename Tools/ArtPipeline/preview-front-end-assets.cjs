@@ -71,11 +71,11 @@ async function selected(){
  for(let i=0;i<classes.length;i++){
   const x=244+(i%6)*194,y=149+Math.floor(i/6)*210;
   if(i===0){await p.box('roster_tile_selected',x-9,y-6,180,212);await p.pic('UI/selection_halo',x-2,y+2,164,164);}
-  await p.reuse('Classes/'+classes[i].key,x+6,y+8,148,148);
+  await p.reuse('Subclasses/'+classes[i].key,x+6,y+8,148,148);
   await p.center(classes[i].label,x+80,y+163,23,i===0?golden:body);
  }
- await p.reuse('Classes/soldier',1536,154,250,250);
- await p.center('士兵  Soldier',1663,433,33,golden,true);
+ await p.reuse('Subclasses/fighter_champion',1536,154,250,250);
+ await p.center('战士·勇士  Champion',1663,433,33,golden,true);
  await p.center('绝对中立',1663,490,23,'#99B994');
  await p.box('divider_horizontal',1490,538,346,24);
  await p.text('生命 20    攻击 +1',1490,596,25,body);
@@ -98,7 +98,7 @@ async function overview(){
  await p.box('panel_detail',1410,128,474,908);
  for(let i=0;i<classes.length;i++){
   const x=77+(i%6)*217,y=159+Math.floor(i/6)*211;
-  await p.reuse('Classes/'+classes[i].key,x+13,y,156,156);
+  await p.reuse('Subclasses/'+classes[i].key,x+13,y,156,156);
   await p.center(classes[i].label,x+91,y+164,24,i===0?golden:body);
  }
  await p.center('冒险者档案',1647,169,33,golden,true);
@@ -119,18 +119,18 @@ async function detail(){
  for(let i=0;i<9;i++){
   const y=144+i*94;
   await p.box('list_row_'+(i===0?'selected':'normal'),49,y,290,88);
-  await p.reuse('Classes/'+classes[i].key,60,y+9,68,68);
+  await p.reuse('Subclasses/'+classes[i].key,60,y+9,68,68);
   await p.text(classes[i].label,143,y+13,23,i===0?golden:body);
   await p.text(classes[i].en,143,y+48,16,muted);
  }
  await p.box('scroll_track',340,148,16,824);await p.box('scroll_thumb_normal',340,151,16,90);
- await p.reuse('Classes/soldier',411,160,344,344);
- await p.center('士兵',583,552,40,golden,true);
- await p.center('Soldier',583,613,26,muted);
+ await p.reuse('Subclasses/fighter_champion',411,160,344,344);
+ await p.center('战士·勇士',583,552,40,golden,true);
+ await p.center('Champion',583,613,26,muted);
  await p.box('divider_horizontal',425,683,320,24);
  await p.text('攻防各 +1 的白板基准。',430,746,25,golden,305,true);
  await p.center('绝对中立',583,867,24,'#99B994');
- await p.text('士兵  Soldier',840,158,43,golden,undefined,true);
+ await p.text('战士·勇士  Champion',840,158,43,golden,undefined,true);
  const stats=[['health','生命 20'],['melee','攻击 +1'],['counter','防御 +1'],['ranged','距离 1']];
  for(const [i,[icon,label]]of stats.entries()){
   const x=843+i*245;await p.pic('Icons/'+icon,x,231,27,27);await p.text(label,x+40,231,23,body);
@@ -141,7 +141,7 @@ async function detail(){
   ['detail','技能详情','没有特殊能力，但攻防各 +1、攻击距离 1 —— 扎实的基础角色。'],
   ['guide','操作指导','没有技能，全靠攻防各 +1 的底子。用它练基本功：优先凑 4/6/8 打输出，血量健康时不必急着合盾。'],
   ['counter','如何针对','没有可针对的机制，正常对拼即可。注意他的攻防各 +1，换血时你会略亏，尽量用技能换回节奏。'],
-  ['synergy','与其他角色的特殊交互','与咒术师：他的攻击无视护盾与正向防御，士兵的防 +1 会被吃掉。\n与巨人：巨人攻 +2 且两段，士兵的防 +1 吃不消。']
+  ['synergy','与其他角色的特殊交互','与法师·咒法学派：他的攻击无视护盾与正向防御，战士·勇士的防 +1 会被吃掉。\n与野蛮人·巨人道途：野蛮人·巨人道途攻 +2 且两段，战士·勇士的防 +1 吃不消。']
  ];
  const positions=[330,438,558,704,850];
  for(let i=0;i<sections.length;i++){
@@ -184,7 +184,7 @@ async function contacts(){
 async function main(){
  await fs.mkdir(out,{recursive:true});
  manifest=JSON.parse(await fs.readFile(path.join(art,'asset-manifest.json'),'utf8'));
- classes=JSON.parse(await fs.readFile(path.join(root,'Art/Production/battle-v1/asset-manifest.json'),'utf8')).assets.filter(a=>a.group==='Classes');
+ classes=JSON.parse(await fs.readFile(path.join(root,'Art/Production/battle-v1/asset-manifest.json'),'utf8')).assets.filter(a=>a.group==='Subclasses');
  const definition=await fs.readFile(path.join(root,'Assets/Scripts/Characters/CharacterDefinition.cs'),'utf8');
  const codex=await fs.readFile(path.join(root,'Assets/Scripts/Characters/CharacterCodex.cs'),'utf8');
  const ids=new Map([...definition.matchAll(/const string (\w+) = "([^"]+)"/g)].map(m=>[m[1],m[2]]));

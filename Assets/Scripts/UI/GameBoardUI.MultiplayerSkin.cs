@@ -19,11 +19,11 @@ namespace FingerDiceDuel.UI
             var background = root.gameObject.AddComponent<Image>();
             BattleArt.Apply(background, "UI/panel_tooltip", true);
             background.raycastTarget = false;
-            var emblem = ArtImage(root, "ClassEmblem", "Classes/soldier", Vector2.zero, new Vector2(60, 60));
+            var emblem = ArtImage(root, "SubclassEmblem", "Subclasses/fighter_champion", Vector2.zero, new Vector2(60, 60));
             var name = CreateText(root, "Name", Vector2.zero, new Vector2(190, 30), 22, TextAnchor.MiddleCenter, BattleArt.Gold);
             name.font = UiFont.Bold;
             name.resizeTextForBestFit = true;
-            name.resizeTextMinSize = 16;
+            name.resizeTextMinSize = 14;
             var seat = CreateText(root, "Seat", Vector2.zero, new Vector2(200, 22), 16, TextAnchor.MiddleCenter, BattleArt.Ink);
             var track = ArtImage(root, "HpBar", "UI/health_track", Vector2.zero, new Vector2(200, 28), true);
             var fill = ArtImage(track.rectTransform, "Fill", "UI/health_fill", Vector2.zero, new Vector2(184, 15));
@@ -95,8 +95,8 @@ namespace FingerDiceDuel.UI
             panel.NameText.text = display;
             panel.HpText.text = player.Health + " / " + player.MaximumHealth;
             UpdateHealthBar(panel.HpFill, player);
-            string id = player.Definition?.Id ?? "soldier";
-            panel.Emblem.sprite = BattleArt.Get("Classes/" + (id == "blank" ? "soldier" : id));
+            string id = player.Definition?.Id ?? "fighter_champion";
+            panel.Emblem.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
             panel.Emblem.color = player.IsAlive ? Color.white : new Color(0.5f, 0.5f, 0.5f);
             panel.Root.GetComponent<Image>().color = player.IsAlive ? Color.white : new Color(0.58f, 0.58f, 0.58f);
             panel.SeatText.color = panel.Relation == RingRelation.Self ? BattleArt.Gold
@@ -132,12 +132,12 @@ namespace FingerDiceDuel.UI
             LayoutRingActionTray();
             if (Visible(_acceptButton))
             {
-                if (_skillEffect == HandEffect.RangerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
-                if (_skillEffect == HandEffect.RangerPowerShot) _acceptButton.GetComponentInChildren<Text>().text = "强化射击 · 2→3";
+                if (_skillEffect == HandEffect.SwashbucklerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
+                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "乘风突刺 · 2→3";
             }
             if (Visible(_skipButton))
                 _skipButton.GetComponentInChildren<Text>().text = _skillActor?.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(_skillActor)
-                    ? "潜行 · 跳过回合" : _skillActor?.Definition?.Id == CharacterDefinition.HexerId ? "同命 · 跳过回合" : "跳过回合";
+                    ? "潜行 · 跳过回合" : _skillActor?.Definition?.Id == CharacterDefinition.TheArchfeyId ? "妖精契约 · 跳过回合" : "跳过回合";
             var actions = new List<Button>();
             foreach (var button in _skillChoiceButtons) if (Visible(button)) actions.Add(button);
             foreach (var button in new[] { _acceptButton, _declineButton, _stealButton, _gambleButton, _skipButton, _sacrificeButton })

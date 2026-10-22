@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Tests
     /// **2v2 批量对局验证**：四个 AI 自动打完整局。
     ///
     /// 目的不是"验证 AI 强不强"，而是**找出卡死**：
-    /// 玩家实测报告"经典里战士攻击卡住了"，所以这里把大量角色组合
+    /// 玩家实测报告"经典里战士·破阵者攻击卡住了"，所以这里把大量角色组合
     /// 与随机种子跑一遍，只要有一局没在步数上限内结束就报出来，
     /// 并把**卡在哪一步**（阶段 / 行动方 / 候选）一起打出来便于定位。
     ///
@@ -29,15 +29,15 @@ namespace FingerDiceDuel.Tests
         private static readonly CharacterDefinition[] Roster =
         {
             CharacterDefinition.Blank,
-            CharacterDefinition.Fighter,
-            CharacterDefinition.Barbarian,
+            CharacterDefinition.Breaker,
+            CharacterDefinition.PathOfTheWarden,
             CharacterDefinition.Assassin,
             CharacterDefinition.Swordsman,
-            CharacterDefinition.Ninja,
-            CharacterDefinition.Werewolf,
-            CharacterDefinition.Ranger,
-            CharacterDefinition.Curseweaver,
-            CharacterDefinition.Cleric,
+            CharacterDefinition.WayOfTheNinja,
+            CharacterDefinition.PathOfTheBeast,
+            CharacterDefinition.Swashbuckler,
+            CharacterDefinition.SchoolOfConjuration,
+            CharacterDefinition.LifeDomain,
         };
 
         /// <summary>一局 2v2 的驱动结果（用于失败时报告现场）。</summary>
@@ -141,8 +141,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Four_ais_finish_a_two_versus_two_match()
         {
-            BatchResult r = PlayOne(CharacterDefinition.Fighter, CharacterDefinition.Cleric,
-                                    CharacterDefinition.Barbarian, CharacterDefinition.Ninja,
+            BatchResult r = PlayOne(CharacterDefinition.Breaker, CharacterDefinition.LifeDomain,
+                                    CharacterDefinition.PathOfTheWarden, CharacterDefinition.WayOfTheNinja,
                                     4000, out GameManager game);
 
             Assert.True(r.Finished, "四个 AI 应能打完 2v2：" + Describe(r));
@@ -161,14 +161,14 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 战士（玩家报告卡住的角色）专项
+        // 战士·破阵者（玩家报告卡住的角色）专项
         // ============================================================
 
         [Test]
         public void A_warrior_attack_does_not_stall_in_two_versus_two()
         {
-            // 玩家实测："经典里战士攻击卡住了"。
-            // 这里把战士放在每个座位各跑一局，确保它出手不会卡。
+            // 玩家实测："经典里战士·破阵者攻击卡住了"。
+            // 这里把战士·破阵者放在每个座位各跑一局，确保它出手不会卡。
             for (int seat = 0; seat < 4; seat++)
             {
                 var defs = new[]
@@ -176,13 +176,13 @@ namespace FingerDiceDuel.Tests
                     CharacterDefinition.Blank, CharacterDefinition.Blank,
                     CharacterDefinition.Blank, CharacterDefinition.Blank,
                 };
-                defs[seat] = CharacterDefinition.Fighter;
+                defs[seat] = CharacterDefinition.Breaker;
 
                 BatchResult r = PlayOne(defs[0], defs[1], defs[2], defs[3],
                                         4000, out GameManager game);
 
                 Assert.True(r.Finished,
-                    $"战士坐在第 {seat + 1} 位时卡住了：" + Describe(r));
+                    $"战士·破阵者坐在第 {seat + 1} 位时卡住了：" + Describe(r));
             }
         }
 
@@ -357,7 +357,7 @@ namespace FingerDiceDuel.Tests
                 return;
 
             // 玩家实测：日志里出现过
-            //   "非法运算被拒绝：非法运算：未选择运算源。（行动方=战士，运算源=，目标=8）"
+            //   "非法运算被拒绝：非法运算：未选择运算源。（行动方=战士·破阵者，运算源=，目标=8）"
             //
             // 这类拒绝被防御性代码接住了（没有崩），但它说明 **AI 产出过非法步骤** ——
             // 在对局中途很可能就是卡死的根源。

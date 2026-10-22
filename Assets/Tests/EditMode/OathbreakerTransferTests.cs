@@ -15,10 +15,10 @@ namespace FingerDiceDuel.Tests
         private static GameManager Match(out List<SimpleChoiceProvider> sinks, CharacterDefinition recipient = null)
         {
             var players = new List<PlayerState> {
-                CharacterFactory.CreatePlayer("攻击者", CharacterDefinition.Soldier),
-                CharacterFactory.CreatePlayer("破誓者", CharacterDefinition.Oathbreaker),
-                CharacterFactory.CreatePlayer("持盾者", recipient ?? CharacterDefinition.Soldier),
-                CharacterFactory.CreatePlayer("圣武士", CharacterDefinition.Paladin) };
+                CharacterFactory.CreatePlayer("攻击者", CharacterDefinition.Champion),
+                CharacterFactory.CreatePlayer("圣武士·破誓者", CharacterDefinition.Oathbreaker),
+                CharacterFactory.CreatePlayer("持盾者", recipient ?? CharacterDefinition.Champion),
+                CharacterFactory.CreatePlayer("圣武士·奉献之誓", CharacterDefinition.OathOfDevotion) };
             sinks = new List<SimpleChoiceProvider>(); var providers = new List<IChoiceProvider>();
             for (int i = 0; i < 4; i++) { var sink = new SimpleChoiceProvider(); sinks.Add(sink); providers.Add(sink); }
             var game = GameManager.Create2v2(players, providers);
@@ -90,9 +90,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Actual_recipient_uses_its_own_dodge_choice_and_keeps_its_shield()
         {
-            var game = Match(out var sinks, CharacterDefinition.Ranger); var target = game.Players[2];
+            var game = Match(out var sinks, CharacterDefinition.Swashbuckler); var target = game.Players[2];
             sinks[1].SetChoice(HandEffect.OathbreakerTransfer, target.LeftHand);
-            sinks[2].SetChoice(HandEffect.RangerDodge, target.RightHand);
+            sinks[2].SetChoice(HandEffect.SwashbucklerDodge, target.RightHand);
             var ctx = Hit(game); Assert.True(ctx.WasDodged);
             Assert.AreEqual(2, target.RightHand.Value); Assert.AreEqual(ShieldState.Formed, target.LeftHand.State);
         }
@@ -104,17 +104,17 @@ namespace FingerDiceDuel.Tests
             Assert.AreSame(game.PlayerB, board.Chooser); Assert.True(board.IsHumanChooser);
             Assert.True(board.CanDeclinePendingChoice);
             Assert.True(board.ClickHand(game.Players[2].RightHand));
-            Assert.AreEqual(HandEffect.PaladinRedirect, board.PendingEffect);
+            Assert.AreEqual(HandEffect.OathOfDevotionRedirect, board.PendingEffect);
             Assert.True(board.DeclinePendingChoice());
             Assert.AreEqual(20, game.PlayerB.Health);
             Assert.AreEqual(ShieldState.Broken, game.Players[2].LeftHand.State);
         }
         [Test]
-        public void Paladin_gets_a_visible_choice_after_transfer_and_can_take_the_attack()
+        public void OathOfDevotion_gets_a_visible_choice_after_transfer_and_can_take_the_attack()
         {
             var game = Match(out var sinks); var board = Board(game, sinks);
             board.ClickHand(game.Players[2].LeftHand);
-            Assert.AreEqual(HandEffect.PaladinRedirect, board.PendingEffect);
+            Assert.AreEqual(HandEffect.OathOfDevotionRedirect, board.PendingEffect);
             Assert.AreSame(game.Players[3], board.Chooser);
             Assert.True(board.ClickHand(game.Players[3].LeftHand));
             Assert.AreEqual(16, game.Players[3].Health);
@@ -132,7 +132,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void One_on_one_has_no_eligible_transfer_target()
         {
-            var a = CharacterFactory.CreatePlayer("A", CharacterDefinition.Soldier);
+            var a = CharacterFactory.CreatePlayer("A", CharacterDefinition.Champion);
             var b = CharacterFactory.CreatePlayer("B", CharacterDefinition.Oathbreaker);
             b.RightHand.SetValue(5); a.RightHand.SetValue(5); a.RightHand.SetShieldState(ShieldState.Formed);
             var game = new GameManager(a, b, new SimpleChoiceProvider(), new SimpleChoiceProvider());
@@ -154,14 +154,14 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void A_previous_paladin_answer_cannot_redirect_a_later_unanswered_attack()
         {
-            var game = Match(out var sinks); var paladin = game.Players[3];
+            var game = Match(out var sinks); var oathOfDevotion = game.Players[3];
             sinks[1].SetChoice(HandEffect.OathbreakerTransfer, game.Players[2].LeftHand);
-            sinks[3].SetChoice(HandEffect.PaladinRedirect, paladin.LeftHand);
+            sinks[3].SetChoice(HandEffect.OathOfDevotionRedirect, oathOfDevotion.LeftHand);
             game.AnsweredLookupFor = (owner, effect, variant) =>
                 owner == game.PlayerB && effect == HandEffect.OathbreakerTransfer ? game.Players[2].LeftHand : null;
             var ctx = Hit(game);
             Assert.AreSame(game.Players[2], ctx.Defender);
-            Assert.AreEqual(20, paladin.Health);
+            Assert.AreEqual(20, oathOfDevotion.Health);
             Assert.AreEqual(ShieldState.Broken, game.Players[2].LeftHand.State);
         }
     }

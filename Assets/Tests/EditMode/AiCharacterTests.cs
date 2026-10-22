@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Tests
     /// AI 对新角色特性的使用验证。
     ///
     /// 为什么要有这一组：早先的 <see cref="GreedyChoiceProvider"/> 只认识
-    /// 白板 / 战士，六个新角色的技能**一个都不会用**。
+    /// 白板 / 战士·破阵者，六个新角色的技能**一个都不会用**。
     /// 这些测试钉住"AI 确实会用技能"，并防止回归。
     /// </summary>
     [TestFixture]
@@ -34,79 +34,79 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 牧师：绝不把 9 回给对手
+        // 牧师·生命领域：绝不把 9 回给对手
         // ============================================================
 
         [Test]
-        public void Cleric_ai_heals_itself_and_never_the_opponent()
+        public void LifeDomain_ai_heals_itself_and_never_the_opponent()
         {
             // 这是修掉的真 bug：旧逻辑按"谁最缺血"选目标，
-            // 于是对手更残血时，牧师会把 9 送给对手。
+            // 于是对手更残血时，牧师·生命领域会把 9 送给对手。
             var ai = new GreedyChoiceProvider();
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var opponent = CharacterFactory.CreatePlayer("乙", CharacterDefinition.Blank);
 
             // 自己满血、对手残血 —— 旧逻辑一定会选对手
-            TestSetup.SetHealth(cleric, 20);
+            TestSetup.SetHealth(lifeDomain, 20);
             TestSetup.SetHealth(opponent, 3);
 
-            var candidates = new List<Hand> { cleric.LeftHand, cleric.RightHand, opponent.LeftHand, opponent.RightHand };
+            var candidates = new List<Hand> { lifeDomain.LeftHand, lifeDomain.RightHand, opponent.LeftHand, opponent.RightHand };
             var request = new ChoiceRequest(
-                HandEffect.ClericHealTarget, "回给谁？", candidates,
-                allowDecline: false, declineResult: cleric.LeftHand, decider: cleric);
+                HandEffect.LifeDomainHealTarget, "回给谁？", candidates,
+                allowDecline: false, declineResult: lifeDomain.LeftHand, decider: lifeDomain);
 
-            Hand chosen = ai.ChooseHandFor(request, cleric);
+            Hand chosen = ai.ChooseHandFor(request, lifeDomain);
 
-            Assert.True(ReferenceEquals(chosen, cleric.LeftHand)
-                        || ReferenceEquals(chosen, cleric.RightHand),
-                "牧师 AI 必须回给自己，不能回给对手。");
+            Assert.True(ReferenceEquals(chosen, lifeDomain.LeftHand)
+                        || ReferenceEquals(chosen, lifeDomain.RightHand),
+                "牧师·生命领域 AI 必须回给自己，不能回给对手。");
         }
 
         // ============================================================
-        // 游侠：该闪就闪、该强化就强化
+        // 游荡者·风流剑客：该闪就闪、该强化就强化
         // ============================================================
 
         [Test]
-        public void Ranger_ai_uses_dodge()
+        public void Swashbuckler_ai_uses_dodge()
         {
             var ai = new GreedyChoiceProvider();
-            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var swashbuckler = CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler);
             var opponent = CharacterFactory.CreatePlayer("乙", CharacterDefinition.Blank);
 
-            var candidates = new List<Hand> { ranger.LeftHand, ranger.RightHand };
+            var candidates = new List<Hand> { swashbuckler.LeftHand, swashbuckler.RightHand };
             var request = new ChoiceRequest(
-                HandEffect.RangerDodge, "要闪避吗？", candidates,
-                allowDecline: true, declineResult: null, decider: ranger);
+                HandEffect.SwashbucklerDodge, "要闪避吗？", candidates,
+                allowDecline: true, declineResult: null, decider: swashbuckler);
 
-            Hand chosen = ai.ChooseHandFor(request, ranger);
+            Hand chosen = ai.ChooseHandFor(request, swashbuckler);
 
             Assert.NotNull(chosen, "被攻击时 AI 应该用掉一只 1 换掉整次攻击。");
-            Assert.True(ReferenceEquals(chosen, ranger.LeftHand)
-                        || ReferenceEquals(chosen, ranger.RightHand));
+            Assert.True(ReferenceEquals(chosen, swashbuckler.LeftHand)
+                        || ReferenceEquals(chosen, swashbuckler.RightHand));
         }
 
         [Test]
-        public void Ranger_ai_always_takes_the_power_shot()
+        public void Swashbuckler_ai_always_takes_the_power_shot()
         {
             var ai = new GreedyChoiceProvider();
-            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var swashbuckler = CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler);
 
             var request = new ChoiceRequest(
-                HandEffect.RangerPowerShot, "要强化吗？",
-                new List<Hand> { ranger.LeftHand },
-                allowDecline: true, declineResult: null, decider: ranger);
+                HandEffect.SwashbucklerDuelistThrust, "要强化吗？",
+                new List<Hand> { swashbuckler.LeftHand },
+                allowDecline: true, declineResult: null, decider: swashbuckler);
 
-            Assert.NotNull(ai.ChooseHandFor(request, ranger), "强化是白赚，必须发动。");
+            Assert.NotNull(ai.ChooseHandFor(request, swashbuckler), "强化是白赚，必须发动。");
         }
 
         // ============================================================
-        // 狼人：优先凑"双手和 7"
+        // 野蛮人·野兽道途：优先凑"双手和 7"
         // ============================================================
 
         [Test]
-        public void Werewolf_ai_actually_picks_a_move_that_triggers_the_sum_seven()
+        public void PathOfTheBeast_ai_actually_picks_a_move_that_triggers_the_sum_seven()
         {
-            var (game, ai) = Arrange(CharacterDefinition.Werewolf);
+            var (game, ai) = Arrange(CharacterDefinition.PathOfTheBeast);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -124,14 +124,14 @@ namespace FingerDiceDuel.Tests
                 ? wolf.RightHand.Value
                 : wolf.LeftHand.Value;
 
-            Assert.AreEqual(WerewolfLogic.TriggerSum, result + other,
+            Assert.AreEqual(PathOfTheBeastLogic.TriggerSum, result + other,
                 "AI 应优先凑出双手和 7（回半血 + 攻防永久 +1）。");
         }
 
         [Test]
-        public void Werewolf_ai_triggers_the_skill_in_a_real_turn()
+        public void PathOfTheBeast_ai_triggers_the_skill_in_a_real_turn()
         {
-            var (game, ai) = Arrange(CharacterDefinition.Werewolf);
+            var (game, ai) = Arrange(CharacterDefinition.PathOfTheBeast);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -147,33 +147,33 @@ namespace FingerDiceDuel.Tests
                 game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
             }
 
-            var logic = wolf.Character as WerewolfLogic;
+            var logic = wolf.Character as PathOfTheBeastLogic;
             Assert.NotNull(logic);
             Assert.True(logic.TriggerCount > 0,
-                "狼人 AI 在 20 个回合内应至少触发一次'和 7'。");
+                "野蛮人·野兽道途 AI 在 20 个回合内应至少触发一次'和 7'。");
             Assert.True(wolf.Character.AttackBonus > attackBefore,
                 "触发后攻防应永久成长。");
             _ = healthBefore;
         }
 
         // ============================================================
-        // 游侠：不能为了输出而烧掉唯一的 1（玩家实测报告）
+        // 游荡者·风流剑客：不能为了输出而烧掉唯一的 1（玩家实测报告）
         // ============================================================
 
         [Test]
-        public void Ranger_keeps_its_only_one_instead_of_spending_it_on_damage()
+        public void Swashbuckler_keeps_its_only_one_instead_of_spending_it_on_damage()
         {
-            // ⚠️ 玩家实测："游侠不会主动运算出 1"，
+            // ⚠️ 玩家实测："游荡者·风流剑客不会主动运算出 1"，
             // 明明能留一个 1 用于闪避，却选了别的手去打输出。
             //
-            // 现在把"留下的手值"计入评分（1 对游侠 = 85，3 = 45），
+            // 现在把"留下的手值"计入评分（1 对游荡者·风流剑客 = 85，3 = 45），
             // 于是"保住 1"比"多打 2 点伤害"更划算。
-            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var swashbuckler = CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler);
             var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
 
-            TestSetup.SetAllHands(ranger, foe, 1);
-            TestSetup.SetHand(ranger.LeftHand, 1);      // 唯一的 1（闪避的种子）
-            TestSetup.SetHand(ranger.RightHand, 3);
+            TestSetup.SetAllHands(swashbuckler, foe, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);      // 唯一的 1（闪避的种子）
+            TestSetup.SetHand(swashbuckler.RightHand, 3);
             TestSetup.SetHand(foe.LeftHand, 3);
             TestSetup.SetHand(foe.RightHand, 3);
 
@@ -181,42 +181,42 @@ namespace FingerDiceDuel.Tests
             //   用 1 加 3 -> 4（攻击 4），但 1 没了
             //   用 3 加 3 -> 6（攻击 6），1 留着
             // 后者效果更好**而且**保住 1，所以必须选后者。
-            var game = new GameManager(ranger, foe, new GreedyChoiceProvider(),
+            var game = new GameManager(swashbuckler, foe, new GreedyChoiceProvider(),
                                        new SimpleChoiceProvider());
             var ai = new GreedyChoiceProvider();
 
-            LegalMove picked = ai.ChooseMove(game, ranger);
-            Assert.NotNull(picked, "游侠应能选出一手。");
+            LegalMove picked = ai.ChooseMove(game, swashbuckler);
+            Assert.NotNull(picked, "游荡者·风流剑客应能选出一手。");
 
             Assert.AreEqual(3, picked.ActedHand.Value,
-                $"游侠不该用唯一的 1 去运算（实际用了 {picked.ActedHand.Value}）。");
-            Assert.AreEqual(1, GetOtherValue(ranger, picked.ActedHand),
+                $"游荡者·风流剑客不该用唯一的 1 去运算（实际用了 {picked.ActedHand.Value}）。");
+            Assert.AreEqual(1, GetOtherValue(swashbuckler, picked.ActedHand),
                 $"另一个 1 应被留在手上。");
         }
 
         [Test]
-        public void Ranger_prefers_keeping_a_one_even_when_the_effect_is_slightly_worse()
+        public void Swashbuckler_prefers_keeping_a_one_even_when_the_effect_is_slightly_worse()
         {
             // 更严格的版本：两个走法的**效果完全相同**（都是 4 点攻击），
             // 一个烧掉 1、一个保住 1 —— 必须选保住的那个。
-            var ranger = CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger);
+            var swashbuckler = CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler);
             var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
 
-            TestSetup.SetAllHands(ranger, foe, 1);
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            TestSetup.SetHand(ranger.RightHand, 1);     // 两个都是 1
+            TestSetup.SetAllHands(swashbuckler, foe, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.RightHand, 1);     // 两个都是 1
             TestSetup.SetHand(foe.LeftHand, 3);
 
-            var game = new GameManager(ranger, foe, new GreedyChoiceProvider(),
+            var game = new GameManager(swashbuckler, foe, new GreedyChoiceProvider(),
                                        new SimpleChoiceProvider());
             var ai = new GreedyChoiceProvider();
 
-            LegalMove picked = ai.ChooseMove(game, ranger);
+            LegalMove picked = ai.ChooseMove(game, swashbuckler);
             Assert.NotNull(picked);
 
             // 两个 1 无论用哪个 -> 结果都是 4、都只剩一个 1，分数相同，选哪个都行；
             // 这里只断言"用完之后手上还留着一个 1"
-            Assert.AreEqual(1, GetOtherValue(ranger, picked.ActedHand),
+            Assert.AreEqual(1, GetOtherValue(swashbuckler, picked.ActedHand),
                 "用完一手后应仍留着一个 1。");
         }
 
@@ -241,7 +241,7 @@ namespace FingerDiceDuel.Tests
                 ai.ApplyDifficulty(difficulty);
 
                 var game = new GameManager(
-                    CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter),
+                    CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker),
                     CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                     ai, new SimpleChoiceProvider());
 
@@ -288,7 +288,7 @@ namespace FingerDiceDuel.Tests
             // 抖动是**随机源**驱动的：同一局面理论上可能给出不同结果。
             // 这里只验证"随机源确实在参与" —— 跑一次不抛异常且返回合法走法。
             var game = new GameManager(
-                CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter),
+                CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker),
                 CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                 easy, new SimpleChoiceProvider());
 
@@ -336,16 +336,16 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 狼人 / 剑客：优势已统一由价值表表达
+        // 野蛮人·野兽道途 / 战士·剑士：优势已统一由价值表表达
         // ============================================================
 
         [Test]
-        public void Werewolf_scores_a_sum_seven_move_higher_than_a_plain_attack()
+        public void PathOfTheBeast_scores_a_sum_seven_move_higher_than_a_plain_attack()
         {
-            // ⚠️ "凑 7 加分"原先硬编码在 WerewolfLogic.ScoreMoveBonus（+200），
-            // 现在统一由**价值表**表达（狼人档案：和为 7 加 220，
+            // ⚠️ "凑 7 加分"原先硬编码在 PathOfTheBeastLogic.ScoreMoveBonus（+200），
+            // 现在统一由**价值表**表达（野蛮人·野兽道途档案：和为 7 加 220，
             // 并把 7 本身调到 15 —— 因为"要有 7"与"要和为 7"互斥）。
-            var wolf = CharacterFactory.CreatePlayer("狼人", CharacterDefinition.Werewolf);
+            var wolf = CharacterFactory.CreatePlayer("野蛮人·野兽道途", CharacterDefinition.PathOfTheBeast);
             var foe = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
 
             TestSetup.SetAllHands(wolf, foe, 1);
@@ -363,7 +363,7 @@ namespace FingerDiceDuel.Tests
 
             // 能凑 7 的操作：3+4=7 或 4+3=7（对手手值是 9，所以 3+9=2、4+9=3 都不行）
             // —— 本用例里没有能凑 7 的操作，所以改为断言价值表本身认这个组合。
-            HandValueProfile profile = HandValueProfiles.For(CharacterDefinition.Werewolf);
+            HandValueProfile profile = HandValueProfiles.For(CharacterDefinition.PathOfTheBeast);
             Assert.True(profile.Score(new HandSplit(3, 4)) > profile.Score(new HandSplit(8, 9)),
                 "价值表应认定 3/4（和为 7）优于 8/9。");
         }
@@ -371,23 +371,23 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Swordsman_scores_a_double_handed_move()
         {
-            // 同上：双持的优势已由价值表表达（剑客档案：双 4/双 6/双 8 加 130）
+            // 同上：双持的优势已由价值表表达（战士·剑士档案：双 4/双 6/双 8 加 130）
             HandValueProfile fencer = HandValueProfiles.For(CharacterDefinition.Swordsman);
 
             Assert.True(fencer.Score(new HandSplit(6, 6)) > fencer.Score(new HandSplit(6, 3)),
                 "双 6 应优于 6/3。");
-            Assert.True(fencer.Combos.Count > 0, "剑客应有配对加成规则。");
+            Assert.True(fencer.Combos.Count > 0, "战士·剑士应有配对加成规则。");
         }
 
         // ============================================================
-        // 剑客：追加攻击的发动门槛
+        // 战士·剑士：追加攻击的发动门槛
         // ============================================================
 
         [Test]
         public void Swordsman_ai_skips_a_feeble_follow_up()
         {
             var ai = new GreedyChoiceProvider { SwordsmanFollowUpMinDamage = 3 };
-            var swordsman = CharacterFactory.CreatePlayer("剑客", CharacterDefinition.Swordsman);
+            var swordsman = CharacterFactory.CreatePlayer("战士·剑士", CharacterDefinition.Swordsman);
 
             var request = new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp, "要追加吗？",
@@ -410,15 +410,15 @@ namespace FingerDiceDuel.Tests
         {
             var defs = new Dictionary<string, CharacterDefinition>
             {
-                { "牧师", CharacterDefinition.Cleric },
-                { "游侠", CharacterDefinition.Ranger },
-                { "狼人", CharacterDefinition.Werewolf },
-                { "剑客", CharacterDefinition.Swordsman },
-                { "忍者", CharacterDefinition.Ninja },
-                { "刺客", CharacterDefinition.Assassin },
-                { "术士", CharacterDefinition.Sorcerer },
-                { "邪术师", CharacterDefinition.Warlock },
-                { "吟游诗人", CharacterDefinition.Bard },
+                { "牧师·生命领域", CharacterDefinition.LifeDomain },
+                { "游荡者·风流剑客", CharacterDefinition.Swashbuckler },
+                { "野蛮人·野兽道途", CharacterDefinition.PathOfTheBeast },
+                { "战士·剑士", CharacterDefinition.Swordsman },
+                { "武僧·忍宗", CharacterDefinition.WayOfTheNinja },
+                { "游荡者·刺客", CharacterDefinition.Assassin },
+                { "术士·狂野魔法", CharacterDefinition.WildMagic },
+                { "邪术师·旧日支配者", CharacterDefinition.TheGreatOldOne },
+                { "吟游诗人·勇气学院", CharacterDefinition.CollegeOfValor },
             };
 
             foreach (var pair in defs)

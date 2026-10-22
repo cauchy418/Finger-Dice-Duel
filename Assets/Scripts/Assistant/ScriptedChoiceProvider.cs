@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -49,21 +49,21 @@ namespace FingerDiceDuel.Assistant
             return this;
         }
 
-        /// <summary>下一次战士连锁破盾时，放弃发动。</summary>
+        /// <summary>下一次战士·破阵者连锁破盾时，放弃发动。</summary>
         public ScriptedChoiceProvider DeclineChainBreak()
         {
             _chainBreaks.Enqueue((w, list) => default);
             return this;
         }
 
-        /// <summary>下一次战士连锁破盾时，选择候选列表中的第 index 项。</summary>
+        /// <summary>下一次战士·破阵者连锁破盾时，选择候选列表中的第 index 项。</summary>
         public ScriptedChoiceProvider ChainBreakAt(int index)
         {
             _chainBreaks.Enqueue((w, list) => (index >= 0 && index < list.Count) ? list[index] : default);
             return this;
         }
 
-        /// <summary>下一次战士连锁破盾时，选择满足条件的第一项。</summary>
+        /// <summary>下一次战士·破阵者连锁破盾时，选择满足条件的第一项。</summary>
         public ScriptedChoiceProvider ChainBreakWhere(Func<ChainBreakTarget, bool> predicate)
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));
@@ -77,11 +77,11 @@ namespace FingerDiceDuel.Assistant
             return this;
         }
 
-        /// <summary>下一次野蛮人锁手时，放弃发动。（等价于 <see cref="Decline"/>。）</summary>
+        /// <summary>下一次野蛮人·守望者道途锁手时，放弃发动。（等价于 <see cref="Decline"/>。）</summary>
         public ScriptedChoiceProvider DeclineLock()
-            => Decline(HandEffect.BarbarianLockTarget);
+            => Decline(HandEffect.PathOfTheWardenLockTarget);
 
-        /// <summary>下一次野蛮人锁手时，锁定候选列表中的第 index 项。</summary>
+        /// <summary>下一次野蛮人·守望者道途锁手时，锁定候选列表中的第 index 项。</summary>
         public ScriptedChoiceProvider LockAt(int index)
         {
             _choices.Enqueue((r, d) =>
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Assistant
             return this;
         }
 
-        /// <summary>下一次野蛮人锁手时，锁定指定那只手。</summary>
+        /// <summary>下一次野蛮人·守望者道途锁手时，锁定指定那只手。</summary>
         public ScriptedChoiceProvider LockHand(Hand hand)
         {
             _choices.Enqueue((r, d) => hand);
@@ -106,11 +106,11 @@ namespace FingerDiceDuel.Assistant
                 : base.AskWhichShieldToBlock(defender, shieldA, shieldB, context);
         }
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
+        public override ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             return _chainBreaks.Count > 0
-                ? _chainBreaks.Dequeue()(fighter, candidates)
+                ? _chainBreaks.Dequeue()(breaker, candidates)
                 : default;
         }
 

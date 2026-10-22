@@ -78,7 +78,7 @@ namespace FingerDiceDuel.UI
         public static Image Emblem(Transform parent, string name, string id, Vector2 pos, Vector2 size)
         {
             var image = Rect(parent, name, pos, size).gameObject.AddComponent<Image>();
-            image.sprite = BattleArt.Get("Classes/" + (id == "blank" ? "soldier" : id));
+            image.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
             image.preserveAspect = true;
             image.raycastTarget = false;
             return image;
@@ -146,6 +146,7 @@ namespace FingerDiceDuel.UI
             label.text = displayName;
             label.font = UiFont.Bold;
             label.fontSize = fontSize;
+            label.resizeTextForBestFit = true; label.resizeTextMinSize = 16; label.resizeTextMaxSize = fontSize;
             label.color = new Color(0.98f, 0.89f, 0.66f);
             label.rectTransform.sizeDelta = new Vector2(rect.sizeDelta.x + 4, 36);
             label.verticalOverflow = VerticalWrapMode.Overflow;

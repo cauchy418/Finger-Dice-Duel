@@ -24,8 +24,8 @@ namespace FingerDiceDuel.Tests
 
         private static GameManager Skill(string skill, CharacterDefinition target = null)
         {
-            var role = skill == "source-shield" || skill == "range-shield" ? CharacterDefinition.Fighter
-                : skill == "power-shot" ? CharacterDefinition.Ranger
+            var role = skill == "source-shield" || skill == "range-shield" ? CharacterDefinition.Breaker
+                : skill == "power-shot" ? CharacterDefinition.Swashbuckler
                 : skill == "stealth" ? CharacterDefinition.Assassin : CharacterDefinition.Swordsman;
             var game = Match(role, out var sink, out _, target);
             var a = game.PlayerA; game.PlayerB.LeftHand.SetValue(1);
@@ -37,11 +37,11 @@ namespace FingerDiceDuel.Tests
             if (skill == "range-shield")
             {
                 a.RightHand.SetValue(5); a.RightHand.SetShieldState(ShieldState.Formed);
-                sink.SetChoice(HandEffect.FighterRangeBreak, a.RightHand);
+                sink.SetChoice(HandEffect.BreakerRangeBreak, a.RightHand);
             }
             if (skill == "power-shot")
             {
-                a.RightHand.SetValue(2); sink.SetChoice(HandEffect.RangerPowerShot, a.RightHand);
+                a.RightHand.SetValue(2); sink.SetChoice(HandEffect.SwashbucklerDuelistThrust, a.RightHand);
             }
             if (skill == "stealth")
             {
@@ -93,9 +93,9 @@ namespace FingerDiceDuel.Tests
         {
             foreach (var skill in Skills)
             {
-                var game = Skill(skill, CharacterDefinition.Ranger);
+                var game = Skill(skill, CharacterDefinition.Swashbuckler);
                 var sink = (SimpleChoiceProvider)game.ChoiceProviderB;
-                sink.SetChoice(HandEffect.RangerDodge, game.PlayerB.LeftHand);
+                sink.SetChoice(HandEffect.SwashbucklerDodge, game.PlayerB.LeftHand);
                 Attack(game);
                 Assert.False(game.PlayerB.HasStatus(StatusEffect.Bleed), skill);
             }
@@ -106,7 +106,7 @@ namespace FingerDiceDuel.Tests
         {
             foreach (var skill in new[] { "source-shield", "range-shield", "power-shot", "stealth" })
             {
-                var game = Skill(skill, CharacterDefinition.Hexer);
+                var game = Skill(skill, CharacterDefinition.TheArchfey);
                 game.PlayerB.RightHand.SetValue(skill == "source-shield" ? 6 : skill == "stealth" ? 8 : 4);
                 Attack(game);
                 Assert.False(game.PlayerB.HasStatus(StatusEffect.Bleed), skill);
@@ -117,17 +117,17 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Follow_up_bleed_survives_cancellation_of_the_later_main_attack()
         {
-            var game = Skill("follow-up", CharacterDefinition.Hexer);
+            var game = Skill("follow-up", CharacterDefinition.TheArchfey);
             game.PlayerB.RightHand.SetValue(4);
             Attack(game);
             Assert.True(game.PlayerB.HasStatus(StatusEffect.Bleed));
-            Assert.AreEqual(16, game.PlayerB.Health, "追加攻击数字为0，仍不可被妖术师取消；只取消主攻击。");
+            Assert.AreEqual(16, game.PlayerB.Health, "追加攻击数字为0，仍不可被邪术师·至高妖精取消；只取消主攻击。");
         }
 
         [Test]
         public void Ordinary_attacks_of_these_roles_do_not_apply_bleed()
         {
-            foreach (var role in new[] { CharacterDefinition.Fighter, CharacterDefinition.Ranger, CharacterDefinition.Assassin, CharacterDefinition.Swordsman })
+            foreach (var role in new[] { CharacterDefinition.Breaker, CharacterDefinition.Swashbuckler, CharacterDefinition.Assassin, CharacterDefinition.Swordsman })
             {
                 var game = Match(role, out _, out _);
                 game.PlayerA.LeftHand.SetValue(3); Attack(game);
@@ -138,7 +138,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void A_previously_broken_shield_does_not_empower_the_next_attack()
         {
-            var game = Match(CharacterDefinition.Fighter, out _, out _);
+            var game = Match(CharacterDefinition.Breaker, out _, out _);
             game.PlayerA.RightHand.SetValue(5); game.PlayerA.RightHand.SetShieldState(ShieldState.Broken);
             game.PlayerA.LeftHand.SetValue(3); Attack(game);
             Assert.False(game.PlayerB.HasStatus(StatusEffect.Bleed));
@@ -191,7 +191,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Zero_damage_landed_hits_still_apply_bleed()
         {
-            var game = Match(CharacterDefinition.Soldier, out _, out _, CharacterDefinition.Soldier);
+            var game = Match(CharacterDefinition.Champion, out _, out _, CharacterDefinition.Champion);
             var ctx = new AttackContext(game.PlayerA, game.PlayerB, game.PlayerA.LeftHand, 0) { InflictsBleed = true };
             ctx.Resolve(game.ChoiceProviderB, game);
             Assert.AreEqual(0, ctx.AppliedDamage);
@@ -199,49 +199,49 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_nine_cleanses_all_eighteen_statuses_before_healing_decay()
+        public void LifeDomain_nine_cleanses_all_eighteen_statuses_before_healing_decay()
         {
-            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
+            var game = Match(CharacterDefinition.LifeDomain, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerB.LeftHand); Attack(game);
             Assert.AreEqual(19, game.PlayerB.Health);
             Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             Assert.Null(game.PlayerB.StatusSourceOf(StatusEffect.Panic));
         }
 
         [Test]
-        public void Cleric_healing_cleanses_even_a_full_health_target_without_breaking_shields()
+        public void LifeDomain_healing_cleanses_even_a_full_health_target_without_breaking_shields()
         {
-            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
+            var game = Match(CharacterDefinition.LifeDomain, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); AllStatuses(game.PlayerB, game.PlayerA);
             game.PlayerB.RightHand.SetValue(5); game.PlayerB.RightHand.SetShieldState(ShieldState.Formed);
-            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerB.LeftHand); Attack(game);
             Assert.AreEqual(20, game.PlayerB.Health); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             Assert.AreEqual(ShieldState.Formed, game.PlayerB.RightHand.State);
         }
 
         [Test]
-        public void Cleric_converted_four_six_and_eight_all_cleanse_the_selected_target()
+        public void LifeDomain_converted_four_six_and_eight_all_cleanse_the_selected_target()
         {
             foreach (int result in new[] { 4, 6, 8 })
             {
-                var game = Match(CharacterDefinition.Cleric, out var sink, out _);
+                var game = Match(CharacterDefinition.LifeDomain, out var sink, out _);
                 game.PlayerA.LeftHand.SetValue(result - 1); game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-                sink.SetChoice(HandEffect.ClericAttackOrHeal, game.PlayerA.LeftHand);
-                sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerB.LeftHand); Attack(game);
+                sink.SetChoice(HandEffect.LifeDomainAttackOrHeal, game.PlayerA.LeftHand);
+                sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerB.LeftHand); Attack(game);
                 Assert.AreEqual(10 + result, game.PlayerB.Health); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
             }
         }
 
         [Test]
-        public void Cleric_double_nine_cleanses_both_independently_selected_targets()
+        public void LifeDomain_double_nine_cleanses_both_independently_selected_targets()
         {
-            var game = Match(CharacterDefinition.Cleric, out var sink, out _);
+            var game = Match(CharacterDefinition.LifeDomain, out var sink, out _);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerA.RightHand.SetValue(9);
             game.PlayerA.TakeDamage(10); game.PlayerA.ApplyStatus(StatusEffect.Decay);
             game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
-            sink.SetChoice(HandEffect.ClericExtraHealTarget, game.PlayerB.LeftHand);
-            sink.SetChoice(HandEffect.ClericHealTarget, game.PlayerA.LeftHand); Attack(game);
+            sink.SetChoice(HandEffect.LifeDomainExtraHealTarget, game.PlayerB.LeftHand);
+            sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerA.LeftHand); Attack(game);
             Assert.AreEqual(19, game.PlayerA.Health); Assert.AreEqual(19, game.PlayerB.Health);
             Assert.AreEqual(0, game.PlayerA.Statuses.Count); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
         }
@@ -249,7 +249,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Other_roles_healing_does_not_cleanse_decay()
         {
-            var game = Match(CharacterDefinition.Soldier, out _, out _);
+            var game = Match(CharacterDefinition.Champion, out _, out _);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerA.TakeDamage(10); game.PlayerA.ApplyStatus(StatusEffect.Decay);
             Attack(game); Assert.AreEqual(10, game.PlayerA.Health); Assert.True(game.PlayerA.HasStatus(StatusEffect.Decay));
         }
@@ -259,12 +259,12 @@ namespace FingerDiceDuel.Tests
         {
             foreach (bool clericFirst in new[] { true, false })
             {
-                var a = DualGeneralFactory.Create("双将", clericFirst ? CharacterDefinition.Cleric : CharacterDefinition.Hunter,
-                    clericFirst ? CharacterDefinition.Hunter : CharacterDefinition.Cleric);
+                var a = DualGeneralFactory.Create("双将", clericFirst ? CharacterDefinition.LifeDomain : CharacterDefinition.GloomStalker,
+                    clericFirst ? CharacterDefinition.GloomStalker : CharacterDefinition.LifeDomain);
                 var b = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
                 var sink = new SimpleChoiceProvider(); var game = new GameManager(a, b, sink, new SimpleChoiceProvider());
                 a.LeftHand.SetValue(3); b.TakeDamage(10); AllStatuses(b, a);
-                sink.SetChoice(HandEffect.ClericAttackOrHeal, a.LeftHand); sink.SetChoice(HandEffect.ClericHealTarget, b.LeftHand);
+                sink.SetChoice(HandEffect.LifeDomainAttackOrHeal, a.LeftHand); sink.SetChoice(HandEffect.LifeDomainHealTarget, b.LeftHand);
                 game.ExecuteTurn(a, a.LeftHand, b.LeftHand);
                 Assert.AreEqual(14, b.Health); Assert.AreEqual(0, b.Statuses.Count);
             }
@@ -301,7 +301,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ai_double_nine_does_not_overwrite_game_over_after_bleed_kills_the_next_player()
         {
-            var game = Match(CharacterDefinition.Cleric, out var a, out var b);
+            var game = Match(CharacterDefinition.LifeDomain, out var a, out var b);
             game.PlayerA.LeftHand.SetValue(8); game.PlayerA.RightHand.SetValue(9);
             game.PlayerA.TakeDamage(10);
             game.PlayerB.TakeDamage(19); game.PlayerB.ApplyStatus(StatusEffect.Bleed);

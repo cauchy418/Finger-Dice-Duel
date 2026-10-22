@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -25,8 +25,8 @@ namespace FingerDiceDuel.Tests
             bool threw = false;
             try
             {
-                DualGeneralFactory.Create("甲", CharacterDefinition.Soldier,
-                                          CharacterDefinition.Soldier);
+                DualGeneralFactory.Create("甲", CharacterDefinition.Champion,
+                                          CharacterDefinition.Champion);
             }
             catch (System.ArgumentException) { threw = true; }
 
@@ -36,12 +36,12 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Two_roles_must_share_the_same_axis()
         {
-            // 搜查：守序（战士）+ 混乱（巨人）应被拒绝
+            // 搜查：守序（战士·破阵者）+ 混乱（野蛮人·巨人道途）应被拒绝
             bool threw = false;
             try
             {
-                DualGeneralFactory.Create("甲", CharacterDefinition.Fighter,
-                                          CharacterDefinition.Giant);
+                DualGeneralFactory.Create("甲", CharacterDefinition.Breaker,
+                                          CharacterDefinition.PathOfTheGiant);
             }
             catch (System.ArgumentException) { threw = true; }
 
@@ -51,8 +51,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Same_axis_pair_is_accepted()
         {
-            // 守序：战士 + 剑客
-            PlayerState p = DualGeneralFactory.Create("甲", CharacterDefinition.Fighter,
+            // 守序：战士·破阵者 + 战士·剑士
+            PlayerState p = DualGeneralFactory.Create("甲", CharacterDefinition.Breaker,
                                                       CharacterDefinition.Swordsman);
             Assert.NotNull(p, "同阵营应能组成双将。");
         }
@@ -60,11 +60,11 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Attack_and_defense_bonuses_are_summed()
         {
-            // 圣武士（守序）+ 骑士（守序）
-            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Paladin,
-                                                         CharacterDefinition.Knight);
-            PlayerState soloA = CharacterFactory.CreatePlayer("a", CharacterDefinition.Paladin);
-            PlayerState soloB = CharacterFactory.CreatePlayer("b", CharacterDefinition.Knight);
+            // 圣武士·奉献之誓（守序）+ 圣武士·王冠之誓（守序）
+            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.OathOfDevotion,
+                                                         CharacterDefinition.OathOfTheCrown);
+            PlayerState soloA = CharacterFactory.CreatePlayer("a", CharacterDefinition.OathOfDevotion);
+            PlayerState soloB = CharacterFactory.CreatePlayer("b", CharacterDefinition.OathOfTheCrown);
 
             Assert.AreEqual(soloA.Character.AttackBonus + soloB.Character.AttackBonus,
                 dual.Character.AttackBonus, "攻击加成应相加。");
@@ -75,11 +75,11 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Max_health_takes_the_larger_not_the_sum()
         {
-            // 狼人（混乱，有 +5 生命）+ 巨人（混乱，+5）
-            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Werewolf,
-                                                         CharacterDefinition.Giant);
-            int solo = CharacterFactory.MaxHealthOf(CharacterDefinition.Werewolf);
-            int other = CharacterFactory.MaxHealthOf(CharacterDefinition.Giant);
+            // 野蛮人·野兽道途（混乱，有 +5 生命）+ 野蛮人·巨人道途（混乱，+5）
+            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.PathOfTheBeast,
+                                                         CharacterDefinition.PathOfTheGiant);
+            int solo = CharacterFactory.MaxHealthOf(CharacterDefinition.PathOfTheBeast);
+            int other = CharacterFactory.MaxHealthOf(CharacterDefinition.PathOfTheGiant);
             int expected = solo > other ? solo : other;
 
             Assert.AreEqual(expected, dual.MaximumHealth,
@@ -89,9 +89,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Attack_range_takes_the_larger()
         {
-            // 守序：魔射手（射程 3）+ 骑士（近战）
+            // 守序：战士·魔射手（射程 3）+ 圣武士·王冠之誓（近战）
             PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.ArcaneArcher,
-                                                         CharacterDefinition.Knight);
+                                                         CharacterDefinition.OathOfTheCrown);
 
             Assert.AreEqual(GameManager.BaseRangeOf(
                     CharacterFactory.CreatePlayer("x", CharacterDefinition.ArcaneArcher)),
@@ -102,9 +102,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Display_name_is_the_primary()
         {
-            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Fighter,
+            PlayerState dual = DualGeneralFactory.Create("双", CharacterDefinition.Breaker,
                                                          CharacterDefinition.Swordsman);
-            Assert.AreEqual(CharacterDefinition.Fighter.DisplayName,
+            Assert.AreEqual(CharacterDefinition.Breaker.DisplayName,
                 ((CharacterTemplate)dual.Character).DisplayName, "战报只显示主将名。");
         }
 
@@ -112,15 +112,15 @@ namespace FingerDiceDuel.Tests
         public void Partners_exclude_self_and_stay_on_the_same_axis()
         {
             List<CharacterDefinition> partners =
-                DualGeneralFactory.PartnersFor(CharacterDefinition.Soldier);
+                DualGeneralFactory.PartnersFor(CharacterDefinition.Champion);
 
             Assert.True(partners.Count > 0, "应有可搭配的副将。");
 
             for (int i = 0; i < partners.Count; i++)
             {
-                Assert.False(ReferenceEquals(partners[i], CharacterDefinition.Soldier),
+                Assert.False(ReferenceEquals(partners[i], CharacterDefinition.Champion),
                     "副将候选不应包含主将自己。");
-                Assert.True(DualGeneralFactory.SameAxis(CharacterDefinition.Soldier, partners[i]),
+                Assert.True(DualGeneralFactory.SameAxis(CharacterDefinition.Champion, partners[i]),
                     "副将候选必须同阵营。");
             }
         }
@@ -131,17 +131,17 @@ namespace FingerDiceDuel.Tests
         /// 这条测试钉住一个真实线上 bug：
         ///   <c>GameManager</c> 用 <c>rewritten != effect</c> 判“是否被改写”，
         ///   所以返回 <c>None</c> 的含义是**“把效果改成无效果”**
-        ///   （巨人的 4/6/8 正是这么用的），而不是“没改写”。
+        ///   （野蛮人·巨人道途的 4/6/8 正是这么用的），而不是“没改写”。
         ///
         ///   我第一版在“两名子角色都不实现改写器”时返回了 None，
-        ///   于是**游侠 + 妖术师的 8 变成了无效果**（玩家实测：8 不攻击）。
+        ///   于是**游荡者·风流剑客 + 邪术师·至高妖精的 8 变成了无效果**（玩家实测：8 不攻击）。
         /// </summary>
         [Test]
         public void Effect_rewrite_falls_back_to_the_original_when_no_part_rewrites()
         {
-            // 游侠与法师**都不实现** IHandEffectRewriter
-            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Ranger,
-                                                       CharacterDefinition.Wizard);
+            // 游荡者·风流剑客与法师·塑能学派**都不实现** IHandEffectRewriter
+            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Swashbuckler,
+                                                       CharacterDefinition.SchoolOfEvocation);
 
             var rewriter = me.Character as IHandEffectRewriter;
             Assert.NotNull(rewriter, "容器必须实现 IHandEffectRewriter。");
@@ -162,10 +162,10 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Giant_partner_still_suppresses_its_own_numbers()
+        public void PathOfTheGiant_partner_still_suppresses_its_own_numbers()
         {
-            // 巨人的 4/6/8 确实要变成“无效果”，不能被上一条修正误伤。
-            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Giant,
+            // 野蛮人·巨人道途的 4/6/8 确实要变成“无效果”，不能被上一条修正误伤。
+            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.PathOfTheGiant,
                                                        CharacterDefinition.Assassin);
             var rewriter = (IHandEffectRewriter)me.Character;
 
@@ -175,14 +175,14 @@ namespace FingerDiceDuel.Tests
                 var hand = new Hand(dead[i]);
                 hand.SetValue(dead[i]);
                 Assert.AreEqual(HandEffectType.None, rewriter.RewriteEffect(me, hand, 5, null),
-                    $"巨人的 {dead[i]} 应为无效果。");
+                    $"野蛮人·巨人道途的 {dead[i]} 应为无效果。");
             }
 
             // 5 变成两段攻击
             var five = new Hand(5);
             five.SetValue(5);
             Assert.AreEqual(HandEffectType.Attack6, rewriter.RewriteEffect(me, five, 5, null),
-                "巨人的 5 应为攻击。");
+                "野蛮人·巨人道途的 5 应为攻击。");
         }
 
         [Test]
@@ -214,9 +214,9 @@ namespace FingerDiceDuel.Tests
             // 取各阵营一对代表性组合。
             var pairs = new[]
             {
-                new[] { CharacterDefinition.Fighter, CharacterDefinition.Swordsman },
-                new[] { CharacterDefinition.Monk, CharacterDefinition.Thief },
-                new[] { CharacterDefinition.Giant, CharacterDefinition.Assassin },
+                new[] { CharacterDefinition.Breaker, CharacterDefinition.Swordsman },
+                new[] { CharacterDefinition.WayOfTheTaiChi, CharacterDefinition.Thief },
+                new[] { CharacterDefinition.PathOfTheGiant, CharacterDefinition.Assassin },
             };
 
             for (int i = 0; i < pairs.Length; i++)

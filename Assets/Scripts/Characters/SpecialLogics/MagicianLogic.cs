@@ -3,7 +3,7 @@
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **魔术师**（攻 0 / 防 −1，攻击距离 2）。
+    /// **游荡者·魔术师**（攻 0 / 防 −1，攻击距离 2）。
     ///
     /// 玩家给出的规则：
     ///   · **可以选择自己的手当被加数**
@@ -18,10 +18,10 @@ namespace FingerDiceDuel.Core
         ISelfAddendProvider, IHandEffectRewriter, IHandEffectDisplay,
         IResultTargetProvider
     {
-        /// <summary>魔术师能把结果 2 当攻击打出的伤害（吃攻防加成）。</summary>
+        /// <summary>游荡者·魔术师能把结果 2 当攻击打出的伤害（吃攻防加成）。</summary>
         public const int MagicAttackValue = 2;
 
-        public override string DisplayName => "魔术师";
+        public override string DisplayName => "游荡者·魔术师";
 
         public override int DefaultAttackBonus => 1;
         public override int DefaultDefenseBonus => -1;
@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Core
             //    我第一版写成 `ReferenceEquals(actedHand, _selfAddendMark)` ——
             //    而 `_selfAddendMark` 记的是**被加数**那只手、
             //    `actedHand` 是**运算源**，自加时两者永远不等，
-            //    于是计数**永远是 0**（发动率统计里魔术师一直显示 0% 的真因）。
+            //    于是计数**永远是 0**（发动率统计里游荡者·魔术师一直显示 0% 的真因）。
             //    这里用入参 `targetValue`（= 被加数的值）去比。
             if (_selfAddendMark != null && targetValue == _selfAddendMark.Value)
                 SelfAddendCount++;
@@ -100,7 +100,7 @@ namespace FingerDiceDuel.Core
         ///    这正是玩家实测的"2 现在是自动攻击目标了"。
         ///
         ///    4/6/8 之所以没这个问题，是因为兜底认得它们；
-        ///    魔术师的 2 是**借** Attack4 的类型，兜底认不出来。
+        ///    游荡者·魔术师的 2 是**借** Attack4 的类型，兜底认不出来。
         /// </summary>
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
@@ -131,7 +131,7 @@ namespace FingerDiceDuel.Core
             if (context.AttackValue != MagicAttackValue) return;
 
             // 必须同时把段数压成 1：Attack4 只是借来的"攻击类型"，
-            // 若不压，别的机制可能按 4 去分段（例如双将里配魔射手）。
+            // 若不压，别的机制可能按 4 去分段（例如双将里配战士·魔射手）。
             context.HitCount = 1;
             context.FinalDamage = MagicAttackValue;
             context.Manager?.NoteSkill(context.Attacker, "魔术攻击", "运算出 2，转为攻击");
@@ -143,7 +143,7 @@ namespace FingerDiceDuel.Core
             _selfAddendMark = null;
         }
 
-        /// <summary>魔术师：**穿刺伤害**（玩家指定）。</summary>
+        /// <summary>游荡者·魔术师：**穿刺伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Piercing;
 

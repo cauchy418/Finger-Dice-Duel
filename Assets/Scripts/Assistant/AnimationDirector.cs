@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>被护盾挡下："格挡"，灰白。</summary>
         Blocked = 1,
 
-        /// <summary>游侠闪避："闪避"，青色。</summary>
+        /// <summary>游荡者·风流剑客闪避："闪避"，青色。</summary>
         Dodged = 2,
 
         /// <summary>回复："+9"，绿色。</summary>
@@ -182,12 +182,12 @@ namespace FingerDiceDuel.Assistant
         /// 飘字规则（已与需求方确认）：
         ///   · 伤害 → "-3"（红），飘在**受击者**名字行；**每一段各飘一条**
         ///   · 被盾挡 → "格挡"（灰白），**每一段各飘一条**
-        ///   · 游侠闪避 → "闪避"（青），**每一段各飘一条**
-        ///   · 回复 → "+9"（绿），飘在**被回复者**名字行（牧师可能回给对手）
+        ///   · 游荡者·风流剑客闪避 → "闪避"（青），**每一段各飘一条**
+        ///   · 回复 → "+9"（绿），飘在**被回复者**名字行（牧师·生命领域可能回给对手）
         ///   · 同一次结算的多条飘字依次错开 <see cref="StaggerSeconds"/> 秒
         ///
-        /// 为什么要按**段数**而不是按总伤害生成：忍者一次攻击是两段、
-        /// 剑客的追加算独立一次 —— 玩家需要看出"打了几下"。
+        /// 为什么要按**段数**而不是按总伤害生成：武僧·忍宗一次攻击是两段、
+        /// 战士·剑士的追加算独立一次 —— 玩家需要看出"打了几下"。
         /// 如果按总数只飘一条 "-6"，就看不出那是两段各 3 点。
         ///
         /// 顺序约定：闪避 → 格挡 → 伤害。多段之间"哪一段被挡、哪一段命中"
@@ -217,7 +217,7 @@ namespace FingerDiceDuel.Assistant
 
             if (defender == null) defender = result.Actor;
 
-            // ---- 追加攻击（剑客）：算独立一次，先播 ----
+            // ---- 追加攻击（战士·剑士）：算独立一次，先播 ----
             if (result.ExtraAttack.HasValue)
             {
                 ExtraAttackInfo extra = result.ExtraAttack.Value;
@@ -228,7 +228,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             // ---- 闪避：每段各一条 ----
-            // 刺客的潜行免伤复用同一条通道，但那是"打不到"，不该说成"闪避"
+            // 游荡者·刺客的潜行免伤复用同一条通道，但那是"打不到"，不该说成"闪避"
             if (result.WasDodged && string.IsNullOrEmpty(result.DodgeReason))
             {
                 int dodged = result.DodgedHits > 0 ? result.DodgedHits : 1;

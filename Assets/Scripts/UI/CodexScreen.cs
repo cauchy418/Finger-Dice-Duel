@@ -20,6 +20,11 @@ namespace FingerDiceDuel.UI
         public string Id;
         public string NameZh;
         public string NameEn;
+        public string ProfessionId;
+        public string ProfessionNameZh;
+        public string ProfessionNameEn;
+        public string SubclassNameZh;
+        public string SubclassNameEn;
         public string Alignment;
         public int MaxHealth;
         public int Attack;
@@ -98,10 +103,14 @@ namespace FingerDiceDuel.UI
     {
         private RectTransform _root, _overviewRoot, _detailRoot, _guideRoot, _listContent, _bodyContent, _guideContent;
         private ScrollRect _bodyScroll, _guideScroll, _listScroll;
-        private Text _heading, _title, _stats, _alignmentLabel, _body, _page, _filterLabel;
+        private Text _professionLabel, _heading, _title, _stats, _alignmentLabel, _body, _page, _filterLabel;
         private Image _emblem;
-        private Button _filterToggle, _overviewButton, _prevButton, _nextButton;
-        private GameObject _filterPanel;
+        private Button _professionToggle, _filterToggle, _overviewButton, _prevButton, _nextButton;
+        private GameObject _filterPanel, _professionPanel;
+        private readonly Dictionary<string, Button> _professionButtons = new Dictionary<string, Button>();
+        private string _professionId;
+        public string ProfessionFilter => _professionId;
+        public bool IsProfessionPanelOpen => _professionPanel != null && _professionPanel.activeSelf;
         private readonly List<CodexCardData> _all = new List<CodexCardData>();
         private readonly List<CodexCardData> _filtered = new List<CodexCardData>();
         private readonly Dictionary<string, Button> _lawButtons = new Dictionary<string, Button>();
@@ -132,6 +141,7 @@ namespace FingerDiceDuel.UI
             close.onClick.AddListener(() => CloseRequested?.Invoke());
             _overviewButton = FrontEndArt.Button(_root, "Overview", "图鉴总览", new Vector2(-200, 440), new Vector2(220, 60));
             _overviewButton.onClick.AddListener(() => { _overview = true; _overviewPage = _index / OverviewPageSize; RebuildNavigation(); Refresh(); });
+            BuildProfessionFilter();
             var divider = FrontEndArt.Image(_root, "Divider", "UI/divider_horizontal", new Vector2(0, 393), new Vector2(1710, 24));
             _overviewRoot = FrontEndArt.Rect(_root, "OverviewContent", Vector2.zero, Vector2.zero);
             _detailRoot = FrontEndArt.Rect(_root, "CharacterDetail", Vector2.zero, Vector2.zero);
@@ -159,21 +169,70 @@ namespace FingerDiceDuel.UI
         {
             FrontEndArt.Image(_detailRoot, "ListPanel", "UI/panel_sidebar", new Vector2(-700, -20), new Vector2(300, 780));
             _listScroll = FrontEndArt.Scroll(_detailRoot, "CharacterList", new Vector2(-700, -20), new Vector2(270, 746), out _listContent);
-            _emblem = FrontEndArt.Emblem(_detailRoot, "LargeEmblem", "soldier", new Vector2(-385, 150), new Vector2(300, 300));
+            _emblem = FrontEndArt.Emblem(_detailRoot, "LargeEmblem", "fighter_champion", new Vector2(-385, 150), new Vector2(300, 300));
             FrontEndArt.Image(_detailRoot, "EmblemDivider", "UI/divider_horizontal", new Vector2(-385, -35), new Vector2(280, 24));
             FrontEndArt.Text(_detailRoot, "EmblemCaption", "命运由你掷下\n传奇在指间诞生", new Vector2(-385, -145), new Vector2(280, 150), 26, title: true);
             FrontEndArt.Image(_detailRoot, "DetailPanel", "UI/panel_detail", new Vector2(310, -20), new Vector2(1070, 780));
-            _title = FrontEndArt.Text(_detailRoot, "Title", "", new Vector2(300, 321), new Vector2(950, 58), 34, TextAnchor.MiddleLeft, true);
-            _alignmentLabel = FrontEndArt.Text(_detailRoot, "AlignmentLabel", "", new Vector2(300, 265), new Vector2(950, 36), 22, TextAnchor.MiddleLeft);
+            _professionLabel = FrontEndArt.Text(_detailRoot, "ProfessionLabel", "", new Vector2(300, 341), new Vector2(950, 34), 20, TextAnchor.MiddleLeft);
+            _professionLabel.fontStyle = FontStyle.Italic;
+            _professionLabel.color = new Color(0.70f, 0.68f, 0.60f);
+            _title = FrontEndArt.Text(_detailRoot, "Title", "", new Vector2(300, 286), new Vector2(950, 62), 34, TextAnchor.MiddleLeft, true);
+            _title.resizeTextForBestFit = true; _title.resizeTextMinSize = 28; _title.resizeTextMaxSize = 34;
+            _alignmentLabel = FrontEndArt.Text(_detailRoot, "AlignmentLabel", "", new Vector2(300, 232), new Vector2(950, 36), 22, TextAnchor.MiddleLeft);
             _alignmentLabel.color = new Color(0.62f, 0.78f, 0.58f);
-            _stats = FrontEndArt.Text(_detailRoot, "Stats", "", new Vector2(300, 215), new Vector2(950, 38), 24, TextAnchor.MiddleLeft);
+            _stats = FrontEndArt.Text(_detailRoot, "Stats", "", new Vector2(300, 183), new Vector2(950, 38), 24, TextAnchor.MiddleLeft);
             _stats.color = FrontEndArt.Gold;
-            _bodyScroll = FrontEndArt.Scroll(_detailRoot, "BodyScroll", new Vector2(310, -105), new Vector2(970, 565), out _bodyContent);
+            _bodyScroll = FrontEndArt.Scroll(_detailRoot, "BodyScroll", new Vector2(310, -125), new Vector2(970, 525), out _bodyContent);
             _body = FrontEndArt.Text(_bodyContent, "Body", "", Vector2.zero, new Vector2(930, 560), 22, TextAnchor.UpperLeft);
             _body.rectTransform.anchorMin = _body.rectTransform.anchorMax = new Vector2(0, 1);
             _body.rectTransform.pivot = new Vector2(0, 1);
             _body.verticalOverflow = VerticalWrapMode.Overflow;
             _body.lineSpacing = 1.18f;
+        }
+
+        private void BuildProfessionFilter()
+        {
+            _professionToggle = FrontEndArt.Button(_root, "ProfessionToggle", "全部职业", new Vector2(130, 440), new Vector2(250, 60));
+            _professionToggle.onClick.AddListener(ToggleProfessionPanel);
+            _professionPanel = FrontEndArt.Image(_root, "ProfessionPanel", "UI/panel_content", Vector2.zero, new Vector2(1100, 710)).gameObject;
+            _professionPanel.GetComponent<Image>().raycastTarget = true;
+            FrontEndArt.Text(_professionPanel.transform, "ProfessionHeading", "按职业查找", new Vector2(0, 287), new Vector2(600, 54), 32, title: true);
+            int index = 0;
+            foreach (var profession in CharacterProfession.All)
+            {
+                string id = profession.Id;
+                var b = FrontEndArt.Button(_professionPanel.transform, "Profession_" + id, profession.NameZh,
+                    new Vector2(-375 + index % 4 * 250, 140 - index / 4 * 150), new Vector2(230, 136));
+                var icon = FrontEndArt.Rect(b.transform, "ProfessionIcon", new Vector2(-67, 0), new Vector2(84, 84)).gameObject.AddComponent<Image>();
+                icon.sprite = BattleArt.Get(profession.IconKey); icon.preserveAspect = true; icon.raycastTarget = false;
+                var label = b.GetComponentInChildren<Text>(); label.fontSize = 25;
+                label.rectTransform.anchoredPosition = new Vector2(38, 17); label.rectTransform.sizeDelta = new Vector2(132, 40);
+                FrontEndArt.Text(b.transform, "ProfessionEnglish", profession.NameEn, new Vector2(38, -22), new Vector2(136, 28), 16);
+                b.onClick.AddListener(() => ToggleProfession(id));
+                _professionButtons[id] = b; index++;
+            }
+            var all = FrontEndArt.Button(_professionPanel.transform, "Profession_All", "全部职业", new Vector2(0, -287), new Vector2(220, 52));
+            all.onClick.AddListener(() => ToggleProfession(null));
+            var close = FrontEndArt.Button(_professionPanel.transform, "ProfessionClose", "关闭", new Vector2(438, 288), new Vector2(130, 48), fontSize: 20);
+            close.onClick.AddListener(ToggleProfessionPanel);
+            _professionPanel.SetActive(false);
+        }
+
+        public void ToggleProfessionPanel()
+        {
+            if (!_allowFilter) return;
+            _filterPanel.SetActive(false);
+            _professionPanel.SetActive(!_professionPanel.activeSelf);
+            _professionPanel.transform.SetAsLastSibling();
+        }
+
+        public void ToggleProfession(string id)
+        {
+            if (!_allowFilter) return;
+            if (id != null && CharacterProfession.Find(id) == null) throw new ArgumentException("未知职业", nameof(id));
+            _professionId = _professionId == id ? null : id;
+            _professionPanel.SetActive(false);
+            ApplyFilter();
         }
 
         private void BuildAxis(string[] axes, Dictionary<string, Button> buttons, float y, bool law)
@@ -194,7 +253,9 @@ namespace FingerDiceDuel.UI
             if (cards != null) for (int i = 0; i < cards.Count; i++) if (cards[i] != null) _all.Add(cards[i]);
             _allowFilter = allowFilter;
             _overview = allowFilter;
-            _lawAxis = _goodAxis = null;
+            _lawAxis = _goodAxis = _professionId = null;
+            _professionPanel.SetActive(false);
+            _professionToggle.gameObject.SetActive(allowFilter);
             _filterPanel.SetActive(false);
             _filterToggle.gameObject.SetActive(allowFilter);
             _overviewButton.gameObject.SetActive(allowFilter);
@@ -203,7 +264,7 @@ namespace FingerDiceDuel.UI
 
         public void ToggleFilterPanel()
         {
-            if (_allowFilter) { _filterPanel.SetActive(!_filterPanel.activeSelf); _filterPanel.transform.SetAsLastSibling(); }
+            if (_allowFilter) { _professionPanel.SetActive(false); _filterPanel.SetActive(!_filterPanel.activeSelf); _filterPanel.transform.SetAsLastSibling(); }
         }
         public void ToggleAxis(string axis, bool isLaw)
         {
@@ -216,7 +277,7 @@ namespace FingerDiceDuel.UI
         {
             _filtered.Clear();
             foreach (var c in _all)
-                if (c.IsGuide || ((_lawAxis == null || c.LawAxis == _lawAxis) && (_goodAxis == null || c.GoodAxis == _goodAxis))) _filtered.Add(c);
+                if (c.IsGuide || ((_professionId == null || c.ProfessionId == _professionId) && (_lawAxis == null || c.LawAxis == _lawAxis) && (_goodAxis == null || c.GoodAxis == _goodAxis))) _filtered.Add(c);
             _index = 0;
             _overviewPage = 0;
             RebuildNavigation();
@@ -261,8 +322,10 @@ namespace FingerDiceDuel.UI
             FrontEndArt.Image(_overviewRoot, "GridPanel", "UI/panel_content", new Vector2(-250, -30), new Vector2(1210, 750));
             var parchment = FrontEndArt.Image(_overviewRoot, "Parchment", "Illustrations/codex_parchment", new Vector2(650, -45), new Vector2(420, 690), false);
             FrontEndArt.Image(parchment.transform, "Book", "Illustrations/codex_book_dice", new Vector2(0, 190), new Vector2(340, 225), false);
-            var note = FrontEndArt.Text(parchment.transform, "Note", "角色图鉴\n\n收录 " + _filtered.Count + " 名角色\n\n点击徽记查看属性、技能、操作指导与特殊交互。\n\n按阵营筛选，\n寻找你的同伴。", new Vector2(0, -90), new Vector2(305, 340), 25, TextAnchor.UpperLeft, true);
+            var note = FrontEndArt.Text(parchment.transform, "Note", "角色图鉴\n\n收录 " + _filtered.Count + " 名角色\n\n点击徽记查看属性、技能、操作指导与特殊交互。\n\n按职业与阵营筛选，\n寻找你的同伴。", new Vector2(0, -90), new Vector2(305, 340), 25, TextAnchor.UpperLeft, true);
             note.color = new Color(0.23f, 0.15f, 0.08f);
+            if (_filtered.Count == 0)
+                FrontEndArt.Text(_overviewRoot, "EmptyProfession", (_professionId == "druid" ? "该职业暂无子职" : "没有符合筛选的子职") + "\n\n可选择其他职业，或清除阵营筛选。", new Vector2(-250, -30), new Vector2(900, 220), 30, title: true);
             _listContent.sizeDelta = new Vector2(246, Mathf.Max(746, _filtered.Count * 76 + 10));
             _listContent.anchoredPosition = Vector2.zero;
             for (int i = 0; i < _filtered.Count; i++)
@@ -285,6 +348,7 @@ namespace FingerDiceDuel.UI
                 var rowLabel = row.GetComponentInChildren<Text>();
                 rowLabel.rectTransform.anchoredPosition = new Vector2(28, 0);
                 rowLabel.rectTransform.sizeDelta = new Vector2(170, 56);
+                rowLabel.resizeTextForBestFit = true; rowLabel.resizeTextMinSize = 13; rowLabel.resizeTextMaxSize = 20;
                 row.onClick.AddListener(() => GoTo(index));
             }
         }
@@ -299,6 +363,8 @@ namespace FingerDiceDuel.UI
             _page.text = _overview ? OverviewPageNumber + " / " + OverviewPageCount + " · " + _filtered.Count + " 名角色" : PageNumber + " / " + PageCount;
             _prevButton.GetComponentInChildren<Text>().text = _overview ? "上一页" : "上一张";
             _nextButton.GetComponentInChildren<Text>().text = _overview ? "下一页" : "下一张";
+            _professionToggle.GetComponentInChildren<Text>().text = CharacterProfession.Find(_professionId)?.NameZh ?? "全部职业";
+            foreach (var kv in _professionButtons) FrontEndArt.StyleButton(kv.Value, "tab", kv.Key == _professionId);
             _filterLabel.text = "阵营：" + (_lawAxis ?? "任意") + " · " + (_goodAxis ?? "任意") + "（再点一次取消）";
             foreach (var kv in _lawButtons) FrontEndArt.StyleButton(kv.Value, "tab", kv.Key == _lawAxis);
             foreach (var kv in _goodButtons) FrontEndArt.StyleButton(kv.Value, "tab", kv.Key == _goodAxis);
@@ -311,17 +377,20 @@ namespace FingerDiceDuel.UI
             var c = Current;
             if (c == null)
             {
+                _professionLabel.text = "";
                 _title.text = "没有符合筛选的角色";
                 _body.text = _stats.text = _alignmentLabel.text = "";
                 _emblem.gameObject.SetActive(false);
                 return;
             }
             if (guide) { RenderGuide(c); return; }
-            _title.text = c.NameZh + "  " + c.NameEn;
+            var identity = CharacterIdentity.Find(c.Id);
+            _professionLabel.text = (c.ProfessionNameZh ?? identity?.Profession.NameZh ?? "") + "  " + (c.ProfessionNameEn ?? identity?.Profession.NameEn ?? "");
+            _title.text = (c.SubclassNameZh ?? identity?.SubclassNameZh ?? c.NameZh) + "  " + (c.SubclassNameEn ?? identity?.SubclassNameEn ?? c.NameEn);
             _alignmentLabel.text = c.Alignment;
             _stats.text = "生命 " + c.MaxHealth + "　攻 " + Signed(c.Attack) + "　防 " + Signed(c.Defense) + "　距离 " + (c.Range == int.MaxValue ? "无限" : c.Range.ToString());
             _emblem.gameObject.SetActive(true);
-            _emblem.sprite = BattleArt.Get("Classes/" + c.Id);
+            _emblem.sprite = BattleArt.Get("Subclasses/" + c.Id);
             var sb = new StringBuilder();
             Section(sb, "技能", c.ShortSkill);
             Section(sb, "技能详解", c.DetailSkill);

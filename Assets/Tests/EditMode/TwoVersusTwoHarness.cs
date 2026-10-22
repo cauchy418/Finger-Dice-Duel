@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -86,7 +86,7 @@ namespace FingerDiceDuel.Tests
         ///
         /// 传 <paramref name="providers"/> = null 时与 <see cref="Play"/> 完全相同。
         /// <paramref name="onSeated"/> 在四名玩家创建后、开局的初始手值分配前调用，
-        /// 用来注入确定性随机源（术士的骰子）—— 这样三组实验共享同一批骰子。
+        /// 用来注入确定性随机源（术士·狂野魔法的骰子）—— 这样三组实验共享同一批骰子。
         /// </summary>
         internal static Outcome PlayWith(CharacterDefinition seat1, CharacterDefinition seat2,
                                          CharacterDefinition seat3, CharacterDefinition seat4,
@@ -128,7 +128,7 @@ namespace FingerDiceDuel.Tests
                 game.RoundLimit = turnLimit;
 
                 // 与实机 BoardController 对齐：AI 的 GreedyChoiceProvider 需要拿到对局，
-                // 法师等角色才会按局面做抉择（原来测试台漏了这一步）。
+                // 法师·塑能学派等角色才会按局面做抉择（原来测试台漏了这一步）。
                 for (int i = 0; i < providers.Count; i++)
                     if (providers[i] is GreedyChoiceProvider greedy) greedy.Game = game;
 
@@ -152,11 +152,11 @@ namespace FingerDiceDuel.Tests
                     // ⚠️⚠️ **每个行动开始都要调 `BeginTurn()`。**
                     //
                     //    它是重置"只属于本回合"标记的**唯一**入口：
-                    //      · `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
-                    //      · `WizardLogic.WantsToAbandonThisTurn`
+                    //      · `SuppressAttackDamage`（法师·塑能学派放弃攻击 = 这一击不造成伤害）
+                    //      · `SchoolOfEvocationLogic.WantsToAbandonThisTurn`
                     //
                     //    这个测试台原来**一次都没调** —— 后果是：
-                    //    法师第一次放弃之后抑制开关**永久为真**，
+                    //    法师·塑能学派第一次放弃之后抑制开关**永久为真**，
                     //    之后每回合都在白扔，一局能"放弃" 47 次、自己 0 伤害。
                     //    多人局里就表现为**谁都打不死谁、一直打到轮数上限**。
                     //
@@ -195,7 +195,7 @@ namespace FingerDiceDuel.Tests
                     }
 
                     // ⚠️ 让"AI 想打谁"真正落到结算上（与 BoardController 第 ③ 步一致）。
-                    //    不传的话结算会回退到"被加数手主"—— 魔术师自加会打自己，
+                    //    不传的话结算会回退到"被加数手主"—— 游荡者·魔术师自加会打自己，
                     //    而集火/目标优先级算出来的目标也会被丢掉。
                     if (choice is GreedyChoiceProvider greedyChoice)
                         game.DamageTargetPlayer = greedyChoice.IntendedVictim;
@@ -251,8 +251,8 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(player.LeftHand, best.Left);
             TestSetup.SetHand(player.RightHand, best.Right);
 
-            // 武僧的 5 要进入太极（与实机一致）
-            MonkLogic.ApplyTaichiToFives(player);
+            // 武僧·太极宗的 5 要进入太极（与实机一致）
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(player);
         }
     }
 }

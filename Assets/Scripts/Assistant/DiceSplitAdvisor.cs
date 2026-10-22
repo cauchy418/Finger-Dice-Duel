@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Assistant
         /// 远大于自己分的差（通常几十），若不设限，
         /// "给对手更低分"会**盖过"自己更好"** —— 违反玩家确认的优先级
         /// （先最大化自己，只有相近时才看对手）。实测发生过：
-        /// 狼人投 11 时选了对自己只有 203 分的 `2/9`，
+        /// 野蛮人·野兽道途投 11 时选了对自己只有 203 分的 `2/9`，
         /// 而不是 275 分的 `4/7`。
         /// </summary>
         public int OpponentPenaltyCap { get; set; } = 6;

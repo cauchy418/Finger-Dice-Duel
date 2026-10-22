@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -65,7 +65,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.IsTrue(controller.ConfirmTargetPlayer());
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, controller.Phase,
-                "确认目标后才问剑客是否追加。");
+                "确认目标后才问战士·剑士是否追加。");
         }
 
         [Test]

@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -8,10 +8,10 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **盗贼**的偷窃。
+    /// **游荡者·盗贼**的偷窃。
     ///
     /// 规则全部由玩家逐条确认（含 9 个澄清问题的答复）：
-    ///   · 双方点数**与状态**互换，但只有盗贼可能触发效果
+    ///   · 双方点数**与状态**互换，但只有游荡者·盗贼可能触发效果
     ///   · **偷窃前的点数 ≥ 偷来的点数**才生效
     ///   · 效果由**偷来的数字**决定（4 攻击、5 合盾、9 回复）
     ///   · 偷来 5 一律合成**完整盾**（不管那 5 之前是什么状态）
@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Tests
         private static GameManager Match(out PlayerState thief, out PlayerState foe)
         {
             thief = Make("贼", CharacterDefinition.Thief);
-            foe = Make("敌", CharacterDefinition.Soldier);
+            foe = Make("敌", CharacterDefinition.Champion);
 
             return new GameManager(thief, foe, new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(0, t.Character.AttackBonus);
             Assert.AreEqual(-1, t.Character.DefenseBonus);
-            Assert.AreEqual(1, GameManager.BaseRangeOf(t), "盗贼攻击距离 1。");
+            Assert.AreEqual(1, GameManager.BaseRangeOf(t), "游荡者·盗贼攻击距离 1。");
         }
 
         // ============================================================
@@ -53,7 +53,7 @@ namespace FingerDiceDuel.Tests
                                             out GameManager game)
         {
             thief = Make("贼", CharacterDefinition.Thief);
-            foe = Make("兵", CharacterDefinition.Soldier);
+            foe = Make("兵", CharacterDefinition.Champion);
 
             game = new GameManager(thief, foe, new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
@@ -63,15 +63,15 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 盗贼的 AI 策略（玩家给的规则）
+        // 游荡者·盗贼的 AI 策略（玩家给的规则）
         // ============================================================
 
-        /// <summary>造一个"双方都是 AI"的局面，让盗贼自己走。</summary>
+        /// <summary>造一个"双方都是 AI"的局面，让游荡者·盗贼自己走。</summary>
         private static BoardController AiBoard(out PlayerState thief, out PlayerState foe,
                                               out GameManager game)
         {
             thief = Make("贼", CharacterDefinition.Thief);
-            foe = Make("兵", CharacterDefinition.Soldier);
+            foe = Make("兵", CharacterDefinition.Champion);
 
             game = new GameManager(thief, foe, new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
@@ -105,9 +105,9 @@ namespace FingerDiceDuel.Tests
                 $"有高价值可偷时，AI 应该偷（偷来 8）。" +
                 $"[L={thief.LeftHand.Value} R={thief.RightHand.Value} " +
                 $"foeL={foe.LeftHand.Value} foeR={foe.RightHand.Value} " +
-                $"AI诊断={board.LastAiMoveDiagnostic} 盗贼AI={board.ThiefAiTrace}]");
+                $"AI诊断={board.LastAiMoveDiagnostic} 游荡者·盗贼AI={board.ThiefAiTrace}]");
             Assert.AreEqual(9, foe.LeftHand.Value,
-                "被偷者应该拿到盗贼原来的 9（证明发生了交换）。");
+                "被偷者应该拿到游荡者·盗贼原来的 9（证明发生了交换）。");
         }
 
         [Test]
@@ -118,7 +118,7 @@ namespace FingerDiceDuel.Tests
             BoardController board = AiBoard(out PlayerState thief, out PlayerState foe,
                                             out GameManager game);
 
-            // 盗贼手里只有 2（偷 2 得 2 -> 无效果）；对手另一只手是 1
+            // 游荡者·盗贼手里只有 2（偷 2 得 2 -> 无效果）；对手另一只手是 1
             TestSetup.SetHand(thief.LeftHand, 2);
             TestSetup.SetHand(thief.RightHand, 2);
             TestSetup.SetHand(foe.LeftHand, 2);
@@ -151,7 +151,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(8, thief.LeftHand.Value,
                 $"4 与 8 都能偷时，应取更好的 8。" +
                 $"[L={thief.LeftHand.Value} foeL={foe.LeftHand.Value} " +
-                $"foeR={foe.RightHand.Value} 盗贼AI={board.ThiefAiTrace}]");
+                $"foeR={foe.RightHand.Value} 游荡者·盗贼AI={board.ThiefAiTrace}]");
         }
 
         [Test]
@@ -178,15 +178,15 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Steal_hands_the_turn_to_the_opponent()
         {
-            // ⚠️ 玩家实测："盗贼偷窃之后会跳过对方回合，
-            //              感觉上像盗贼连动两回合。"
+            // ⚠️ 玩家实测："游荡者·盗贼偷窃之后会跳过对方回合，
+            //              感觉上像游荡者·盗贼连动两回合。"
             //
-            // 所以偷窃**不能**推进两次回合 —— 它只是消耗盗贼自己的回合，
+            // 所以偷窃**不能**推进两次回合 —— 它只是消耗游荡者·盗贼自己的回合，
             // 之后必须轮到对方。
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
             PlayerState before = game.CurrentPlayer;
-            Assert.True(ReferenceEquals(before, thief), "前置：先手是盗贼。");
+            Assert.True(ReferenceEquals(before, thief), "前置：先手是游荡者·盗贼。");
 
             TestSetup.SetHand(thief.LeftHand, 9);
             TestSetup.SetHand(foe.LeftHand, 4);
@@ -247,7 +247,7 @@ namespace FingerDiceDuel.Tests
             int foeBefore = foe.Health;
             Assert.True(board.ClickHand(foe.LeftHand), "点对方的手完成偷窃");
 
-            Assert.AreEqual(4, thief.LeftHand.Value, "盗贼拿到 4。");
+            Assert.AreEqual(4, thief.LeftHand.Value, "游荡者·盗贼拿到 4。");
             Assert.AreEqual(9, foe.LeftHand.Value, "对手拿到 9。");
             Assert.AreEqual(foeBefore, foe.Health, "还没选目标 -> 伤害不落地。");
 
@@ -301,7 +301,7 @@ namespace FingerDiceDuel.Tests
             // ③ 点别人的手 —— 完成偷窃
             Assert.True(board.ClickHand(foe.LeftHand), "点别人的手完成偷窃");
 
-            Assert.AreEqual(4, thief.LeftHand.Value, "盗贼拿到 4。");
+            Assert.AreEqual(4, thief.LeftHand.Value, "游荡者·盗贼拿到 4。");
             Assert.AreEqual(9, foe.LeftHand.Value, "对手拿到 9。");
         }
 
@@ -322,48 +322,48 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Stealing_a_monks_zero_only_yields_one()
         {
-            // 玩家补充规则："盗贼偷武僧的 0 **只能偷到 1**，
-            //               目前**只有武僧能持有 0**。"
+            // 玩家补充规则："游荡者·盗贼偷武僧·太极宗的 0 **只能偷到 1**，
+            //               目前**只有武僧·太极宗能持有 0**。"
             //
-            // 0 是武僧太极形态的专属产物（5 被攻击后变 0），
+            // 0 是武僧·太极宗太极形态的专属产物（5 被攻击后变 0），
             // 一旦经由偷窃换手就按"被触碰"处理。
             var thief = Make("贼", CharacterDefinition.Thief);
-            var monk = Make("僧", CharacterDefinition.Monk);
-            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+            var wayOfTheTaiChi = Make("僧", CharacterDefinition.WayOfTheTaiChi);
+            var game = new GameManager(thief, wayOfTheTaiChi, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
             TestSetup.SetHand(thief.LeftHand, 8);
-            TestSetup.SetHand(monk.LeftHand, 0);      // 武僧的太极被打掉后留下的 0
+            TestSetup.SetHand(wayOfTheTaiChi.LeftHand, 0);      // 武僧·太极宗的太极被打掉后留下的 0
 
-            Assert.AreEqual(0, monk.LeftHand.Value, "前置：武僧持有 0。");
+            Assert.AreEqual(0, wayOfTheTaiChi.LeftHand.Value, "前置：武僧·太极宗持有 0。");
 
-            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+            game.ExecuteSteal(thief, thief.LeftHand, wayOfTheTaiChi.LeftHand);
 
             Assert.AreEqual(1, thief.LeftHand.Value,
-                "盗贼偷 0 只能得到 1（0 不可能流通到别人手上）。");
-            Assert.AreEqual(8, monk.LeftHand.Value,
-                "武僧拿到盗贼原来的 8（8 不是 0，不受这条规则影响）。");
+                "游荡者·盗贼偷 0 只能得到 1（0 不可能流通到别人手上）。");
+            Assert.AreEqual(8, wayOfTheTaiChi.LeftHand.Value,
+                "武僧·太极宗拿到游荡者·盗贼原来的 8（8 不是 0，不受这条规则影响）。");
         }
 
         [Test]
         public void A_zero_left_on_the_monks_hand_also_becomes_one()
         {
-            // 同一规则的另一半：交换之后**武僧自己**那只 0 也被触碰了。
-            // 造法：武僧手里有 0，但他不是被偷的那只手 ——
-            // 用盗贼的 0 换出去会更复杂，所以这里直接验证
+            // 同一规则的另一半：交换之后**武僧·太极宗自己**那只 0 也被触碰了。
+            // 造法：武僧·太极宗手里有 0，但他不是被偷的那只手 ——
+            // 用游荡者·盗贼的 0 换出去会更复杂，所以这里直接验证
             // "偷窃之后场上不该残留 0"。
             var thief = Make("贼", CharacterDefinition.Thief);
-            var monk = Make("僧", CharacterDefinition.Monk);
-            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+            var wayOfTheTaiChi = Make("僧", CharacterDefinition.WayOfTheTaiChi);
+            var game = new GameManager(thief, wayOfTheTaiChi, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
             TestSetup.SetHand(thief.LeftHand, 3);
-            TestSetup.SetHand(monk.LeftHand, 0);
+            TestSetup.SetHand(wayOfTheTaiChi.LeftHand, 0);
 
-            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+            game.ExecuteSteal(thief, thief.LeftHand, wayOfTheTaiChi.LeftHand);
 
-            Assert.False(thief.LeftHand.Value == 0, "盗贼手上不该有 0。");
-            Assert.False(monk.LeftHand.Value == 0, "武僧那只 0 也被触碰了，应变成非 0。");
+            Assert.False(thief.LeftHand.Value == 0, "游荡者·盗贼手上不该有 0。");
+            Assert.False(wayOfTheTaiChi.LeftHand.Value == 0, "武僧·太极宗那只 0 也被触碰了，应变成非 0。");
         }
 
         [Test]
@@ -391,7 +391,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.IsHumanChooser,
                 "偷窃目标这一步必须由行动方自己点 —— 否则 UI 会丢弃点击并卡死。");
             Assert.True(ReferenceEquals(board.Chooser, board.ActivePlayer),
-                "chooser 应该是行动方（盗贼本人）。");
+                "chooser 应该是行动方（游荡者·盗贼本人）。");
         }
 
         [Test]
@@ -429,8 +429,8 @@ namespace FingerDiceDuel.Tests
 
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(4, thief.LeftHand.Value, "盗贼应拿到偷来的 4。");
-            Assert.AreEqual(9, foe.LeftHand.Value, "被偷者应拿到盗贼原来的 9。");
+            Assert.AreEqual(4, thief.LeftHand.Value, "游荡者·盗贼应拿到偷来的 4。");
+            Assert.AreEqual(9, foe.LeftHand.Value, "被偷者应拿到游荡者·盗贼原来的 9。");
         }
 
         [Test]
@@ -449,7 +449,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(r.StealEffective, "9 ≥ 4，应生效。");
             Assert.AreEqual(HandEffectType.Attack4, r.Effect, "偷来的 4 -> 攻击。");
 
-            // 盗贼的攻击是**两步**：先登记待选目标，选完才结算
+            // 游荡者·盗贼的攻击是**两步**：先登记待选目标，选完才结算
             Assert.True(game.StealAttackAwaitingTarget, "应处于待选目标状态。");
             Assert.AreEqual(before, foe.Health, "还没选目标 -> 伤害不落地。");
 
@@ -460,7 +460,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Steal_is_ineffective_when_original_is_smaller()
         {
-            // 玩家给的例子："盗贼原先手里有个 2，拿这个 2 去偷了别人的 8，
+            // 玩家给的例子："游荡者·盗贼原先手里有个 2，拿这个 2 去偷了别人的 8，
             //               2 比 8 小，所以不会发起 8 的攻击"
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
@@ -517,54 +517,54 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Thief_never_inherits_taichi_from_a_monk()
         {
-            // 玩家最新规则："对于武僧，盗贼**不会偷到一个带有太极的 5**，
+            // 玩家最新规则："对于武僧·太极宗，游荡者·盗贼**不会偷到一个带有太极的 5**，
             //               他只会偷到盾 / 破碎的 5"
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
             game.GetType();
 
-            // 把对手换成武僧
-            var monk = Make("僧", CharacterDefinition.Monk);
-            var game2 = new GameManager(thief, monk, new SimpleChoiceProvider(),
+            // 把对手换成武僧·太极宗
+            var wayOfTheTaiChi = Make("僧", CharacterDefinition.WayOfTheTaiChi);
+            var game2 = new GameManager(thief, wayOfTheTaiChi, new SimpleChoiceProvider(),
                                         new SimpleChoiceProvider());
 
             TestSetup.SetHand(thief.LeftHand, 7);
-            TestSetup.SetHand(monk.LeftHand, 5);
-            monk.LeftHand.SetShieldState(ShieldState.Taichi);      // 武僧的太极
+            TestSetup.SetHand(wayOfTheTaiChi.LeftHand, 5);
+            wayOfTheTaiChi.LeftHand.SetShieldState(ShieldState.Taichi);      // 武僧·太极宗的太极
 
-            game2.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+            game2.ExecuteSteal(thief, thief.LeftHand, wayOfTheTaiChi.LeftHand);
 
             Assert.AreEqual(ShieldState.Formed, thief.LeftHand.State,
-                "盗贼只拿到**普通完整盾**，不继承太极。");
+                "游荡者·盗贼只拿到**普通完整盾**，不继承太极。");
             Assert.False(thief.LeftHand.State == ShieldState.Taichi,
-                "盗贼不该拿到太极形态。");
+                "游荡者·盗贼不该拿到太极形态。");
         }
 
         [Test]
-        public void Monk_receiving_a_five_gets_taichi()
+        public void WayOfTheTaiChi_receiving_a_five_gets_taichi()
         {
-            // 玩家最新规则："同理**武僧收到一个 5 也只会是太极状态**"
+            // 玩家最新规则："同理**武僧·太极宗收到一个 5 也只会是太极状态**"
             var thief = Make("贼", CharacterDefinition.Thief);
-            var monk = Make("僧", CharacterDefinition.Monk);
-            var game = new GameManager(thief, monk, new SimpleChoiceProvider(),
+            var wayOfTheTaiChi = Make("僧", CharacterDefinition.WayOfTheTaiChi);
+            var game = new GameManager(thief, wayOfTheTaiChi, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
-            // ⚠️ 造法要选对：武僧手上放**非 5**（3），盗贼用 **5** 去偷它 ——
-            //    交换后武僧才拿到那个 5。
+            // ⚠️ 造法要选对：武僧·太极宗手上放**非 5**（3），游荡者·盗贼用 **5** 去偷它 ——
+            //    交换后武僧·太极宗才拿到那个 5。
             //
-            //    我第一版写成"武僧手上是 5、盗贼是 3"，那样武僧拿到的是 3，
+            //    我第一版写成"武僧·太极宗手上是 5、游荡者·盗贼是 3"，那样武僧·太极宗拿到的是 3，
             //    根本验证不到"收到 5"；而且第二次调用还会撞上冷却
             //    （"上回合已经偷过"）—— 两条都是测试自己写错。
             TestSetup.SetHand(thief.LeftHand, 5);
-            TestSetup.SetHand(monk.LeftHand, 3);
+            TestSetup.SetHand(wayOfTheTaiChi.LeftHand, 3);
 
-            game.ExecuteSteal(thief, thief.LeftHand, monk.LeftHand);
+            game.ExecuteSteal(thief, thief.LeftHand, wayOfTheTaiChi.LeftHand);
 
-            Assert.AreEqual(5, monk.LeftHand.Value, "武僧拿到盗贼原来的 5。");
-            Assert.AreEqual(ShieldState.Taichi, monk.LeftHand.State,
-                "武僧收到的 5 只会是**太极**状态（不是普通盾）。");
+            Assert.AreEqual(5, wayOfTheTaiChi.LeftHand.Value, "武僧·太极宗拿到游荡者·盗贼原来的 5。");
+            Assert.AreEqual(ShieldState.Taichi, wayOfTheTaiChi.LeftHand.State,
+                "武僧·太极宗收到的 5 只会是**太极**状态（不是普通盾）。");
 
-            // 盗贼那边：偷来的 3 不是盾
-            Assert.AreEqual(3, thief.LeftHand.Value, "盗贼拿到 3。");
+            // 游荡者·盗贼那边：偷来的 3 不是盾
+            Assert.AreEqual(3, thief.LeftHand.Value, "游荡者·盗贼拿到 3。");
             Assert.AreEqual(ShieldState.None, thief.LeftHand.State);
         }
 
@@ -575,13 +575,13 @@ namespace FingerDiceDuel.Tests
             // 而且"**不形成盾**（因为他没合盾）"
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
-            TestSetup.SetHand(thief.LeftHand, 9);     // 9 -> 盗贼的原值
+            TestSetup.SetHand(thief.LeftHand, 9);     // 9 -> 游荡者·盗贼的原值
             TestSetup.SetHand(foe.LeftHand, 5);       // 5 -> 会被换给被偷者？
 
-            // 这里用"盗贼拿 9 偷 5"：盗贼得到 5 合盾，被偷者得到 9
+            // 这里用"游荡者·盗贼拿 9 偷 5"：游荡者·盗贼得到 5 合盾，被偷者得到 9
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(9, foe.LeftHand.Value, "被偷者拿到盗贼原来的 9。");
+            Assert.AreEqual(9, foe.LeftHand.Value, "被偷者拿到游荡者·盗贼原来的 9。");
             Assert.False(foe.LeftHand.IsShield,
                 "被偷者不该因为拿到数字而形成盾（他没合盾）。");
         }
@@ -589,22 +589,22 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Steal_states_swap_together_with_the_values()
         {
-            // 玩家确认："盗贼以**完整的盾**去换别人**完整的盾**，
+            // 玩家确认："游荡者·盗贼以**完整的盾**去换别人**完整的盾**，
             //            会换来一面完整的盾而对面的盾破碎"
             //
             // 也就是"完整 vs 破碎"时，状态**跟着数值一起交换**：
-            // 盗贼把自己那面完整盾给出去，换来对面那面碎的。
+            // 游荡者·盗贼把自己那面完整盾给出去，换来对面那面碎的。
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
             // ⚠️ 必须用**不同数值**才能观察状态交换 ——
             //    如果两边都是 5，那么"偷来的 5 一律合成完整盾"会生效，
-            //    盗贼那边永远是完整盾，看不出交换
+            //    游荡者·盗贼那边永远是完整盾，看不出交换
             //    （我第一版就是这么写的，白查一轮）。
             //
-            //    玩家给的语义：盗贼以**完整的盾**去换别人**完整/破碎的盾**时，
+            //    玩家给的语义：游荡者·盗贼以**完整的盾**去换别人**完整/破碎的盾**时，
             //    状态**跟着数值一起走**。
             TestSetup.SetHand(thief.LeftHand, 5);
-            thief.LeftHand.SetShieldState(ShieldState.Formed);     // 盗贼：完整 5
+            thief.LeftHand.SetShieldState(ShieldState.Formed);     // 游荡者·盗贼：完整 5
 
             TestSetup.SetHand(foe.LeftHand, 3);
             foe.LeftHand.SetShieldState(ShieldState.Broken);       // 对面：破碎的 3
@@ -612,8 +612,8 @@ namespace FingerDiceDuel.Tests
             // 5 >= 3 -> 判定生效（但偷来的 3 本身无效果）
             game.ExecuteSteal(thief, thief.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(3, thief.LeftHand.Value, "盗贼拿到 3。");
-            Assert.AreEqual(5, foe.LeftHand.Value, "对面拿到盗贼原来的 5。");
+            Assert.AreEqual(3, thief.LeftHand.Value, "游荡者·盗贼拿到 3。");
+            Assert.AreEqual(5, foe.LeftHand.Value, "对面拿到游荡者·盗贼原来的 5。");
 
             // 玩家确认："状态只在数值仍是 5 时保留" -> 3 不是盾，状态清掉
             Assert.AreEqual(ShieldState.None, thief.LeftHand.State,
@@ -628,7 +628,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Cannot_steal_twice_in_a_row()
         {
-            // 玩家实测："盗贼现在可以**连续偷**。"
+            // 玩家实测："游荡者·盗贼现在可以**连续偷**。"
             //
             // 规则：他**自己的上一次行动**偷过，本回合就不能再偷。
             //
@@ -676,7 +676,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Steal_of_four_attacks_the_victim()
         {
-            // 玩家给的例子："盗贼原先手里有个 9，拿这个 9 去偷了别人的 4，
+            // 玩家给的例子："游荡者·盗贼原先手里有个 9，拿这个 9 去偷了别人的 4，
             //               9 比 4 大，所以会正常发起 4 的攻击"
             GameManager game = Match(out PlayerState thief, out PlayerState foe);
 
@@ -690,8 +690,8 @@ namespace FingerDiceDuel.Tests
 
             game.ResolvePendingStealAttack(thief, foe);
 
-            // 盗贼 攻0、士兵 防+1 -> 4 - 1 = 3
-            Assert.AreEqual(3, before - foe.Health, "4 点攻击 - 士兵防御 1 = 3 点伤害。");
+            // 游荡者·盗贼 攻0、战士·勇士 防+1 -> 4 - 1 = 3
+            Assert.AreEqual(3, before - foe.Health, "4 点攻击 - 战士·勇士防御 1 = 3 点伤害。");
         }
 
         [Test]

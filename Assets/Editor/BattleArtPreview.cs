@@ -54,7 +54,7 @@ namespace FingerDiceDuel.EditorTools
             if (!_prepared)
             {
                 bootstrap.PlayerBIsAI = false;
-                bootstrap.StartMatch(CharacterDefinition.Soldier, CharacterDefinition.Wizard);
+                bootstrap.StartMatch(CharacterDefinition.Champion, CharacterDefinition.SchoolOfEvocation);
                 _prepared = true;
                 _readyAfter = EditorApplication.timeSinceStartup + 0.5;
                 return;
@@ -96,8 +96,8 @@ namespace FingerDiceDuel.EditorTools
             Check(UiFont.Title != null && UiFont.Title != UiFont.Bold, "Source Han Serif static title font loaded");
             foreach (CharacterDefinition definition in CharacterDefinition.BuiltIn)
             {
-                string key = definition.Id == "blank" ? "soldier" : definition.Id;
-                Check(BattleArt.Get("Classes/" + key) != null, "class emblem " + definition.Id);
+                string key = definition.Id == "blank" ? "fighter_champion" : definition.Id;
+                Check(BattleArt.Get("Subclasses/" + key) != null, "class emblem " + definition.Id);
             }
             foreach (AttackDamageType type in Enum.GetValues(typeof(AttackDamageType)))
                 if (type != AttackDamageType.None)
@@ -131,7 +131,7 @@ namespace FingerDiceDuel.EditorTools
             handsB[0].onClick.Invoke();
             Check(game.PlayerA.LeftHand.Value == 2, "target click resolves real 1+1 operation");
             Check(handsA[0].transform.Find("Gesture").GetComponent<Image>().sprite.name.EndsWith("left_2"), "gesture updates after operation");
-            bootstrap.StartMatch(CharacterDefinition.Soldier, CharacterDefinition.Wizard);
+            bootstrap.StartMatch(CharacterDefinition.Champion, CharacterDefinition.SchoolOfEvocation);
             game = Field<GameManager>(bootstrap, "_game");
             Capture(board, "battle-initial.png");
             game.PlayerA.LeftHand.SetValue(4);
@@ -144,7 +144,7 @@ namespace FingerDiceDuel.EditorTools
             board.SetInteractable((owner, hand) => true);
             board.Refresh(game.PlayerA, game.PlayerB, game.PlayerA.LeftHand, turnCount: 7, turnLimit: 50);
             board.SetHint("选择对方一只手，完成本次运算", "已选左手 4 · 数字位于手型下方");
-            board.SetLog(new[] { "第 7 轮", "士兵选择左手 4。", "法师：强酸使防御降低 2。", "护盾只在合成后生效。", "将鼠标移至此处滚轮可查看战报。" });
+            board.SetLog(new[] { "第 7 轮", "战士·勇士选择左手 4。", "法师·塑能学派：强酸使防御降低 2。", "护盾只在合成后生效。", "将鼠标移至此处滚轮可查看战报。" });
             Check(!handsB[0].transform.Find("HandState").GetComponent<Image>().enabled, "initial value 5 does not imply a formed shield");
             Check(Mathf.Abs(Field<Image>(board, "_hpBarFillA").fillAmount - 0.65f) < 0.001f, "health fill uses current health ratio");
             Check(Field<StatusIconBar>(board, "_statusIconsB").VisibleCount == 9, "all nine status icons visible");
@@ -200,7 +200,7 @@ namespace FingerDiceDuel.EditorTools
             Check(areaA.gameObject.activeSelf && areaB.gameObject.activeSelf, "return to 1v1 restores painted player areas");
             Check(Field<RectTransform>(board, "_battleLog").sizeDelta.x == 460, "return to 1v1 restores right log width");
             // 退出检验夹具，留下一局正常可玩的 1v1。
-            bootstrap.StartMatch(CharacterDefinition.Soldier, CharacterDefinition.Wizard);
+            bootstrap.StartMatch(CharacterDefinition.Champion, CharacterDefinition.SchoolOfEvocation);
             _captureAfter = EditorApplication.timeSinceStartup + 0.5;
             File.WriteAllLines(Output("validation.txt"), Checks);
             Debug.Log("[BattleArtPreview] " + Checks.Count + " checks passed. " + Output("battle-initial.png"));

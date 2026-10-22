@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Tests
     /// 回归：**AI 的抉择必须交给 AI 的抉择器，而不是交给 sink**。
     ///
     /// 玩家实测 bug：AI 使用新角色时**从不发动任何技能**
-    /// （AI 游侠有 1 不闪避、有 2 不强化、剑客不追加……）。
+    /// （AI 游荡者·风流剑客有 1 不闪避、有 2 不强化、战士·剑士不追加……）。
     ///
     /// 根因（由实机诊断日志定位）：
     ///   `BoardController.GetChoice(player)` 原来**无条件**返回
@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Tests
     ///   于是 AI 的抉择被交给它，永远返回 null -> 判定非法 -> 放弃发动。
     ///
     ///   诊断日志里的铁证：
-    ///   `AI作答 RangerDodge(v0) provider=SimpleChoiceProvider pick=null/非法 cands=1`
+    ///   `AI作答 SwashbucklerDodge(v0) provider=SimpleChoiceProvider pick=null/非法 cands=1`
     ///                                            ^^^^^^^^^^^^^^^^^^^^ 应该是 GreedyChoiceProvider
     ///
     /// 修法：AI 玩家优先用它的 <see cref="IMoveSelector"/>（它同时实现
@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Ai_defender_uses_its_own_choice_provider_to_dodge()
         {
-            Arrange(CharacterDefinition.Ranger);
+            Arrange(CharacterDefinition.Swashbuckler);
 
             // 人类先手：3 打 AI 的 5 -> 8（攻击）；AI 右手是 1，可翻滚
             TestSetup.SetHand(_human.LeftHand, 3);
@@ -93,19 +93,19 @@ namespace FingerDiceDuel.Tests
                 $"实际记录：{AiTraceText()}");
 
             Assert.AreEqual(2, _ai.RightHand.Value,
-                $"AI 游侠应翻滚（1 -> 2）。记录：{AiTraceText()}");
+                $"AI 游荡者·风流剑客应翻滚（1 -> 2）。记录：{AiTraceText()}");
             Assert.AreEqual(20, _ai.Health,
                 $"翻滚应完全免伤。记录：{AiTraceText()}");
         }
 
         // ============================================================
-        // ② AI 作为行动方：强化射击
+        // ② AI 作为行动方：乘风突刺
         // ============================================================
 
         [Test]
         public void Ai_attacker_uses_its_own_choice_provider_to_power_shot()
         {
-            Arrange(CharacterDefinition.Ranger);
+            Arrange(CharacterDefinition.Swashbuckler);
 
             // 让它轮到 AI：人类先走一步
             TestSetup.SetHand(_human.LeftHand, 1);
@@ -135,7 +135,7 @@ namespace FingerDiceDuel.Tests
                 $"实际记录：{AiTraceText()}");
 
             Assert.AreEqual(3, _ai.RightHand.Value,
-                $"AI 游侠应强化（2 -> 3）。记录：{AiTraceText()}");
+                $"AI 游荡者·风流剑客应强化（2 -> 3）。记录：{AiTraceText()}");
         }
     }
 }

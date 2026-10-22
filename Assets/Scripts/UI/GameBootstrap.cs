@@ -28,10 +28,10 @@ namespace FingerDiceDuel.UI
     {
         [Header("对局设置")]
         [Tooltip("玩家 A 使用的角色（默认白板）")]
-        public SpecialLogicType PlayerACharacter = SpecialLogicType.Fighter;
+        public SpecialLogicType PlayerACharacter = SpecialLogicType.Breaker;
 
         [Tooltip("玩家 B 使用的角色（默认白板）")]
-        public SpecialLogicType PlayerBCharacter = SpecialLogicType.Curseweaver;
+        public SpecialLogicType PlayerBCharacter = SpecialLogicType.SchoolOfConjuration;
 
         [Tooltip("玩家 B 是否由 AI 控制")]
         public bool PlayerBIsAI = true;
@@ -486,7 +486,7 @@ namespace FingerDiceDuel.UI
             _board.AcceptClicked += OnAcceptClicked;
             _board.SacrificeClicked += OnSacrificeClicked;
 
-            // 法师：伤害类型面板上选了某一种
+            // 法师·塑能学派：伤害类型面板上选了某一种
             _board.DamageTypePicked += OnDamageTypePicked;
             _board.ExitClicked += OnExitClicked;
             _board.SetVisible(false);
@@ -508,8 +508,8 @@ namespace FingerDiceDuel.UI
                 if (CharacterFactory.IsRegistered(def.Logic)) _roster.Add(def);
             }
 
-            // 兜底角色：白板已被士兵取代（玩家要求），所以这里用士兵。
-            if (_roster.Count == 0) _roster.Add(CharacterDefinition.Soldier);
+            // 兜底角色：白板已被战士·勇士取代（玩家要求），所以这里用战士·勇士。
+            if (_roster.Count == 0) _roster.Add(CharacterDefinition.Champion);
         }
 
         // ============================================================
@@ -858,7 +858,7 @@ namespace FingerDiceDuel.UI
             HandSplit split = new DiceSplitAdvisor().Choose(player.Definition, null, splits);
             player.LeftHand.SetValue(split.Left);
             player.RightHand.SetValue(split.Right);
-            MonkLogic.ApplyTaichiToFives(player);
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(player);
         }
 
         private void OnFactionStartClicked()
@@ -1660,14 +1660,19 @@ namespace FingerDiceDuel.UI
                 CodexEntry e = CharacterCodex.For(def);
                 if (e == null) continue;
 
-                // 攻防与生命用**运行时实例**（骑士的攻防会随碎盾变）
+                // 攻防与生命用**运行时实例**（圣武士·王冠之誓的攻防会随碎盾变）
                 PlayerState probe = CharacterFactory.CreatePlayer(def.DisplayName, def);
 
                 var card = new CodexCardData
                 {
-                    Id = def.Id == "blank" ? "soldier" : def.Id,
+                    Id = def.Id == "blank" ? "fighter_champion" : def.Id,
                     NameZh = def.DisplayName,
                     NameEn = e.EnglishName,
+                    ProfessionId = def.Profession?.Id,
+                    ProfessionNameZh = def.Profession?.NameZh,
+                    ProfessionNameEn = def.Profession?.NameEn,
+                    SubclassNameZh = def.SubclassNameZh,
+                    SubclassNameEn = def.SubclassNameEn,
                     Alignment = Alignments.NameOf(e.Alignment),
                     MaxHealth = CharacterFactory.MaxHealthOf(def),
                     Attack = probe?.Character?.AttackBonus ?? def.AttackBonus,
@@ -1714,9 +1719,9 @@ namespace FingerDiceDuel.UI
         /// 把一份 **Core 的速查表**（<see cref="GuideSheet"/>）转成图鉴卡片。
         ///
         /// ⚠️ 内容全部来自 Core —— 界面只负责排版：
-        ///    · 没有归属标签（"法师体系"）、没有属性行
+        ///    · 没有归属标签（"法师·塑能学派体系"）、没有属性行
         ///    · 没有【技能】/【技能详细】/【操作指导】/【如何针对】四节
-        ///    （玩家要求：这两张表是**纯速查**，"不仅法师要用，日后做 pve 冒险也很重要"）
+        ///    （玩家要求：这两张表是**纯速查**，"不仅法师·塑能学派要用，日后做 pve 冒险也很重要"）
         ///
         /// ⚠️ 数据放在 Core 的另一个好处：**测试项目引用不到 UI**，
         ///    写在这里就没法测；放进 Core 才能被断言。
@@ -2472,7 +2477,7 @@ namespace FingerDiceDuel.UI
             // 详情也用图鉴那条短描述（与卡片一致）
             target.text = def.DisplayName + "　" + CharacterRosterView.DescribeStats(def) + "\n" + SkillHintText(def);
             var emblem = target.transform.parent.Find("SelectedEmblem");
-            if (emblem != null) emblem.GetComponent<Image>().sprite = BattleArt.Get("Classes/" + (def.Id == "blank" ? "soldier" : def.Id));
+            if (emblem != null) emblem.GetComponent<Image>().sprite = BattleArt.Get("Subclasses/" + (def.Id == "blank" ? "fighter_champion" : def.Id));
         }
 
 
@@ -2678,7 +2683,7 @@ namespace FingerDiceDuel.UI
         {
             ShowScreen(GameScreen.InMatch);
 
-            // ⚠️ **武僧初始的 5 也进入太极形态**（玩家要求）。
+            // ⚠️ **武僧·太极宗初始的 5 也进入太极形态**（玩家要求）。
             //
             //    必须在这里统一做一次：`ShieldState.Taichi` 原本只在
             //    "运算产生 Shield 效果"时才被设上，而开局直接摆出来的 5
@@ -2878,7 +2883,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// 点了「开赌」（赌徒）：掷 1d9，点数直接作为本次行动结果。
+        /// 点了「开赌」（游荡者·赌徒）：掷 1d9，点数直接作为本次行动结果。
         ///
         /// 掷出攻击时 <see cref="BoardController.Gamble"/> 会停在"选打谁"，
         /// 这里只是刷新界面让玩家看到可点的目标。
@@ -2901,7 +2906,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// 盗贼点了「偷窃」：进入"选被偷的手"这一步。
+        /// 游荡者·盗贼点了「偷窃」：进入"选被偷的手"这一步。
         ///
         /// 玩家给的交互是三步：点自己的手 -> 点「偷窃」-> 点别人的手。
         /// 所以这里只是**推进阶段**，真正完成在
@@ -2920,7 +2925,7 @@ namespace FingerDiceDuel.UI
             if (moved) RefreshView();
         }
 
-        /// <summary>发动当前的"角色抉择"（剑客的追加攻击、游侠的强化等）。</summary>
+        /// <summary>发动当前的"角色抉择"（战士·剑士的追加攻击、游荡者·风流剑客的强化等）。</summary>
         private void OnAcceptClicked()
         {
             if (_controller == null) return;
@@ -2929,10 +2934,10 @@ namespace FingerDiceDuel.UI
             // ⚠️⚠️ **必须无条件刷新。**
             //
             //    原来是 `if (_controller.AcceptPendingChoice()) RefreshView();` ——
-            //    于是"发动"被拒绝时（例如法师的"放弃攻击"有 **2 个候选**，
+            //    于是"发动"被拒绝时（例如法师·塑能学派的"放弃攻击"有 **2 个候选**，
             //    而 AcceptPendingChoice 要求**唯一候选**），
             //    界面**一点反应都没有**，玩家看到的就是**卡住**
-            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //    （玩家实测："法师·塑能学派点击放弃攻击后卡住"）。
             //
             //    界面必须永远反映控制器的真实状态；失败也要给出可读的原因。
             bool ok = _controller.AcceptPendingChoice();
@@ -2949,7 +2954,7 @@ namespace FingerDiceDuel.UI
             RefreshView();
         }
 
-        /// <summary>放弃当前的"角色抉择"（游侠的闪避 / 强化、野蛮人的锁手等）。</summary>
+        /// <summary>放弃当前的"角色抉择"（游荡者·风流剑客的闪避 / 强化、野蛮人·守望者道途的锁手等）。</summary>
         private void OnDeclineClicked()
         {
             if (_controller == null) return;
@@ -2977,7 +2982,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// **法师**：玩家在伤害类型面板上选了某一种。
+        /// **法师·塑能学派**：玩家在伤害类型面板上选了某一种。
         ///
         /// 玩家确认的顺序是"先问放弃 -> 选类型 -> 再选目标"，
         /// 所以这里选完之后流程继续走到"选攻击目标"那一步。
@@ -2992,7 +2997,7 @@ namespace FingerDiceDuel.UI
             //    我第一版写成"只有 `ChooseDamageType` 返回 true 才关面板 + 刷新"，
             //    于是它一旦返回 false（状态不符 / 找不到 sink），
             //    面板既不消失、界面也不刷新 —— 玩家看到的就是**卡住**
-            //    （玩家实测："法师点击放弃攻击后卡住"）。
+            //    （玩家实测："法师·塑能学派点击放弃攻击后卡住"）。
             //    界面必须**永远**反映控制器的真实状态，不能"失败就什么都不做"。
             _board.SetDamageTypePanelVisible(false);
 
@@ -3033,14 +3038,14 @@ namespace FingerDiceDuel.UI
             if (_controller.Phase == BoardPhase.GameOver) return;
             if (IsPausing) return;              // 回合间停顿：暂停 AI 推进
 
-            // ⚠️⚠️ **吟游诗人的抉择没答完之前，AI 一律不许行动。**
+            // ⚠️⚠️ **吟游诗人·勇气学院的抉择没答完之前，AI 一律不许行动。**
             //
-            //    玩家实测："1 号吟游诗人受到 2 号伤害，玩家还没选完，
+            //    玩家实测："1 号吟游诗人·勇气学院受到 2 号伤害，玩家还没选完，
             //    3 号 4 号已经行动完了。"
-            //    因为 `BardChoicePending` 不是 `BoardPhase`，AI 的推进只看了
+            //    因为 `CollegeOfValorChoicePending` 不是 `BoardPhase`，AI 的推进只看了
             //    `IsHumanChooser` —— 那时"该谁决定"已经交回 AI，于是它继续打。
             //    这个面板是**半途插进来**的，所以必须单独挡一道。
-            if (_controller.BardChoicePending)
+            if (_controller.CollegeOfValorChoicePending)
             {
                 _aiDelayTimer = 0f;
                 return;
@@ -3185,10 +3190,10 @@ namespace FingerDiceDuel.UI
                     _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
             }
 
-            // 赌徒的「开赌」按钮：只在"等开赌"这一步显示
+            // 游荡者·赌徒的「开赌」按钮：只在"等开赌"这一步显示
             _board.SetGambleButtonVisible(_controller.CanGamble);
 
-            // 盗贼的「偷窃」按钮：只在"点了自己的手、且本回合没偷过"时显示
+            // 游荡者·盗贼的「偷窃」按钮：只在"点了自己的手、且本回合没偷过"时显示
             _board.SetStealButtonVisible(_controller.CanSteal);
             RefreshSacrificeButton();
 
@@ -3212,11 +3217,11 @@ namespace FingerDiceDuel.UI
             }
 
             // 角色抉择的出口：
-            //   · "发动"按钮 —— 只有一个候选时（剑客追加、游侠强化、牧师的攻击/回复）
+            //   · "发动"按钮 —— 只有一个候选时（战士·剑士追加、游荡者·风流剑客强化、牧师·生命领域的攻击/回复）
             //   · "不发动 / 放弃攻击"按钮 —— 允许放弃时
             //
             // 「放弃攻击」是**新流程专有**的出口：玩家已选定参与运算的手，
-            // 但当前**没有合法攻击目标**（刺客潜行，日后还有攻击距离不足等），
+            // 但当前**没有合法攻击目标**（游荡者·刺客潜行，日后还有攻击距离不足等），
             // 此时"放弃攻击"是唯一出路。放弃 = **算用掉本回合**。
             bool giveUp = _controller.IsHumanChooser && _controller.CanGiveUpAttack;
             bool canDecline = giveUp
@@ -3238,14 +3243,14 @@ namespace FingerDiceDuel.UI
             _board.SetAcceptButtonVisible(canAccept);
             if (canAccept) _board.SetAcceptButtonLabel(acceptLabel);
 
-            // ⚠️ **法师：轮到"选伤害类型"时弹 10 选 1 面板，而不是普通的发动/不发动。**
+            // ⚠️ **法师·塑能学派：轮到"选伤害类型"时弹 10 选 1 面板，而不是普通的发动/不发动。**
             //
             //    玩家确认的顺序：先问"是否放弃攻击" -> 选类型 -> 再选目标。
             //    这一步必须**优先**于发动按钮处理，否则玩家会看到
             //    一个没有意义的"就选它"按钮。
             bool pickingDamageType =
                 _controller.IsHumanChooser
-                && _controller.PendingEffect == HandEffect.WizardDamageType;
+                && _controller.PendingEffect == HandEffect.SchoolOfEvocationDamageType;
 
             _board.SetDamageTypePanelVisible(pickingDamageType);
             if (pickingDamageType)
@@ -3262,7 +3267,7 @@ namespace FingerDiceDuel.UI
             // 临时诊断：把面板显隐的真实状态打出来 ——
             // "点了放弃却看不到 10 选 1"这类问题只能靠它定位
             // （是没进这个分支、还是面板没显示出来）。
-            if (_controller.PendingEffect == HandEffect.WizardDamageType
+            if (_controller.PendingEffect == HandEffect.SchoolOfEvocationDamageType
                 || _board.IsDamageTypePanelVisible)
             {
                 Debug.Log($"[FDD伤害类型] phase={_controller.Phase} " +
@@ -3277,28 +3282,28 @@ namespace FingerDiceDuel.UI
                 _board.ShowGameOver(WinMessage());
                 _board.SetSkipButtonVisible(false);
                 _board.SetDamageTypePanelVisible(false);
-                _board.HideBardChoicePanel();
+                _board.HideCollegeOfValorChoicePanel();
             }
             else
             {
-                // ⚠️ **吟游诗人：本回合受过伤 / 实际回过血 -> 弹四步面板。**
+                // ⚠️ **吟游诗人·勇气学院：本回合受过伤 / 实际回过血 -> 弹四步面板。**
                 //
                 //    这是第一个"运算之后才问"的技能，所以不接阶段机，
                 //    只在这里按需开面板（① 是否发动由玩家在面板里选）。
                 //
                 //    ⚠️ 只在"从没弹变成该弹"时调 `Show` —— `Show` 会把步骤重置回第 ② 步，
                 //       每次刷新都调会把玩家已经点过的进度清掉。
-                bool offer = _controller.OfferBardChoiceIfAny();
-                if (offer && !IsHumanPlayer(_controller.BardActor))
+                bool offer = _controller.OfferCollegeOfValorChoiceIfAny();
+                if (offer && !IsHumanPlayer(_controller.CollegeOfValorActor))
                 {
-                    // AI 的吟游诗人自己选完，不弹玩家面板。
-                    _controller.AutoResolveAiBardChoice();
-                    if (_board.IsBardChoicePanelVisible) _board.HideBardChoicePanel();
+                    // AI 的吟游诗人·勇气学院自己选完，不弹玩家面板。
+                    _controller.AutoResolveAiCollegeOfValorChoice();
+                    if (_board.IsCollegeOfValorChoicePanelVisible) _board.HideCollegeOfValorChoicePanel();
                 }
-                else if (offer && !_board.IsBardChoicePanelVisible)
-                    _board.ShowBardChoicePanel(_controller, RefreshView);
-                else if (!offer && _board.IsBardChoicePanelVisible)
-                    _board.HideBardChoicePanel();
+                else if (offer && !_board.IsCollegeOfValorChoicePanelVisible)
+                    _board.ShowCollegeOfValorChoicePanel(_controller, RefreshView);
+                else if (!offer && _board.IsCollegeOfValorChoicePanelVisible)
+                    _board.HideCollegeOfValorChoicePanel();
             }
 
             DiagnoseIfNeeded(canDecline, acceptLabel, canAccept);
@@ -3355,7 +3360,7 @@ namespace FingerDiceDuel.UI
                 sb.Append($" | 我方手 L{_game.PlayerA?.LeftHand.Value} R{_game.PlayerA?.RightHand.Value}");
                 sb.Append($" | 对手手 L{_game.PlayerB?.LeftHand.Value} R{_game.PlayerB?.RightHand.Value}");
 
-                // ⚠️ 玩家报过"赌徒的显示和实际不一样"，两处读的却是同一个对象 ——
+                // ⚠️ 玩家报过"游荡者·赌徒的显示和实际不一样"，两处读的却是同一个对象 ——
                 //    所以把**展示层真正用的**手牌对象也打出来（附对象哈希），
                 //    这样能确认"显示与诊断读的是不是同一份数据"，
                 //    而不是继续在两边各自的读数上打转。
@@ -3426,7 +3431,7 @@ namespace FingerDiceDuel.UI
         /// ⚠️ 曾经写死 `ActivePlayer == _game.PlayerA` ——
         ///    1v1 里勉强对（人类就是 A），但 **2v2 里完全错**：
         ///    人类可能是 2/3/4 号位，于是按钮永远不显示
-        ///    （玩家实测："2v2 中妖术师没有跳过回合按钮"）。
+        ///    （玩家实测："2v2 中邪术师·至高妖精没有跳过回合按钮"）。
         ///
         /// 正确的判据是"**当前行动方是不是人类**"，与座位无关。
         /// </summary>
@@ -3441,7 +3446,7 @@ namespace FingerDiceDuel.UI
             // 这类"界面没画"的问题光看截图分不清是规则判错还是漏传参数。
             if (VerboseLogging && !show && _controller != null
                 && _controller.ActivePlayer != null
-                && _controller.ActivePlayer.Character is HexerLogic)
+                && _controller.ActivePlayer.Character is TheArchfeyLogic)
             {
                 string line =
                     $"[FDD跳过按钮] 不显示 -> isHumanTurn={_controller.IsHumanTurn}" +
@@ -3542,18 +3547,18 @@ namespace FingerDiceDuel.UI
 
             switch (request.Value.Effect)
             {
-                case HandEffect.RangerDodge: return "不闪避";
-                case HandEffect.RangerPowerShot: return "不强化";
-                case HandEffect.BarbarianLockTarget: return "不锁手";
-                case HandEffect.FighterChainBreak: return "不发动";
+                case HandEffect.SwashbucklerDodge: return "不闪避";
+                case HandEffect.SwashbucklerDuelistThrust: return "不强化";
+                case HandEffect.PathOfTheWardenLockTarget: return "不锁手";
+                case HandEffect.BreakerChainBreak: return "不发动";
                 case HandEffect.SwordsmanFollowUp: return "不追加";
-                // 猎人伏击（与剑客追加攻击同一条通道）
-                case HandEffect.HunterAmbush: return "不伏击";
+                // 游侠·幽域追踪者伏击（与战士·剑士追加攻击同一条通道）
+                case HandEffect.GloomStalkerAmbush: return "不伏击";
                 // 回复目标是**必选**的（玩家要求：选了回复就必须回复、
                 // 运算出 9 必须回复、双 9 两段都必须回复），
                 // 所以这里不会走到 —— 按钮根本不会出现。
                 // 点自己的手就是回自己、点对方的手就是回对方。
-                case HandEffect.ClericAttackOrHeal: return "攻击";
+                case HandEffect.LifeDomainAttackOrHeal: return "攻击";
                 default: return "不发动";
             }
         }
@@ -3570,8 +3575,8 @@ namespace FingerDiceDuel.UI
             // ⚠️ 只在"**现在还是刚结算那位行动方的回合**"时才显示上一手摘要。
             //
             // 否则会挂着**上一位行动者**的结算 ——
-            // 玩家实测看到："轮到圣武士，摘要却写着 游侠 左手: 5+1=6"。
-            // 那其实是上一回合游侠打的那一手，与新回合无关，纯属误导。
+            // 玩家实测看到："轮到圣武士·奉献之誓，摘要却写着 游荡者·风流剑客 左手: 5+1=6"。
+            // 那其实是上一回合游荡者·风流剑客打的那一手，与新回合无关，纯属误导。
             //
             // 为什么不比回合号：`BoardController.DisplayTurn` 与
             // `GameManager.TurnCount` 语义差 1（前者是"当前第几回合"、

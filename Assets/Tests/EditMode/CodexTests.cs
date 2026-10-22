@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -65,7 +65,7 @@ namespace FingerDiceDuel.Tests
             //
             // ⚠️ 我第一版断言的是"精简描述必须短于详细描述"，
             //    结果有一个角色失败 —— 但那是**测试太严**：
-            //    有几个角色的详细描述本来就只有一句（例如士兵的"攻防各 +1"），
+            //    有几个角色的详细描述本来就只有一句（例如战士·勇士的"攻防各 +1"），
             //    这种情况下"精简比详细短"根本不成立。
             //    真正的意图是"精简要短"，所以改成限制绝对长度。
             const int maxShortLen = 80;
@@ -100,12 +100,12 @@ namespace FingerDiceDuel.Tests
         ///   操作指南    ~30~38          ~50~60       80
         ///   如何针对    ~19~40          ~20~40       80
         ///
-        /// **机制简单** = 一句能说完（士兵、游侠、骑士、狼人、魔射手、巨人…）
-        /// **有机制**   = 需要说清触发条件与代价（武僧、盗贼、妖术师、猎人、魔术师…）
+        /// **机制简单** = 一句能说完（战士·勇士、游荡者·风流剑客、圣武士·王冠之誓、野蛮人·野兽道途、战士·魔射手、野蛮人·巨人道途…）
+        /// **有机制**   = 需要说清触发条件与代价（武僧·太极宗、游荡者·盗贼、邪术师·至高妖精、游侠·幽域追踪者、游荡者·魔术师…）
         ///
         /// \u26a0\ufe0f 上限只挡"长篇大论"，不追求人人等长 ——
         ///    因为"把简单角色也写长"和"把有机制的角色写短"都是错的方向。
-        ///    定这条之前，武僧的"如何针对"曾写到 167 字（中位数的 5 倍）。
+        ///    定这条之前，武僧·太极宗的"如何针对"曾写到 167 字（中位数的 5 倍）。
         ///
         /// \u26a0\ufe0f 例外机制：若某段确实**重要到无法删**，把它加进下面的
         ///    <see cref="LongButJustified"/> 并**写清理由** ——
@@ -118,8 +118,8 @@ namespace FingerDiceDuel.Tests
         /// <summary>
         /// **必须写进图鉴的机制**（玩家纠正："不要把这种重要的机制从图鉴里删掉"）。
         ///
-        /// 起因：我精简图鉴时，把战士的"碎盾换无限距离"从技能里删掉了，
-        /// 而游侠的"强化射击使本次攻击距离无限"**从来就没写过**。
+        /// 起因：我精简图鉴时，把战士·破阵者的"碎盾换无限距离"从技能里删掉了，
+        /// 而游荡者·风流剑客的"乘风突刺使本次攻击距离无限"**从来就没写过**。
         /// 玩家指出：攻击距离什么时候变成无限，是玩家做决策必须知道的事。
         ///
         /// \u26a0\ufe0f 所以**篇幅上限不能成为删掉机制的理由**。
@@ -130,11 +130,11 @@ namespace FingerDiceDuel.Tests
         private static readonly Dictionary<string, string[]> MustMention =
             new Dictionary<string, string[]>
             {
-                // 战士：碎盾换射程 -> 本次攻击距离无限
-                { CharacterDefinition.FighterId, new[] { "无限" } },
-                // 游侠：强化射击 -> 本次攻击距离无限
-                { CharacterDefinition.RangerId, new[] { "无限" } },
-                // 盗贼：偷窃是无限距离
+                // 战士·破阵者：碎盾换射程 -> 本次攻击距离无限
+                { CharacterDefinition.BreakerId, new[] { "无限" } },
+                // 游荡者·风流剑客：乘风突刺 -> 本次攻击距离无限
+                { CharacterDefinition.SwashbucklerId, new[] { "无限" } },
+                // 游荡者·盗贼：偷窃是无限距离
                 { CharacterDefinition.ThiefId, new[] { "无限" } },
             };
 
@@ -244,36 +244,36 @@ namespace FingerDiceDuel.Tests
             // 以后不小心改动会被捕到。
             var expect = new Dictionary<string, Alignment>
             {
-                // 守序善良：圣武士 牧师 骑士
-                { CharacterDefinition.PaladinId, Alignment.LawfulGood },
-                { CharacterDefinition.ClericId, Alignment.LawfulGood },
-                { CharacterDefinition.KnightId, Alignment.LawfulGood },
-                // 守序中立：剑客 战士
+                // 守序善良：圣武士·奉献之誓 牧师·生命领域 圣武士·王冠之誓
+                { CharacterDefinition.OathOfDevotionId, Alignment.LawfulGood },
+                { CharacterDefinition.LifeDomainId, Alignment.LawfulGood },
+                { CharacterDefinition.OathOfTheCrownId, Alignment.LawfulGood },
+                // 守序中立：战士·剑士 战士·破阵者
                 { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
-                { CharacterDefinition.FighterId, Alignment.LawfulNeutral },
-                // 守序邪恶：魔射手
+                { CharacterDefinition.BreakerId, Alignment.LawfulNeutral },
+                // 守序邪恶：战士·魔射手
                 { CharacterDefinition.ArcaneArcherId, Alignment.LawfulEvil },
-                // 中立善良：游侠 武僧
-                { CharacterDefinition.RangerId, Alignment.NeutralGood },
-                { CharacterDefinition.MonkId, Alignment.NeutralGood },
-                // 绝对中立：忍者 士兵 魔术师（魔术师由混乱善良移来）
-                { CharacterDefinition.NinjaId, Alignment.TrueNeutral },
-                { CharacterDefinition.SoldierId, Alignment.TrueNeutral },
+                // 中立善良：游荡者·风流剑客 武僧·太极宗
+                { CharacterDefinition.SwashbucklerId, Alignment.NeutralGood },
+                { CharacterDefinition.WayOfTheTaiChiId, Alignment.NeutralGood },
+                // 绝对中立：武僧·忍宗 战士·勇士 游荡者·魔术师（游荡者·魔术师由混乱善良移来）
+                { CharacterDefinition.WayOfTheNinjaId, Alignment.TrueNeutral },
+                { CharacterDefinition.ChampionId, Alignment.TrueNeutral },
                 { CharacterDefinition.MagicianId, Alignment.TrueNeutral },
-                // 中立邪恶：盗贼
+                // 中立邪恶：游荡者·盗贼
                 { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
-                // 混乱善良：野蛮人
-                { CharacterDefinition.BarbarianId, Alignment.ChaoticGood },
-                // 混乱中立：刺客 赌徒 咒术师
+                // 混乱善良：野蛮人·守望者道途
+                { CharacterDefinition.PathOfTheWardenId, Alignment.ChaoticGood },
+                // 混乱中立：游荡者·刺客 游荡者·赌徒 法师·咒法学派
                 { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
-                { CharacterDefinition.CurseweaverId, Alignment.ChaoticNeutral },
-                // 混乱邪恶：狼人 巨人 妖术师（妖术师由中立邪恶移来）
-                { CharacterDefinition.WerewolfId, Alignment.ChaoticEvil },
-                { CharacterDefinition.GiantId, Alignment.ChaoticEvil },
-                { CharacterDefinition.HexerId, Alignment.ChaoticEvil },
-                // 守序邪恶：猎人（玩家指定）
-                { CharacterDefinition.HunterId, Alignment.LawfulEvil },
+                { CharacterDefinition.SchoolOfConjurationId, Alignment.ChaoticNeutral },
+                // 混乱邪恶：野蛮人·野兽道途 野蛮人·巨人道途 邪术师·至高妖精（邪术师·至高妖精由中立邪恶移来）
+                { CharacterDefinition.PathOfTheBeastId, Alignment.ChaoticEvil },
+                { CharacterDefinition.PathOfTheGiantId, Alignment.ChaoticEvil },
+                { CharacterDefinition.TheArchfeyId, Alignment.ChaoticEvil },
+                // 守序邪恶：游侠·幽域追踪者（玩家指定）
+                { CharacterDefinition.GloomStalkerId, Alignment.LawfulEvil },
             };
 
             var wrong = new List<string>();

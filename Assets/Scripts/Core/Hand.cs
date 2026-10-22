@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -9,7 +9,7 @@ namespace FingerDiceDuel.Core
         /// 手值的合法下界 = **0**。
         ///
         /// ⚠️ 原本是 1（"十进制归一化后不会出现 0"）——
-        ///    但**武僧的太极**明确要求"把那张 5 变成 **0**"（玩家规则），
+        ///    但**武僧·太极宗的太极**明确要求"把那张 5 变成 **0**"（玩家规则），
         ///    所以下界必须放开。
         ///
         ///    放开之后的注意点：
@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Core
         public bool IsShield => State == ShieldState.Formed;
 
         /// <summary>
-        /// 这只手是否处于**太极形态**（武僧）。
+        /// 这只手是否处于**太极形态**（武僧·太极宗）。
         ///
         /// ⚠️ 与 <see cref="IsShield"/> **互斥**：太极不是盾，
         ///    所以"能不能挡伤害 / 算不算双盾 / 能不能被破"这些判断

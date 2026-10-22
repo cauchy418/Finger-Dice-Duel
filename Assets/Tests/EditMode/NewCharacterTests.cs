@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// 牧师 / 游侠 / 狼人 三名新角色的能力验证。
+    /// 牧师·生命领域 / 游荡者·风流剑客 / 野蛮人·野兽道途 三名新角色的能力验证。
     /// </summary>
     [TestFixture]
     public class NewCharacterTests
@@ -42,65 +42,65 @@ namespace FingerDiceDuel.Tests
         // "放弃"键（UI 的取消出口）
         // ============================================================
 
-        /// <summary>构造一个"人类游侠被攻击、停在闪避抉择"的局面。</summary>
-        private BoardController ArrangeHumanRangerDodge(PlayerState[] outPair)
+        /// <summary>构造一个"人类游荡者·风流剑客被攻击、停在闪避抉择"的局面。</summary>
+        private BoardController ArrangeHumanSwashbucklerDodge(PlayerState[] outPair)
         {
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.Swashbuckler),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
             outPair[0] = blank;
-            outPair[1] = ranger;
+            outPair[1] = swashbuckler;
 
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, ranger, 1);
+            TestSetup.SetAllHands(blank, swashbuckler, 1);
             TestSetup.SetHand(blank.LeftHand, 3);       // 3 + 1 = 4 -> 攻击
-            TestSetup.SetHand(ranger.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
 
             board.BeginTurn();
             return board;
         }
 
         [Test]
-        public void Ranger_dodge_choice_allows_declining_from_the_ui()
+        public void Swashbuckler_dodge_choice_allows_declining_from_the_ui()
         {
             var pair = new PlayerState[2];
-            BoardController board = ArrangeHumanRangerDodge(pair);
+            BoardController board = ArrangeHumanSwashbucklerDodge(pair);
             PlayerState blank = pair[0];
-            PlayerState ranger = pair[1];
+            PlayerState swashbuckler = pair[1];
 
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "游侠有一只手为 1 -> 应先问是否闪避。");
+                "游荡者·风流剑客有一只手为 1 -> 应先问是否闪避。");
             Assert.True(board.CanDeclinePendingChoice, "闪避应允许放弃。");
-            Assert.True(board.IsChoiceCandidate(ranger.LeftHand));
+            Assert.True(board.IsChoiceCandidate(swashbuckler.LeftHand));
 
-            int healthBefore = ranger.Health;
+            int healthBefore = swashbuckler.Health;
 
             // 每一段各问一次 -> 全部放弃
             Assert.True(DeclineAllDodges(board) > 0, "应至少问过一次闪避");
             Assert.False(board.Phase == BoardPhase.ChoosingPreTurnChoice, "两次都放弃后应继续结算。");
-            Assert.AreEqual(1, ranger.LeftHand.Value, "放弃闪避不应改变手值。");
-            Assert.AreEqual(1, ranger.RightHand.Value, "放弃闪避不应改变手值。");
-            Assert.True(ranger.Health < healthBefore, "放弃闪避应正常吃伤害。");
+            Assert.AreEqual(1, swashbuckler.LeftHand.Value, "放弃闪避不应改变手值。");
+            Assert.AreEqual(1, swashbuckler.RightHand.Value, "放弃闪避不应改变手值。");
+            Assert.True(swashbuckler.Health < healthBefore, "放弃闪避应正常吃伤害。");
         }
 
         [Test]
         public void Declining_is_rejected_outside_a_pre_turn_choice()
         {
             var pair = new PlayerState[2];
-            BoardController board = ArrangeHumanRangerDodge(pair);
+            BoardController board = ArrangeHumanSwashbucklerDodge(pair);
 
             // 还在"选自己哪只手"阶段，没有可放弃的抉择
             Assert.False(board.CanDeclinePendingChoice);
@@ -108,42 +108,42 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 通用抉择管线（替代原先的 is BarbarianLogic 硬编码）
+        // 通用抉择管线（替代原先的 is PathOfTheWardenLogic 硬编码）
         // ============================================================
 
         [Test]
-        public void Barbarian_lock_still_goes_through_the_declarative_pipeline()
+        public void PathOfTheWarden_lock_still_goes_through_the_declarative_pipeline()
         {
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState barbarian = game.PlayerB;
+            PlayerState pathOfTheWarden = game.PlayerB;
 
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, barbarian, 1);
-            TestSetup.SetHand(barbarian.LeftHand, 4);   // 4 + 1 = 5 -> 合盾
+            TestSetup.SetAllHands(blank, pathOfTheWarden, 1);
+            TestSetup.SetHand(pathOfTheWarden.LeftHand, 4);   // 4 + 1 = 5 -> 合盾
 
-            // Blank 先手；让它随便走一回合把回合交给野蛮人
+            // Blank 先手；让它随便走一回合把回合交给野蛮人·守望者道途
             board.BeginTurn();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(barbarian.RightHand);
+            board.ClickHand(pathOfTheWarden.RightHand);
             board.ConfirmTargetPlayer();
 
-            board.ClickHand(barbarian.LeftHand);
+            board.ClickHand(pathOfTheWarden.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "野蛮人合盾应走通用抉择管线问锁手。");
+                "野蛮人·守望者道途合盾应走通用抉择管线问锁手。");
             Assert.AreEqual(2, board.ChoiceCandidates.Count, "对手两只手都可选。");
 
             // 点对手的左手 -> 应锁住它
@@ -154,31 +154,31 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Barbarian_lock_can_be_declined()
+        public void PathOfTheWarden_lock_can_be_declined()
         {
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState barbarian = game.PlayerB;
+            PlayerState pathOfTheWarden = game.PlayerB;
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, barbarian, 1);
-            TestSetup.SetHand(barbarian.LeftHand, 4);
+            TestSetup.SetAllHands(blank, pathOfTheWarden, 1);
+            TestSetup.SetHand(pathOfTheWarden.LeftHand, 4);
 
-            // Blank 先手；让它随便走一回合把回合交给野蛮人
+            // Blank 先手；让它随便走一回合把回合交给野蛮人·守望者道途
             board.BeginTurn();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(barbarian.RightHand);
+            board.ClickHand(pathOfTheWarden.RightHand);
             board.ConfirmTargetPlayer();
 
-            board.ClickHand(barbarian.LeftHand);
+            board.ClickHand(pathOfTheWarden.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
@@ -189,7 +189,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 剑客 Swordsman（+2 / -1）
+        // 战士·剑士 Swordsman（+2 / -1）
         // ============================================================
 
         [Test]
@@ -206,27 +206,27 @@ namespace FingerDiceDuel.Tests
         {
             // 让双方攻防都不为 0，验证追加攻击"无视双方攻防加成"。
             var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);   // 攻 +2
-            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian);   // 防 +1
+            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);   // 防 +1
             var sink = new ScriptedChoiceProvider();
 
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4) { IgnoreStatBonuses = true };
             ctx.Resolve(sink, null);
 
             Assert.AreEqual(4, ctx.AppliedDamage,
-                "追加攻击固定 4 点，不受剑客攻 +2 / 野蛮人防 +1 影响。");
+                "追加攻击固定 4 点，不受战士·剑士攻 +2 / 野蛮人·守望者道途防 +1 影响。");
         }
 
         [Test]
         public void Swordsman_main_attack_still_applies_stat_bonuses()
         {
             var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);   // 攻 +2
-            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian);   // 防 +1
+            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);   // 防 +1
             var sink = new ScriptedChoiceProvider();
 
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4);
             ctx.Resolve(sink, null);
 
-            // 4 + 2(剑客攻) - 1(野蛮人防) = 5
+            // 4 + 2(战士·剑士攻) - 1(野蛮人·守望者道途防) = 5
             Assert.AreEqual(5, ctx.AppliedDamage, "主攻击照常结算攻防加成。");
         }
 
@@ -308,23 +308,23 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(6 + 2, board.LastTurn.DamageDealt, "只有主攻击：6 + 攻 2 = 8。");
         }
         // ============================================================
-        // 忍者 Ninja（+1 / -1）
+        // 武僧·忍宗 WayOfTheNinja（+1 / -1）
         // ============================================================
 
         [Test]
-        public void Ninja_has_plus_one_and_minus_one()
+        public void WayOfTheNinja_has_plus_one_and_minus_one()
         {
-            PlayerState n = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
+            PlayerState n = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
 
             Assert.AreEqual(1, n.Character.AttackBonus);
             Assert.AreEqual(-1, n.Character.DefenseBonus);
         }
 
         [Test]
-        public void Ninja_splits_attack_into_two_halves()
+        public void WayOfTheNinja_splits_attack_into_two_halves()
         {
-            // 基础 4 -> 两次 2。忍者攻 +1：每段 2 + 1 = 3，共 6。
-            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
+            // 基础 4 -> 两次 2。武僧·忍宗攻 +1：每段 2 + 1 = 3，共 6。
+            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
             var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
             var sink = new ScriptedChoiceProvider();
 
@@ -337,10 +337,10 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ninja_each_half_is_blocked_by_only_one_shield()
+        public void WayOfTheNinja_each_half_is_blocked_by_only_one_shield()
         {
             // 已确认：一面盾只能挡下其中一段，另一段照常造成伤害。
-            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
+            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
             var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
             var sink = new ScriptedChoiceProvider();
 
@@ -357,9 +357,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ninja_two_shields_can_block_both_halves()
+        public void WayOfTheNinja_two_shields_can_block_both_halves()
         {
-            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
+            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
             var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
             var sink = new ScriptedChoiceProvider();
 
@@ -377,7 +377,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 刺客 Assassin（+2 / -1）
+        // 游荡者·刺客 Assassin（+2 / -1）
         // ============================================================
 
         [Test]
@@ -504,7 +504,7 @@ namespace FingerDiceDuel.Tests
             foreach (int value in new[] { 4, 6, 8 })
             {
                 var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);  // 攻 +2
-                var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian);  // 防 +1
+                var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);  // 防 +1
                 var sink = new ScriptedChoiceProvider();
 
                 TestSetup.SetHand(atk.LeftHand, value);
@@ -526,7 +526,7 @@ namespace FingerDiceDuel.Tests
         {
             // 主攻击照常吃攻防加成：4 + 攻2 - 防1 = 5
             var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);
-            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian);
+            var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);
             var sink = new ScriptedChoiceProvider();
 
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4);
@@ -538,7 +538,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Assassin_stealth_dodge_reports_the_right_reason()
         {
-            // 战报不能说"被游侠闪避" —— 潜行是"打不到"。
+            // 战报不能说"被游荡者·风流剑客闪避" —— 潜行是"打不到"。
             var atk = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
             var def = CharacterFactory.CreatePlayer("A", CharacterDefinition.Assassin);
             var sink = new ScriptedChoiceProvider();
@@ -558,11 +558,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_stealth_free_dodge_has_no_reason_so_uses_default_text()
+        public void Swashbuckler_stealth_free_dodge_has_no_reason_so_uses_default_text()
         {
-            // 游侠的真正闪避没有自定义原因 -> 战报走默认文案
+            // 游荡者·风流剑客的真正闪避没有自定义原因 -> 战报走默认文案
             var atk = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
-            var def = CharacterFactory.CreatePlayer("A", CharacterDefinition.Ranger);
+            var def = CharacterFactory.CreatePlayer("A", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);
@@ -577,7 +577,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(ctx.WasDodged);
 
-            // 战报路径：游侠闪避没有自定义原因 -> 走默认文案"被游侠闪避"
+            // 战报路径：游荡者·风流剑客闪避没有自定义原因 -> 走默认文案"被游荡者·风流剑客闪避"
             TurnResult t = new TurnResult
             {
                 Actor = atk,
@@ -590,34 +590,34 @@ namespace FingerDiceDuel.Tests
                 Effect = HandEffectType.Attack4,
             };
             string text = BoardController.DescribeTurn(t);
-            Assert.True(text.Contains("闪避"), $"默认文案应说'被游侠闪避'：{text}");
-            Assert.False(text.Contains("潜行"), "游侠闪避不该说成潜行。");
+            Assert.True(text.Contains("闪避"), $"默认文案应说'被游荡者·风流剑客闪避'：{text}");
+            Assert.False(text.Contains("潜行"), "游荡者·风流剑客闪避不该说成潜行。");
         }
 
         [Test]
-        public void Ranger_power_shot_prompts_and_applies_in_a_real_turn()
+        public void Swashbuckler_power_shot_prompts_and_applies_in_a_real_turn()
         {
-            // 端到端：游侠**攻击手**是别的数字、**另一只手**是 2 -> 应弹强化提示。
+            // 端到端：游荡者·风流剑客**攻击手**是别的数字、**另一只手**是 2 -> 应弹强化提示。
             // （此前收集阶段还在扫"自己的两只手"，导致提示不出现。）
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
-                CharacterFactory.CreatePlayer("A", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("A", CharacterDefinition.Swashbuckler),
                 CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank),
                 choiceA, choiceB);
 
-            PlayerState ranger = game.PlayerA;
+            PlayerState swashbuckler = game.PlayerA;
             PlayerState blank = game.PlayerB;
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(ranger, blank, 1);
-            TestSetup.SetHand(ranger.LeftHand, 1);      // 攻击手
-            TestSetup.SetHand(ranger.RightHand, 2);     // 另一只手 = 2 -> 可强化
+            TestSetup.SetAllHands(swashbuckler, blank, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);      // 攻击手
+            TestSetup.SetHand(swashbuckler.RightHand, 2);     // 另一只手 = 2 -> 可强化
             TestSetup.SetHand(blank.RightHand, 3);      // 1 + 3 = 4 -> 攻击
 
             board.BeginTurn();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
@@ -631,9 +631,9 @@ namespace FingerDiceDuel.Tests
             int before = blank.Health;
             Assert.True(board.AcceptPendingChoice(), "点'发动'应生效。");
 
-            // 强化：基础 4 -> 6；游侠攻 0、白板防 0 => 6
+            // 强化：基础 4 -> 6；游荡者·风流剑客攻 0、白板防 0 => 6
             Assert.AreEqual(7, before - blank.Health, "强化伤害 6 + 回合开始流血 1。");
-            Assert.AreEqual(3, ranger.RightHand.Value, "另一只手 2 -> 3。");
+            Assert.AreEqual(3, swashbuckler.RightHand.Value, "另一只手 2 -> 3。");
         }
 
         [Test]
@@ -683,7 +683,7 @@ namespace FingerDiceDuel.Tests
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
-                CharacterFactory.CreatePlayer("剑客", CharacterDefinition.Swordsman),
+                CharacterFactory.CreatePlayer("战士·剑士", CharacterDefinition.Swordsman),
                 CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                 choiceA, choiceB);
 
@@ -769,11 +769,11 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Ninja_two_halves_need_two_ones_to_dodge_completely()
+        public void WayOfTheNinja_two_halves_need_two_ones_to_dodge_completely()
         {
-            // 需求：忍者的每一段都要各自用一次"1 变 2"，完全闪避需要两次。
-            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
-            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger);
+            // 需求：武僧·忍宗的每一段都要各自用一次"1 变 2"，完全闪避需要两次。
+            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
+            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);
@@ -793,11 +793,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ninja_one_hand_equal_to_one_only_dodges_one_half()
+        public void WayOfTheNinja_one_hand_equal_to_one_only_dodges_one_half()
         {
             // 只有一只"1"时，只能闪掉一段，另一段照常造成伤害。
-            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.Ninja);
-            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger);
+            var atk = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
+            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);     // 只有一只能闪
@@ -810,16 +810,16 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(1, ctx.DodgedHits, "只闪掉一段。");
             Assert.AreEqual(1, ctx.LandedHits, "另一段命中。");
-            // 每段 = 4/2 + 忍者攻1 - 游侠防(-2) = 2 + 1 + 2 = 5
-            Assert.AreEqual(5, ctx.AppliedDamage, "命中那段 = 2 + 攻1 + 游侠易伤2 = 5。");
+            // 每段 = 4/2 + 武僧·忍宗攻1 - 游荡者·风流剑客防(-2) = 2 + 1 + 2 = 5
+            Assert.AreEqual(5, ctx.AppliedDamage, "命中那段 = 2 + 攻1 + 游荡者·风流剑客易伤2 = 5。");
         }
 
         [Test]
         public void Swordsman_extra_attack_can_be_dodged_by_a_one()
         {
-            // 需求：剑客的追加攻击也可以被游侠"1 变 2"闪避掉。
+            // 需求：战士·剑士的追加攻击也可以被游荡者·风流剑客"1 变 2"闪避掉。
             var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);
-            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger);
+            var def = CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);
@@ -842,19 +842,19 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ninja_attack_log_describes_both_halves()
+        public void WayOfTheNinja_attack_log_describes_both_halves()
         {
             // 需求：战报要体现"两段攻击，各造成 X 点伤害"。
             var game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Ninja, CharacterDefinition.Blank);
-            PlayerState ninja = game.PlayerA;
+                CharacterDefinition.WayOfTheNinja, CharacterDefinition.Blank);
+            PlayerState wayOfTheNinja = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetAllHands(ninja, blank, 1);
-            TestSetup.SetHand(ninja.LeftHand, 3);       // 3 + 1 = 4 -> 两段
+            TestSetup.SetAllHands(wayOfTheNinja, blank, 1);
+            TestSetup.SetHand(wayOfTheNinja.LeftHand, 3);       // 3 + 1 = 4 -> 两段
             TestSetup.SetHand(blank.RightHand, 1);
 
-            TurnResult r = game.ExecuteTurn(ninja, ninja.LeftHand, blank.RightHand);
+            TurnResult r = game.ExecuteTurn(wayOfTheNinja, wayOfTheNinja.LeftHand, blank.RightHand);
             string text = BoardController.DescribeTurn(r);
 
             Assert.AreEqual(2, r.HitCount);
@@ -865,19 +865,19 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ninja_attack_log_mentions_the_blocked_half()
+        public void WayOfTheNinja_attack_log_mentions_the_blocked_half()
         {
             var game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Ninja, CharacterDefinition.Blank);
-            PlayerState ninja = game.PlayerA;
+                CharacterDefinition.WayOfTheNinja, CharacterDefinition.Blank);
+            PlayerState wayOfTheNinja = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetAllHands(ninja, blank, 1);
-            TestSetup.SetHand(ninja.LeftHand, 3);       // 3 + 1 = 4 -> 两段
+            TestSetup.SetAllHands(wayOfTheNinja, blank, 1);
+            TestSetup.SetHand(wayOfTheNinja.LeftHand, 3);       // 3 + 1 = 4 -> 两段
             TestSetup.SetHand(blank.RightHand, 1);
             blank.RightHand.SetShieldState(ShieldState.Formed);   // 一面盾挡住一段
 
-            TurnResult r = game.ExecuteTurn(ninja, ninja.LeftHand, blank.RightHand);
+            TurnResult r = game.ExecuteTurn(wayOfTheNinja, wayOfTheNinja.LeftHand, blank.RightHand);
             string text = BoardController.DescribeTurn(r);
 
             Assert.AreEqual(1, r.BlockedHits);
@@ -888,7 +888,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_can_strengthen_with_a_hand_that_became_two_from_dodging()
+        public void Swashbuckler_can_strengthen_with_a_hand_that_became_two_from_dodging()
         {
             // 需求：闪避把 1 变成 2 之后，这只手在**自己回合**应当可以用于强化。
             // （之前因为读了过期的手而失败。）
@@ -896,22 +896,22 @@ namespace FingerDiceDuel.Tests
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
-                CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler),
                 CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank),
                 choiceA, choiceB);
 
-            PlayerState ranger = game.PlayerA;
+            PlayerState swashbuckler = game.PlayerA;
             PlayerState blank = game.PlayerB;
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(ranger, blank, 1);
+            TestSetup.SetAllHands(swashbuckler, blank, 1);
             // 模拟"上一回合闪避后"的状态：右手已经是 2
-            TestSetup.SetHand(ranger.LeftHand, 1);      // 攻击手
-            TestSetup.SetHand(ranger.RightHand, 2);     // 闪避留下的 2
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);      // 攻击手
+            TestSetup.SetHand(swashbuckler.RightHand, 2);     // 闪避留下的 2
             TestSetup.SetHand(blank.RightHand, 3);      // 1 + 3 = 4 -> 攻击
 
             board.BeginTurn();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
@@ -925,33 +925,33 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.AcceptPendingChoice(), "强化应生效。");
 
             Assert.AreEqual(7, before - blank.Health, "强化伤害 6 + 回合开始流血 1。");
-            Assert.AreEqual(3, ranger.RightHand.Value, "那只手 2 -> 3。");
+            Assert.AreEqual(3, swashbuckler.RightHand.Value, "那只手 2 -> 3。");
         }
 
         [Test]
-        public void Ranger_is_not_asked_to_dodge_a_non_attack_operation()
+        public void Swashbuckler_is_not_asked_to_dodge_a_non_attack_operation()
         {
-            // 需求：游侠的翻滚闪避**只在对攻击时**才询问。
+            // 需求：游荡者·风流剑客的翻滚闪避**只在对攻击时**才询问。
             // 合盾 / 回复 / 无效果这类操作不该弹提示。
             foreach (int targetValue in new[] { 4, 8, 5, 2, 7 })
             {
-                // 让白板用 1 打游侠的 1：1 + 1 = 2（无效果）、1+4=5（合盾）、
+                // 让白板用 1 打游荡者·风流剑客的 1：1 + 1 = 2（无效果）、1+4=5（合盾）、
                 // 1+8=9（回复）、1+2=3（无效果）、1+7=8（攻击 -> 应弹）
                 var choiceA = new SimpleChoiceProvider();
                 var choiceB = new SimpleChoiceProvider();
 
                 var game = new GameManager(
                     CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                    CharacterFactory.CreatePlayer("B", CharacterDefinition.Ranger),
+                    CharacterFactory.CreatePlayer("B", CharacterDefinition.Swashbuckler),
                     choiceA, choiceB);
 
                 PlayerState blank = game.PlayerA;
-                PlayerState ranger = game.PlayerB;
+                PlayerState swashbuckler = game.PlayerB;
                 var board = new BoardController(game, choiceA, choiceB);
 
-                TestSetup.SetAllHands(blank, ranger, 1);
+                TestSetup.SetAllHands(blank, swashbuckler, 1);
                 TestSetup.SetHand(blank.LeftHand, 1);
-                TestSetup.SetHand(ranger.RightHand, targetValue);
+                TestSetup.SetHand(swashbuckler.RightHand, targetValue);
 
                 int sum = Hand.ComputeSum(1, targetValue);
                 bool isAttack = sum == 4 || sum == 6 || sum == 8;
@@ -959,11 +959,11 @@ namespace FingerDiceDuel.Tests
                 board.BeginTurn();
                 board.ClickHand(blank.LeftHand);
                 board.ConfirmTargetPlayer();
-                board.ClickHand(ranger.RightHand);
+                board.ClickHand(swashbuckler.RightHand);
                 board.ConfirmTargetPlayer();
 
                 bool asked = board.Phase == BoardPhase.ChoosingPreTurnChoice
-                             && board.PendingRequest?.Effect == HandEffect.RangerDodge;
+                             && board.PendingRequest?.Effect == HandEffect.SwashbucklerDodge;
 
                 Assert.AreEqual(isAttack, asked,
                     $"1 + {targetValue} = {sum}（{(isAttack ? "攻击" : "非攻击")}）：" +
@@ -974,7 +974,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_built_in_characters_can_be_constructed()
         {
-            // 角色数量随版本增长（现在 13 个：白板 + 9 个旧角色 + 圣武士/妖术师/魔射手）。
+            // 角色数量随版本增长（现在 13 个：白板 + 9 个旧角色 + 圣武士·奉献之誓/邪术师·至高妖精/战士·魔射手）。
             // 这里只断言"至少 10 个且每个都能构造"，不锁死具体数字 ——
             // 否则每加一个角色都要改这条测试。
             Assert.True(CharacterDefinition.BuiltIn.Length >= 10,
@@ -992,322 +992,322 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 牧师 Cleric（-2 / 0）
+        // 牧师·生命领域 LifeDomain（-2 / 0）
         // ============================================================
 
         [Test]
-        public void Cleric_has_minus_one_attack_and_minus_one_defense()
+        public void LifeDomain_has_minus_one_attack_and_minus_one_defense()
         {
             // 规则变更：攻防从 -2 / 0 改为 **-1 / -1**
-            PlayerState cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
+            PlayerState lifeDomain = CharacterFactory.CreatePlayer("P", CharacterDefinition.LifeDomain);
 
-            Assert.AreEqual(-1, cleric.Character.AttackBonus);
-            Assert.AreEqual(-1, cleric.Character.DefenseBonus);
-            Assert.AreEqual(PlayerState.DefaultMaxHealth, cleric.MaximumHealth);
+            Assert.AreEqual(-1, lifeDomain.Character.AttackBonus);
+            Assert.AreEqual(-1, lifeDomain.Character.DefenseBonus);
+            Assert.AreEqual(PlayerState.DefaultMaxHealth, lifeDomain.MaximumHealth);
         }
 
         [Test]
-        public void Cleric_heal_goes_to_self_by_default()
+        public void LifeDomain_heal_goes_to_self_by_default()
         {
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);          // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);          // 8 + 1 = 9 -> 回复
             blank.TakeDamage(10);
-            cleric.TakeDamage(10);
+            lifeDomain.TakeDamage(10);
 
-            int before = cleric.Health;
-            _choiceA.Decline(HandEffect.ClericHealTarget);
+            int before = lifeDomain.Health;
+            _choiceA.Decline(HandEffect.LifeDomainHealTarget);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(before + 9, cleric.Health, "放弃选择 = 回给自己。");
+            Assert.AreEqual(before + 9, lifeDomain.Health, "放弃选择 = 回给自己。");
         }
 
         [Test]
-        public void Cleric_can_redirect_heal_to_the_opponent()
+        public void LifeDomain_can_redirect_heal_to_the_opponent()
         {
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);          // 8 + 1 = 9 -> 回复
-            cleric.TakeDamage(10);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);          // 8 + 1 = 9 -> 回复
+            lifeDomain.TakeDamage(10);
             blank.TakeDamage(18);                           // 对手残血
 
-            int clericBefore = cleric.Health;
+            int clericBefore = lifeDomain.Health;
             int blankBefore = blank.Health;
 
             // 选对手的一只手 = 把这次回复给对手
             _choiceA.ChooseHand(blank.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(clericBefore, cleric.Health, "牧师自己不应回血。");
+            Assert.AreEqual(clericBefore, lifeDomain.Health, "牧师·生命领域自己不应回血。");
             Assert.AreEqual(blankBefore + 9, blank.Health, "对手应回 9 点。");
         }
 
         [Test]
-        public void Cleric_heal_never_exceeds_max_health()
+        public void LifeDomain_heal_never_exceeds_max_health()
         {
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);
             blank.TakeDamage(3);                            // 只差 3 点满血
 
             _choiceA.ChooseHand(blank.LeftHand);
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
             Assert.AreEqual(blank.MaximumHealth, blank.Health, "回复不应超过上限。");
         }
 
         [Test]
-        public void Cleric_double_nine_after_operation_stacks_with_the_main_heal()
+        public void LifeDomain_double_nine_after_operation_stacks_with_the_main_heal()
         {
             // 触发条件是"**运算后**双手同时为 9"。
             //
             // 构造：运算源 8 + 目标 1 = 9（回复），另一只手也是 9 -> 运算后双 9。
             // 两次回复（额外 9 + 本次 9）各选各的目标；这里都回自己。
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
-            TestSetup.SetHand(cleric.RightHand, 9);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(lifeDomain.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            cleric.TakeDamage(19);                      // 只剩 1
+            lifeDomain.TakeDamage(19);                      // 只剩 1
 
-            _choiceA.SetChoice(HandEffect.ClericExtraHealTarget, cleric.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainExtraHealTarget, lifeDomain.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(9, cleric.LeftHand.Value, "8 + 1 = 9。");
-            Assert.AreEqual(9, cleric.RightHand.Value, "另一只手是 9。");
-            Assert.True(ClericLogic.HasDoubleNineNow(cleric), "运算后应双手同时为 9。");
-            Assert.AreEqual(1 + ClericLogic.ExtraHealAmount + ClericLogic.HealAmount,
-                cleric.Health,
+            Assert.AreEqual(9, lifeDomain.LeftHand.Value, "8 + 1 = 9。");
+            Assert.AreEqual(9, lifeDomain.RightHand.Value, "另一只手是 9。");
+            Assert.True(LifeDomainLogic.HasDoubleNineNow(lifeDomain), "运算后应双手同时为 9。");
+            Assert.AreEqual(1 + LifeDomainLogic.ExtraHealAmount + LifeDomainLogic.HealAmount,
+                lifeDomain.Health,
                 "额外回 9 + 本次 9 的回复 = 共 18。");
         }
 
         [Test]
-        public void Cleric_double_nine_bonus_target_is_chosen_by_the_player()
+        public void LifeDomain_double_nine_bonus_target_is_chosen_by_the_player()
         {
             // 规则变更：双 9 的那次**额外**回复不再固定回自己，而是由玩家选目标。
             // 这里让额外回复给对手、本次 9 的回复给自己，验证两者互不干扰。
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
-            TestSetup.SetHand(cleric.RightHand, 9);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHand(lifeDomain.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            cleric.TakeDamage(19);                      // 只剩 1
+            lifeDomain.TakeDamage(19);                      // 只剩 1
             blank.TakeDamage(15);                       // 只剩 5
 
             // 顺序：先"额外回复给谁"，再"本次回复给谁"
-            _choiceA.SetChoice(HandEffect.ClericExtraHealTarget, blank.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainExtraHealTarget, blank.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(1 + ClericLogic.HealAmount, cleric.Health,
+            Assert.AreEqual(1 + LifeDomainLogic.HealAmount, lifeDomain.Health,
                 "本次 9 的回复给了自己。");
-            Assert.AreEqual(5 + ClericLogic.ExtraHealAmount, blank.Health,
+            Assert.AreEqual(5 + LifeDomainLogic.ExtraHealAmount, blank.Health,
                 "双 9 的**额外**回复这次给了对手（不再固定回自己）。");
         }
 
         [Test]
-        public void Cleric_double_nine_extra_heal_defaults_to_self_when_not_chosen()
+        public void LifeDomain_double_nine_extra_heal_defaults_to_self_when_not_chosen()
         {
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            PlayerState cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            PlayerState lifeDomain = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(cleric.LeftHand, 8);
-            TestSetup.SetHand(cleric.RightHand, 9);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);
+            TestSetup.SetHand(lifeDomain.RightHand, 9);
             TestSetup.SetHand(blank.RightHand, 1);
-            cleric.TakeDamage(19);
+            lifeDomain.TakeDamage(19);
 
-            _choiceA.Decline(HandEffect.ClericExtraHealTarget);   // 不选 = 回自己
-            _choiceA.Decline(HandEffect.ClericHealTarget);
+            _choiceA.Decline(HandEffect.LifeDomainExtraHealTarget);   // 不选 = 回自己
+            _choiceA.Decline(HandEffect.LifeDomainHealTarget);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(1 + ClericLogic.HealAmount + ClericLogic.ExtraHealAmount,
-                cleric.Health, "两次回复都回自己，共 18。");
+            Assert.AreEqual(1 + LifeDomainLogic.HealAmount + LifeDomainLogic.ExtraHealAmount,
+                lifeDomain.Health, "两次回复都回自己，共 18。");
         }
 
         // ============================================================
         // ============================================================
-        // 牧师：4 / 6 / 8 可选"当攻击打"或"当回复用"（规则变更）
+        // 牧师·生命领域：4 / 6 / 8 可选"当攻击打"或"当回复用"（规则变更）
         // ============================================================
 
-        /// <summary>造一局：牧师（A）打白板（B），让运算结果为 attackValue。</summary>
-        private GameManager ClericAttacksWith(int attackValue, out PlayerState cleric,
+        /// <summary>造一局：牧师·生命领域（A）打白板（B），让运算结果为 attackValue。</summary>
+        private GameManager LifeDomainAttacksWith(int attackValue, out PlayerState lifeDomain,
                                               out PlayerState blank)
         {
-            GameManager game = Match(CharacterDefinition.Cleric, CharacterDefinition.Blank);
-            cleric = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.LifeDomain, CharacterDefinition.Blank);
+            lifeDomain = game.PlayerA;
             blank = game.PlayerB;
 
             // 运算源 = attackValue - 1，目标手 = 1 -> 结果 = attackValue
-            TestSetup.SetHand(cleric.LeftHand, attackValue - 1);
-            TestSetup.SetHand(cleric.RightHand, 5);
+            TestSetup.SetHand(lifeDomain.LeftHand, attackValue - 1);
+            TestSetup.SetHand(lifeDomain.RightHand, 5);
             TestSetup.SetHand(blank.RightHand, 1);
             return game;
         }
 
         [Test]
-        public void Cleric_choosing_heal_on_a_four_heals_four_and_deals_no_damage()
+        public void LifeDomain_choosing_heal_on_a_four_heals_four_and_deals_no_damage()
         {
-            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(4, out PlayerState lifeDomain, out PlayerState blank);
 
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetHealth(lifeDomain, 10);
             int blankBefore = blank.Health;
 
-            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);   // 选"当回复用"
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);     // 回给自己
+            _choiceA.SetChoice(HandEffect.LifeDomainAttackOrHeal, lifeDomain.LeftHand);   // 选"当回复用"
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);     // 回给自己
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(10 + 4, cleric.Health, "4 当回复用 -> 回 4 点。");
+            Assert.AreEqual(10 + 4, lifeDomain.Health, "4 当回复用 -> 回 4 点。");
             Assert.AreEqual(blankBefore, blank.Health, "选择回复时不造成任何伤害。");
         }
 
         [Test]
-        public void Cleric_choosing_heal_on_a_six_heals_six()
+        public void LifeDomain_choosing_heal_on_a_six_heals_six()
         {
-            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(6, out PlayerState lifeDomain, out PlayerState blank);
 
-            TestSetup.SetHealth(cleric, 8);
+            TestSetup.SetHealth(lifeDomain, 8);
 
-            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainAttackOrHeal, lifeDomain.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(8 + 6, cleric.Health, "6 当回复用 -> 回 6 点。");
+            Assert.AreEqual(8 + 6, lifeDomain.Health, "6 当回复用 -> 回 6 点。");
         }
 
         [Test]
-        public void Cleric_choosing_heal_on_an_eight_heals_eight()
+        public void LifeDomain_choosing_heal_on_an_eight_heals_eight()
         {
-            GameManager game = ClericAttacksWith(8, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(8, out PlayerState lifeDomain, out PlayerState blank);
 
-            TestSetup.SetHealth(cleric, 5);
+            TestSetup.SetHealth(lifeDomain, 5);
 
-            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainAttackOrHeal, lifeDomain.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(5 + 8, cleric.Health, "8 当回复用 -> 回 8 点。");
+            Assert.AreEqual(5 + 8, lifeDomain.Health, "8 当回复用 -> 回 8 点。");
         }
 
         [Test]
-        public void Cleric_heal_value_is_not_affected_by_attack_bonus()
+        public void LifeDomain_heal_value_is_not_affected_by_attack_bonus()
         {
-            // 牧师的攻 -1 只作用于"攻击"，回复量固定等于该数字（不受攻防影响）。
-            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
+            // 牧师·生命领域的攻 -1 只作用于"攻击"，回复量固定等于该数字（不受攻防影响）。
+            GameManager game = LifeDomainAttacksWith(6, out PlayerState lifeDomain, out PlayerState blank);
 
-            TestSetup.SetHealth(cleric, 8);
-            Assert.AreEqual(-1, cleric.Character.AttackBonus, "牧师攻 -1（对照组）");
+            TestSetup.SetHealth(lifeDomain, 8);
+            Assert.AreEqual(-1, lifeDomain.Character.AttackBonus, "牧师·生命领域攻 -1（对照组）");
 
-            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, cleric.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainAttackOrHeal, lifeDomain.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, lifeDomain.LeftHand);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.AreEqual(8 + 6, cleric.Health, "回复 6 —— 不能被攻 -1 改成 5。");
+            Assert.AreEqual(8 + 6, lifeDomain.Health, "回复 6 —— 不能被攻 -1 改成 5。");
         }
 
         [Test]
-        public void Cleric_declining_heal_treats_it_as_a_normal_attack()
+        public void LifeDomain_declining_heal_treats_it_as_a_normal_attack()
         {
-            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(4, out PlayerState lifeDomain, out PlayerState blank);
 
             int blankBefore = blank.Health;
 
-            _choiceA.Decline(HandEffect.ClericAttackOrHeal);   // 不回复 = 当攻击打
+            _choiceA.Decline(HandEffect.LifeDomainAttackOrHeal);   // 不回复 = 当攻击打
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
-            // 白板防 0、牧师攻 -1 -> 4 - 1 = 3
+            // 白板防 0、牧师·生命领域攻 -1 -> 4 - 1 = 3
             Assert.AreEqual(blankBefore - 3, blank.Health,
-                "放弃回复就是普通攻击：4 基础 - 牧师攻1 - 白板防0 = 3。");
+                "放弃回复就是普通攻击：4 基础 - 牧师·生命领域攻1 - 白板防0 = 3。");
         }
 
         [Test]
-        public void Cleric_can_heal_the_opponent_with_a_four_six_or_eight()
+        public void LifeDomain_can_heal_the_opponent_with_a_four_six_or_eight()
         {
             // 给他人回复是为多人玩法预留的辅助能力（不是 bug）。
-            GameManager game = ClericAttacksWith(6, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(6, out PlayerState lifeDomain, out PlayerState blank);
 
             TestSetup.SetHealth(blank, 10);
-            int clericBefore = cleric.Health;
+            int clericBefore = lifeDomain.Health;
 
             // 目标与"攻击还是回复"分两段：
-            //   ① 选目标手之前 -> ClericAttackOrHeal（选回复）
-            //   ② 选目标手之后 -> ClericHealTarget（回给谁）
-            _choiceA.SetChoice(HandEffect.ClericAttackOrHeal, cleric.LeftHand);
-            _choiceA.SetChoice(HandEffect.ClericHealTarget, blank.LeftHand);   // 回给对手
+            //   ① 选目标手之前 -> LifeDomainAttackOrHeal（选回复）
+            //   ② 选目标手之后 -> LifeDomainHealTarget（回给谁）
+            _choiceA.SetChoice(HandEffect.LifeDomainAttackOrHeal, lifeDomain.LeftHand);
+            _choiceA.SetChoice(HandEffect.LifeDomainHealTarget, blank.LeftHand);   // 回给对手
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
             Assert.AreEqual(10 + 6, blank.Health, "6 当回复用可以回给对手。");
-            Assert.AreEqual(clericBefore, cleric.Health, "回给他人时自己不变。");
+            Assert.AreEqual(clericBefore, lifeDomain.Health, "回给他人时自己不变。");
         }
 
         [Test]
-        public void Cleric_gets_one_choice_per_stage_for_four_six_eight()
+        public void LifeDomain_gets_one_choice_per_stage_for_four_six_eight()
         {
             // 玩家要求的顺序：运算出 4 -> **先**弹出「攻击 / 回复」-> 选完再问目标。
             //
             // 所以"攻击还是回复"属于【选目标手之前】的抉择，
             // 而"回复给谁"属于【选目标手之后】的抉择，两者分开。
-            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("P", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(cleric.LeftHand, 3);       // 3 + 1 = 4 -> 攻击/回复 二选一
-            TestSetup.SetHand(cleric.RightHand, 5);
+            TestSetup.SetHand(lifeDomain.LeftHand, 3);       // 3 + 1 = 4 -> 攻击/回复 二选一
+            TestSetup.SetHand(lifeDomain.RightHand, 5);
             TestSetup.SetHand(blank.RightHand, 1);
 
-            var context = new PreTurnChoiceContext(cleric, blank,
-                                                   cleric.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(lifeDomain, blank,
+                                                   lifeDomain.LeftHand, blank.RightHand);
             Assert.AreEqual(HandEffectType.Attack4, context.Effect, "3 + 1 = 4");
 
             // ① 选目标手**之前**：只有一个"攻击还是回复"
             var pre = new List<ChoiceRequest>();
-            (cleric.Character as ITargetHandChoiceProvider)
+            (lifeDomain.Character as ITargetHandChoiceProvider)
                 ?.CollectPreTargetChoices(context, pre);
 
             Assert.AreEqual(1, pre.Count,
                 $"4/6/8 在选目标前应只有**一个**抉择。实际：{pre.Count}");
-            Assert.AreEqual(HandEffect.ClericAttackOrHeal, pre[0].Effect,
+            Assert.AreEqual(HandEffect.LifeDomainAttackOrHeal, pre[0].Effect,
                 "那一个抉择应是「攻击还是回复」。");
             Assert.True(pre[0].DeclineResult == null,
                 "放弃应是'不回复'（当攻击打）。");
 
             // ② 选目标手**之后**：注入"选了回复"的答案 -> 应问一次"回复给谁"
             context.AnsweredLookup = (e, v) =>
-                e == HandEffect.ClericAttackOrHeal ? cleric.LeftHand : null;
+                e == HandEffect.LifeDomainAttackOrHeal ? lifeDomain.LeftHand : null;
 
             var post = new List<ChoiceRequest>();
-            (cleric.Character as IPreTurnChoiceProvider)
+            (lifeDomain.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
 
             Assert.AreEqual(1, post.Count, "选了回复 -> 应问一次「回复给谁」。");
-            Assert.AreEqual(HandEffect.ClericHealTarget, post[0].Effect);
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, post[0].Effect);
 
             // ③ 反向：答了攻击 -> 不该问回复目标
             context.AnsweredLookup = (e, v) => null;
 
             var post2 = new List<ChoiceRequest>();
-            (cleric.Character as IPreTurnChoiceProvider)
+            (lifeDomain.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post2);
 
             Assert.AreEqual(0, post2.Count,
@@ -1315,198 +1315,198 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_declining_the_heal_question_does_not_ask_for_a_target()
+        public void LifeDomain_declining_the_heal_question_does_not_ask_for_a_target()
         {
             // 端到端回归：放弃"当回复用"之后，不应再停留在任何抉择阶段。
-            GameManager game = ClericAttacksWith(4, out PlayerState cleric, out PlayerState blank);
+            GameManager game = LifeDomainAttacksWith(4, out PlayerState lifeDomain, out PlayerState blank);
 
             int blankBefore = blank.Health;
-            _choiceA.Decline(HandEffect.ClericAttackOrHeal);
+            _choiceA.Decline(HandEffect.LifeDomainAttackOrHeal);
 
-            game.ExecuteTurn(cleric, cleric.LeftHand, blank.RightHand);
+            game.ExecuteTurn(lifeDomain, lifeDomain.LeftHand, blank.RightHand);
 
             Assert.AreEqual(blankBefore - 3, blank.Health,
-                "放弃回复 = 普通攻击（4 - 牧师攻1 - 白板防0 = 3），且不再追问目标。");
+                "放弃回复 = 普通攻击（4 - 牧师·生命领域攻1 - 白板防0 = 3），且不再追问目标。");
         }
 
         [Test]
-        public void Cleric_heal_choice_is_offered_for_four_six_and_eight()
+        public void LifeDomain_heal_choice_is_offered_for_four_six_and_eight()
         {
-            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("P", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
             foreach (int value in new[] { 4, 6, 8 })
             {
-                TestSetup.SetHand(cleric.LeftHand, value - 1);
-                TestSetup.SetHand(cleric.RightHand, 5);
+                TestSetup.SetHand(lifeDomain.LeftHand, value - 1);
+                TestSetup.SetHand(lifeDomain.RightHand, 5);
                 TestSetup.SetHand(blank.RightHand, 1);
 
-                var context = new PreTurnChoiceContext(cleric, blank,
-                                                       cleric.LeftHand, blank.RightHand);
+                var context = new PreTurnChoiceContext(lifeDomain, blank,
+                                                       lifeDomain.LeftHand, blank.RightHand);
 
                 // 4/6/8 的「攻击还是回复」是**选目标手之前**的那一次抉择
                 var requests = new List<ChoiceRequest>();
-                (cleric.Character as ITargetHandChoiceProvider)
+                (lifeDomain.Character as ITargetHandChoiceProvider)
                     ?.CollectPreTargetChoices(context, requests);
 
                 bool hasChoice = false;
                 for (int i = 0; i < requests.Count; i++)
-                    if (requests[i].Effect == HandEffect.ClericAttackOrHeal) hasChoice = true;
+                    if (requests[i].Effect == HandEffect.LifeDomainAttackOrHeal) hasChoice = true;
 
                 Assert.True(hasChoice, $"运算出 {value} 时应提供「攻击还是回复」的抉择。");
 
                 // 结果确实是该数字
                 Assert.AreEqual(value,
-                    Hand.ComputeSum(cleric.LeftHand.Value, blank.RightHand.Value),
+                    Hand.ComputeSum(lifeDomain.LeftHand.Value, blank.RightHand.Value),
                     $"运算结果应为 {value}。");
             }
         }
 
         [Test]
-        public void Cleric_nine_does_not_offer_an_attack_or_heal_choice()
+        public void LifeDomain_nine_does_not_offer_an_attack_or_heal_choice()
         {
             // 出 9 时本次运算本身就是回复 -> 直接问"回复给谁"，
             // 没有"攻击还是回复"这一步（玩家要求的顺序）。
-            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("P", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8 + 1 = 9
             TestSetup.SetHand(blank.RightHand, 1);
 
-            var context = new PreTurnChoiceContext(cleric, blank,
-                                                   cleric.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(lifeDomain, blank,
+                                                   lifeDomain.LeftHand, blank.RightHand);
             Assert.AreEqual(HandEffectType.Heal, context.Effect);
 
             var pre = new List<ChoiceRequest>();
-            (cleric.Character as ITargetHandChoiceProvider)
+            (lifeDomain.Character as ITargetHandChoiceProvider)
                 ?.CollectPreTargetChoices(context, pre);
             Assert.AreEqual(0, pre.Count, "出 9 时不该有'攻击还是回复'。");
 
             var post = new List<ChoiceRequest>();
-            (cleric.Character as IPreTurnChoiceProvider)
+            (lifeDomain.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
             Assert.AreEqual(1, post.Count, "出 9 应问一次'回复给谁'。");
-            Assert.AreEqual(HandEffect.ClericHealTarget, post[0].Effect);
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, post[0].Effect);
             Assert.False(post[0].ShouldSkip(), "出 9 时必然要问回复目标。");
         }
 
         [Test]
-        public void Cleric_double_nine_asks_for_two_heal_targets()
+        public void LifeDomain_double_nine_asks_for_two_heal_targets()
         {
             // 玩家要求：双 9 -> 选**两次**回复目标（先额外、再本次）
             //
             // 「双 9」在运算**前**就能预测：运算源 8 + 目标 1 = 9，
             // 另一只手本来就是 9 -> 运算后双手都是 9。
-            // （这与剑客"追加攻击"的判定同类，都是运算前可算。）
-            var cleric = CharacterFactory.CreatePlayer("P", CharacterDefinition.Cleric);
+            // （这与战士·剑士"追加攻击"的判定同类，都是运算前可算。）
+            var lifeDomain = CharacterFactory.CreatePlayer("P", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
 
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 运算源（运算前是 8）
-            TestSetup.SetHand(cleric.RightHand, 9);     // 另一只手是 9
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 运算源（运算前是 8）
+            TestSetup.SetHand(lifeDomain.RightHand, 9);     // 另一只手是 9
             TestSetup.SetHand(blank.RightHand, 1);      // 8 + 1 = 9
 
-            var context = new PreTurnChoiceContext(cleric, blank,
-                                                   cleric.LeftHand, blank.RightHand);
+            var context = new PreTurnChoiceContext(lifeDomain, blank,
+                                                   lifeDomain.LeftHand, blank.RightHand);
 
-            Assert.True(ClericLogic.HasDoubleNineAfter(context),
+            Assert.True(LifeDomainLogic.HasDoubleNineAfter(context),
                 "8 + 1 = 9 且另一只手是 9 -> 运算后应双 9（运算前可预测）。");
 
             var post = new List<ChoiceRequest>();
-            (cleric.Character as IPreTurnChoiceProvider)
+            (lifeDomain.Character as IPreTurnChoiceProvider)
                 ?.CollectPreTurnChoices(context, post);
 
             Assert.AreEqual(2, post.Count,
                 $"双 9 应问**两次**回复目标。实际：{post.Count}");
-            Assert.AreEqual(HandEffect.ClericExtraHealTarget, post[0].Effect,
+            Assert.AreEqual(HandEffect.LifeDomainExtraHealTarget, post[0].Effect,
                 "第一次应问「额外回复」给谁（玩家要求先额外、再本次）。");
-            Assert.AreEqual(HandEffect.ClericHealTarget, post[1].Effect,
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, post[1].Effect,
                 "第二次应问「本次回复」给谁。");
         }
-        // 游侠 Ranger（0 / -2）
+        // 游荡者·风流剑客 Swashbuckler（0 / -2）
         // ============================================================
 
         [Test]
-        public void Ranger_has_zero_attack_and_minus_two_defense()
+        public void Swashbuckler_has_zero_attack_and_minus_two_defense()
         {
-            PlayerState ranger = CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger);
+            PlayerState swashbuckler = CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler);
 
-            Assert.AreEqual(0, ranger.Character.AttackBonus);
-            Assert.AreEqual(-2, ranger.Character.DefenseBonus);
+            Assert.AreEqual(0, swashbuckler.Character.AttackBonus);
+            Assert.AreEqual(-2, swashbuckler.Character.DefenseBonus);
         }
 
 
         /// <summary>
-        /// 摆一个"游侠**双盾**、且这次攻击可闪避"的局面。
+        /// 摆一个"游荡者·风流剑客**双盾**、且这次攻击可闪避"的局面。
         ///
         /// 必须是**双盾**：只有双盾时旧顺序才会停在"选盾"阶段，
         /// 才能区分"先问闪避"和"先问选盾"。（单盾时旧顺序直接跳过选盾，测不出顺序。）
         /// </summary>
-        private BoardController ArrangeDoubleShieldRanger(PlayerState[] outPair)
+        private BoardController ArrangeDoubleShieldSwashbuckler(PlayerState[] outPair)
         {
             var choiceA = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.Swashbuckler),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
             outPair[0] = blank;
-            outPair[1] = ranger;
+            outPair[1] = swashbuckler;
 
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, ranger, 1);
+            TestSetup.SetAllHands(blank, swashbuckler, 1);
             TestSetup.SetHand(blank.LeftHand, 3);       // 3 + 1 = 4 -> 攻击 4，可闪避
 
-            // 游侠双盾，其中左手是 1（可闪避，同时是本次目标手）
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            ranger.LeftHand.SetShieldState(ShieldState.Formed);
-            TestSetup.SetHand(ranger.RightHand, 5);
-            ranger.RightHand.SetShieldState(ShieldState.Formed);
+            // 游荡者·风流剑客双盾，其中左手是 1（可闪避，同时是本次目标手）
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
+            swashbuckler.LeftHand.SetShieldState(ShieldState.Formed);
+            TestSetup.SetHand(swashbuckler.RightHand, 5);
+            swashbuckler.RightHand.SetShieldState(ShieldState.Formed);
 
-            Assert.True(ranger.HasDoubleShield, "前置条件：游侠应有双盾。");
+            Assert.True(swashbuckler.HasDoubleShield, "前置条件：游荡者·风流剑客应有双盾。");
 
             board.BeginTurn();
             return board;
         }
 
         [Test]
-        public void Ranger_is_asked_to_dodge_before_being_asked_which_shield()
+        public void Swashbuckler_is_asked_to_dodge_before_being_asked_which_shield()
         {
             // 需求：闪避的询问时机必须在"用哪面盾抵挡"**之前**。
-            // 否则有盾的游侠会被直接碎盾，问不到闪避。
+            // 否则有盾的游荡者·风流剑客会被直接碎盾，问不到闪避。
             var pair = new PlayerState[2];
-            BoardController board = ArrangeDoubleShieldRanger(pair);
+            BoardController board = ArrangeDoubleShieldSwashbuckler(pair);
             PlayerState blank = pair[0];
-            PlayerState ranger = pair[1];
+            PlayerState swashbuckler = pair[1];
 
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);           // 打游侠的左手（3 + 1 = 4）
+            board.ClickHand(swashbuckler.LeftHand);           // 打游荡者·风流剑客的左手（3 + 1 = 4）
             board.ConfirmTargetPlayer();
 
             // 第一步必须是闪避询问，而不是选盾
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
-                "有盾的游侠也必须先被问是否闪避，而不是直接进入选盾。");
-            RequestEffectIs(board, HandEffect.RangerDodge);
+                "有盾的游荡者·风流剑客也必须先被问是否闪避，而不是直接进入选盾。");
+            RequestEffectIs(board, HandEffect.SwashbucklerDodge);
             Assert.False(board.CanDeclinePendingChoice == false && false);   // 占位见下
-            Assert.True(board.IsChoiceCandidate(ranger.LeftHand), "候选应是那只 1。");
+            Assert.True(board.IsChoiceCandidate(swashbuckler.LeftHand), "候选应是那只 1。");
         }
 
         [Test]
         public void Declining_the_dodge_then_moves_on_to_the_shield_choice()
         {
             var pair = new PlayerState[2];
-            BoardController board = ArrangeDoubleShieldRanger(pair);
+            BoardController board = ArrangeDoubleShieldSwashbuckler(pair);
             PlayerState blank = pair[0];
-            PlayerState ranger = pair[1];
+            PlayerState swashbuckler = pair[1];
 
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
 
             // 左手是唯一的"1"，所以只有一段闪避询问
@@ -1518,10 +1518,10 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(2, board.DefenseShieldChoices.Count, "双盾都应是候选。");
 
             // 选右手盾 -> 右手碎，左手保留（也没被闪避消耗掉）
-            Assert.True(board.ClickHand(ranger.RightHand));
+            Assert.True(board.ClickHand(swashbuckler.RightHand));
             board.ConfirmTargetPlayer();
-            Assert.AreEqual(ShieldState.Broken, ranger.RightHand.State, "被选中的盾应破碎。");
-            Assert.AreEqual(ShieldState.Formed, ranger.LeftHand.State, "另一面盾应完好。");
+            Assert.AreEqual(ShieldState.Broken, swashbuckler.RightHand.State, "被选中的盾应破碎。");
+            Assert.AreEqual(ShieldState.Formed, swashbuckler.LeftHand.State, "另一面盾应完好。");
         }
 
         /// <summary>
@@ -1553,7 +1553,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_attacking_with_a_two_in_the_other_hand_prompts_to_strengthen()
+        public void Swashbuckler_attacking_with_a_two_in_the_other_hand_prompts_to_strengthen()
         {
             // 需求：一只手发起攻击后，若**另一只手**为 2，
             // 应弹出"是否加强攻击"的提示，并提供"不加强"的选项。
@@ -1562,53 +1562,53 @@ namespace FingerDiceDuel.Tests
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.Swashbuckler),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, ranger, 1);
+            TestSetup.SetAllHands(blank, swashbuckler, 1);
             TestSetup.SetHand(blank.RightHand, 3);      // 1 + 3 = 4 -> 攻击 4
-            TestSetup.SetHand(ranger.RightHand, 2);     // 另一只手为 2 -> 可强化
+            TestSetup.SetHand(swashbuckler.RightHand, 2);     // 另一只手为 2 -> 可强化
 
-            // Blank 先手，让一回合把回合交给游侠。
-            // 注意：游侠被这一击攻击时也会有一次闪避询问 —— 先放弃掉。
+            // Blank 先手，让一回合把回合交给游荡者·风流剑客。
+            // 注意：游荡者·风流剑客被这一击攻击时也会有一次闪避询问 —— 先放弃掉。
             board.BeginTurn();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
             DeclineAllDodges(board);
 
-            board.ClickHand(ranger.LeftHand);           // 游侠用左手攻击（1 + 3 = 4）
+            board.ClickHand(swashbuckler.LeftHand);           // 游荡者·风流剑客用左手攻击（1 + 3 = 4）
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "另一只手为 2 -> 应弹出强化提示。");
-            RequestEffectIs(board, HandEffect.RangerPowerShot);
+            RequestEffectIs(board, HandEffect.SwashbucklerDuelistThrust);
 
             // 必须提供"不加强"的出口
             Assert.True(board.CanDeclinePendingChoice, "应允许选择'不加强'。");
 
             // 候选就是那只 2（另一只手）
             Assert.AreEqual(1, board.ChoiceCandidates.Count);
-            Assert.True(ReferenceEquals(board.ChoiceCandidates[0], ranger.RightHand),
+            Assert.True(ReferenceEquals(board.ChoiceCandidates[0], swashbuckler.RightHand),
                 "候选应是另一只手。");
 
             // 选它 -> 强化
-            Assert.True(board.ClickHand(ranger.RightHand));
+            Assert.True(board.ClickHand(swashbuckler.RightHand));
             board.ConfirmTargetPlayer();
             Assert.NotNull(board.LastTurn);
             Assert.AreEqual(6, board.LastTurn.DamageDealt, "强化后 4 -> 6。");
-            Assert.AreEqual(3, ranger.RightHand.Value, "另一只手 2 -> 3。");
+            Assert.AreEqual(3, swashbuckler.RightHand.Value, "另一只手 2 -> 3。");
         }
 
         [Test]
-        public void Ranger_attacking_without_a_two_is_not_prompted()
+        public void Swashbuckler_attacking_without_a_two_is_not_prompted()
         {
             // 另一只手不是 2 时不应弹出强化提示（直接结算）。
             var choiceA = new SimpleChoiceProvider();
@@ -1616,25 +1616,25 @@ namespace FingerDiceDuel.Tests
 
             var game = new GameManager(
                 CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank),
-                CharacterFactory.CreatePlayer("B", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("B", CharacterDefinition.Swashbuckler),
                 choiceA, choiceB);
 
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
             var board = new BoardController(game, choiceA, choiceB);
 
-            TestSetup.SetAllHands(blank, ranger, 1);
+            TestSetup.SetAllHands(blank, swashbuckler, 1);
             TestSetup.SetHand(blank.RightHand, 3);
-            TestSetup.SetHand(ranger.RightHand, 7);     // 不是 2
+            TestSetup.SetHand(swashbuckler.RightHand, 7);     // 不是 2
 
             board.BeginTurn();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
             DeclineAllDodges(board);                    // 先放弃被攻击时的闪避询问
 
-            board.ClickHand(ranger.LeftHand);
+            board.ClickHand(swashbuckler.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
@@ -1643,7 +1643,7 @@ namespace FingerDiceDuel.Tests
             if (board.Phase == BoardPhase.ChoosingPreTurnChoice)
             {
                 ChoiceRequest? pending = board.PendingRequest;
-                Assert.True(pending == null || pending.Value.Effect != HandEffect.RangerPowerShot,
+                Assert.True(pending == null || pending.Value.Effect != HandEffect.SwashbucklerDuelistThrust,
                     "另一只手不是 2 -> 不该提强化。");
                 DeclineAllDodges(board);
             }
@@ -1653,7 +1653,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 不可闪避的判定依据是"攻击者是咒术师"，**不是**"伤害是 8"
+        // 不可闪避的判定依据是"攻击者是法师·咒法学派"，**不是**"伤害是 8"
         // ============================================================
 
         /// <summary>
@@ -1670,7 +1670,7 @@ namespace FingerDiceDuel.Tests
                                                    out ScriptedChoiceProvider sink)
         {
             PlayerState atk = CharacterFactory.CreatePlayer("Atk", attackerDef);
-            defender = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Ranger);
+            defender = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Swashbuckler);
             sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(defender.LeftHand, 1);
@@ -1686,18 +1686,18 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Curseweaver_blocks_dodge_regardless_of_damage_value()
+        public void SchoolOfConjuration_blocks_dodge_regardless_of_damage_value()
         {
-            // 咒术师能用 4 / 6 / 8 攻击，**每一种都不能被闪避**。
+            // 法师·咒法学派能用 4 / 6 / 8 攻击，**每一种都不能被闪避**。
             foreach (int damage in new[] { 4, 6, 8 })
             {
                 AttackContext ctx = ResolveAttack(
-                    CharacterDefinition.Curseweaver, damage, true,
+                    CharacterDefinition.SchoolOfConjuration, damage, true,
                     out PlayerState defender, out _);
 
                 Assert.AreEqual(damage, ctx.RawDamage, "伤害值应与构造一致。");
-                Assert.False(ctx.WasDodged, $"咒术师的 {damage} 点攻击不能被闪避。");
-                Assert.True(ctx.AppliedDamage > 0, $"咒术师的 {damage} 点攻击应正常造成伤害。");
+                Assert.False(ctx.WasDodged, $"法师·咒法学派的 {damage} 点攻击不能被闪避。");
+                Assert.True(ctx.AppliedDamage > 0, $"法师·咒法学派的 {damage} 点攻击应正常造成伤害。");
                 Assert.AreEqual(1, defender.LeftHand.Value,
                     $"未能闪避时不应消耗那只「1」（damage={damage}）。");
             }
@@ -1706,14 +1706,14 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Non_curseweaver_attacks_can_be_dodged_even_at_eight_damage()
         {
-            // 其他角色打出 8 时，游侠**应该**能闪避（这正是之前的 bug）。
+            // 其他角色打出 8 时，游荡者·风流剑客**应该**能闪避（这正是之前的 bug）。
             foreach (CharacterDefinition attacker in new[]
                      {
                          CharacterDefinition.Blank,
-                         CharacterDefinition.Fighter,
-                         CharacterDefinition.Barbarian,
-                         CharacterDefinition.Cleric,
-                         CharacterDefinition.Werewolf,
+                         CharacterDefinition.Breaker,
+                         CharacterDefinition.PathOfTheWarden,
+                         CharacterDefinition.LifeDomain,
+                         CharacterDefinition.PathOfTheBeast,
                      })
             {
                 AttackContext ctx = ResolveAttack(attacker, 8, true,
@@ -1727,12 +1727,12 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_cannot_dodge_a_base_eight_attack()
+        public void Swashbuckler_cannot_dodge_a_base_eight_attack()
         {
-            // 咒术师的攻击不可闪避 —— 说到底是"攻击者是咒术师"，不是"伤害是 8"。
-            // （保留本测试作为"咒术师不可闪避"的最小复现。）
-            var atk = CharacterFactory.CreatePlayer("Atk", CharacterDefinition.Curseweaver);
-            var def = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Ranger);
+            // 法师·咒法学派的攻击不可闪避 —— 说到底是"攻击者是法师·咒法学派"，不是"伤害是 8"。
+            // （保留本测试作为"法师·咒法学派不可闪避"的最小复现。）
+            var atk = CharacterFactory.CreatePlayer("Atk", CharacterDefinition.SchoolOfConjuration);
+            var def = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);
@@ -1745,17 +1745,17 @@ namespace FingerDiceDuel.Tests
             ctx.AttackerProvider = sink;
             ctx.Resolve(sink, null);
 
-            Assert.False(ctx.WasDodged, "基础 8 的攻击（咒术师）不能被闪避。");
+            Assert.False(ctx.WasDodged, "基础 8 的攻击（法师·咒法学派）不能被闪避。");
             Assert.True(ctx.AppliedDamage > 0, "应该正常吃到伤害。");
             Assert.AreEqual(1, def.LeftHand.Value, "未能闪避时不应消耗那只「1」。");
         }
 
         [Test]
-        public void Ranger_can_still_dodge_a_base_four_attack()
+        public void Swashbuckler_can_still_dodge_a_base_four_attack()
         {
             // 对照组：非 8 的攻击仍然可以闪避（证明上面的失败不是因为闪避整个坏了）。
             var atk = CharacterFactory.CreatePlayer("Atk", CharacterDefinition.Blank);
-            var def = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Ranger);
+            var def = CharacterFactory.CreatePlayer("Def", CharacterDefinition.Swashbuckler);
             var sink = new ScriptedChoiceProvider();
 
             TestSetup.SetHand(def.LeftHand, 1);
@@ -1774,143 +1774,143 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_dodges_by_turning_a_one_into_a_two()
+        public void Swashbuckler_dodges_by_turning_a_one_into_a_two()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Ranger);
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Swashbuckler);
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
 
-            TestSetup.SetHand(ranger.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
             TestSetup.SetHand(blank.LeftHand, 3);           // 3 + 1 = 4 -> 攻击 4
 
-            int healthBefore = ranger.Health;
-            _choiceB.ChooseHand(ranger.LeftHand);           // 用左手闪避
+            int healthBefore = swashbuckler.Health;
+            _choiceB.ChooseHand(swashbuckler.LeftHand);           // 用左手闪避
 
-            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, ranger.LeftHand);
+            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, swashbuckler.LeftHand);
 
             Assert.True(r.WasDodged, "应被闪避。");
             Assert.AreEqual(0, r.DamageDealt, "闪避应完全免伤。");
-            Assert.AreEqual(healthBefore, ranger.Health);
-            Assert.AreEqual(2, ranger.LeftHand.Value, "闪避消耗：1 -> 2。");
+            Assert.AreEqual(healthBefore, swashbuckler.Health);
+            Assert.AreEqual(2, swashbuckler.LeftHand.Value, "闪避消耗：1 -> 2。");
         }
 
         [Test]
-        public void Ranger_declining_the_dodge_takes_damage()
+        public void Swashbuckler_declining_the_dodge_takes_damage()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Ranger);
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Swashbuckler);
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
 
-            TestSetup.SetHand(ranger.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
             TestSetup.SetHand(blank.LeftHand, 3);
 
-            int healthBefore = ranger.Health;
-            _choiceB.Decline(HandEffect.RangerDodge);
+            int healthBefore = swashbuckler.Health;
+            _choiceB.Decline(HandEffect.SwashbucklerDodge);
 
-            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, ranger.LeftHand);
+            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, swashbuckler.LeftHand);
 
             Assert.False(r.WasDodged, "放弃闪避就不该闪避。");
-            Assert.AreEqual(1, ranger.LeftHand.Value, "放弃闪避不应改变手值。");
-            Assert.True(ranger.Health < healthBefore, "应吃到伤害。");
+            Assert.AreEqual(1, swashbuckler.LeftHand.Value, "放弃闪避不应改变手值。");
+            Assert.True(swashbuckler.Health < healthBefore, "应吃到伤害。");
         }
 
         [Test]
-        public void Ranger_dodge_needs_a_hand_equal_to_one()
+        public void Swashbuckler_dodge_needs_a_hand_equal_to_one()
         {
-            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Ranger);
+            GameManager game = Match(CharacterDefinition.Blank, CharacterDefinition.Swashbuckler);
             PlayerState blank = game.PlayerA;
-            PlayerState ranger = game.PlayerB;
+            PlayerState swashbuckler = game.PlayerB;
 
-            TestSetup.SetHand(ranger.LeftHand, 3);          // 没有 1，无法闪避
+            TestSetup.SetHand(swashbuckler.LeftHand, 3);          // 没有 1，无法闪避
             TestSetup.SetHand(blank.LeftHand, 1);           // 1 + 3 = 4 -> 攻击
 
-            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, ranger.LeftHand);
+            TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, swashbuckler.LeftHand);
 
             Assert.False(r.WasDodged, "手值不是 1 时不能闪避。");
             Assert.True(r.DamageDealt > 0, "应正常吃伤害。");
         }
 
         [Test]
-        public void Ranger_power_shot_multiplies_base_damage_by_1_5()
+        public void Swashbuckler_power_shot_multiplies_base_damage_by_1_5()
         {
-            GameManager game = Match(CharacterDefinition.Ranger, CharacterDefinition.Blank);
-            PlayerState ranger = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Swashbuckler, CharacterDefinition.Blank);
+            PlayerState swashbuckler = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
             // 规则：用一只手发起攻击后，若**另一只手**为 2，可以把它变成 3 强化这次攻击。
             // 构造：左手 1 + 目标 3 = 4（攻击），右手正好是 2 -> 可强化。
-            // 强化后基础 4 -> 6；游侠攻 0、白板防 0 => 实际 6。
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            TestSetup.SetHand(ranger.RightHand, 2);
+            // 强化后基础 4 -> 6；游荡者·风流剑客攻 0、白板防 0 => 实际 6。
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.RightHand, 2);
             TestSetup.SetHand(blank.RightHand, 3);
 
-            _choiceA.ChooseHand(ranger.RightHand);          // 消耗另一只手（右手）来强化
+            _choiceA.ChooseHand(swashbuckler.RightHand);          // 消耗另一只手（右手）来强化
 
-            TurnResult r = game.ExecuteTurn(ranger, ranger.LeftHand, blank.RightHand);
+            TurnResult r = game.ExecuteTurn(swashbuckler, swashbuckler.LeftHand, blank.RightHand);
 
             Assert.AreEqual(HandEffectType.Attack4, r.Effect, "基础效果仍是 4。");
             Assert.AreEqual(6, r.DamageDealt, "强化后基础 4 -> 6。");
-            Assert.AreEqual(4, ranger.LeftHand.Value, "运算源变成结果值 4。");
-            Assert.AreEqual(3, ranger.RightHand.Value, "强化消耗：另一只手 2 -> 3。");
+            Assert.AreEqual(4, swashbuckler.LeftHand.Value, "运算源变成结果值 4。");
+            Assert.AreEqual(3, swashbuckler.RightHand.Value, "强化消耗：另一只手 2 -> 3。");
         }
 
         [Test]
-        public void Ranger_power_shot_does_not_apply_when_declined()
+        public void Swashbuckler_power_shot_does_not_apply_when_declined()
         {
-            GameManager game = Match(CharacterDefinition.Ranger, CharacterDefinition.Blank);
-            PlayerState ranger = game.PlayerA;
+            GameManager game = Match(CharacterDefinition.Swashbuckler, CharacterDefinition.Blank);
+            PlayerState swashbuckler = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
-            TestSetup.SetHand(ranger.LeftHand, 1);
-            TestSetup.SetHand(ranger.RightHand, 2);
+            TestSetup.SetHand(swashbuckler.LeftHand, 1);
+            TestSetup.SetHand(swashbuckler.RightHand, 2);
             TestSetup.SetHand(blank.RightHand, 3);      // 1 + 3 = 4
 
-            _choiceA.Decline(HandEffect.RangerPowerShot);
+            _choiceA.Decline(HandEffect.SwashbucklerDuelistThrust);
 
-            TurnResult r = game.ExecuteTurn(ranger, ranger.LeftHand, blank.RightHand);
+            TurnResult r = game.ExecuteTurn(swashbuckler, swashbuckler.LeftHand, blank.RightHand);
 
             Assert.AreEqual(4, r.DamageDealt, "放弃强化就是普通 4 点。");
-            Assert.AreEqual(2, ranger.RightHand.Value, "放弃强化不应改变另一只手。");
+            Assert.AreEqual(2, swashbuckler.RightHand.Value, "放弃强化不应改变另一只手。");
         }
 
         [Test]
-        public void Ranger_can_reach_9_damage_from_an_8()
+        public void Swashbuckler_can_reach_9_damage_from_an_8()
         {
             // 8 强化后 12，再算攻防加成。
             // 8 需要 8 + 1 = 9？不 —— 攻击效果是 4/6/8，所以 8 由 8 + 1 得不到。
-            // 构造：游侠某只手 2 不能直接打出 8，所以这里验证 8 -> 12 的换算。
+            // 构造：游荡者·风流剑客某只手 2 不能直接打出 8，所以这里验证 8 -> 12 的换算。
             var ctx = new AttackContext(
-                CharacterFactory.CreatePlayer("R", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("R", CharacterDefinition.Swashbuckler),
                 CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank),
                 null, 8);
 
-            ctx.DamageMultiplier = RangerLogic.PowerMultiplier;
+            ctx.DamageMultiplier = SwashbucklerLogic.PowerMultiplier;
             ctx.Resolve(null, null);
 
-            // 游侠攻 0、白板防 0 => 12
+            // 游荡者·风流剑客攻 0、白板防 0 => 12
             Assert.AreEqual(12, ctx.AppliedDamage, "8 × 1.5 = 12。");
         }
 
         // ============================================================
-        // 狼人 Werewolf（-2 / -2，上限 +5）
+        // 野蛮人·野兽道途 PathOfTheBeast（-2 / -2，上限 +5）
         // ============================================================
 
         [Test]
-        public void Werewolf_has_25_max_health_and_minus_two_minus_two()
+        public void PathOfTheBeast_has_25_max_health_and_minus_two_minus_two()
         {
-            PlayerState wolf = CharacterFactory.CreatePlayer("W", CharacterDefinition.Werewolf);
+            PlayerState wolf = CharacterFactory.CreatePlayer("W", CharacterDefinition.PathOfTheBeast);
 
             Assert.AreEqual(25, wolf.MaximumHealth,
-                $"生命上限应为 20 + {WerewolfLogic.HealthBonus} = 25。");
+                $"生命上限应为 20 + {PathOfTheBeastLogic.HealthBonus} = 25。");
             Assert.AreEqual(25, wolf.Health, "开局应满血。");
             Assert.AreEqual(-2, wolf.Character.AttackBonus);
             Assert.AreEqual(-2, wolf.Character.DefenseBonus);
         }
 
         [Test]
-        public void Werewolf_heals_and_grows_when_hand_sum_is_seven()
+        public void PathOfTheBeast_heals_and_grows_when_hand_sum_is_seven()
         {
-            GameManager game = Match(CharacterDefinition.Werewolf, CharacterDefinition.Blank);
+            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -1930,9 +1930,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Werewolf_triggers_when_sum_is_seven()
+        public void PathOfTheBeast_triggers_when_sum_is_seven()
         {
-            GameManager game = Match(CharacterDefinition.Werewolf, CharacterDefinition.Blank);
+            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -1956,9 +1956,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Werewolf_growth_stacks_across_triggers()
+        public void PathOfTheBeast_growth_stacks_across_triggers()
         {
-            GameManager game = Match(CharacterDefinition.Werewolf, CharacterDefinition.Blank);
+            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -1977,9 +1977,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Werewolf_growth_is_cleared_on_reset()
+        public void PathOfTheBeast_growth_is_cleared_on_reset()
         {
-            GameManager game = Match(CharacterDefinition.Werewolf, CharacterDefinition.Blank);
+            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
@@ -1999,9 +1999,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Werewolf_heal_is_capped_at_max_health()
+        public void PathOfTheBeast_heal_is_capped_at_max_health()
         {
-            GameManager game = Match(CharacterDefinition.Werewolf, CharacterDefinition.Blank);
+            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 

@@ -4,7 +4,7 @@ const crypto = require('node:crypto');
 const { sharp, root } = require('./deps.cjs');
 
 // Selected exports are retained alongside their original generated sources.
-// Reimporting the older painted atlas must not restore the old barbarian badge.
+// Reimporting the older painted atlas must not restore the old pathOfTheWarden badge.
 async function importNewRoleIcons() {
   const base = path.join(root, 'Art/Production/new-roles-v1');
   let manifest;
@@ -27,6 +27,7 @@ async function importNewRoleIcons() {
   }
   for (const { item, bytes } of prepared) await fs.writeFile(path.join(root, item.runtime), bytes);
   console.log(`Imported ${prepared.length} selected class emblems; engine .meta files untouched.`);
+  await require('./import-selected-profession-icons.cjs').importSelectedProfessionIcons();
 }
 module.exports = { importNewRoleIcons };
 if (require.main === module) importNewRoleIcons().catch(error => { console.error(error); process.exitCode = 1; });

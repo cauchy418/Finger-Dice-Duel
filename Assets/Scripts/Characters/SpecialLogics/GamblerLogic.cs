@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **赌徒**（攻 0 / 防 0，攻击距离 1）。
+    /// **游荡者·赌徒**（攻 0 / 防 0，攻击距离 1）。
     ///
     /// 玩家确认的规则（逐条）：
     ///   · 运算时可以选择**赌博**：先点自己一只手，再点右侧「开赌」，
@@ -18,7 +18,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public sealed class GamblerLogic : CharacterTemplate
     {
-        public override string DisplayName => "赌徒";
+        public override string DisplayName => "游荡者·赌徒";
 
         public override int DefaultAttackBonus => 0;
         public override int DefaultDefenseBonus => 0;

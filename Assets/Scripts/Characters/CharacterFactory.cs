@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -35,36 +35,36 @@ namespace FingerDiceDuel.Core
         public static void RegisterDefaults()
         {
             _registry[SpecialLogicType.None] = () => new DataDrivenCharacter();
-            _registry[SpecialLogicType.Fighter] = () => new FighterLogic();
-            _registry[SpecialLogicType.Curseweaver] = () => new CurseweaverLogic();
-            _registry[SpecialLogicType.Barbarian] = () => new BarbarianLogic();
-            _registry[SpecialLogicType.Cleric] = () => new ClericLogic();
-            _registry[SpecialLogicType.Ranger] = () => new RangerLogic();
-            _registry[SpecialLogicType.Werewolf] = () => new WerewolfLogic();
+            _registry[SpecialLogicType.Breaker] = () => new BreakerLogic();
+            _registry[SpecialLogicType.SchoolOfConjuration] = () => new SchoolOfConjurationLogic();
+            _registry[SpecialLogicType.PathOfTheWarden] = () => new PathOfTheWardenLogic();
+            _registry[SpecialLogicType.LifeDomain] = () => new LifeDomainLogic();
+            _registry[SpecialLogicType.Swashbuckler] = () => new SwashbucklerLogic();
+            _registry[SpecialLogicType.PathOfTheBeast] = () => new PathOfTheBeastLogic();
             _registry[SpecialLogicType.Swordsman] = () => new SwordsmanLogic();
-            _registry[SpecialLogicType.Ninja] = () => new NinjaLogic();
+            _registry[SpecialLogicType.WayOfTheNinja] = () => new WayOfTheNinjaLogic();
             _registry[SpecialLogicType.Assassin] = () => new AssassinLogic();
-            _registry[SpecialLogicType.Paladin] = () => new PaladinLogic();
-            _registry[SpecialLogicType.Hexer] = () => new HexerLogic();
+            _registry[SpecialLogicType.OathOfDevotion] = () => new OathOfDevotionLogic();
+            _registry[SpecialLogicType.TheArchfey] = () => new TheArchfeyLogic();
             _registry[SpecialLogicType.ArcaneArcher] = () => new ArcaneArcherLogic();
 
             // 白板已从角色选择里移除，但这个映射要保留 ——
             // 未登记/拼错的逻辑类型会退化成它（见 CreateBehavior 的兜底注释）。
-            _registry[SpecialLogicType.Soldier] = () => new SoldierLogic();
-            _registry[SpecialLogicType.Knight] = () => new KnightLogic();
+            _registry[SpecialLogicType.Champion] = () => new ChampionLogic();
+            _registry[SpecialLogicType.OathOfTheCrown] = () => new OathOfTheCrownLogic();
             _registry[SpecialLogicType.Gambler] = () => new GamblerLogic();
-            _registry[SpecialLogicType.Monk] = () => new MonkLogic();
-            _registry[SpecialLogicType.Giant] = () => new GiantLogic();
+            _registry[SpecialLogicType.WayOfTheTaiChi] = () => new WayOfTheTaiChiLogic();
+            _registry[SpecialLogicType.PathOfTheGiant] = () => new PathOfTheGiantLogic();
             _registry[SpecialLogicType.Thief] = () => new ThiefLogic();
-            _registry[SpecialLogicType.Hunter] = () => new HunterLogic();
+            _registry[SpecialLogicType.GloomStalker] = () => new GloomStalkerLogic();
             _registry[SpecialLogicType.Magician] = () => new MagicianLogic();
-            _registry[SpecialLogicType.Wizard] = () => new WizardLogic();
-            _registry[SpecialLogicType.Sorcerer] = () => new SorcererLogic();
-            _registry[SpecialLogicType.Warlock] = () => new WarlockLogic();
-            _registry[SpecialLogicType.Bard] = () => new BardLogic();
+            _registry[SpecialLogicType.SchoolOfEvocation] = () => new SchoolOfEvocationLogic();
+            _registry[SpecialLogicType.WildMagic] = () => new WildMagicLogic();
+            _registry[SpecialLogicType.TheGreatOldOne] = () => new TheGreatOldOneLogic();
+            _registry[SpecialLogicType.CollegeOfValor] = () => new CollegeOfValorLogic();
             _registry[SpecialLogicType.Oathbreaker] = () => new OathbreakerLogic();
-            _registry[SpecialLogicType.Berserker] = () => new BerserkerLogic();
-            _registry[SpecialLogicType.Wanderer] = () => new WandererLogic();
+            _registry[SpecialLogicType.PathOfTheBerserker] = () => new PathOfTheBerserkerLogic();
+            _registry[SpecialLogicType.Tactician] = () => new TacticianLogic();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace FingerDiceDuel.Core
         /// 创建已绑定角色与最大生命的玩家。
         ///
         /// 最大生命 = 角色数据的 MaxHealth + 角色自身的 <see cref="CharacterTemplate.MaxHealthBonus"/>
-        /// （狼人 +5 => 25）。
+        /// （野蛮人·野兽道途 +5 => 25）。
         /// </summary>
         public static PlayerState CreatePlayer(string name, CharacterDefinition definition)
         {
@@ -111,7 +111,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 该玩家打出的攻击会分成几段（忍者 = 2，其余 = 1）。
+        /// 该玩家打出的攻击会分成几段（武僧·忍宗 = 2，其余 = 1）。
         ///
         /// 上层需要提前知道段数，才能为每一段各问一次闪避。
         /// </summary>
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
             => (behavior as CharacterTemplate)?.MaxHealthBonus ?? 0;
 
         /// <summary>
-        /// 某个角色定义的**实际**生命上限（含角色自带的加成，例如狼人 +5）。
+        /// 某个角色定义的**实际**生命上限（含角色自带的加成，例如野蛮人·野兽道途 +5）。
         ///
         /// 供角色选择界面显示身材。注意加成不在数据层（<see cref="CharacterDefinition.MaxHealth"/>），
         /// 而是由角色逻辑提供，所以必须实例化一次才能拿到。

@@ -25,7 +25,7 @@ async function main(){
    if(hashes.has(a.sha256))throw new Error(`Duplicate asset: ${a.path}`);
    hashes.add(a.sha256);counts[a.group]=(counts[a.group]||0)+1;
  }
- const expected={UI:19,Damage:13,Status:9,Classes:24,Overlay:11,Hands:20,Backgrounds:1};
+ const expected={UI:19,Damage:13,Status:9,Subclasses:24,Overlay:11,Hands:20,Backgrounds:1};
  for(const [group,n]of Object.entries(expected))if(counts[group]!==n)throw new Error(`Missing ${group} assets`);
  for(let i=0;i<10;i++){
    const left=await sharp(path.join(dst,`Hands/hand_left_${i}.png`)).flop().ensureAlpha().raw().toBuffer();

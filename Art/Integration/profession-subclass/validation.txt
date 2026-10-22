@@ -1,0 +1,321 @@
+PASS profession emblem barbarian
+PASS profession emblem bard
+PASS profession emblem cleric
+PASS profession emblem druid
+PASS profession emblem fighter
+PASS profession emblem monk
+PASS profession emblem paladin
+PASS profession emblem ranger
+PASS profession emblem rogue
+PASS profession emblem sorcerer
+PASS profession emblem warlock
+PASS profession emblem wizard
+PASS subclass emblem fighter_champion
+PASS legacy art alias fighter_champion
+PASS subclass emblem fighter_breaker
+PASS legacy art alias fighter_breaker
+PASS subclass emblem wizard_school_of_conjuration
+PASS legacy art alias wizard_school_of_conjuration
+PASS subclass emblem barbarian_path_of_the_warden
+PASS legacy art alias barbarian_path_of_the_warden
+PASS subclass emblem cleric_life_domain
+PASS legacy art alias cleric_life_domain
+PASS subclass emblem rogue_swashbuckler
+PASS legacy art alias rogue_swashbuckler
+PASS subclass emblem barbarian_path_of_the_beast
+PASS legacy art alias barbarian_path_of_the_beast
+PASS subclass emblem fighter_swordsman
+PASS legacy art alias fighter_swordsman
+PASS subclass emblem monk_way_of_the_ninja
+PASS legacy art alias monk_way_of_the_ninja
+PASS subclass emblem rogue_assassin
+PASS legacy art alias rogue_assassin
+PASS subclass emblem paladin_oath_of_devotion
+PASS legacy art alias paladin_oath_of_devotion
+PASS subclass emblem warlock_the_archfey
+PASS legacy art alias warlock_the_archfey
+PASS subclass emblem fighter_arcane_archer
+PASS legacy art alias fighter_arcane_archer
+PASS subclass emblem rogue_gambler
+PASS legacy art alias rogue_gambler
+PASS subclass emblem paladin_oath_of_the_crown
+PASS legacy art alias paladin_oath_of_the_crown
+PASS subclass emblem monk_way_of_the_tai_chi
+PASS legacy art alias monk_way_of_the_tai_chi
+PASS subclass emblem barbarian_path_of_the_giant
+PASS legacy art alias barbarian_path_of_the_giant
+PASS subclass emblem rogue_thief
+PASS legacy art alias rogue_thief
+PASS subclass emblem ranger_gloom_stalker
+PASS legacy art alias ranger_gloom_stalker
+PASS subclass emblem rogue_magician
+PASS legacy art alias rogue_magician
+PASS subclass emblem wizard_school_of_evocation
+PASS legacy art alias wizard_school_of_evocation
+PASS subclass emblem sorcerer_wild_magic
+PASS legacy art alias sorcerer_wild_magic
+PASS subclass emblem warlock_the_great_old_one
+PASS legacy art alias warlock_the_great_old_one
+PASS subclass emblem bard_college_of_valor
+PASS legacy art alias bard_college_of_valor
+PASS subclass emblem paladin_oathbreaker
+PASS legacy art alias paladin_oathbreaker
+PASS subclass emblem barbarian_path_of_the_berserker
+PASS legacy art alias barbarian_path_of_the_berserker
+PASS subclass emblem fighter_tactician
+PASS legacy art alias fighter_tactician
+PASS raycast reaches ProfessionToggle
+PASS profession chooser visible
+PASS raycast reaches Profession_barbarian
+PASS selected profession barbarian
+PASS profession count barbarian=4
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_bard
+PASS selected profession bard
+PASS profession count bard=1
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_cleric
+PASS selected profession cleric
+PASS profession count cleric=1
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_druid
+PASS selected profession druid
+PASS profession count druid=0
+PASS reserved druid empty state
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_fighter
+PASS selected profession fighter
+PASS profession count fighter=5
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_monk
+PASS selected profession monk
+PASS profession count monk=2
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_paladin
+PASS selected profession paladin
+PASS profession count paladin=3
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_ranger
+PASS selected profession ranger
+PASS profession count ranger=1
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_rogue
+PASS selected profession rogue
+PASS profession count rogue=5
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_sorcerer
+PASS selected profession sorcerer
+PASS profession count sorcerer=1
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_warlock
+PASS selected profession warlock
+PASS profession count warlock=2
+PASS raycast reaches ProfessionToggle
+PASS raycast reaches Profession_wizard
+PASS selected profession wizard
+PASS profession count wizard=2
+PASS clear profession restores 27 roles
+PASS 12 per page, three pages
+PASS overview page 1
+PASS raycast reaches Next
+PASS overview page 2
+PASS raycast reaches Next
+PASS overview page 3
+PASS profession and both alignment filters intersect
+PASS profession bilingual header fighter_champion
+PASS italic profession fighter_champion
+PASS exact subclass bilingual header fighter_champion
+PASS three header rows fighter_champion
+PASS profession bilingual header fighter_breaker
+PASS italic profession fighter_breaker
+PASS exact subclass bilingual header fighter_breaker
+PASS three header rows fighter_breaker
+PASS profession bilingual header wizard_school_of_conjuration
+PASS italic profession wizard_school_of_conjuration
+PASS exact subclass bilingual header wizard_school_of_conjuration
+PASS three header rows wizard_school_of_conjuration
+PASS profession bilingual header barbarian_path_of_the_warden
+PASS italic profession barbarian_path_of_the_warden
+PASS exact subclass bilingual header barbarian_path_of_the_warden
+PASS three header rows barbarian_path_of_the_warden
+PASS profession bilingual header cleric_life_domain
+PASS italic profession cleric_life_domain
+PASS exact subclass bilingual header cleric_life_domain
+PASS three header rows cleric_life_domain
+PASS profession bilingual header rogue_swashbuckler
+PASS italic profession rogue_swashbuckler
+PASS exact subclass bilingual header rogue_swashbuckler
+PASS three header rows rogue_swashbuckler
+PASS profession bilingual header barbarian_path_of_the_beast
+PASS italic profession barbarian_path_of_the_beast
+PASS exact subclass bilingual header barbarian_path_of_the_beast
+PASS three header rows barbarian_path_of_the_beast
+PASS profession bilingual header fighter_swordsman
+PASS italic profession fighter_swordsman
+PASS exact subclass bilingual header fighter_swordsman
+PASS three header rows fighter_swordsman
+PASS profession bilingual header monk_way_of_the_ninja
+PASS italic profession monk_way_of_the_ninja
+PASS exact subclass bilingual header monk_way_of_the_ninja
+PASS three header rows monk_way_of_the_ninja
+PASS profession bilingual header rogue_assassin
+PASS italic profession rogue_assassin
+PASS exact subclass bilingual header rogue_assassin
+PASS three header rows rogue_assassin
+PASS profession bilingual header paladin_oath_of_devotion
+PASS italic profession paladin_oath_of_devotion
+PASS exact subclass bilingual header paladin_oath_of_devotion
+PASS three header rows paladin_oath_of_devotion
+PASS profession bilingual header warlock_the_archfey
+PASS italic profession warlock_the_archfey
+PASS exact subclass bilingual header warlock_the_archfey
+PASS three header rows warlock_the_archfey
+PASS profession bilingual header fighter_arcane_archer
+PASS italic profession fighter_arcane_archer
+PASS exact subclass bilingual header fighter_arcane_archer
+PASS three header rows fighter_arcane_archer
+PASS profession bilingual header rogue_gambler
+PASS italic profession rogue_gambler
+PASS exact subclass bilingual header rogue_gambler
+PASS three header rows rogue_gambler
+PASS profession bilingual header paladin_oath_of_the_crown
+PASS italic profession paladin_oath_of_the_crown
+PASS exact subclass bilingual header paladin_oath_of_the_crown
+PASS three header rows paladin_oath_of_the_crown
+PASS profession bilingual header monk_way_of_the_tai_chi
+PASS italic profession monk_way_of_the_tai_chi
+PASS exact subclass bilingual header monk_way_of_the_tai_chi
+PASS three header rows monk_way_of_the_tai_chi
+PASS profession bilingual header barbarian_path_of_the_giant
+PASS italic profession barbarian_path_of_the_giant
+PASS exact subclass bilingual header barbarian_path_of_the_giant
+PASS three header rows barbarian_path_of_the_giant
+PASS profession bilingual header rogue_thief
+PASS italic profession rogue_thief
+PASS exact subclass bilingual header rogue_thief
+PASS three header rows rogue_thief
+PASS profession bilingual header ranger_gloom_stalker
+PASS italic profession ranger_gloom_stalker
+PASS exact subclass bilingual header ranger_gloom_stalker
+PASS three header rows ranger_gloom_stalker
+PASS profession bilingual header rogue_magician
+PASS italic profession rogue_magician
+PASS exact subclass bilingual header rogue_magician
+PASS three header rows rogue_magician
+PASS profession bilingual header wizard_school_of_evocation
+PASS italic profession wizard_school_of_evocation
+PASS exact subclass bilingual header wizard_school_of_evocation
+PASS three header rows wizard_school_of_evocation
+PASS profession bilingual header sorcerer_wild_magic
+PASS italic profession sorcerer_wild_magic
+PASS exact subclass bilingual header sorcerer_wild_magic
+PASS three header rows sorcerer_wild_magic
+PASS profession bilingual header warlock_the_great_old_one
+PASS italic profession warlock_the_great_old_one
+PASS exact subclass bilingual header warlock_the_great_old_one
+PASS three header rows warlock_the_great_old_one
+PASS profession bilingual header bard_college_of_valor
+PASS italic profession bard_college_of_valor
+PASS exact subclass bilingual header bard_college_of_valor
+PASS three header rows bard_college_of_valor
+PASS profession bilingual header paladin_oathbreaker
+PASS italic profession paladin_oathbreaker
+PASS exact subclass bilingual header paladin_oathbreaker
+PASS three header rows paladin_oathbreaker
+PASS profession bilingual header barbarian_path_of_the_berserker
+PASS italic profession barbarian_path_of_the_berserker
+PASS exact subclass bilingual header barbarian_path_of_the_berserker
+PASS three header rows barbarian_path_of_the_berserker
+PASS profession bilingual header fighter_tactician
+PASS italic profession fighter_tactician
+PASS exact subclass bilingual header fighter_tactician
+PASS three header rows fighter_tactician
+PASS all 27 selection cards
+PASS raycast reaches Card0
+PASS selection click 0
+PASS full profession subclass name fighter_champion
+PASS raycast reaches Card1
+PASS selection click 1
+PASS full profession subclass name fighter_breaker
+PASS raycast reaches Card2
+PASS selection click 2
+PASS full profession subclass name wizard_school_of_conjuration
+PASS raycast reaches Card3
+PASS selection click 3
+PASS full profession subclass name barbarian_path_of_the_warden
+PASS raycast reaches Card4
+PASS selection click 4
+PASS full profession subclass name cleric_life_domain
+PASS raycast reaches Card5
+PASS selection click 5
+PASS full profession subclass name rogue_swashbuckler
+PASS raycast reaches Card6
+PASS selection click 6
+PASS full profession subclass name barbarian_path_of_the_beast
+PASS raycast reaches Card7
+PASS selection click 7
+PASS full profession subclass name fighter_swordsman
+PASS raycast reaches Card8
+PASS selection click 8
+PASS full profession subclass name monk_way_of_the_ninja
+PASS raycast reaches Card9
+PASS selection click 9
+PASS full profession subclass name rogue_assassin
+PASS raycast reaches Card10
+PASS selection click 10
+PASS full profession subclass name paladin_oath_of_devotion
+PASS raycast reaches Card11
+PASS selection click 11
+PASS full profession subclass name warlock_the_archfey
+PASS raycast reaches Card12
+PASS selection click 12
+PASS full profession subclass name fighter_arcane_archer
+PASS raycast reaches Card13
+PASS selection click 13
+PASS full profession subclass name rogue_gambler
+PASS raycast reaches Card14
+PASS selection click 14
+PASS full profession subclass name paladin_oath_of_the_crown
+PASS raycast reaches Card15
+PASS selection click 15
+PASS full profession subclass name monk_way_of_the_tai_chi
+PASS raycast reaches Card16
+PASS selection click 16
+PASS full profession subclass name barbarian_path_of_the_giant
+PASS raycast reaches Card17
+PASS selection click 17
+PASS full profession subclass name rogue_thief
+PASS raycast reaches Card18
+PASS selection click 18
+PASS full profession subclass name ranger_gloom_stalker
+PASS raycast reaches Card19
+PASS selection click 19
+PASS full profession subclass name rogue_magician
+PASS raycast reaches Card20
+PASS selection click 20
+PASS full profession subclass name wizard_school_of_evocation
+PASS raycast reaches Card21
+PASS selection click 21
+PASS full profession subclass name sorcerer_wild_magic
+PASS raycast reaches Card22
+PASS selection click 22
+PASS full profession subclass name warlock_the_great_old_one
+PASS raycast reaches Card23
+PASS selection click 23
+PASS full profession subclass name bard_college_of_valor
+PASS raycast reaches Card24
+PASS selection click 24
+PASS full profession subclass name paladin_oathbreaker
+PASS raycast reaches Card25
+PASS selection click 25
+PASS full profession subclass name barbarian_path_of_the_berserker
+PASS raycast reaches Card26
+PASS selection click 26
+PASS full profession subclass name fighter_tactician
+PASS battle name avoids duplicated full name
+PASS battle long name fitting enabled
+PASS long versus title fits above subtitle
+PASS versus title renders on one line
+PASS multiplayer editor preview available
+PASS multiplayer full subclass name 4
+PASS multiplayer full subclass name 8

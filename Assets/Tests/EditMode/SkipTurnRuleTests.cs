@@ -24,8 +24,8 @@ namespace FingerDiceDuel.Tests
 
         private static GameManager Match()
         {
-            var a = Make("A", CharacterDefinition.Soldier);
-            var b = Make("B", CharacterDefinition.Soldier);
+            var a = Make("A", CharacterDefinition.Champion);
+            var b = Make("B", CharacterDefinition.Champion);
             return new GameManager(a, b, new GreedyChoiceProvider(),
                                    new GreedyChoiceProvider());
         }
@@ -90,8 +90,8 @@ namespace FingerDiceDuel.Tests
         {
             var ca = new SimpleChoiceProvider();
             var cb = new SimpleChoiceProvider();
-            game = new GameManager(Make("A", a ?? CharacterDefinition.Soldier),
-                Make("B", b ?? CharacterDefinition.Fighter), ca, cb);
+            game = new GameManager(Make("A", a ?? CharacterDefinition.Champion),
+                Make("B", b ?? CharacterDefinition.Breaker), ca, cb);
             return new BoardController(game, ca, cb, aiForB: aiB ? new GreedyChoiceProvider() : null);
         }
 
@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Frozen_ai_fighter_skips_instead_of_showing_game_over()
         {
-            var board = Board(out var game, CharacterDefinition.Wizard, CharacterDefinition.Fighter, aiB: true);
+            var board = Board(out var game, CharacterDefinition.SchoolOfEvocation, CharacterDefinition.Breaker, aiB: true);
             game.PlayerB.ApplyStatus(StatusEffect.Frozen);
             game.ForceActivePlayerForTest(game.PlayerB);
             board.BeginTurn();
@@ -130,10 +130,10 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Actual_cold_hit_freezes_ai_fighter_without_ending_the_match()
         {
-            var board = Board(out var game, CharacterDefinition.Wizard, CharacterDefinition.Fighter, aiB: true);
+            var board = Board(out var game, CharacterDefinition.SchoolOfEvocation, CharacterDefinition.Breaker, aiB: true);
             game.PlayerB.LeftHand.SetValue(3);
             game.PlayerB.ApplyStatus(StatusEffect.Frost, source: game.PlayerA);
-            ((FingerDiceDuel.Characters.SpecialLogics.WizardLogic)game.PlayerA.Character).SetPendingDamageType(DamageType.Cold);
+            ((FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic)game.PlayerA.Character).SetPendingDamageType(DamageType.Cold);
             game.ExecuteTurn(game.PlayerA, game.PlayerA.LeftHand, game.PlayerB.LeftHand);
             Assert.True(game.PlayerB.HasStatus(StatusEffect.Frozen), "真实寒冷命中覆霜应转为冻结。");
             board.BeginTurn();
@@ -205,7 +205,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Frozen_hexer_cannot_activate_health_swap_while_skipping()
         {
-            var board = Board(out var game, CharacterDefinition.Hexer);
+            var board = Board(out var game, CharacterDefinition.TheArchfey);
             game.PlayerA.TakeDamage(4);
             game.PlayerA.ApplyStatus(StatusEffect.Frozen);
             board.BeginTurn();
@@ -218,7 +218,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Voluntary_hexer_skip_also_finishes_status_duration()
         {
-            var board = Board(out var game, CharacterDefinition.Hexer);
+            var board = Board(out var game, CharacterDefinition.TheArchfey);
             game.PlayerA.TakeDamage(4);
             game.PlayerA.ApplyStatus(StatusEffect.Acid);
             board.BeginTurn();

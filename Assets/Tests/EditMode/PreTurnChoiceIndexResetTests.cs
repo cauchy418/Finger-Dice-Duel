@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Tests
     /// <summary>
     /// 回归：**接受过一个抉择之后，下个回合的抉择会被静默跳过**。
     ///
-    /// 玩家实测的现象：游侠第五步（左手 5 + 对面 1 = 6，右手是 2）
+    /// 玩家实测的现象：游荡者·风流剑客第五步（左手 5 + 对面 1 = 6，右手是 2）
     /// 应该弹强化，但**提示条里连文字都没有**。
     ///
     /// 根因（由实机诊断日志 `idx=1/0` 定位）：
@@ -29,7 +29,7 @@ namespace FingerDiceDuel.Tests
     {
         private GameManager _game;
         private BoardController _board;
-        private PlayerState _ranger;      // A：游侠（人类）
+        private PlayerState _ranger;      // A：游荡者·风流剑客（人类）
         private PlayerState _foe;         // B：白板（人类，便于手动驱动）
 
         private void Arrange()
@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Tests
             var choiceB = new SimpleChoiceProvider();
 
             _game = new GameManager(
-                CharacterFactory.CreatePlayer("游侠", CharacterDefinition.Ranger),
+                CharacterFactory.CreatePlayer("游荡者·风流剑客", CharacterDefinition.Swashbuckler),
                 CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank),
                 choiceA, choiceB);
 
@@ -58,8 +58,8 @@ namespace FingerDiceDuel.Tests
         {
             Arrange();
 
-            // ================= 第 1 回合：游侠被攻击 -> 接受闪避 =================
-            // 白板先手（A 是游侠，这里改成让 B 攻击，所以先让 A 走一步）
+            // ================= 第 1 回合：游荡者·风流剑客被攻击 -> 接受闪避 =================
+            // 白板先手（A 是游荡者·风流剑客，这里改成让 B 攻击，所以先让 A 走一步）
             TestSetup.SetHand(_ranger.LeftHand, 5);
             TestSetup.SetHand(_ranger.RightHand, 1);     // 会被翻滚用掉
             TestSetup.SetHand(_foe.LeftHand, 4);
@@ -76,7 +76,7 @@ namespace FingerDiceDuel.Tests
             while (_board.Phase == BoardPhase.ChoosingPreTurnChoice)
                 if (!_board.DeclinePendingChoice()) break;
 
-            // 现在轮到 B（白板），让它攻击游侠 -> 应问游侠翻滚
+            // 现在轮到 B（白板），让它攻击游荡者·风流剑客 -> 应问游荡者·风流剑客翻滚
             TestSetup.SetHand(_ranger.LeftHand, 5);
             TestSetup.SetHand(_ranger.RightHand, 1);
             TestSetup.SetHand(_foe.LeftHand, 3);         // 3 + 5 = 8 -> 攻击
@@ -90,14 +90,14 @@ namespace FingerDiceDuel.Tests
             _board.ClickHand(_ranger.LeftHand);
             _board.ConfirmTargetPlayer();
 
-            Assert.AreEqual(HandEffect.RangerDodge, _board.PendingRequest?.Effect,
-                "白板攻击游侠 -> 应问翻滚");
+            Assert.AreEqual(HandEffect.SwashbucklerDodge, _board.PendingRequest?.Effect,
+                "白板攻击游荡者·风流剑客 -> 应问翻滚");
 
             // **接受**（这一步会让 _pendingRequestIndex 前进到 1）
             Assert.True(_board.AcceptPendingChoice(), "接受翻滚应成功");
             Assert.AreEqual(2, _ranger.RightHand.Value, "翻滚把 1 变成 2");
 
-            // ================= 第 2 回合：游侠攻击 -> 必须弹强化 =================
+            // ================= 第 2 回合：游荡者·风流剑客攻击 -> 必须弹强化 =================
             TestSetup.SetHand(_ranger.LeftHand, 5);
             TestSetup.SetHand(_ranger.RightHand, 2);     // 翻滚留下的 2
             TestSetup.SetHand(_foe.LeftHand, 4);
@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Tests
 
             _board.BeginTurn();
 
-            Assert.True(ReferenceEquals(_board.ActivePlayer, _ranger), "应轮到游侠");
+            Assert.True(ReferenceEquals(_board.ActivePlayer, _ranger), "应轮到游荡者·风流剑客");
 
             // 左手 5 打对面 1 -> 6（攻击）
             _board.ClickHand(_ranger.LeftHand);
@@ -117,11 +117,11 @@ namespace FingerDiceDuel.Tests
                 $"phase={_board.Phase} idx={_board.PendingRequestIndex}/" +
                 $"{_board.PendingRequests.Count} " +
                 $"pending={_board.PendingRequest?.Effect.ToString() ?? "null"} " +
-                $"游侠手 L{_ranger.LeftHand.Value} R{_ranger.RightHand.Value}";
+                $"游荡者·风流剑客手 L{_ranger.LeftHand.Value} R{_ranger.RightHand.Value}";
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, _board.Phase,
                 $"下一回合的抉择**不能**被跳过。现场：{scene}");
-            Assert.AreEqual(HandEffect.RangerPowerShot, _board.PendingRequest?.Effect,
+            Assert.AreEqual(HandEffect.SwashbucklerDuelistThrust, _board.PendingRequest?.Effect,
                 $"左手 5 + 对面 1 = 6（攻击），另一只手是 2 -> 应弹强化。现场：{scene}");
         }
 
@@ -159,7 +159,7 @@ namespace FingerDiceDuel.Tests
             _board.ClickHand(_ranger.LeftHand);
             _board.ConfirmTargetPlayer();
 
-            if (_board.PendingRequest?.Effect == HandEffect.RangerDodge)
+            if (_board.PendingRequest?.Effect == HandEffect.SwashbucklerDodge)
                 _board.AcceptPendingChoice();
 
             // 走过一个回合边界后再检查

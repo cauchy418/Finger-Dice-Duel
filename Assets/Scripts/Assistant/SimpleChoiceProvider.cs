@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -53,7 +53,7 @@ namespace FingerDiceDuel.Assistant
         /// "玩家选了回复、默认目标是自己"（记录为一只手）区分开。
         /// 经 <see cref="GetChoice"/> 时后者会拿到非 null 的回退值，
         /// 于是"选了攻击"被误判成"选了回复" —— 真实 bug：
-        /// 牧师选了攻击仍被追问回复目标。
+        /// 牧师·生命领域选了攻击仍被追问回复目标。
         /// </summary>
         public Hand GetExplicitChoice(HandEffect effect, int variant = 0)
             => _choices.TryGetValue(KeyOf(effect, variant), out Hand h) ? h : null;
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Assistant
             => GetChoice(HandEffect.ShieldBlock, shieldA);
 
         /// <summary>P1：自动放弃连锁破盾（规则允许放弃）。</summary>
-        public ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
+        public ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                            IReadOnlyList<ChainBreakTarget> candidates)
             => default;
 

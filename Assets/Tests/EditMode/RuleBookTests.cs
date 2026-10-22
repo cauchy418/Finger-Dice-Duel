@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -158,13 +158,13 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Character_list_shows_the_real_max_health_for_the_werewolf()
         {
-            // 狼人上限 25，规则里若写 20 就是骗人
-            var roster = new List<CharacterDefinition> { CharacterDefinition.Werewolf };
+            // 野蛮人·野兽道途上限 25，规则里若写 20 就是骗人
+            var roster = new List<CharacterDefinition> { CharacterDefinition.PathOfTheBeast };
 
             string text = RuleBook.CharacterList(roster);
 
             Assert.True(text.Contains("25"),
-                $"狼人的生命上限应写 25（实际由 WerewolfLogic 提供）。\n{text}");
+                $"野蛮人·野兽道途的生命上限应写 25（实际由 PathOfTheBeastLogic 提供）。\n{text}");
         }
 
         [Test]
@@ -212,12 +212,12 @@ namespace FingerDiceDuel.Tests
         public void Rule_stated_character_numbers_match_the_logic_classes()
         {
             // 规则一栏里出现的数字（如"和 7"、"潜行 7"、"追加"）都应与逻辑类一致
-            Assert.AreEqual(7, WerewolfLogic.TriggerSum, "狼人触发和应是 7。");
-            Assert.AreEqual(7, AssassinLogic.StealthValue, "刺客潜行值应是 7。");
-            Assert.AreEqual(9, ClericLogic.DoubleNineValue, "牧师双 9 判定值是 9。");
-            Assert.AreEqual(1, RangerLogic.DodgeFromValue, "游侠闪避的来源值是 1。");
-            Assert.AreEqual(2, RangerLogic.PowerFromValue, "游侠强化的来源值是 2。");
-            Assert.AreEqual(2, NinjaLogic.HitCount, "忍者攻击是两段。");
+            Assert.AreEqual(7, PathOfTheBeastLogic.TriggerSum, "野蛮人·野兽道途触发和应是 7。");
+            Assert.AreEqual(7, AssassinLogic.StealthValue, "游荡者·刺客潜行值应是 7。");
+            Assert.AreEqual(9, LifeDomainLogic.DoubleNineValue, "牧师·生命领域双 9 判定值是 9。");
+            Assert.AreEqual(1, SwashbucklerLogic.DodgeFromValue, "游荡者·风流剑客闪避的来源值是 1。");
+            Assert.AreEqual(2, SwashbucklerLogic.PowerFromValue, "游荡者·风流剑客强化的来源值是 2。");
+            Assert.AreEqual(2, WayOfTheNinjaLogic.HitCount, "武僧·忍宗攻击是两段。");
         }
 
         [Test]

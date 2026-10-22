@@ -75,29 +75,29 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public AttackDamageType AttackType = AttackDamageType.None;
 
-        /// <summary>本次攻击是否被闪避（游侠 / 刺客潜行）。</summary>
+        /// <summary>本次攻击是否被闪避（游荡者·风流剑客 / 游荡者·刺客潜行）。</summary>
         public bool WasDodged;
 
         /// <summary>免伤原因（例如"目标在潜行中，无法被攻击"）。供战报显示。</summary>
         public string DodgeReason;
 
         /// <summary>
-        /// 本次攻击是否被**妖术师取消**（玩家要求写进战报：
-        /// "可以写被妖术师取消，造成 0 点伤害"）。
+        /// 本次攻击是否被**邪术师·至高妖精取消**（玩家要求写进战报：
+        /// "可以写被邪术师·至高妖精取消，造成 0 点伤害"）。
         /// </summary>
         public bool WasCancelled;
 
         /// <summary>取消者的名字（战报里要写清是谁取消的）。</summary>
         public string CancelledBy;
 
-        /// <summary>本次行动是不是**赌博**（赌徒）。</summary>
+        /// <summary>本次行动是不是**赌博**（游荡者·赌徒）。</summary>
         public bool WasGamble;
 
-        // ---------- 盗贼的偷窃 ----------
+        // ---------- 游荡者·盗贼的偷窃 ----------
 
-        /// <summary>本次行动是不是**偷窃**（盗贼）。</summary>
+        /// <summary>本次行动是不是**偷窃**（游荡者·盗贼）。</summary>
         public bool StealUsed;
-        /// <summary>偷窃前盗贼那只手的点数（"原先"）。</summary>
+        /// <summary>偷窃前游荡者·盗贼那只手的点数（"原先"）。</summary>
         public int StealOriginal;
 
         /// <summary>偷来的点数（"偷窃后"）。</summary>
@@ -109,7 +109,7 @@ namespace FingerDiceDuel.Core
         /// <summary>赌博掷出的点数（1d9）。<see cref="WasGamble"/> 为 true 时有效。</summary>
         public int GambleRoll;
 
-        // ---------- 法师的状态体系 ----------
+        // ---------- 法师·塑能学派的状态体系 ----------
 
         /// <summary>
         /// 被**冰冻**减半前的原始结果（0 = 本次没被减半）。
@@ -119,7 +119,7 @@ namespace FingerDiceDuel.Core
         public int FreezeHalvedFrom;
 
         /// <summary>
-        /// 本次行动为下一次攻击**指定的伤害类型**（法师）。
+        /// 本次行动为下一次攻击**指定的伤害类型**（法师·塑能学派）。
         ///
         /// 非 <see cref="DamageType.None"/> 时表示"这一次放弃了攻击、只是选了类型"。
         /// </summary>
@@ -138,7 +138,7 @@ namespace FingerDiceDuel.Core
         public int Healed;
 
         /// <summary>
-        /// 本次回复**效果本身的数值**（牧师 9 -> 9、4/6/8 当回复 -> 该数字）。
+        /// 本次回复**效果本身的数值**（牧师·生命领域 9 -> 9、4/6/8 当回复 -> 该数字）。
         ///
         /// 与 <see cref="Healed"/> 的区别：`Healed` 是"行动方实际回了多少血"
         /// （回给别人时是 0），而本字段是**这次回复的量**，供战报显示。
@@ -149,21 +149,21 @@ namespace FingerDiceDuel.Core
         public bool AttackSuppressed;
         public bool OutOfRange;
 
-        /// <summary>本次回复效果实际作用到谁（牧师可以回给对手）。非回复效果时为 null。</summary>
+        /// <summary>本次回复效果实际作用到谁（牧师·生命领域可以回给对手）。非回复效果时为 null。</summary>
         public PlayerState HealTarget;
 
-        /// <summary>本次运算**之前**发生的追加攻击（剑客）。没有则为 null，供战报单独显示一行。</summary>
+        /// <summary>本次运算**之前**发生的追加攻击（战士·剑士）。没有则为 null，供战报单独显示一行。</summary>
         public ExtraAttackInfo? ExtraAttack;
 
         /// <summary>
-        /// 这次运算之后猎人是否**进入了伏击**（暗置了一只手）。
+        /// 这次运算之后游侠·幽域追踪者是否**进入了伏击**（暗置了一只手）。
         ///
         /// 供战报使用 —— 否则玩家会看到"（无效果）"，而实际上他进了伏击：
         /// 伏击**不改变效果类型**，它改的是那只手的**状态**。
         /// </summary>
         public bool EnteredAmbush;
 
-        /// <summary>本次攻击的段数（忍者 = 2，其余 = 1）。战报用它说明"两段攻击"。</summary>
+        /// <summary>本次攻击的段数（武僧·忍宗 = 2，其余 = 1）。战报用它说明"两段攻击"。</summary>
         public int HitCount = 1;
 
         /// <summary>造成伤害的段数。</summary>
@@ -391,7 +391,7 @@ namespace FingerDiceDuel.Core
         private readonly HashSet<Hand> _brokenThisTurn = new HashSet<Hand>();
 
         /// <summary>
-        /// 由角色在结算过程中写入的"本次追加攻击"记录（剑客用）。
+        /// 由角色在结算过程中写入的"本次追加攻击"记录（战士·剑士用）。
         /// <see cref="ResolveTurn"/> 结束时收进 <see cref="TurnResult.ExtraAttack"/> 并清空。
         ///
         /// 之所以要中转一下：追加攻击发生在 <c>OnBeforeEffectResolved</c> 里，
@@ -400,7 +400,7 @@ namespace FingerDiceDuel.Core
         public ExtraAttackInfo? PendingExtraAttack;
 
         /// <summary>
-        /// true 表示当前正在结算"追加攻击"（剑客）。
+        /// true 表示当前正在结算"追加攻击"（战士·剑士）。
         ///
         /// 这类攻击发生在主攻击之前，玩家还没做过闪避选择，
         /// 所以它的闪避要**自动结算**（有几只"1"就闪几段），不弹提示。
@@ -512,14 +512,14 @@ namespace FingerDiceDuel.Core
                 if (IsTeammate(p, player)) continue;
                 if (!p.IsAlive) continue;
 
-                // ⚠️ **法师状态带来的"打不到"**（残响 / 震慑）。
+                // ⚠️ **法师·塑能学派状态带来的"打不到"**（残响 / 震慑）。
                 //
                 //    玩家确认的处理方式："若打出攻击数字且无合法目标就放弃攻击，
-                //    和 1v1 面对刺客潜行类似" —— 也就是说这里过滤掉之后，
+                //    和 1v1 面对游荡者·刺客潜行类似" —— 也就是说这里过滤掉之后，
                 //    界面上会变成"放弃攻击"，而不是整局卡住。
                 //
                 //    · 残响：只能打距离 1 的角色
-                //    · 震慑：不能打"给自己挂震慑的那个法师"
+                //    · 震慑：不能打"给自己挂震慑的那个法师·塑能学派"
                 if (!StatusRules.CanAttackTarget(player, p, this)) continue;
                 if (StatusRules.IsBlockedByPanic(player, p)) continue;
 
@@ -551,7 +551,7 @@ namespace FingerDiceDuel.Core
         /// **场上还活着几名玩家**（1v1 里可能变成 1，2v2 里可以是 1..4）。
         ///
         /// 用途：有些规则**只在仅剩两人时**生效 ——
-        /// 例如野蛮人的"同时只能控制对手一只手"（见 <c>BarbarianLogic</c>）。
+        /// 例如野蛮人·守望者道途的"同时只能控制对手一只手"（见 <c>PathOfTheWardenLogic</c>）。
         /// </summary>
         public int AlivePlayerCount
         {
@@ -744,13 +744,13 @@ namespace FingerDiceDuel.Core
             int wrap = n - diff;
             int baseDistance = diff < wrap ? diff : wrap;
 
-            // ⚠️ **邪术师的距离修正**：只影响"他与他命中过的那个人"这一对，
+            // ⚠️ **邪术师·旧日支配者的距离修正**：只影响"他与他命中过的那个人"这一对，
             //    其他玩家之间的距离完全不变（玩家明确要求）。
             return baseDistance + DistancePenaltyBetween(a, b);
         }
 
         // ============================================================
-        // 距离修正层（邪术师）
+        // 距离修正层（邪术师·旧日支配者）
         // ============================================================
 
         /// <summary>一条"成对距离修正"。</summary>
@@ -767,10 +767,10 @@ namespace FingerDiceDuel.Core
         private readonly List<DistancePenalty> _distancePenalties = new List<DistancePenalty>();
 
         /// <summary>
-        /// **邪术师**：令 <paramref name="owner"/> 与 <paramref name="target"/> 之间的距离 +<paramref name="amount"/>。
+        /// **邪术师·旧日支配者**：令 <paramref name="owner"/> 与 <paramref name="target"/> 之间的距离 +<paramref name="amount"/>。
         ///
         /// 玩家确认的口径：
-        ///   · 持续到**目标自己的 2 个回合**结束（与法师状态同一套计时）
+        ///   · 持续到**目标自己的 2 个回合**结束（与法师·塑能学派状态同一套计时）
         ///   · 再次命中**只刷新时长，不叠加**（+2 封顶）
         ///   · **不封顶**：8 人环距离最大 4，+2 之后就是 6
         /// </summary>
@@ -843,10 +843,10 @@ namespace FingerDiceDuel.Core
         ///
         /// 规则（玩家确认）：合法攻击目标 = **处于攻击范围内的其他角色**；
         /// 攻击距离由角色自己声明（<see cref="IAttackRangeProvider"/>），
-        /// 咒术师与牧师无限，其余为 1。
+        /// 法师·咒法学派与牧师·生命领域无限，其余为 1。
         ///
         /// <paramref name="rangeOverride"/> 用于"本次攻击距离无限"的效果
-        /// （战士碎盾、游侠强化）——传 <see cref="CharacterTemplate.InfiniteAttackRange"/>。
+        /// （战士·破阵者碎盾、游荡者·风流剑客强化）——传 <see cref="CharacterTemplate.InfiniteAttackRange"/>。
         /// </summary>
         public bool CanReach(PlayerState actor, PlayerState target, int rangeOverride = -1)
         {
@@ -1168,7 +1168,7 @@ namespace FingerDiceDuel.Core
         /// 查询"本回合**先前已经问过**的抉择的答案"（由上层 BoardController 注入）。
         ///
         /// 与 <see cref="AiDecisionLookup"/> 的区别：这个是"玩家已经答过的"。
-        /// 用于分阶段抉择 —— 牧师的 4/6/8 先问"攻击还是回复"（选目标手之前），
+        /// 用于分阶段抉择 —— 牧师·生命领域的 4/6/8 先问"攻击还是回复"（选目标手之前），
         /// 之后再据此决定"要不要回复"。
         ///
         /// ⚠️ 不能只靠 sink 回读：两段抉择之间会重建队列、sink 可能被清空，
@@ -1180,7 +1180,7 @@ namespace FingerDiceDuel.Core
         /// "**某位玩家**对某个抉择的作答"（带玩家参数）。
         ///
         /// 与 <see cref="AnsweredLookup"/> 的区别：那个已经绑定到"当前记录者"
-        /// （行动方 / 防守方），而**妖术师是场上的第三方** ——
+        /// （行动方 / 防守方），而**邪术师·至高妖精是场上的第三方** ——
         /// 取消攻击的抉择不属于行动方也不属于防守方，所以要按人查。
         ///
         /// 由 <see cref="Assistant.BoardController"/> 注入。
@@ -1239,7 +1239,7 @@ namespace FingerDiceDuel.Core
         /// 并通知每个角色清空自身跨回合状态（<see cref="ICharacterBehavior.OnMatchReset"/>）。
         ///
         /// 重开一局必须走这里，而不是直接调用 PlayerState.Reset()，
-        /// 否则野蛮人的锁手会残留到下一局。
+        /// 否则野蛮人·守望者道途的锁手会残留到下一局。
         /// </summary>
         public void ResetMatch()
         {
@@ -1248,8 +1248,8 @@ namespace FingerDiceDuel.Core
             PlayerA.Reset();
             PlayerB.Reset();
 
-            // ⚠️ **法师的负面状态必须一起清掉** —— 否则第二局会带着上一局的
-            //    中毒 / 燃烧 / 震慑开局（与"野蛮人的锁手映射"同一类坑）。
+            // ⚠️ **法师·塑能学派的负面状态必须一起清掉** —— 否则第二局会带着上一局的
+            //    中毒 / 燃烧 / 震慑开局（与"野蛮人·守望者道途的锁手映射"同一类坑）。
             ClearAllStatuses();
 
             IsGameOver = false;
@@ -1275,9 +1275,9 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 把场上所有武僧手上**值为 5** 的手变成**太极形态**。
+        /// 把场上所有武僧·太极宗手上**值为 5** 的手变成**太极形态**。
         ///
-        /// 玩家要求："武僧初始有 5 的话这个 5 是可以发动的，处于太极状态。"
+        /// 玩家要求："武僧·太极宗初始有 5 的话这个 5 是可以发动的，处于太极状态。"
         ///
         /// 为什么需要单独一步：`ShieldState.Taichi` 原本只在**运算产生 Shield 效果**
         /// 时才被设上；而开局直接摆出来的 5（掷骰决定的手值、测试直接设的手值）
@@ -1289,7 +1289,7 @@ namespace FingerDiceDuel.Core
         public void ApplyInitialTaichiForm()
         {
             for (int i = 0; i < _players.Count; i++)
-                MonkLogic.ApplyTaichiToFives(_players[i]);
+                WayOfTheTaiChiLogic.ApplyTaichiToFives(_players[i]);
         }
 
         // ============================================================
@@ -1312,7 +1312,7 @@ namespace FingerDiceDuel.Core
         ///    `move.ActedHand == null`，并**崩溃成 AccessViolation**（原生层直接挂掉）。
         ///
         ///    这个隐患一直存在（"先拿列表、再问一次合法步"就会踩到），
-        ///    只是加魔术师的自加选项**改变了列表长度与调用时机**，才让它稳定复现。
+        ///    只是加游荡者·魔术师的自加选项**改变了列表长度与调用时机**，才让它稳定复现。
         ///    返回副本是最省心的修法：调用方拿到的列表不再与内部状态共享生命周期。
         /// </summary>
         public IReadOnlyList<LegalMove> GetLegalMoves(PlayerState actor)
@@ -1332,7 +1332,7 @@ namespace FingerDiceDuel.Core
             // 玩家确认的规则是"A 可以选择 B/C/D 任何一个数字作为被加数"，
             // 别人的数字不会被改动，只有行动方自己的手变成结果值。
             // 所以这里枚举"除自己以外的全部玩家"，不过滤队友。
-            // 魔术师：**可以拿自己的另一只手当被加数**。
+            // 游荡者·魔术师：**可以拿自己的另一只手当被加数**。
             bool selfAddend = (actor.Character as ISelfAddendProvider)?.AllowsSelfAddend == true;
 
             foreach (Hand mine in actor.Hands)
@@ -1341,7 +1341,7 @@ namespace FingerDiceDuel.Core
                 //    而已成型盾 / 太极**可以**（拿它运算会主动破盾）。
                 if (!mine.CanBeOperated) continue;
 
-                // 魔术师：先把**自己的另一只手**加进来。
+                // 游荡者·魔术师：先把**自己的另一只手**加进来。
                 // 玩家确认：两只手任选一个方向，变的是**先点的那只手**。
                 if (selfAddend)
                 {
@@ -1350,7 +1350,7 @@ namespace FingerDiceDuel.Core
                         if (ReferenceEquals(own, mine)) continue;    // 一只手不能加自己
                         if (own.IsConcealed) continue;               // 暗置手不能当被加数
 
-                        // ⚠️ **目盲**（法师的光耀）：只能选**距离 1** 的手当被加数。
+                        // ⚠️ **目盲**（法师·塑能学派的光耀）：只能选**距离 1** 的手当被加数。
                         //    自己的手距离是 0，所以自加**不受目盲限制**。
                         if (!StatusRules.CanUseHandAsAddend(actor, own, this)) continue;
 
@@ -1424,7 +1424,7 @@ namespace FingerDiceDuel.Core
             //
             //    这条以前是**隐含**成立的：加数与被加数必须属于不同玩家，
             //    而一个人只有两只手，所以"同一只手"根本不可能出现。
-            //    魔术师放开"可以拿自己的手当被加数"之后，这个隐含前提没了 ——
+            //    游荡者·魔术师放开"可以拿自己的手当被加数"之后，这个隐含前提没了 ——
             //    必须显式挡住（玩家原话："重复点一只手不会生效"）。
             if (ReferenceEquals(actedHand, targetHand))
             {
@@ -1432,14 +1432,14 @@ namespace FingerDiceDuel.Core
                 return false;
             }
 
-            // ⚠️ **法师的状态限制（目盲 / 残响 / 震慑）**。
+            // ⚠️ **法师·塑能学派的状态限制（目盲 / 残响 / 震慑）**。
             //
             //    规则：被加数的手必须在合法范围内（目盲 = 距离 1）；
             //    而"打谁"由**结果效果**决定 —— 若结果是攻击，
             //    挨打的人是当前默认攻击目标，必须通过残响与震慑的检查。
             //
             //    玩家确认的做法："若打出攻击数字且无合法目标就放弃攻击"
-            //    —— 与 1v1 面对刺客潜行时同一处理。所以这里不是拒绝运算，
+            //    —— 与 1v1 面对游荡者·刺客潜行时同一处理。所以这里不是拒绝运算，
             //    而是**拒绝把它当成攻击**；实际放行由 ResolveTurn 决定。
             if (!StatusRules.CanUseHandAsAddend(actor, targetHand, this))
             {
@@ -1449,7 +1449,7 @@ namespace FingerDiceDuel.Core
 
             if (ReferenceEquals(addendOwner, actor))
             {
-                // ⚠️ 魔术师**例外**：玩家确认他可以拿自己的手当被加数
+                // ⚠️ 游荡者·魔术师**例外**：玩家确认他可以拿自己的手当被加数
                 //    （左手 3 碰自己的右手 5 凑出 8）。
                 //    但仍然**不能一只手加自己**（加数与被加数必须是不同的两只手）——
                 //    那条由下面的一般检查挡住。
@@ -1508,15 +1508,15 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **法师：铺伤害类型的统一入口（界面与无头两条路都走它）。**
+        /// **法师·塑能学派：铺伤害类型的统一入口（界面与无头两条路都走它）。**
         ///
         /// 界面路径由 <c>BoardController</c> 在"收集完抉择"之后调用
-        /// <c>WizardLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
+        /// <c>SchoolOfEvocationLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
         /// 直接驱动 GameManager，**从不收集抉择** ——
-        /// 于是 AI 法师的"选伤害类型"永远落不到自己身上，
-        /// 表现为"AI 法师从不挂状态"（与之前魔术师计数那次同一类坑）。
+        /// 于是 AI 法师·塑能学派的"选伤害类型"永远落不到自己身上，
+        /// 表现为"AI 法师·塑能学派从不挂状态"（与之前游荡者·魔术师计数那次同一类坑）。
         ///
-        /// 这里兜底：若法师还没回读过选择，就从它的抉择器**当场问一次**。
+        /// 这里兜底：若法师·塑能学派还没回读过选择，就从它的抉择器**当场问一次**。
         /// 已经回读过的不再问（避免覆盖界面玩家的明确选择）。
         /// </summary>
         private void ResolveMageStatusIntent(PlayerState actor, Hand actedHand,
@@ -1531,7 +1531,7 @@ namespace FingerDiceDuel.Core
             //
             //    玩家实测报的 bug："放弃攻击仍然造成了伤害，且是不用选择就造成了伤害"。
             //    根因就是下面那句 `if (mage.HasPendingType) return;`：
-            //    **法师身上已经有待用类型**时（前几轮铺下的）直接返回，
+            //    **法师·塑能学派身上已经有待用类型**时（前几轮铺下的）直接返回，
             //    于是后面那句 `if (mage.WantsToAbandonThisTurn) Suppress...`
             //    **永远执行不到** —— 抑制开关恒为 false，伤害照打。
             //
@@ -1554,12 +1554,12 @@ namespace FingerDiceDuel.Core
             sink.WantsToAbandonAttack = false;
             sink.ChosenDamageType = DamageType.None;
 
-            // ⚠️⚠️ **把当前对局注入抉择器** —— 这是"AI 法师从不在无头对局里
+            // ⚠️⚠️ **把当前对局注入抉择器** —— 这是"AI 法师·塑能学派从不在无头对局里
             //    铺状态"的**根因**：
             //    `GreedyChoiceProvider.Game` 原本只在 `BoardController` 里被赋值
             //    （`if (provider is GreedyChoiceProvider g) g.Game = _game;`），
             //    而 `MatchRunner` 与各测试 harness **从不设置它**；
-            //    于是 AI 的法师分支第一句 `if (Game == null) return null;`
+            //    于是 AI 的法师·塑能学派分支第一句 `if (Game == null) return null;`
             //    直接放弃，永远不问、永远不铺。
             //
             //    放在这个调用点：界面 / 无头 / 测试三条路径都会经过这里。
@@ -1578,9 +1578,9 @@ namespace FingerDiceDuel.Core
                 AlivePlayerCount = AlivePlayerCount,
 
                 // ⚠️ **必须显式填结果值** —— 界面路径由 BoardController 填，
-                //    而无头路径没人填。`WizardLogic.CollectPreTurnChoices`
+                //    而无头路径没人填。`SchoolOfEvocationLogic.CollectPreTurnChoices`
                 //    正是用 `ResultValue` 判断"结果是不是 4/6/8"，
-                //    不填就永远问不出东西（AI 法师从不挂状态 —— 测试抓到过）。
+                //    不填就永远问不出东西（AI 法师·塑能学派从不挂状态 —— 测试抓到过）。
                 //    此刻发起运算的那只手**已经是结果值**
                 //    （PerformOperation 已执行、效果尚未分派）。
                 ResultValue = actedHand?.Value ?? 0,
@@ -1597,21 +1597,21 @@ namespace FingerDiceDuel.Core
                 // ⚠️⚠️ **先问"要不要放弃攻击"，再决定要不要问"选哪种类型"。**
                 //
                 //    原来第二步的条件是 `sink.WantsToAbandonAttack` ——
-                //    但那个属性**只有在 `ChooseHandFor(WizardAbandonAttack)`
+                //    但那个属性**只有在 `ChooseHandFor(SchoolOfEvocationAbandonAttack)`
                 //    被调用之后才会被设置**（AI 与界面都是在那一刻写它的），
                 //    而循环的第一轮**正是**在问"要不要放弃"。
                 //
                 //    于是时序变成"先读答案、再问问题"：
                 //    第一步真的执行了、`WantsToAbandonAttack` 也置真了，
-                //    但请求列表里没有第二轮，`WizardDamageType` **从来没被问过** ——
+                //    但请求列表里没有第二轮，`SchoolOfEvocationDamageType` **从来没被问过** ——
                 //    表现就是"AI 问了 2000 多次要不要放弃，却一次类型都没选上"。
                 //
                 //    修法：按**请求的顺序**推进，每一步之后再让后续步骤的判断生效。
-                if (requests[i].Effect == HandEffect.WizardAbandonAttack)
+                if (requests[i].Effect == HandEffect.SchoolOfEvocationAbandonAttack)
                 {
                     provider.ChooseHandFor(requests[i], actor);
                 }
-                else if (requests[i].Effect == HandEffect.WizardDamageType)
+                else if (requests[i].Effect == HandEffect.SchoolOfEvocationDamageType)
                 {
                     // 到这里"要不要放弃"已经有答案了（它在 requests 里排在前面）
                     if (sink.WantsToAbandonAttack
@@ -1624,12 +1624,12 @@ namespace FingerDiceDuel.Core
 
 
 
-            // ⚠️ **统一把选择落到法师身上**（界面路径也会调同一个方法，
+            // ⚠️ **统一把选择落到法师·塑能学派身上**（界面路径也会调同一个方法，
             //    但那是"收集完就落"，这里是"结算时才落" —— 两条路径都幂等）。
             //
             //    漏了这一步的表现：`WantsToAbandonAttack` 已经置真、
-            //    但法师自己身上没有类型，于是命中时 `StatusToApplyOnHit`
-            //    返回 None，状态挂不上（AI 法师铺了等于没铺）。
+            //    但法师·塑能学派自己身上没有类型，于是命中时 `StatusToApplyOnHit`
+            //    返回 None，状态挂不上（AI 法师·塑能学派铺了等于没铺）。
             mage.ReadFromSink(sink);
 
             // ⚠️⚠️ **"放弃攻击"的伤害抑制开关必须在这里设。**
@@ -1637,14 +1637,14 @@ namespace FingerDiceDuel.Core
             //    不能放在 `BoardController.ResolveTurn` 的入口：
             //    那里读 `WantsToAbandonThisTurn` 时，结果还没算出来、
             //    `ResolveMageStatusIntent` 还没跑 —— 标记必然是 false，
-            //    于是 suppress 永远不成立（实测 24961 次法师回合里一次都没有）。
+            //    于是 suppress 永远不成立（实测 24961 次法师·塑能学派回合里一次都没有）。
             //
             //    放在这里（结果已算完、效果尚未分派）时序才对。
             if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
         }
 
         /// <summary>
-        /// 若这次是"拿自己的手当被加数"（魔术师的特色），把被加数那只手标给角色，
+        /// 若这次是"拿自己的手当被加数"（游荡者·魔术师的特色），把被加数那只手标给角色，
         /// **仅供技能发动率统计**。
         ///
         /// \u26a0\ufe0f 规则的判定**不依赖**这个标记 —— 那一条一律从手牌归属直接推出
@@ -1683,18 +1683,18 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 最近一次"武僧的 0 被触碰变成 1"的说明（供战报显示）；没有则为 null。
+        /// 最近一次"武僧·太极宗的 0 被触碰变成 1"的说明（供战报显示）；没有则为 null。
         ///
         /// 只在一次结算内有效。
         /// </summary>
-        public string MonkZeroTouchNote { get; private set; }
+        public string WayOfTheTaiChiZeroTouchNote { get; private set; }
 
         // ============================================================
-        // 盗贼：偷窃
+        // 游荡者·盗贼：偷窃
         // ============================================================
 
         /// <summary>
-        /// 盗贼上一次**发起**偷窃是在第几回合（−1 = 还没偷过）。
+        /// 游荡者·盗贼上一次**发起**偷窃是在第几回合（−1 = 还没偷过）。
         ///
         /// 玩家规则："若上回合**发起了**偷窃，本回合不能继续偷窃"，
         /// 且"**只要点了偷窃就算'发起过'**"（哪怕判定不生效）。
@@ -1708,12 +1708,12 @@ namespace FingerDiceDuel.Core
         private PlayerState _lastStealActor;
 
         /// <summary>
-        /// **盗贼自己的行动次数**（每结算一次他的行动 +1）。
+        /// **游荡者·盗贼自己的行动次数**（每结算一次他的行动 +1）。
         ///
         /// 为什么要单独计数，而不是用 `TurnCount`：
         ///   `TurnCount` 每过一个回合都会变，于是"回合号 != 上次回合号"
-        ///   **永远成立** —— 冷却形同虚设，盗贼可以**连续偷**
-        ///   （玩家实测："盗贼现在可以连续偷"）。
+        ///   **永远成立** —— 冷却形同虚设，游荡者·盗贼可以**连续偷**
+        ///   （玩家实测："游荡者·盗贼现在可以连续偷"）。
         ///
         ///   正确判据是"他**上一次行动**偷过吗"，所以需要一个
         ///   只在**他自己行动时**递增的计数器。
@@ -1745,7 +1745,7 @@ namespace FingerDiceDuel.Core
             _ownTurnOrdinal[player] = cur + 1;
         }
 
-        /// <summary>盗贼本回合能不能偷窃（他自己上一次行动偷过就不能）。</summary>
+        /// <summary>游荡者·盗贼本回合能不能偷窃（他自己上一次行动偷过就不能）。</summary>
         public bool CanStealOn(PlayerState thief)
         {
             if (thief == null || IsGameOver) return false;
@@ -1769,7 +1769,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **偷窃**：交换盗贼与被偷者的两只手（点数与状态），
+        /// **偷窃**：交换游荡者·盗贼与被偷者的两只手（点数与状态），
         /// 若"偷窃前的点数 ≥ 偷来的点数"则按**偷来的数字**触发效果。
         ///
         /// 玩家给的完整规则见 <see cref="ThiefLogic"/> 的类注释。
@@ -1784,7 +1784,7 @@ namespace FingerDiceDuel.Core
             if (actor == null)
                 throw new InvalidOperationException("非法偷窃：行动方为空。");
             if (!(actor.Character is ThiefLogic))
-                throw new InvalidOperationException("非法偷窃：该角色不是盗贼。");
+                throw new InvalidOperationException("非法偷窃：该角色不是游荡者·盗贼。");
             if (myHand == null || !actor.Owns(myHand))
                 throw new InvalidOperationException("非法偷窃：必须用自己的一只手。");
             if (myHand.IsLocked)
@@ -1801,24 +1801,24 @@ namespace FingerDiceDuel.Core
 
             ThiefLogic.StealOutcome outcome = ThiefLogic.Steal(myHand, theirHand);
 
-            // ⚠️ **武僧的 0 被触碰就变 1**（玩家补充规则）。
+            // ⚠️ **武僧·太极宗的 0 被触碰就变 1**（玩家补充规则）。
             //
-            //    "盗贼偷武僧的 0 只能偷到 1，目前只有武僧能持有 0。"
+            //    "游荡者·盗贼偷武僧·太极宗的 0 只能偷到 1，目前只有武僧·太极宗能持有 0。"
             //
             //    这是"0 被他人触碰后立即变成 1"那条规则在偷窃路径上的延伸 ——
             //    ⚠️ 我原来的 `ResolveTurn` 里只处理了"被当**加数**用"，
             //       而偷窃**不走运算**，所以那条守卫覆盖不到这里
             //       （这是"两条路径各写一份而漂移"的典型案例）。
             //
-            //    所以两边都要纠正：手值 0 在任何人手上都只可能是武僧的太极产物，
+            //    所以两边都要纠正：手值 0 在任何人手上都只可能是武僧·太极宗的太极产物，
             //    一旦经由偷窃换手，就按"被触碰"处理。
-            if (myHand.Value == ThiefLogic.MonksZeroBecomesOne)
-                myHand.SetValue(1);            // 盗贼只能偷到 1
+            if (myHand.Value == ThiefLogic.WayOfTheTaiChisZeroBecomesOne)
+                myHand.SetValue(1);            // 游荡者·盗贼只能偷到 1
 
-            if (theirHand.Value == ThiefLogic.MonksZeroBecomesOne)
-                theirHand.SetValue(1);         // 武僧那只 0 也被触碰了
+            if (theirHand.Value == ThiefLogic.WayOfTheTaiChisZeroBecomesOne)
+                theirHand.SetValue(1);         // 武僧·太极宗那只 0 也被触碰了
 
-            // 被偷者若是武僧，他收到的 5 会变成**太极**（玩家最新规则）
+            // 被偷者若是武僧·太极宗，他收到的 5 会变成**太极**（玩家最新规则）
             ThiefLogic.ApplyVictimShieldSemantics(OwnerOfHand(theirHand), theirHand);
 
             // 结算：只有**生效**时才按偷来的数字触发效果
@@ -1863,7 +1863,7 @@ namespace FingerDiceDuel.Core
             int stolen = outcome.Stolen;
 
             // 偷来的 5 -> **合成一面完整的盾**（玩家明确要求：
-            // "无论之前这个 5 是什么状态，盗贼都会合成一面盾牌"）。
+            // "无论之前这个 5 是什么状态，游荡者·盗贼都会合成一面盾牌"）。
             // 所以这里**不受**"已碎"影响，直接设成完整盾。
             HandEffectType effect = ThiefLogic.EffectOfStolen(stolen);
 
@@ -1889,7 +1889,7 @@ namespace FingerDiceDuel.Core
                      || effect == HandEffectType.Attack8)
             {
                 // ⚠️ **不在这里结算伤害**（玩家实测要求）：
-                //    "盗贼偷窃出攻击数字要**再次点击目标**才可以攻击，
+                //    "游荡者·盗贼偷窃出攻击数字要**再次点击目标**才可以攻击，
                 //      现在是默认攻击。"
                 //
                 //    所以这里只**登记**"偷出了一个待结算的攻击"，
@@ -1929,7 +1929,7 @@ namespace FingerDiceDuel.Core
         }
 
         // ============================================================
-        // 盗贼：偷出攻击时的"待确认目标"
+        // 游荡者·盗贼：偷出攻击时的"待确认目标"
         // ============================================================
 
         /// <summary>是否正在等"偷出的攻击"选定目标。</summary>
@@ -1994,7 +1994,7 @@ namespace FingerDiceDuel.Core
         public TurnResult LastTurnResult { get; private set; }
 
         // ============================================================
-        // 法师的状态：回合开始 / 回合结束结算
+        // 法师·塑能学派的状态：回合开始 / 回合结束结算
         // ============================================================
 
         /// <summary>
@@ -2002,7 +2002,7 @@ namespace FingerDiceDuel.Core
         ///
         /// · 中毒：2 点毒素伤害，**不可被抵挡**（玩家确认：可能直接把他打死、跳过其行动）
         /// · 感电：1 点闪电伤害，自己 + **环上相邻**的玩家各一次，
-        ///         可被盾抵挡 / 游侠闪避 / 太极减免
+        ///         可被盾抵挡 / 游荡者·风流剑客闪避 / 太极减免
         ///
         /// ⚠️ 这两种伤害**不会再挂回状态**（玩家明确要求），否则会变成无法摆脱的循环。
         ///
@@ -2034,7 +2034,7 @@ namespace FingerDiceDuel.Core
                 PlayerState victim = shocked[i];
                 if (victim == null || !victim.IsAlive) continue;
 
-                // 走普通伤害流程（可被盾 / 太极抵挡；游侠若满足条件也能闪避）
+                // 走普通伤害流程（可被盾 / 太极抵挡；游荡者·风流剑客若满足条件也能闪避）
                 var ctx = new AttackContext(actor, victim, actor.LeftHand,
                                             StatusRules.ShockDamagePerTurn)
                 {
@@ -2079,7 +2079,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **某人的回合结束之后**的状态结算（燃烧）与**状态计数递减**。
         ///
-        /// · 燃烧：3 点火焰伤害，可被盾抵挡 / 游侠闪避 / 太极减免
+        /// · 燃烧：3 点火焰伤害，可被盾抵挡 / 游荡者·风流剑客闪避 / 太极减免
         /// · 递减：**目标自己的回合**结束时把所有状态计数 −1，归零即移除
         ///
         /// ⚠️ 递减放在这里（"他自己的回合结束"）而不是"每个回合都减" ——
@@ -2110,7 +2110,7 @@ namespace FingerDiceDuel.Core
             // ---- 状态计数递减（归零即移除）----
             actor.TickStatuses();
 
-            // ---- 距离修正递减（邪术师）：记在**目标**身上，用的也是他自己的回合 ----
+            // ---- 距离修正递减（邪术师·旧日支配者）：记在**目标**身上，用的也是他自己的回合 ----
             TickDistancePenalties(actor);
         }
 
@@ -2120,7 +2120,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **"放弃攻击"时也要挂状态。**
         ///
-        /// 玩家确认：法师放弃攻击是为了给**下一次**攻击铺类型，这一击本就该白扔。
+        /// 玩家确认：法师·塑能学派放弃攻击是为了给**下一次**攻击铺类型，这一击本就该白扔。
         /// 但"放弃"≠"没命中" —— 那个类型是给**后续**命中用的，
         /// 而这一次的命中同样应该正常消耗类型并挂状态。
         ///
@@ -2153,7 +2153,7 @@ namespace FingerDiceDuel.Core
                                           result?.ResultValue ?? 0);
             StatusEffect status = applier.StatusToApplyOnHit(probe);
 
-            if (actor.Character is Characters.SpecialLogics.WizardLogic mage)
+            if (actor.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
                 mage.ConsumeDamageType();
 
             if (status == StatusEffect.None) return;
@@ -2165,7 +2165,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。
+        /// 游荡者·盗贼**发起过偷窃**是在第几回合（−1 = 没偷过）。
         /// </summary>
         public int LastStealTurn => _lastStealTurn;
 
@@ -2185,7 +2185,7 @@ namespace FingerDiceDuel.Core
         /// <paramref name="targetHand"/> 只用于"指定挨打的人"（结果出来后才定），
         /// 可以传 null —— 那就走默认的"打第一位对手"。
         /// </summary>
-        /// <exception cref="InvalidOperationException">不是赌徒、或比赛已结束时抛出。</exception>
+        /// <exception cref="InvalidOperationException">不是游荡者·赌徒、或比赛已结束时抛出。</exception>
         public TurnResult ExecuteGamble(PlayerState actor, Hand actedHand, Random rng,
                                         Hand targetHand = null)
         {
@@ -2200,7 +2200,7 @@ namespace FingerDiceDuel.Core
         ///    "开赌掷点 -> 选打谁 -> 结算"，也就是**掷点与结算分属两次调用**。
         ///    如果结算时又调 <see cref="ExecuteGamble"/>，就会**再掷一次**，
         ///    玩家看到的点数与实际结算的点数不同
-        ///    （玩家实测："先说投出了 4，点战士时又说投出 2 无效果"）。
+        ///    （玩家实测："先说投出了 4，点战士·破阵者时又说投出 2 无效果"）。
         ///
         ///    所以点数只能由**开赌那一次**决定，之后一路传递。
         /// </summary>
@@ -2213,7 +2213,7 @@ namespace FingerDiceDuel.Core
             if (actor == null)
                 throw new InvalidOperationException("非法赌博：行动方为空。");
             if (!(actor.Character is GamblerLogic))
-                throw new InvalidOperationException("非法赌博：该角色不是赌徒。");
+                throw new InvalidOperationException("非法赌博：该角色不是游荡者·赌徒。");
             if (actedHand == null || !actor.Owns(actedHand))
                 throw new InvalidOperationException("非法赌博：运算源必须是自己的手。");
             if (actedHand.IsLocked)
@@ -2275,7 +2275,7 @@ namespace FingerDiceDuel.Core
             _brokenThisTurn.Clear();
 
             // ⚠️ "本回合放弃攻击"的标记在 `ResolveMageStatusIntent` 里清零 ——
-            //    见那里的详解（无头路径原来从不清零，法师第一次放弃后
+            //    见那里的详解（无头路径原来从不清零，法师·塑能学派第一次放弃后
             //    标记永久为 true：伤害永久被抑制、类型永远被追问）。
 
             // 0. 说明：本方法**不**清理 ShieldState.Broken。
@@ -2293,9 +2293,9 @@ namespace FingerDiceDuel.Core
             PlayerState opponent = DamageTargetPlayer ?? addendOwner ?? GetOpponent(actor);
             result.Defender = opponent;
 
-            // ⚠️ **武僧的 0 被他人触碰 -> 立即变 1**（玩家确认的规则）。
+            // ⚠️ **武僧·太极宗的 0 被他人触碰 -> 立即变 1**（玩家确认的规则）。
             //
-            //    触发条件：**别人把那只见习武僧的手当作加数用**。
+            //    触发条件：**别人把那只见习武僧·太极宗的手当作加数用**。
             //    且"当成 1 参与本次运算" —— 所以必须在这里（结算前）改，
             //    而不是结算后（那样本次运算的结果就不对了）。
             //
@@ -2303,17 +2303,17 @@ namespace FingerDiceDuel.Core
             if (targetHand != null
                 && addendOwner != null
                 && !ReferenceEquals(addendOwner, actor)
-                && addendOwner.Character is MonkLogic)
+                && addendOwner.Character is WayOfTheTaiChiLogic)
             {
                 int before = targetHand.Value;
-                MonkLogic.OnTouchedAsAddend(targetHand);
+                WayOfTheTaiChiLogic.OnTouchedAsAddend(targetHand);
 
                 if (targetHand.Value != before)
                 {
                     // 手值变了 -> 参与运算的数字也要跟着变
                     targetValue = targetHand.Value;
                     result.TargetHandValue = targetValue;
-                    MonkZeroTouchNote = $"{addendOwner.Name}（武僧）的手被触碰，" +
+                    WayOfTheTaiChiZeroTouchNote = $"{addendOwner.Name}（武僧·太极宗）的手被触碰，" +
                                         $"{before} 变成 {targetHand.Value}";
                 }
             }
@@ -2357,7 +2357,7 @@ namespace FingerDiceDuel.Core
                 effect = actedHand.PerformOperation(targetValue);
             }
 
-            // 2b. 角色可以**改写效果类型**（圣武士的 4/6 改为合出护盾）。
+            // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
             //
             //     必须在这里做：手值已经变成结果值（盾就是 5），
             //     但护盾状态还没设 —— 改写后要由我们补上状态，
@@ -2375,7 +2375,7 @@ namespace FingerDiceDuel.Core
                     //
                     // ⚠️ **不要在这里调 OnShieldFormed** —— 效果分派处
                     //    （后面那段按 effect 分发的代码）已经会调一次，
-                    //    这里再调就变成"合一次盾触发两次"（圣武士的冲击
+                    //    这里再调就变成"合一次盾触发两次"（圣武士·奉献之誓的冲击
                     //    因此造成 4 点而不是 2 点，测试抓到）。
                     actedHand.SetShieldState(effect == HandEffectType.Shield
                         ? ShieldState.Formed
@@ -2383,7 +2383,7 @@ namespace FingerDiceDuel.Core
                 }
             }
 
-            // 2c. **冰冻**（法师的寒冷）：运算得到的结果**减半（向下取整）**。
+            // 2c. **冰冻**（法师·塑能学派的寒冷）：运算得到的结果**减半（向下取整）**。
             //
             //     玩家原话："运算后得到的结果减半（向下取整）。如算出 9 变成 4，
             //     算出 5 变成 2。"
@@ -2414,13 +2414,13 @@ namespace FingerDiceDuel.Core
                 }
             }
 
-            // 2d. **法师：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
+            // 2d. **法师·塑能学派：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
             //
             //     ⚠️ 必须放在**这里**（结果已经算出来）：
-            //        `WizardLogic.CollectPreTurnChoices` 用 `context.ResultValue`
+            //        `SchoolOfEvocationLogic.CollectPreTurnChoices` 用 `context.ResultValue`
             //        判断"结果是不是 4/6/8"，而在 ExecuteTurn 入口处结果还没算出来。
             //        我第一版放在入口，于是**永远问不出东西**、
-            //        AI 法师从不挂状态（新测试立刻抓到）。
+            //        AI 法师·塑能学派从不挂状态（新测试立刻抓到）。
             //
             //     与冰冻同一位置，也都在"效果分派之前" —— 因为这一步会决定
             //     本次要不要真的打伤害（放弃 = 不造成伤害）。
@@ -2439,7 +2439,7 @@ namespace FingerDiceDuel.Core
             //    结算完再放回去（类型本来就是跨回合的，这样做语义一致）。
             DamageType unspent = DamageType.None;
 
-            if (actor?.Character is Characters.SpecialLogics.WizardLogic mageForStash
+            if (actor?.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mageForStash
                 && mageForStash.WantsToAbandonThisTurn)
             {
                 unspent = mageForStash.ConsumeDamageType();
@@ -2452,7 +2452,7 @@ namespace FingerDiceDuel.Core
             //    不该再挂"碎盾"标签 —— 否则界面会出现"值为 8 的手显示碎盾展开"。
             //
             //    反过来，只要手值还是 5，Broken 就一直保留（可跨回合、可无限期），
-            //    战士随时都能用另一只手合出新盾把它修好。
+            //    战士·破阵者随时都能用另一只手合出新盾把它修好。
             if (result.ShieldBrokenBeforeOp
                 && actedHand.State == ShieldState.None
                 && actedHand.Value == 5)
@@ -2466,7 +2466,7 @@ namespace FingerDiceDuel.Core
 
             // 3. 效果分派前的"**双 9 抢跑**"阶段。
             //
-            //    牧师的规则要求：运算出双 9 时，**先自动回自己 9 点**，
+            //    牧师·生命领域的规则要求：运算出双 9 时，**先自动回自己 9 点**，
             //    然后再结算"运算出 9"那次回复。所以这一步必须排在效果分派之前。
             //
             //    判定用的是"运算后的双手值"：运算源已经是结果值，
@@ -2485,7 +2485,7 @@ namespace FingerDiceDuel.Core
             // 3b. 分派效果
             int healthBefore = actor.Health;
 
-            // 牧师可以把 4/6/8 **当回复用**（回复量就是该数字，不受攻防影响）。
+            // 牧师·生命领域可以把 4/6/8 **当回复用**（回复量就是该数字，不受攻防影响）。
             // 这一步在分派**之前**完成，因为"选了回复"就完全不走攻击分支。
             //
             // 返回 null 表示"玩家选的是攻击" -> 走正常攻击路径；
@@ -2495,13 +2495,13 @@ namespace FingerDiceDuel.Core
             //   ① 前置抉择（**选目标手之前**）里玩家选的是"攻击"还是"回复"
             //   ② 若选了回复，再解析"回复给谁"（**选目标手之后**才问）
             PlayerState clericHealTarget = null;
-            if (CharacterBehaviors.FirstImplementer<ClericLogic>(actor) != null && isAttackEffect(effect))
+            if (CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor) != null && isAttackEffect(effect))
             {
                 var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
 
-                if (ClericLogic.ChoseToHeal(actor, this, sink, AnsweredLookup))
-                    clericHealTarget = ClericLogic.ResolveTarget(actor, this, sink,
-                                                                 HandEffect.ClericHealTarget);
+                if (LifeDomainLogic.ChoseToHeal(actor, this, sink, AnsweredLookup))
+                    clericHealTarget = LifeDomainLogic.ResolveTarget(actor, this, sink,
+                                                                 HandEffect.LifeDomainHealTarget);
             }
 
 
@@ -2512,14 +2512,14 @@ namespace FingerDiceDuel.Core
                 case HandEffectType.Attack6:
                 case HandEffectType.Attack8:
                     {
-                        // ① 牧师选择"当回复用" -> 不造成伤害，改为回复
+                        // ① 牧师·生命领域选择"当回复用" -> 不造成伤害，改为回复
                         if (clericHealTarget != null)
                         {
-                            int amount = ClericLogic.HealAmountFor(effect);
+                            int amount = LifeDomainLogic.HealAmountFor(effect);
                             PlayerState target = clericHealTarget;
 
                             int before = target?.Health ?? 0;
-                            ClericLogic.CleanseAndHeal(actor, target, amount, this);
+                            LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -2544,14 +2544,14 @@ namespace FingerDiceDuel.Core
 
                             // ⚠️⚠️ **但"放弃攻击"不等于"没命中"。**
                             //
-                            //    玩家确认：法师放弃攻击是为了**给下一次攻击铺类型**，
+                            //    玩家确认：法师·塑能学派放弃攻击是为了**给下一次攻击铺类型**，
                             //    这一次本来就该白扔。所以这里的语义是
                             //    "命中但不造成伤害" —— 而火焰/毒素等状态挂在
                             //    **下一次**命中的攻击上。
                             //
                             //    ⚠️ 我原来直接 `break`，于是**根本没有创建 AttackContext**，
                             //       而"命中即挂状态"是挂在 `AttackContext.Resolve` 末尾的 ——
-                            //       结果就是"AI 法师铺了类型却永远挂不上状态"。
+                            //       结果就是"AI 法师·塑能学派铺了类型却永远挂不上状态"。
                             //       这里补一次 `ApplyAttackerStatus`，让放弃的那一击
                             //       也能正常消耗类型并挂状态（与普通命中同一套判定）。
 
@@ -2569,7 +2569,7 @@ namespace FingerDiceDuel.Core
 
                         // ③ 正常攻击
                         //
-                        // ⚠️ 顺序很重要：**先让角色做"换射程"的副作用**（战士碎盾），
+                        // ⚠️ 顺序很重要：**先让角色做"换射程"的副作用**（战士·破阵者碎盾），
                         //    再检查距离 —— 否则"碎盾换无限距离"永远来不及生效。
                         //
                         // 只有结果是攻击时才需要这一步：非攻击不需要攻击距离。
@@ -2580,8 +2580,8 @@ namespace FingerDiceDuel.Core
                             || (hadRangeShield && rangeShield.State == ShieldState.Broken);
                         //
                         // 攻击距离：只有"本次攻击在范围内"才落实伤害。
-                        //   距离 1 的角色（战士等）在 2v2 里够不到环上对角的对手；
-                        //   咒术师 / 牧师无限；战士碎盾 / 游侠强化可让本次无限。
+                        //   距离 1 的角色（战士·破阵者等）在 2v2 里够不到环上对角的对手；
+                        //   法师·咒法学派 / 牧师·生命领域无限；战士·破阵者碎盾 / 游荡者·风流剑客强化可让本次无限。
                         //
                         // ⚠️ 距离不足时**保留运算结果**（手值照常改变）但不造成伤害 ——
                         //    与"放弃攻击"同一处理方式，避免手值回退（踩过的坑）。
@@ -2598,7 +2598,7 @@ namespace FingerDiceDuel.Core
 
                         var ctx = new AttackContext(actor, opponent, actedHand, (int)effect);
                         ctx.StartedFromStealth = startedFromStealth;
-                        ctx.InflictsBleed = activelyBrokeShield && CharacterBehaviors.FirstImplementer<FighterLogic>(actor) != null;
+                        ctx.InflictsBleed = activelyBrokeShield && CharacterBehaviors.FirstImplementer<BreakerLogic>(actor) != null;
                         ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
@@ -2610,13 +2610,13 @@ namespace FingerDiceDuel.Core
                         ctx.AiDecisionLookup = AiDecisionLookup;
                         ctx.ChoiceGatherer = ChoiceGatherer;
 
-                        // 妖术师的"是否取消"要回读玩家在收集阶段的回答 ——
-                        // 与游侠闪避走的是同一条通路。
+                        // 邪术师·至高妖精的"是否取消"要回读玩家在收集阶段的回答 ——
+                        // 与游荡者·风流剑客闪避走的是同一条通路。
                         ctx.AnsweredLookupFor = AnsweredLookupFor;
                         ctx.AskedCancelLookup = AskedCancelLookup;
 
                         // ⚠️ **把本次攻击的距离交给攻击方角色** ——
-                        //    牧师 / 妖术师 / 法师按"距离 1 内 / 外"分型
+                        //    牧师·生命领域 / 邪术师·至高妖精 / 法师·塑能学派按"距离 1 内 / 外"分型
                         //    （玩家规则），而 AttackContext 刻意不持有对局引用。
                         if (actor.Character is CharacterTemplate template)
                             template.LastAttackDistance = DistanceBetween(actor, opponent);
@@ -2644,23 +2644,23 @@ namespace FingerDiceDuel.Core
                 case HandEffectType.Heal:
                     {
                         // 默认：回复行动方自己。
-                        // 但角色可以"接管"这一步（例如牧师的 9 能回给对手），
+                        // 但角色可以"接管"这一步（例如牧师·生命领域的 9 能回给对手），
                         // 接管时不再执行默认治疗，避免一次 9 回两次。
                         if (CharacterBehaviors.FirstImplementer<IHealOverride>(actor) is IHealOverride healer)
                         {
                             var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                             PlayerState target = healer.ApplyHeal(actor, this, sink);
 
-                            // 回复量：角色可以自己声明（巨人 = 另一只手点数 × 2），
-                            // 否则用牧师那套"按效果类型算"（9 回 9）。
+                            // 回复量：角色可以自己声明（野蛮人·巨人道途 = 另一只手点数 × 2），
+                            // 否则用牧师·生命领域那套"按效果类型算"（9 回 9）。
                             //
-                            // ⚠️ 必须让角色能接管这一处 —— 巨人的 9 是"两段回复"，
+                            // ⚠️ 必须让角色能接管这一处 —— 野蛮人·巨人道途的 9 是"两段回复"，
                             //    总量不是固定的 9（玩家规则），写死会让它的回复量永远错。
                             int amount = CharacterBehaviors.FirstImplementer<IHealAmountProvider>(actor) is IHealAmountProvider amountProvider
                                 ? amountProvider.HealAmountOf(actor, this)
-                                : ClericLogic.HealAmountFor(effect);
+                                : LifeDomainLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
-                            if (healer is ClericLogic) ClericLogic.CleanseAndHeal(actor, target, amount, this);
+                            if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
                             else target?.Heal(amount);
 
                             result.Healed = ReferenceEquals(target, actor)
@@ -2683,14 +2683,14 @@ namespace FingerDiceDuel.Core
                     }
             }
 
-            // 3c. "运算后"钩子（狼人的双手和为 7 等）。
+            // 3c. "运算后"钩子（野蛮人·野兽道途的双手和为 7 等）。
             //     放在效果分派之后、"胜负判定"之前，这样钩子造成的回血/成长能立刻算进判定。
             //     只允许读取玩家**在运算前**已经做好的选择，结算中不能再向 UI 索取输入。
             actor.Character?.OnOperationResolved(
                 actor, actedHand, result.ActedHandValueBefore, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
 
-            // 3d. 收下角色在结算中登记的"追加攻击"（剑客），供战报单独显示一行。
+            // 3d. 收下角色在结算中登记的"追加攻击"（战士·剑士），供战报单独显示一行。
             result.ExtraAttack = PendingExtraAttack;
             PendingExtraAttack = null;
 
@@ -2733,9 +2733,9 @@ namespace FingerDiceDuel.Core
             // ⚠️ **把"放弃攻击"暂存的伤害类型放回去**（见上面取下的地方）。
             //
             //    玩家确认："放弃这次攻击，为下一次攻击指定伤害类型" ——
-            //    所以类型必须跨过这次结算、留在法师身上等下一次攻击。
+            //    所以类型必须跨过这次结算、留在法师·塑能学派身上等下一次攻击。
             if (unspent != DamageType.None
-                && actor?.Character is Characters.SpecialLogics.WizardLogic mageRestore)
+                && actor?.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mageRestore)
             {
                 mageRestore.SetPendingDamageType(unspent);
                 NoteSkill(actor, "附魔", $"下一次攻击：{StatusNames.Of(unspent)}");
@@ -2864,7 +2864,7 @@ namespace FingerDiceDuel.Core
             if (IsGameOver)
                 throw new InvalidOperationException("非法跳过：比赛已结束。");
 
-            // ⚠️ 必须用**实例版**：妖术师的跳过条件要看别人的体力，
+            // ⚠️ 必须用**实例版**：邪术师·至高妖精的跳过条件要看别人的体力，
             //    静态版传 null 会让它永远判非法（测试抓到：
             //    "非法跳过：当前不满足跳过回合的条件"）。
             if (!CanSkipTurnFor(CurrentPlayer))
@@ -2874,7 +2874,7 @@ namespace FingerDiceDuel.Core
             PlayerState opponent = GetOpponent(CurrentPlayer);
             _brokenThisTurn.Clear();
 
-            // 通知角色"跳过已发生"（刺客用它消耗掉潜行的那次跳过机会）
+            // 通知角色"跳过已发生"（游荡者·刺客用它消耗掉潜行的那次跳过机会）
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
             PlayerState skippedActor = CurrentPlayer;
@@ -2887,7 +2887,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **已经校验过条件**的跳过（供"先做副作用、再结束回合"的技能使用）。
         ///
-        /// 为什么需要它：妖术师的流程是
+        /// 为什么需要它：邪术师·至高妖精的流程是
         /// "校验可发动 -> 改某人体力 -> 结束回合"，
         /// 而**改完体力之后条件就不成立了**（所有人血量被改成一致），
         /// 再走一次校验会抛"非法跳过"（测试抓到）。
@@ -2933,13 +2933,13 @@ namespace FingerDiceDuel.Core
         /// 该玩家当前是否可以跳过回合。
         ///
         /// 默认规则：两只手都是成型护盾（见 RULES.md §14）。
-        /// 但角色可以自己接管（<see cref="ITurnSkipRule"/>），例如刺客的潜行。
+        /// 但角色可以自己接管（<see cref="ITurnSkipRule"/>），例如游荡者·刺客的潜行。
         /// </summary>
         public static bool CanSkipTurn(PlayerState player)
         {
             if (player == null) return false;
 
-            // 角色可以自己接管跳过规则（例如刺客的潜行）
+            // 角色可以自己接管跳过规则（例如游荡者·刺客的潜行）
             if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
             {
                 rule.SyncSkipState(player);
@@ -2950,13 +2950,13 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 记录一次圣武士的**冲击**，供战报显示。
+        /// 记录一次圣武士·奉献之誓的**冲击**，供战报显示。
         ///
         /// 为什么必须写进战报：冲击是"合盾 / 碎盾的副产品"，
         /// 不占一次运算，所以它**不会**出现在 TurnResult 里。
         /// 光看血条无法区分"被盾挡住了"和"根本没触发"（玩家实测报告过疑惑）。
         ///
-        /// ⚠️ 冲击现在**可以被盾牌挡下 / 被游侠闪避**（玩家要求的平衡性改动），
+        /// ⚠️ 冲击现在**可以被盾牌挡下 / 被游荡者·风流剑客闪避**（玩家要求的平衡性改动），
         ///    所以文案要反映实际结果，不能一律说"造成 N 点"。
         /// </summary>
         public void NoteShock(PlayerState source, PlayerState target,
@@ -2988,7 +2988,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 该玩家当前是否可以跳过回合（**带 GameManager** 的版本）。
         ///
-        /// ⚠️ 有些角色的跳过条件要**看别人**（妖术师：场上必须有人体力与自己不同），
+        /// ⚠️ 有些角色的跳过条件要**看别人**（邪术师·至高妖精：场上必须有人体力与自己不同），
         ///    没有 manager 就查不到 —— 所以调用方应优先用这个重载。
         ///    静态版保留给无法拿到 manager 的老调用点。
         /// </summary>
@@ -3006,9 +3006,9 @@ namespace FingerDiceDuel.Core
 
             // ⚠️⚠️ **玩家确认（本轮）："无法合步"也正式算作可以跳过回合。**
             //
-            //    触发场景：**目盲 + 邪术师的距离修正**。
+            //    触发场景：**目盲 + 邪术师·旧日支配者的距离修正**。
             //      · 目盲只允许用"与自己距离正好 1"的人的手当被加数；
-            //      · 邪术师命中后把这一对的距离推到 3；
+            //      · 邪术师·旧日支配者命中后把这一对的距离推到 3；
             //      · 于是对方没有任何可用的被加数（自己的手不许自己加）——
             //        一手都走不出来。
             //
@@ -3066,7 +3066,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 破除某玩家一面护盾，并通知其角色钩子（供战士连锁破盾等使用）。
+        /// 破除某玩家一面护盾，并通知其角色钩子（供战士·破阵者连锁破盾等使用）。
         /// 使用 _brokenThisTurn 防止递归。
         /// </summary>
         public void BreakShieldAndNotify(PlayerState owner, Hand shield)
@@ -3079,7 +3079,7 @@ namespace FingerDiceDuel.Core
 
             // ⚠️ 这条路径是"**被动被打碎**"（被攻击消耗、或被连锁破盾打碎）。
             //    它与"自己主动破盾"（`NotifyOwnShieldBroken`）**不是同一件事** ——
-            //    圣武士要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
+            //    圣武士·奉献之誓要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
             NotifyOwnShieldBroken(owner, shield);
             owner.Character?.OnOtherShieldBroken(owner, shield, this);
         }
@@ -3112,19 +3112,19 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️⚠️ 为什么必须有一个统一入口：
         ///
-        ///   `SuppressAttackDamage`（法师放弃攻击 = 这一击不造成伤害）
-        ///   与 `WizardLogic.WantsToAbandonThisTurn` 的语义都是
+        ///   `SuppressAttackDamage`（法师·塑能学派放弃攻击 = 这一击不造成伤害）
+        ///   与 `SchoolOfEvocationLogic.WantsToAbandonThisTurn` 的语义都是
         ///   **"本回合"** —— 但它们原来**都没有每回合重置**：
         ///
         ///     · `BoardController`（界面路径）自己清了；
         ///     · **无头路径（MatchRunner / 测试）从不清**。
         ///
-        ///   后果：法师**第一次**放弃攻击之后，`SuppressAttackDamage`
+        ///   后果：法师·塑能学派**第一次**放弃攻击之后，`SuppressAttackDamage`
         ///   永久为 true —— **他再也打不出任何伤害**。
         ///   于是"放弃换来的类型"永远用不掉（消耗它的攻击永远不会落地），
         ///   状态也就永远挂不上。表现就是
-        ///   "AI 法师问了 7000 多次要不要放弃、铺了 8 万次类型，
-        ///     一次状态都没挂上"，而且法师的胜率被人为压得极低。
+        ///   "AI 法师·塑能学派问了 7000 多次要不要放弃、铺了 8 万次类型，
+        ///     一次状态都没挂上"，而且法师·塑能学派的胜率被人为压得极低。
         ///
         ///   界面路径也走这里 —— 两边一套逻辑，不会再漂移。
         /// </summary>
@@ -3134,12 +3134,12 @@ namespace FingerDiceDuel.Core
             SuppressAttackDamage = false;
 
             if (CurrentPlayer?.Character
-                is Characters.SpecialLogics.WizardLogic wizard)
+                is Characters.SpecialLogics.SchoolOfEvocationLogic schoolOfEvocation)
             {
-                wizard.WantsToAbandonThisTurn = false;
+                schoolOfEvocation.WantsToAbandonThisTurn = false;
             }
 
-            // ⚠️ **吟游诗人的"本回合受过伤 / 回过血"标记，每次行动开始全部复位。**
+            // ⚠️ **吟游诗人·勇气学院的"本回合受过伤 / 回过血"标记，每次行动开始全部复位。**
             //
             //    为什么是"所有人"而不是"当前行动者"：
             //    触发条件是"本回合我受过伤"，而受伤的往往不是行动者
@@ -3151,7 +3151,7 @@ namespace FingerDiceDuel.Core
             SeedBrokenShields();
         }
 
-        /// <summary>刷新狂战士 / 浪客等角色的动态攻防。</summary>
+        /// <summary>刷新野蛮人·狂战士道途 / 战士·战术家等角色的动态攻防。</summary>
         public void RefreshDynamicStats()
         {
             for (int i = 0; i < _players.Count; i++)
@@ -3167,12 +3167,12 @@ namespace FingerDiceDuel.Core
         /// **开局掷出的 5 要带上"破碎的盾"的状态。**
         ///
         /// 玩家实测 bug："初始的 5 没有盾的词条，导致在这只手没运算过的情况下，
-        /// 另一只手生成 5 时战士不会修复这个没有词条的盾。"
+        /// 另一只手生成 5 时战士·破阵者不会修复这个没有词条的盾。"
         ///
         /// 规则口径（玩家确认）：
         ///   · **5 本身就是盾**的角色 -> 开局那只 5 的手算"**破碎的盾**"
-        ///     （所以战士合出新盾时能把它修好）；
-        ///   · **5 不是盾**的角色（巨人把 5 变成两段攻击、武僧把 5 变成太极 …）
+        ///     （所以战士·破阵者合出新盾时能把它修好）；
+        ///   · **5 不是盾**的角色（野蛮人·巨人道途把 5 变成两段攻击、武僧·太极宗把 5 变成太极 …）
         ///     -> 不加任何盾状态。
         ///
         /// ⚠️ 只补 `State == None` 的 5 —— 正常运算生成的盾是 `Formed`，
@@ -3203,16 +3203,16 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 这个角色的「5」是不是**盾**。
         ///
-        /// 判据交给角色自己（`IHandEffectRewriter`）：巨人的 5 是两段攻击、
-        /// 武僧的 5 是太极 —— 它们都会把 5 改写成别的东西。
+        /// 判据交给角色自己（`IHandEffectRewriter`）：野蛮人·巨人道途的 5 是两段攻击、
+        /// 武僧·太极宗的 5 是太极 —— 它们都会把 5 改写成别的东西。
         /// 没有改写者的角色，5 就是标准的合盾。
         /// </summary>
         private bool FiveIsShield(PlayerState owner, Hand hand)
         {
             if (owner?.Character == null) return true;
 
-            // ⚠️ 武僧的 5 是「太极」，不是盾。
-            if (owner.Character is MonkLogic) return false;
+            // ⚠️ 武僧·太极宗的 5 是「太极」，不是盾。
+            if (owner.Character is WayOfTheTaiChiLogic) return false;
 
             if (!(CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(owner)
                   is IHandEffectRewriter rewriter))
@@ -3248,7 +3248,7 @@ namespace FingerDiceDuel.Core
         /// **本次攻击的距离覆盖**（-1 = 用角色自己的基础距离）。
         ///
         /// 由上层（BoardController）在收完"换射程"的抉择后设定 ——
-        /// 目前两个来源：战士碎盾换射程、游侠强化射击。
+        /// 目前两个来源：战士·破阵者碎盾换射程、游荡者·风流剑客乘风突刺。
         /// 调用方必须在结算后复位。
         /// </summary>
         public int RangeOverride { get; set; } = -1;

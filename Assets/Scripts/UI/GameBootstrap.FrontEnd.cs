@@ -107,7 +107,7 @@ namespace FingerDiceDuel.UI
             text.alignment = TextAnchor.MiddleLeft;
             if (emblem)
             {
-                FrontEndArt.Emblem(panel, "SelectedEmblem", "soldier", new Vector2(0, height / 2 + 170), new Vector2(290, 290));
+                FrontEndArt.Emblem(panel, "SelectedEmblem", "fighter_champion", new Vector2(0, height / 2 + 170), new Vector2(290, 290));
                 FrontEndArt.Image(panel, "SelectedDivider", "UI/divider_horizontal", new Vector2(0, height / 2 + 10), new Vector2(width - 30, 24));
             }
         }

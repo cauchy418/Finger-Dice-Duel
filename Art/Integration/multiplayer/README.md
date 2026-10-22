@@ -1,3 +1,5 @@
+> 历史接入记录：截图与日志保留该阶段旧名。2026-10-23 的职业·子职重构验收见 [最新记录](../profession-subclass/README.md)。
+
 # 多人战斗美术与战斗记录
 
 运行编辑器菜单 `Finger Dice Duel/Preview/Multiplayer Battle Art`，输出本目录的真实引擎截图及 `validation.txt`。

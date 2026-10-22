@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -62,8 +62,8 @@ namespace FingerDiceDuel.Tests
         public void Self_and_mate_resolve_to_the_two_different_lanes()
         {
             GameManager game = Make2v2(
-                CharacterDefinition.Curseweaver, CharacterDefinition.Soldier,
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                CharacterDefinition.SchoolOfConjuration, CharacterDefinition.Champion,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
                 out List<PlayerState> seated, out _);
 
             PlayerState me = seated[0];        // 座位 1，1&4 一队
@@ -87,8 +87,8 @@ namespace FingerDiceDuel.Tests
         public void Focus_bonus_goes_only_to_attacks_on_the_focus_target()
         {
             GameManager game = Make2v2(
-                CharacterDefinition.Curseweaver, CharacterDefinition.Soldier,
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                CharacterDefinition.SchoolOfConjuration, CharacterDefinition.Champion,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
                 out List<PlayerState> seated, out List<GreedyChoiceProvider> ais);
 
             PlayerState me = seated[0];
@@ -127,8 +127,8 @@ namespace FingerDiceDuel.Tests
         public void Focus_bonus_does_not_apply_to_shields()
         {
             GameManager game = Make2v2(
-                CharacterDefinition.Curseweaver, CharacterDefinition.Soldier,
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                CharacterDefinition.SchoolOfConjuration, CharacterDefinition.Champion,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
                 out List<PlayerState> seated, out List<GreedyChoiceProvider> ais);
 
             PlayerState me = seated[0];
@@ -158,8 +158,8 @@ namespace FingerDiceDuel.Tests
             // 这里让队友车道的敌人掉到 10 血（基线一定打他，但还没进斩杀线），
             // 集火 Self 仍应改打自己车道那个满血的敌人。
             GameManager game = Make2v2(
-                CharacterDefinition.Curseweaver, CharacterDefinition.Soldier,
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                CharacterDefinition.SchoolOfConjuration, CharacterDefinition.Champion,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
                 out List<PlayerState> seated, out List<GreedyChoiceProvider> ais);
 
             PlayerState me = seated[0];
@@ -194,11 +194,11 @@ namespace FingerDiceDuel.Tests
         public void Mate_is_inert_for_a_melee_actor_who_cannot_reach_the_mate_lane()
         {
             GameManager game = Make2v2(
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
-                CharacterDefinition.Soldier, CharacterDefinition.Soldier,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
+                CharacterDefinition.Champion, CharacterDefinition.Champion,
                 out List<PlayerState> seated, out List<GreedyChoiceProvider> ais);
 
-            PlayerState me = seated[0];        // 士兵：射程 1
+            PlayerState me = seated[0];        // 战士·勇士：射程 1
             PlayerState mateLane = seated[2];  // 座位 3：离队友最近，但离我距离 2
 
             SetAllHands(seated, 3, 1);

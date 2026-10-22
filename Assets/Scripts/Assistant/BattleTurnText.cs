@@ -53,7 +53,7 @@ namespace FingerDiceDuel.Assistant
                 case HandEffectType.Attack6:
                 case HandEffectType.Attack8:
                     string outcome;
-                    if (t.WasCancelled) outcome = $"被{t.CancelledBy ?? "妖术师"}取消，造成 0 点伤害";
+                    if (t.WasCancelled) outcome = $"被{t.CancelledBy ?? "邪术师·至高妖精"}取消，造成 0 点伤害";
                     else if (t.HitCount > 1)
                     {
                         var parts = new List<string>();
@@ -62,7 +62,7 @@ namespace FingerDiceDuel.Assistant
                         parts.Add($"共造成 {t.DamageDealt} 点伤害");
                         outcome = (t.HitCount == 2 ? "两段攻击" : $"{t.HitCount} 段攻击") + "，" + string.Join("，", parts);
                     }
-                    else if (t.WasDodged) outcome = string.IsNullOrEmpty(t.DodgeReason) ? "被游侠闪避" : t.DodgeReason;
+                    else if (t.WasDodged) outcome = string.IsNullOrEmpty(t.DodgeReason) ? "被游荡者·风流剑客闪避" : t.DodgeReason;
                     else if (t.WasBlocked) outcome = "被护盾挡下";
                     else outcome = $"造成 {t.DamageDealt} 点伤害";
                     string type = t.AttackType == AttackDamageType.None ? "" : $"（{AttackDamageTypes.NameOf(t.AttackType)}）";

@@ -1,3 +1,5 @@
+> 历史接入记录：截图与日志保留该阶段旧名。2026-10-23 的职业·子职重构验收见 [最新记录](../profession-subclass/README.md)。
+
 # 冻结、跳过回合与放弃攻击验收
 
 2026-10-22。编辑器菜单：`Finger Dice Duel/Preview/Turn Skip and Give Up`。本目录截图均为团结引擎运行时 Canvas 的真实渲染。

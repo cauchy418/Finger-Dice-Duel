@@ -487,15 +487,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "soldier",
-      "group": "Classes",
-      "path": "Classes/soldier.png",
+      "key": "fighter_champion",
+      "group": "Subclasses",
+      "path": "Subclasses/fighter_champion.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/soldier.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/fighter_champion.png",
       "nativeWidth": 428,
       "nativeHeight": 429,
       "crop": {
@@ -509,15 +509,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "fighter",
-      "group": "Classes",
-      "path": "Classes/fighter.png",
+      "key": "fighter_breaker",
+      "group": "Subclasses",
+      "path": "Subclasses/fighter_breaker.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/fighter.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/fighter_breaker.png",
       "nativeWidth": 428,
       "nativeHeight": 429,
       "crop": {
@@ -531,15 +531,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "curseweaver",
-      "group": "Classes",
-      "path": "Classes/curseweaver.png",
+      "key": "wizard_school_of_conjuration",
+      "group": "Subclasses",
+      "path": "Subclasses/wizard_school_of_conjuration.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/curseweaver.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/wizard_school_of_conjuration.png",
       "nativeWidth": 428,
       "nativeHeight": 429,
       "crop": {
@@ -553,15 +553,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "barbarian",
-      "group": "Classes",
-      "path": "Classes/barbarian.png",
+      "key": "barbarian_path_of_the_warden",
+      "group": "Subclasses",
+      "path": "Subclasses/barbarian_path_of_the_warden.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/barbarian.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_warden.png",
       "nativeWidth": 429,
       "nativeHeight": 429,
       "crop": {
@@ -575,15 +575,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "cleric",
-      "group": "Classes",
-      "path": "Classes/cleric.png",
+      "key": "cleric_life_domain",
+      "group": "Subclasses",
+      "path": "Subclasses/cleric_life_domain.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/cleric.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/cleric_life_domain.png",
       "nativeWidth": 429,
       "nativeHeight": 430,
       "crop": {
@@ -597,15 +597,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "ranger",
-      "group": "Classes",
-      "path": "Classes/ranger.png",
+      "key": "rogue_swashbuckler",
+      "group": "Subclasses",
+      "path": "Subclasses/rogue_swashbuckler.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/ranger.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/rogue_swashbuckler.png",
       "nativeWidth": 429,
       "nativeHeight": 430,
       "crop": {
@@ -619,15 +619,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "werewolf",
-      "group": "Classes",
-      "path": "Classes/werewolf.png",
+      "key": "barbarian_path_of_the_beast",
+      "group": "Subclasses",
+      "path": "Subclasses/barbarian_path_of_the_beast.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/werewolf.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_beast.png",
       "nativeWidth": 429,
       "nativeHeight": 430,
       "crop": {
@@ -641,15 +641,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "swordsman",
-      "group": "Classes",
-      "path": "Classes/swordsman.png",
+      "key": "fighter_swordsman",
+      "group": "Subclasses",
+      "path": "Subclasses/fighter_swordsman.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-a-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/swordsman.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/fighter_swordsman.png",
       "nativeWidth": 429,
       "nativeHeight": 430,
       "crop": {
@@ -663,15 +663,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "ninja",
-      "group": "Classes",
-      "path": "Classes/ninja.png",
+      "key": "monk_way_of_the_ninja",
+      "group": "Subclasses",
+      "path": "Subclasses/monk_way_of_the_ninja.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/ninja.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/monk_way_of_the_ninja.png",
       "nativeWidth": 432,
       "nativeHeight": 431,
       "crop": {
@@ -685,15 +685,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "assassin",
-      "group": "Classes",
-      "path": "Classes/assassin.png",
+      "key": "rogue_assassin",
+      "group": "Subclasses",
+      "path": "Subclasses/rogue_assassin.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/assassin.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/rogue_assassin.png",
       "nativeWidth": 432,
       "nativeHeight": 431,
       "crop": {
@@ -707,15 +707,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "paladin",
-      "group": "Classes",
-      "path": "Classes/paladin.png",
+      "key": "paladin_oath_of_devotion",
+      "group": "Subclasses",
+      "path": "Subclasses/paladin_oath_of_devotion.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/paladin.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_devotion.png",
       "nativeWidth": 435,
       "nativeHeight": 432,
       "crop": {
@@ -729,15 +729,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "hexer",
-      "group": "Classes",
-      "path": "Classes/hexer.png",
+      "key": "warlock_the_archfey",
+      "group": "Subclasses",
+      "path": "Subclasses/warlock_the_archfey.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/hexer.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/warlock_the_archfey.png",
       "nativeWidth": 433,
       "nativeHeight": 432,
       "crop": {
@@ -751,15 +751,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "arcane_archer",
-      "group": "Classes",
-      "path": "Classes/arcane_archer.png",
+      "key": "fighter_arcane_archer",
+      "group": "Subclasses",
+      "path": "Subclasses/fighter_arcane_archer.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/arcane_archer.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/fighter_arcane_archer.png",
       "nativeWidth": 432,
       "nativeHeight": 427,
       "crop": {
@@ -773,15 +773,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "gambler",
-      "group": "Classes",
-      "path": "Classes/gambler.png",
+      "key": "rogue_gambler",
+      "group": "Subclasses",
+      "path": "Subclasses/rogue_gambler.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/gambler.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/rogue_gambler.png",
       "nativeWidth": 432,
       "nativeHeight": 427,
       "crop": {
@@ -795,15 +795,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "knight",
-      "group": "Classes",
-      "path": "Classes/knight.png",
+      "key": "paladin_oath_of_the_crown",
+      "group": "Subclasses",
+      "path": "Subclasses/paladin_oath_of_the_crown.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/knight.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_the_crown.png",
       "nativeWidth": 433,
       "nativeHeight": 427,
       "crop": {
@@ -817,15 +817,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "monk",
-      "group": "Classes",
-      "path": "Classes/monk.png",
+      "key": "monk_way_of_the_tai_chi",
+      "group": "Subclasses",
+      "path": "Subclasses/monk_way_of_the_tai_chi.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-b-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/monk.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/monk_way_of_the_tai_chi.png",
       "nativeWidth": 433,
       "nativeHeight": 427,
       "crop": {
@@ -839,15 +839,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "giant",
-      "group": "Classes",
-      "path": "Classes/giant.png",
+      "key": "barbarian_path_of_the_giant",
+      "group": "Subclasses",
+      "path": "Subclasses/barbarian_path_of_the_giant.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/giant.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/barbarian_path_of_the_giant.png",
       "nativeWidth": 445,
       "nativeHeight": 447,
       "crop": {
@@ -861,15 +861,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "thief",
-      "group": "Classes",
-      "path": "Classes/thief.png",
+      "key": "rogue_thief",
+      "group": "Subclasses",
+      "path": "Subclasses/rogue_thief.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/thief.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/rogue_thief.png",
       "nativeWidth": 444,
       "nativeHeight": 447,
       "crop": {
@@ -883,15 +883,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "hunter",
-      "group": "Classes",
-      "path": "Classes/hunter.png",
+      "key": "ranger_gloom_stalker",
+      "group": "Subclasses",
+      "path": "Subclasses/ranger_gloom_stalker.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/hunter.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/ranger_gloom_stalker.png",
       "nativeWidth": 445,
       "nativeHeight": 447,
       "crop": {
@@ -905,15 +905,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "magician",
-      "group": "Classes",
-      "path": "Classes/magician.png",
+      "key": "rogue_magician",
+      "group": "Subclasses",
+      "path": "Subclasses/rogue_magician.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/magician.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/rogue_magician.png",
       "nativeWidth": 446,
       "nativeHeight": 447,
       "crop": {
@@ -927,15 +927,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "wizard",
-      "group": "Classes",
-      "path": "Classes/wizard.png",
+      "key": "wizard_school_of_evocation",
+      "group": "Subclasses",
+      "path": "Subclasses/wizard_school_of_evocation.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/wizard.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/wizard_school_of_evocation.png",
       "nativeWidth": 445,
       "nativeHeight": 446,
       "crop": {
@@ -949,15 +949,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "sorcerer",
-      "group": "Classes",
-      "path": "Classes/sorcerer.png",
+      "key": "sorcerer_wild_magic",
+      "group": "Subclasses",
+      "path": "Subclasses/sorcerer_wild_magic.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/sorcerer.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/sorcerer_wild_magic.png",
       "nativeWidth": 444,
       "nativeHeight": 446,
       "crop": {
@@ -971,15 +971,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "warlock",
-      "group": "Classes",
-      "path": "Classes/warlock.png",
+      "key": "warlock_the_great_old_one",
+      "group": "Subclasses",
+      "path": "Subclasses/warlock_the_great_old_one.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/warlock.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/warlock_the_great_old_one.png",
       "nativeWidth": 445,
       "nativeHeight": 446,
       "crop": {
@@ -993,15 +993,15 @@
       "usage": "Simple Image, white tint; do not add another badge ring or multiply by a semantic color."
     },
     {
-      "key": "bard",
-      "group": "Classes",
-      "path": "Classes/bard.png",
+      "key": "bard_college_of_valor",
+      "group": "Subclasses",
+      "path": "Subclasses/bard_college_of_valor.png",
       "width": 512,
       "height": 512,
       "alpha": true,
       "style": "painted-old-gold-v2",
       "source": "Art/Production/painted-icons-v2/source/classes-c-sheet.png",
-      "nativeCrop": "Art/Production/painted-icons-v2/native/Classes/bard.png",
+      "nativeCrop": "Art/Production/painted-icons-v2/native/Subclasses/bard_college_of_valor.png",
       "nativeWidth": 446,
       "nativeHeight": 446,
       "crop": {

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using FingerDiceDuel.Assistant;
 
 // 注意：每个测试文件都必须自己带这一段 —— C# 的 using 不会跨文件生效。
@@ -187,7 +187,7 @@ namespace FingerDiceDuel.Tests
         ///
         /// ⚠️ 真实 bug 的回归：界面曾经自己拼"顺序提示"与"本次抉择说明"，
         /// 把 decider 的名字/点数两边都用上，于是实机出现
-        /// 「战士投出 19（大失败）」这种**点数与身份都不对**的提示
+        /// 「战士·破阵者投出 19（大失败）」这种**点数与身份都不对**的提示
         /// （那次实际是 A 投 17、B 投 19，19 还是小成功不是大失败）。
         ///
         /// 控制器侧已有测试钉住 `OrderText` / `DecisionText` 的内容，

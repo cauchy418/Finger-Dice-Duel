@@ -1,0 +1,238 @@
+{
+  "assets": [
+    {
+      "id": "barbarian",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/barbarian.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/barbarian.png",
+      "sha256": "cb9b3862f46ed8e939336218dc8781fc1e9a13f298401e262109cae7b3a71d16"
+    },
+    {
+      "id": "bard",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/bard.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/bard.png",
+      "sha256": "ae09473e3f07dedafd003cfa7a34723f9c23e31d20c75cee70bd8e1d03aad3af"
+    },
+    {
+      "id": "cleric",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/cleric.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/cleric.png",
+      "sha256": "14ca90009e06785ee3f9487d210a3fcc13b8f20a54dfcd6f400ddddd83578d65"
+    },
+    {
+      "id": "druid",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/druid.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/druid.png",
+      "sha256": "46d5091a9753527ff8d55a2324eeb7551cd368a30eca871e8493c663336c8e9e"
+    },
+    {
+      "id": "fighter",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/fighter.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/fighter.png",
+      "sha256": "d70504b9d889670f3beeedf5149d43582f12ad30d3d415c19f4780f8746b308c"
+    },
+    {
+      "id": "monk",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/monk.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/monk.png",
+      "sha256": "c212e9d450969c692dff4f3903199127f0e79b698543a382ecd9859387f7e539"
+    },
+    {
+      "id": "paladin",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/paladin.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/paladin.png",
+      "sha256": "06caaf850936b72b46a024194784de4b386e846c5ce93e8d02619ad043b5730b"
+    },
+    {
+      "id": "ranger",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/ranger.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/ranger.png",
+      "sha256": "c67e9817c95f554d4225eb84d0b9e710129b515674e92ee80dc45eacc4ca142f"
+    },
+    {
+      "id": "rogue",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/rogue.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/rogue.png",
+      "sha256": "4b7592ffdfec68a0291c8228d839593a2296e9db8ab3f1af1ea09281c0768c63"
+    },
+    {
+      "id": "sorcerer",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/sorcerer.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/sorcerer.png",
+      "sha256": "fdcde598f18b7de677b11e7b14bacb23ba5a7d82f30a23635bce17b21dec4605"
+    },
+    {
+      "id": "warlock",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/warlock.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/warlock.png",
+      "sha256": "3a67aa31612332fb7fdbed1c99491616e4b841296f31a595150da77389542251"
+    },
+    {
+      "id": "wizard",
+      "source": "Art/Production/profession-subclass-v1/selected/Professions/wizard.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/wizard.png",
+      "sha256": "21d4506c3bffd2c40f4e18a6b46e14d6d570e79d5afdd361c199cfec3fad51c4"
+    },
+    {
+      "id": "barbarian_path_of_the_beast",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/barbarian_path_of_the_beast.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_beast.png",
+      "sha256": "57d8a7ecebad0692013c3922dd1341d5b471c220c2d72848fda97b8c9d049453"
+    },
+    {
+      "id": "barbarian_path_of_the_berserker",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/barbarian_path_of_the_berserker.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_berserker.png",
+      "sha256": "760389f0edffdfe9d7fcc81d2e643b499df69c0227c613b8a09adc0de200c9ee"
+    },
+    {
+      "id": "barbarian_path_of_the_giant",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/barbarian_path_of_the_giant.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_giant.png",
+      "sha256": "984d8b6c86f2b34c901b8bd9be565123c10548306db12b7f9e257c1d7b117ccf"
+    },
+    {
+      "id": "barbarian_path_of_the_warden",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/barbarian_path_of_the_warden.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png",
+      "sha256": "71775f271f0c8d33e5339e0f6095c30fbff7e5ae363af59a6790ac1596d7464d"
+    },
+    {
+      "id": "bard_college_of_valor",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/bard_college_of_valor.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png",
+      "sha256": "4d5ca58f9cbc218c9e0ae9a2ce1abe22f3b69cf74592616febbb8324db8e85ff"
+    },
+    {
+      "id": "cleric_life_domain",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/cleric_life_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_life_domain.png",
+      "sha256": "2f947ae6200c6a5742f70ac1bf96124d8d9fb7203549c6d7594619b54e71db5b"
+    },
+    {
+      "id": "fighter_arcane_archer",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_arcane_archer.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_arcane_archer.png",
+      "sha256": "befbaef5ef27ec16f995fb591952624f0fd141c8ab252726b8cb326c1f418a5b"
+    },
+    {
+      "id": "fighter_breaker",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_breaker.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_breaker.png",
+      "sha256": "46c746066238397a440f223e5273fd8cec2cbf0d13f90d5457d59956bf4faa13"
+    },
+    {
+      "id": "fighter_champion",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_champion.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_champion.png",
+      "sha256": "cd950fe351fe0cbdcb031343bf19cd2b759356b5523209aba903124fd8b55b2c"
+    },
+    {
+      "id": "fighter_swordsman",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_swordsman.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_swordsman.png",
+      "sha256": "677afb7593afe7c6a97ecdb9e0f67fcdca7b79c581aa53ff5a4c47cb22ae0903"
+    },
+    {
+      "id": "fighter_tactician",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_tactician.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_tactician.png",
+      "sha256": "b4d364252efba285e9474a4b381a56c267f84cef67f209094f5386f21e39216e"
+    },
+    {
+      "id": "monk_way_of_the_ninja",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/monk_way_of_the_ninja.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_ninja.png",
+      "sha256": "42f0d0a01ca40ac474b0676305e38192037a54c894a8cd30e7d035c29c2e2668"
+    },
+    {
+      "id": "monk_way_of_the_tai_chi",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/monk_way_of_the_tai_chi.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_tai_chi.png",
+      "sha256": "0d1994393958352d33ac417503b4388c88b43b5bdab5e5c38bb52be84ff5a097"
+    },
+    {
+      "id": "paladin_oath_of_devotion",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/paladin_oath_of_devotion.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_devotion.png",
+      "sha256": "6c2aa4afe71a9c43ce8bce3096124a882a9c5029bd3f5c620614e572a0f516e1"
+    },
+    {
+      "id": "paladin_oath_of_the_crown",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/paladin_oath_of_the_crown.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_crown.png",
+      "sha256": "26095e9bf6d4efaf6583e13d3a8530e48022e84c52f9304698e8529826a30404"
+    },
+    {
+      "id": "paladin_oathbreaker",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/paladin_oathbreaker.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oathbreaker.png",
+      "sha256": "9ca1c82bebbce4bc1ac1d124e40ddfbcd29e7c940671516041e328e11f5b37a3"
+    },
+    {
+      "id": "ranger_gloom_stalker",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/ranger_gloom_stalker.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_gloom_stalker.png",
+      "sha256": "8cb74c9e54c3bb24af9d14b740afbb0838083ca9f1246df21ff10ec8284f6536"
+    },
+    {
+      "id": "rogue_assassin",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/rogue_assassin.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_assassin.png",
+      "sha256": "1ee277cbb61e458aec71cb17a82359ee6c7070b0ee103c5d92ec1fd0978dbd94"
+    },
+    {
+      "id": "rogue_gambler",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/rogue_gambler.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_gambler.png",
+      "sha256": "b82cdac7027650071b3b8bce6be8dccbd359e7a1c645e92a5ada37c9d25bbd28"
+    },
+    {
+      "id": "rogue_magician",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/rogue_magician.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_magician.png",
+      "sha256": "236e44014ae1b9c9dc7a52c0d070f5f2063137f332b868396da5e178bf563410"
+    },
+    {
+      "id": "rogue_swashbuckler",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/rogue_swashbuckler.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_swashbuckler.png",
+      "sha256": "a5739e622230abeeefe0103eddcfc5489e89ddc9e66efc993e28496650bbe0a9"
+    },
+    {
+      "id": "rogue_thief",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/rogue_thief.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_thief.png",
+      "sha256": "ad5e2a669b4d2869f87572bf1fe30ca3cad594b8a50a65cd94e697fad80ab57b"
+    },
+    {
+      "id": "sorcerer_wild_magic",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/sorcerer_wild_magic.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_wild_magic.png",
+      "sha256": "9151408eaf1d0eadc1f8889f8cf152c1a65f1566b2dc2da2ebd3e4bc299656bc"
+    },
+    {
+      "id": "warlock_the_archfey",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/warlock_the_archfey.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_archfey.png",
+      "sha256": "582d16b283cc59b6834954d33107d22a6aacee94a6312639c6bf130b43ab625b"
+    },
+    {
+      "id": "warlock_the_great_old_one",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/warlock_the_great_old_one.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_great_old_one.png",
+      "sha256": "1331004d6b3599fef56d2a1d4fdfdfbe8adccf73c843ef7ba8f00b9006beeac6"
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_school_of_conjuration.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_conjuration.png",
+      "sha256": "df240392402f559afbaab709e3f19731c9e40c28fb23ee83a40b2e07c26187fb"
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_school_of_evocation.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png",
+      "sha256": "2b2d7f925819007f9c2ce682047bfc934ee0f449fd89882c254eaa7fb9f89ad2"
+    }
+  ]
+}

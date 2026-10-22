@@ -1,0 +1,59 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/profession-subclass");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button> click=(button)=>{shot(front,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);check(hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name);UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);};
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+foreach(var p in FingerDiceDuel.Core.CharacterProfession.All)check(FingerDiceDuel.UI.BattleArt.Get(p.IconKey)!=null,"profession emblem "+p.Id);
+foreach(var d in FingerDiceDuel.Core.CharacterDefinition.BuiltIn){check(FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+d.Id)!=null,"subclass emblem "+d.Id);check(FingerDiceDuel.UI.BattleArt.Get("Classes/"+d.Identity.LegacyId)==FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+d.Id),"legacy art alias "+d.Id);}
+invoke(boot,"OnCodexClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");
+System.Func<string,UnityEngine.UI.Button> button=(name)=>codex.Root.GetComponentsInChildren<UnityEngine.UI.Button>().Single(b=>b.name==name);
+click(button("ProfessionToggle"));check(codex.IsProfessionPanelOpen,"profession chooser visible");shot(front,"profession-chooser");
+foreach(var p in FingerDiceDuel.Core.CharacterProfession.All){
+ if(!codex.IsProfessionPanelOpen)click(button("ProfessionToggle"));click(button("Profession_"+p.Id));
+ check(codex.ProfessionFilter==p.Id,"selected profession "+p.Id);
+ int expected=FingerDiceDuel.Core.CharacterDefinition.BuiltIn.Count(d=>d.Profession.Id==p.Id);check(codex.PageCount==expected,"profession count "+p.Id+"="+expected);
+ if(p.Id=="druid"){check(codex.Root.GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.name=="EmptyProfession"&&t.text.Contains("暂无子职")),"reserved druid empty state");shot(front,"druid-reserved");}
+ if(p.Id=="fighter")shot(front,"fighter-filter");
+}
+codex.ToggleProfession(null);check(codex.PageCount==27,"clear profession restores 27 roles");check(codex.OverviewPageCount==3,"12 per page, three pages");
+for(int i=0;i<3;i++){check(codex.Root.GetComponentsInChildren<UnityEngine.UI.Button>().Count(b=>b.name.StartsWith("CodexTile"))==(i==2?3:12),"overview page "+(i+1));shot(front,"overview-"+(i+1));if(i<2)click(button("Next"));}
+codex.ToggleProfession("fighter");codex.ToggleAxis("守序",true);codex.ToggleAxis("善良",false);check(codex.PageCount==FingerDiceDuel.Characters.CharacterCodex.Filter("守序","善良","fighter").Count,"profession and both alignment filters intersect");
+codex.ToggleAxis("守序",true);codex.ToggleAxis("善良",false);codex.ToggleProfession(null);
+for(int i=0;i<27;i++){
+ codex.GoTo(i);var d=FingerDiceDuel.Core.CharacterDefinition.BuiltIn[i];
+ var profession=(UnityEngine.UI.Text)field(codex,"_professionLabel");var title=(UnityEngine.UI.Text)field(codex,"_title");var alignment=(UnityEngine.UI.Text)field(codex,"_alignmentLabel");
+ check(profession.text==d.Profession.NameZh+"  "+d.Profession.NameEn,"profession bilingual header "+d.Id);
+ check(profession.fontStyle==UnityEngine.FontStyle.Italic,"italic profession "+d.Id);
+ check(title.text==d.SubclassNameZh+"  "+d.SubclassNameEn,"exact subclass bilingual header "+d.Id);
+ check(profession.fontSize<title.fontSize&&title.rectTransform.anchoredPosition.y<profession.rectTransform.anchoredPosition.y&&alignment.rectTransform.anchoredPosition.y<title.rectTransform.anchoredPosition.y,"three header rows "+d.Id);
+ if(d.Id=="rogue_swashbuckler"||d.Id=="barbarian_path_of_the_warden"||d.Id=="barbarian_path_of_the_berserker"||d.Id=="warlock_the_archfey"||d.Id=="paladin_oath_of_the_crown")shot(front,"detail-"+d.Id);
+}
+invoke(boot,"GoToCharacterSelect",new object[0]);var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_rosterViewA");var cards=(System.Collections.Generic.List<UnityEngine.UI.Button>)field(roster,"_cards");
+check(roster.Count==27,"all 27 selection cards");
+for(int i=0;i<27;i++){roster.Select(i);roster.ScrollToSelected();click(cards[i]);check(roster.SelectedIndex==i,"selection click "+i);var d=FingerDiceDuel.Core.CharacterDefinition.BuiltIn[i];check(cards[i].GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.text==d.DisplayName),"full profession subclass name "+d.Id);}
+shot(front,"selection-last-page");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Swashbuckler,FingerDiceDuel.Core.CharacterDefinition.PathOfTheBerserker);
+var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");var boardCanvas=((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponent<UnityEngine.Canvas>();shot(boardCanvas,"battle-long-names");
+var nameA=(UnityEngine.UI.Text)field(board,"_nameTextA");check(nameA.text==FingerDiceDuel.Core.CharacterDefinition.Swashbuckler.DisplayName,"battle name avoids duplicated full name");check(nameA.resizeTextForBestFit,"battle long name fitting enabled");
+var battleTitle=(UnityEngine.UI.Text)field(board,"_titleText");check(battleTitle.resizeTextForBestFit&&battleTitle.rectTransform.sizeDelta.y==36,"long versus title fits above subtitle");
+check(battleTitle.cachedTextGenerator.lines.Count==1,"versus title renders on one line");
+var preview=typeof(FingerDiceDuel.UI.GameBootstrap).Assembly.GetType("FingerDiceDuel.EditorTools.MultiplayerArtPreview");
+if(preview==null)preview=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.EditorTools.MultiplayerArtPreview")).FirstOrDefault(t=>t!=null);
+check(preview!=null,"multiplayer editor preview available");
+var statics=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static;preview.GetField("_boot",statics).SetValue(null,boot);
+foreach(int count in new[]{4,8}){preview.GetMethod("Build",statics).Invoke(null,new object[]{count,0,FingerDiceDuel.Core.CharacterDefinition.PathOfTheBerserker,false});shot(boardCanvas,count==4?"battle-2v2":"battle-8p");check(boardCanvas.GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.name=="Name"&&t.text.Contains("野蛮人·狂战士道途")),"multiplayer full subclass name "+count);}
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+return "Passed "+checks.Count+" profession migration UI checks. Evidence: "+output;

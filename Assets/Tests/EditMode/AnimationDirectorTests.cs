@@ -77,7 +77,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Ranger_dodge_shows_the_word_dodge()
+        public void Swashbuckler_dodge_shows_the_word_dodge()
         {
             var result = new TurnResult
             {
@@ -98,7 +98,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Stealth_immunity_does_not_show_the_word_dodge()
         {
-            // 刺客潜行时是"打不到"，不该说成"闪避"
+            // 游荡者·刺客潜行时是"打不到"，不该说成"闪避"
             var result = new TurnResult
             {
                 Actor = _a,
@@ -117,7 +117,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Heal_shows_on_the_healed_player_not_the_actor()
         {
-            // 牧师可以把 9 回给对手 —— 必须飘在**被回复者**头上
+            // 牧师·生命领域可以把 9 回给对手 —— 必须飘在**被回复者**头上
             var result = new TurnResult
             {
                 Actor = _a,
@@ -158,7 +158,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Multiple_floats_are_staggered_by_a_quarter_second()
         {
-            // 忍者两段 + 剑客追加可能一次冒出多条 -> 依次错开
+            // 武僧·忍宗两段 + 战士·剑士追加可能一次冒出多条 -> 依次错开
             var result = new TurnResult
             {
                 Actor = _a,
@@ -288,7 +288,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Multi_hit_attacks_shake_once_per_segment()
         {
-            // 忍者两段各 3 点 -> 两次"中"档震动，依次错开
+            // 武僧·忍宗两段各 3 点 -> 两次"中"档震动，依次错开
             var result = new TurnResult
             {
                 Actor = _a, Effect = HandEffectType.Attack4,
@@ -308,7 +308,7 @@ namespace FingerDiceDuel.Tests
             var result = new TurnResult
             {
                 Actor = _a, Effect = HandEffectType.Attack6,
-                ExtraAttack = new ExtraAttackInfo("剑客", 6, 6, false),
+                ExtraAttack = new ExtraAttackInfo("战士·剑士", 6, 6, false),
                 DamageDealt = 8, LandedHits = 1, HitCount = 2,
             };
 

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// **魔术师**（混乱善良）的专项测试。
+    /// **游荡者·魔术师**（混乱善良）的专项测试。
     ///
     /// 玩家给出的规则：
     ///   · 可以拿**自己的手**当被加数（左手 3 碰自己的右手 5 凑出 8）；
@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Tests
         private static GameManager Match(out PlayerState magician, out PlayerState foe)
         {
             magician = Make("魔", CharacterDefinition.Magician);
-            foe = Make("敌", CharacterDefinition.Soldier);
+            foe = Make("敌", CharacterDefinition.Champion);
             return new GameManager(magician, foe,
                                    new GreedyChoiceProvider(),
                                    new GreedyChoiceProvider());
@@ -37,7 +37,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void UI_allows_clicking_own_other_hand_as_the_addend()
         {
-            // 玩家实测的 bug："魔术师的手选择后无法触碰自己的手运算"。
+            // 玩家实测的 bug："游荡者·魔术师的手选择后无法触碰自己的手运算"。
             // 领域层早就放行，但 BoardController.CanClick 的
             // ChoosingTargetHand 分支用的是 `!ActivePlayer.Owns(hand)` ——
             // 把"碰自己的手"一手挡住了。这里把界面这一层也钉住。
@@ -56,7 +56,7 @@ namespace FingerDiceDuel.Tests
 
             // 第②步：碰自己的右手（这就是玩家点不动的那一步）
             Assert.True(board.CanClick(magician.RightHand),
-                "魔术师必须能点自己的另一只手当被加数。");
+                "游荡者·魔术师必须能点自己的另一只手当被加数。");
             Assert.True(board.ClickHand(magician.RightHand),
                 "点击自己的另一只手应当被接受。");
         }
@@ -64,21 +64,21 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Other_characters_still_cannot_click_their_own_hand_as_addend()
         {
-            var soldier = Make("兵", CharacterDefinition.Soldier);
-            var foe = Make("敌", CharacterDefinition.Soldier);
-            var game = new GameManager(soldier, foe,
+            var champion = Make("兵", CharacterDefinition.Champion);
+            var foe = Make("敌", CharacterDefinition.Champion);
+            var game = new GameManager(champion, foe,
                                        new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
             var board = new BoardController(game, new SimpleChoiceProvider(),
                                             new SimpleChoiceProvider());
             board.BeginTurn();
 
-            soldier.LeftHand.SetValue(3);
-            soldier.RightHand.SetValue(5);
+            champion.LeftHand.SetValue(3);
+            champion.RightHand.SetValue(5);
 
-            board.ClickHand(soldier.LeftHand);
-            Assert.False(board.CanClick(soldier.RightHand),
-                "其他角色仍然不能点自己的手当被加数（规则只属于魔术师）。");
+            board.ClickHand(champion.LeftHand);
+            Assert.False(board.CanClick(champion.RightHand),
+                "其他角色仍然不能点自己的手当被加数（规则只属于游荡者·魔术师）。");
         }
 
         [Test]
@@ -94,7 +94,7 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(1);      // 1 + 1 = 2（前面写成 4 会得到 5）
 
             var provider = magician.Character as IResultTargetProvider;
-            Assert.NotNull(provider, "魔术师必须实现 IResultTargetProvider。");
+            Assert.NotNull(provider, "游荡者·魔术师必须实现 IResultTargetProvider。");
 
             // 自加：1 碰自己的 1 -> 2 -> 是攻击 -> 需要问打谁
             var selfCtx = new PreTurnChoiceContext(magician, foe,
@@ -152,7 +152,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
 
-            Assert.True(found, "魔术师应能拿自己的左手去碰自己的右手。");
+            Assert.True(found, "游荡者·魔术师应能拿自己的左手去碰自己的右手。");
             Assert.True(game.IsLegalMove(magician, magician.LeftHand, magician.RightHand, out _),
                 "校验层也应放行自己的手当被加数。");
         }
@@ -160,17 +160,17 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Other_characters_still_cannot_add_themselves()
         {
-            var soldier = Make("兵", CharacterDefinition.Soldier);
-            var foe = Make("敌", CharacterDefinition.Soldier);
-            var game = new GameManager(soldier, foe,
+            var champion = Make("兵", CharacterDefinition.Champion);
+            var foe = Make("敌", CharacterDefinition.Champion);
+            var game = new GameManager(champion, foe,
                                        new GreedyChoiceProvider(),
                                        new GreedyChoiceProvider());
 
-            soldier.LeftHand.SetValue(3);
-            soldier.RightHand.SetValue(5);
+            champion.LeftHand.SetValue(3);
+            champion.RightHand.SetValue(5);
 
-            Assert.False(game.IsLegalMove(soldier, soldier.LeftHand, soldier.RightHand, out _),
-                "其他角色不能拿自己的手当被加数（这条规则只属于魔术师）。");
+            Assert.False(game.IsLegalMove(champion, champion.LeftHand, champion.RightHand, out _),
+                "其他角色不能拿自己的手当被加数（这条规则只属于游荡者·魔术师）。");
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace FingerDiceDuel.Tests
             magician.LeftHand.SetValue(3);
 
             Assert.False(game.IsLegalMove(magician, magician.LeftHand, magician.LeftHand, out _),
-                "一只手不能加自己（即使魔术师也不行）。");
+                "一只手不能加自己（即使游荡者·魔术师也不行）。");
 
             IReadOnlyList<LegalMove> moves = game.GetLegalMoves(magician);
             for (int i = 0; i < moves.Count; i++)
@@ -209,18 +209,18 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Magician_attacks_deal_their_face_damage()
         {
-            // **最初版本**（当前采用）：魔术师的攻击牌是 2/4/6/8，
+            // **最初版本**（当前采用）：游荡者·魔术师的攻击牌是 2/4/6/8，
             // 伤害**就是牌面数字**（2 打 2 点、8 打 8 点），**吃攻防加成**。
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
-            PlayerState foe = Make("敌", CharacterDefinition.Soldier);
+            PlayerState foe = Make("敌", CharacterDefinition.Champion);
 
             // 2 仍然要被改写成攻击
             magician.LeftHand.SetValue(2);
             var rewriter = magician.Character as IHandEffectRewriter;
-            Assert.NotNull(rewriter, "魔术师应实现 IHandEffectRewriter。");
+            Assert.NotNull(rewriter, "游荡者·魔术师应实现 IHandEffectRewriter。");
             HandEffectType effect = rewriter.RewriteEffect(magician, magician.LeftHand, 5, null);
             Assert.AreNotEqual((int)HandEffectType.None, (int)effect,
-                "运算出 2 对魔术师应是攻击，而不是无效果。");
+                "运算出 2 对游荡者·魔术师应是攻击，而不是无效果。");
 
             // 四种攻击牌的伤害都按引擎公式算期望值
             // （2 是"借"来的攻击，打 2 点；4/6/8 直接按牌面）
@@ -228,7 +228,7 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < attacks.Length; i++)
             {
                 PlayerState me = Make("魔", CharacterDefinition.Magician);
-                PlayerState target = Make("敌", CharacterDefinition.Soldier);
+                PlayerState target = Make("敌", CharacterDefinition.Champion);
                 me.LeftHand.SetValue(attacks[i]);
 
                 int before = target.Health;
@@ -249,7 +249,7 @@ namespace FingerDiceDuel.Tests
         {
             // **最初版本**：吃攻防加成 —— 对手防 +2 会把伤害压下去。
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
-            PlayerState foe = Make("敌", CharacterDefinition.Giant);   // 防 +2
+            PlayerState foe = Make("敌", CharacterDefinition.PathOfTheGiant);   // 防 +2
 
             magician.LeftHand.SetValue(6);
             int before = foe.Health;
@@ -265,15 +265,15 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Base_game_still_treats_two_as_no_effect()
         {
-            // 反向对照：别的角色运算出 2 仍然是无效果（规则只给魔术师）
+            // 反向对照：别的角色运算出 2 仍然是无效果（规则只给游荡者·魔术师）
             Assert.AreEqual(HandEffectType.None, Hand.GetEffectType(2),
-                "引擎基线里 2 仍然是无效果 —— 魔术师是例外，不是全局改动。");
+                "引擎基线里 2 仍然是无效果 —— 游荡者·魔术师是例外，不是全局改动。");
 
-            var soldier = Make("兵", CharacterDefinition.Soldier);
-            var rewriter = soldier.Character as IHandEffectRewriter;
+            var champion = Make("兵", CharacterDefinition.Champion);
+            var rewriter = champion.Character as IHandEffectRewriter;
             Assert.True(rewriter == null || rewriter.RewriteEffect(
-                    soldier, soldier.LeftHand, 5, null) == HandEffectType.None,
-                "士兵的 2 不应变成攻击。");
+                    champion, champion.LeftHand, 5, null) == HandEffectType.None,
+                "战士·勇士的 2 不应变成攻击。");
         }
 
         [Test]
@@ -281,7 +281,7 @@ namespace FingerDiceDuel.Tests
         {
             PlayerState magician = Make("魔", CharacterDefinition.Magician);
 
-            Assert.AreEqual(2, GameManager.BaseRangeOf(magician), "魔术师攻击距离 2。");
+            Assert.AreEqual(2, GameManager.BaseRangeOf(magician), "游荡者·魔术师攻击距离 2。");
             Assert.AreEqual(0, magician.Character.AttackBonus, "攻 0。");
             Assert.AreEqual(-1, magician.Character.DefenseBonus, "防 −1。");
         }

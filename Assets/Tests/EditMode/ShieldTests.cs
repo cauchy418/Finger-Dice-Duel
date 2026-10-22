@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 
 #if FDD_UNITY_TESTS
@@ -258,7 +258,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(6, r.ResultValue, "5 + 1 = 6");
             Assert.AreEqual(HandEffectType.Attack6, r.Effect);
             // 结果不是 5，所以这只手就是普通手牌，不该再挂"碎盾"标记。
-            // （只有结果仍然为 5 时才保留 Broken，表示"这面盾碎了但仍可被战士修复"。）
+            // （只有结果仍然为 5 时才保留 Broken，表示"这面盾碎了但仍可被战士·破阵者修复"。）
             Assert.AreEqual(ShieldState.None, _a.LeftHand.State,
                 "5+1=6：结果不是 5，应回到普通状态。");
             Assert.False(_a.LeftHand.IsShield);
@@ -273,7 +273,7 @@ namespace FingerDiceDuel.Tests
             _game.ExecuteTurn(_a, _a.LeftHand, _b.LeftHand);
             Assert.AreEqual(ShieldState.None, _a.LeftHand.State);
 
-            // 模拟"被战士修复"（真实修复由 FighterLogic.OnShieldFormed 触发）
+            // 模拟"被战士·破阵者修复"（真实修复由 BreakerLogic.OnShieldFormed 触发）
             _a.LeftHand.SetShieldState(ShieldState.Formed);
             Assert.True(_a.LeftHand.IsShield);
 

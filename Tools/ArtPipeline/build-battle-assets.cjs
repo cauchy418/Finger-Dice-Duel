@@ -80,32 +80,32 @@ async function icons(){
   for(const [key,name,c,body] of statuses)await emit('Status',key,256,256,`<g transform="scale(2)">${iconBody(body,c)}</g>`,{label:name,color:c});
   const helmet=poly('M38 91L33 54Q32 20 64 17 97 20 96 54L91 91 74 108V70H54V108Z')+line('M41 53L56 58 M87 53L72 58 M64 20V51','#3A2A18',5);
   const cls=[
-   ['soldier','士兵',helmet],
-   ['fighter','战士',`<g transform="translate(17 20) scale(.7)">${shield}</g>`+sword],
-   ['curseweaver','咒术师',line('M64 13L113 106H15Z',gold,4)+line('M38 75Q37 37 68 47 101 61 75 84 51 106 42 77 33 52 61 49 86 44 88 71',ivory,5)],
-   ['barbarian','野蛮人',poly('M57 13H71V114H57Z')+poly('M56 27Q32 30 20 15L15 66Q39 55 56 57Z')+poly('M72 27Q96 30 108 15L113 66Q89 55 72 57Z')],
-   ['cleric','牧师',line('M40 20L30 67H98L88 20 M64 10V37 M50 23H78 M35 67Q39 106 64 112 89 106 93 67 M21 78L13 85 M107 78L115 85',gold,5)+circ(64,80,10,gold,3)],
-   ['ranger','游侠',bow+poly('M15 92Q12 71 35 66 37 87 15 92Z')],
-   ['werewolf','狼人',poly('M30 16L49 31 80 30 99 14 95 58 103 79 76 110H52L25 79 33 58Z')+line('M40 54L54 61 M88 54L74 61 M54 79L64 88 74 79 M64 88V98','#3E2C1B',5)],
-   ['swordsman','剑客',`<g transform="translate(-10 3) rotate(-15 64 64)">${sword}</g><g transform="translate(24 -4) rotate(15 64 64) scale(.85)">${sword}</g>`],
-   ['ninja','忍者',poly('M64 10L76 47 113 64 76 77 64 115 51 77 14 64 51 47Z')+circ(64,64,11,'#241D14',5)],
-   ['assassin','刺客',line('M21 88Q16 40 64 14 112 40 107 88 M36 76L50 63 M92 76L78 63',gold,5)+poly('M64 45L75 60 68 97 64 115 60 97 53 60Z')],
-   ['paladin','圣武士',`<g transform="translate(13 21) scale(.8)">${shield}</g>`+circ(64,27,13,gold,4)+line('M64 3V8 M40 10L46 16 M88 10L82 16',gold,4)],
-   ['hexer','妖术师',line('M29 95Q7 67 31 45 M99 95Q121 67 97 45 M31 45L45 54 43 35 M97 45L83 54 85 35 M50 25Q67 15 83 29 M54 106Q70 113 81 103',gold,5)+line('M33 95L96 23 M59 49L78 64',ivory,5)],
-   ['arcane_archer','魔射手',circ(64,64,39,gold,2)+circ(64,64,25,gold,2)+line('M25 106L99 22 M82 25L105 16 102 40 M25 84V106H47',ivory,5)],
-   ['gambler','赌徒',poly('M64 13L110 41 98 96 44 113 15 64Z')+line('M64 13L44 113 M64 13L15 64 98 96 64 13 M15 64L110 41 44 113','#50391E',3)+circ(70,62,7,'#4E361E',3)],
-   ['knight','骑士',poly('M31 110L35 80 57 69 46 57 24 57 30 40 51 26 61 11 76 27Q111 43 95 81L105 110Z')+line('M41 45H49 M62 35Q91 42 78 78L58 90','#3E2C1B',5)],
-   ['monk','武僧',circ(64,64,46,gold,4)+line('M64 18C105 35 24 88 64 110',gold,6)+circ(64,42,7,gold,3,gold)+circ(64,88,7,gold,3)],
-   ['giant','巨人',poly('M34 83L23 59 24 31 36 27 44 39V20H57V37 15H72V39 22H85V44 32H99V71L87 95H41Z')+line('M15 114L39 90 57 108 76 92 113 114',gold,5)],
-   ['thief','盗贼',line('M46 55V35Q46 14 67 14 89 14 89 37',gold,7)+poly('M30 55H98V111H30Z')+line('M65 72V91 M17 100L99 41 114 47 103 59',ivory,5)],
-   ['hunter','猎人',line('M16 52Q64 15 112 52 64 92 16 52Z',gold,5)+circ(64,52,12,gold,4)+line('M29 102Q64 76 99 102 M40 114Q64 95 88 114',gold,4)],
-   ['magician','魔术师',poly('M64 17L88 54 64 91 40 54Z')+line('M33 110L18 75Q12 49 24 51L33 68 30 37Q34 24 41 39L45 69 M95 110L110 75Q116 49 104 51L95 68 98 37Q94 24 87 39L83 69',gold,5)],
-   ['wizard','法师',`<g transform="translate(0 16) scale(1 .83)">${book}</g>`+line('M64 8L68 23 84 28 68 33 64 48 60 33 44 28 60 23Z',ivory,3)],
-   ['sorcerer','术士',`<g style="color:${gold}" transform="translate(12 -2) scale(.8)">${flame}</g>`+poly('M64 57L92 86 64 116 36 86Z')+line('M64 57V116 M36 86H92','#4C351C',3)],
-   ['warlock','邪术师',eye+line('M33 23L20 10 M95 23L108 10 M22 92L15 109 32 117 42 101 M86 101L96 117 113 109 106 92',gold,6)],
-   ['bard','吟游诗人',line('M25 24Q20 75 46 85V111H82V85Q108 75 103 24 M25 24L44 36H84L103 24 M45 37V76 M58 37V82 M71 37V82 M84 37V76 M44 93H84',gold,5)]
+   ['fighter_champion','战士·勇士',helmet],
+   ['fighter_breaker','战士·破阵者',`<g transform="translate(17 20) scale(.7)">${shield}</g>`+sword],
+   ['wizard_school_of_conjuration','法师·咒法学派',line('M64 13L113 106H15Z',gold,4)+line('M38 75Q37 37 68 47 101 61 75 84 51 106 42 77 33 52 61 49 86 44 88 71',ivory,5)],
+   ['barbarian_path_of_the_warden','野蛮人·守望者道途',poly('M57 13H71V114H57Z')+poly('M56 27Q32 30 20 15L15 66Q39 55 56 57Z')+poly('M72 27Q96 30 108 15L113 66Q89 55 72 57Z')],
+   ['cleric_life_domain','牧师·生命领域',line('M40 20L30 67H98L88 20 M64 10V37 M50 23H78 M35 67Q39 106 64 112 89 106 93 67 M21 78L13 85 M107 78L115 85',gold,5)+circ(64,80,10,gold,3)],
+   ['rogue_swashbuckler','游荡者·风流剑客',bow+poly('M15 92Q12 71 35 66 37 87 15 92Z')],
+   ['barbarian_path_of_the_beast','野蛮人·野兽道途',poly('M30 16L49 31 80 30 99 14 95 58 103 79 76 110H52L25 79 33 58Z')+line('M40 54L54 61 M88 54L74 61 M54 79L64 88 74 79 M64 88V98','#3E2C1B',5)],
+   ['fighter_swordsman','战士·剑士',`<g transform="translate(-10 3) rotate(-15 64 64)">${sword}</g><g transform="translate(24 -4) rotate(15 64 64) scale(.85)">${sword}</g>`],
+   ['monk_way_of_the_ninja','武僧·忍宗',poly('M64 10L76 47 113 64 76 77 64 115 51 77 14 64 51 47Z')+circ(64,64,11,'#241D14',5)],
+   ['rogue_assassin','游荡者·刺客',line('M21 88Q16 40 64 14 112 40 107 88 M36 76L50 63 M92 76L78 63',gold,5)+poly('M64 45L75 60 68 97 64 115 60 97 53 60Z')],
+   ['paladin_oath_of_devotion','圣武士·奉献之誓',`<g transform="translate(13 21) scale(.8)">${shield}</g>`+circ(64,27,13,gold,4)+line('M64 3V8 M40 10L46 16 M88 10L82 16',gold,4)],
+   ['warlock_the_archfey','邪术师·至高妖精',line('M29 95Q7 67 31 45 M99 95Q121 67 97 45 M31 45L45 54 43 35 M97 45L83 54 85 35 M50 25Q67 15 83 29 M54 106Q70 113 81 103',gold,5)+line('M33 95L96 23 M59 49L78 64',ivory,5)],
+   ['fighter_arcane_archer','战士·魔射手',circ(64,64,39,gold,2)+circ(64,64,25,gold,2)+line('M25 106L99 22 M82 25L105 16 102 40 M25 84V106H47',ivory,5)],
+   ['rogue_gambler','游荡者·赌徒',poly('M64 13L110 41 98 96 44 113 15 64Z')+line('M64 13L44 113 M64 13L15 64 98 96 64 13 M15 64L110 41 44 113','#50391E',3)+circ(70,62,7,'#4E361E',3)],
+   ['paladin_oath_of_the_crown','圣武士·王冠之誓',poly('M31 110L35 80 57 69 46 57 24 57 30 40 51 26 61 11 76 27Q111 43 95 81L105 110Z')+line('M41 45H49 M62 35Q91 42 78 78L58 90','#3E2C1B',5)],
+   ['monk_way_of_the_tai_chi','武僧·太极宗',circ(64,64,46,gold,4)+line('M64 18C105 35 24 88 64 110',gold,6)+circ(64,42,7,gold,3,gold)+circ(64,88,7,gold,3)],
+   ['barbarian_path_of_the_giant','野蛮人·巨人道途',poly('M34 83L23 59 24 31 36 27 44 39V20H57V37 15H72V39 22H85V44 32H99V71L87 95H41Z')+line('M15 114L39 90 57 108 76 92 113 114',gold,5)],
+   ['rogue_thief','游荡者·盗贼',line('M46 55V35Q46 14 67 14 89 14 89 37',gold,7)+poly('M30 55H98V111H30Z')+line('M65 72V91 M17 100L99 41 114 47 103 59',ivory,5)],
+   ['ranger_gloom_stalker','游侠·幽域追踪者',line('M16 52Q64 15 112 52 64 92 16 52Z',gold,5)+circ(64,52,12,gold,4)+line('M29 102Q64 76 99 102 M40 114Q64 95 88 114',gold,4)],
+   ['rogue_magician','游荡者·魔术师',poly('M64 17L88 54 64 91 40 54Z')+line('M33 110L18 75Q12 49 24 51L33 68 30 37Q34 24 41 39L45 69 M95 110L110 75Q116 49 104 51L95 68 98 37Q94 24 87 39L83 69',gold,5)],
+   ['wizard_school_of_evocation','法师·塑能学派',`<g transform="translate(0 16) scale(1 .83)">${book}</g>`+line('M64 8L68 23 84 28 68 33 64 48 60 33 44 28 60 23Z',ivory,3)],
+   ['sorcerer_wild_magic','术士·狂野魔法',`<g style="color:${gold}" transform="translate(12 -2) scale(.8)">${flame}</g>`+poly('M64 57L92 86 64 116 36 86Z')+line('M64 57V116 M36 86H92','#4C351C',3)],
+   ['warlock_the_great_old_one','邪术师·旧日支配者',eye+line('M33 23L20 10 M95 23L108 10 M22 92L15 109 32 117 42 101 M86 101L96 117 113 109 106 92',gold,6)],
+   ['bard_college_of_valor','吟游诗人·勇气学院',line('M25 24Q20 75 46 85V111H82V85Q108 75 103 24 M25 24L44 36H84L103 24 M45 37V76 M58 37V82 M71 37V82 M84 37V76 M44 93H84',gold,5)]
   ];
-  for(const [key,name,body] of cls)await emit('Classes',key,256,256,`<g transform="scale(2)" style="color:${gold}">${iconBody(body,gold,'class')}</g>`,{label:name,color:gold});
+  for(const [key,name,body] of cls)await emit('Subclasses',key,256,256,`<g transform="scale(2)" style="color:${gold}">${iconBody(body,gold,'class')}</g>`,{label:name,color:gold});
   const overlayIcons=[['shield',shield,'#6FADDD'],['shield_broken',line('M64 18L101 31 95 70Q88 95 64 110 40 95 33 70L27 31Z','currentColor',5)+line('M70 23L54 49 73 61 52 87 66 108','currentColor',6),'#8595AA'],['locked',line('M42 55V35Q42 14 64 14 86 14 86 35V55','currentColor',7)+poly('M29 55H99V112H29Z','currentColor')+circ(64,78,7,'#10141A',4,'#10141A'),'#A6A0BA'],['taichi',circ(64,64,46,'currentColor',5)+line('M64 18C106 37 22 91 64 110','currentColor',6)+circ(64,42,7,'currentColor',3,'currentColor')+circ(64,88,7,'currentColor',3),'#6AC2A4'],['concealed',eye+line('M20 106L108 18','currentColor',6),'#5B9F9B'],['stealth',line('M23 96Q17 41 64 15 111 41 105 96 M40 68L53 73 M88 68L75 73','currentColor',6),'#9383AE'],['attack',sword,'#C88570'],['defense',shield,'#9AABC2'],['range',bow,'#C3AE80'],['heal',line('M51 21H77V51H107V77H77V107H51V77H21V51H51Z','currentColor',6),'#68B485'],['dead',skull,'#AAA5A1']];
   for(const [key,body,c] of overlayIcons)await emit('Overlay',key,256,256,`<g transform="scale(2)" style="color:${c}">${body.replaceAll('url(#metal)','currentColor').replaceAll(gold,'currentColor').replaceAll('#D6BC83','currentColor')}</g>`);
 }

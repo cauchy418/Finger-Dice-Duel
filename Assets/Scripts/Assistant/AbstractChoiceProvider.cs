@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -16,13 +16,13 @@ namespace FingerDiceDuel.Assistant
                                                   AttackContext context)
             => shieldA;
 
-        /// <summary>战士连锁破盾。默认放弃发动。</summary>
-        public virtual ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
+        /// <summary>战士·破阵者连锁破盾。默认放弃发动。</summary>
+        public virtual ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                                    IReadOnlyList<ChainBreakTarget> candidates)
             => default;
 
         /// <summary>
-        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 强化射击 ……）。
+        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 乘风突刺 ……）。
         /// 默认"放弃发动"，子类只重写自己关心的 <see cref="HandEffect"/>。
         /// </summary>
         public virtual Hand ChooseHandFor(ChoiceRequest request, PlayerState decider)

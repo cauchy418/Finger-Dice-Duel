@@ -18,11 +18,19 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1049 项全部通过**（2026-10-22，含三套统计 + 86,400 局集火实验）；新增转移回归 12 项通过；新角色真实界面 146 项检查通过（既有跳过／放弃专项另有 264 项） |
+| 测试 | **1052 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过** |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **22,080** 局、2v2 **35,328** 局、双将 **83,664** 局、集火实验 **86,400** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
+
+## 职业与子职（2026-10-23）
+
+当前 27 个子职，12 个职业大类；德鲁伊仅预留。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
+
+大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 39 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
+
+图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
 
 ## 目录结构
 
@@ -82,7 +90,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 **用编辑器看画面**：团结 Hub 打开本目录 → 直接 Play（任意场景都行）。
 前台美术验收菜单：`Finger Dice Duel/Preview/All Front End Art`。覆盖主菜单、全部子菜单、五类选将、图鉴与先攻，输出 `Art/Integration/front-end/`。
 
-技能与居中验收菜单：`Finger Dice Duel/Preview/UI Alignment and Skills`。核对 24 个角色入口，检查骰面字形、徽记与名字间隔，并实际点击主动 / 防御技能、法师与吟游诗人面板。截图及角色入口清单见 [`Art/Integration/ui-polish/README.md`](Art/Integration/ui-polish/README.md)。
+技能与居中验收菜单：`Finger Dice Duel/Preview/UI Alignment and Skills`。核对 24 个角色入口，检查骰面字形、徽记与名字间隔，并实际点击主动 / 防御技能、法师·塑能学派与吟游诗人·勇气学院面板。截图及角色入口清单见 [`Art/Integration/ui-polish/README.md`](Art/Integration/ui-polish/README.md)。
 
 多人战斗验收菜单：`Finger Dice Duel/Preview/Multiplayer Battle Art`。覆盖 2v2 四个主视角与 8 人八个主视角、绘画手牌和徽记、盾牌专用并拢 5、名字旁的负面状态、战斗记录抽屉及多人技能目标；截图见 [`Art/Integration/multiplayer/README.md`](Art/Integration/multiplayer/README.md)。战斗记录在所有模式默认收起，入口位于“返回标题”下方。
 
@@ -91,19 +99,19 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，按「伤害类型／状态一览／元素反应」分三页，第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
-新角色美术：正式 `Classes/oathbreaker`、`berserker`、`wanderer` 已导入；野蛮人换用用户选定的兽角图腾，原斧徽记用于狂战士。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
+新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
 ## 战报与提示
 
 - 回合出口统一由 `BoardController` 管理：无合法运算不等于结束比赛，冻结／双手不可用时保留选手阶段并提供跳过；AI 自动跳过。所有跳过路径设置待结算的回合结束者，燃烧与状态时长照常推进。震慑保留合法运算，攻击目标按 `StatusRules.CanAttackTarget` 过滤，无合法攻击目标才提供放弃。编辑器菜单 `Finger Dice Duel/Preview/Turn Skip and Give Up` 验证实际按钮，记录见 [`Art/Integration/turn-exits/README.md`](Art/Integration/turn-exits/README.md)。
 
-- 技能流血在 `AttackContext.InflictsBleed` 上按次标记，由统一命中判定附加并记 `流血` 提示，回合开始扣血按实际中毒／流血状态命名；盾抵挡／太极／零伤害算命中，闪避／取消不算。战士记录本次运算前完整盾及碎另一盾的实际变化，游侠只在强化生效后标记，刺客在运算前快照潜行，剑客只标记独立追加攻击。追加命中立即降防，后续主攻击使用新防御；追加闪避自动结算，`PreTurnChoiceContext.IsResolvingAttack` 保证不依赖已改写的手值重算攻击类型。
-- 牧师的 4/6/8 转回复、9 和双 9 额外回复统一走 `ClericLogic.CleanseAndHeal`：先清所有状态再回血，满血也净化，腐朽不阻止这次回复；双将两种位置同样生效。其他角色回复保留原判定。
-- 牧师相关抉择入口在收集到候选后返回“已接管流程”；AI 同步答完也须停止调用方旧步骤，避免重复运算、覆盖胜负界面。
+- 技能流血在 `AttackContext.InflictsBleed` 上按次标记，由统一命中判定附加并记 `流血` 提示，回合开始扣血按实际中毒／流血状态命名；盾抵挡／太极／零伤害算命中，闪避／取消不算。战士·破阵者记录本次运算前完整盾及碎另一盾的实际变化，游荡者·风流剑客只在强化生效后标记，游荡者·刺客在运算前快照潜行，战士·剑士只标记独立追加攻击。追加命中立即降防，后续主攻击使用新防御；追加闪避自动结算，`PreTurnChoiceContext.IsResolvingAttack` 保证不依赖已改写的手值重算攻击类型。
+- 牧师·生命领域的 4/6/8 转回复、9 和双 9 额外回复统一走 `LifeDomainLogic.CleanseAndHeal`：先清所有状态再回血，满血也净化，腐朽不阻止这次回复；双将两种位置同样生效。其他角色回复保留原判定。
+- 牧师·生命领域相关抉择入口在收集到候选后返回“已接管流程”；AI 同步答完也须停止调用方旧步骤，避免重复运算、覆盖胜负界面。
 - `BoardController.BeginTurn` 连续处理回合开始状态致死，直到轮到存活者或比赛结束；不可只重读一次行动者，否则多人连续流血致死会停在已阵亡角色上。
 
-- 三名新角色的 AI 价值表已补齐：破誓者重视 5、狂战士重视 9，浪客沿用通用表；破誓者转移使用 `OathbreakerTransfer`。
-- 破誓者通过 `IAttackTransfer` 在圣武士代挡前转移整次攻击；运算前由防守者选择持盾角色，后续抉择交给 `ChoiceRequest.Decider` 对应角色生成，补收实际目标的防御与圣武士代挡。结算重新验证持 5、存活、完整盾、非自己／攻击者；使用实际目标的抉择器。按钮按角色去重，8 人最多 6 名候选，保留【不发动】。`OathbreakerTransferTests` 覆盖 12 项真实流程与非法／过期目标回归。
+- 三名新角色的 AI 价值表已补齐：圣武士·破誓者重视 5、野蛮人·狂战士道途重视 9，战士·战术家沿用通用表；圣武士·破誓者转移使用 `OathbreakerTransfer`。
+- 圣武士·破誓者通过 `IAttackTransfer` 在圣武士·奉献之誓代挡前转移整次攻击；运算前由防守者选择持盾角色，后续抉择交给 `ChoiceRequest.Decider` 对应角色生成，补收实际目标的防御与圣武士·奉献之誓代挡。结算重新验证持 5、存活、完整盾、非自己／攻击者；使用实际目标的抉择器。按钮按角色去重，8 人最多 6 名候选，保留【不发动】。`OathbreakerTransferTests` 覆盖 12 项真实流程与非法／过期目标回归。
 
 - `Assistant/BattleTurnText.cs` 只格式化结算快照；回复显示实际增量，放弃攻击不写成零伤害命中。
 - `Core/CombatText.cs` 统一“角色【技能】操作／结果”。技能实际生效后调用 `GameManager.NoteSkill`；不要把收集抉择、点击候选或 AI 意图记成已发动。
@@ -146,12 +154,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | # | 坑 | 要点 |
 |---|---|---|
-| ★7 | **"该谁决定" ≠ "轮到谁行动"** | 游侠的闪避属于**防守方**；一律用行动方会让闪避选项点不到 |
+| ★7 | **"该谁决定" ≠ "轮到谁行动"** | 游荡者·风流剑客的闪避属于**防守方**；一律用行动方会让闪避选项点不到 |
 | ★8 | **回合边界必须复位"抉择队列"与"队列索引"** | 只清队列不清索引 → `idx >= count` 被判成"问完了" → **下回合的提示完全不弹** |
 | 9 | **抉择器必须在创建 `GameManager` 时就传进去** | 否则结算时找不到 provider |
 | 10 | **`PreTurnChoiceReader.Read` 必须带"回退询问"** | 直连 `ExecuteTurn`（无收集步骤）时仍要能问出答案 |
 | 11 | **询问顺序必须与结算顺序一致** | 闪避在结算里优先于护盾，问也必须先问闪避 |
-| ★11b | **结算钩子里不能向玩家索要输入** | `ExecuteTurn` 一次跑完、无法暂停；在钩子里问 provider 的话**人类永远看不到弹窗**（AI 能当场答，所以表现为"有时生效"）。战士连锁破盾曾因此形同失效 —— 必须改成"运算前收集 + 结算回读" |
+| ★11b | **结算钩子里不能向玩家索要输入** | `ExecuteTurn` 一次跑完、无法暂停；在钩子里问 provider 的话**人类永远看不到弹窗**（AI 能当场答，所以表现为"有时生效"）。战士·破阵者连锁破盾曾因此形同失效 —— 必须改成"运算前收集 + 结算回读" |
 | 12 | **只有一个候选的抉择要给"发动"按钮** | 让玩家去点手牌很别扭 |
 | ★13 | **分两段的抉择要显式设计"跨阶段传答案"** | 见下方详解 |
 | ★14 | **新增交互阶段必须同步 4 张"按阶段分派"的表** | `Chooser` / `CanClick` / `ClickHand` / UI 按钮可见性。漏掉 `Chooser` → 返回 null → `IsHumanChooser=false` → **UI 丢弃点击 → 游戏卡死** |
@@ -165,10 +173,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | # | 坑 | 要点 |
 |---|---|---|
 | ★19 | **运算源的"运算前"值在结算钩子里已经被改写** | 收集阶段与结算阶段看到的手值不同；用快照，别读当前值 |
-| ★20 | **`AttackContext` 必须保存"运算前的双方手值快照"** | 否则效果判定会算错（曾把游侠闪避整个跳过） |
+| ★20 | **`AttackContext` 必须保存"运算前的双方手值快照"** | 否则效果判定会算错（曾把游荡者·风流剑客闪避整个跳过） |
 | 21 | **多段攻击：攻防加成只能叠加一次** | 每段各自算会造成重复加成 |
-| 22 | **判定触发条件要看"来源"，不要看数值** | 咒术师"无视护盾"是**身份**属性；按数值判会误伤其他角色的 8 |
-| 23 | **看清条件是"运算源"还是"另一只手"** | 剑客要求"另一只手与结果同值"，不是运算源 |
+| 22 | **判定触发条件要看"来源"，不要看数值** | 法师·咒法学派"无视护盾"是**身份**属性；按数值判会误伤其他角色的 8 |
+| 23 | **看清条件是"运算源"还是"另一只手"** | 战士·剑士要求"另一只手与结果同值"，不是运算源 |
 | 24 | **免伤通道复用时，战报要说清是哪一种** | 闪避 / 护盾 / 免疫都要能区分 |
 | 25 | **`Hand` 的状态标记必须与"这只手现在的数值"一致** | 手值变了，护盾状态要跟着失效 |
 
@@ -203,7 +211,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 #### A. 分两段的抉择 —— "跨阶段传答案"必须显式设计
 
-**需求**：牧师的 4/6/8 要**先弹「攻击 / 回复」**，选完**再**点手牌选目标。
+**需求**：牧师·生命领域的 4/6/8 要**先弹「攻击 / 回复」**，选完**再**点手牌选目标。
 也就是同一次运算里有**两段抉择**，中间隔着"选目标手 + 确认目标玩家"。
 
 **难点**：所有抉择都要在运算前收集（`ExecuteTurn` 一次跑完），
@@ -232,7 +240,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 "运算源为空"**不是**"这是新回合"的定义 —— 它只是恰好在旧调用顺序下等价。
 顺序一变（例如某个校准步骤先给 `_pendingActedHand` 赋值），
 "回合中途"就会被误判成"新回合"，把同回合刚答的抉择清掉，
-表现为"牧师选了回复却按攻击结算"。
+表现为"牧师·生命领域选了回复却按攻击结算"。
 
 **通用规则**：判据要写成**问题本身**（"行动方变了吗"），
 不要写成**当前唯一的间接表现**（"运算源为空"）。
@@ -278,7 +286,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | **平衡隐患** | 单回合最大伤害 8 < 一次回复 9，双方都只顾活命时可拖延；靠轮次上限兜底（见 `RULES.md` §17） |
 | **AI 给队友回血未实现** | 1v1 里给对手回血是资敌；2v2 已支持队友但 AI 尚未利用 |
 | **空运算源** | 2v2 AI 对局里偶发"用空运算源去结算"，已由两道守门拦住（不再抛异常、不再崩），改为记录 `[FDD异常]` 现场。**根因未消除** |
-| **AI 赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
+| **AI 游荡者·赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
 | **诊断字段曾多次跨回合残留** | `LastIllegalOperation` / `_advanceTrace` / `_pendingGambleRoll` 都踩过，统一在回合边界清空（`ResetDiagnostics` / `SetupFirstStep`） |
 
 ## 2v2 集火策略（AI）
@@ -286,7 +294,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | 文件 | 职责 |
 |---|---|
 | `Assistant/GreedyChoiceProvider.cs` | `FocusPolicy`（None / Self / Mate）、`FocusBonus = 25000`、`IntendedVictim`；集火分**只加在攻击**上，且目标必须真的可达 |
-| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师 / 猎人 / 狼人 / 魔术师）。邪术师 2v2 62.5% / 8.7% 平局，先处理平局，暂不叠加集火 |
+| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师·旧日支配者 / 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师）。邪术师·旧日支配者 2v2 62.5% / 8.7% 平局，先处理平局，暂不叠加集火 |
 | `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
 | `Tests/EditMode/FocusPolicyExperimentTests.cs` | 24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局，写 `Tools/focus-report.txt` |
 
@@ -295,17 +303,17 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | 文件 | 职责 |
 |---|---|
 | `Tests/EditMode/SkillBleedAndCleanseTests.cs` | 21 项回归：五条技能流血路径、盾／闪避／取消／零伤害、潜行快照、普通攻击隔离、时长刷新、18 种状态净化、双 9／双将、连续流血致死推进及 AI 双九结算出口 |
-| `Tests/EditMode/BardTriggerTests.cs` | 吟游诗人**真实行动**触发链：受伤 / 9 回血 / 满血回复不触发 / 中毒触发 / 2v2 队友受伤不触发；并验证 `BardAi.TryActivate` 接上触发 |
-| `Tests/EditMode/BardTests.cs` + `BardChoiceFlowTests.cs` | 四步选择、强度、目标数、替换与死亡清除 |
-| `Tests/EditMode/SorcererTests.cs` / `WarlockDistanceTests.cs` | 术士 / 邪术师的被动触发与距离结算（无触发窗口，不另做自动触发测试） |
-| `Tests/EditMode/AiCharacterTests.cs` | AI 驱动冒烟：已覆盖术士 / 邪术师 / 吟游诗人；另有旧角色技能使用回归 |
+| `Tests/EditMode/CollegeOfValorTriggerTests.cs` | 吟游诗人·勇气学院**真实行动**触发链：受伤 / 9 回血 / 满血回复不触发 / 中毒触发 / 2v2 队友受伤不触发；并验证 `CollegeOfValorAi.TryActivate` 接上触发 |
+| `Tests/EditMode/CollegeOfValorTests.cs` + `CollegeOfValorChoiceFlowTests.cs` | 四步选择、强度、目标数、替换与死亡清除 |
+| `Tests/EditMode/WildMagicTests.cs` / `TheGreatOldOneDistanceTests.cs` | 术士·狂野魔法 / 邪术师·旧日支配者的被动触发与距离结算（无触发窗口，不另做自动触发测试） |
+| `Tests/EditMode/AiCharacterTests.cs` | AI 驱动冒烟：已覆盖术士·狂野魔法 / 邪术师·旧日支配者 / 吟游诗人·勇气学院；另有旧角色技能使用回归 |
 
 ```powershell
 # 只跑集火实验（约 20 秒）
 dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 ```
 
-> 实验口径：同一局的三组共享**完全相同**的阵容 / 初始手值 / 术士骰子，
+> 实验口径：同一局的三组共享**完全相同**的阵容 / 初始手值 / 术士·狂野魔法骰子，
 > 只有受试角色的 AI 切换策略；队友与对手始终 baseline。
 > 这样得到的是"**我**用集火，队伍是否更常赢"的配对比较。
 

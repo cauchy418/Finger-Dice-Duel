@@ -234,7 +234,7 @@ namespace FingerDiceDuel.EditorTools
                 RevealRosterCard(Field<CharacterRosterView>(_bootstrap, "_rosterViewB"), 20);
                 Click(Field<CharacterRosterView>(_bootstrap, "_rosterViewB").Root.Find("Content/Card20").GetComponent<Button>());
                 Check(Field<CharacterRosterView>(_bootstrap, "_rosterViewA").SelectedIndex == 23, "last character can be selected");
-                Check(Field<Text>(_bootstrap, "_detailA").text.Contains("吟游诗人"), "selection detail reflects Bard");
+                Check(Field<Text>(_bootstrap, "_detailA").text.Contains("吟游诗人·勇气学院"), "selection detail reflects CollegeOfValor");
             });
             Shot("CharacterSelect");
             Add(() => Click("SelectBack"));

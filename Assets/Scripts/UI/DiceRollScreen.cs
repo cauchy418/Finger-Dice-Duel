@@ -274,7 +274,7 @@ namespace FingerDiceDuel.UI
             //
             // 界面曾经自己拼（先调 AssignHint 再用 Hint 覆盖），
             // 那份被覆盖的调用是死代码，而且它把两个名字/点数用错 ——
-            // 实机出现过「战士投出 19（大失败）」（实际 A 投 17、19 还是小成功）。
+            // 实机出现过「战士·破阵者投出 19（大失败）」（实际 A 投 17、19 还是小成功）。
             // 现在只认控制器给的文字，并有源码守卫钉住（见 ScreenFlowTests）。
             _hintText.text = _controller.DecisionText;
             if (string.IsNullOrEmpty(_hintText.text)) _hintText.text = _controller.Hint;

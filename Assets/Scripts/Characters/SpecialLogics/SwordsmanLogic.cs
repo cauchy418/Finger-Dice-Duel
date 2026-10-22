@@ -4,7 +4,7 @@ using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>
-    /// 剑客 Swordsman（攻防 +2 / −1）
+    /// 战士·剑士 Swordsman（攻防 +2 / −1）
     ///
     /// 技能：运算出 4 / 6 / 8（攻击）时，若**另一只手恰好和运算源数字相同**
     /// （即双 4 / 双 6 / 双 8），则在主攻击**之前**先追加一次攻击，
@@ -16,14 +16,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     public sealed class SwordsmanLogic : CharacterTemplate, IPreTurnChoiceProvider, IExtraAttackProvider, IAiMoveAdvisor,
                                          ILethalThresholdAdvisor, ITwoStepGoal
     {
-        public override string DisplayName => "剑客";
+        public override string DisplayName => "战士·剑士";
 
         // ============================================================
         // 双 4/6/8 的**两回合计划**
         // ============================================================
         //
-        // ⚠️ 为什么需要：剑客的追加攻击要求**双手相同且结果是 4/6/8**，
-        //    这也是一手做不出来的（和刺客的双 7 一样）。
+        // ⚠️ 为什么需要：战士·剑士的追加攻击要求**双手相同且结果是 4/6/8**，
+        //    这也是一手做不出来的（和游荡者·刺客的双 7 一样）。
         //    价值表里的 DoublesOf 只在**已经成了**时给分，
         //    所以贪心评分看不到"我手上已经有一个 8，下一手凑齐就成"。
         //    实测发动率只有 20% —— 加上这条之后明显上升。
@@ -48,8 +48,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>
         /// 给这一手加分，让 AI **愿意为双 4/6/8 铺路**。
         ///
-        /// 差一步给 45（比刺客的 55 略低：剑客的追加攻击已经是"锦上添花"，
-        /// 而刺客的潜行还附带"不能被攻击"，价值更高）。
+        /// 差一步给 45（比游荡者·刺客的 55 略低：战士·剑士的追加攻击已经是"锦上添花"，
+        /// 而游荡者·刺客的潜行还附带"不能被攻击"，价值更高）。
         /// </summary>
         public override int ScoreMoveBonus(MoveValueContext context)
         {
@@ -60,7 +60,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int DefaultAttackBonus => 2;
 
         /// <summary>
-        /// **剑客的斩杀线**（玩家要求"剑客的斩杀线也要根据不同手的情况写"）。
+        /// **战士·剑士的斩杀线**（玩家要求"战士·剑士的斩杀线也要根据不同手的情况写"）。
         ///
         /// = 主攻击伤害 + （若会触发追加攻击）追加伤害。
         ///
@@ -107,7 +107,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         // 「双持同值特别值钱」原本在这里硬编码（+40）。
-        // 现在统一由价值表表达（见 Assistant.HandValueProfiles 的剑客档案：
+        // 现在统一由价值表表达（见 Assistant.HandValueProfiles 的战士·剑士档案：
         // 双 4/双 6/双 8 加 130）。
 
         /// <summary>供上层查询"这次运算会不会追加一次攻击"。</summary>
@@ -137,10 +137,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (context == null || requests == null) return;
 
-            // ⚠️ 同 HunterLogic：双将时 `actor.Character` 是容器，
+            // ⚠️ 同 GloomStalkerLogic：双将时 `actor.Character` 是容器，
             //    `!= this` 会**恒为真**，追加攻击在双将里静默失效。
-            //    （这是与"双将猎人没有伏击按钮"同一类的坑，
-            //     由 HunterLogic 那次修复一并发现并改正。）
+            //    （这是与"双将游侠·幽域追踪者没有伏击按钮"同一类的坑，
+            //     由 GloomStalkerLogic 那次修复一并发现并改正。）
             if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
             if (!ShouldFollowUp(context)) return;
 
@@ -151,7 +151,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             requests.Add(new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp,
-                $"剑客双 {value}：可以在主攻击之前追加一次" +
+                $"战士·剑士双 {value}：可以在主攻击之前追加一次" +
                 $"固定 {value} 点伤害的攻击（无视双方攻防加成，命中附流血 2 回合）。要发动吗？",
                 new List<Hand>(1) { GetOtherHand(context.Actor, context.ActedHand) },
                 allowDecline: true,
@@ -197,7 +197,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 AutoResolveDodge = true,
 
                 // ⚠️ 追加攻击的"攻击数字视为 0"（玩家确认）——
-                //    因此**妖术师无法取消它**（任何手值都不可能等于 0）。
+                //    因此**邪术师·至高妖精无法取消它**（任何手值都不可能等于 0）。
                 IsSpecialAttack = true,
             };
             // 追加攻击发生在主攻击之前，玩家还没来得及做闪避选择，
@@ -224,7 +224,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             var request = new ChoiceRequest(
                 HandEffect.SwordsmanFollowUp,
-                "剑客：要追加一次固定伤害、命中附流血2回合的攻击吗？",
+                "战士·剑士：要追加一次固定伤害、命中附流血2回合的攻击吗？",
                 new List<Hand>(1) { other },
                 allowDecline: true,
                 declineResult: null,

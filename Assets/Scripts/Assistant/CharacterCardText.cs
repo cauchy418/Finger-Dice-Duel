@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
 {
@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Assistant
     /// 为什么单独一层：UI 的 <c>CharacterRosterView</c> 在 <c>FingerDiceDuel.UI</c> 下，
     /// 而**测试工程在无头环境编译，引用不到 UI 命名空间**。
     /// 文案是纯字符串处理，放在这里就能被测试覆盖 ——
-    /// 尤其"狼人的实际生命上限是 25 而不是 20"这种事，显示错了玩家会以为卡片在骗人。
+    /// 尤其"野蛮人·野兽道途的实际生命上限是 25 而不是 20"这种事，显示错了玩家会以为卡片在骗人。
     /// </summary>
     public static class CharacterCardText
     {
@@ -19,10 +19,10 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️ 攻防也要问**运行时实例**，不能读定义里的静态值。
             //
-            // 先例：狼人的 +5 生命由角色逻辑提供，不在数据层。
-            // 骑士同理且更明显 —— 它的攻击加成**恒等于攻击距离**，
+            // 先例：野蛮人·野兽道途的 +5 生命由角色逻辑提供，不在数据层。
+            // 圣武士·王冠之誓同理且更明显 —— 它的攻击加成**恒等于攻击距离**，
             // 会随碎盾次数变化；而定义里的 AttackBonus 写的是 0。
-            // 玩家实测反馈："进入游戏显示骑士的攻防就是 +1/-1" ——
+            // 玩家实测反馈："进入游戏显示圣武士·王冠之誓的攻防就是 +1/-1" ——
             // 棋盘上是对的（用运行时值），但角色选择卡上显示 +0/-1。
             int maxHealth = CharacterFactory.MaxHealthOf(def);
 

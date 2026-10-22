@@ -127,7 +127,7 @@ async function main() {
  await record('Illustrations','d20_initiative',512,512,{source:dieSource,kind:'imagegen',nativeWidth:dieMeta.width,nativeHeight:dieMeta.height,resampling:'uniform contain; 24px transparent padding; preserved alpha',upscaled:false,usage:'Simple Image, white tint; live numeral overlay, never a baked dice result'});
  await ui(); await icons();
  const battle=JSON.parse(await fs.readFile(path.join(root,'Art/Production/battle-v1/asset-manifest.json'),'utf8'));
- const reused=battle.assets.filter(a=>['Classes','Damage','Status'].includes(a.group)).map(a=>({key:a.key,group:a.group,resourcesKey:a.resourcesKey,path:'Assets/Resources/Art/Battle/v1/'+a.path}));
+ const reused=battle.assets.filter(a=>['Subclasses','Damage','Status'].includes(a.group)).map(a=>({key:a.key,group:a.group,resourcesKey:a.resourcesKey,path:'Assets/Resources/Art/Battle/v1/'+a.path}));
  for(const key of ['attack','defense','range','heal','d20_sigil']) {
   const a=battle.assets.find(a=>a.key===key);if(!a)throw Error('Missing reusable '+key);
   reused.push({key:a.key,group:a.group,resourcesKey:a.resourcesKey,path:'Assets/Resources/Art/Battle/v1/'+a.path});

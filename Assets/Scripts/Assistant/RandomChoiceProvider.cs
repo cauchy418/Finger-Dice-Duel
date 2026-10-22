@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -9,14 +9,14 @@ namespace FingerDiceDuel.Assistant
     /// 主要用途是"批量模拟对局"以评估平衡性，也是 P0 阶段唯一能自动跑完整局的对手。
     ///
     /// 设计取舍：
-    /// - 锁手一定发动（对野蛮人有利，没有理由放弃）。
+    /// - 锁手一定发动（对野蛮人·守望者道途有利，没有理由放弃）。
     /// - 连锁破盾默认放弃，可通过 <see cref="ChainBreakChance"/> 调整（破盾有风险也有收益）。
     /// </summary>
     public sealed class RandomChoiceProvider : AbstractChoiceProvider, IMoveSelector
     {
         private readonly Random _rng;
 
-        /// <summary>战士连锁破盾的发动概率，0 = 从不发动，1 = 总是发动。</summary>
+        /// <summary>战士·破阵者连锁破盾的发动概率，0 = 从不发动，1 = 总是发动。</summary>
         public double ChainBreakChance { get; set; }
 
         public RandomChoiceProvider() : this(Environment.TickCount) { }
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Assistant
                                                    AttackContext context)
             => _rng.Next(2) == 0 ? shieldA : shieldB;
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
+        public override ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             if (candidates == null || candidates.Count == 0) return default;

@@ -15,7 +15,7 @@ namespace FingerDiceDuel.Core
         /// 本次攻击**实际承受伤害的人**。
         ///
         /// 默认就是构造时的目标，但可以在 <see cref="Resolve"/> 开头被改写 ——
-        /// 圣武士的"范围内的角色被攻击时把目标改成自己"就是这么做的。
+        /// 圣武士·奉献之誓的"范围内的角色被攻击时把目标改成自己"就是这么做的。
         /// </summary>
         public PlayerState Defender { get; private set; }
         public Hand SourceHand { get; }
@@ -30,12 +30,12 @@ namespace FingerDiceDuel.Core
         public int FinalDamage { get; set; }
 
         /// <summary>
-        /// 基础伤害倍率，默认 1.0。角色钩子可修改（游侠强化后为 1.5）。
+        /// 基础伤害倍率，默认 1.0。角色钩子可修改（游荡者·风流剑客强化后为 1.5）。
         /// 作用顺序：**先乘倍率、再叠加攻防加成**（见 RULES.md §6）。
         /// </summary>
         public float DamageMultiplier { get; set; } = 1f;
 
-        /// <summary>本次攻击是否被闪避（游侠）。闪避完全免伤，且不消耗护盾。</summary>
+        /// <summary>本次攻击是否被闪避（游荡者·风流剑客）。闪避完全免伤，且不消耗护盾。</summary>
         public bool WasDodged { get; private set; }
 
         /// <summary>免伤原因（例如"目标在潜行中，无法被攻击"）。供战报显示。</summary>
@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 攻击方的抉择接收者，由 <see cref="GameManager"/> 在结算前注入。
-        /// 角色的攻击钩子（如游侠的强化射击）用它回读玩家在运算前的选择。
+        /// 角色的攻击钩子（如游荡者·风流剑客的乘风突刺）用它回读玩家在运算前的选择。
         /// </summary>
         public IPreTurnChoiceSink AttackerChoiceSink { get; set; }
 
@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Core
         ///
         /// 必须显式保存：运算源已经被改写成结果值，无法再由它反推这次运算的效果。
         /// （曾经在闪避判定里把运算源当成目标手用，导致 Effect 算成 None、
-        /// 游侠的闪避被整个跳过 —— 真实 bug。）
+        /// 游荡者·风流剑客的闪避被整个跳过 —— 真实 bug。）
         /// </summary>
         public int TargetHandValueBefore { get; set; }
 
@@ -68,14 +68,14 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public int SourceHandValueBefore { get; set; }
 
-        /// <summary>是否无视护盾（咒术师）。</summary>
+        /// <summary>是否无视护盾（法师·咒法学派）。</summary>
         public bool IgnoreShield { get; set; }
 
-        /// <summary>是否无视对方的正向防御加成（咒术师）。负向加成仍然生效。</summary>
+        /// <summary>是否无视对方的正向防御加成（法师·咒法学派）。负向加成仍然生效。</summary>
         public bool IgnorePositiveDefense { get; set; }
 
         /// <summary>
-        /// 本次攻击是否**完全无视双方的攻防加成**（剑客的追加攻击）。
+        /// 本次攻击是否**完全无视双方的攻防加成**（战士·剑士的追加攻击）。
         /// 为 true 时最终伤害就等于 RawDamage（经倍率与分段），不叠加任何攻防修正。
         /// </summary>
         public bool IgnoreStatBonuses { get; set; }
@@ -90,7 +90,7 @@ namespace FingerDiceDuel.Core
         public int AppliedDamage { get; private set; }
 
         /// <summary>
-        /// 本次攻击的段数（默认 1）。忍者把它设为 2：伤害平均分配，每段独立结算。
+        /// 本次攻击的段数（默认 1）。武僧·忍宗把它设为 2：伤害平均分配，每段独立结算。
         /// </summary>
         public int HitCount { get; set; } = 1;
 
@@ -109,7 +109,7 @@ namespace FingerDiceDuel.Core
         ///    `TurnResult.AttackType` 供界面使用。
         ///
         /// ⚠️ 可写**仅**为太极反弹服务：反弹要在构造时**预置**原攻击的类型，
-        ///    从而跳过"问攻击方"那一步（那一刻攻击方是武僧，会得到钝击）。
+        ///    从而跳过"问攻击方"那一步（那一刻攻击方是武僧·太极宗，会得到钝击）。
         /// </summary>
         public AttackDamageType AttackType { get; set; } = AttackDamageType.None;
 
@@ -120,9 +120,9 @@ namespace FingerDiceDuel.Core
         public DamageType InteractionDamageType { get; set; } = DamageType.None;
 
         /// <summary>
-        /// **术士专用**：本次攻击被掷骰改写成哪种元素（`DamageType.None` = 没改写）。
+        /// **术士·狂野魔法专用**：本次攻击被掷骰改写成哪种元素（`DamageType.None` = 没改写）。
         ///
-        /// ⚠️ 为什么需要一个独立字段，而不是让术士自己存一个"上次掷到什么"：
+        /// ⚠️ 为什么需要一个独立字段，而不是让术士·狂野魔法自己存一个"上次掷到什么"：
         ///    同一次结算里要**用两次**这个结果 ——
         ///    ① 决定伤害类型（飘字颜色 / 力场穿透）
         ///    ② 决定挂哪个负面状态
@@ -131,7 +131,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public DamageType ElementOverride { get; set; } = DamageType.None;
 
-        /// <summary>本次攻击是否被改写成「力场」（术士掷到力场时用）。</summary>
+        /// <summary>本次攻击是否被改写成「力场」（术士·狂野魔法掷到力场时用）。</summary>
         public bool IsForceElement => ElementOverride == DamageType.Force;
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace FingerDiceDuel.Core
         /// <summary>实际造成伤害的段数。</summary>
         public int LandedHits { get; private set; }
 
-        /// <summary>被闪避掉的段数（游侠每段消耗一只"1"）。</summary>
+        /// <summary>被闪避掉的段数（游荡者·风流剑客每段消耗一只"1"）。</summary>
         public int DodgedHits { get; private set; }
 
         public AttackContext(PlayerState attacker, PlayerState defender, Hand sourceHand, int rawDamage)
@@ -193,10 +193,10 @@ namespace FingerDiceDuel.Core
         public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
         {
             Manager = manager;
-            // 0. **最早结算：取消攻击**（妖术师）。
+            // 0. **最早结算：取消攻击**（邪术师·至高妖精）。
             //
             //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
-            //    所以能取消掉咒术师那种"在钩子里改写伤害"的攻击。
+            //    所以能取消掉法师·咒法学派那种"在钩子里改写伤害"的攻击。
             //
             //    ⚠️ 取消者不是挨打的人，而是**场上的第三方**，所以要遍历全部参战玩家。
             //    ⚠️ 追加攻击与冲击的"攻击数字视为 0"（见 AttackValue），
@@ -210,19 +210,19 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
-            // 1. 攻击方钩子介入（如咒术师设置 IgnoreShield / 修改 FinalDamage / 游侠设置倍率）
+            // 1. 攻击方钩子介入（如法师·咒法学派设置 IgnoreShield / 修改 FinalDamage / 游荡者·风流剑客设置倍率）
             Attacker.Character?.OnResolveAttack(this);
 
             // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
             //
             //     ⚠️ 必须在 `OnResolveAttack` **之后**取：
-            //        游侠的"强化射击"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
-            //        而"普通挥砍 / 强化穿刺"正是按这个区分（见 RangerLogic）。
+            //        游荡者·风流剑客的"乘风突刺"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
+            //        而"普通挥砍 / 强化穿刺"正是按这个区分（见 SwashbucklerLogic）。
             //
             //     ⚠️⚠️ **已经带了类型就不再重新推导** ——
             //        太极反弹是"内部再开一个上下文"，它必须**继承原攻击的类型**
             //        （玩家："打来的攻击是寒冰伤害，反弹也就是寒冰伤害"）。
-            //        若在这里再问一次，问到的会是**武僧自己**的类型（钝击），
+            //        若在这里再问一次，问到的会是**武僧·太极宗自己**的类型（钝击），
             //        那就永远弹回去钝击了。
             if (AttackType == AttackDamageType.None
                 && Attacker.Character is IAttackTypeProvider typeProvider)
@@ -230,7 +230,7 @@ namespace FingerDiceDuel.Core
                 AttackType = typeProvider.AttackTypeOf(this);
             }
 
-            // 1b. 攻击方的**伤害规则**改写（魔射手：6 伤害 +2、8 无视护盾）。
+            // 1b. 攻击方的**伤害规则**改写（战士·魔射手：6 伤害 +2、8 无视护盾）。
             //
             //     与 OnResolveAttack 分开是因为它需要**攻击数字**，
             //     而那个数字要用"运算前的快照"算（SourceHandValueBefore + TargetHandValueBefore），
@@ -272,19 +272,19 @@ namespace FingerDiceDuel.Core
             //      独立结算攻防加成。
             //
             // 为什么连闪避也要逐段：规则已确认 ——
-            // 忍者的每一段都要各自用一次"1 变 2"才能完全闪过，
-            // 剑客的追加攻击也算**独立的一次攻击**（可以单独被闪避/挡盾）。
+            // 武僧·忍宗的每一段都要各自用一次"1 变 2"才能完全闪过，
+            // 战士·剑士的追加攻击也算**独立的一次攻击**（可以单独被闪避/挡盾）。
             //
             // 注意这里先把加成从基础伤害里剥掉，再分段，最后每段各自加回去：
-            //   忍者基础 4、攻 +1 -> 每段 (4/2) + 1 = 3，共 6（而不是 (4+1)/2 = 2，共 4）。
+            //   武僧·忍宗基础 4、攻 +1 -> 每段 (4/2) + 1 = 3，共 6（而不是 (4+1)/2 = 2，共 4）。
             int hits = HitCount < 1 ? 1 : HitCount;
 
-            // 基础伤害用 **FinalDamage**（钩子可能改过它，例如刺客的出潜行 +7），
+            // 基础伤害用 **FinalDamage**（钩子可能改过它，例如游荡者·刺客的出潜行 +7），
             // 而不是 RawDamage —— 否则钩子对伤害的修改会被静默丢弃。
             int perHitBase = SplitDamage(FinalDamage, hits);
             int perHit = IgnoreStatBonuses ? perHitBase : ApplyStatBonuses(perHitBase);
 
-            // 2°. **太极化解**（武僧）：在逐段结算之前询问。
+            // 2°. **太极化解**（武僧·太极宗）：在逐段结算之前询问。
             //
             //     与闪避 / 护盾的区别：那两种是"整段免掉"，
             //     太极是"**减半**，并把剩下的一半**反弹**给攻击方"。
@@ -301,7 +301,7 @@ namespace FingerDiceDuel.Core
             //    "先闪避再太极" —— 没闪掉的那一段才吃太极。
             //
             //    为什么不能只挪一行调用：
-            //      · <see cref="TryDodgeThisHit"/> **有副作用**（游侠的闪避会**消耗一只"1"**），
+            //      · <see cref="TryDodgeThisHit"/> **有副作用**（游荡者·风流剑客的闪避会**消耗一只"1"**），
             //        所以不能"先预判一遍、再正式问一遍"；
             //      · 太极原本在循环**之前**询问，而闪避在循环**里** —— 顺序天然是太极在前。
             //
@@ -315,7 +315,7 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < hits; i++)
             {
-                // 2a. **闪避**（游侠每次消耗一只"1"；刺客潜行则整次攻击都打不到）
+                // 2a. **闪避**（游荡者·风流剑客每次消耗一只"1"；游荡者·刺客潜行则整次攻击都打不到）
                 //
                 //     现在它排在**太极之前**（玩家要求）：
                 //     闪掉的段不再吃太极，太极留给后面真正落地的段。
@@ -334,7 +334,7 @@ namespace FingerDiceDuel.Core
                     continue;
                 }
 
-                // 2c. **太极化解**（武僧）——
+                // 2c. **太极化解**（武僧·太极宗）——
                 //     未被闪避、未被盾挡的段，若还有太极可用，就减半并累加反弹。
                 //
                 //     ⚠⚠ **同一段上要把太极问到用完** —— 这是个内层循环，
@@ -393,13 +393,13 @@ namespace FingerDiceDuel.Core
             //
             //    玩家确认的规则：
             //      · **无视距离**（不走 CanReach）
-            //      · **可以被盾挡下、可以被游侠闪避**
-            //      · **无法被妖术师取消**
+            //      · **可以被盾挡下、可以被游荡者·风流剑客闪避**
+            //      · **无法被邪术师·至高妖精取消**
             //
             //    所以这里发起的是**一次新的攻击**（同一套结算），
             //    但它是**由挨打方发起、目标是攻击方**，而且用
             //    <see cref="IsSpecialAttack"/> 关掉"取消"那条路
-            //    （与剑客的追加攻击同类——它们的"攻击数字"不是一次正常运算）。
+            //    （与战士·剑士的追加攻击同类——它们的"攻击数字"不是一次正常运算）。
             if (WasMitigated && reflectTotal > 0 && Attacker != null && Attacker.IsAlive
                 && manager != null)
             {
@@ -407,7 +407,7 @@ namespace FingerDiceDuel.Core
                                                    Defender.LeftHand ?? Defender.RightHand,
                                                    reflectTotal)
                 {
-                    // "攻击数字视为 0" -> 妖术师取消不了（玩家明确要求）。
+                    // "攻击数字视为 0" -> 邪术师·至高妖精取消不了（玩家明确要求）。
                     // 用反射产生的攻击，只能取消真正的攻击，不能取消反弹。
                     IsSpecialAttack = true,
 
@@ -421,12 +421,12 @@ namespace FingerDiceDuel.Core
                     // ⚠️⚠️ **反弹继承"打来的那次攻击"的类型**。
                     //
                     //    玩家原话：
-                    //      "武僧的太极反弹根据反弹的攻击定，
+                    //      "武僧·太极宗的太极反弹根据反弹的攻击定，
                     //       比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害"。
                     //
                     //    所以这里**直接把原类型传过去**，并且（见 Resolve 里
-                    //    `AttackType == None` 的判断）**不会**再去问武僧自己 ——
-                    //    因为此刻武僧是"攻击方"，问它会得到武僧自己的钝击，
+                    //    `AttackType == None` 的判断）**不会**再去问武僧·太极宗自己 ——
+                    //    因为此刻武僧·太极宗是"攻击方"，问它会得到武僧·太极宗自己的钝击，
                     //    那正好是错的结果。
                     AttackType = AttackType != AttackDamageType.None
                         ? AttackType : AttackDamageType.Bludgeoning,
@@ -437,7 +437,7 @@ namespace FingerDiceDuel.Core
                 ReflectedAttackType = reflectCtx.AttackType;
             }
 
-            // 4. **法师：命中即挂状态**。
+            // 4. **法师·塑能学派：命中即挂状态**。
             //
             //    玩家确认的命中口径：
             //      · 被盾**抵挡**（BlockedHits）、被太极**减免**（WasMitigated）
@@ -445,12 +445,12 @@ namespace FingerDiceDuel.Core
             //      · 被**闪避**导致一段都没落地、或被**取消**（HitCount == 0）
             //        -> **不算命中**（不挂，且那次的"放弃"作废）。
             //
-            //    ⚠️ 挂状态的是**攻击方**的角色（法师），挂到**被实际承受伤害的人**身上
-            //       （圣武士可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
+            //    ⚠️ 挂状态的是**攻击方**的角色（法师·塑能学派），挂到**被实际承受伤害的人**身上
+            //       （圣武士·奉献之誓可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
             ApplyAttackerStatus(manager);
             ApplySkillBleed(manager);
 
-            // 5. **命中后的通用钩子**（邪术师的距离修正走这里）。
+            // 5. **命中后的通用钩子**（邪术师·旧日支配者的距离修正走这里）。
             //    与挂状态同一个位置 —— 那一刻"算不算命中"已经确定
             //    （盾抵挡 / 太极减免算命中，闪避 / 取消不算）。
             ApplyAttackerHitEffect(manager);
@@ -468,7 +468,7 @@ namespace FingerDiceDuel.Core
             manager?.NoteSkill(Attacker, "流血", $"{Defender.Name}：{PlayerState.StatusDurationTurns} 回合");
         }
 
-        /// <summary>把命中通知攻击方角色，用于邪术师距离修正等通用命中效果。</summary>
+        /// <summary>把命中通知攻击方角色，用于邪术师·旧日支配者距离修正等通用命中效果。</summary>
         private void ApplyAttackerHitEffect(GameManager manager)
         {
             if (Attacker == null) return;
@@ -485,10 +485,10 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 把攻击方角色声明的状态挂到**实际承受伤害的人**身上（法师体系）。
+        /// 把攻击方角色声明的状态挂到**实际承受伤害的人**身上（法师·塑能学派体系）。
         ///
-        /// 没命中就什么都不做 —— 但**注意**：法师的"放弃换来的类型"该不该作废
-        /// 由 <c>WizardLogic</c> 在使用后自行清空决定（见 <c>WizardLogic.ConsumeDamageType</c>），
+        /// 没命中就什么都不做 —— 但**注意**：法师·塑能学派的"放弃换来的类型"该不该作废
+        /// 由 <c>SchoolOfEvocationLogic</c> 在使用后自行清空决定（见 <c>SchoolOfEvocationLogic.ConsumeDamageType</c>），
         /// 这里只负责"命中才挂"。
         /// </summary>
         private void ApplyAttackerStatus(GameManager manager)
@@ -508,7 +508,7 @@ namespace FingerDiceDuel.Core
             }
 
             // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
-            if (Attacker.Character is Characters.SpecialLogics.WizardLogic mage)
+            if (Attacker.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
                 mage.ConsumeDamageType();
 
             if (status == StatusEffect.None) return;
@@ -538,9 +538,9 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **太极反弹出去的那一击用的是什么伤害类型**。
         ///
-        /// ⚠️ 玩家要求："武僧的太极反弹根据反弹的攻击定，
+        /// ⚠️ 玩家要求："武僧·太极宗的太极反弹根据反弹的攻击定，
         ///    比如打来的攻击时寒冰伤害，反弹也就是寒冰伤害"。
-        ///    所以它必须等于**打来那次攻击**的类型，而不是武僧自己的钝击。
+        ///    所以它必须等于**打来那次攻击**的类型，而不是武僧·太极宗自己的钝击。
         /// </summary>
         public AttackDamageType ReflectedAttackType { get; private set; }
             = AttackDamageType.None;
@@ -549,7 +549,7 @@ namespace FingerDiceDuel.Core
         /// 反弹的嵌套层数（最初那次攻击是 0）。
         ///
         /// ⚠️ 玩家允许"可循环"，但**没有任何终止条件**的互相反弹会变成
-        ///    无限递归（两个武僧各自 5，挡一下弹回去、再挡一下弹回来…）。
+        ///    无限递归（两个武僧·太极宗各自 5，挡一下弹回去、再挡一下弹回来…）。
         ///    所以这里设一个**硬上限**，超过就不再反弹 ——
         ///    正常对局远远到不了（每次反弹伤害都减半，几层之后就是 0）。
         /// </summary>
@@ -558,14 +558,14 @@ namespace FingerDiceDuel.Core
         /// <summary>反弹的最大嵌套层数（防御性上限，防无限递归）。</summary>
         public const int MaxReflectDepth = 8;
 
-        /// <summary>本次攻击的伤害是否被**太极化解**（武僧）。</summary>
+        /// <summary>本次攻击的伤害是否被**太极化解**（武僧·太极宗）。</summary>
         public bool WasMitigated { get; private set; }
 
         /// <summary>
         /// 当前对局（在 <see cref="Resolve"/> 时记下）。
         ///
         /// 用途：角色在结算途中需要回读"玩家在收集阶段的作答"
-        /// （武僧的"是否发动太极"），那需要 <see cref="GameManager.GetChoiceProvider"/>。
+        /// （武僧·太极宗的"是否发动太极"），那需要 <see cref="GameManager.GetChoiceProvider"/>。
         /// </summary>
         public GameManager Manager { get; private set; }
 
@@ -576,12 +576,12 @@ namespace FingerDiceDuel.Core
         public int MitigatedPerHit { get; private set; }
 
         /// <summary>
-        /// 这一段上实际发动了**几次**减免（武僧有两个太极时会是 2）。
+        /// 这一段上实际发动了**几次**减免（武僧·太极宗有两个太极时会是 2）。
         /// </summary>
         public int MitigationStages { get; private set; }
 
         /// <summary>
-        /// 询问挨打的人是否用**太极**化解这次攻击（武僧）。
+        /// 询问挨打的人是否用**太极**化解这次攻击（武僧·太极宗）。
         ///
         /// 只有**挨打的人自己**能化解（不像代挡那样遍历全场）——
         /// 太极是"以柔克刚"的自身姿态。
@@ -595,7 +595,7 @@ namespace FingerDiceDuel.Core
         ///    调用方只在返回 true 时读。
         /// </summary>
         /// <summary>
-        /// 询问守方是否发动减免（武僧的太极）。
+        /// 询问守方是否发动减免（武僧·太极宗的太极）。
         ///
         /// ⚠️ **只处理第一段后的结果**：
         ///    玩家确认"一个太极只对付一段"，
@@ -632,7 +632,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 询问场上是否有角色愿意**代挡**这一击（圣武士：把目标改成自己）。
+        /// 询问场上是否有角色愿意**代挡**这一击（圣武士·奉献之誓：把目标改成自己）。
         ///
         /// 遍历全部参战玩家（不能只看 A/B —— 2v2 里有四个人），
         /// 第一个答应的就成为新的挨打目标。
@@ -679,7 +679,7 @@ namespace FingerDiceDuel.Core
         /// <summary>本次攻击是否被"代挡"改过目标。</summary>
         public bool WasRedirected { get; private set; }
 
-        /// <summary>本次攻击是否被**取消**（妖术师）。</summary>
+        /// <summary>本次攻击是否被**取消**（邪术师·至高妖精）。</summary>
         public bool WasCancelled { get; private set; }
 
         /// <summary>取消者的名字（供战报显示）。</summary>
@@ -689,10 +689,10 @@ namespace FingerDiceDuel.Core
         /// **攻击数字**：发起攻击时用的那个数字（4 / 6 / 8）。
         ///
         /// ⚠️ 必须用**运算前的快照**算：运算源在钩子阶段已经是结果值，
-        ///    直接用当前值会把数字算错（本项目在"游侠闪避"上踩过同类坑）。
+        ///    直接用当前值会把数字算错（本项目在"游荡者·风流剑客闪避"上踩过同类坑）。
         ///
-        /// ⚠️ **剑客的追加攻击与圣武士的冲击视为 0** —— 它们不是"发起攻击"，
-        ///    所以妖术师无法取消（任何手值都不会等于 0，因此天然拦不住）。
+        /// ⚠️ **战士·剑士的追加攻击与圣武士·奉献之誓的冲击视为 0** —— 它们不是"发起攻击"，
+        ///    所以邪术师·至高妖精无法取消（任何手值都不会等于 0，因此天然拦不住）。
         /// </summary>
         public int AttackValue
         {
@@ -722,10 +722,10 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 查询"**某位玩家**对某个抉择的作答"（由 <see cref="GameManager"/> 注入）。
         ///
-        /// 妖术师的"是否取消"要在**结算时**读回玩家在收集阶段的回答 ——
+        /// 邪术师·至高妖精的"是否取消"要在**结算时**读回玩家在收集阶段的回答 ——
         /// 没有它就只能自动取消（那是 AI 的行为）。
         ///
-        /// ⚠️ 用带玩家参数的版本：妖术师是**场上的第三方**，
+        /// ⚠️ 用带玩家参数的版本：邪术师·至高妖精是**场上的第三方**，
         ///    既不是行动方也不是防守方。
         /// </summary>
         public Func<PlayerState, HandEffect, int, Hand> AnsweredLookupFor { get; set; }
@@ -741,7 +741,7 @@ namespace FingerDiceDuel.Core
         public Func<PlayerState, bool> AskedCancelLookup { get; set; }
 
         /// <summary>
-        /// 询问场上有没有角色能**取消**这次攻击（妖术师）。
+        /// 询问场上有没有角色能**取消**这次攻击（邪术师·至高妖精）。
         ///
         /// 遍历全部参战玩家（取消者是第三方，不是挨打的人）。
         /// 第一个答应的就取消成功。
@@ -760,25 +760,25 @@ namespace FingerDiceDuel.Core
                 if (p == null || !p.IsAlive) continue;
 
                 // ⚠️ **不能取消自己发起的攻击**（玩家实测抓到：
-                //    妖术师取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
+                //    邪术师·至高妖精取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
                 if (ReferenceEquals(p, Attacker)) continue;
 
                 // ⚠️ 多人模式里**不能取消队友的攻击**。
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
 
-                if (p.Character is HexerLogic hexer)
+                if (p.Character is TheArchfeyLogic theArchfey)
                 {
-                    // 人类的妖术师走"询问式"：按玩家在收集阶段的回答决定。
-                    // AI 的妖术师没被问过 -> wasAsked = false -> 自动取消。
+                    // 人类的邪术师·至高妖精走"询问式"：按玩家在收集阶段的回答决定。
+                    // AI 的邪术师·至高妖精没被问过 -> wasAsked = false -> 自动取消。
                     bool wasAsked = AskedCancelLookup != null && AskedCancelLookup(p);
-                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.HexerCancel, 0);
+                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.TheArchfeyCancel, 0);
 
-                    if (hexer.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
+                    if (theArchfey.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;
-                        manager.NoteSkill(p, "取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
+                        manager.NoteSkill(p, "妖精戏法·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
                         return true;
                     }
 
@@ -790,7 +790,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasCancelled = true;
                     CancelledBy = p.Name;
-                    manager.NoteSkill(p, "取消攻击", $"取消 {Attacker.Name} 的攻击");
+                    manager.NoteSkill(p, "妖精戏法·取消攻击", $"取消 {Attacker.Name} 的攻击");
                     return true;
                 }
             }
@@ -802,7 +802,7 @@ namespace FingerDiceDuel.Core
         /// 询问防守方是否用一次免伤挡下**这一段**攻击。
         ///
         /// 判断与消耗都由角色自己在 <see cref="CharacterTemplate.TryDodge"/> 里完成
-        /// （游侠把一只"1"变成 2；刺客潜行则不需要消耗）。
+        /// （游荡者·风流剑客把一只"1"变成 2；游荡者·刺客潜行则不需要消耗）。
         /// </summary>
         private bool TryDodgeThisHit(IPreTurnChoiceSink sink, GameManager manager, int hitIndex)
         {
@@ -845,7 +845,7 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 必须是**同一份实现** —— 否则 AI 的斩杀线会与真实结算漂移，
         ///    表现为"AI 以为是斩杀、其实差 1 点"（或反过来该杀不杀）。
         ///
-        /// <paramref name="ignorePositiveDefense"/> 对应咒术师的
+        /// <paramref name="ignorePositiveDefense"/> 对应法师·咒法学派的
         /// "无视对方正向防御加成"。
         /// </summary>
         public static int ApplyStatBonuses(int damage, int attackBonus, int defenseBonus,
@@ -905,13 +905,13 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 计算最终伤害，顺序是：
-        ///   1. 基础伤害 × 倍率（游侠强化）
+        ///   1. 基础伤害 × 倍率（游荡者·风流剑客强化）
         ///   2. 取整（四舍五入，远离零）
         ///   3. 叠加 攻方.AttackBonus - 守方.DefenseBonus
         ///   4. 下限 0
         ///
-        /// 例：游侠强化后 4 -> 6、6 -> 9、8 -> 12；
-        ///     咒术师（攻 -1）无视野蛮人（防 +1）打出 4，无倍率时是 3。
+        /// 例：游荡者·风流剑客强化后 4 -> 6、6 -> 9、8 -> 12；
+        ///     法师·咒法学派（攻 -1）无视野蛮人·守望者道途（防 +1）打出 4，无倍率时是 3。
         /// </summary>
         /// <summary>
         /// 记录"经倍率、但**尚未叠加攻防加成**"的伤害。

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -28,9 +28,9 @@ namespace FingerDiceDuel.Core
         public bool IsDead => Health <= 0;
 
         /// <summary>
-        /// **赌徒专用**：本回合是否**必须赌博**。
+        /// **游荡者·赌徒专用**：本回合是否**必须赌博**。
         ///
-        /// 玩家确认的规则："若赌徒上一个自己的回合进行了正常的运算（非赌博），
+        /// 玩家确认的规则："若游荡者·赌徒上一个自己的回合进行了正常的运算（非赌博），
         /// 那么这一回合就必须赌博"；"赌完就解除，下一回合可以正常运算，
         /// 当然也可以继续赌，但下一回合正常运算后再下一个回合又得强制赌"。
         ///
@@ -39,9 +39,9 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public bool MustGamble { get; set; }
 
-        // ============ 法师的负面状态 ============
+        // ============ 法师·塑能学派的负面状态 ============
         /// <summary>
-        /// 身上的**负面状态**（法师体系）。
+        /// 身上的**负面状态**（法师·塑能学派体系）。
         ///
         /// 以 <see cref="StatusEffect"/> 为键，值 = 剩余"目标自己的回合数"
         /// （玩家确认的持续时间为 **2**）。
@@ -213,10 +213,10 @@ namespace FingerDiceDuel.Core
         /// **两只手都不能作为运算源**。
         ///
         /// 两种情况：
-        ///   ① 两只手**都被锁定**（野蛮人锁手）；
-        ///   ② **一只手被暗置**（猎人的伏击），另一只手又被锁
+        ///   ① 两只手**都被锁定**（野蛮人·守望者道途锁手）；
+        ///   ② **一只手被暗置**（游侠·幽域追踪者的伏击），另一只手又被锁
         ///      —— 这正是玩家早就指出的场景：
-        ///      "若猎人处于潜伏状态，剩余的那只手被野蛮人控制住也要给出跳过回合按钮"。
+        ///      "若游侠·幽域追踪者处于潜伏状态，剩余的那只手被野蛮人·守望者道途控制住也要给出跳过回合按钮"。
         ///
         /// ⚠️ 判据必须与 `GetLegalMoves` 的过滤口径**一致**（那里用的是
         ///    `Hand.CanBeOperated` = 未锁 **且** 未暗置）。
@@ -276,12 +276,12 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 回复生命值。
         ///
-        /// ⚠️ **腐朽**（法师的暗蚀状态）在这里拦截：带着腐朽的人**完全不能回血**。
+        /// ⚠️ **腐朽**（法师·塑能学派的暗蚀状态）在这里拦截：带着腐朽的人**完全不能回血**。
         ///
         /// 为什么放在这个最底层的方法里、而不是逐个回复技能去判断：
-        /// 回血的入口不止一处（牧师、巨人、狼人的成长回血…），
+        /// 回血的入口不止一处（牧师·生命领域、野蛮人·巨人道途、野蛮人·野兽道途的成长回血…），
         /// 逐个判断必然会漏；而这里是**唯一**真正改生命值上行的出口。
-        /// （<see cref="SetHealth"/> 是"赋值"语义 —— 妖术师那种不算治疗，不受腐朽影响。）
+        /// （<see cref="SetHealth"/> 是"赋值"语义 —— 邪术师·至高妖精那种不算治疗，不受腐朽影响。）
         /// </summary>
         public void Heal(int amount)
         {
@@ -291,15 +291,15 @@ namespace FingerDiceDuel.Core
             int before = Health;
             Health = Math.Min(MaximumHealth, Health + amount);
 
-            // ⚠️ 吟游诗人的触发条件是"**实际**回过体力" —— 满血回复不算，
+            // ⚠️ 吟游诗人·勇气学院的触发条件是"**实际**回过体力" —— 满血回复不算，
             //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。
             if (Health > before) HealedThisTurn = true;
         }
 
-        // ============ 吟游诗人：本回合的"是否受过伤 / 回过血" ============
+        // ============ 吟游诗人·勇气学院：本回合的"是否受过伤 / 回过血" ============
 
         /// <summary>
-        /// 本回合是否**受过伤害**（吟游诗人的触发条件之一）。
+        /// 本回合是否**受过伤害**（吟游诗人·勇气学院的触发条件之一）。
         /// 每次行动开始时由 `GameManager.BeginTurn` 复位。
         /// </summary>
         public bool TookDamageThisTurn { get; set; }
@@ -311,55 +311,55 @@ namespace FingerDiceDuel.Core
         public bool HealedThisTurn { get; set; }
 
         /// <summary>
-        /// **吟游诗人给的攻防加成**（正数 = 增幅、负数 = 削弱）。
+        /// **吟游诗人·勇气学院给的攻防加成**（正数 = 增幅、负数 = 削弱）。
         ///
         /// 与"角色自身的攻防加成"相加（见 `StatusRules.EffectiveAttackBonus`），
         /// 所以和强酸的 −2 防御是同一层，会一起被算进去。
         /// </summary>
-        public int BardAttackOffset { get; private set; }
-        public int BardDefenseOffset { get; private set; }
+        public int CollegeOfValorAttackOffset { get; private set; }
+        public int CollegeOfValorDefenseOffset { get; private set; }
 
-        /// <summary>这些加成是哪位吟游诗人给的（用于"下次发动时清除旧的"与"死亡清除"）。</summary>
-        public PlayerState BardOffsetSource { get; private set; }
+        /// <summary>这些加成是哪位吟游诗人·勇气学院给的（用于"下次发动时清除旧的"与"死亡清除"）。</summary>
+        public PlayerState CollegeOfValorOffsetSource { get; private set; }
 
-        /// <summary>设置/覆盖吟游诗人的加成（<paramref name="source"/> 为 null 时等于清除）。</summary>
-        public void SetBardOffset(PlayerState source, int attackOffset, int defenseOffset)
+        /// <summary>设置/覆盖吟游诗人·勇气学院的加成（<paramref name="source"/> 为 null 时等于清除）。</summary>
+        public void SetCollegeOfValorOffset(PlayerState source, int attackOffset, int defenseOffset)
         {
-            BardOffsetSource = source;
-            BardAttackOffset = attackOffset;
-            BardDefenseOffset = defenseOffset;
+            CollegeOfValorOffsetSource = source;
+            CollegeOfValorAttackOffset = attackOffset;
+            CollegeOfValorDefenseOffset = defenseOffset;
         }
 
-        /// <summary>清除由某位吟游诗人给的加成（他再次发动 / 他死亡时调用）。</summary>
-        public void ClearBardOffsetFrom(PlayerState source)
+        /// <summary>清除由某位吟游诗人·勇气学院给的加成（他再次发动 / 他死亡时调用）。</summary>
+        public void ClearCollegeOfValorOffsetFrom(PlayerState source)
         {
             if (source == null) return;
-            if (!ReferenceEquals(BardOffsetSource, source)) return;
-            SetBardOffset(null, 0, 0);
+            if (!ReferenceEquals(CollegeOfValorOffsetSource, source)) return;
+            SetCollegeOfValorOffset(null, 0, 0);
         }
 
         /// <summary>
-        /// 本回合**是否已经发动过**吟游诗人的技能。
+        /// 本回合**是否已经发动过**吟游诗人·勇气学院的技能。
         ///
         /// ⚠️ 没有这个标记时：确认之后 `TookDamageThisTurn` 仍是 true
         ///    （要到下一次行动才复位），于是界面刷新时又满足"可以发动"
         ///    -> **面板重新弹出、反复询问**（玩家实测）。
         /// 一次行动只能发动一次，所以答完（含"不发动"）就置位。
         /// </summary>
-        public bool BardActivatedThisTurn { get; set; }
+        public bool CollegeOfValorActivatedThisTurn { get; set; }
 
         /// <summary>复位"本回合"标记（每次行动开始时调用）。</summary>
         public void ResetTurnFlags()
         {
             TookDamageThisTurn = false;
             HealedThisTurn = false;
-            BardActivatedThisTurn = false;
+            CollegeOfValorActivatedThisTurn = false;
         }
 
         /// <summary>
         /// **精确设置**生命值（不夹到上限、也不做治疗/伤害的语义）。
         ///
-        /// 用途：妖术师的"把场上一人的体力改成与自己一致" ——
+        /// 用途：邪术师·至高妖精的"把场上一人的体力改成与自己一致" ——
         /// 那是**赋值**而不是治疗，用 <see cref="Heal"/> 会被上限截断，
         /// 用 <see cref="TakeDamage"/> 又只能减。
         ///

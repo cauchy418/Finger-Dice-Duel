@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -225,8 +225,8 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(player.LeftHand, best.Left);
             TestSetup.SetHand(player.RightHand, best.Right);
 
-            // 武僧的 5 要进入太极（与实机一致：开局那个 5 就是太极）
-            MonkLogic.ApplyTaichiToFives(player);
+            // 武僧·太极宗的 5 要进入太极（与实机一致：开局那个 5 就是太极）
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(player);
         }
 
         private static double Rate(int w, int l, int d)

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -14,8 +14,8 @@ namespace FingerDiceDuel.Tests
     /// 玩家要求：
     ///   · "在能斩杀对方时，要大幅优先决定攻击"
     ///   · "斩杀线即为最大伤害加上攻防加成之后的值"
-    ///   · "游侠在有 2 的情况下斩杀线会对应提升"
-    ///   · "同理剑客刺客巨人的斩杀线也要根据不同手的情况写"
+    ///   · "游荡者·风流剑客在有 2 的情况下斩杀线会对应提升"
+    ///   · "同理战士·剑士游荡者·刺客野蛮人·巨人道途的斩杀线也要根据不同手的情况写"
     /// </summary>
     [TestFixture]
     public class LethalThresholdTests
@@ -44,9 +44,9 @@ namespace FingerDiceDuel.Tests
         public void Base_lethal_is_result_plus_attack_minus_defense()
         {
             // 玩家原话："斩杀线即为最大伤害加上攻防加成之后的值"
-            // 士兵 攻+1 防+1；打士兵 8 点 -> 8 + 1 - 1 = 8
-            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Soldier);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            // 战士·勇士 攻+1 防+1；打战士·勇士 8 点 -> 8 + 1 - 1 = 8
+            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Champion);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(me, foe, out GameManager game);
 
@@ -54,19 +54,19 @@ namespace FingerDiceDuel.Tests
             var move = new LegalMove(me, me.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(8, ai.TotalLethalDamage(move, me, foe, 8),
-                "士兵 8 点攻击对士兵：8 + 1 - 1 = 8。");
+                "战士·勇士 8 点攻击对战士·勇士：8 + 1 - 1 = 8。");
         }
 
         [Test]
         public void Ai_prefers_a_lethal_attack_over_a_bigger_but_non_lethal_one()
         {
             // "大幅优先决定攻击"：能斩杀时，即使另一手效果更好也该斩杀
-            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Barbarian);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.PathOfTheWarden);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(me, foe, out GameManager game);
 
-            // 野蛮人 攻0 防+1；士兵 防+1
+            // 野蛮人·守望者道途 攻0 防+1；战士·勇士 防+1
             SetHealth(foe, 4);       // 4 点就能斩杀
 
             // 4 是能斩杀的攻击（4 + 0 - 1 = 3 … 不够）-> 用 5 点手值构造
@@ -84,28 +84,28 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 游侠：有 2 时斩杀线提升
+        // 游荡者·风流剑客：有 2 时斩杀线提升
         // ============================================================
 
         [Test]
-        public void Ranger_lethal_threshold_rises_when_holding_a_two()
+        public void Swashbuckler_lethal_threshold_rises_when_holding_a_two()
         {
-            // 玩家要求："游侠在有 2 的情况下斩杀线会对应提升"
-            // 强化射击：基础值 ×1.5，**之后再**加攻防
-            // 游侠 攻0 防0；打士兵 防+1
-            var ranger = CharacterFactory.CreatePlayer("游", CharacterDefinition.Ranger);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            // 玩家要求："游荡者·风流剑客在有 2 的情况下斩杀线会对应提升"
+            // 乘风突刺：基础值 ×1.5，**之后再**加攻防
+            // 游荡者·风流剑客 攻0 防0；打战士·勇士 防+1
+            var swashbuckler = CharacterFactory.CreatePlayer("游", CharacterDefinition.Swashbuckler);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
-            GreedyChoiceProvider ai = Ai(ranger, foe, out GameManager game);
+            GreedyChoiceProvider ai = Ai(swashbuckler, foe, out GameManager game);
 
             // 结果是 4；另一只手是 2 -> 4 * 1.5 = 6 -> 6 + 0 - 1 = 5
-            ranger.RightHand.SetValue(2);
-            var withTwo = new LegalMove(ranger, ranger.LeftHand, foe.LeftHand);
-            int boosted = ai.TotalLethalDamage(withTwo, ranger, foe, 4);
+            swashbuckler.RightHand.SetValue(2);
+            var withTwo = new LegalMove(swashbuckler, swashbuckler.LeftHand, foe.LeftHand);
+            int boosted = ai.TotalLethalDamage(withTwo, swashbuckler, foe, 4);
 
             // 另一只手不是 2 -> 普通 4 + 0 - 1 = 3
-            ranger.RightHand.SetValue(3);
-            int plain = ai.TotalLethalDamage(withTwo, ranger, foe, 4);
+            swashbuckler.RightHand.SetValue(3);
+            int plain = ai.TotalLethalDamage(withTwo, swashbuckler, foe, 4);
 
             Assert.AreEqual(5, boosted, "有 2 时：4 × 1.5 = 6，再 +0 −1 = 5。");
             Assert.AreEqual(3, plain, "没有 2 时：4 + 0 − 1 = 3。");
@@ -113,22 +113,22 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 剑客：双手相同时追加一次固定伤害
+        // 战士·剑士：双手相同时追加一次固定伤害
         // ============================================================
 
         [Test]
         public void Swordsman_lethal_includes_the_follow_up_attack()
         {
-            // 玩家要求："剑客…斩杀线也要根据不同手的情况写"
+            // 玩家要求："战士·剑士…斩杀线也要根据不同手的情况写"
             // 追加攻击：双手相同且结果是 4/6/8 时，额外固定 4/6/8（不吃攻防）
             var sword = CharacterFactory.CreatePlayer("剑", CharacterDefinition.Swordsman);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(sword, foe, out GameManager game);
 
             var move = new LegalMove(sword, sword.LeftHand, foe.LeftHand);
 
-            // 剑客 攻+2；士兵 防+1
+            // 战士·剑士 攻+2；战士·勇士 防+1
             // 双手都是 8 -> 主攻击 8+2-1 = 9，追加 8 -> 共 17
             sword.RightHand.SetValue(8);
             int doubled = ai.TotalLethalDamage(move, sword, foe, 8);
@@ -142,44 +142,44 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 巨人：伤害看"另一只手"，与结果值无关
+        // 野蛮人·巨人道途：伤害看"另一只手"，与结果值无关
         // ============================================================
 
         [Test]
-        public void Giant_lethal_uses_the_other_hand_not_the_result()
+        public void PathOfTheGiant_lethal_uses_the_other_hand_not_the_result()
         {
-            // 玩家要求："巨人…斩杀线也要根据不同手的情况写"
+            // 玩家要求："野蛮人·巨人道途…斩杀线也要根据不同手的情况写"
             // 打出 5 -> 两段，每段基础伤害 = 另一只手的点数
-            var giant = CharacterFactory.CreatePlayer("巨", CharacterDefinition.Giant);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            var pathOfTheGiant = CharacterFactory.CreatePlayer("巨", CharacterDefinition.PathOfTheGiant);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
-            GreedyChoiceProvider ai = Ai(giant, foe, out GameManager game);
+            GreedyChoiceProvider ai = Ai(pathOfTheGiant, foe, out GameManager game);
 
-            var move = new LegalMove(giant, giant.LeftHand, foe.LeftHand);
+            var move = new LegalMove(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
-            // 巨人 攻+2；士兵 防+1
+            // 野蛮人·巨人道途 攻+2；战士·勇士 防+1
             // 另一只手 3 -> 每段 3+2-1 = 4，两段共 8
-            giant.RightHand.SetValue(3);
-            int dmg = ai.TotalLethalDamage(move, giant, foe, 5);
+            pathOfTheGiant.RightHand.SetValue(3);
+            int dmg = ai.TotalLethalDamage(move, pathOfTheGiant, foe, 5);
 
             Assert.AreEqual(8, dmg,
-                "巨人打 5、另一只手 3：两段各 4，共 8（不是 5+2-1=6）。");
+                "野蛮人·巨人道途打 5、另一只手 3：两段各 4，共 8（不是 5+2-1=6）。");
         }
 
         [Test]
-        public void Giant_lethal_is_zero_on_four_six_eight()
+        public void PathOfTheGiant_lethal_is_zero_on_four_six_eight()
         {
-            // 巨人的 4/6/8 完全无效果 -> 不可能斩杀
-            var giant = CharacterFactory.CreatePlayer("巨", CharacterDefinition.Giant);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            // 野蛮人·巨人道途的 4/6/8 完全无效果 -> 不可能斩杀
+            var pathOfTheGiant = CharacterFactory.CreatePlayer("巨", CharacterDefinition.PathOfTheGiant);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
-            GreedyChoiceProvider ai = Ai(giant, foe, out GameManager game);
-            var move = new LegalMove(giant, giant.LeftHand, foe.LeftHand);
+            GreedyChoiceProvider ai = Ai(pathOfTheGiant, foe, out GameManager game);
+            var move = new LegalMove(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
             foreach (int v in new[] { 4, 6, 8 })
             {
-                Assert.AreEqual(0, ai.TotalLethalDamage(move, giant, foe, v),
-                    $"巨人打出 {v} 完全无效果，伤害应为 0。");
+                Assert.AreEqual(0, ai.TotalLethalDamage(move, pathOfTheGiant, foe, v),
+                    $"野蛮人·巨人道途打出 {v} 完全无效果，伤害应为 0。");
             }
         }
 
@@ -191,8 +191,8 @@ namespace FingerDiceDuel.Tests
         private static GreedyChoiceProvider DangerAi(out PlayerState me, out PlayerState foe,
                                                      out GameManager game)
         {
-            me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Soldier);
-            foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Champion);
+            foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             game = new GameManager(me, foe, new SimpleChoiceProvider(),
                                    new SimpleChoiceProvider());
@@ -247,8 +247,8 @@ namespace FingerDiceDuel.Tests
         public void Denial_does_not_fire_when_nobody_is_in_danger()
         {
             // 平时（双方血量都健康）不该多算这一项 —— 否则会改变既有行为
-            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Soldier);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Champion);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             var game = new GameManager(me, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
@@ -267,21 +267,21 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 刺客：潜行中 +7
+        // 游荡者·刺客：潜行中 +7
         // ============================================================
 
         [Test]
         public void Assassin_lethal_rises_while_stealthed()
         {
-            // 玩家要求："刺客…斩杀线也要根据不同手的情况写"
+            // 玩家要求："游荡者·刺客…斩杀线也要根据不同手的情况写"
             // 出潜行斩杀：伤害 +7（加在基础值上，再加攻防）
             var assassin = CharacterFactory.CreatePlayer("刺", CharacterDefinition.Assassin);
-            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Soldier);
+            var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(assassin, foe, out GameManager game);
             var move = new LegalMove(assassin, assassin.LeftHand, foe.LeftHand);
 
-            // 不在潜行：刺客 攻+2；士兵 防+1 -> 8 + 2 - 1 = 9
+            // 不在潜行：游荡者·刺客 攻+2；战士·勇士 防+1 -> 8 + 2 - 1 = 9
             int plain = ai.TotalLethalDamage(move, assassin, foe, 8);
 
             // 进入潜行（测试专用入口，需要强制进入）
@@ -299,7 +299,7 @@ namespace FingerDiceDuel.Tests
         }
 
         /// <summary>
-        /// 通过 Core 接口让刺客进入潜行。
+        /// 通过 Core 接口让游荡者·刺客进入潜行。
         ///
         /// ⚠️ 测试层不能引用 Characters 层，所以走接口。
         ///    `ISkillUseCounter` 只读，这里用反射之外的正规办法：

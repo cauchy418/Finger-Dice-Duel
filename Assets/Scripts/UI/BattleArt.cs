@@ -15,6 +15,8 @@ namespace FingerDiceDuel.UI
 
         public static Sprite Get(string path)
         {
+            if (path.StartsWith("Classes/") || path.StartsWith("Subclasses/"))
+                path = "Subclasses/" + CharacterIdentity.NormalizeId(path.Substring(path.IndexOf('/') + 1));
             Sprite sprite;
             if (Cache.TryGetValue(path, out sprite)) return sprite;
             var texture = Resources.Load<Texture2D>(Root + path);

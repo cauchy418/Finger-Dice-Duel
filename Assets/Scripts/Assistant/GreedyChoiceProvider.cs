@@ -36,8 +36,8 @@ namespace FingerDiceDuel.Assistant
     ///   9 → 90，但仅在生命低于阈值时才优先（否则不浪费回复）
     ///   其他 → 0
     ///
-    /// ⚠️ 特性加分是后加的：早期版本只认识白板 / 战士，
-    /// 牧师、游侠、狼人、剑客、忍者、刺客的 AI **完全不会用技能**。
+    /// ⚠️ 特性加分是后加的：早期版本只认识白板 / 战士·破阵者，
+    /// 牧师·生命领域、游荡者·风流剑客、野蛮人·野兽道途、战士·剑士、武僧·忍宗、游荡者·刺客的 AI **完全不会用技能**。
     /// 现在每个角色都有对应的评分与抉择策略。
     /// </summary>
     public sealed class GreedyChoiceProvider : AbstractChoiceProvider, IMoveSelector,
@@ -211,10 +211,10 @@ namespace FingerDiceDuel.Assistant
         }
 
         // ============================================================
-        // 法师的伤害类型选择（IDamageTypeChoiceSink）
+        // 法师·塑能学派的伤害类型选择（IDamageTypeChoiceSink）
         // ============================================================
 
-        /// <summary>AI 选定的伤害类型（供 <see cref="WizardLogic"/> 回读）。</summary>
+        /// <summary>AI 选定的伤害类型（供 <see cref="SchoolOfEvocationLogic"/> 回读）。</summary>
         public DamageType ChosenDamageType { get; set; } = DamageType.None;
 
         /// <summary>本次是否会放弃攻击去铺状态。</summary>
@@ -233,13 +233,13 @@ namespace FingerDiceDuel.Assistant
         /// 能斩杀时就不该放弃攻击去挂状态 —— 立刻赢下比赛胜过铺一个状态。
         /// 未注入时按"不能斩杀"处理（保守：允许铺状态）。
         /// </summary>
-        public System.Func<bool> WizardAbandonLethalGuard { get; set; }
+        public System.Func<bool> SchoolOfEvocationAbandonLethalGuard { get; set; }
 
         /// <summary>
-        /// **法师要不要放弃这一次攻击**（玩家本轮给的策略）。
+        /// **法师·塑能学派要不要放弃这一次攻击**（玩家本轮给的策略）。
         ///
         /// 玩家原话：
-        ///   "法师在对方未进斩杀线前，若自己没有放弃过攻击，
+        ///   "法师·塑能学派在对方未进斩杀线前，若自己没有放弃过攻击，
         ///     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
         ///
         /// 落到实现：
@@ -253,28 +253,28 @@ namespace FingerDiceDuel.Assistant
         ///    无法反映"这套策略到底好不好"。
         ///    这里的概率是**固定的种子随机**，所以胜率可复现。
         /// </summary>
-        private bool WizardShouldAbandon(int result, PlayerState self)
+        private bool SchoolOfEvocationShouldAbandon(int result, PlayerState self)
         {
             // 只有 4 / 6 / 8 是"攻击数字"，其余（9 回复等）根本不进这个抉择
             if (result != 4 && result != 6 && result != 8) return false;
 
             // ⚠️⚠️ **"能不能斩杀"只认调用方注入的判据**
-            //    （<see cref="WizardAbandonLethalGuard"/>，由 BoardController
+            //    （<see cref="SchoolOfEvocationAbandonLethalGuard"/>，由 BoardController
             //     用真实的这一击去算），**没有注入就按"不能斩杀"处理**。
             //
             //    我先前自己写了一个"看手值估斩杀"的启发式 —— 结果是**灾难**：
             //    `myMax + foeMax >= foe.Health` 在开局就几乎恒真，
-            //    于是 4 次抉择里 3 次被它挡掉，法师**永远不铺状态**。
+            //    于是 4 次抉择里 3 次被它挡掉，法师·塑能学派**永远不铺状态**。
             //    教训：**不要用粗估去替代真实判据**；
             //    宁可"没判据时允许铺"（玩家策略本来就是"未进斩杀线前就该铺"）。
-            if (WizardAbandonLethalGuard?.Invoke() == true) return false;
+            if (SchoolOfEvocationAbandonLethalGuard?.Invoke() == true) return false;
 
-            int roll = WizardRoll();          // 0..99
+            int roll = SchoolOfEvocationRoll();          // 0..99
 
             switch (result)
             {
                 // ⚠️ 玩家原话是"4 会倾向于放弃、6 不一定、8 基本不放弃"。
-                //    但**放弃太多会让法师永远在铺垫、永远不出手** ——
+                //    但**放弃太多会让法师·塑能学派永远在铺垫、永远不出手** ——
                 //    单局轨迹显示：一旦铺上类型，后面几回合 dmg 常常是 0
                 //    （打不中），类型反而被"消耗它的那一次"白白吃掉。
                 //    所以把概率收敛一些，让它真的打得出去。
@@ -285,12 +285,12 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 法师当前的掷点数（供"倾向 / 不一定 / 基本不"用）。
+        /// 法师·塑能学派当前的掷点数（供"倾向 / 不一定 / 基本不"用）。
         ///
         /// ⚠️ 用一个**独立的确定性序列**而不是 <c>UnityEngine.Random</c>：
         ///    无头平衡测试要可复现，两个 `Random` 混用会让胜率每次不同。
         /// </summary>
-        private int WizardRoll()
+        private int SchoolOfEvocationRoll()
         {
             _wizardSeed = _wizardSeed * 1103515245 + 12345;
             return (_wizardSeed >> 16) & 0x7FFF % 100;
@@ -299,7 +299,7 @@ namespace FingerDiceDuel.Assistant
         private int _wizardSeed = 20240816;
 
         /// <summary>
-        /// **法师选哪一种伤害类型**（玩家本轮给的策略）。
+        /// **法师·塑能学派选哪一种伤害类型**（玩家本轮给的策略）。
         ///
         /// 玩家原话：
         ///   "视情况选择各种技能：
@@ -309,7 +309,7 @@ namespace FingerDiceDuel.Assistant
         ///     多人模式下控制对手选择光耀/雷鸣，
         ///     准备斩杀对手选择力场/暗蚀/强酸"
         /// </summary>
-        private DamageType WizardPickDamageType(PlayerState self)
+        private DamageType SchoolOfEvocationPickDamageType(PlayerState self)
         {
             if (self == null || Game == null) return DamageType.Fire;
             IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
@@ -322,10 +322,10 @@ namespace FingerDiceDuel.Assistant
             //
             //    我第一版把力场写成了兜底默认值（对手没盾没回复就返回力场），
             //    结果 AI 几乎每次都选力场 —— 而**力场按设计不挂任何状态**
-            //    （玩家原话："力场 同咒术师方法，无法被任何方式抵挡/闪避"，
+            //    （玩家原话："力场 同法师·咒法学派方法，无法被任何方式抵挡/闪避"，
             //      它的价值是穿透 + 必中，不是状态）。
             //
-            //    表现（探针轨迹）：40 局里法师铺了 80 次类型、全部是力场，
+            //    表现（探针轨迹）：40 局里法师·塑能学派铺了 80 次类型、全部是力场，
             //    对手**一次状态都没挂上**，`Ai_mage_applies_a_status` 一直红。
             //    而且这个"铺了等于没铺"还白扔了一回合，反而拉低胜率。
             //
@@ -349,7 +349,7 @@ namespace FingerDiceDuel.Assistant
                 if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
                     return DamageType.Force;          // 有盾 -> 穿透最稳
 
-                if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
+                if (foe != null && SchoolOfEvocationCanHeal(foe)) return DamageType.Necrotic;
 
                 // 没盾、也不能回血 -> 用**带状态**的类型收尾（不强求必中，但铺得上状态）
                 return DamageType.Poison;
@@ -368,7 +368,7 @@ namespace FingerDiceDuel.Assistant
 
             // ④ 常规打伤害 -> 毒素（不可被抵挡）/ 火焰（每回合 3 点）
             //    对手能回血时优先封回复
-            if (foe != null && WizardCanHeal(foe)) return DamageType.Necrotic;
+            if (foe != null && SchoolOfEvocationCanHeal(foe)) return DamageType.Necrotic;
 
             return DamageType.Poison;
         }
@@ -392,12 +392,12 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 对手是否**有可能回血**（法师选"腐朽"的判据）。
+        /// 对手是否**有可能回血**（法师·塑能学派选"腐朽"的判据）。
         ///
         /// 用"角色自带回复能力"判断，而不是猜他的手牌 ——
-        /// 牧师 / 巨人 / 狼人都有明确的回复机制。
+        /// 牧师·生命领域 / 野蛮人·巨人道途 / 野蛮人·野兽道途都有明确的回复机制。
         /// </summary>
-        private static bool WizardCanHeal(PlayerState foe)
+        private static bool SchoolOfEvocationCanHeal(PlayerState foe)
         {
             if (foe?.Character == null) return false;
 
@@ -412,50 +412,50 @@ namespace FingerDiceDuel.Assistant
         /// 生命低于等于该值时，回复的评分提高。
         ///
         /// 重要：这个阈值必须显著低于"最大可造成伤害"，否则会出现"双方都优先回血、
-        /// 谁也打不死谁"的僵局。实测野蛮人镜像在阈值 ≥12 时会 100% 打成僵局，
+        /// 谁也打不死谁"的僵局。实测野蛮人·守望者道途镜像在阈值 ≥12 时会 100% 打成僵局，
         /// 阈值 ≤8 时 21 回合内正常结束。默认值 8 是据此选定的。
         /// </summary>
         /// <summary>
         /// "血少到该优先回血"的血量线。
         ///
-        /// ⚠️ 调这个数会**同时影响所有能回血的角色**（牧师 / 巨人 / 狼人），
+        /// ⚠️ 调这个数会**同时影响所有能回血的角色**（牧师·生命领域 / 野蛮人·巨人道途 / 野蛮人·野兽道途），
         ///    所以它是**最敏感**的平衡旋钮之一。
         ///
-        /// 循环赛实测（每对 40 局，17 角色）：8 时牧师的胜率只有 **30%**、
+        /// 循环赛实测（每对 40 局，17 角色）：8 时牧师·生命领域的胜率只有 **30%**、
         /// 而且 640 局里 **226 局是同归于尽**的平局 ——
         /// 因为 ≤8 血时回血（120 分）永远压过攻击（最高 88 分），
-        /// 牧师于是"一直回血、打不死别人，最后与对方互换"。
-        /// 调到 4 之后牧师明显敢打了。
+        /// 牧师·生命领域于是"一直回血、打不死别人，最后与对方互换"。
+        /// 调到 4 之后牧师·生命领域明显敢打了。
         /// </summary>
         public int HealPriorityHealth { get; set; } = 4;
 
         /// <summary>
-        /// 牧师认为"自己处于危险值"的血量**百分比**（玩家给的规则）。
+        /// 牧师·生命领域认为"自己处于危险值"的血量**百分比**（玩家给的规则）。
         ///
-        /// "牧师只需要检查在**危险时刻优先给回血**，否则**全部进攻**"。
+        /// "牧师·生命领域只需要检查在**危险时刻优先给回血**，否则**全部进攻**"。
         ///
         /// ⚠️ 用百分比而不是绝对值：不同角色的生命上限不同
-        ///    （巨人 25、狼人 25、其余 20），绝对阈值在它们之间没有可比性。
+        ///    （野蛮人·巨人道途 25、野蛮人·野兽道途 25、其余 20），绝对阈值在它们之间没有可比性。
         ///
         /// 35% 大致对应"再挨一到两下就没了"。
         /// </summary>
-        public int ClericHealHealthPercent { get; set; } = 35;
+        public int LifeDomainHealHealthPercent { get; set; } = 35;
 
         /// <summary>
         /// 当前对局（由 <see cref="BoardController"/> 在询问之前注入）。
         ///
         /// ⚠️ 为什么需要：有些抉择的"正确答案"要看**全场信息** ——
-        ///    例如牧师该给谁回血（自己这一队里血最低的存活者），
+        ///    例如牧师·生命领域该给谁回血（自己这一队里血最低的存活者），
         ///    那要遍历全部参战玩家与队伍关系，`ChooseHandFor` 的入参里没有。
         ///    没有它就只能退回"取第一个候选"（= 永远回自己）。
         /// </summary>
         public GameManager Game { get; set; }
 
-        /// <summary>是否发动战士连锁破盾。默认放弃（避免自作自受地破自己的盾）。</summary>
+        /// <summary>是否发动战士·破阵者连锁破盾。默认放弃（避免自作自受地破自己的盾）。</summary>
         public bool UseChainBreak { get; set; }
 
         /// <summary>
-        /// 低于该伤害就不发动剑客的追加攻击。
+        /// 低于该伤害就不发动战士·剑士的追加攻击。
         /// 追加会把"另一只手"改写成主攻击结果，太弱的追加不值得换掉原来的数字。
         /// </summary>
         public int SwordsmanFollowUpMinDamage { get; set; } = 3;
@@ -513,7 +513,7 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>
         /// 这一手**实际该打谁**：优先取被加数的手主（对手）；
-        /// 用队友的手 / 魔术师自加时，退回"第一位对手"（或本回合的集火目标）。
+        /// 用队友的手 / 游荡者·魔术师自加时，退回"第一位对手"（或本回合的集火目标）。
         ///
         /// 攻击目标本来就能与被加数手主不同（玩家确认的第 ③ 步），
         /// 所以这个值必须显式传给结算层，不能靠"手主"猜。
@@ -537,7 +537,7 @@ namespace FingerDiceDuel.Assistant
                 && !game.IsTeammate(actor, owner) && owner.IsAlive)
                 return owner;
 
-            // ② 被加数是自己的手（魔术师自加）/ 队友的手：攻击目标本来就能单独选，
+            // ② 被加数是自己的手（游荡者·魔术师自加）/ 队友的手：攻击目标本来就能单独选，
             //    此时才用集火目标（含"打不到就回到第一位对手"）。
             if (isAttack)
             {
@@ -549,7 +549,7 @@ namespace FingerDiceDuel.Assistant
             return foes.Count > 0 ? foes[0] : null;
         }
 
-        /// <summary>这一手的结果在 AI 眼里是不是攻击（含魔术师借来的攻击）。</summary>
+        /// <summary>这一手的结果在 AI 眼里是不是攻击（含游荡者·魔术师借来的攻击）。</summary>
         private static bool IsAttackResult(LegalMove move, PlayerState actor)
         {
             if (move.ActedHand == null || move.TargetHand == null) return false;
@@ -573,7 +573,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 效果档位是 44/50/66/88 这个量级，而手值权重已按
         /// <see cref="HandValueProfiles.MoveScoreScale"/> 缩到 1.5~9.5（同量级）。
-        /// 取 12 时：游侠把 (1,3) 变成 (2,3) 会掉约
+        /// 取 12 时：游荡者·风流剑客把 (1,3) 变成 (2,3) 会掉约
         /// (8.5+4.5 - 2.0-4.5) × 12 ≈ 78 分 —— 高于"多打 2 点伤害"（22 分），
         /// 也就是它会为了保住 1 而放弃一点输出。
         ///
@@ -651,7 +651,7 @@ namespace FingerDiceDuel.Assistant
         /// 于是 AI 会把队友当成"一个可以用掉废手的靶子"。
         ///
         /// 实测（批量测试）：60 局 2v2 里出现 **616 次**攻击落在队友身上
-        /// （玩家也实测报告过："二号位咒术师攻击了自己的队友游侠"）。
+        /// （玩家也实测报告过："二号位法师·咒法学派攻击了自己的队友游荡者·风流剑客"）。
         ///
         /// 取值远大于任何正面评分（效果档位 44/66/88、手值项几十），
         /// 所以**只要有敌人可打就绝不会打队友**；但它是惩罚而不是硬禁止 ——
@@ -709,7 +709,7 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️⚠️ **角色把自己某个结果值变成攻击时，评分必须跟着认。**
             //
-            //    实测（探针）暴露的根因：魔术师的"自加凑出 2"是攻击，
+            //    实测（探针）暴露的根因：游荡者·魔术师的"自加凑出 2"是攻击，
             //    但那是 `RewriteEffect` **借**来的 Attack4 ——
             //    `Hand.GetEffectType(2)` 仍然是 `None`，
             //    于是上面那个 switch 给它 **0 分**。
@@ -742,7 +742,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             // ---- 角色特性加分 ----
-            // 反转依赖：不是"AI 认识狼人"，而是"角色告诉 AI 这一手值多少"。
+            // 反转依赖：不是"AI 认识野蛮人·野兽道途"，而是"角色告诉 AI 这一手值多少"。
             // 这样 Assistant 层不必引用 Characters 层（项目约定）。
             Hand other = GetOtherHand(actor, move.ActedHand);
 
@@ -754,9 +754,9 @@ namespace FingerDiceDuel.Assistant
 
             // ---- 留下的手值将来能干什么 ----
             //
-            // ⚠️ 这一条是**游侠必须有的**：只看"这次运算产出了什么效果"的话，
-            // 游侠会拿唯一的 1 去打输出，下回合就闪不了 ——
-            // 实测现象："游侠不会主动运算出 1"。
+            // ⚠️ 这一条是**游荡者·风流剑客必须有的**：只看"这次运算产出了什么效果"的话，
+            // 游荡者·风流剑客会拿唯一的 1 去打输出，下回合就闪不了 ——
+            // 实测现象："游荡者·风流剑客不会主动运算出 1"。
             //
             // 运算后：被操作的手变成**结果值**，另一只手不变。
             score += HandValueScore(actor, result, other.Value);
@@ -794,14 +794,14 @@ namespace FingerDiceDuel.Assistant
             {
                 PlayerState owner = game.OwnerOfHand(move.TargetHand);
 
-                // ⚠️⚠️ **必须排除"被加数就是自己的手"**（魔术师的自加）。
+                // ⚠️⚠️ **必须排除"被加数就是自己的手"**（游荡者·魔术师的自加）。
                 //
                 //    `IsTeammate(a, a)` 会返回 **true**（自己和自己是"同队"），
-                //    于是魔术师**自加凑出攻击**（1+1=2 正是攻击）时，
+                //    于是游荡者·魔术师**自加凑出攻击**（1+1=2 正是攻击）时，
                 //    这一手会被当成"打队友"而**扣分** ——
                 //    AI 于是系统性地回避自加，改去碰对手的手。
                 //
-                //    实测（探针，30 局）：魔术师**自加次数恒为 0**，
+                //    实测（探针，30 局）：游荡者·魔术师**自加次数恒为 0**，
                 //    而它的招牌能力恰恰就是自加。这就是根因。
                 bool isSelfAddend = ReferenceEquals(owner, actor);
 
@@ -829,14 +829,14 @@ namespace FingerDiceDuel.Assistant
             //
             // ⚠️⚠️ **必须按"实际会挨打的人"算，不能按"被加数的手主"算。**
             //
-            //    魔术师可以拿**自己的手**当被加数 —— 这时被加数的手主是**自己**，
+            //    游荡者·魔术师可以拿**自己的手**当被加数 —— 这时被加数的手主是**自己**，
             //    但攻击照样落在**对手**身上（借自己的手只是为了凑数字）。
             //
             //    原来的写法直接传 `move.TargetHand` 给 TargetPriorityScore，
             //    而它对"手主是自己"直接返回 0 ——
             //    于是自加凑出的攻击**拿不到任何目标优先级分**。
             //    实测（探针）：自加 176 分 vs 碰对手 322 分，差 146 分，
-            //    全部来自这一项 -> **AI 永远选碰对手，魔术师的招牌能力废掉**。
+            //    全部来自这一项 -> **AI 永远选碰对手，游荡者·魔术师的招牌能力废掉**。
             //
             //    预测挨打对象：结果是攻击时 = 默认攻击目标 = 第一位对手
             //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
@@ -889,8 +889,8 @@ namespace FingerDiceDuel.Assistant
             //
             // 斩杀线 = **本次攻击的最大伤害**，即
             //   基础值 + 攻方攻击加成 − 受方防御加成
-            // 再叠加**角色自己的**修正（游侠有 2 时强化、剑客双持追加、
-            // 刺客潜行 +7、巨人两段求和…见 <see cref="ILethalThresholdAdvisor"/>）。
+            // 再叠加**角色自己的**修正（游荡者·风流剑客有 2 时强化、战士·剑士双持追加、
+            // 游荡者·刺客潜行 +7、野蛮人·巨人道途两段求和…见 <see cref="ILethalThresholdAdvisor"/>）。
             //
             // ⚠️ 必须放在最后、且量级**远大于**其他所有项 ——
             //    能一击带走时，前面那些"目标优先级""屯牌价值"全都不重要了。
@@ -931,7 +931,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 打队友不算"斩杀"（那是负收益，另有惩罚）
             if (game.IsTeammate(actor, victim)) return false;
 
-            // 角色特有的增伤 / 额外段数（游侠强化、剑客追加、刺客潜行、巨人两段…）
+            // 角色特有的增伤 / 额外段数（游荡者·风流剑客强化、战士·剑士追加、游荡者·刺客潜行、野蛮人·巨人道途两段…）
             // 由 TotalLethalDamage 统一处理（传**原始值**给角色自算）。
             return TotalLethalDamage(move, actor, victim, result) >= victim.Health;
         }
@@ -1085,13 +1085,13 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 负数（= 扣分），且**按比率缩放** —— 保证永不超过我方收益
             int score = -(denyWeight * DenyRatioPercent) / 100;
 
-            // ---- 魔术师专属（玩家给的规则）----
+            // ---- 游荡者·魔术师专属（玩家给的规则）----
             //
             // 规则原话：
-            //   "ai 应该是：避免送给比魔术师两手和价值更大的数字。
-            //    即魔术师两手和价值很低，则需要针对；
-            //    若魔术师两手和价值很高，针对就可以放缓 ——
-            //    因为针对了魔术师也可以合成高价值数字。"
+            //   "ai 应该是：避免送给比游荡者·魔术师两手和价值更大的数字。
+            //    即游荡者·魔术师两手和价值很低，则需要针对；
+            //    若游荡者·魔术师两手和价值很高，针对就可以放缓 ——
+            //    因为针对了游荡者·魔术师也可以合成高价值数字。"
             //
             // 直白说：他已经能自己凑出来的数字，送给他**没有额外价值**；
             // 只有**超出他自造能力**的那个数字才值得挡。
@@ -1102,9 +1102,9 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **给魔术师留下的数字超出自造能力时的扣分**（玩家给的两条规则）。
+        /// **给游荡者·魔术师留下的数字超出自造能力时的扣分**（玩家给的两条规则）。
         ///
-        /// 魔术师可以拿自己的手当被加数，所以他**自己就能造出**
+        /// 游荡者·魔术师可以拿自己的手当被加数，所以他**自己就能造出**
         /// "两手之和（归一化）"以内的任何数字。因此：
         ///   · 我留的数字 **≤ 他的自造上限** -> 他本来就能做，扣 0；
         ///   · 超出越多越危险 -> 按超出量扣分。
@@ -1113,13 +1113,13 @@ namespace FingerDiceDuel.Assistant
         ///   他两手和**很低** -> 自造上限低 -> 高数字都算"超出" -> **针对很强**；
         ///   他两手和**很高** -> 自造上限高 -> 高数字也不再超出 -> **针对放缓**。
         ///
-        /// 对非魔术师返回 0（这条只服务于魔术师）。
+        /// 对非游荡者·魔术师返回 0（这条只服务于游荡者·魔术师）。
         /// </summary>
         private static int MagicianExposurePenalty(PlayerState victim, int value)
         {
             if (victim?.Hands == null || value <= 0) return 0;
 
-            // 只对魔术师算 —— 用能力接口判定，不硬编码角色类型
+            // 只对游荡者·魔术师算 —— 用能力接口判定，不硬编码角色类型
             var self = victim.Character as ISelfAddendProvider;
             if (self == null || !self.AllowsSelfAddend) return 0;
 
@@ -1197,7 +1197,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 目标优先级评分（<paramref name="target"/> 就是**实际会挨打的人**）。
         ///
-        /// 与"被加数手主"分开是因为：魔术师自加时
+        /// 与"被加数手主"分开是因为：游荡者·魔术师自加时
         /// "被加数的手主"是**自己**，而挨打的是**对手** ——
         /// 需要允许显式传入真正的挨打对象。
         /// </summary>
@@ -1366,17 +1366,17 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 两部分，**缩放的待遇不同**：
         ///
-        ///   ① **手值权重**（游侠的 1、刺客的 7 之类）：
+        ///   ① **手值权重**（游荡者·风流剑客的 1、游荡者·刺客的 7 之类）：
         ///      这是"屯资源的偏好"，属于次要动机，所以缩到与效果分同量级。
         ///
-        ///   ② **组合规则**（狼人凑 7、剑客双持）：
+        ///   ② **组合规则**（野蛮人·野兽道途凑 7、战士·剑士双持）：
         ///      这是**角色签名能力的触发条件**，不是偏好 ——
         ///      应该像原先硬编码的 +200 那样有决定性。所以**不缩放**。
         ///
         /// ⚠️ 两个踩过的坑：
-        ///   · 一开始把两者一起缩放，狼人为了多打 2 点伤害放弃了凑 7。
-        ///   · 组合匹配曾用**对手的手值**去算 —— 但狼人的机制是
-        ///     `运算后的手 + 另一只手 == 7`（见 WerewolfLogic.ScoreMoveBonus
+        ///   · 一开始把两者一起缩放，野蛮人·野兽道途为了多打 2 点伤害放弃了凑 7。
+        ///   · 组合匹配曾用**对手的手值**去算 —— 但野蛮人·野兽道途的机制是
+        ///     `运算后的手 + 另一只手 == 7`（见 PathOfTheBeastLogic.ScoreMoveBonus
         ///     的原始写法），对手的手值与此无关，导致凑 7 永远匹配不上。
         ///     正确的两个操作数是"运算后的手"与"自己的另一只手"。
         /// </summary>
@@ -1396,37 +1396,37 @@ namespace FingerDiceDuel.Assistant
                     score += profile.Combos[i].Bonus;
             }
 
-            // ③ **邪术师距离修正的"情境权重"**（玩家要求）
-            score += WarlockDistanceAdjust(actor, actedAfter);
+            // ③ **邪术师·旧日支配者距离修正的"情境权重"**（玩家要求）
+            score += TheGreatOldOneDistanceAdjust(actor, actedAfter);
 
             return score;
         }
 
         /// <summary>
-        /// **邪术师把对手推开的那两个回合里，双方的手牌价值观要变。**
+        /// **邪术师·旧日支配者把对手推开的那两个回合里，双方的手牌价值观要变。**
         ///
         /// 玩家要求（原话）：
         ///   "把近距离角色推开的两个回合内，大幅增加攻击数字权重，
         ///    大幅降低 5 的权重（但要比无意义数字大）"；
-        ///   "增加的是邪术师自己的数值，
-        ///    被邪术师影响的角色在那两个回合里应该降低攻击数字的价值"。
+        ///   "增加的是邪术师·旧日支配者自己的数值，
+        ///    被邪术师·旧日支配者影响的角色在那两个回合里应该降低攻击数字的价值"。
         ///
         /// 为什么放这里而不是改静态权重表：
         ///   同一张手牌，在"对手被推开（打不到我）"和"没被推开"两种局面下价值不同，
         ///   静态表表达不了，只能按实时局面加/减分。
         ///
         /// 判据用**距离修正层**（`DistancePenaltyBetween > 0`）——
-        ///   它就是"被邪术师推开的两个回合"这个状态本身。
+        ///   它就是"被邪术师·旧日支配者推开的两个回合"这个状态本身。
         /// </summary>
-        private int WarlockDistanceAdjust(PlayerState actor, int actedAfter)
+        private int TheGreatOldOneDistanceAdjust(PlayerState actor, int actedAfter)
         {
             if (Game == null || actor == null) return 0;
 
             bool isAttackNumber = actedAfter == 4 || actedAfter == 6 || actedAfter == 8;
             bool isFive = actedAfter == 5;
 
-            // ---- ① 邪术师自己：对手被推开 -> 猛攻 ----
-            if (actor.Character is Characters.SpecialLogics.WarlockLogic)
+            // ---- ① 邪术师·旧日支配者自己：对手被推开 -> 猛攻 ----
+            if (actor.Character is Characters.SpecialLogics.TheGreatOldOneLogic)
             {
                 if (!AnyOpponentPushedBy(actor)) return 0;
 
@@ -1436,42 +1436,42 @@ namespace FingerDiceDuel.Assistant
             }
 
             // ---- ② 被推开的人：这两回合打不到人 -> 攻击数字贬值 ----
-            if (IsPushedByWarlock(actor) && isAttackNumber) return -PushedAttackPenalty;
+            if (IsPushedByTheGreatOldOne(actor) && isAttackNumber) return -PushedAttackPenalty;
 
             return 0;
         }
 
-        /// <summary>邪术师自己：是否有对手正被自己的距离修正推开。</summary>
-        private bool AnyOpponentPushedBy(PlayerState warlock)
+        /// <summary>邪术师·旧日支配者自己：是否有对手正被自己的距离修正推开。</summary>
+        private bool AnyOpponentPushedBy(PlayerState theGreatOldOne)
         {
             System.Collections.Generic.IReadOnlyList<PlayerState> all = Game.Players;
             for (int i = 0; i < all.Count; i++)
             {
                 PlayerState p = all[i];
-                if (p == null || ReferenceEquals(p, warlock) || !p.IsAlive) continue;
-                if (Game.DistancePenaltyBetween(warlock, p) > 0) return true;
+                if (p == null || ReferenceEquals(p, theGreatOldOne) || !p.IsAlive) continue;
+                if (Game.DistancePenaltyBetween(theGreatOldOne, p) > 0) return true;
             }
             return false;
         }
 
-        /// <summary>我自己是否正被某位邪术师推开（距离修正 &gt; 0）。</summary>
-        private bool IsPushedByWarlock(PlayerState me)
+        /// <summary>我自己是否正被某位邪术师·旧日支配者推开（距离修正 &gt; 0）。</summary>
+        private bool IsPushedByTheGreatOldOne(PlayerState me)
         {
             System.Collections.Generic.IReadOnlyList<PlayerState> all = Game.Players;
             for (int i = 0; i < all.Count; i++)
             {
                 PlayerState p = all[i];
                 if (p == null || ReferenceEquals(p, me) || !p.IsAlive) continue;
-                if (!(p.Character is Characters.SpecialLogics.WarlockLogic)) continue;
+                if (!(p.Character is Characters.SpecialLogics.TheGreatOldOneLogic)) continue;
                 if (Game.DistancePenaltyBetween(p, me) > 0) return true;
             }
             return false;
         }
 
-        /// <summary>邪术师"猛攻"时给攻击数字的额外分（大幅）。</summary>
+        /// <summary>邪术师·旧日支配者"猛攻"时给攻击数字的额外分（大幅）。</summary>
         private const int AggressiveAttackBonus = 260;
 
-        /// <summary>邪术师"猛攻"时给 5 的减分（降到有意义数字之下、无意义数字之上）。</summary>
+        /// <summary>邪术师·旧日支配者"猛攻"时给 5 的减分（降到有意义数字之下、无意义数字之上）。</summary>
         private const int CalmFivePenalty = 180;
 
         /// <summary>被推开时攻击数字的贬值幅度。</summary>
@@ -1502,11 +1502,11 @@ namespace FingerDiceDuel.Assistant
 
             // ⚠️ **有"签名组合规则"的角色跳过这一项**。
             //
-            //    狼人要凑"双手和为 7"、剑客要双 4/6/8、刺客要双 7 ——
+            //    野蛮人·野兽道途要凑"双手和为 7"、战士·剑士要双 4/6/8、游荡者·刺客要双 7 ——
             //    这些都是**角色自己的完整计划**，而通用的"下一手潜力"
-            //    与它们经常相反（例如 7 对狼人是死牌，但 7 的下一手潜力很高）。
+            //    与它们经常相反（例如 7 对野蛮人·野兽道途是死牌，但 7 的下一手潜力很高）。
             //    两者一起算会把签名计划压掉
-            //    （测试当场抓到：狼人 20 回合都触发不了一次和 7）。
+            //    （测试当场抓到：野蛮人·野兽道途 20 回合都触发不了一次和 7）。
             HandValueProfile profile = HandValueProfiles.For(actor.Definition);
             if (profile != null && profile.Combos.Count > 0) return 0;
 
@@ -1557,7 +1557,7 @@ namespace FingerDiceDuel.Assistant
         /// "下一手潜力"在总分里的千分比权重。
         ///
         /// ⚠️ 取 120（最高约 +10 分）—— 我第一版取 300（+26）就把
-        ///    游侠的"强化射击"压过去了（测试当场抓到：
+        ///    游荡者·风流剑客的"乘风突刺"压过去了（测试当场抓到：
         ///    它宁可留着 2 也不肯变 3 强化）。
         ///    所以它必须**明显小于**一次效果档位（44~88），
         ///    只在"这一手打什么已经定了"之后做微调。
@@ -1569,14 +1569,14 @@ namespace FingerDiceDuel.Assistant
                                                    AttackContext context)
             => shieldA.Value <= shieldB.Value ? shieldA : shieldB;
 
-        public override ChainBreakTarget AskWarriorChainBreakTarget(PlayerState fighter,
+        public override ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                                     IReadOnlyList<ChainBreakTarget> candidates)
         {
             if (!UseChainBreak || candidates == null || candidates.Count == 0) return default;
 
             // 优先破对手的盾
             for (int i = 0; i < candidates.Count; i++)
-                if (candidates[i].Owner != fighter) return candidates[i];
+                if (candidates[i].Owner != breaker) return candidates[i];
 
             return default;
         }
@@ -1584,12 +1584,12 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 通用角色抉择的贪心策略（按角色特性逐条处理）：
         ///
-        ///   · 锁手（野蛮人）：锁对手更大的那只手，限制其最强的一招。
-        ///   · 强化射击（游侠）：一律发动 —— 白赚 50% 伤害，代价只是把一只 2 变成 3。
-        ///   · 闪避（游侠）：一律用掉一只 1。被攻击时一只 1 本身毫无战斗力，
+        ///   · 锁手（野蛮人·守望者道途）：锁对手更大的那只手，限制其最强的一招。
+        ///   · 乘风突刺（游荡者·风流剑客）：一律发动 —— 白赚 50% 伤害，代价只是把一只 2 变成 3。
+        ///   · 闪避（游荡者·风流剑客）：一律用掉一只 1。被攻击时一只 1 本身毫无战斗力，
         ///     换掉一次完整攻击是纯赚（比"被盾挡下"还彻底）。
-        ///   · 回血目标（牧师）：**永远回给自己**，绝不回给对手。
-        ///   · 追加攻击（剑客）：伤害太低时不换（保留原来那手数字）。
+        ///   · 回血目标（牧师·生命领域）：**永远回给自己**，绝不回给对手。
+        ///   · 追加攻击（战士·剑士）：伤害太低时不换（保留原来那手数字）。
         /// </summary>
         public override Hand ChooseHandFor(ChoiceRequest request, PlayerState decider)
         {
@@ -1598,7 +1598,7 @@ namespace FingerDiceDuel.Assistant
 
             switch (request.Effect)
             {
-                case HandEffect.BarbarianLockTarget:
+                case HandEffect.PathOfTheWardenLockTarget:
                     {
                         // 锁手该锁**对手最依赖的那只手**，而不是单纯"数值最大"。
                         //
@@ -1606,7 +1606,7 @@ namespace FingerDiceDuel.Assistant
                         // 用**对手自己的价值表**算（他看重什么，锁掉什么最疼）。
                         //
                         // 为什么不是"数值最大"：数值大不等于有用
-                        // （例如对狼人来说 7 反而是死牌、对巨人的 4/6/8 完全无效果）。
+                        // （例如对野蛮人·野兽道途来说 7 反而是死牌、对野蛮人·巨人道途的 4/6/8 完全无效果）。
                         // 用对手自己的价值表就自动涵盖了这些反直觉的情况。
                         HandValueProfile foeProfile =
                             HandValueProfiles.For(Game?.OwnerOfHand(c[0])?.Definition);
@@ -1636,27 +1636,27 @@ namespace FingerDiceDuel.Assistant
                     }
                     return request.DeclineResult;
 
-                case HandEffect.RangerPowerShot:
+                case HandEffect.SwashbucklerDuelistThrust:
                     return c[0];       // 每次都给强化，白赚
 
-                // ⚠️ 猎人**伏击**：条件已满足（两手同为 1/2/3）。
+                // ⚠️ 游侠·幽域追踪者**伏击**：条件已满足（两手同为 1/2/3）。
                 //
                 //    但不能**无条件**接受 —— 伏击**只有一次**（抵伤即消耗），
                 //    无脑用掉会把自己一只手封住、却没换来任何东西。
-                //    实测：无条件接受时猎人 1v1 胜率 49.6% -> 41.8%、
+                //    实测：无条件接受时游侠·幽域追踪者 1v1 胜率 49.6% -> 41.8%、
                 //    平局率 3.7% -> **19.3%**（大量僵局）。
                 //
                 //    所以只在"**对手这一手可能打出攻击**"时才埋伏 ——
                 //    这时伏击能**截掉他一次攻击**，才是真的赚。
                 //    （判据：他两只手里有一只能与我的某个手值凑出 4/6/8。）
-                case HandEffect.HunterAmbush:
+                case HandEffect.GloomStalkerAmbush:
                     return OpponentLikelyCanAttack(request) ? c[0] : request.DeclineResult;
 
-                case HandEffect.RangerDodge:
+                case HandEffect.SwashbucklerDodge:
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
 
-                case HandEffect.ClericHealTarget:
-                case HandEffect.ClericExtraHealTarget:
+                case HandEffect.LifeDomainHealTarget:
+                case HandEffect.LifeDomainExtraHealTarget:
                     {
                         // 玩家给的规则：
                         //   只有 2v2 什么时候回给队友要写，
@@ -1683,13 +1683,13 @@ namespace FingerDiceDuel.Assistant
                         return c[0];
                     }
 
-                case HandEffect.ClericAttackOrHeal:
+                case HandEffect.LifeDomainAttackOrHeal:
                     // 玩家给的规则：
-                    //   "牧师只需要检查在**危险时刻优先给回血**，否则**全部进攻**"
+                    //   "牧师·生命领域只需要检查在**危险时刻优先给回血**，否则**全部进攻**"
                     //
                     // 所以判据是"自己是否处于危险值"（血量百分比），
                     // 而不是一个固定的绝对值 —— 绝对值在不同生命上限的角色
-                    // 之间没有可比性（巨人 25、狼人 25、其余 20）。
+                    // 之间没有可比性（野蛮人·巨人道途 25、野蛮人·野兽道途 25、其余 20）。
                     //
                     // 返回的手既表示"要回复"，也表示"回给谁"。
                     // ⚠️ 候选顺序是"自己两只手在前、其他人两只手在后"，
@@ -1697,7 +1697,7 @@ namespace FingerDiceDuel.Assistant
                     if (decider == null) return null;
 
                     bool danger = decider.Health * 100
-                                  <= decider.MaximumHealth * ClericHealHealthPercent;
+                                  <= decider.MaximumHealth * LifeDomainHealHealthPercent;
 
                     if (!danger) return null;      // 不危险 -> 全部进攻（放弃 = 当攻击打）
 
@@ -1721,11 +1721,11 @@ namespace FingerDiceDuel.Assistant
                         return damage >= SwordsmanFollowUpMinDamage ? c[0] : null;
                     }
 
-                // ---------- 法师 ----------
-                case HandEffect.WizardAbandonAttack:
+                // ---------- 法师·塑能学派 ----------
+                case HandEffect.SchoolOfEvocationAbandonAttack:
                     {
                         // 玩家给的方向（本轮）：
-                        //   "法师在对方未进斩杀线前，若自己没有放弃过攻击，
+                        //   "法师·塑能学派在对方未进斩杀线前，若自己没有放弃过攻击，
                         //     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
                         //
                         // 什么时候**一定不**放弃：
@@ -1733,7 +1733,7 @@ namespace FingerDiceDuel.Assistant
                         //   · 这一击能**直接斩杀** —— 立刻结束比赛胜过挂状态。
                         if (decider == null || Game == null) return null;
 
-                        // ⚠️ 用 Core 的 IMageState 而不是 WizardLogic ——
+                        // ⚠️ 用 Core 的 IMageState 而不是 SchoolOfEvocationLogic ——
                         //    Assistant 层不能引用 Characters 层（架构铁律）。
                         var mage = decider.Character as IMageState;
                         if (mage == null) return null;
@@ -1744,29 +1744,29 @@ namespace FingerDiceDuel.Assistant
                         //    只是让 AI 算法不要重复选，
                         //    玩家实操可以自己决定是否要重复放弃。"
                         //
-                        //    所以引擎（`WizardLogic.CollectPreTurnChoices`）
+                        //    所以引擎（`SchoolOfEvocationLogic.CollectPreTurnChoices`）
                         //    **永远都问**；克制放在这里 —— 已经铺好了就不要再铺，
                         //    否则只是白发一回合（AI 自己算得清这笔账）。
                         if (mage.HasPendingType) return null;      // 已经铺好了
 
-                        if (WizardAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
+                        if (SchoolOfEvocationAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
 
                         // 本次合出的结果（4/6/8）—— 决定放弃的倾向
                         int result = request.ResultValue;
 
-                        if (!WizardShouldAbandon(result, decider)) return null;
+                        if (!SchoolOfEvocationShouldAbandon(result, decider)) return null;
 
                         WantsToAbandonAttack = true;
                         return c[0];
                     }
 
-                case HandEffect.WizardDamageType:
+                case HandEffect.SchoolOfEvocationDamageType:
                     {
-                        ChosenDamageType = WizardPickDamageType(decider);
+                        ChosenDamageType = SchoolOfEvocationPickDamageType(decider);
                         return c[0];
                     }
 
-                case HandEffect.FighterChainBreak:
+                case HandEffect.BreakerChainBreak:
                     {
                         if (!UseChainBreak || c.Count == 0) return null;   // 默认放弃
 
@@ -1784,14 +1784,14 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// **对手这一手是否可能打出攻击**（供猎人决定要不要伏击）。
+        /// **对手这一手是否可能打出攻击**（供游侠·幽域追踪者决定要不要伏击）。
         ///
         /// 判据：他两只手里有任意一只，能与**我的某个手值**凑出 4/6/8 ——
         /// 那就说明他下一手有能力攻击，伏击才值得用来**截掉他一次攻击**。
         ///
         /// ⚠️ 为什么必须加这个限制：伏击**只有一次**（抵伤即消耗）。
         ///    无条件接受会把自己一只手封住、却什么都没换来 ——
-        ///    实测：猎人 1v1 胜率 49.6% -> 41.8%、平局率 3.7% -> 19.3%。
+        ///    实测：游侠·幽域追踪者 1v1 胜率 49.6% -> 41.8%、平局率 3.7% -> 19.3%。
         /// </summary>
         private bool OpponentLikelyCanAttack(ChoiceRequest request)
         {
@@ -1832,7 +1832,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 由调用方注入："剑客这次追加攻击会造成多少伤害"。
+        /// 由调用方注入："战士·剑士这次追加攻击会造成多少伤害"。
         /// 这是一次结算过程中的临时信息，只有正在跑的那次运算知道。
         /// 未注入时按"值得发动"处理（保守起见不打折）。
         /// </summary>

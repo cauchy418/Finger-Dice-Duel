@@ -3,9 +3,9 @@
   "processing": "User-authorized alpha crop, centering and Lanczos resize; source artwork unchanged.",
   "assets": [
     {
-      "id": "oathbreaker",
-      "source": "Art/Production/new-roles-v1/source/oathbreaker.png",
-      "candidate": "Art/Production/new-roles-v1/candidates/oathbreaker.png",
+      "id": "paladin_oathbreaker",
+      "source": "Art/Production/new-roles-v1/source/paladin_oathbreaker.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/paladin_oathbreaker.png",
       "sourceBounds": [
         0,
         7,
@@ -22,12 +22,12 @@
       ],
       "sha256": "9ca1c82bebbce4bc1ac1d124e40ddfbcd29e7c940671516041e328e11f5b37a3",
       "status": "integrated",
-      "runtime": "Assets/Resources/Art/Battle/v1/Classes/oathbreaker.png"
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oathbreaker.png"
     },
     {
-      "id": "barbarian",
-      "source": "Art/Production/new-roles-v1/source/barbarian.png",
-      "candidate": "Art/Production/new-roles-v1/candidates/barbarian.png",
+      "id": "barbarian_path_of_the_warden",
+      "source": "Art/Production/new-roles-v1/source/barbarian_path_of_the_warden.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/barbarian_path_of_the_warden.png",
       "sourceBounds": [
         0,
         1,
@@ -44,12 +44,12 @@
       ],
       "sha256": "946e05137a7589665bc8b55a04e29bb104e75b153834094c555dbeee49d44e7b",
       "status": "integrated",
-      "runtime": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png"
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png"
     },
     {
-      "id": "wanderer",
-      "source": "Art/Production/new-roles-v1/source/wanderer.png",
-      "candidate": "Art/Production/new-roles-v1/candidates/wanderer.png",
+      "id": "fighter_tactician",
+      "source": "Art/Production/new-roles-v1/source/fighter_tactician.png",
+      "candidate": "Art/Production/new-roles-v1/candidates/fighter_tactician.png",
       "sourceBounds": [
         0,
         0,
@@ -66,13 +66,13 @@
       ],
       "sha256": "689e8fa59925d47642c7f302b5b51da53081b4166bce46abeb0e2a67ee10337e",
       "status": "integrated",
-      "runtime": "Assets/Resources/Art/Battle/v1/Classes/wanderer.png"
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_tactician.png"
     }
   ],
-  "userSelection": "New horned totem for barbarian; original barbarian double axe reassigned to berserker.",
+  "userSelection": "New horned totem for pathOfTheWarden; original pathOfTheWarden double axe reassigned to pathOfTheBerserker.",
   "reused": {
-    "id": "berserker",
-    "source": "Art/Production/new-roles-v1/candidates/berserker-original-axe.png",
-    "runtime": "Assets/Resources/Art/Battle/v1/Classes/berserker.png"
+    "id": "barbarian_path_of_the_berserker",
+    "source": "Art/Production/new-roles-v1/candidates/pathOfTheBerserker-original-axe.png",
+    "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_berserker.png"
   }
 }

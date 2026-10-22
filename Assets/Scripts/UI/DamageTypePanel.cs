@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace FingerDiceDuel.UI
 {
     /// <summary>
-    /// **法师的伤害类型选择面板**（10 选 1）。
+    /// **法师·塑能学派的伤害类型选择面板**（10 选 1）。
     ///
     /// 玩家确认的交互顺序：
     ///   ① 右侧弹「是否放弃攻击」

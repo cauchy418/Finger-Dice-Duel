@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Assistant
@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Assistant
     /// ## 重要语义
     ///
     /// **初始手值不触发任何效果。**
-    /// 初始 5 **不是**成型盾（更不是碎盾）、刺客初始双 7 **不进入潜行**。
+    /// 初始 5 **不是**成型盾（更不是碎盾）、游荡者·刺客初始双 7 **不进入潜行**。
     /// 因此本类只写手的数值，绝不写护盾状态。
     /// </summary>
     public static class DiceRollSetup
@@ -218,7 +218,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>一个拆分的按钮文案，形如 `4 / 8`。</summary>
         public static string SplitLabel(HandSplit split) => $"{split.Left} / {split.Right}";
 
-        /// <summary>掷骰结果的标题，形如 `战士 12　vs　游侠 15`。</summary>
+        /// <summary>掷骰结果的标题，形如 `战士·破阵者 12　vs　游荡者·风流剑客 15`。</summary>
         public static string RollLine(string nameA, int rollA, string nameB, int rollB)
             => $"{nameA} {rollA}　vs　{nameB} {rollB}";
 

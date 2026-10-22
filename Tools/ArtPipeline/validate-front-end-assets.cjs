@@ -33,7 +33,7 @@ async function main(){
   for(const state of ['normal','hover','pressed','selected','disabled'])
    if(!manifest.assets.some(a=>a.key===type+'_'+state))throw Error('Missing UI state '+type+'_'+state);
  for(const a of manifest.reused)await fs.access(path.join(root,a.path));
- if(manifest.reused.filter(a=>a.group==='Classes').length!==24)throw Error('Must preserve all 24 classes');
+ if(manifest.reused.filter(a=>a.group==='Subclasses').length!==24)throw Error('Must preserve all 24 classes');
  if(manifest.reused.filter(a=>a.group==='Damage').length!==13)throw Error('Must preserve all 13 damage types');
  if(manifest.reused.filter(a=>a.group==='Status').length!==9)throw Error('Must preserve all 9 project statuses');
  for(const p of ['main-menu-assembly.png','main-menu-alternate-assembly.png','selection-assembly.png','codex-detail-assembly.png','codex-overview-assembly.png']){

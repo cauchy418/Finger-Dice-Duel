@@ -56,7 +56,7 @@ namespace FingerDiceDuel.Characters
         /// **主将的显示名** —— 战报与 UI 只认这个（玩家确认）。
         ///
         /// ⚠️ 不能用 <c>CharacterTemplate.DisplayName</c>：它默认是 <c>GetType().Name</c>，
-        ///    对子角色来说就是英文类名（实测：期望“战士”、实际“Fighter”）。
+        ///    对子角色来说就是英文类名（实测：期望“战士·破阵者”、实际“Breaker”）。
         ///    所以由工厂在创建时把名字传进来。
         /// </summary>
         public string PrimaryName { get; private set; }
@@ -157,7 +157,7 @@ namespace FingerDiceDuel.Characters
         // ---------------------------------------------------------------
         //
         // ⚠️ 这些不是"取一个"，而是**逐个转发**——
-        //    骑士的碎盾计数、巨人的另一只手记录、狼人的成长
+        //    圣武士·王冠之誓的碎盾计数、野蛮人·巨人道途的另一只手记录、野蛮人·野兽道途的成长
         //    都依赖自己收到事件，只转发一个会静默地少算一半。
         public override void OnResolveAttack(AttackContext context)
         {
@@ -217,7 +217,7 @@ namespace FingerDiceDuel.Characters
 
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
-            // 与结算采用同一个首位改写者；圣武士合盾不被另一名角色的普通攻击判定覆盖。
+            // 与结算采用同一个首位改写者；圣武士·奉献之誓合盾不被另一名角色的普通攻击判定覆盖。
             var rewriter = CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(context?.Actor);
             if (rewriter != null && rewriter is IResultTargetProvider rewrittenTarget)
                 return rewrittenTarget.ResultNeedsTarget(context);
@@ -345,12 +345,12 @@ namespace FingerDiceDuel.Characters
             //
             //    <see cref="GameManager"/> 用 <c>rewritten != effect</c> 来判“是否被改写”，
             //    所以 <c>None</c> 的含义是**“把效果改成无效果”**
-            //    （巨人的 4/6/8 正是这么用的），而不是“没改写”。
+            //    （野蛮人·巨人道途的 4/6/8 正是这么用的），而不是“没改写”。
             //
             //    我第一版在没有改写器时返回了 None —— 于是
-            //    **游侠+妖术师这种“两个都不实现改写器”的组合，
+            //    **游荡者·风流剑客+邪术师·至高妖精这种“两个都不实现改写器”的组合，
             //    所有数字全变成了无效果**（玩家实测：8 不攻击）。
-            //    巨人只是**恰好确实想把 8 变成 None**，所以看起来是对的。
+            //    野蛮人·巨人道途只是**恰好确实想把 8 变成 None**，所以看起来是对的。
             HandEffectType original = actedHand != null
                 ? Hand.GetEffectType(actedHand.Value)
                 : HandEffectType.None;
@@ -371,7 +371,7 @@ namespace FingerDiceDuel.Characters
         HandEffectType IHandEffectDisplay.DisplayedEffectOf(int resultValue)
         {
             // 同上：**没有子角色会改显示时，返回原效果**。
-            // 巨人的 4/6/8 确实要显示成“不红”，所以它的 None 是有意义的。
+            // 野蛮人·巨人道途的 4/6/8 确实要显示成“不红”，所以它的 None 是有意义的。
             for (int i = 0; i < _parts.Count; i++)
             {
                 if (!(_parts[i] is IHandEffectDisplay d)) continue;

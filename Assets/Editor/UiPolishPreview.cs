@@ -151,11 +151,11 @@ namespace FingerDiceDuel.EditorTools
         }
         private static void Dodge(int left, int right)
         {
-            Start(CharacterDefinition.Ranger, CharacterDefinition.Soldier, left, right, 3, 1, true);
+            Start(CharacterDefinition.Swashbuckler, CharacterDefinition.Champion, left, right, 3, 1, true);
             Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.LeftHand);
             if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer();
             Refresh();
-            Check(Controller.PendingEffect == HandEffect.RangerDodge, "real ranger defense request");
+            Check(Controller.PendingEffect == HandEffect.SwashbucklerDodge, "real swashbuckler defense request");
         }
         private static void CheckTile(Button tile)
         {
@@ -173,7 +173,7 @@ namespace FingerDiceDuel.EditorTools
             if (_turnExitsOnly) { PrepareTurnExits(); return; }
             Add(() =>
             {
-                Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
+                Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 1, 1, 1, 1);
                 _boot.ShowScreen(GameScreen.DiceRoll);
                 var screen = Field<DiceRollScreen>(_boot, "_diceRoll"); screen.Begin(Game);
                 var controller = Field<MatchStartController>(screen, "_controller"); controller.RollWith(2, 11);
@@ -200,10 +200,10 @@ namespace FingerDiceDuel.EditorTools
             Add(() => { foreach (var tile in Root.GetComponentsInChildren<Button>().Where(b => b.name.StartsWith("CodexTile"))) CheckTile(tile); }); Shot("codex-centered");
             Add(() => _boot.ShowScreen(GameScreen.CharacterSelect));
             Add(() => { foreach (var tile in Root.GetComponentsInChildren<Button>().Where(b => b.name.StartsWith("Card"))) CheckTile(tile); }); Shot("selection-centered");
-            Add(() => Dodge(5, 1)); Shot("ranger-dodge");
+            Add(() => Dodge(5, 1)); Shot("swashbuckler-dodge");
             Add(() => Click("AcceptButton"));
             Add(() => { Check(Game.PlayerA.RightHand.Value == 2, "single dodge spends the selected one"); Check(Game.PlayerA.Health == Game.PlayerA.MaximumHealth, "single dodge prevents damage"); });
-            Add(() => Dodge(1, 1)); Shot("ranger-dodge-two-hands");
+            Add(() => Dodge(1, 1)); Shot("swashbuckler-dodge-two-hands");
             Add(() => Click("SkillChoice1"));
             Add(() => { Check(Game.PlayerA.RightHand.Value == 2 && Game.PlayerA.LeftHand.Value == 1, "right dodge button selects the right hand only"); Check(Game.PlayerA.Health == Game.PlayerA.MaximumHealth, "two-candidate dodge prevents damage"); });
             Add(() => Dodge(5, 1));
@@ -211,15 +211,15 @@ namespace FingerDiceDuel.EditorTools
             Add(() => Check(Game.PlayerA.RightHand.Value == 1 && Game.PlayerA.Health < Game.PlayerA.MaximumHealth, "declining dodge keeps the hand and takes damage"));
             Add(() =>
             {
-                Start(CharacterDefinition.Ranger, CharacterDefinition.Soldier, 5, 2, 1, 1);
+                Start(CharacterDefinition.Swashbuckler, CharacterDefinition.Champion, 5, 2, 1, 1);
                 Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh();
-                Check(Controller.PendingEffect == HandEffect.RangerPowerShot, "real power-shot request");
-            }); Shot("ranger-power-shot");
+                Check(Controller.PendingEffect == HandEffect.SwashbucklerDuelistThrust, "real power-shot request");
+            }); Shot("swashbuckler-power-shot");
             Add(() => Click("AcceptButton"));
             Add(() => { if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) { Controller.ConfirmTargetPlayer(); Refresh(); } Check(Game.PlayerA.RightHand.Value == 3, "power-shot button spends the two"); });
             Add(() =>
             {
-                Start(CharacterDefinition.Assassin, CharacterDefinition.Soldier, 6, 7, 1, 1);
+                Start(CharacterDefinition.Assassin, CharacterDefinition.Champion, 6, 7, 1, 1);
                 Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh();
                 Check(Game.PlayerA.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(Game.PlayerA), "assassin enters stealth through real operation");
                 Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.LeftHand); Refresh();
@@ -229,10 +229,10 @@ namespace FingerDiceDuel.EditorTools
             Add(() => { Check(Controller.CanSkipTurn, "stealth skip available"); Refresh(); Check(Find("SkipTurnButton").GetComponentInChildren<Text>().text.Contains("潜行"), "stealth action explicitly named"); }); Shot("assassin-stealth");
             Add(() => Click("SkipTurnButton"));
             Add(() => { Controller.SetFirstPlayer(Game.PlayerA); Controller.BeginTurn(); Refresh(); Check(!Controller.CanSkipTurn, "stealth skip cannot be used twice"); });
-            Add(() => { Start(CharacterDefinition.Gambler, CharacterDefinition.Soldier, 1, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Refresh(); }); Shot("gambler-action");
+            Add(() => { Start(CharacterDefinition.Gambler, CharacterDefinition.Champion, 1, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Refresh(); }); Shot("gambler-action");
             Add(() => Click("GambleButton"));
             Add(() => Check(Controller.LastGambleRoll >= 1 && Controller.LastGambleRoll <= 9, "gamble button still rolls via controller"));
-            Add(() => { Start(CharacterDefinition.Thief, CharacterDefinition.Soldier, 1, 2, 4, 6); Controller.ClickHand(Game.PlayerA.LeftHand); Refresh(); }); Shot("thief-action");
+            Add(() => { Start(CharacterDefinition.Thief, CharacterDefinition.Champion, 1, 2, 4, 6); Controller.ClickHand(Game.PlayerA.LeftHand); Refresh(); }); Shot("thief-action");
             Add(() => Click("StealButton"));
             AddAllRoleChecks();
             Add(() => { _boot.ShowScreen(GameScreen.MainMenu); _boot.PlayerBIsAI = true; });
@@ -252,43 +252,43 @@ namespace FingerDiceDuel.EditorTools
                 var role = definition;
                 Add(() =>
                 {
-                    Start(role, CharacterDefinition.Soldier, 1, 1, 1, 1);
+                    Start(role, CharacterDefinition.Champion, 1, 1, 1, 1);
                     Check(Field<Image>(Board, "_badgeA").sprite.name.EndsWith(role.Id), "battle emblem available " + role.DisplayName);
                     CheckActions();
                 });
             }
-            Add(() => { Start(CharacterDefinition.Barbarian, CharacterDefinition.Soldier, 4, 1, 1, 2); Operation(); Check(Controller.PendingEffect == HandEffect.BarbarianLockTarget, "barbarian lock request"); });
-            Shot("barbarian-lock"); Add(() => Click("SkillChoice1"));
+            Add(() => { Start(CharacterDefinition.PathOfTheWarden, CharacterDefinition.Champion, 4, 1, 1, 2); Operation(); Check(Controller.PendingEffect == HandEffect.PathOfTheWardenLockTarget, "pathOfTheWarden lock request"); });
+            Shot("pathOfTheWarden-lock"); Add(() => Click("SkillChoice1"));
             Add(() => Check(Game.PlayerB.RightHand.IsLocked, "lock button locks chosen hand"));
-            Add(() => { Start(CharacterDefinition.Monk, CharacterDefinition.Soldier, 5, 1, 3, 1, true); Game.PlayerA.LeftHand.SetShieldState(ShieldState.Taichi); Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.RightHand); if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer(); Refresh(); Check(Controller.PendingEffect == HandEffect.MonkTaichi, "monk taichi request"); });
-            Shot("monk-taichi"); Add(() => Click("AcceptButton")); Add(() => Check(Game.PlayerA.LeftHand.Value == 0, "taichi button consumes five"));
-            Add(() => { Start(CharacterDefinition.Hexer, CharacterDefinition.Monk, 4, 4, 0, 1, true); Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.LeftHand); if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer(); Refresh(); Check(Controller.PendingEffect == HandEffect.HexerCancel, "hexer cancel request"); });
-            Shot("hexer-cancel"); Add(() => Click("SkillChoice1")); Add(() => Check(Game.PlayerA.RightHand.Value == 5 && Game.PlayerA.Health == Game.PlayerA.MaximumHealth, "cancel button raises selected hand and prevents attack"));
-            Add(() => { Start(CharacterDefinition.Hexer, CharacterDefinition.Soldier, 1, 1, 1, 1); Game.PlayerA.TakeDamage(4); Refresh(); });
-            Shot("hexer-health"); Add(() => Click("SkipTurnButton")); Add(() => { Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Game.PlayerB.Health == Game.PlayerA.Health, "hexer skip opens health target and applies same health"); });
-            Add(() => { Start(CharacterDefinition.Cleric, CharacterDefinition.Soldier, 3, 1, 1, 1); Game.PlayerA.TakeDamage(9); Operation(); Check(Controller.PendingEffect == HandEffect.ClericAttackOrHeal, "cleric attack or heal request"); });
-            Shot("cleric-attack-or-heal"); Add(() => Click("AcceptButton")); Shot("cleric-heal-target"); Add(() => Click("SkillChoice0")); Add(() => Check(Game.PlayerA.Health > 11, "cleric target button heals chosen player"));
-            Add(() => { Start(CharacterDefinition.Cleric, CharacterDefinition.Soldier, 8, 9, 1, 1); Game.PlayerA.TakeDamage(15); Operation(); Check(Controller.PendingEffect == HandEffect.ClericExtraHealTarget, "cleric extra-nine heal request"); });
-            Shot("cleric-double-nine"); Add(() => Click("SkillChoice0"));
-            Add(() => { Check(Controller.PendingEffect == HandEffect.ClericHealTarget, "normal nine heal target also available"); }); Shot("cleric-extra-heal"); Add(() => Click("SkillChoice0"));
-            Add(() => { Start(CharacterDefinition.Swordsman, CharacterDefinition.Soldier, 3, 4, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.SwordsmanFollowUp, "swordsman follow-up request"); });
+            Add(() => { Start(CharacterDefinition.WayOfTheTaiChi, CharacterDefinition.Champion, 5, 1, 3, 1, true); Game.PlayerA.LeftHand.SetShieldState(ShieldState.Taichi); Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.RightHand); if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer(); Refresh(); Check(Controller.PendingEffect == HandEffect.WayOfTheTaiChiTaichi, "wayOfTheTaiChi taichi request"); });
+            Shot("wayOfTheTaiChi-taichi"); Add(() => Click("AcceptButton")); Add(() => Check(Game.PlayerA.LeftHand.Value == 0, "taichi button consumes five"));
+            Add(() => { Start(CharacterDefinition.TheArchfey, CharacterDefinition.WayOfTheTaiChi, 4, 4, 0, 1, true); Controller.ClickHand(Game.PlayerB.LeftHand); Controller.ClickHand(Game.PlayerA.LeftHand); if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer(); Refresh(); Check(Controller.PendingEffect == HandEffect.TheArchfeyCancel, "theArchfey cancel request"); });
+            Shot("theArchfey-cancel"); Add(() => Click("SkillChoice1")); Add(() => Check(Game.PlayerA.RightHand.Value == 5 && Game.PlayerA.Health == Game.PlayerA.MaximumHealth, "cancel button raises selected hand and prevents attack"));
+            Add(() => { Start(CharacterDefinition.TheArchfey, CharacterDefinition.Champion, 1, 1, 1, 1); Game.PlayerA.TakeDamage(4); Refresh(); });
+            Shot("theArchfey-health"); Add(() => Click("SkipTurnButton")); Add(() => { Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Game.PlayerB.Health == Game.PlayerA.Health, "theArchfey skip opens health target and applies same health"); });
+            Add(() => { Start(CharacterDefinition.LifeDomain, CharacterDefinition.Champion, 3, 1, 1, 1); Game.PlayerA.TakeDamage(9); Operation(); Check(Controller.PendingEffect == HandEffect.LifeDomainAttackOrHeal, "lifeDomain attack or heal request"); });
+            Shot("lifeDomain-attack-or-heal"); Add(() => Click("AcceptButton")); Shot("lifeDomain-heal-target"); Add(() => Click("SkillChoice0")); Add(() => Check(Game.PlayerA.Health > 11, "lifeDomain target button heals chosen player"));
+            Add(() => { Start(CharacterDefinition.LifeDomain, CharacterDefinition.Champion, 8, 9, 1, 1); Game.PlayerA.TakeDamage(15); Operation(); Check(Controller.PendingEffect == HandEffect.LifeDomainExtraHealTarget, "lifeDomain extra-nine heal request"); });
+            Shot("lifeDomain-double-nine"); Add(() => Click("SkillChoice0"));
+            Add(() => { Check(Controller.PendingEffect == HandEffect.LifeDomainHealTarget, "normal nine heal target also available"); }); Shot("lifeDomain-extra-heal"); Add(() => Click("SkillChoice0"));
+            Add(() => { Start(CharacterDefinition.Swordsman, CharacterDefinition.Champion, 3, 4, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.SwordsmanFollowUp, "swordsman follow-up request"); });
             Shot("swordsman-follow-up"); Add(() => Click("AcceptButton"));
-            Add(() => { Start(CharacterDefinition.Hunter, CharacterDefinition.Soldier, 1, 2, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.HunterAmbush, "hunter ambush request"); });
-            Shot("hunter-ambush"); Add(() => Click("AcceptButton")); Add(() => Check(Game.PlayerA.LeftHand.IsConcealed, "ambush button conceals the operated hand"));
-            Add(() => { Start(CharacterDefinition.Paladin, CharacterDefinition.Soldier, 3, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Controller.PendingEffect == HandEffect.PaladinShockTarget, "paladin four directly asks shock without normal attack target"); });
-            Shot("paladin-shock"); Add(() => Click("SkillChoice0")); Add(() => { Check(Game.PlayerB.Health < Game.PlayerB.MaximumHealth, "shock target button deals damage"); Check(Game.PlayerA.LeftHand.IsShield && Controller.LastTurn.Effect == HandEffectType.Shield, "paladin four resolves as shield"); Board.SetHistoryOpen(true); Refresh(); Check(string.Join("\n", Controller.Log).Contains("【冲击】"), "named shock visible in battle history"); });
-            Shot("paladin-history");
-            Add(() => { Start(CharacterDefinition.Paladin, CharacterDefinition.Soldier, 5, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Controller.PendingEffect == HandEffect.PaladinShockTarget, "paladin six directly asks shock without normal attack target"); });
-            Shot("paladin-six-shock"); Add(() => Click("SkillChoice0"));
-            Add(() => { Start(CharacterDefinition.Fighter, CharacterDefinition.Soldier, 3, 4, 1, 1); Game.PlayerA.RightHand.PerformOperation(1); Operation(); Check(Controller.PendingEffect == HandEffect.FighterRangeBreak, "fighter range request"); });
-            Shot("fighter-range"); Add(() => Click("AcceptButton"));
-            Add(() => { Start(CharacterDefinition.Fighter, CharacterDefinition.Soldier, 4, 4, 4, 4); Game.PlayerA.LeftHand.PerformOperation(1); Game.PlayerA.RightHand.PerformOperation(1); Game.PlayerB.LeftHand.PerformOperation(1); Game.PlayerB.RightHand.PerformOperation(1); Operation(); Check(Controller.PendingEffect == HandEffect.FighterChainBreak, "fighter multi-target chain request"); });
-            Shot("fighter-chain"); Add(() => Click("SkillChoice2")); Add(() => Check(Game.PlayerB.RightHand.State == ShieldState.Broken, "chain button breaks selected shield"));
-            Add(() => { Start(CharacterDefinition.Wizard, CharacterDefinition.Soldier, 3, 1, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.WizardAbandonAttack, "wizard enchant request"); });
-            Shot("wizard-enchant"); Add(() => Click("AcceptButton")); Shot("wizard-types"); Add(() => Click("Type5")); Add(() => Check(Controller.PendingEffect != HandEffect.WizardDamageType, "damage type button completes type selection"));
-            Add(() => { Start(CharacterDefinition.Bard, CharacterDefinition.Soldier, 1, 1, 1, 1); Game.PlayerA.TakeDamage(3); Refresh(); Check(Board.IsBardChoicePanelVisible, "bard opens real choice panel"); });
-            Shot("bard-kind"); Add(() => Click("Bard增幅攻击")); Shot("bard-count"); Add(() => Click("Bard1 人  ±3")); Shot("bard-target"); Add(() => Click("BardTarget0"));
-            Add(() => Click("Bard确认")); Add(() => Check(!Board.IsBardChoicePanelVisible, "bard buttons finish complete choice flow"));
+            Add(() => { Start(CharacterDefinition.GloomStalker, CharacterDefinition.Champion, 1, 2, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.GloomStalkerAmbush, "gloomStalker ambush request"); });
+            Shot("gloomStalker-ambush"); Add(() => Click("AcceptButton")); Add(() => Check(Game.PlayerA.LeftHand.IsConcealed, "ambush button conceals the operated hand"));
+            Add(() => { Start(CharacterDefinition.OathOfDevotion, CharacterDefinition.Champion, 3, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Controller.PendingEffect == HandEffect.OathOfDevotionShockTarget, "oathOfDevotion four directly asks shock without normal attack target"); });
+            Shot("oathOfDevotion-shock"); Add(() => Click("SkillChoice0")); Add(() => { Check(Game.PlayerB.Health < Game.PlayerB.MaximumHealth, "shock target button deals damage"); Check(Game.PlayerA.LeftHand.IsShield && Controller.LastTurn.Effect == HandEffectType.Shield, "oathOfDevotion four resolves as shield"); Board.SetHistoryOpen(true); Refresh(); Check(string.Join("\n", Controller.Log).Contains("【冲击】"), "named shock visible in battle history"); });
+            Shot("oathOfDevotion-history");
+            Add(() => { Start(CharacterDefinition.OathOfDevotion, CharacterDefinition.Champion, 5, 1, 1, 1); Controller.ClickHand(Game.PlayerA.LeftHand); Controller.ClickHand(Game.PlayerB.LeftHand); Refresh(); Check(Controller.PendingEffect == HandEffect.OathOfDevotionShockTarget, "oathOfDevotion six directly asks shock without normal attack target"); });
+            Shot("oathOfDevotion-six-shock"); Add(() => Click("SkillChoice0"));
+            Add(() => { Start(CharacterDefinition.Breaker, CharacterDefinition.Champion, 3, 4, 1, 1); Game.PlayerA.RightHand.PerformOperation(1); Operation(); Check(Controller.PendingEffect == HandEffect.BreakerRangeBreak, "breaker range request"); });
+            Shot("breaker-range"); Add(() => Click("AcceptButton"));
+            Add(() => { Start(CharacterDefinition.Breaker, CharacterDefinition.Champion, 4, 4, 4, 4); Game.PlayerA.LeftHand.PerformOperation(1); Game.PlayerA.RightHand.PerformOperation(1); Game.PlayerB.LeftHand.PerformOperation(1); Game.PlayerB.RightHand.PerformOperation(1); Operation(); Check(Controller.PendingEffect == HandEffect.BreakerChainBreak, "breaker multi-target chain request"); });
+            Shot("breaker-chain"); Add(() => Click("SkillChoice2")); Add(() => Check(Game.PlayerB.RightHand.State == ShieldState.Broken, "chain button breaks selected shield"));
+            Add(() => { Start(CharacterDefinition.SchoolOfEvocation, CharacterDefinition.Champion, 3, 1, 1, 1); Operation(); Check(Controller.PendingEffect == HandEffect.SchoolOfEvocationAbandonAttack, "schoolOfEvocation enchant request"); });
+            Shot("schoolOfEvocation-enchant"); Add(() => Click("AcceptButton")); Shot("schoolOfEvocation-types"); Add(() => Click("Type5")); Add(() => Check(Controller.PendingEffect != HandEffect.SchoolOfEvocationDamageType, "damage type button completes type selection"));
+            Add(() => { Start(CharacterDefinition.CollegeOfValor, CharacterDefinition.Champion, 1, 1, 1, 1); Game.PlayerA.TakeDamage(3); Refresh(); Check(Board.IsCollegeOfValorChoicePanelVisible, "collegeOfValor opens real choice panel"); });
+            Shot("collegeOfValor-kind"); Add(() => Click("CollegeOfValor增幅攻击")); Shot("collegeOfValor-count"); Add(() => Click("CollegeOfValor1 人  ±3")); Shot("collegeOfValor-target"); Add(() => Click("CollegeOfValorTarget0"));
+            Add(() => Click("CollegeOfValor确认")); Add(() => Check(!Board.IsCollegeOfValorChoicePanelVisible, "collegeOfValor buttons finish complete choice flow"));
         }
         private static void HandClick(bool playerA, int index = 0)
         {
@@ -303,15 +303,15 @@ namespace FingerDiceDuel.EditorTools
         }
         private static void PrepareTurnExits()
         {
-            Add(() => { Start(CharacterDefinition.Wizard, CharacterDefinition.Fighter, 1, 1, 3, 1); Game.PlayerA.ApplyStatus(StatusEffect.Frozen); Controller.BeginTurn(); Refresh(); CheckLive("frozen human"); Check(Find("SkipTurnButton").interactable, "frozen human sees skip"); Check(!Controller.CanClick(Game.PlayerA.LeftHand), "frozen hands disabled"); });
+            Add(() => { Start(CharacterDefinition.SchoolOfEvocation, CharacterDefinition.Breaker, 1, 1, 3, 1); Game.PlayerA.ApplyStatus(StatusEffect.Frozen); Controller.BeginTurn(); Refresh(); CheckLive("frozen human"); Check(Find("SkipTurnButton").interactable, "frozen human sees skip"); Check(!Controller.CanClick(Game.PlayerA.LeftHand), "frozen hands disabled"); });
             Shot("frozen-human");
             Add(() => { Click("SkipTurnButton"); CheckLive("after frozen skip"); Check(ReferenceEquals(Controller.ActivePlayer, Game.PlayerB), "frozen skip hands turn to opponent"); Check(Game.PlayerA.StatusTurnsLeft(StatusEffect.Frozen) == 1, "frozen ticks once"); });
             Add(() =>
             {
-                Start(CharacterDefinition.Wizard, CharacterDefinition.Fighter, 1, 1, 3, 1);
+                Start(CharacterDefinition.SchoolOfEvocation, CharacterDefinition.Breaker, 1, 1, 3, 1);
                 Controller.BindPlayer(Game.PlayerB, new GreedyChoiceProvider(), Field<SimpleChoiceProvider>(_boot, "_choiceB"));
                 Game.PlayerB.ApplyStatus(StatusEffect.Frozen); Controller.SetFirstPlayer(Game.PlayerB); Controller.BeginTurn(); Refresh();
-                CheckLive("frozen AI fighter");
+                CheckLive("frozen AI breaker");
                 Check(!Field<Button>(Board, "_skipButton").gameObject.activeInHierarchy, "AI turn has no human skip button");
                 _boot.AiThinkSeconds = 0; Invoke(_boot, "Update"); _boot.AiThinkSeconds = 1000;
                 CheckLive("AI automatic skip"); Check(ReferenceEquals(Controller.ActivePlayer, Game.PlayerA), "bootstrap update automatically skips frozen AI");
@@ -323,7 +323,7 @@ namespace FingerDiceDuel.EditorTools
                 int value = mask;
                 Add(() =>
                 {
-                    Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
+                    Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 1, 1, 1, 1);
                     if ((value & 1) == 0) Game.PlayerA.LeftHand.Lock(); else Game.PlayerA.LeftHand.Conceal();
                     if ((value & 2) == 0) Game.PlayerA.RightHand.Lock(); else Game.PlayerA.RightHand.Conceal();
                     Controller.BeginTurn(); Refresh(); CheckLive("unusable hands " + value); Click("SkipTurnButton");
@@ -332,36 +332,36 @@ namespace FingerDiceDuel.EditorTools
             }
             Add(() =>
             {
-                Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 5, 5, 1, 1);
+                Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 5, 5, 1, 1);
                 Game.PlayerA.LeftHand.SetShieldState(ShieldState.Formed); Game.PlayerA.RightHand.SetShieldState(ShieldState.Formed); Refresh();
                 Click("SkipTurnButton"); Check(Game.PlayerA.HasDoubleShield, "voluntary skip preserves shields");
             });
             Add(() =>
             {
-                Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 5, 1, 1);
+                Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 1, 5, 1, 1);
                 Game.PlayerA.LeftHand.Lock(); Game.PlayerA.RightHand.SetShieldState(ShieldState.Formed); Refresh();
                 Check(!Field<Button>(Board, "_skipButton").gameObject.activeInHierarchy, "one locked hand and one shield cannot skip");
             });
             Add(() =>
             {
-                Start(CharacterDefinition.Assassin, CharacterDefinition.Fighter, 7, 7, 1, 1);
+                Start(CharacterDefinition.Assassin, CharacterDefinition.Breaker, 7, 7, 1, 1);
                 ((FingerDiceDuel.Characters.SpecialLogics.AssassinLogic)Game.PlayerA.Character).EnterStealthForTest(); Refresh();
                 Click("SkipTurnButton"); Controller.SetFirstPlayer(Game.PlayerA); Controller.BeginTurn(); Refresh();
                 Check(!Controller.CanSkipTurn, "assassin stealth skip only once");
             });
             Add(() =>
             {
-                Start(CharacterDefinition.Hexer, CharacterDefinition.Fighter, 1, 1, 1, 1);
+                Start(CharacterDefinition.TheArchfey, CharacterDefinition.Breaker, 1, 1, 1, 1);
                 Game.PlayerA.TakeDamage(4); Game.PlayerA.ApplyStatus(StatusEffect.Acid); Refresh(); Click("SkipTurnButton");
-                Check(Controller.Phase == BoardPhase.ChoosingHealthSwapTarget, "hexer skip still asks for target"); HandClick(false);
-                Check(Game.PlayerB.Health == 16 && Game.PlayerA.StatusTurnsLeft(StatusEffect.Acid) == 1, "hexer target click resolves skill and duration");
+                Check(Controller.Phase == BoardPhase.ChoosingHealthSwapTarget, "theArchfey skip still asks for target"); HandClick(false);
+                Check(Game.PlayerB.Health == 16 && Game.PlayerA.StatusTurnsLeft(StatusEffect.Acid) == 1, "theArchfey target click resolves skill and duration");
             });
             foreach (var status in new[] { StatusEffect.Stunned, StatusEffect.Panic })
             {
                 var effect = status;
                 Add(() =>
                 {
-                    Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 3, 1);
+                    Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 1, 1, 3, 1);
                     Game.PlayerA.ApplyStatus(effect, source: Game.PlayerB); Controller.BeginTurn(); Refresh(); HandClick(true); HandClick(false);
                     Check(Controller.CanGiveUpAttack, "give up offered for " + effect);
                     Check(Find("DeclineButton").GetComponentInChildren<Text>().text == "放弃攻击", "give up label " + effect);
@@ -371,7 +371,7 @@ namespace FingerDiceDuel.EditorTools
             }
             Add(() =>
             {
-                Start(CharacterDefinition.Soldier, CharacterDefinition.Assassin, 1, 1, 7, 7);
+                Start(CharacterDefinition.Champion, CharacterDefinition.Assassin, 1, 1, 7, 7);
                 ((FingerDiceDuel.Characters.SpecialLogics.AssassinLogic)Game.PlayerB.Character).EnterStealthForTest(); Refresh(); HandClick(true); HandClick(false); Click("DeclineButton");
                 Check(Game.PlayerA.LeftHand.Value == 8 && Game.PlayerB.Health == 20, "stealth target give up retains sum");
             });
@@ -405,12 +405,12 @@ namespace FingerDiceDuel.EditorTools
         }
         private static void StartExitRing(int count, int seat)
         {
-            Start(CharacterDefinition.Soldier, CharacterDefinition.Fighter, 1, 1, 1, 1);
+            Start(CharacterDefinition.Champion, CharacterDefinition.Breaker, 1, 1, 1, 1);
             var players = new List<PlayerState>(); var sinks = new List<SimpleChoiceProvider>();
             var lookup = Field<Dictionary<PlayerState, SimpleChoiceProvider>>(_boot, "_sinkByPlayer"); lookup.Clear();
             for (int i = 0; i < count; i++)
             {
-                var p = CharacterFactory.CreatePlayer("座位" + (i + 1), CharacterDefinition.Soldier);
+                var p = CharacterFactory.CreatePlayer("座位" + (i + 1), CharacterDefinition.Champion);
                 var sink = new SimpleChoiceProvider(); players.Add(p); sinks.Add(sink); lookup[p] = sink;
             }
             Set(_boot, "_isTwoOnTwo", count == 4); Set(_boot, "_isEightPlayer", count == 8); Set(_boot, "_isIdentity", count == 8);

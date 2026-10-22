@@ -3,7 +3,7 @@
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>
-    /// 刺客 Assassin（攻防 +2 / −1）
+    /// 游荡者·刺客 Assassin（攻防 +2 / −1）
     ///
     /// 技能：
     ///   1. **潜行**：两只手都为 7 时进入潜行状态，此时**不能被攻击**
@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                        ISkillUseCounter, IAiMoveAdvisor, ITwoStepGoal,
                                        ILethalThresholdAdvisor
     {
-        public override string DisplayName => "刺客";
+        public override string DisplayName => "游荡者·刺客";
 
         public override int DefaultAttackBonus => 2;
         public override int DefaultDefenseBonus => -1;
@@ -31,7 +31,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public const int StealthBonusDamage = 7;
 
         /// <summary>
-        /// **刺客的斩杀线**：潜行中出手时伤害 **+7**，所以斩杀线要相应提高。
+        /// **游荡者·刺客的斩杀线**：潜行中出手时伤害 **+7**，所以斩杀线要相应提高。
         ///
         /// ⚠️ 加伤作用在**基础值**上（在加攻防之前），
         ///    与真实结算的顺序一致。
@@ -62,8 +62,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// **本局是否真的"进入过"潜行**（由运算达成双 7 时才置位）。
         ///
         /// ⚠️ 为什么不能只看手值：**初始手值由开局掷骰决定**，
-        /// 一个刺客完全可能开局就是 7 / 7 —— 但那**不该**算潜行。
-        /// 玩家明确要求："刺客初始出双 7 也不会进潜行"。
+        /// 一个游荡者·刺客完全可能开局就是 7 / 7 —— 但那**不该**算潜行。
+        /// 玩家明确要求："游荡者·刺客初始出双 7 也不会进潜行"。
         ///
         /// 所以潜行 = `双方都是 7` **且** `本局已通过运算达成过`。
         /// </summary>
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>
         /// 潜行中不能被选为攻击目标（<see cref="IAttackTargetRule"/>）。
         ///
-        /// 由 Assistant 层的 BoardController 查询 —— 它不认识刺客这个具体角色，
+        /// 由 Assistant 层的 BoardController 查询 —— 它不认识游荡者·刺客这个具体角色，
         /// 只问"你能不能被打"。
         /// </summary>
         public bool IsImmuneToAttack(PlayerState owner) => IsStealthActive(owner);
@@ -225,12 +225,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public int SkillUseCount => StealthEnterCount;
 
         // ============================================================
-        // 双 7 的**两回合计划**（玩家指出：剑客的双 4/6/8 能成，
-        // 刺客的双 7 也就能成 —— 两者用的是同一条 ComboRule 通路）
+        // 双 7 的**两回合计划**（玩家指出：战士·剑士的双 4/6/8 能成，
+        // 游荡者·刺客的双 7 也就能成 —— 两者用的是同一条 ComboRule 通路）
         // ============================================================
         //
         // ⚠️ 但光有 ComboRule 不够。诊断实测（12 局）：
-        //      对 战士：[1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6]…
+        //      对 战士·破阵者：[1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6]…
         //    第一手走的是 `1+2=3`，**从不保留 7**，双 7 一次都没成过。
         //
         //    原因：`DoublesOf` 只在 `actedAfter == otherHand` 时给分，
@@ -289,7 +289,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             StealthEnterCount = 0;
         }
 
-        /// <summary>刺客：**穿刺伤害**（玩家指定）。</summary>
+        /// <summary>游荡者·刺客：**穿刺伤害**（玩家指定）。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Piercing;
 

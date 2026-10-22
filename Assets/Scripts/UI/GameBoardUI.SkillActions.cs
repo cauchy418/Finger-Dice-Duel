@@ -21,8 +21,8 @@ namespace FingerDiceDuel.UI
             _skillActor = actor;
             _battleChoiceOwner = chooser;
             bool chooseHand = chooser != null && effect != HandEffect.None
-                && effect != HandEffect.WizardDamageType && candidates != null
-                && (!hasAcceptButton || (effect == HandEffect.FighterChainBreak && candidates.Count > 1));
+                && effect != HandEffect.SchoolOfEvocationDamageType && candidates != null
+                && (!hasAcceptButton || (effect == HandEffect.BreakerChainBreak && candidates.Count > 1));
             if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
             int count = chooseHand ? Mathf.Min(candidates.Count, _skillChoiceButtons.Length) : 0;
             // 以角色为目标的技能，两只手代表同一人，只列一次。
@@ -64,9 +64,9 @@ namespace FingerDiceDuel.UI
             return a != null && a.Owns(hand) ? a : _cardsB?[0].Owner;
         }
 
-        private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.ClericHealTarget
-            || effect == HandEffect.ClericExtraHealTarget || effect == HandEffect.PaladinShockTarget
-            || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.PaladinRedirect;
+        private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.LifeDomainHealTarget
+            || effect == HandEffect.LifeDomainExtraHealTarget || effect == HandEffect.OathOfDevotionShockTarget
+            || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.OathOfDevotionRedirect;
 
         private string ChoiceLabel(HandEffect effect, Hand hand)
         {
@@ -76,16 +76,16 @@ namespace FingerDiceDuel.UI
                 : ReferenceEquals(owner, _cardsA?[0].Owner) ? "我方" : "对手";
             switch (effect)
             {
-                case HandEffect.RangerDodge: return "闪避" + side + " · 1→2";
-                case HandEffect.RangerPowerShot: return "强化" + side + " · 2→3";
-                case HandEffect.BarbarianLockTarget: return "锁定 · " + player + side;
-                case HandEffect.FighterChainBreak: return "破盾 · " + player + side;
-                case HandEffect.HexerCancel: return "取消攻击 · " + side + "+1";
-                case HandEffect.ClericHealTarget: return "回复 · " + player;
-                case HandEffect.ClericExtraHealTarget: return "额外回复 · " + player;
-                case HandEffect.PaladinShockTarget: return "冲击 · " + player;
+                case HandEffect.SwashbucklerDodge: return "闪避" + side + " · 1→2";
+                case HandEffect.SwashbucklerDuelistThrust: return "强化" + side + " · 2→3";
+                case HandEffect.PathOfTheWardenLockTarget: return "锁定 · " + player + side;
+                case HandEffect.BreakerChainBreak: return "破盾 · " + player + side;
+                case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
+                case HandEffect.LifeDomainHealTarget: return "回复 · " + player;
+                case HandEffect.LifeDomainExtraHealTarget: return "额外回复 · " + player;
+                case HandEffect.OathOfDevotionShockTarget: return "冲击 · " + player;
                 case HandEffect.OathbreakerTransfer: return "转移至 · " + player + (owner?.Definition?.DisplayName ?? "角色");
-                case HandEffect.PaladinRedirect: return "代挡 · 由我承受";
+                case HandEffect.OathOfDevotionRedirect: return "代挡 · 由我承受";
                 case HandEffect.ShieldBlock: return "抵挡 · " + side;
                 default: return "发动 · " + side;
             }
@@ -106,8 +106,8 @@ namespace FingerDiceDuel.UI
                 if (Visible(button)) DecorateSkillAction(button, _battleChoiceOwner, new Vector2(290, start - row++ * gap), height);
             if (Visible(_acceptButton))
             {
-                if (_skillEffect == HandEffect.RangerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
-                if (_skillEffect == HandEffect.RangerPowerShot) _acceptButton.GetComponentInChildren<Text>().text = "强化射击 · 2→3";
+                if (_skillEffect == HandEffect.SwashbucklerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
+                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "乘风突刺 · 2→3";
                 DecorateSkillAction(_acceptButton, _battleChoiceOwner, new Vector2(290, start - row++ * gap), height);
             }
             if (Visible(_declineButton))
@@ -116,7 +116,7 @@ namespace FingerDiceDuel.UI
             {
                 bool stealth = _skillActor?.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(_skillActor);
                 _skipButton.GetComponentInChildren<Text>().text = stealth ? "潜行 · 跳过回合"
-                    : _skillActor?.Definition?.Id == CharacterDefinition.HexerId ? "同命 · 跳过回合" : "跳过回合";
+                    : _skillActor?.Definition?.Id == CharacterDefinition.TheArchfeyId ? "妖精契约 · 跳过回合" : "跳过回合";
             }
             bool actorTop = _cardsB != null && ReferenceEquals(_skillActor, _cardsB[0].Owner);
             foreach (var button in new[] { _stealButton, _gambleButton, _skipButton })
@@ -137,11 +137,11 @@ namespace FingerDiceDuel.UI
             Position((RectTransform)button.transform, position, new Vector2(width, height));
             BattleArt.Button(button);
             var icon = button.transform.Find("SkillIcon")?.GetComponent<Image>();
-            if (icon == null) icon = ArtImage((RectTransform)button.transform, "SkillIcon", "Classes/soldier", new Vector2(-88, 0), new Vector2(48, 48));
+            if (icon == null) icon = ArtImage((RectTransform)button.transform, "SkillIcon", "Subclasses/fighter_champion", new Vector2(-88, 0), new Vector2(48, 48));
             icon.gameObject.SetActive(true);
             icon.rectTransform.anchoredPosition = new Vector2(-width / 2 + 37, 0);
-            string id = owner?.Definition?.Id ?? "soldier";
-            icon.sprite = BattleArt.Get("Classes/" + (id == "blank" ? "soldier" : id));
+            string id = owner?.Definition?.Id ?? "fighter_champion";
+            icon.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
             icon.preserveAspect = true;
             var label = button.GetComponentInChildren<Text>();
             label.font = UiFont.Bold;

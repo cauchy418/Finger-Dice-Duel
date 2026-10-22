@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Tests
     /// **玩家确认的规则**：一手合法运算都走不出来时，**允许跳过回合**。
     ///
     /// 触发场景：目盲（只能用距离正好 1 的人的手当被加数）
-    /// + 邪术师的距离修正（把这一对推到 3）
+    /// + 邪术师·旧日支配者的距离修正（把这一对推到 3）
     /// -> 对方**没有任何可用的被加数**（自己的手不许自己加）-> 无合法步。
     /// </summary>
     [TestFixture]
@@ -24,12 +24,12 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Blind_plus_warlock_distance_leaves_no_legal_operation()
         {
-            PlayerState w = Make("邪", CharacterDefinition.Warlock);
-            PlayerState foe = Make("战", CharacterDefinition.Soldier);
+            PlayerState w = Make("邪", CharacterDefinition.TheGreatOldOne);
+            PlayerState foe = Make("战", CharacterDefinition.Champion);
             var game = new GameManager(w, foe, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
-            // 邪术师命中 -> 距离变 3
+            // 邪术师·旧日支配者命中 -> 距离变 3
             w.LeftHand.SetValue(1);
             foe.LeftHand.SetValue(3);
             game.ExecuteTurn(w, w.LeftHand, foe.LeftHand);
@@ -55,8 +55,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void A_normal_position_still_has_legal_operations()
         {
-            PlayerState a = Make("甲", CharacterDefinition.Soldier);
-            PlayerState b = Make("乙", CharacterDefinition.Fighter);
+            PlayerState a = Make("甲", CharacterDefinition.Champion);
+            PlayerState b = Make("乙", CharacterDefinition.Breaker);
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 
@@ -69,8 +69,8 @@ namespace FingerDiceDuel.Tests
         public void Blind_alone_does_not_block_the_operation_in_one_versus_one()
         {
             // 1v1 初始距离 1 -> 目盲照样能用手
-            PlayerState a = Make("甲", CharacterDefinition.Soldier);
-            PlayerState b = Make("乙", CharacterDefinition.Fighter);
+            PlayerState a = Make("甲", CharacterDefinition.Champion);
+            PlayerState b = Make("乙", CharacterDefinition.Breaker);
             var game = new GameManager(a, b, new SimpleChoiceProvider(),
                                        new SimpleChoiceProvider());
 

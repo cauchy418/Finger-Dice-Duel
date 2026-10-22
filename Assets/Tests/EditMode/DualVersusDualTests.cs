@@ -1,4 +1,4 @@
-using FingerDiceDuel.Characters;
+﻿using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Tests
             WriteReport(report);
 
             // 这里只断言"没有真异常"：模拟器被迫中断、或组合构建失败。
-            // ⚠️ 打满回合上限**不算异常** —— 按血量判定，只有血量相同才平局（巨人系本来就拖）。
+            // ⚠️ 打满回合上限**不算异常** —— 按血量判定，只有血量相同才平局（野蛮人·巨人道途系本来就拖）。
             Assert.True(report.Contains("异常：无"),
                 "全部双将组合交叉对战都不应崩溃。\n\n" + report);
         }
@@ -54,8 +54,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Seed_21639_skipping_turns_still_advances_rounds()
         {
-            var a = FindDual("咒术师", "巨人");
-            var b = FindDual("野蛮人", "妖术师");
+            var a = FindDual("法师·咒法学派", "野蛮人·巨人道途");
+            var b = FindDual("野蛮人·守望者道途", "邪术师·至高妖精");
 
             for (int swap = 0; swap < 2; swap++)
             {

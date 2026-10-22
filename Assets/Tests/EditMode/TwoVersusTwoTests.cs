@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -64,7 +64,7 @@ namespace FingerDiceDuel.Tests
         {
             // 1v1 不能因为"加了 2v2"而变样
             var game = CharacterFactory.CreateMatch(CharacterDefinition.Blank,
-                                                    CharacterDefinition.Fighter);
+                                                    CharacterDefinition.Breaker);
 
             Assert.AreEqual(2, game.Players.Count);
             Assert.True(game.TeamOf(game.PlayerA) != game.TeamOf(game.PlayerB));

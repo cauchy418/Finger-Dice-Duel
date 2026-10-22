@@ -1601,148 +1601,148 @@
       "path": "Assets/Resources/Art/Battle/v1/Status/stun.png"
     },
     {
-      "key": "soldier",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/soldier",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/soldier.png"
+      "key": "fighter_champion",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/fighter_champion",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_champion.png"
     },
     {
-      "key": "fighter",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/fighter",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/fighter.png"
+      "key": "fighter_breaker",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/fighter_breaker",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_breaker.png"
     },
     {
-      "key": "curseweaver",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/curseweaver",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/curseweaver.png"
+      "key": "wizard_school_of_conjuration",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/wizard_school_of_conjuration",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_conjuration.png"
     },
     {
-      "key": "barbarian",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/barbarian",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/barbarian.png"
+      "key": "barbarian_path_of_the_warden",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/barbarian_path_of_the_warden",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png"
     },
     {
-      "key": "cleric",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/cleric",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/cleric.png"
+      "key": "cleric_life_domain",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/cleric_life_domain",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_life_domain.png"
     },
     {
-      "key": "ranger",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/ranger",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/ranger.png"
+      "key": "rogue_swashbuckler",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/rogue_swashbuckler",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_swashbuckler.png"
     },
     {
-      "key": "werewolf",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/werewolf",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/werewolf.png"
+      "key": "barbarian_path_of_the_beast",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/barbarian_path_of_the_beast",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_beast.png"
     },
     {
-      "key": "swordsman",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/swordsman",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/swordsman.png"
+      "key": "fighter_swordsman",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/fighter_swordsman",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_swordsman.png"
     },
     {
-      "key": "ninja",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/ninja",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/ninja.png"
+      "key": "monk_way_of_the_ninja",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/monk_way_of_the_ninja",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_ninja.png"
     },
     {
-      "key": "assassin",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/assassin",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/assassin.png"
+      "key": "rogue_assassin",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/rogue_assassin",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_assassin.png"
     },
     {
-      "key": "paladin",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/paladin",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/paladin.png"
+      "key": "paladin_oath_of_devotion",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/paladin_oath_of_devotion",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_devotion.png"
     },
     {
-      "key": "hexer",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/hexer",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/hexer.png"
+      "key": "warlock_the_archfey",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/warlock_the_archfey",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_archfey.png"
     },
     {
-      "key": "arcane_archer",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/arcane_archer",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/arcane_archer.png"
+      "key": "fighter_arcane_archer",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/fighter_arcane_archer",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_arcane_archer.png"
     },
     {
-      "key": "gambler",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/gambler",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/gambler.png"
+      "key": "rogue_gambler",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/rogue_gambler",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_gambler.png"
     },
     {
-      "key": "knight",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/knight",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/knight.png"
+      "key": "paladin_oath_of_the_crown",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/paladin_oath_of_the_crown",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_crown.png"
     },
     {
-      "key": "monk",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/monk",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/monk.png"
+      "key": "monk_way_of_the_tai_chi",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/monk_way_of_the_tai_chi",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_tai_chi.png"
     },
     {
-      "key": "giant",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/giant",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/giant.png"
+      "key": "barbarian_path_of_the_giant",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/barbarian_path_of_the_giant",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_giant.png"
     },
     {
-      "key": "thief",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/thief",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/thief.png"
+      "key": "rogue_thief",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/rogue_thief",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_thief.png"
     },
     {
-      "key": "hunter",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/hunter",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/hunter.png"
+      "key": "ranger_gloom_stalker",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/ranger_gloom_stalker",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_gloom_stalker.png"
     },
     {
-      "key": "magician",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/magician",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/magician.png"
+      "key": "rogue_magician",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/rogue_magician",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_magician.png"
     },
     {
-      "key": "wizard",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/wizard",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/wizard.png"
+      "key": "wizard_school_of_evocation",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/wizard_school_of_evocation",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png"
     },
     {
-      "key": "sorcerer",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/sorcerer",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/sorcerer.png"
+      "key": "sorcerer_wild_magic",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/sorcerer_wild_magic",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_wild_magic.png"
     },
     {
-      "key": "warlock",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/warlock",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/warlock.png"
+      "key": "warlock_the_great_old_one",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/warlock_the_great_old_one",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_great_old_one.png"
     },
     {
-      "key": "bard",
-      "group": "Classes",
-      "resourcesKey": "Art/Battle/v1/Classes/bard",
-      "path": "Assets/Resources/Art/Battle/v1/Classes/bard.png"
+      "key": "bard_college_of_valor",
+      "group": "Subclasses",
+      "resourcesKey": "Art/Battle/v1/Subclasses/bard_college_of_valor",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png"
     },
     {
       "key": "attack",

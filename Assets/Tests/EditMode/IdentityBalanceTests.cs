@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Tests
             HandSplit split = new DiceSplitAdvisor().Choose(p.Definition, null, splits);
             p.LeftHand.SetValue(split.Left);
             p.RightHand.SetValue(split.Right);
-            MonkLogic.ApplyTaichiToFives(p);
+            WayOfTheTaiChiLogic.ApplyTaichiToFives(p);
         }
 
         private static bool LordSide(IdentityRole role)
@@ -117,8 +117,8 @@ namespace FingerDiceDuel.Tests
                 {
                     while (!game.IsGameOver && steps < 2000)
                     {
-                        if (controller.BardChoicePending)
-                            controller.AutoResolveAiBardChoice();
+                        if (controller.CollegeOfValorChoicePending)
+                            controller.AutoResolveAiCollegeOfValorChoice();
                         if (controller.Phase == BoardPhase.GameOver) break;
                         if (!controller.MakeAutomaticMove())
                         {
@@ -263,23 +263,23 @@ namespace FingerDiceDuel.Tests
             {
                 [IdentityRole.Lord] = new[]
                 {
-                    "巨人", "圣武士", "士兵", "邪术师", "狼人",
-                    "猎人", "野蛮人", "骑士", "剑客", "术士",
+                    "野蛮人·巨人道途", "圣武士·奉献之誓", "战士·勇士", "邪术师·旧日支配者", "野蛮人·野兽道途",
+                    "游侠·幽域追踪者", "野蛮人·守望者道途", "圣武士·王冠之誓", "战士·剑士", "术士·狂野魔法",
                 },
                 [IdentityRole.Loyalist] = new[]
                 {
-                    "吟游诗人", "咒术师", "邪术师", "术士", "魔射手",
-                    "牧师", "妖术师", "刺客", "武僧", "游侠",
+                    "吟游诗人·勇气学院", "法师·咒法学派", "邪术师·旧日支配者", "术士·狂野魔法", "战士·魔射手",
+                    "牧师·生命领域", "邪术师·至高妖精", "游荡者·刺客", "武僧·太极宗", "游荡者·风流剑客",
                 },
                 [IdentityRole.Rebel] = new[]
                 {
-                    "术士", "魔射手", "圣武士", "邪术师", "咒术师",
-                    "法师", "巨人", "妖术师", "战士", "狼人",
+                    "术士·狂野魔法", "战士·魔射手", "圣武士·奉献之誓", "邪术师·旧日支配者", "法师·咒法学派",
+                    "法师·塑能学派", "野蛮人·巨人道途", "邪术师·至高妖精", "战士·破阵者", "野蛮人·野兽道途",
                 },
                 [IdentityRole.Traitor] = new[]
                 {
-                    "圣武士", "剑客", "魔射手", "咒术师", "牧师",
-                    "邪术师", "狼人", "术士", "巨人", "士兵",
+                    "圣武士·奉献之誓", "战士·剑士", "战士·魔射手", "法师·咒法学派", "牧师·生命领域",
+                    "邪术师·旧日支配者", "野蛮人·野兽道途", "术士·狂野魔法", "野蛮人·巨人道途", "战士·勇士",
                 },
             };
 

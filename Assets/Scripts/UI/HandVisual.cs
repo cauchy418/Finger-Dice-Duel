@@ -16,10 +16,10 @@ namespace FingerDiceDuel.UI
         private static readonly Color LockedCard = new Color(0.16f, 0.15f, 0.15f);
 
         /// <summary>
-        /// **暗置（猎人伏击）** 的牌面颜色。
+        /// **暗置（游侠·幽域追踪者伏击）** 的牌面颜色。
         ///
         /// 与"被锁"不同：被锁是别人强加的（暗灰），
-        /// 暗置是猎人自己摆的姿态（深青），而且**数值仍然可见**。
+        /// 暗置是游侠·幽域追踪者自己摆的姿态（深青），而且**数值仍然可见**。
         /// </summary>
         private static readonly Color ConcealedCard = new Color(0.13f, 0.24f, 0.26f);
 
@@ -32,10 +32,10 @@ namespace FingerDiceDuel.UI
             {
                 case Core.ShieldState.Formed: return ShieldCard;   // 合拢的手掌 = 盾
                 case Core.ShieldState.Broken: return BrokenCard;   // 展开的碎盾
-                // 太极形态（武僧）：借"回复"的绿色系 —— 它既不是攻击也不是盾，
+                // 太极形态（武僧·太极宗）：借"回复"的绿色系 —— 它既不是攻击也不是盾，
                 // 而是"以柔克刚"的防守姿态。用与护盾不同的颜色以示区分。
                 case Core.ShieldState.Taichi: return HealCard;
-                // 暗置（猎人伏击）：数值仍可见，但不能当运算源、也不能被对手碰
+                // 暗置（游侠·幽域追踪者伏击）：数值仍可见，但不能当运算源、也不能被对手碰
                 case Core.ShieldState.Concealed: return ConcealedCard;
             }
 
@@ -64,7 +64,7 @@ namespace FingerDiceDuel.UI
         ///
         /// 必须把"这一手现在可点"和"这一手是当前抉择的候选"区分开：
         /// 前者会持续整整一个回合，若拿它当高亮，手牌就会一直亮着
-        /// （游侠的 1 闪避成 2、2 强化成 3 之后都一直高亮过 —— 真实 bug）。
+        /// （游荡者·风流剑客的 1 闪避成 2、2 强化成 3 之后都一直高亮过 —— 真实 bug）。
         /// </summary>
         public enum OutlineState
         {
@@ -125,7 +125,7 @@ namespace FingerDiceDuel.UI
         /// ⚠️ **不能直接用 <c>Hand.GetEffectType</c>** ——
         ///    有些角色会改写效果，界面上必须按**角色自己的规则**显示，
         ///    否则会出现"看起来能打人、其实无效果"（玩家实测：
-        ///    巨人的 4/6/8 显示成红色攻击、而 5 反而显示成护盾，
+        ///    野蛮人·巨人道途的 4/6/8 显示成红色攻击、而 5 反而显示成护盾，
         ///    两者正好与实际相反）。
         ///
         /// 角色通过 <see cref="Core.IHandEffectDisplay"/> 自报，

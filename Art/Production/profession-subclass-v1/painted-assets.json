@@ -1,0 +1,254 @@
+{
+  "date": "2026-10-23",
+  "tool": "built-in image_gen",
+  "processing": "Authorized alpha crop, centering and resize only",
+  "assets": [
+    {
+      "id": "druid",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/druid.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/druid.png",
+      "bounds": [
+        0,
+        0,
+        1253,
+        1237
+      ],
+      "sha256": "46d5091a9753527ff8d55a2324eeb7551cd368a30eca871e8493c663336c8e9e"
+    },
+    {
+      "id": "rogue_swashbuckler",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/rogue_swashbuckler.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_swashbuckler.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "a5739e622230abeeefe0103eddcfc5489e89ddc9e66efc993e28496650bbe0a9"
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/wizard_school_of_conjuration.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_conjuration.png",
+      "bounds": [
+        0,
+        0,
+        1253,
+        1235
+      ],
+      "sha256": "df240392402f559afbaab709e3f19731c9e40c28fb23ee83a40b2e07c26187fb"
+    },
+    {
+      "id": "warlock_the_archfey",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/warlock_the_archfey.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_archfey.png",
+      "bounds": [
+        0,
+        0,
+        1242,
+        1254
+      ],
+      "sha256": "582d16b283cc59b6834954d33107d22a6aacee94a6312639c6bf130b43ab625b"
+    },
+    {
+      "id": "warlock_the_great_old_one",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/warlock_the_great_old_one.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_great_old_one.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "1331004d6b3599fef56d2a1d4fdfdfbe8adccf73c843ef7ba8f00b9006beeac6"
+    },
+    {
+      "id": "fighter_tactician",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/fighter_tactician.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_tactician.png",
+      "bounds": [
+        0,
+        0,
+        1239,
+        1254
+      ],
+      "sha256": "b4d364252efba285e9474a4b381a56c267f84cef67f209094f5386f21e39216e"
+    },
+    {
+      "id": "paladin_oath_of_the_crown",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/paladin_oath_of_the_crown.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_crown.png",
+      "bounds": [
+        0,
+        0,
+        1240,
+        1254
+      ],
+      "sha256": "26095e9bf6d4efaf6583e13d3a8530e48022e84c52f9304698e8529826a30404"
+    },
+    {
+      "id": "ranger_gloom_stalker",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/ranger_gloom_stalker.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_gloom_stalker.png",
+      "bounds": [
+        10,
+        2,
+        1243,
+        1254
+      ],
+      "sha256": "8cb74c9e54c3bb24af9d14b740afbb0838083ca9f1246df21ff10ec8284f6536"
+    },
+    {
+      "id": "bard_college_of_valor",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/bard_college_of_valor.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png",
+      "bounds": [
+        0,
+        0,
+        1246,
+        1254
+      ],
+      "sha256": "4d5ca58f9cbc218c9e0ae9a2ce1abe22f3b69cf74592616febbb8324db8e85ff"
+    },
+    {
+      "id": "wizard",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/wizard.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/wizard.png",
+      "bounds": [
+        0,
+        0,
+        1253,
+        1254
+      ],
+      "sha256": "21d4506c3bffd2c40f4e18a6b46e14d6d570e79d5afdd361c199cfec3fad51c4"
+    },
+    {
+      "id": "cleric",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/cleric.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/cleric.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "14ca90009e06785ee3f9487d210a3fcc13b8f20a54dfcd6f400ddddd83578d65"
+    },
+    {
+      "id": "barbarian",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/barbarian.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/barbarian.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "cb9b3862f46ed8e939336218dc8781fc1e9a13f298401e262109cae7b3a71d16"
+    },
+    {
+      "id": "monk",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/monk.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/monk.png",
+      "bounds": [
+        0,
+        0,
+        1240,
+        1254
+      ],
+      "sha256": "c212e9d450969c692dff4f3903199127f0e79b698543a382ecd9859387f7e539"
+    },
+    {
+      "id": "bard",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/bard.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/bard.png",
+      "bounds": [
+        0,
+        0,
+        1253,
+        1254
+      ],
+      "sha256": "ae09473e3f07dedafd003cfa7a34723f9c23e31d20c75cee70bd8e1d03aad3af"
+    },
+    {
+      "id": "fighter",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/fighter.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/fighter.png",
+      "bounds": [
+        0,
+        0,
+        1253,
+        1238
+      ],
+      "sha256": "d70504b9d889670f3beeedf5149d43582f12ad30d3d415c19f4780f8746b308c"
+    },
+    {
+      "id": "paladin",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/paladin.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/paladin.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "06caaf850936b72b46a024194784de4b386e846c5ce93e8d02619ad043b5730b"
+    },
+    {
+      "id": "rogue",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/rogue.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/rogue.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1234
+      ],
+      "sha256": "4b7592ffdfec68a0291c8228d839593a2296e9db8ab3f1af1ea09281c0768c63"
+    },
+    {
+      "id": "sorcerer",
+      "group": "Professions",
+      "source": "Art/Production/profession-subclass-v1/source/sorcerer.png",
+      "path": "Assets/Resources/Art/Battle/v1/Professions/sorcerer.png",
+      "bounds": [
+        0,
+        1,
+        1254,
+        1254
+      ],
+      "sha256": "fdcde598f18b7de677b11e7b14bacb23ba5a7d82f30a23635bce17b21dec4605"
+    },
+    {
+      "id": "barbarian_path_of_the_warden",
+      "group": "Subclasses",
+      "source": "Art/Production/profession-subclass-v1/source/barbarian_path_of_the_warden.png",
+      "path": "Assets/Resources/Art/Battle/v1/Subclasses/barbarian_path_of_the_warden.png",
+      "bounds": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "sha256": "71775f271f0c8d33e5339e0f6095c30fbff7e5ae363af59a6790ac1596d7464d"
+    }
+  ]
+}

@@ -9,7 +9,7 @@
 - `Assets/Resources/Art/Battle/v1/Hands/hand_left_5_shield.png`
 - `Assets/Resources/Art/Battle/v1/Hands/hand_right_5_shield.png`
 
-两张 PNG 均为 512×640、真实透明背景。只有数值为 5 且 `Hand.IsShield`（完整盾牌）使用新图；普通 5、碎盾、太极，以及圣武士的 4 / 6 盾保留原数字手型。所有战斗模式共用此映射。
+两张 PNG 均为 512×640、真实透明背景。只有数值为 5 且 `Hand.IsShield`（完整盾牌）使用新图；普通 5、碎盾、太极，以及圣武士·奉献之誓的 4 / 6 盾保留原数字手型。所有战斗模式共用此映射。
 
 ## 实际生成提示词
 

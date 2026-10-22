@@ -40,14 +40,14 @@ namespace FingerDiceDuel.UI
         private RectTransform _nameRowA, _nameRowB;
 
         /// <summary>
-        /// **法师状态的图标栏**（玩家面板右侧）。
+        /// **法师·塑能学派状态的图标栏**（玩家面板右侧）。
         ///
         /// 1v1 用 A/B 两栏；2v2 走四面板布局（见 <see cref="RefreshRing"/>），
         /// 那四个面板各自建自己的图标栏。
         /// </summary>
         private StatusIconBar _statusIconsA, _statusIconsB;
 
-        /// <summary>法师的伤害类型选择面板（10 选 1）。</summary>
+        /// <summary>法师·塑能学派的伤害类型选择面板（10 选 1）。</summary>
         private DamageTypePanel _damageTypePanel;
 
         /// <summary>玩家在伤害类型面板上选了某一种（由 GameBootstrap 接上）。</summary>
@@ -65,28 +65,28 @@ namespace FingerDiceDuel.UI
         public bool IsDamageTypePanelVisible
             => _damageTypePanel != null && _damageTypePanel.IsVisible;
 
-        /// <summary>吟游诗人的四步抉择面板。</summary>
-        private BardChoicePanel _bardChoicePanel;
+        /// <summary>吟游诗人·勇气学院的四步抉择面板。</summary>
+        private CollegeOfValorChoicePanel _bardChoicePanel;
 
-        /// <summary>显示吟游诗人面板（由 GameBootstrap 在每次刷新后按需调用）。</summary>
-        public void ShowBardChoicePanel(Assistant.BoardController board, System.Action onDone)
+        /// <summary>显示吟游诗人·勇气学院面板（由 GameBootstrap 在每次刷新后按需调用）。</summary>
+        public void ShowCollegeOfValorChoicePanel(Assistant.BoardController board, System.Action onDone)
         {
             if (_bardChoicePanel == null) return;
             _bardChoicePanel.Show(board, onDone);
         }
 
-        /// <summary>隐藏吟游诗人面板。</summary>
-        public void HideBardChoicePanel()
+        /// <summary>隐藏吟游诗人·勇气学院面板。</summary>
+        public void HideCollegeOfValorChoicePanel()
         {
             if (_bardChoicePanel != null) _bardChoicePanel.Hide();
         }
 
-        /// <summary>吟游诗人面板当前是否可见（供测试 / 诊断）。</summary>
-        public bool IsBardChoicePanelVisible
+        /// <summary>吟游诗人·勇气学院面板当前是否可见（供测试 / 诊断）。</summary>
+        public bool IsCollegeOfValorChoicePanelVisible
             => _bardChoicePanel != null && _bardChoicePanel.IsVisible;
 
-        /// <summary>吟游诗人面板当前步骤（0 = 未显示；2/3/4 = 四项 / 目标数 / 选目标）。</summary>
-        public int BardChoicePanelStep
+        /// <summary>吟游诗人·勇气学院面板当前步骤（0 = 未显示；2/3/4 = 四项 / 目标数 / 选目标）。</summary>
+        public int CollegeOfValorChoicePanelStep
             => _bardChoicePanel != null ? _bardChoicePanel.CurrentStep : 0;
 
         private FloatingTextLayer _floats;
@@ -100,10 +100,10 @@ namespace FingerDiceDuel.UI
         private Text _gameOverText;
         private Button _skipButton;
 
-        /// <summary>「开赌」按钮（赌徒专用）。</summary>
+        /// <summary>「开赌」按钮（游荡者·赌徒专用）。</summary>
         private Button _gambleButton;
 
-        /// <summary>盗贼的「偷窃」按钮（按需创建）。</summary>
+        /// <summary>游荡者·盗贼的「偷窃」按钮（按需创建）。</summary>
         private Button _stealButton;
         private Button _sacrificeButton;
         private Button _exitButton;
@@ -117,7 +117,7 @@ namespace FingerDiceDuel.UI
         /// <summary>点击"跳过回合"。</summary>
         public event Action SkipTurnClicked;
 
-        /// <summary>点了「开赌」（赌徒）。</summary>
+        /// <summary>点了「开赌」（游荡者·赌徒）。</summary>
         public event Action GambleClicked;
 
         /// <summary>点击"不发动 / 放弃"（角色抉择允许放弃时显示）。</summary>
@@ -233,7 +233,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// **法师的伤害类型选择面板**。建好之后默认隐藏，
+        /// **法师·塑能学派的伤害类型选择面板**。建好之后默认隐藏，
         /// 只在"玩家选了放弃攻击"时由 <see cref="SetDamageTypePanelVisible"/> 弹出。
         /// </summary>
         private void BuildDamageTypePanel()
@@ -242,8 +242,8 @@ namespace FingerDiceDuel.UI
             _damageTypePanel.OnPicked = type => DamageTypePicked?.Invoke(type);
             _damageTypePanel.Hide();
 
-            // 吟游诗人的四步抉择面板（① 是否发动由 GameBootstrap 判断）
-            _bardChoicePanel = new BardChoicePanel(_canvasRoot, _font);
+            // 吟游诗人·勇气学院的四步抉择面板（① 是否发动由 GameBootstrap 判断）
+            _bardChoicePanel = new CollegeOfValorChoicePanel(_canvasRoot, _font);
             _bardChoicePanel.Hide();
         }
 
@@ -356,7 +356,7 @@ namespace FingerDiceDuel.UI
                 cards[i] = CreateHandCard(area, pos);
             }
 
-            // 法师的状态图标栏（面板右侧）
+            // 法师·塑能学派的状态图标栏（面板右侧）
             if (anchorTop) _statusIconsB = new StatusIconBar(area, _font, true, "StatusIconsB");
             else _statusIconsA = new StatusIconBar(area, _font, false, "StatusIconsA");
         }
@@ -1174,7 +1174,7 @@ namespace FingerDiceDuel.UI
                 label.text = armed ? "替死：已准备（点击取消）" : "替死待命";
         }
 
-        /// <summary>显示/隐藏「开赌」按钮（赌徒专用）。</summary>
+        /// <summary>显示/隐藏「开赌」按钮（游荡者·赌徒专用）。</summary>
         public void SetGambleButtonVisible(bool visible)
         {
             if (!visible)
@@ -1211,7 +1211,7 @@ namespace FingerDiceDuel.UI
             PlaceButtonRightOf(rect, _gambleButton, 60f);
         }
 
-        /// <summary>1v1 布局里的最右手牌（赌徒按钮的兜底锚点）。</summary>
+        /// <summary>1v1 布局里的最右手牌（游荡者·赌徒按钮的兜底锚点）。</summary>
         private HandCard RightmostSideCard()
         {
             if (_cardsA == null || _cardsA.Length == 0) return null;
@@ -1219,14 +1219,14 @@ namespace FingerDiceDuel.UI
         }
 
         // ============================================================
-        // 盗贼：「偷窃」按钮
+        // 游荡者·盗贼：「偷窃」按钮
         // ============================================================
 
         /// <summary>
         /// 显示 / 隐藏「偷窃」按钮。
         ///
         /// 玩家给的交互：点自己的手 -> 点「偷窃」-> 点别人的手。
-        /// 所以按钮只在"盗贼点了自己一只手、且本回合没偷过"时出现。
+        /// 所以按钮只在"游荡者·盗贼点了自己一只手、且本回合没偷过"时出现。
         /// </summary>
         public void SetStealButtonVisible(bool visible)
         {
@@ -1352,7 +1352,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"不发动"按钮。
         ///
-        /// 角色的抉择可能允许放弃（游侠的闪避、强化射击、野蛮人的锁手），
+        /// 角色的抉择可能允许放弃（游荡者·风流剑客的闪避、乘风突刺、野蛮人·守望者道途的锁手），
         /// 这时必须给玩家一个明确的"放弃"出口，否则他会以为必须选一张手牌。
         /// </summary>
         public void SetDeclineButtonVisible(bool visible)
@@ -1374,7 +1374,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"发动"按钮。
         ///
-        /// 只有一个候选的抉择（剑客追加攻击、游侠强化射击）用按钮比"点手牌"直观得多，
+        /// 只有一个候选的抉择（战士·剑士追加攻击、游荡者·风流剑客乘风突刺）用按钮比"点手牌"直观得多，
         /// 所以这类抉择会在"不发动"左侧显示一个发动按钮。
         /// </summary>
         public void SetAcceptButtonVisible(bool visible)
@@ -1485,7 +1485,7 @@ namespace FingerDiceDuel.UI
             UpdateHealthBar(_hpBarFillA, a);
             UpdateHealthBar(_hpBarFillB, b);
 
-            // 名字行同时承担"攻防加值"（狼人会永久成长，必须每次刷新重算）
+            // 名字行同时承担"攻防加值"（野蛮人·野兽道途会永久成长，必须每次刷新重算）
             if (_nameTextA != null) _nameTextA.text = DescribeNameLine(a);
             if (_nameTextB != null) _nameTextB.text = DescribeNameLine(b);
             _statusTextA.text = HandVisual.ShieldSummary(a);
@@ -1494,7 +1494,7 @@ namespace FingerDiceDuel.UI
             RefreshBattleHeader(a, false);
             RefreshBattleHeader(b, true);
 
-            // 法师的状态图标（玩家面板右侧）
+            // 法师·塑能学派的状态图标（玩家面板右侧）
             _statusIconsA?.Refresh(a);
             _statusIconsB?.Refresh(b);
 
@@ -1510,18 +1510,18 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 名字那一行：名字 + 攻防加值 + 血量数值（整体居中）。
         ///
-        /// 例：<c>咒术师    攻 -1    防 0    20/20</c>
+        /// 例：<c>法师·咒法学派    攻 -1    防 0    20/20</c>
         ///
-        /// 攻防是**动态**的（狼人会永久成长），所以每次刷新都要重算，
+        /// 攻防是**动态**的（野蛮人·野兽道途会永久成长），所以每次刷新都要重算，
         /// 不能只在开局写一次。负的防御表示"受到的伤害 +2"（见 RULES.md §6）。
         /// </summary>
         private static string DescribeNameLine(PlayerState p, bool compact = false)
         {
             // ⚠️⚠️ **必须用"有效加成"，不能用角色自身加成。**
             //
-            //    玩家实测："吟游诗人和强酸、震慑等加成要实时反映在面板上"。
+            //    玩家实测："吟游诗人·勇气学院和强酸、震慑等加成要实时反映在面板上"。
             //    `Character.AttackBonus` 只是**角色自身**那一份，
-            //    震慑（攻 −2）、强酸（防 −2）、吟游诗人的 ±N 都在
+            //    震慑（攻 −2）、强酸（防 −2）、吟游诗人·勇气学院的 ±N 都在
             //    `StatusRules.EffectiveAttackBonus/EffectiveDefenseBonus` 里叠加 ——
             //    直接读 `Character.*` 会让面板永远显示"原始值"，玩家人为没生效。
             int atk = FingerDiceDuel.Core.StatusRules.EffectiveAttackBonus(p);

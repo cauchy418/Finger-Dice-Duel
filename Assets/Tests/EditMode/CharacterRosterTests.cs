@@ -12,21 +12,21 @@ namespace FingerDiceDuel.Tests
     /// 角色选择界面的**文案**验证。
     ///
     /// 布局与外观看不到，但"卡片上显示的身材对不对、技能摘要是否可读"
-    /// 是纯数据，可以精确验证 —— 尤其是狼人的 +5 生命上限不在数据层，
+    /// 是纯数据，可以精确验证 —— 尤其是野蛮人·野兽道途的 +5 生命上限不在数据层，
     /// 显示错了玩家会以为卡片在骗人。
     /// </summary>
     [TestFixture]
     public class CharacterRosterTests
     {
         [Test]
-        public void Werewolf_card_shows_the_real_max_health_of_twenty_five()
+        public void PathOfTheBeast_card_shows_the_real_max_health_of_twenty_five()
         {
-            // 狼人的 +5 由角色逻辑提供，不在 CharacterDefinition.MaxHealth 里。
+            // 野蛮人·野兽道途的 +5 由角色逻辑提供，不在 CharacterDefinition.MaxHealth 里。
             // 卡片必须显示 25，否则和实战不符。
-            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Werewolf);
+            string stats = CharacterCardText.DescribeStats(CharacterDefinition.PathOfTheBeast);
 
             Assert.True(stats.Contains("25"),
-                $"狼人卡片应显示实际生命上限 25，实际：{stats}");
+                $"野蛮人·野兽道途卡片应显示实际生命上限 25，实际：{stats}");
         }
 
         [Test]
@@ -41,8 +41,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Card_stats_show_attack_and_defense_with_signs()
         {
-            // 咒术师 攻 -1 / 防 0
-            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Curseweaver);
+            // 法师·咒法学派 攻 -1 / 防 0
+            string stats = CharacterCardText.DescribeStats(CharacterDefinition.SchoolOfConjuration);
 
             Assert.True(stats.Contains("-1"), $"应显示 攻 -1，实际：{stats}");
             Assert.True(stats.Contains("防 0"), $"应显示 防 0，实际：{stats}");
@@ -51,8 +51,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Card_stats_show_positive_bonuses_with_a_plus()
         {
-            // 战士 攻 +1 —— 正数必须带 +，否则和 1 分不清
-            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Fighter);
+            // 战士·破阵者 攻 +1 —— 正数必须带 +，否则和 1 分不清
+            string stats = CharacterCardText.DescribeStats(CharacterDefinition.Breaker);
 
             Assert.True(stats.Contains("+1"), $"正加值应带 + 号，实际：{stats}");
         }

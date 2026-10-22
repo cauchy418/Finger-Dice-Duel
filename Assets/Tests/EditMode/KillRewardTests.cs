@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -115,8 +115,8 @@ namespace FingerDiceDuel.Tests
             GameManager game = MatchEight(out List<PlayerState> seated);
             BoardController controller = Controller(game, seated);
 
-            seated[0].LeftHand.SetValue(3);      // 战士（守序）
-            seated[1].LeftHand.SetValue(1);      // 队友牧师（守序）
+            seated[0].LeftHand.SetValue(3);      // 战士·破阵者（守序）
+            seated[1].LeftHand.SetValue(1);      // 队友牧师·生命领域（守序）
             seated[1].SetHealthExact(1);
 
             Assert.IsTrue(controller.CanBeAttacked(seated[1]));

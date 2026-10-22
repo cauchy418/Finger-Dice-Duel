@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
 {
@@ -109,7 +109,7 @@ namespace FingerDiceDuel.Assistant
             var list = new System.Collections.Generic.List<SfxSpec>(4);
             if (result == null) return list;
 
-            // ---- 追加攻击（剑客）：算独立一次 ----
+            // ---- 追加攻击（战士·剑士）：算独立一次 ----
             if (result.ExtraAttack.HasValue)
             {
                 ExtraAttackInfo extra = result.ExtraAttack.Value;

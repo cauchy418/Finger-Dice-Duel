@@ -131,7 +131,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Multi_hit_attacks_play_one_sound_per_segment_staggered()
         {
-            // 忍者两段各 3 点 -> 两声"中击"，依次错开
+            // 武僧·忍宗两段各 3 点 -> 两声"中击"，依次错开
             var result = new TurnResult
             {
                 Actor = _a, Effect = HandEffectType.Attack4,
@@ -153,7 +153,7 @@ namespace FingerDiceDuel.Tests
             var result = new TurnResult
             {
                 Actor = _a, Effect = HandEffectType.Attack6,
-                ExtraAttack = new ExtraAttackInfo("剑客", 6, 6, false),
+                ExtraAttack = new ExtraAttackInfo("战士·剑士", 6, 6, false),
                 DamageDealt = 8, LandedHits = 1, HitCount = 2,
             };
 
@@ -167,7 +167,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Dodge_reason_from_stealth_does_not_play_the_dodge_sound()
         {
-            // 刺客潜行时是"打不到"，不该响"闪避"音
+            // 游荡者·刺客潜行时是"打不到"，不该响"闪避"音
             var result = new TurnResult
             {
                 Actor = _a, Effect = HandEffectType.Attack8,

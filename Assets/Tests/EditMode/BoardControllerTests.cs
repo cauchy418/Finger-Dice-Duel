@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -171,7 +171,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_actor_decides_during_the_target_player_phase()
         {
-            // ⚠️ 真实 bug 的回归：玩家实测"战士打战士后第一步就卡住，
+            // ⚠️ 真实 bug 的回归：玩家实测"战士·破阵者打战士·破阵者后第一步就卡住，
             // 显示 AI 正在思考"。
             //
             // 根因：`Chooser` 没覆盖 ChoosingTargetPlayer -> 落到 default
@@ -223,7 +223,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void An_operation_without_any_effect_does_not_ask_for_a_target()
         {
-            // 玩家实测反馈：战士 1 + 1 运算出 2（**无效果**）也被要求选目标，
+            // 玩家实测反馈：战士·破阵者 1 + 1 运算出 2（**无效果**）也被要求选目标，
             // 产生大量无意义询问。无效果 / 护盾都不该追问。
             _board.BeginTurn();
             _board.ClickHand(_a.LeftHand);
@@ -265,19 +265,19 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 放弃攻击（只在面对刺客潜行时出现）
+        // 放弃攻击（只在面对游荡者·刺客潜行时出现）
         // ============================================================
 
         /// <summary>
-        /// 造一局：A 打 B，B 是潜行中的刺客。
+        /// 造一局：A 打 B，B 是潜行中的游荡者·刺客。
         ///
-        /// ⚠️ 潜行要求刺客**双手都是 7**，所以"参与运算的那只手"固定是 7 ——
+        /// ⚠️ 潜行要求游荡者·刺客**双手都是 7**，所以"参与运算的那只手"固定是 7 ——
         /// 运算结果是 actedValue + 7（测试第一版按 1+3 写，期望值算错了）。
         /// </summary>
         private void ArrangeStealthedAssassinDefender(int actedValue)
         {
-            var attacker = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
-            var assassin = CharacterFactory.CreatePlayer("刺客", CharacterDefinition.Assassin);
+            var attacker = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
+            var assassin = CharacterFactory.CreatePlayer("游荡者·刺客", CharacterDefinition.Assassin);
             var sinkA = new SimpleChoiceProvider();
             var sinkB = new SimpleChoiceProvider();
             var game = new GameManager(attacker, assassin, sinkA, sinkB);
@@ -309,7 +309,7 @@ namespace FingerDiceDuel.Tests
             _board.ClickHand(_a.LeftHand);
             _board.ClickHand(_b.LeftHand);
 
-            Assert.True(_board.CanGiveUpAttack, "面对潜行的刺客 -> 应提供放弃攻击。");
+            Assert.True(_board.CanGiveUpAttack, "面对潜行的游荡者·刺客 -> 应提供放弃攻击。");
             Assert.True(_board.GiveUpAttack(), "放弃攻击应被接受。");
 
             Assert.AreEqual(8, _a.LeftHand.Value,
@@ -321,7 +321,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Give_up_attack_is_offered_only_against_a_stealthed_assassin()
         {
-            // 玩家实测要求："放弃攻击在 1v1 中应只在面对刺客潜行时会出现"。
+            // 玩家实测要求："放弃攻击在 1v1 中应只在面对游荡者·刺客潜行时会出现"。
             ArrangeAttack();       // 普通对手
             _board.BeginTurn();
             _board.ClickHand(_a.LeftHand);
@@ -347,7 +347,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Every_player_is_a_legal_attack_target_by_default()
         {
-            // 判据是"有没有合法的攻击目标"，不是"对手是不是刺客"。
+            // 判据是"有没有合法的攻击目标"，不是"对手是不是游荡者·刺客"。
             ArrangeAttack();
             _board.BeginTurn();
 
@@ -359,13 +359,13 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void A_stealthed_assassin_removes_the_legal_target()
         {
-            // 刺客潜行 = 令**自己**无法成为攻击目标
+            // 游荡者·刺客潜行 = 令**自己**无法成为攻击目标
             ArrangeStealthedAssassinDefender(actedValue: 1);
             _board.BeginTurn();
             _board.ClickHand(_a.LeftHand);
             _board.ClickHand(_b.LeftHand);
 
-            Assert.False(_board.CanBeAttacked(_b), "潜行中的刺客不能被选为目标。");
+            Assert.False(_board.CanBeAttacked(_b), "潜行中的游荡者·刺客不能被选为目标。");
             Assert.False(_board.HasAnyLegalTarget, "1v1 里潜行 -> 没有合法目标。");
             Assert.True(_board.DefenderCannotBeAttacked, "应给出「放弃攻击」。");
         }
@@ -373,20 +373,20 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_assassins_hands_cannot_be_clicked_to_confirm_an_attack()
         {
-            // "敌方运算出攻击数字无法点击" —— 潜行时刺客的手牌点不动
+            // "敌方运算出攻击数字无法点击" —— 潜行时游荡者·刺客的手牌点不动
             ArrangeStealthedAssassinDefender(actedValue: 1);
             _board.BeginTurn();
             _board.ClickHand(_a.LeftHand);
             _board.ClickHand(_b.LeftHand);
 
             Assert.False(_board.CanClick(_b.LeftHand),
-                "潜行中的刺客不能被点选为攻击目标。");
+                "潜行中的游荡者·刺客不能被点选为攻击目标。");
         }
 
         [Test]
         public void A_plain_heal_does_not_ask_for_a_target()
         {
-            // 玩家实测要求："除了牧师外，其余角色运算出 9 也是自动回复，无需询问"。
+            // 玩家实测要求："除了牧师·生命领域外，其余角色运算出 9 也是自动回复，无需询问"。
             // 这里用**没有角色**的玩家（等同普通角色）验证默认行为。
             TestSetup.SetAllHands(_a, _b, 1);
             TestSetup.SetHand(_a.LeftHand, 8);      // 8 + 1 = 9 -> 回复
@@ -405,32 +405,32 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_cleric_still_asks_for_a_target_on_a_nine()
         {
-            // 对照组：牧师能把回复给对手（IHealOverride），所以必须问。
+            // 对照组：牧师·生命领域能把回复给对手（IHealOverride），所以必须问。
             // 玩家要求：**运算出 9 时点一次就决定回复对象**，不再先确认目标玩家。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetHealth(lifeDomain, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);           // ① 自己的手（运算源）
+            board.ClickHand(lifeDomain.LeftHand);           // ① 自己的手（运算源）
             board.ClickHand(blank.LeftHand);            // ② 对手的手 -> 8+1=9
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "运算出 9 后应直接进入「选回复目标」，而不是先确认目标玩家。");
             Assert.NotNull(board.PendingRequest);
-            Assert.AreEqual(HandEffect.ClericHealTarget, board.PendingRequest.Value.Effect);
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, board.PendingRequest.Value.Effect);
 
             // 点自己 = 回自己（这就是"删掉回给自己按钮"的原因：点自己本来就是回自己）
-            Assert.True(board.ClickHand(cleric.RightHand), "点自己的手应表示回自己。");
-            Assert.AreEqual(19, cleric.Health,
-                $"点自己的手应回给自己（10 + 9）。实际 cleric={cleric.Health} blank={blank.Health}");
+            Assert.True(board.ClickHand(lifeDomain.RightHand), "点自己的手应表示回自己。");
+            Assert.AreEqual(19, lifeDomain.Health,
+                $"点自己的手应回给自己（10 + 9）。实际 lifeDomain={lifeDomain.Health} blank={blank.Health}");
             Assert.AreEqual(PlayerState.DefaultMaxHealth, blank.Health,
                 "对方是满血，不该被治疗。");
         }
@@ -438,28 +438,28 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void The_cleric_heal_on_a_nine_can_also_target_the_opponent()
         {
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8 + 1 = 9 -> 回复
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8 + 1 = 9 -> 回复
             TestSetup.SetHealth(blank, 10);
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetHealth(lifeDomain, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);
+            board.ClickHand(lifeDomain.LeftHand);
             board.ClickHand(blank.LeftHand);
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
 
-            // 点对手的手 = 回给对手（牧师可以把回复给他人）
+            // 点对手的手 = 回给对手（牧师·生命领域可以把回复给他人）
             Assert.True(board.ClickHand(blank.RightHand), "点对手的手应表示回给他。");
             Assert.AreEqual(19, blank.Health, "回 9 点给对手（10 + 9）。");
-            Assert.AreEqual(10, cleric.Health, "自己不该被治疗。");
+            Assert.AreEqual(10, lifeDomain.Health, "自己不该被治疗。");
         }
 
         [Test]
@@ -473,20 +473,20 @@ namespace FingerDiceDuel.Tests
             // 因为结果 = 自己那只手 + 对手那只手，运算源没定时结果是不确定的。
             // （曾经在第 ① 步就问，只能用替身猜 —— 实测出现
             //   "该提示不提示" 与 "提示的数值不对" 两类 bug。）
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 3);      // 3 + 1 = 4 -> 攻击或回复
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 3);      // 3 + 1 = 4 -> 攻击或回复
 
             board.BeginTurn();
 
             // ① 点自己的手：只是选定运算源，此时**还问不出**攻击还是回复
-            Assert.True(board.ClickHand(cleric.LeftHand), "选自己的手应被接受。");
+            Assert.True(board.ClickHand(lifeDomain.LeftHand), "选自己的手应被接受。");
             Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
                 "第 ① 步之后应还在选目标手，不能提前问（结果还不确定）。");
 
@@ -495,25 +495,25 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
                 "运算源定了（3+1=4）之后才该问攻击还是回复。");
             Assert.NotNull(board.PendingRequest);
-            Assert.AreEqual(HandEffect.ClericAttackOrHeal, board.PendingRequest.Value.Effect);
+            Assert.AreEqual(HandEffect.LifeDomainAttackOrHeal, board.PendingRequest.Value.Effect);
         }
 
         [Test]
         public void The_cleric_can_attack_after_choosing_attack()
         {
             // 选「攻击」-> 再选攻击目标 -> 结算造成伤害
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 3);      // 3 + 1 = 4 -> 攻击
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 3);      // 3 + 1 = 4 -> 攻击
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);           // ① 自己的手
+            board.ClickHand(lifeDomain.LeftHand);           // ① 自己的手
             board.ClickHand(blank.LeftHand);            // ② 目标手（运算源）
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
@@ -530,7 +530,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_heal_after_four_six_eight_completes_on_the_single_target_click()
+        public void LifeDomain_heal_after_four_six_eight_completes_on_the_single_target_click()
         {
             // ⚠️ 玩家实测 bug 的回归：
             //   运算出 6、选了「回复」之后，还要再点一次对手才轮到选治疗目标 ——
@@ -540,24 +540,24 @@ namespace FingerDiceDuel.Tests
             // 而 4/6/8 的**运算结果本身就是攻击值**，于是被误判成攻击而跳过。
             //
             // 玩家要求的交互：选了回复 -> **点一只手就是选治疗目标** -> 结算。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var breaker = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, fighter, sinkP, sinkW);
+            var game = new GameManager(lifeDomain, breaker, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(cleric, fighter, 1);
-            TestSetup.SetHand(cleric.LeftHand, 5);
-            TestSetup.SetHand(cleric.RightHand, 5);     // 另一只手（避免巧合）
-            TestSetup.SetHand(fighter.LeftHand, 8);
-            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
-            TestSetup.SetHealth(cleric, 10);
-            TestSetup.SetHealth(fighter, 10);
+            TestSetup.SetAllHands(lifeDomain, breaker, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 5);
+            TestSetup.SetHand(lifeDomain.RightHand, 5);     // 另一只手（避免巧合）
+            TestSetup.SetHand(breaker.LeftHand, 8);
+            TestSetup.SetHand(breaker.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(lifeDomain, 10);
+            TestSetup.SetHealth(breaker, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);           // ① 自己的手
-            board.ClickHand(fighter.RightHand);         // ② 对手的手 -> 5+1=6
+            board.ClickHand(lifeDomain.LeftHand);           // ① 自己的手
+            board.ClickHand(breaker.RightHand);         // ② 对手的手 -> 5+1=6
 
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
             Assert.True(board.AcceptPendingChoice(), "选「回复 6」应被接受。");
@@ -565,74 +565,74 @@ namespace FingerDiceDuel.Tests
             // 关键断言：**直接**进入选治疗目标，不再要求确认目标玩家
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "选了回复后应直接进入选治疗目标，不该先要求确认目标玩家。");
-            Assert.AreEqual(HandEffect.ClericHealTarget, board.PendingRequest.Value.Effect);
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, board.PendingRequest.Value.Effect);
             Assert.False(board.CanDeclinePendingChoice,
                 "回复是必选的（玩家要求：选了回复就不能不回复），不该有「不回复」按钮。");
 
             // 点自己的手 -> 回自己；一次点击就完成
-            Assert.True(board.ClickHand(cleric.RightHand), "点自己的手应表示回自己。");
-            Assert.AreEqual(16, cleric.Health, "回复 6 点（10 + 6）。");
-            Assert.AreEqual(10, fighter.Health, "不该治疗对手。");
+            Assert.True(board.ClickHand(lifeDomain.RightHand), "点自己的手应表示回自己。");
+            Assert.AreEqual(16, lifeDomain.Health, "回复 6 点（10 + 6）。");
+            Assert.AreEqual(10, breaker.Health, "不该治疗对手。");
         }
 
         [Test]
-        public void Cleric_can_heal_the_opponent_after_four_six_eight()
+        public void LifeDomain_can_heal_the_opponent_after_four_six_eight()
         {
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var breaker = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, fighter, sinkP, sinkW);
+            var game = new GameManager(lifeDomain, breaker, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(cleric, fighter, 1);
-            TestSetup.SetHand(cleric.LeftHand, 5);
-            TestSetup.SetHand(cleric.RightHand, 5);
-            TestSetup.SetHand(fighter.LeftHand, 8);
-            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
-            TestSetup.SetHealth(cleric, 10);
-            TestSetup.SetHealth(fighter, 10);
+            TestSetup.SetAllHands(lifeDomain, breaker, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 5);
+            TestSetup.SetHand(lifeDomain.RightHand, 5);
+            TestSetup.SetHand(breaker.LeftHand, 8);
+            TestSetup.SetHand(breaker.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(lifeDomain, 10);
+            TestSetup.SetHealth(breaker, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);
-            board.ClickHand(fighter.RightHand);
+            board.ClickHand(lifeDomain.LeftHand);
+            board.ClickHand(breaker.RightHand);
             Assert.True(board.AcceptPendingChoice(), "选回复。");
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
-            Assert.True(board.ClickHand(fighter.LeftHand), "点对手的手应表示回给他。");
-            Assert.AreEqual(16, fighter.Health, "回复 6 点给对手（10 + 6）。");
-            Assert.AreEqual(10, cleric.Health, "自己不该被治疗。");
+            Assert.True(board.ClickHand(breaker.LeftHand), "点对手的手应表示回给他。");
+            Assert.AreEqual(16, breaker.Health, "回复 6 点给对手（10 + 6）。");
+            Assert.AreEqual(10, lifeDomain.Health, "自己不该被治疗。");
         }
 
         [Test]
-        public void Cleric_heal_after_four_six_eight_is_logged_as_heal_not_attack()
+        public void LifeDomain_heal_after_four_six_eight_is_logged_as_heal_not_attack()
         {
-            // ⚠️ 玩家实测：牧师 4 选回复后，战斗记录写成
-            //   「牧师 右手：8+6=4（攻击，造成0点伤害）」
+            // ⚠️ 玩家实测：牧师·生命领域 4 选回复后，战斗记录写成
+            //   「牧师·生命领域 右手：8+6=4（攻击，造成0点伤害）」
             // 应写成"回复"，不该是"攻击"。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var breaker = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, fighter, sinkP, sinkW);
+            var game = new GameManager(lifeDomain, breaker, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(cleric, fighter, 1);
-            TestSetup.SetHand(cleric.LeftHand, 5);
-            TestSetup.SetHand(cleric.RightHand, 5);
-            TestSetup.SetHand(fighter.LeftHand, 8);
-            TestSetup.SetHand(fighter.RightHand, 1);    // 5 + 1 = 6
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetAllHands(lifeDomain, breaker, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 5);
+            TestSetup.SetHand(lifeDomain.RightHand, 5);
+            TestSetup.SetHand(breaker.LeftHand, 8);
+            TestSetup.SetHand(breaker.RightHand, 1);    // 5 + 1 = 6
+            TestSetup.SetHealth(lifeDomain, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);
-            board.ClickHand(fighter.RightHand);
+            board.ClickHand(lifeDomain.LeftHand);
+            board.ClickHand(breaker.RightHand);
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
             Assert.True(board.AcceptPendingChoice(), "选回复。");
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "应进入选治疗目标。");
-            Assert.True(board.ClickHand(cleric.RightHand), "点自己的手 = 回自己。");
+            Assert.True(board.ClickHand(lifeDomain.RightHand), "点自己的手 = 回自己。");
 
             // 结算必须发生（而不是"非法运算被拒绝"）
             Assert.NotNull(board.LastTurn, "应完成结算。");
@@ -650,23 +650,23 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_heal_target_is_mandatory()
+        public void LifeDomain_heal_target_is_mandatory()
         {
             // 玩家要求：选择了回复就不能不回复；运算出 9 也必须回复；
             // 双 9 的两段回复都必须回复 —— 所以没有「不回复」按钮。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
             var sinkB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, sinkP, sinkB);
+            var game = new GameManager(lifeDomain, blank, sinkP, sinkB);
             var board = new BoardController(game, sinkP, sinkB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 8);      // 8+1 = 9 -> 必须回复
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 8);      // 8+1 = 9 -> 必须回复
+            TestSetup.SetHealth(lifeDomain, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);
+            board.ClickHand(lifeDomain.LeftHand);
             board.ClickHand(blank.LeftHand);
 
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase);
@@ -676,12 +676,12 @@ namespace FingerDiceDuel.Tests
                 "直接调放弃也应被拒绝。");
 
             // 点一只手才完成
-            Assert.True(board.ClickHand(cleric.RightHand));
-            Assert.AreEqual(19, cleric.Health, "9 点回复（10 + 9）。");
+            Assert.True(board.ClickHand(lifeDomain.RightHand));
+            Assert.AreEqual(19, lifeDomain.Health, "9 点回复（10 + 9）。");
         }
 
         // ============================================================
-        // 牧师 4/6/8：提示不能因为"替身的手值"而漏掉（玩家实测报告）
+        // 牧师·生命领域 4/6/8：提示不能因为"替身的手值"而漏掉（玩家实测报告）
         // ============================================================
 
         /// <summary>
@@ -693,21 +693,21 @@ namespace FingerDiceDuel.Tests
         /// 玩家实测因此出现两类错：该提示的不提示、提示的数值不对。
         /// </summary>
         [Test]
-        public void Cleric_gets_the_attack_or_heal_prompt_after_the_target_hand_is_chosen()
+        public void LifeDomain_gets_the_attack_or_heal_prompt_after_the_target_hand_is_chosen()
         {
-            // 牧师手 5/2、对手手 1/3：
+            // 牧师·生命领域手 5/2、对手手 1/3：
             //   · 用 5 运算、打对手的 1 -> 6（4/6/8）-> 应提示
             //   · 打对手的 3 -> 8（4/6/8）-> 也提示
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
             var sinkB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, sinkP, sinkB);
+            var game = new GameManager(lifeDomain, blank, sinkP, sinkB);
             var board = new BoardController(game, sinkP, sinkB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 5);
-            TestSetup.SetHand(cleric.RightHand, 2);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 5);
+            TestSetup.SetHand(lifeDomain.RightHand, 2);
             TestSetup.SetHand(blank.LeftHand, 1);
             TestSetup.SetHand(blank.RightHand, 3);
 
@@ -715,7 +715,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase);
 
             // ① 自己的手
-            Assert.True(board.ClickHand(cleric.LeftHand), "点自己的手应被接受。");
+            Assert.True(board.ClickHand(lifeDomain.LeftHand), "点自己的手应被接受。");
             Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
                 "第 ① 步之后还没定运算源，不能提前问。");
 
@@ -732,24 +732,24 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_does_not_prompt_when_the_chosen_target_makes_no_effect()
+        public void LifeDomain_does_not_prompt_when_the_chosen_target_makes_no_effect()
         {
             // 反方向：选定的运算源打不出 4/6/8 -> 不该提示。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
             var sinkB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, sinkP, sinkB);
+            var game = new GameManager(lifeDomain, blank, sinkP, sinkB);
             var board = new BoardController(game, sinkP, sinkB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 2);
-            TestSetup.SetHand(cleric.RightHand, 2);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 2);
+            TestSetup.SetHand(lifeDomain.RightHand, 2);
             TestSetup.SetHand(blank.LeftHand, 5);       // 2+5 = 7 -> 无效果
             TestSetup.SetHand(blank.RightHand, 5);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);
+            board.ClickHand(lifeDomain.LeftHand);
             board.ClickHand(blank.LeftHand);
 
             Assert.False(board.Phase == BoardPhase.ChoosingPreTargetChoice,
@@ -757,27 +757,27 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_does_not_prompt_on_the_exact_hands_the_player_reported()
+        public void LifeDomain_does_not_prompt_on_the_exact_hands_the_player_reported()
         {
             // 玩家实测报告的原话："手是 22，对手手是 13，点自己的手会跳出运算出 4 的错误提示"。
             // 修好替身逻辑后，2+1=3、2+3=5 —— 都不在 4/6/8 里，所以**不该有任何提示**。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
             var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
             var sinkP = new SimpleChoiceProvider();
             var sinkB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, sinkP, sinkB);
+            var game = new GameManager(lifeDomain, blank, sinkP, sinkB);
             var board = new BoardController(game, sinkP, sinkB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 2);
-            TestSetup.SetHand(cleric.RightHand, 2);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 2);
+            TestSetup.SetHand(lifeDomain.RightHand, 2);
             TestSetup.SetHand(blank.LeftHand, 1);
             TestSetup.SetHand(blank.RightHand, 3);
 
             board.BeginTurn();
 
             // 点自己的手：应直接进"选目标手"，没有 4 的提示
-            Assert.True(board.ClickHand(cleric.LeftHand), "点自己的手应被接受。");
+            Assert.True(board.ClickHand(lifeDomain.LeftHand), "点自己的手应被接受。");
             Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase,
                 "2+1=3、2+3=5 都不是 4/6/8，不该出现任何攻击/回复提示。");
 
@@ -790,31 +790,31 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_prompt_shows_the_real_value_on_the_hand_the_player_reported()
+        public void LifeDomain_prompt_shows_the_real_value_on_the_hand_the_player_reported()
         {
-            // 玩家实测报告的局面：牧师手 5/8、战士手 6/8。
-            //   牧师点自己的 8，再点战士的 8 -> 8+8=16 -> **6**
+            // 玩家实测报告的局面：牧师·生命领域手 5/8、战士·破阵者手 6/8。
+            //   牧师·生命领域点自己的 8，再点战士·破阵者的 8 -> 8+8=16 -> **6**
             //   旧逻辑在"点自己的手"时就问了，只能用替身/候选第一个去猜，
             //   猜出的是 8+6=4 -> 提示写成「回复 4」（错）。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var fighter = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Fighter);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var breaker = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Breaker);
             var sinkP = new SimpleChoiceProvider();
             var sinkW = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, fighter, sinkP, sinkW);
+            var game = new GameManager(lifeDomain, breaker, sinkP, sinkW);
             var board = new BoardController(game, sinkP, sinkW);
 
-            TestSetup.SetAllHands(cleric, fighter, 1);
-            TestSetup.SetHand(cleric.LeftHand, 5);
-            TestSetup.SetHand(cleric.RightHand, 8);     // 运算源
-            TestSetup.SetHand(fighter.LeftHand, 6);     // 8+6 = 4
-            TestSetup.SetHand(fighter.RightHand, 8);    // 8+8 = 6  <- 玩家点的是这个
+            TestSetup.SetAllHands(lifeDomain, breaker, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 5);
+            TestSetup.SetHand(lifeDomain.RightHand, 8);     // 运算源
+            TestSetup.SetHand(breaker.LeftHand, 6);     // 8+6 = 4
+            TestSetup.SetHand(breaker.RightHand, 8);    // 8+8 = 6  <- 玩家点的是这个
 
             board.BeginTurn();
-            board.ClickHand(cleric.RightHand);          // ① 自己的 8
+            board.ClickHand(lifeDomain.RightHand);          // ① 自己的 8
             Assert.False(board.Phase == BoardPhase.ChoosingPreTargetChoice,
                 "第 ① 步之后运算源未定，不能提前问。");
 
-            board.ClickHand(fighter.RightHand);         // ② 战士的 8 -> 8+8=6
+            board.ClickHand(breaker.RightHand);         // ② 战士·破阵者的 8 -> 8+8=6
 
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
                 "8+8=6 在 4/6/8 之列，应问攻击还是回复。");
@@ -826,28 +826,28 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Cleric_attack_or_heal_flow_completes_on_the_hand_that_used_to_hide_the_prompt()
+        public void LifeDomain_attack_or_heal_flow_completes_on_the_hand_that_used_to_hide_the_prompt()
         {
             // 端到端：把上面那个"该提示却不提示"的局面**走完**，
             // 确认提示出现后，两条分支（攻击 / 回复）都能正常结算。
             foreach (bool chooseHeal in new[] { false, true })
             {
-                var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
+                var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
                 var blank = CharacterFactory.CreatePlayer("白板", CharacterDefinition.Blank);
                 var sinkP = new SimpleChoiceProvider();
                 var sinkB = new SimpleChoiceProvider();
-                var game = new GameManager(cleric, blank, sinkP, sinkB);
+                var game = new GameManager(lifeDomain, blank, sinkP, sinkB);
                 var board = new BoardController(game, sinkP, sinkB);
 
-                TestSetup.SetAllHands(cleric, blank, 1);
-                TestSetup.SetHand(cleric.LeftHand, 5);
-                TestSetup.SetHand(cleric.RightHand, 2);
+                TestSetup.SetAllHands(lifeDomain, blank, 1);
+                TestSetup.SetHand(lifeDomain.LeftHand, 5);
+                TestSetup.SetHand(lifeDomain.RightHand, 2);
                 TestSetup.SetHand(blank.LeftHand, 1);    // 5+1 = 6
                 TestSetup.SetHand(blank.RightHand, 3);
-                TestSetup.SetHealth(cleric, 10);
+                TestSetup.SetHealth(lifeDomain, 10);
 
                 board.BeginTurn();
-                board.ClickHand(cleric.LeftHand);        // ① 自己的手
+                board.ClickHand(lifeDomain.LeftHand);        // ① 自己的手
                 board.ClickHand(blank.LeftHand);         // ② 目标手（运算源）-> 5+1=6 确定
 
                 Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase,
@@ -862,11 +862,11 @@ namespace FingerDiceDuel.Tests
                     // （不再先要求"确认目标玩家" —— 那一击就是回复本身）
                     Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                         "选了回复后应直接进入「选治疗目标」。");
-                    Assert.AreEqual(HandEffect.ClericHealTarget, board.PendingRequest.Value.Effect);
+                    Assert.AreEqual(HandEffect.LifeDomainHealTarget, board.PendingRequest.Value.Effect);
                     Assert.False(board.CanDeclinePendingChoice, "回复是必选的，不该有「不回复」。");
 
-                    Assert.True(board.ClickHand(cleric.RightHand), "点自己的手 = 回自己。");
-                    Assert.True(cleric.Health > 10, $"选回复应回血。实际 HP={cleric.Health}。");
+                    Assert.True(board.ClickHand(lifeDomain.RightHand), "点自己的手 = 回自己。");
+                    Assert.True(lifeDomain.Health > 10, $"选回复应回血。实际 HP={lifeDomain.Health}。");
                 }
                 else
                 {
@@ -888,7 +888,7 @@ namespace FingerDiceDuel.Tests
         {
             // ⚠️ 真实 bug 的回归（这条是本次修复的**核心**）。
             //
-            // 牧师的 4/6/8 有两段抉择，中间隔着"确认目标玩家"：
+            // 牧师·生命领域的 4/6/8 有两段抉择，中间隔着"确认目标玩家"：
             //   ① 选定运算源之后：「攻击 / 回复」   ← 答案存进 sink
             //   ② 确认目标玩家之后：「回复给谁」/ 结算
             //
@@ -898,19 +898,19 @@ namespace FingerDiceDuel.Tests
             // 表现为"选了回复却按攻击结算"。
             //
             // 现在只有**行动方真正变化**时才算回合边界，本答案得以存活。
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 3);      // 3 + 1 = 4 -> 可当回复 4
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 3);      // 3 + 1 = 4 -> 可当回复 4
+            TestSetup.SetHealth(lifeDomain, 10);
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);           // ① 自己的手
+            board.ClickHand(lifeDomain.LeftHand);           // ① 自己的手
             board.ClickHand(blank.LeftHand);            // ② 目标手 -> 结果 4 确定
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
@@ -921,11 +921,11 @@ namespace FingerDiceDuel.Tests
             // 就会把同回合刚答的答案清掉。
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "选了回复后应直接进入选治疗目标。");
-            Assert.AreEqual(HandEffect.ClericHealTarget, board.PendingRequest.Value.Effect,
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, board.PendingRequest.Value.Effect,
                 "前置答案若被清掉，这里就读不到'选了回复'，会退回按攻击结算。");
 
-            board.ClickHand(cleric.RightHand);          // 回给自己
-            Assert.AreEqual(14, cleric.Health,
+            board.ClickHand(lifeDomain.RightHand);          // 回给自己
+            Assert.AreEqual(14, lifeDomain.Health,
                 "4 当回复用 -> 回 4 点。若前置答案丢失，这里会是 10。");
         }
 
@@ -933,20 +933,20 @@ namespace FingerDiceDuel.Tests
         public void The_cleric_can_heal_after_choosing_heal()
         {
             // 选「回复」-> **点一只手选治疗目标** -> 结算（不再先确认目标玩家）
-            var cleric = CharacterFactory.CreatePlayer("牧师", CharacterDefinition.Cleric);
-            var blank = CharacterFactory.CreatePlayer("战士", CharacterDefinition.Blank);
+            var lifeDomain = CharacterFactory.CreatePlayer("牧师·生命领域", CharacterDefinition.LifeDomain);
+            var blank = CharacterFactory.CreatePlayer("战士·破阵者", CharacterDefinition.Blank);
             var choiceP = new SimpleChoiceProvider();
             var choiceB = new SimpleChoiceProvider();
-            var game = new GameManager(cleric, blank, choiceP, choiceB);
+            var game = new GameManager(lifeDomain, blank, choiceP, choiceB);
             var board = new BoardController(game, choiceP, choiceB);
 
-            TestSetup.SetAllHands(cleric, blank, 1);
-            TestSetup.SetHand(cleric.LeftHand, 3);      // 3 + 1 = 4 -> 回复 4
-            TestSetup.SetHealth(cleric, 10);
+            TestSetup.SetAllHands(lifeDomain, blank, 1);
+            TestSetup.SetHand(lifeDomain.LeftHand, 3);      // 3 + 1 = 4 -> 回复 4
+            TestSetup.SetHealth(lifeDomain, 10);
             int blankBefore = blank.Health;
 
             board.BeginTurn();
-            board.ClickHand(cleric.LeftHand);           // ① 自己的手
+            board.ClickHand(lifeDomain.LeftHand);           // ① 自己的手
             board.ClickHand(blank.LeftHand);            // ② 目标手（运算源）-> 结果确定
             Assert.AreEqual(BoardPhase.ChoosingPreTargetChoice, board.Phase);
 
@@ -960,12 +960,12 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingPreTurnChoice, board.Phase,
                 "确认目标后才问「回复给谁」。");
             Assert.NotNull(board.PendingRequest);
-            Assert.AreEqual(HandEffect.ClericHealTarget, board.PendingRequest.Value.Effect);
+            Assert.AreEqual(HandEffect.LifeDomainHealTarget, board.PendingRequest.Value.Effect);
 
-            // 点牧师自己的手 = 回复给自己
-            Assert.True(board.ClickHand(cleric.RightHand), "点手牌表示回复目标。");
+            // 点牧师·生命领域自己的手 = 回复给自己
+            Assert.True(board.ClickHand(lifeDomain.RightHand), "点手牌表示回复目标。");
             Assert.NotNull(board.LastTurn, "应已结算。");
-            Assert.AreEqual(14, cleric.Health, "4 当回复用 -> 回 4 点（10 + 4）。");
+            Assert.AreEqual(14, lifeDomain.Health, "4 当回复用 -> 回 4 点（10 + 4）。");
             Assert.AreEqual(blankBefore, blank.Health, "选回复不造成伤害。");
         }
 
@@ -1135,13 +1135,13 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 野蛮人：自己选锁哪只手
+        // 野蛮人·守望者道途：自己选锁哪只手
         // ============================================================
 
         /// <summary>
         /// 局面（全部在开局摆好，过程中不改数值）：
         ///   A = 白板，A.L = 1，A.R = 3
-        ///   B = 野蛮人，B.L = 1，B.R = 4
+        ///   B = 野蛮人·守望者道途，B.L = 1，B.R = 4
         ///
         /// 回合推演（关键：行动方的手会被改写，所以下一步要用**另一只手**当目标）：
         ///   回合1 A：A.R 3 + B.L 1 = 4 -> 攻击 4（A.R 变 4；A.L 仍是 1，B.R 仍是 4）
@@ -1149,66 +1149,66 @@ namespace FingerDiceDuel.Tests
         ///   回合3 A：A.R 4 + B.L 1 = 5 -> A 也合盾（A 是白板，不询问）
         ///   回合4 B：B.L 1 + A.R 5 = 6 -> 攻击（B.L 变 6）
         /// </summary>
-        private BoardController ArrangeBarbarianAboutToFormShield(out PlayerState barbarian)
+        private BoardController ArrangePathOfTheWardenAboutToFormShield(out PlayerState pathOfTheWarden)
         {
             var blank = CharacterFactory.CreatePlayer("A", CharacterDefinition.Blank);
-            barbarian = CharacterFactory.CreatePlayer("B", CharacterDefinition.Barbarian);
+            pathOfTheWarden = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);
 
             var sink = new SimpleChoiceProvider();
-            var game = new GameManager(blank, barbarian, sink, sink);
+            var game = new GameManager(blank, pathOfTheWarden, sink, sink);
             var board = new BoardController(game, sink, sink);
 
-            TestSetup.SetAllHands(blank, barbarian, 1);
+            TestSetup.SetAllHands(blank, pathOfTheWarden, 1);
             TestSetup.SetHand(blank.RightHand, 3);
-            TestSetup.SetHand(barbarian.RightHand, 4);
+            TestSetup.SetHand(pathOfTheWarden.RightHand, 4);
 
             board.BeginTurn();
             return board;
         }
 
-        /// <summary>把 <see cref="ArrangeBarbarianAboutToFormShield"/> 推进到"野蛮人已合盾、正等玩家选锁哪只手"。</summary>
-        private BoardController ArrangeAtLockPrompt(out PlayerState barbarian, out PlayerState blank)
+        /// <summary>把 <see cref="ArrangePathOfTheWardenAboutToFormShield"/> 推进到"野蛮人·守望者道途已合盾、正等玩家选锁哪只手"。</summary>
+        private BoardController ArrangeAtLockPrompt(out PlayerState pathOfTheWarden, out PlayerState blank)
         {
-            BoardController board = ArrangeBarbarianAboutToFormShield(out barbarian);
+            BoardController board = ArrangePathOfTheWardenAboutToFormShield(out pathOfTheWarden);
             blank = board.PlayerA;
 
             // 回合 1（A）：A.R 3 + B.L 1 = 4 -> 攻击（A.L 保持 1、B.R 保持 4）
             board.ClickHand(blank.RightHand);
-            board.ClickHand(barbarian.LeftHand);
+            board.ClickHand(pathOfTheWarden.LeftHand);
             board.ConfirmTargetPlayer();
             Assert.AreEqual(HandEffectType.Attack4, board.LastTurn.Effect, "3 + 1 = 4");
 
             // 回合 2（B）：B.R 4 + A.L 1 = 5 -> 合盾 -> 询问锁手
-            Assert.AreSame(barbarian, board.ActivePlayer, "前置条件：应轮到野蛮人。");
-            board.ClickHand(barbarian.RightHand);
+            Assert.AreSame(pathOfTheWarden, board.ActivePlayer, "前置条件：应轮到野蛮人·守望者道途。");
+            board.ClickHand(pathOfTheWarden.RightHand);
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
 
             Assert.AreEqual(BoardPhase.ChoosingLockTarget, board.Phase,
-                "前置条件：野蛮人合盾后应停在锁手询问。");
+                "前置条件：野蛮人·守望者道途合盾后应停在锁手询问。");
 
             return board;
         }
 
         [Test]
-        public void Barbarian_forming_a_shield_prompts_for_lock_target()
+        public void PathOfTheWarden_forming_a_shield_prompts_for_lock_target()
         {
-            PlayerState barbarian;
+            PlayerState pathOfTheWarden;
             PlayerState blank;
-            BoardController board = ArrangeAtLockPrompt(out barbarian, out blank);
+            BoardController board = ArrangeAtLockPrompt(out pathOfTheWarden, out blank);
 
             Assert.AreEqual(2, board.ChoiceCandidates.Count, "对手两只手都可选。");
             Assert.True(board.CanClick(blank.LeftHand));
             Assert.True(board.CanClick(blank.RightHand));
-            Assert.False(board.CanClick(barbarian.LeftHand), "自己的手不应可点。");
+            Assert.False(board.CanClick(pathOfTheWarden.LeftHand), "自己的手不应可点。");
         }
 
         [Test]
-        public void Barbarian_lock_choice_targets_the_chosen_hand()
+        public void PathOfTheWarden_lock_choice_targets_the_chosen_hand()
         {
-            PlayerState barbarian;
+            PlayerState pathOfTheWarden;
             PlayerState blank;
-            BoardController board = ArrangeAtLockPrompt(out barbarian, out blank);
+            BoardController board = ArrangeAtLockPrompt(out pathOfTheWarden, out blank);
 
             // 显式锁右手（默认策略会锁数值最大的，这里验证"玩家说了算"）
             Assert.True(board.ClickHand(blank.RightHand), "锁手目标应可点。");
@@ -1216,15 +1216,15 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(blank.RightHand.IsLocked, "被选中的右手应被锁定。");
             Assert.False(blank.LeftHand.IsLocked, "另一只手不应被锁。");
-            Assert.AreEqual(ShieldState.Formed, barbarian.RightHand.State, "合盾本身应生效。");
+            Assert.AreEqual(ShieldState.Formed, pathOfTheWarden.RightHand.State, "合盾本身应生效。");
         }
 
         [Test]
-        public void Barbarian_lock_can_target_the_left_hand_too()
+        public void PathOfTheWarden_lock_can_target_the_left_hand_too()
         {
-            PlayerState barbarian;
+            PlayerState pathOfTheWarden;
             PlayerState blank;
-            BoardController board = ArrangeAtLockPrompt(out barbarian, out blank);
+            BoardController board = ArrangeAtLockPrompt(out pathOfTheWarden, out blank);
 
             Assert.True(board.ClickHand(blank.LeftHand));
             board.ConfirmTargetPlayer();
@@ -1236,9 +1236,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Locked_hand_cannot_be_used_as_source_next_turn()
         {
-            PlayerState barbarian;
+            PlayerState pathOfTheWarden;
             PlayerState blank;
-            BoardController board = ArrangeAtLockPrompt(out barbarian, out blank);
+            BoardController board = ArrangeAtLockPrompt(out pathOfTheWarden, out blank);
 
             board.ClickHand(blank.LeftHand);           // 锁 A 左手
             board.ConfirmTargetPlayer();
@@ -1275,7 +1275,7 @@ namespace FingerDiceDuel.Tests
             _board.ConfirmTargetPlayer();
 
             Assert.False(_board.Phase == BoardPhase.ChoosingLockTarget,
-                "只有野蛮人才会触发锁手选择。");
+                "只有野蛮人·守望者道途才会触发锁手选择。");
             Assert.NotNull(_board.LastTurn);
             Assert.AreEqual(HandEffectType.Shield, _board.LastTurn.Effect);
         }
@@ -1283,27 +1283,27 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Lock_prompt_is_skipped_when_already_controlling_a_hand()
         {
-            PlayerState barbarian;
+            PlayerState pathOfTheWarden;
             PlayerState blank;
-            BoardController board = ArrangeAtLockPrompt(out barbarian, out blank);
+            BoardController board = ArrangeAtLockPrompt(out pathOfTheWarden, out blank);
 
             board.ClickHand(blank.LeftHand);           // 锁住 A 的左手
             board.ConfirmTargetPlayer();
             Assert.True(blank.LeftHand.IsLocked);
-            Assert.AreEqual(ShieldState.Formed, barbarian.RightHand.State);
+            Assert.AreEqual(ShieldState.Formed, pathOfTheWarden.RightHand.State);
 
             // 回合 3（A）：A.R 4 + B.L 1 = 5 -> A 也合盾
             Assert.AreSame(blank, board.ActivePlayer);
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
-            board.ClickHand(barbarian.LeftHand);
+            board.ClickHand(pathOfTheWarden.LeftHand);
             board.ConfirmTargetPlayer();
             Assert.AreEqual(HandEffectType.Shield, board.LastTurn.Effect, "4 + 1 = 5");
 
             // 回合 4（B）：B.L 1 + A.R 5 = 6 -> 攻击（B.L 变 6）。
             //                B 的右手（已成型）仍在控制中，因此**不应**再问锁手。
-            Assert.AreSame(barbarian, board.ActivePlayer);
-            board.ClickHand(barbarian.LeftHand);
+            Assert.AreSame(pathOfTheWarden, board.ActivePlayer);
+            board.ClickHand(pathOfTheWarden.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.RightHand);
             board.ConfirmTargetPlayer();
@@ -1484,25 +1484,25 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Curseweaver_ignores_shields_so_the_choice_is_harmless()
+        public void SchoolOfConjuration_ignores_shields_so_the_choice_is_harmless()
         {
-            // 咒术师无视护盾：即使先问了"用哪面盾"，护盾也不会被消费。
-            var curseweaver = CharacterFactory.CreatePlayer("A", CharacterDefinition.Curseweaver);
+            // 法师·咒法学派无视护盾：即使先问了"用哪面盾"，护盾也不会被消费。
+            var schoolOfConjuration = CharacterFactory.CreatePlayer("A", CharacterDefinition.SchoolOfConjuration);
             var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
             var ai = new SimpleChoiceProvider();
-            var game = new GameManager(curseweaver, blank, ai, new SimpleChoiceProvider());
+            var game = new GameManager(schoolOfConjuration, blank, ai, new SimpleChoiceProvider());
             var board = new BoardController(game, ai, ai);
 
-            TestSetup.SetAllHands(curseweaver, blank, 1);
+            TestSetup.SetAllHands(schoolOfConjuration, blank, 1);
             TestSetup.SetHand(blank.LeftHand, 5);
             blank.LeftHand.SetShieldState(ShieldState.Formed);
             TestSetup.SetHand(blank.RightHand, 5);
             blank.RightHand.SetShieldState(ShieldState.Formed);
             Assert.True(blank.HasDoubleShield);
 
-            TestSetup.SetHand(curseweaver.LeftHand, 3);   // 3 + 5 = 8 -> 攻击 8
+            TestSetup.SetHand(schoolOfConjuration.LeftHand, 3);   // 3 + 5 = 8 -> 攻击 8
             board.BeginTurn();
-            board.ClickHand(curseweaver.LeftHand);
+            board.ClickHand(schoolOfConjuration.LeftHand);
             board.ConfirmTargetPlayer();
             board.ClickHand(blank.LeftHand);
             board.ConfirmTargetPlayer();
@@ -1514,7 +1514,7 @@ namespace FingerDiceDuel.Tests
             board.ConfirmTargetPlayer();
 
             Assert.NotNull(board.LastTurn);
-            Assert.False(board.LastTurn.WasBlocked, "咒术师应无视护盾。");
+            Assert.False(board.LastTurn.WasBlocked, "法师·咒法学派应无视护盾。");
             Assert.AreEqual(ShieldState.Formed, blank.LeftHand.State, "护盾不应被消费。");
             Assert.AreEqual(ShieldState.Formed, blank.RightHand.State);
         }
@@ -1779,7 +1779,7 @@ namespace FingerDiceDuel.Tests
         public void Ai_plays_a_full_match_without_human_input()
         {
             var game = CharacterFactory.CreateMatch(
-                CharacterDefinition.Fighter, CharacterDefinition.Barbarian);
+                CharacterDefinition.Breaker, CharacterDefinition.PathOfTheWarden);
             var ca = new SimpleChoiceProvider();
             var cb = new SimpleChoiceProvider();
             var board = new BoardController(game, ca, cb,
