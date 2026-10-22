@@ -1,0 +1,89 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/castling");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action refresh=()=>invoke(boot,"RefreshView",new object[0]);
+System.Func<UnityEngine.Canvas> canvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button> click=(button)=>{
+ shot(canvas(),null);
+ var pointer=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(pointer,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name);
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,pointer,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+var testType=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.Tests.ConjurationCastlingTests")).FirstOrDefault(t=>t!=null);
+check(testType!=null,"castling fixture imported into editor");var fixture=System.Activator.CreateInstance(testType);
+foreach(var m in testType.GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.DeclaredOnly)) {
+ if(m.GetParameters().Length!=0)continue;
+ try{m.Invoke(fixture,null);check(true,"engine regression "+m.Name);}catch(System.Reflection.TargetInvocationException e){throw e.InnerException;}
+}
+var def=FingerDiceDuel.Core.CharacterDefinition.SchoolOfConjuration;
+check(def.Description.Contains("王车易位")&&FingerDiceDuel.Assistant.RuleBook.BasicRules().Contains("下一轮按新座位"),"runtime descriptions current");
+boot.StartMatch(def,FingerDiceDuel.Core.CharacterDefinition.Champion);
+var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+game.PlayerA.LeftHand.SetValue(4);game.PlayerA.RightHand.SetValue(6);game.PlayerB.LeftHand.SetValue(6);game.PlayerB.RightHand.SetValue(4);
+controller.SetFirstPlayer(game.PlayerA);controller.BeginTurn();refresh();
+var action=(UnityEngine.UI.Button)field(board,"_seatSwapButton");check(action.GetComponentInChildren<UnityEngine.UI.Text>().text.Contains("王车易位"),"1v1 named action visible");
+shot(canvas(),"1v1-action");click(action);check(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingSeatSwapTarget,"1v1 action opens targeting");
+var targets=(UnityEngine.UI.Button[])field(board,"_skillChoiceButtons");check(targets.Count(b=>b!=null&&b.gameObject.activeInHierarchy)==1,"1v1 one target per player");
+var cancel=(UnityEngine.UI.Button)field(board,"_declineButton");check(cancel.GetComponentInChildren<UnityEngine.UI.Text>().text=="取消换位","cancel label explicit");click(cancel);check(game.TurnCount==0&&game.SeatRevision==0,"cancel consumes no turn");
+click(action);shot(canvas(),"1v1-target");click(targets.First(b=>b!=null&&b.gameObject.activeInHierarchy));
+check(game.SeatOf(game.PlayerA)==2&&game.TurnCount==1&&game.CurrentPlayer==game.PlayerB,"1v1 target swaps seats and ends turn exactly once");
+check(controller.Log.Any(s=>s.Contains("【王车易位】")),"unified skill log visible");board.SetHistoryOpen(true);shot(canvas(),"1v1-result");
+var preview=typeof(FingerDiceDuel.EditorTools.MultiplayerArtPreview);var staticFlags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Static;
+preview.GetField("_boot",staticFlags).SetValue(null,boot);
+foreach(int count in new[]{4,8}) {
+ foreach(int myIndex in count==4?new[]{0,1,2,3}:new[]{0,4,7}) {
+  preview.GetMethod("Build",staticFlags).Invoke(null,new object[]{count,myIndex,def,false});
+  game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+  var seated=game.Players.ToArray();var me=seated[myIndex];
+  foreach(var p in seated){p.LeftHand.SetValue(4);p.RightHand.SetValue(6);}
+  controller.SetFirstPlayer(me);controller.BeginTurn();refresh();
+  action=(UnityEngine.UI.Button)field(board,"_seatSwapButton");check(action.gameObject.activeInHierarchy,count+" players action visible at human seat "+(myIndex+1));
+  click(action);targets=(UnityEngine.UI.Button[])field(board,"_skillChoiceButtons");
+  check(targets.Count(b=>b!=null&&b.gameObject.activeInHierarchy)==count-1,count+" players unique candidate count");
+  cancel=(UnityEngine.UI.Button)field(board,"_declineButton");check(cancel.gameObject.activeInHierarchy,count+" players cancel visible");
+  foreach(var b in targets.Where(b=>b!=null&&b.gameObject.activeInHierarchy))check(b.GetComponentInChildren<UnityEngine.UI.Text>().preferredHeight<=b.GetComponentInChildren<UnityEngine.UI.Text>().rectTransform.rect.height+0.5f,"target label fits "+count+" "+b.name);
+  if(myIndex==0)shot(canvas(),count+"p-target");
+  var hands=(FingerDiceDuel.Core.Hand[])field(board,"_skillHands");
+  var victim=game.OwnerOfHand(hands[0]);bool ally=game.IsTeammate(me,victim);var identity=game.IdentityOf(me);int oldSeat=game.SeatOf(me),newSeat=game.SeatOf(victim);
+  click(targets.First(b=>b!=null&&b.gameObject.activeInHierarchy));
+  check(game.SeatOf(me)==newSeat&&game.SeatOf(victim)==oldSeat,count+" players physical seats swapped");
+  check(game.IsTeammate(me,victim)==ally&&game.IdentityOf(me)==identity,count+" players team and identity preserved");
+  check(object.ReferenceEquals(typeof(FingerDiceDuel.UI.GameBootstrap).GetMethod("HumanPlayer",flags).Invoke(boot,new object[0]),me),count+" players human control preserved after swap");
+  check(object.ReferenceEquals(field(board,"_ringMe"),me),count+" players self panel remains human");
+  var visibleSeats=((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponentsInChildren<UnityEngine.UI.Text>().Where(t=>t.name=="Seat").Select(t=>t.text).ToArray();
+  check(visibleSeats.Count(t=>t.Contains("我"))==1,count+" players only one self relation label");
+  if(myIndex==0)shot(canvas(),count+"p-result");
+ }
+}
+// 双将由副将提供换位技能，确认按钮不依赖主将 ID。
+invoke(boot,"PrepareDualMatch",new object[]{FingerDiceDuel.Core.CharacterDefinition.Gambler,def,FingerDiceDuel.Core.CharacterDefinition.Breaker,FingerDiceDuel.Core.CharacterDefinition.LifeDomain});
+invoke(boot,"StartPreparedMatch",new object[0]);
+game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+foreach(var p in game.Players){p.LeftHand.SetValue(4);p.RightHand.SetValue(6);}controller.SetFirstPlayer(game.PlayerA);controller.BeginTurn();refresh();
+action=(UnityEngine.UI.Button)field(board,"_seatSwapButton");click(action);targets=(UnityEngine.UI.Button[])field(board,"_skillChoiceButtons");click(targets.First(b=>b!=null&&b.gameObject.activeInHierarchy));
+check(game.SeatRevision==1&&game.SeatOf(game.PlayerA)==2,"dual 1v1 secondary Conjuration skill executes through visible button");shot(canvas(),"dual-result");
+// 正式八人双将阵营入口（与身份局使用同一套换位 UI）。
+invoke(boot,"StartDualFactionBattle",new object[]{def,FingerDiceDuel.Core.CharacterDefinition.Gambler});
+game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+var factionMe=(FingerDiceDuel.Core.PlayerState)field(boot,"_eightHumanPlayer");
+foreach(var p in game.Players){p.LeftHand.SetValue(4);p.RightHand.SetValue(6);}controller.SetFirstPlayer(factionMe);controller.BeginTurn();refresh();
+action=(UnityEngine.UI.Button)field(board,"_seatSwapButton");click(action);targets=(UnityEngine.UI.Button[])field(board,"_skillChoiceButtons");
+check(targets.Count(b=>b!=null&&b.gameObject.activeInHierarchy)==7,"eight-player faction seven targets visible");shot(canvas(),"faction-target");
+click(targets.First(b=>b!=null&&b.gameObject.activeInHierarchy));check(game.SeatRevision==1&&game.TurnCount==1,"eight-player faction castling consumes one normal turn");
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+return "Passed "+checks.Count+" castling engine/UI checks. Evidence: "+output;

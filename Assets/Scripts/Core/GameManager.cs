@@ -902,8 +902,8 @@ namespace FingerDiceDuel.Core
         {
             get
             {
-                for (int i = 0; i < _players.Count; i++)
-                    if (_players[i] != null && _players[i].IsAlive) return _players[i];
+                for (int i = 0; i < ActionOrder.Count; i++)
+                    if (ActionOrder[i] != null && ActionOrder[i].IsAlive) return ActionOrder[i];
                 return null;
             }
         }
@@ -923,22 +923,31 @@ namespace FingerDiceDuel.Core
         private void AdvanceRoundAfter(PlayerState actor)
         {
             PlayerState next = NextPlayerAfter(actor);
-            PlayerState anchor = RoundAnchor;
-            if (next != null && ReferenceEquals(next, anchor)) RoundCount++;
+            // 以名单索引是否绕回判断，避免首位被回合开始状态击杀时误算完成整轮。
+            int actorIndex = ActionOrder.IndexOf(actor);
+            if (next != null && actorIndex >= 0 && ActionOrder.IndexOf(next) <= actorIndex)
+            {
+                RoundCount++;
+                if (_roundActionOrder != null)
+                {
+                    _roundActionOrder = null;
+                    CurrentPlayer = RoundAnchor;
+                }
+            }
         }
 
         private PlayerState NextPlayerAfter(PlayerState current)
         {
-            int count = _players.Count;
+            int count = ActionOrder.Count;
             if (count == 0) return null;
 
-            int start = _players.IndexOf(current);
+            int start = ActionOrder.IndexOf(current);
             if (start < 0) start = 0;
 
             // 至多绕一圈：若所有人都阵亡则不返回任何人
             for (int step = 1; step <= count; step++)
             {
-                PlayerState candidate = _players[(start + step) % count];
+                PlayerState candidate = ActionOrder[(start + step) % count];
                 if (candidate.IsAlive) return candidate;
             }
 
@@ -1103,10 +1112,20 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 某位玩家的**下家**（环上下一个座位，跳过阵亡者）。
         ///
-        /// ⚠️ 与"回合顺序"是同一件事：<see cref="NextPlayerAfter"/> 就是按座位轮转的。
+        /// 换位后物理下家立即变化；本轮行动顺序仍由独立快照保留。
         /// 界面用它判断"队友是我的上家还是下家"。
         /// </summary>
-        public PlayerState NextSeatAfter(PlayerState player) => NextPlayerAfter(player);
+        public PlayerState NextSeatAfter(PlayerState player)
+        {
+            int start = _players.IndexOf(player);
+            if (start < 0) return null;
+            for (int step = 1; step <= _players.Count; step++)
+            {
+                var next = _players[(start + step) % _players.Count];
+                if (next.IsAlive) return next;
+            }
+            return null;
+        }
 
         /// <summary>
         /// 某位玩家的**上家**（环上前一个座位，跳过阵亡者）。
@@ -1243,6 +1262,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            ResetSeats();
             _skillLog.Clear();
             _brokenThisTurn.Clear();
             PlayerA.Reset();
@@ -1856,6 +1876,7 @@ namespace FingerDiceDuel.Core
                 //    再记下"他这一次行动的序号"。
                 BumpOwnTurnOrdinal(actor);
                 _lastStealTurn = CurrentOwnTurnOrdinal(actor);
+                AdvanceRoundAfter(actor);
                 CheckTurnLimit();
                 return result;
             }
@@ -1922,6 +1943,7 @@ namespace FingerDiceDuel.Core
                 BumpOwnTurnOrdinal(actor);
                 _lastStealTurn = CurrentOwnTurnOrdinal(actor);      // 他的"这次行动"结束了
                 CurrentPlayer = NextPlayerAfter(actor);
+                AdvanceRoundAfter(actor);
                 CheckTurnLimit();
             }
 
@@ -2894,18 +2916,21 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 调用方必须自己保证进入时条件成立。
         /// </summary>
-        public void SkipTurnAlreadyValidated()
+        public void SkipTurnAlreadyValidated(bool extraAction = false)
         {
             if (IsGameOver) return;
 
             _brokenThisTurn.Clear();
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
-            PlayerState skippedActor = CurrentPlayer;
-            TurnCount++;
-            CurrentPlayer = NextPlayerAfter(skippedActor);
-            AdvanceRoundAfter(skippedActor);
-            CheckTurnLimit();
+            if (!extraAction)
+            {
+                PlayerState skippedActor = CurrentPlayer;
+                TurnCount++;
+                CurrentPlayer = NextPlayerAfter(skippedActor);
+                AdvanceRoundAfter(skippedActor);
+                CheckTurnLimit();
+            }
         }
         ///
         /// 与 <see cref="SkipTurn"/> 的区别：后者是角色的技能（双盾 / 潜行），

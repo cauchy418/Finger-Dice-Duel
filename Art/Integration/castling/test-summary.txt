@@ -1,0 +1,12 @@
+2026-10-23 Conjuration castling integration
+Tools/HeadlessTests/run-tests.ps1 -Quiet: PASS 1081 / FAIL 0.
+Process-scoped DOTNET_TieredCompilation=0, same local .NET6 JIT workaround documented for Champion.
+ConjurationCastlingTests: PASS 20, including controller AI and extra-action cases.
+Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS -Quiet: compile passed (exit 0).
+Tools/UiCompileCheck/check-ui.ps1 -Quiet: passed (exit 0).
+Actual Tuanjie editor: PASS 143; includes 20 regression methods executed inside editor.
+Actual UI raycasts: 1v1, all four local-human seats in 2v2, seats 1/5/8 in identity mode, dual 1v1 secondary skill, and eight-player dual faction mode.
+All screenshots rendered from engine at 1920x1080; script and full checks included.
+Art validator: 39 canonical profession/subclass resources passed dimensions, alpha, hashes and selected/runtime consistency.
+Generated balance reports refreshed by the full suite. MatchRunner statistics do not model the controller's new proactive seat-swap policy; that policy is covered by dedicated controller tests.
+Editor refresh reported the existing AssetStoreDownloadManager serialization error; Play, imported source tests and rendered/clicked UI validation succeeded.

@@ -66,7 +66,8 @@ namespace FingerDiceDuel.UI
 
         private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.LifeDomainHealTarget
             || effect == HandEffect.LifeDomainExtraHealTarget || effect == HandEffect.OathOfDevotionShockTarget
-            || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.OathOfDevotionRedirect;
+            || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.OathOfDevotionRedirect
+            || effect == HandEffect.SchoolOfConjurationCastling;
 
         private string ChoiceLabel(HandEffect effect, Hand hand)
         {
@@ -81,6 +82,7 @@ namespace FingerDiceDuel.UI
                 case HandEffect.PathOfTheWardenLockTarget: return "锁定 · " + player + side;
                 case HandEffect.BreakerChainBreak: return "破盾 · " + player + side;
                 case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
+                case HandEffect.SchoolOfConjurationCastling: return "换位 · " + player;
                 case HandEffect.LifeDomainHealTarget: return "回复 · " + player;
                 case HandEffect.LifeDomainExtraHealTarget: return "额外回复 · " + player;
                 case HandEffect.OathOfDevotionShockTarget: return "冲击 · " + player;
@@ -96,7 +98,7 @@ namespace FingerDiceDuel.UI
             bool top = _cardsB != null && ReferenceEquals(_battleChoiceOwner, _cardsB[0].Owner);
             int count = (Visible(_acceptButton) ? 1 : 0) + (Visible(_declineButton) ? 1 : 0);
             foreach (var button in _skillChoiceButtons) if (Visible(button)) count++;
-            foreach (var button in new[] { _stealButton, _gambleButton, _skipButton }) if (Visible(button)) count++;
+            foreach (var button in new[] { _stealButton, _gambleButton, _skipButton, _seatSwapButton }) if (Visible(button)) count++;
             bool compact = count >= 4;
             float start = top ? (compact ? 320 : 300) : (compact ? -222 : -264);
             float gap = compact ? 72 : 88;
@@ -119,7 +121,7 @@ namespace FingerDiceDuel.UI
                     : _skillActor?.Definition?.Id == CharacterDefinition.TheArchfeyId ? "妖精契约 · 跳过回合" : "跳过回合";
             }
             bool actorTop = _cardsB != null && ReferenceEquals(_skillActor, _cardsB[0].Owner);
-            foreach (var button in new[] { _stealButton, _gambleButton, _skipButton })
+            foreach (var button in new[] { _stealButton, _gambleButton, _skipButton, _seatSwapButton })
                 if (Visible(button)) DecorateSkillAction(button, _skillActor, new Vector2(290, (actorTop ? (compact ? 320 : 300) : (compact ? -222 : -264)) - row++ * gap), height);
             if (Visible(_skipButton))
             {

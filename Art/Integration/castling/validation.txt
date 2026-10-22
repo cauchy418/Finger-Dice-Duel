@@ -1,0 +1,143 @@
+PASS castling fixture imported into editor
+PASS engine regression Unordered_numbers_match_exactly_including_duplicates_and_zero
+PASS engine regression Invalid_self_outsider_dead_owner_dead_target_and_wrong_turn_are_rejected
+PASS engine regression Frozen_cannot_castle_but_can_still_skip_without_swapping
+PASS engine regression Current_round_keeps_all_old_actors_then_next_round_uses_new_seats
+PASS engine regression Mid_round_swap_with_already_acted_player_does_not_repeat_or_skip_anyone
+PASS engine regression Last_actor_swap_takes_effect_at_immediately_following_round
+PASS engine regression Multiple_swaps_preserve_first_snapshot_and_latest_physical_seats
+PASS engine regression Dead_players_are_skipped_in_saved_and_new_orders
+PASS engine regression Old_anchor_dying_at_turn_start_does_not_finish_round_early
+PASS engine regression Distance_and_physical_neighbors_change_immediately_but_teams_do_not
+PASS engine regression Target_ui_candidates_support_ally_enemy_and_out_of_range_without_double_turn_end
+PASS engine regression Cancel_is_free_and_stale_target_does_not_end_turn_or_consume_status
+PASS engine regression Dual_general_has_castling_in_either_primary_order
+PASS engine regression Reset_restores_initial_seats_and_discards_pending_order_snapshot
+PASS engine regression Identity_and_lord_owner_remain_attached_to_person_after_swap
+PASS engine regression Extra_action_castling_does_not_advance_normal_round_or_turn_count
+PASS engine regression Ai_uses_castling_to_reduce_adjacent_enemies_and_resolves_target_immediately
+PASS engine regression Ai_keeps_ordinary_play_when_castling_cannot_reduce_adjacent_enemies
+PASS engine regression Non_attack_thief_turn_can_finish_the_saved_round
+PASS engine regression Round_limit_still_resolves_after_new_order_is_installed
+PASS runtime descriptions current
+PASS 1v1 named action visible
+PASS raycast reaches SeatSwap
+PASS 1v1 action opens targeting
+PASS 1v1 one target per player
+PASS cancel label explicit
+PASS raycast reaches DeclineButton
+PASS cancel consumes no turn
+PASS raycast reaches SeatSwap
+PASS raycast reaches SkillChoice0
+PASS 1v1 target swaps seats and ends turn exactly once
+PASS unified skill log visible
+PASS 4 players action visible at human seat 1
+PASS raycast reaches SeatSwap
+PASS 4 players unique candidate count
+PASS 4 players cancel visible
+PASS target label fits 4 SkillChoice0
+PASS target label fits 4 SkillChoice1
+PASS target label fits 4 SkillChoice2
+PASS raycast reaches SkillChoice0
+PASS 4 players physical seats swapped
+PASS 4 players team and identity preserved
+PASS 4 players human control preserved after swap
+PASS 4 players self panel remains human
+PASS 4 players only one self relation label
+PASS 4 players action visible at human seat 2
+PASS raycast reaches SeatSwap
+PASS 4 players unique candidate count
+PASS 4 players cancel visible
+PASS target label fits 4 SkillChoice0
+PASS target label fits 4 SkillChoice1
+PASS target label fits 4 SkillChoice2
+PASS raycast reaches SkillChoice0
+PASS 4 players physical seats swapped
+PASS 4 players team and identity preserved
+PASS 4 players human control preserved after swap
+PASS 4 players self panel remains human
+PASS 4 players only one self relation label
+PASS 4 players action visible at human seat 3
+PASS raycast reaches SeatSwap
+PASS 4 players unique candidate count
+PASS 4 players cancel visible
+PASS target label fits 4 SkillChoice0
+PASS target label fits 4 SkillChoice1
+PASS target label fits 4 SkillChoice2
+PASS raycast reaches SkillChoice0
+PASS 4 players physical seats swapped
+PASS 4 players team and identity preserved
+PASS 4 players human control preserved after swap
+PASS 4 players self panel remains human
+PASS 4 players only one self relation label
+PASS 4 players action visible at human seat 4
+PASS raycast reaches SeatSwap
+PASS 4 players unique candidate count
+PASS 4 players cancel visible
+PASS target label fits 4 SkillChoice0
+PASS target label fits 4 SkillChoice1
+PASS target label fits 4 SkillChoice2
+PASS raycast reaches SkillChoice0
+PASS 4 players physical seats swapped
+PASS 4 players team and identity preserved
+PASS 4 players human control preserved after swap
+PASS 4 players self panel remains human
+PASS 4 players only one self relation label
+PASS 8 players action visible at human seat 1
+PASS raycast reaches SeatSwap
+PASS 8 players unique candidate count
+PASS 8 players cancel visible
+PASS target label fits 8 SkillChoice0
+PASS target label fits 8 SkillChoice1
+PASS target label fits 8 SkillChoice2
+PASS target label fits 8 SkillChoice3
+PASS target label fits 8 SkillChoice4
+PASS target label fits 8 SkillChoice5
+PASS target label fits 8 SkillChoice6
+PASS raycast reaches SkillChoice0
+PASS 8 players physical seats swapped
+PASS 8 players team and identity preserved
+PASS 8 players human control preserved after swap
+PASS 8 players self panel remains human
+PASS 8 players only one self relation label
+PASS 8 players action visible at human seat 5
+PASS raycast reaches SeatSwap
+PASS 8 players unique candidate count
+PASS 8 players cancel visible
+PASS target label fits 8 SkillChoice0
+PASS target label fits 8 SkillChoice1
+PASS target label fits 8 SkillChoice2
+PASS target label fits 8 SkillChoice3
+PASS target label fits 8 SkillChoice4
+PASS target label fits 8 SkillChoice5
+PASS target label fits 8 SkillChoice6
+PASS raycast reaches SkillChoice0
+PASS 8 players physical seats swapped
+PASS 8 players team and identity preserved
+PASS 8 players human control preserved after swap
+PASS 8 players self panel remains human
+PASS 8 players only one self relation label
+PASS 8 players action visible at human seat 8
+PASS raycast reaches SeatSwap
+PASS 8 players unique candidate count
+PASS 8 players cancel visible
+PASS target label fits 8 SkillChoice0
+PASS target label fits 8 SkillChoice1
+PASS target label fits 8 SkillChoice2
+PASS target label fits 8 SkillChoice3
+PASS target label fits 8 SkillChoice4
+PASS target label fits 8 SkillChoice5
+PASS target label fits 8 SkillChoice6
+PASS raycast reaches SkillChoice0
+PASS 8 players physical seats swapped
+PASS 8 players team and identity preserved
+PASS 8 players human control preserved after swap
+PASS 8 players self panel remains human
+PASS 8 players only one self relation label
+PASS raycast reaches SeatSwap
+PASS raycast reaches SkillChoice0
+PASS dual 1v1 secondary Conjuration skill executes through visible button
+PASS raycast reaches SeatSwap
+PASS eight-player faction seven targets visible
+PASS raycast reaches SkillChoice0
+PASS eight-player faction castling consumes one normal turn

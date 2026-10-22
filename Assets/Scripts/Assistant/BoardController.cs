@@ -56,6 +56,7 @@ namespace FingerDiceDuel.Assistant
         /// 点右侧「跳过回合」进入本相位，再点目标的手发动。
         /// </summary>
         ChoosingHealthSwapTarget = 7,
+        ChoosingSeatSwapTarget = 10,
 
         /// <summary>
         /// 等待**游荡者·赌徒**点「开赌」。
@@ -142,7 +143,7 @@ namespace FingerDiceDuel.Assistant
     ///       AI 玩家直接调用 <see cref="MakeAutomaticMove"/>；
     ///   3. 每步之后读 <see cref="Phase"/> / <see cref="LastTurn"/> / <see cref="Log"/> 刷新界面。
     /// </summary>
-    public sealed class BoardController
+    public sealed partial class BoardController
     {
         private readonly GameManager _game;
         private readonly IChoiceProvider _choiceA;
@@ -408,6 +409,7 @@ namespace FingerDiceDuel.Assistant
 
                     // 邪术师·至高妖精改体力的目标由**行动方自己**点（他发动技能）
                     case BoardPhase.ChoosingHealthSwapTarget:
+                    case BoardPhase.ChoosingSeatSwapTarget:
                         return ActivePlayer;
 
                     // ⚠️ **游荡者·盗贼的偷窃目标也由行动方自己点。**
@@ -1097,6 +1099,9 @@ namespace FingerDiceDuel.Assistant
                     // 自己除外 —— 偷自己没有意义。
                     return !ActivePlayer.Owns(hand);
 
+                case BoardPhase.ChoosingSeatSwapTarget:
+                    return CanCastleWith(OwnerOf(hand));
+
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
                     // 邪术师·至高妖精：可以点**任何其他人**的手（体力与自己不同的才有意义）。
@@ -1728,6 +1733,9 @@ namespace FingerDiceDuel.Assistant
                 case BoardPhase.ChoosingPreTargetChoice:
                     ApplyPreTurnChoiceAndContinue(hand);
                     return true;
+
+                case BoardPhase.ChoosingSeatSwapTarget:
+                    return CompleteCastling(OwnerOf(hand));
 
                 case BoardPhase.ChoosingHealthSwapTarget:
                 {
@@ -3136,6 +3144,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool DeclinePendingChoice()
         {
+            if (Phase == BoardPhase.ChoosingSeatSwapTarget) return CancelCastling();
             if (!IsInChoicePhase) return false;
 
             // ⚠️⚠️ **阶段守卫：只有"角色抉择"阶段才能用「不发动」。**
@@ -3163,7 +3172,7 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>当前待问的抉择是否允许放弃（UI 用来决定是否显示"不发动"按钮）。</summary>
         public bool CanDeclinePendingChoice
-            => IsInChoicePhase
+            => Phase == BoardPhase.ChoosingSeatSwapTarget || IsInChoicePhase
                && _pendingRequestIndex < _pendingRequests.Count
                && _pendingRequests[_pendingRequestIndex].AllowDecline;
 
@@ -3174,7 +3183,7 @@ namespace FingerDiceDuel.Assistant
         /// 要弹出"10 种伤害类型"的选择面板，而不是普通的"发动 / 不发动"。
         /// </summary>
         public HandEffect PendingEffect
-            => IsInChoicePhase && _pendingRequestIndex < _pendingRequests.Count
+            => Phase == BoardPhase.ChoosingSeatSwapTarget ? HandEffect.SchoolOfConjurationCastling : IsInChoicePhase && _pendingRequestIndex < _pendingRequests.Count
                ? _pendingRequests[_pendingRequestIndex].Effect
                : HandEffect.None;
 
@@ -3395,6 +3404,7 @@ namespace FingerDiceDuel.Assistant
             //
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
             if (TryAiTheArchfeySkip()) return true;
+            if (TryAiCastling()) return true;
 
             // ---- 游荡者·盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
             //

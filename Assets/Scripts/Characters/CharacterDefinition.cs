@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition SchoolOfConjuration { get; } = new CharacterDefinition(
             SchoolOfConjurationId, "法师·咒法学派", SpecialLogicType.SchoolOfConjuration,
             attackBonus: -1,
-            description: "攻击无视对方护盾与正向防御加成。攻击 -1。");
+            description: "空间刃无视护盾、正防御与闪避。王车易位：可跳过回合，与双手值相同（不分左右）的角色换位；距离立即更新，下轮按新座位行动。攻击 -1。");
 
         public static CharacterDefinition PathOfTheWarden { get; } = new CharacterDefinition(
             PathOfTheWardenId, "野蛮人·守望者道途", SpecialLogicType.PathOfTheWarden,

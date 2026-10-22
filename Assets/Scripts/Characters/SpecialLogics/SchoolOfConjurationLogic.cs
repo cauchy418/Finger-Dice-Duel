@@ -8,7 +8,7 @@
     /// 实现方式：在 OnResolveAttack 钩子中将 AttackContext.IgnoreShield 置为 true，
     /// 由 AttackContext.Resolve 在后续流程中据此跳过护盾抵挡判定。
     /// </summary>
-    public class SchoolOfConjurationLogic : CharacterTemplate, IDodgeBlocker, IPiercesMitigation
+    public class SchoolOfConjurationLogic : CharacterTemplate, IDodgeBlocker, IPiercesMitigation, ISeatSwapSkill
     {
         /// <summary>
         /// 法师·咒法学派的攻击**穿透减免**（玩家确认）：
@@ -20,6 +20,19 @@
         /// 如今游侠·幽域追踪者也要判同一件事，再硬编码一次就是"两个角色各自认识法师·咒法学派"。
         /// </summary>
         public bool PiercesMitigation => true;
+
+        public bool CanSwapSeats(PlayerState owner, PlayerState target, GameManager game)
+        {
+            if (game == null || game.IsGameOver || owner == null || target == null
+                || !ReferenceEquals(game.CurrentPlayer, owner) || !CharacterBehaviors.ActorHas(owner, this)
+                || ReferenceEquals(owner, target) || !owner.IsAlive || !target.IsAlive
+                || !StatusRules.CanAct(owner) || game.SeatOf(owner)<1 || game.SeatOf(target)<1) return false;
+            return (owner.LeftHand.Value==target.LeftHand.Value && owner.RightHand.Value==target.RightHand.Value)
+                || (owner.LeftHand.Value==target.RightHand.Value && owner.RightHand.Value==target.LeftHand.Value);
+        }
+
+        public bool TrySwapSeats(PlayerState owner, PlayerState target, GameManager game)
+            => CanSwapSeats(owner,target,game) && game.TrySwapSeats(owner,target);
 
         public override string DisplayName => "法师·咒法学派";
 

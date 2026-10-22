@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1061 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式。详见 [最新接入验收](Art/Integration/profession-subclass/README.md)。
+当前状态：**1081 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。职业·子职重构已接入，编辑器 **321 项检查通过**，覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
 
 **职业·子职**：27 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
 
@@ -133,7 +133,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 |---|:---:|:---:|---|
 | 战士·勇士 Champion | +1 / 0 | 1 | **十点重击**：运算后双手和为10，发起攻击的基础伤害×1.5，再算攻防；自动触发 |
 | 战士·破阵者 Breaker | +1 / 0 | 1 | 己方盾碎可连锁破盾；主动以完整盾运算、或碎另一盾换无限距离后攻击，命中附流血 2 回合 |
-| 法师·咒法学派 School of Conjuration | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成；**并穿透伏击（游侠·幽域追踪者的伏击挡不住、也不会被解除）** |
+| 法师·咒法学派 School of Conjuration | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成；**并穿透伏击（游侠·幽域追踪者的伏击挡不住、也不会被解除）**；**王车易位**：可跳过回合，与双手值相同（不分左右）的存活角色换座；距离立即更新，队伍/身份不变，本轮原顺序、下轮新顺序 |
 | 野蛮人·守望者道途 Path of the Warden | 0 / +1 | 1 | 合盾时可锁对手一只手，直到该盾破碎（**仅剩两人时**限制生效） |
 | **牧师·生命领域 Life Domain** | −1 / −1 | **∞** | 4/6/8 可转回复；9 可选回复目标，双 9 额外回复一次；**每段回复先清除全部负面状态，再回血** |
 | **游荡者·风流剑客 Swashbuckler** | 0 / −2 | 1 | 一只「1」变 2 完全闪避；攻击时另一只「2」变 3，使基础伤害 ×1.5、距离无限，命中附流血 2 回合 |
@@ -390,7 +390,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 ### 平衡实测（1v1 经典循环赛）
 
 > 统计口径：1v1 / 2v2 / 双将 1v1 为无头 AI 直接驱动 `GameManager`；
-> **击杀奖惩只在 8 人阵营混战启用**。本节旧表与对比为勇士本次调整前的历史采样；调整后的最新完整结果见 [1v1](Tools/1v1-report.txt)、[2v2](Tools/2v2-report.txt)、[双将](Tools/dual-report.txt)、[集火实验](Tools/focus-report.txt)。旧表不作为当前平衡结论。
+> **击杀奖惩只在 8 人阵营混战启用**。本节旧表与对比为勇士本次调整前的历史采样；勇士与换位回合收尾修正后的完整结果见 [1v1](Tools/1v1-report.txt)、[2v2](Tools/2v2-report.txt)、[双将](Tools/dual-report.txt)、[集火实验](Tools/focus-report.txt)。旧表不作为当前平衡结论。
 
 **27 名角色**两两配对、每对 **80 局**、双方交替先手，共 **28,080 局**，
 平均 **17.7** 回合，**0 局模拟器强停**；**951 局**打满轮次上限。
@@ -579,7 +579,7 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 工程结构
 
 `Core`（规则内核）/ `Characters`（27 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1061 项无头测试。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1081 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

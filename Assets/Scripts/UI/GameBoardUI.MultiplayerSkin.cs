@@ -140,7 +140,7 @@ namespace FingerDiceDuel.UI
                     ? "潜行 · 跳过回合" : _skillActor?.Definition?.Id == CharacterDefinition.TheArchfeyId ? "妖精契约 · 跳过回合" : "跳过回合";
             var actions = new List<Button>();
             foreach (var button in _skillChoiceButtons) if (Visible(button)) actions.Add(button);
-            foreach (var button in new[] { _acceptButton, _declineButton, _stealButton, _gambleButton, _skipButton, _sacrificeButton })
+            foreach (var button in new[] { _acceptButton, _declineButton, _stealButton, _gambleButton, _skipButton, _sacrificeButton, _seatSwapButton })
                 if (Visible(button)) actions.Add(button);
             _ringActionRoot.gameObject.SetActive(actions.Count > 0);
             if (actions.Count == 0) return;
@@ -152,7 +152,7 @@ namespace FingerDiceDuel.UI
             {
                 var button = actions[i];
                 if (button.transform.parent != _ringActionContent) button.transform.SetParent(_ringActionContent, false);
-                var owner = button == _stealButton || button == _gambleButton || button == _skipButton || button == _sacrificeButton ? _skillActor : _battleChoiceOwner;
+                var owner = button == _stealButton || button == _gambleButton || button == _skipButton || button == _sacrificeButton || button == _seatSwapButton ? _skillActor : _battleChoiceOwner;
                 DecorateSkillAction(button, owner, Vector2.zero, 64, cell - 8);
                 var rect = (RectTransform)button.transform;
                 rect.anchorMin = rect.anchorMax = new Vector2(0, 1);
@@ -164,7 +164,7 @@ namespace FingerDiceDuel.UI
         {
             if (_ringActionRoot != null) _ringActionRoot.gameObject.SetActive(false);
             foreach (var button in _skillChoiceButtons) if (button != null) button.transform.SetParent(_canvasRoot, false);
-            foreach (var button in new[] { _acceptButton, _declineButton, _stealButton, _gambleButton, _skipButton, _sacrificeButton })
+            foreach (var button in new[] { _acceptButton, _declineButton, _stealButton, _gambleButton, _skipButton, _sacrificeButton, _seatSwapButton })
                 if (button != null) button.transform.SetParent(_canvasRoot, false);
         }
     }

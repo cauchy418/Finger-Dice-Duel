@@ -480,6 +480,7 @@ namespace FingerDiceDuel.UI
             _board.HandClicked += OnHandClicked;
             _board.RestartClicked += OnRestartClicked;
             _board.SkipTurnClicked += OnSkipTurnClicked;
+            _board.SeatSwapClicked += OnSeatSwapClicked;
             _board.GambleClicked += OnGambleClicked;
             _board.StealClicked += OnStealClicked;
             _board.DeclineClicked += OnDeclineClicked;
@@ -3122,6 +3123,7 @@ namespace FingerDiceDuel.UI
         private void RefreshView()
         {
             if (_controller == null || _board == null || _game == null) return;
+            SyncSeatLayout();
 
             // ⚠️ **必须先算可点性，再刷新高亮**。
             //
@@ -3262,7 +3264,10 @@ namespace FingerDiceDuel.UI
 
             _board.SetSkillActionContext(_controller.PendingEffect,
                 _controller.IsHumanChooser ? _controller.Chooser : null, _controller.ActivePlayer,
-                _controller.PendingRequest?.Candidates, canAccept);
+                _controller.Phase == BoardPhase.ChoosingSeatSwapTarget ? _controller.ChoiceCandidates
+                    : _controller.PendingRequest?.Candidates, canAccept);
+            _board.SetSeatSwapActionVisible(_controller.IsHumanTurn
+                && ReferenceEquals(_controller.ActivePlayer,HumanPlayer()) && _controller.CanCastle);
 
             // 临时诊断：把面板显隐的真实状态打出来 ——
             // "点了放弃却看不到 10 选 1"这类问题只能靠它定位
@@ -3542,6 +3547,7 @@ namespace FingerDiceDuel.UI
         /// <summary>放弃按钮的文案（按抉择类型区分）。</summary>
         private string DeclineLabel()
         {
+            if (_controller.Phase == BoardPhase.ChoosingSeatSwapTarget) return "取消换位";
             ChoiceRequest? request = _controller.PendingRequest;
             if (request == null) return "不发动";
 

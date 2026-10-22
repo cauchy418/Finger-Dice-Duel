@@ -253,7 +253,7 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 |---|:---:|:---:|---|
 | 战士·勇士 Champion | +1 / 0 | 1 | 十点重击：运算后双手和10，发起攻击的基础伤害×1.5，再算攻防 |
 | 战士·破阵者 Breaker | +1 / 0 | 1 | 连锁破盾、合盾修复；两种主动碎盾攻击附流血 2 回合，见 §8.8 |
-| 法师·咒法学派 School of Conjuration | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成 |
+| 法师·咒法学派 School of Conjuration | −1 / 0 | **∞** | 攻击无视护盾与正向防御加成；王车易位可与双手值相同（不分左右）的角色换座并跳过 |
 | 野蛮人·守望者道途 Path of the Warden | 0 / +1 | 1 | 合盾时可锁对手一只手，直到该盾破碎 |
 | 牧师·生命领域 Life Domain | −1 / −1 | **∞** | 见 §8.1 |
 | 游荡者·风流剑客 Swashbuckler | 0 / −2 | 1 | 见 §8.2 |
@@ -399,6 +399,11 @@ actedHand.Value = ComputeSum(actedHand.Value, targetHand.Value)
 - 成长（+1/+1）是**跨回合状态**，重开一局必须清空（`OnMatchReset`）。
 
 ### 8.7 法师·咒法学派 School of Conjuration
+
+- **王车易位**：行动前，若另一名存活角色的两个手值与你相同（不区分左右，如4/6与6/4），可跳过本回合与其交换座位。可选队友或对手，不限距离；冻结时不能发动。
+  - 座位与距离立即更新，队伍、身份和角色归属不变；本轮按换位前顺序完成，**下一轮**按新座位顺序行动。
+  - 点击「王车易位 · 跳过回合」后选择目标；取消不消耗回合。重开恢复初始座位。
+
 
 - **攻击无视对方护盾**：护盾不消耗、不破碎、不挡伤。
 - **无视对方的正向防御加成**（负向/易伤加成仍然生效）。
@@ -1183,7 +1188,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**1061 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**1081 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
