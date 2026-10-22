@@ -5,9 +5,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>圣武士·破誓者：5 改为攻击；持5可把整次来袭攻击转移给持完整盾的角色。</summary>
     public sealed class OathbreakerLogic : CharacterTemplate,
-        IHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IPreTurnChoiceProvider, IAttackTransfer
+        IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IPreTurnChoiceProvider, IAttackTransfer
     {
         public const int AttackValue = 5;
+
+        public bool HandlesResult(int value) => value == AttackValue;
 
         public override string DisplayName => "圣武士·破誓者";
         public override int DefaultAttackBonus => 2;

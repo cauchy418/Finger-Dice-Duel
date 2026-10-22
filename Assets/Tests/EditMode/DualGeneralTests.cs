@@ -139,8 +139,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Effect_rewrite_falls_back_to_the_original_when_no_part_rewrites()
         {
-            // 游荡者·风流剑客与法师·塑能学派**都不实现** IHandEffectRewriter
-            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Swashbuckler,
+            // 勇士与塑能学派现同属中立，且都不实现 IHandEffectRewriter
+            PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.Champion,
                                                        CharacterDefinition.SchoolOfEvocation);
 
             var rewriter = me.Character as IHandEffectRewriter;

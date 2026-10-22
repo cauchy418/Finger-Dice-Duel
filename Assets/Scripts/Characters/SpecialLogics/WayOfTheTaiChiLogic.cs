@@ -21,9 +21,11 @@
     /// 反弹 `floor(N/2)`）—— 理由：太极是防守方自己的技能，
     /// 不该因为取整而让它比"四舍五入"更亏；而且这样**总伤害守恒**（受 + 反弹 = N）。
     /// </summary>
-    public sealed class WayOfTheTaiChiLogic : CharacterTemplate, IHandEffectRewriter,
+    public sealed class WayOfTheTaiChiLogic : CharacterTemplate, IHandEffectRewriter, ISelectiveHandEffectRewriter,
                                      IDamageMitigator, IPreTurnChoiceProvider
     {
+        public bool HandlesResult(int value) => value == TaichiValue;
+
         public override string DisplayName => "武僧·太极宗";
 
         public override int DefaultAttackBonus => 0;

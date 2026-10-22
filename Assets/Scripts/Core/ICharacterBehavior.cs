@@ -343,6 +343,31 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public static class CharacterBehaviors
     {
+        public static IHandEffectRewriter EffectRewriterFor(PlayerState actor, int result)
+        {
+            if (actor?.Character is ICharacterBehaviorContainer container)
+                return EffectRewriterFor(container.Parts,result);
+            var rewriter=actor?.Character as IHandEffectRewriter;
+            return rewriter is ISelectiveHandEffectRewriter selective && !selective.HandlesResult(result) ? null : rewriter;
+        }
+
+        public static IHandEffectRewriter EffectRewriterFor(IReadOnlyList<ICharacterBehavior> parts, int result)
+        {
+            if(parts==null) return null;
+            foreach(var part in parts)
+                if(part is IHandEffectRewriter rewriter
+                    && (!(part is ISelectiveHandEffectRewriter selective) || selective.HandlesResult(result)))
+                    return rewriter;
+            return null;
+        }
+
+        public static HandEffectType DisplayedEffectOf(PlayerState actor, int result)
+        {
+            var rewriter=EffectRewriterFor(actor,result);
+            if(rewriter is IHandEffectDisplay display) return display.DisplayedEffectOf(result);
+            return FirstImplementer<IHandEffectDisplay>(actor)?.DisplayedEffectOf(result) ?? Hand.GetEffectType(result);
+        }
+
         public static bool ActorHas(PlayerState actor, ICharacterBehavior part)
         {
             if (actor?.Character == null || part == null) return false;
@@ -480,6 +505,12 @@ namespace FingerDiceDuel.Core
     {
         /// <summary>本次回复的**总量**（已经包含所有段数）。</summary>
         int HealAmountOf(PlayerState owner, GameManager manager);
+    }
+
+    /// <summary>声明真正接管的数字；未接管的普通数字不应挡住双将另一技能。</summary>
+    public interface ISelectiveHandEffectRewriter
+    {
+        bool HandlesResult(int value);
     }
 
     /// <summary>

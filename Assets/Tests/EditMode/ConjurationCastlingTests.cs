@@ -168,8 +168,8 @@ namespace FingerDiceDuel.Tests
         {
             foreach(bool primary in new[]{true,false})
             {
-                var a=DualGeneralFactory.Create("dual",primary?CharacterDefinition.SchoolOfConjuration:CharacterDefinition.Gambler,
-                    primary?CharacterDefinition.Gambler:CharacterDefinition.SchoolOfConjuration);
+                var a=DualGeneralFactory.Create("dual",primary?CharacterDefinition.SchoolOfConjuration:CharacterDefinition.Breaker,
+                    primary?CharacterDefinition.Breaker:CharacterDefinition.SchoolOfConjuration);
                 var enemy=Make(1);var g=new GameManager(a,enemy,new SimpleChoiceProvider(),new SimpleChoiceProvider());
                 var b=Board(g);Assert.IsTrue(b.CanCastle);Assert.IsTrue(b.BeginCastling());
                 Assert.IsTrue(b.CompleteCastling(enemy));Assert.AreEqual(2,g.SeatOf(a));

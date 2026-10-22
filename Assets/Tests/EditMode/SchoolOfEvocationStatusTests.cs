@@ -287,8 +287,8 @@ namespace FingerDiceDuel.Tests
             Assert.NotNull(def, "法师·塑能学派应当在内置角色表里。");
             Assert.AreEqual(0, def.AttackBonus);
             Assert.AreEqual(-1, def.DefenseBonus);
-            Assert.AreEqual(Alignment.NeutralGood,
-                CharacterCodex.For(def).Alignment, "玩家指定：中立善良。");
+            Assert.AreEqual(Alignment.TrueNeutral,
+                CharacterCodex.For(def).Alignment, "玩家最新指定：绝对中立。");
         }
 
         [Test]

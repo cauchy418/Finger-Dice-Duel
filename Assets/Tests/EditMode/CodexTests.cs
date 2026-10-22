@@ -244,36 +244,33 @@ namespace FingerDiceDuel.Tests
             // 以后不小心改动会被捕到。
             var expect = new Dictionary<string, Alignment>
             {
-                // 守序善良：圣武士·奉献之誓 牧师·生命领域 圣武士·王冠之誓
-                { CharacterDefinition.OathOfDevotionId, Alignment.LawfulGood },
-                { CharacterDefinition.LifeDomainId, Alignment.LawfulGood },
-                { CharacterDefinition.OathOfTheCrownId, Alignment.LawfulGood },
-                // 守序中立：战士·剑士 战士·破阵者
-                { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
+                { CharacterDefinition.ChampionId, Alignment.NeutralGood },
                 { CharacterDefinition.BreakerId, Alignment.LawfulNeutral },
-                // 守序邪恶：战士·魔射手
-                { CharacterDefinition.ArcaneArcherId, Alignment.LawfulEvil },
-                // 中立善良：游荡者·风流剑客 武僧·太极宗
-                { CharacterDefinition.SwashbucklerId, Alignment.NeutralGood },
-                { CharacterDefinition.WayOfTheTaiChiId, Alignment.NeutralGood },
-                // 绝对中立：武僧·忍宗 战士·勇士 游荡者·魔术师（游荡者·魔术师由混乱善良移来）
-                { CharacterDefinition.WayOfTheNinjaId, Alignment.TrueNeutral },
-                { CharacterDefinition.ChampionId, Alignment.TrueNeutral },
-                { CharacterDefinition.MagicianId, Alignment.TrueNeutral },
-                // 中立邪恶：游荡者·盗贼
-                { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
-                // 混乱善良：野蛮人·守望者道途
+                { CharacterDefinition.SchoolOfConjurationId, Alignment.LawfulNeutral },
                 { CharacterDefinition.PathOfTheWardenId, Alignment.ChaoticGood },
-                // 混乱中立：游荡者·刺客 游荡者·赌徒 法师·咒法学派
-                { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
-                { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
-                { CharacterDefinition.SchoolOfConjurationId, Alignment.ChaoticNeutral },
-                // 混乱邪恶：野蛮人·野兽道途 野蛮人·巨人道途 邪术师·至高妖精（邪术师·至高妖精由中立邪恶移来）
+                { CharacterDefinition.LifeDomainId, Alignment.LawfulGood },
+                { CharacterDefinition.SwashbucklerId, Alignment.ChaoticGood },
                 { CharacterDefinition.PathOfTheBeastId, Alignment.ChaoticEvil },
+                { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
+                { CharacterDefinition.WayOfTheNinjaId, Alignment.TrueNeutral },
+                { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.OathOfDevotionId, Alignment.LawfulGood },
+                { CharacterDefinition.TheArchfeyId, Alignment.LawfulEvil },
+                { CharacterDefinition.ArcaneArcherId, Alignment.LawfulNeutral },
+                { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.OathOfTheCrownId, Alignment.LawfulGood },
+                { CharacterDefinition.WayOfTheTaiChiId, Alignment.NeutralGood },
                 { CharacterDefinition.PathOfTheGiantId, Alignment.ChaoticEvil },
-                { CharacterDefinition.TheArchfeyId, Alignment.ChaoticEvil },
-                // 守序邪恶：游侠·幽域追踪者（玩家指定）
-                { CharacterDefinition.GloomStalkerId, Alignment.LawfulEvil },
+                { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
+                { CharacterDefinition.GloomStalkerId, Alignment.ChaoticGood },
+                { CharacterDefinition.MagicianId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.SchoolOfEvocationId, Alignment.TrueNeutral },
+                { CharacterDefinition.WildMagicId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.TheGreatOldOneId, Alignment.NeutralEvil },
+                { CharacterDefinition.CollegeOfValorId, Alignment.LawfulGood },
+                { CharacterDefinition.OathbreakerId, Alignment.LawfulEvil },
+                { CharacterDefinition.PathOfTheBerserkerId, Alignment.NeutralEvil },
+                { CharacterDefinition.TacticianId, Alignment.ChaoticGood },
             };
 
             var wrong = new List<string>();

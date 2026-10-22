@@ -259,8 +259,8 @@ namespace FingerDiceDuel.Tests
         {
             foreach (bool clericFirst in new[] { true, false })
             {
-                var a = DualGeneralFactory.Create("双将", clericFirst ? CharacterDefinition.LifeDomain : CharacterDefinition.GloomStalker,
-                    clericFirst ? CharacterDefinition.GloomStalker : CharacterDefinition.LifeDomain);
+                var a = DualGeneralFactory.Create("双将", clericFirst ? CharacterDefinition.LifeDomain : CharacterDefinition.ArcaneArcher,
+                    clericFirst ? CharacterDefinition.ArcaneArcher : CharacterDefinition.LifeDomain);
                 var b = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
                 var sink = new SimpleChoiceProvider(); var game = new GameManager(a, b, sink, new SimpleChoiceProvider());
                 a.LeftHand.SetValue(3); b.TakeDamage(10); AllStatuses(b, a);

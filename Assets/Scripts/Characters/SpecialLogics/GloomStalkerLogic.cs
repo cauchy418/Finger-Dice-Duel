@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Core
     ///     <see cref="GameManager.CanSkipTurnFor"/> 统管。）
     /// </summary>
     public sealed class GloomStalkerLogic : CharacterTemplate,
-        IHandEffectRewriter, IHandEffectDisplay, IDamageMitigator,
+        IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay, IDamageMitigator,
         IAttackRangeProvider, ITwoStepGoal, IPreTurnChoiceProvider
     {
         /// <summary>伏击要求两只手都是 1/2/3 —— 上界（含）。</summary>
@@ -33,6 +33,8 @@ namespace FingerDiceDuel.Core
 
         /// <summary>伏击状态下的攻击距离。</summary>
         public const int AmbushRange = 3;
+
+        public bool HandlesResult(int value) => false;
 
         public override string DisplayName => "游侠·幽域追踪者";
 

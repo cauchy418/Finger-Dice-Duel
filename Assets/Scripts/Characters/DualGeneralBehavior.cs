@@ -17,9 +17,8 @@ namespace FingerDiceDuel.Characters
     ///   · AI 评分：**两表平均后取最高**
     ///   · “接管同一步骤”型接口（改写效果 / 取消 / 闪避等）：**取第一个能处理的子角色**
     ///
-    /// ⚠️ 为何"同阵营"能避开碰撞：
-    ///   会互相覆盖的 5 个"接管型"接口，在**守序 / 中立 / 混乱**
-    ///   三组内都**不重叠**（已逐个核对）。
+    /// 同阵营不保证技能兼容；多个效果改写器按负责的数字分派；同一数字都接管时才取主将在前的实现者。
+    /// 生命周期钩子都会执行，可能与改写结果叠加或覆盖；见双将阵营迁移检查。
     /// </summary>
     public sealed class DualGeneralBehavior : CharacterTemplate,
         IMultiHitAttack, IAttackRangeProvider, ITurnSkipRule, IDamageMitigator,
@@ -28,7 +27,7 @@ namespace FingerDiceDuel.Characters
         IDodgeBlocker, IRangeBreakEffect, IExtraAttackProvider, IAiMoveAdvisor,
         IAttackTargetRule, IDodgeCapability, ISkillUseCounter, ITwoStepGoal,
         IHandEffectDisplay, IResultTargetProvider, ITargetHandChoiceProvider,
-        ICharacterBehaviorContainer
+        ICharacterBehaviorContainer, ISelfAddendProvider, IPiercesMitigation
     {
         // ⚠️ 存成 `ICharacterBehavior`（Core 层接口）而不是 `CharacterTemplate`：
         //    容器本身在 Characters 层，但构造参数不应强制调用方持有具体类型。
@@ -218,7 +217,7 @@ namespace FingerDiceDuel.Characters
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
             // 与结算采用同一个首位改写者；圣武士·奉献之誓合盾不被另一名角色的普通攻击判定覆盖。
-            var rewriter = CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(context?.Actor);
+            var rewriter = CharacterBehaviors.EffectRewriterFor(context?.Actor, context?.ResultValue ?? 0);
             if (rewriter != null && rewriter is IResultTargetProvider rewrittenTarget)
                 return rewrittenTarget.ResultNeedsTarget(context);
             for (int i = 0; i < _parts.Count; i++)
@@ -341,44 +340,26 @@ namespace FingerDiceDuel.Characters
         HandEffectType IHandEffectRewriter.RewriteEffect(PlayerState actor, Hand actedHand,
                                                          int targetValue, GameManager manager)
         {
-            // ⚠⚠ **没有子角色会改写时，必须返回原效果，不是 None。**
-            //
-            //    <see cref="GameManager"/> 用 <c>rewritten != effect</c> 来判“是否被改写”，
-            //    所以 <c>None</c> 的含义是**“把效果改成无效果”**
-            //    （野蛮人·巨人道途的 4/6/8 正是这么用的），而不是“没改写”。
-            //
-            //    我第一版在没有改写器时返回了 None —— 于是
-            //    **游荡者·风流剑客+邪术师·至高妖精这种“两个都不实现改写器”的组合，
-            //    所有数字全变成了无效果**（玩家实测：8 不攻击）。
-            //    野蛮人·巨人道途只是**恰好确实想把 8 变成 None**，所以看起来是对的。
-            HandEffectType original = actedHand != null
-                ? Hand.GetEffectType(actedHand.Value)
-                : HandEffectType.None;
-
-            for (int i = 0; i < _parts.Count; i++)
-            {
-                if (!(_parts[i] is IHandEffectRewriter r)) continue;
-
-                // 取**第一个实现了改写器的子角色的答案**，
-                // 包括它返回的 None（=“我要把它变成无效果”）。
-                // 各子角色在“不想改写”时会自己返回原效果。
-                return r.RewriteEffect(actor, actedHand, targetValue, manager);
-            }
-
-            return original;
+            var rewriter=CharacterBehaviors.EffectRewriterFor(_parts,actedHand?.Value ?? 0);
+            return rewriter?.RewriteEffect(actor,actedHand,targetValue,manager)
+                ?? Hand.GetEffectType(actedHand?.Value ?? 0);
         }
 
         HandEffectType IHandEffectDisplay.DisplayedEffectOf(int resultValue)
         {
-            // 同上：**没有子角色会改显示时，返回原效果**。
-            // 野蛮人·巨人道途的 4/6/8 确实要显示成“不红”，所以它的 None 是有意义的。
-            for (int i = 0; i < _parts.Count; i++)
-            {
-                if (!(_parts[i] is IHandEffectDisplay d)) continue;
-                return d.DisplayedEffectOf(resultValue);
-            }
-
+            var rewriter=CharacterBehaviors.EffectRewriterFor(_parts,resultValue);
+            if(rewriter is IHandEffectDisplay display) return display.DisplayedEffectOf(resultValue);
             return Hand.GetEffectType(resultValue);
+        }
+
+        bool ISelfAddendProvider.AllowsSelfAddend
+        {
+            get
+            {
+                foreach(var part in _parts)
+                    if(part is ISelfAddendProvider self && self.AllowsSelfAddend) return true;
+                return false;
+            }
         }
 
         bool IDamageMitigator.TryMitigate(PlayerState owner, AttackContext context, int segmentDamage,
@@ -431,10 +412,21 @@ namespace FingerDiceDuel.Characters
             }
         }
 
+        bool IPiercesMitigation.PiercesMitigation
+        {
+            get
+            {
+                foreach (var part in _parts)
+                    if (part is IPiercesMitigation pierce && pierce.PiercesMitigation) return true;
+                return false;
+            }
+        }
+
         void IRangeBreakEffect.ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager)
         {
-            var e = First<IRangeBreakEffect>();
-            e?.ApplyRangeBreak(actor, actedHand, manager);
+            // CharacterTemplate 为全部角色提供空实现，不能让主将空实现挡住副将破阵者。
+            foreach (var part in _parts)
+                if (part is IRangeBreakEffect effect) effect.ApplyRangeBreak(actor, actedHand, manager);
         }
 
         bool IExtraAttackProvider.WillExtraAttack(PreTurnChoiceContext context)

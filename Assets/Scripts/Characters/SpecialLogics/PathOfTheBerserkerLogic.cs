@@ -4,10 +4,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>野蛮人·狂战士道途：9 改为攻击；每少 5 点生命获得 +1/+1；造成伤害回复一半。</summary>
     public sealed class PathOfTheBerserkerLogic : CharacterTemplate,
-        IHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IOnHitLanded,
+        IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IOnHitLanded,
         IDynamicStats
     {
         public const int AttackValue = 9;
+
+        public bool HandlesResult(int value) => value == AttackValue;
 
         public override string DisplayName => "野蛮人·狂战士道途";
         public override int DefaultAttackBonus => -1;

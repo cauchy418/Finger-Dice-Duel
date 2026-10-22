@@ -1,0 +1,127 @@
+PASS alignment fixture imported
+PASS engine regression All_27_alignments_match_the_latest_assignment_and_cancelled_berserker_move
+PASS engine regression New_axis_populations_produce_111_pairs_and_both_orders_can_be_built
+PASS engine regression Every_selective_rewriter_declares_only_the_results_it_actually_handles
+PASS engine regression Magician_and_giant_keep_two_attack_and_five_double_attack_in_both_orders
+PASS engine regression Magician_and_giant_keep_dead_numbers_and_double_healing_in_both_orders
+PASS engine regression Magician_giant_self_add_and_target_choice_work_in_both_orders
+PASS engine regression Attack_target_prompt_and_effect_display_agree_for_two_five_and_dead_numbers
+PASS engine regression Other_disjoint_rewriters_cannot_mask_partner_results
+PASS engine regression Newly_lawful_conjuration_duals_keep_mitigation_piercing_in_both_orders
+PASS engine regression Newly_lawful_archfey_duals_keep_health_swap_skip_in_both_orders
+PASS engine regression Castling_and_archfey_skip_remain_independent_choices
+PASS engine regression Secondary_breaker_range_break_is_not_masked_by_a_default_noop
+PASS engine regression Audit_all_111_pairs_for_competing_number_handlers_and_real_operation_failures
+PASS codex alignment fighter_champion 中立善良
+PASS codex alignment fighter_breaker 守序中立
+PASS codex alignment wizard_school_of_conjuration 守序中立
+PASS codex alignment barbarian_path_of_the_warden 混乱善良
+PASS codex alignment cleric_life_domain 守序善良
+PASS codex alignment rogue_swashbuckler 混乱善良
+PASS codex alignment barbarian_path_of_the_beast 混乱邪恶
+PASS codex alignment fighter_swordsman 守序中立
+PASS codex alignment monk_way_of_the_ninja 绝对中立
+PASS codex alignment rogue_assassin 混乱中立
+PASS codex alignment paladin_oath_of_devotion 守序善良
+PASS codex alignment warlock_the_archfey 守序邪恶
+PASS codex alignment fighter_arcane_archer 守序中立
+PASS codex alignment rogue_gambler 混乱中立
+PASS codex alignment paladin_oath_of_the_crown 守序善良
+PASS codex alignment monk_way_of_the_tai_chi 中立善良
+PASS codex alignment barbarian_path_of_the_giant 混乱邪恶
+PASS codex alignment rogue_thief 中立邪恶
+PASS codex alignment ranger_gloom_stalker 混乱善良
+PASS codex alignment rogue_magician 混乱中立
+PASS codex alignment wizard_school_of_evocation 绝对中立
+PASS codex alignment sorcerer_wild_magic 混乱中立
+PASS codex alignment warlock_the_great_old_one 中立邪恶
+PASS codex alignment bard_college_of_valor 守序善良
+PASS codex alignment paladin_oathbreaker 守序邪恶
+PASS codex alignment barbarian_path_of_the_berserker 中立邪恶
+PASS codex alignment fighter_tactician 混乱善良
+PASS codex law population 守序
+PASS codex intersection 守序善良
+PASS codex intersection 守序中立
+PASS codex intersection 守序邪恶
+PASS codex law population 中立
+PASS codex intersection 中立善良
+PASS codex intersection 中立中立
+PASS codex intersection 中立邪恶
+PASS codex law population 混乱
+PASS codex intersection 混乱善良
+PASS codex intersection 混乱中立
+PASS codex intersection 混乱邪恶
+PASS selectable rogue_magician
+PASS raycast reaches Card19 parent=Content active=True enabled=True phase= hits=Card19,DgRoster
+PASS chaotic partner population nine
+PASS berserker excluded from chaotic partner list
+PASS selectable barbarian_path_of_the_giant
+PASS raycast reaches Card5 parent=Content active=True enabled=True phase= hits=Card5,DgRoster
+PASS both selected roles preserved
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 2 reverse False
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetPlayer hits=PaintedHandCard
+PASS real UI result 2
+PASS self add two deals 4 once
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 5 reverse False
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetPlayer hits=PaintedHandCard
+PASS real UI result 5
+PASS five deals two fives
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 9 reverse False
+PASS real UI result 9
+PASS nine heals six without target step
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 4 reverse False
+PASS real UI result 4
+PASS four remains dead number
+PASS selectable barbarian_path_of_the_giant
+PASS raycast reaches Card16 parent=Content active=True enabled=True phase=ChoosingAttackerHand hits=Card16,DgRoster
+PASS chaotic partner population nine
+PASS berserker excluded from chaotic partner list
+PASS selectable rogue_magician
+PASS raycast reaches Card6 parent=Content active=True enabled=True phase=ChoosingAttackerHand hits=Card6,DgRoster
+PASS both selected roles preserved
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 2 reverse True
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetPlayer hits=PaintedHandCard
+PASS real UI result 2
+PASS self add two deals 4 once
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 5 reverse True
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetPlayer hits=PaintedHandCard
+PASS real UI result 5
+PASS five deals two fives
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 9 reverse True
+PASS real UI result 9
+PASS nine heals six without target step
+PASS single line dual name _nameTextA
+PASS single line dual name _nameTextB
+PASS raycast reaches PaintedHandCard parent=AreaA active=True enabled=True phase=ChoosingAttackerHand hits=PaintedHandCard
+PASS raycast reaches PaintedHandCard parent=AreaB active=True enabled=True phase=ChoosingTargetHand hits=PaintedHandCard
+PASS visible target stage matches result 4 reverse True
+PASS real UI result 4
+PASS four remains dead number

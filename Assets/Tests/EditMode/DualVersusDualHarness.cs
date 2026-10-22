@@ -54,7 +54,7 @@ namespace FingerDiceDuel.Tests
             public override string ToString() => Name;
         }
 
-        /// <summary>列出全部合法双将（每阵营 C(6,2) = 15，共 45 个）。</summary>
+        /// <summary>按当前阵营表动态列出全部同阵营双将；兼容性与选将资格分别检查。</summary>
         public static List<Dual> AllDuals()
         {
             var list = new List<Dual>();
@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Tests
         /// <paramref name="firstIsA"/> 控制谁坐 A 位 —— 同一对组合跑两遍交换座位，
         /// 把座位偏差从胜率里抵消掉（与 1v1 测试台同一做法）。
         /// </summary>
-        public static Outcome Play(Dual first, Dual second, bool firstIsA, int seed)
+        public static Outcome Play(Dual first, Dual second, bool firstIsA, int seed, bool historicalMechanicsOnly = false)
         {
             var result = new Outcome();
 
@@ -100,8 +100,8 @@ namespace FingerDiceDuel.Tests
                 Dual a = firstIsA ? first : second;
                 Dual b = firstIsA ? second : first;
 
-                PlayerState pA = DualGeneralFactory.Create("甲", a.Primary, a.Secondary);
-                PlayerState pB = DualGeneralFactory.Create("乙", b.Primary, b.Secondary);
+                PlayerState pA = historicalMechanicsOnly ? HistoricalMechanicsPair("甲",a) : DualGeneralFactory.Create("甲", a.Primary, a.Secondary);
+                PlayerState pB = historicalMechanicsOnly ? HistoricalMechanicsPair("乙",b) : DualGeneralFactory.Create("乙", b.Primary, b.Secondary);
 
                 var choiceA = new GreedyChoiceProvider();
                 var choiceB = new GreedyChoiceProvider();
@@ -137,6 +137,18 @@ namespace FingerDiceDuel.Tests
             }
 
             return result;
+        }
+
+        // 仅供保留已跨阵营的历史死锁现场；正式选将与全量组合仍严格走工厂校验。
+        private static PlayerState HistoricalMechanicsPair(string name,Dual pair)
+        {
+            var primary=CharacterFactory.CreatePlayer("primary",pair.Primary);
+            var secondary=CharacterFactory.CreatePlayer("secondary",pair.Secondary);
+            var behavior=new DualGeneralBehavior(primary.Character,secondary.Character);
+            behavior.SetNames(pair.Primary.DisplayName,pair.Secondary.DisplayName);
+            var player=new PlayerState(name,behavior,Math.Max(primary.MaximumHealth,secondary.MaximumHealth));
+            player.BindDefinition(pair.Primary);
+            return player;
         }
 
         /// <summary>按 1d20 掷骰分配初始手值（与实机经典模式一致）。</summary>

@@ -50,11 +50,11 @@ namespace FingerDiceDuel.Tests
         public void Double_nine_heals_the_extra_amount_in_a_dual_general()
         {
             // ⚠️ 双将要求两名角色**同属守序 / 中立 / 混乱之一**。
-            //    玩家报告的组合正是「牧师·生命领域 + 游侠·幽域追踪者」（都属守序），
-            //    所以直接照它来 —— 比我自己编一个更贴近现场。
-            PlayerState lifeDomain = MakeDual("对手牧师·生命领域游侠·幽域追踪者", CharacterDefinition.LifeDomain,
-                                          CharacterDefinition.GloomStalker);
-            PlayerState foe = MakeDual("我方游侠·幽域追踪者战士·剑士", CharacterDefinition.GloomStalker,
+            //    旧报告组合是生命领域+幽域追踪者；后者现已改为混乱，改用守序魔射手验证同一回复机制。
+            //    回复、双九和净化的断言保持不变。
+            PlayerState lifeDomain = MakeDual("生命领域+魔射手", CharacterDefinition.LifeDomain,
+                                          CharacterDefinition.ArcaneArcher);
+            PlayerState foe = MakeDual("魔射手+剑士", CharacterDefinition.ArcaneArcher,
                                        CharacterDefinition.Swordsman);
 
             ArrangeDoubleNineAfter(lifeDomain, foe);
@@ -86,9 +86,9 @@ namespace FingerDiceDuel.Tests
         public void Single_nine_heals_only_once_in_a_dual_general()
         {
             // 反向对照：只有一只 9（另一只手是别的数）时不该有额外回复
-            PlayerState lifeDomain = MakeDual("对手牧师·生命领域游侠·幽域追踪者", CharacterDefinition.LifeDomain,
-                                          CharacterDefinition.GloomStalker);
-            PlayerState foe = MakeDual("我方游侠·幽域追踪者战士·剑士", CharacterDefinition.GloomStalker,
+            PlayerState lifeDomain = MakeDual("生命领域+魔射手", CharacterDefinition.LifeDomain,
+                                          CharacterDefinition.ArcaneArcher);
+            PlayerState foe = MakeDual("魔射手+剑士", CharacterDefinition.ArcaneArcher,
                                        CharacterDefinition.Swordsman);
 
             lifeDomain.LeftHand.SetValue(8);
@@ -117,9 +117,9 @@ namespace FingerDiceDuel.Tests
         {
             // 对照：单独牧师·生命领域（非双将）的双 9 一直是好的 —— 用来隔离
             // "是双将容器的问题，还是双 9 本身的问题"
-            PlayerState lifeDomain = MakeDual("对手牧师·生命领域游侠·幽域追踪者", CharacterDefinition.LifeDomain,
-                                          CharacterDefinition.GloomStalker);
-            PlayerState foe = MakeDual("我方游侠·幽域追踪者战士·剑士", CharacterDefinition.GloomStalker,
+            PlayerState lifeDomain = MakeDual("生命领域+魔射手", CharacterDefinition.LifeDomain,
+                                          CharacterDefinition.ArcaneArcher);
+            PlayerState foe = MakeDual("魔射手+剑士", CharacterDefinition.ArcaneArcher,
                                        CharacterDefinition.Swordsman);
 
             lifeDomain.LeftHand.SetValue(8);

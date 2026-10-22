@@ -50,7 +50,9 @@ namespace FingerDiceDuel.UI
                 28, TextAnchor.MiddleCenter, BattleArt.Gold);
             name.font = UiFont.Title;
             name.fontStyle = FontStyle.Normal;
-            name.resizeTextForBestFit = true; name.resizeTextMinSize = 18; name.resizeTextMaxSize = 28;
+            name.resizeTextForBestFit = true; name.resizeTextMinSize = 14; name.resizeTextMaxSize = 28;
+            // 双将的职业·子职全名较长，限制在姓名行内缩放，避免换行压住血条。
+            name.verticalOverflow = VerticalWrapMode.Truncate;
             status = CreateText(area, "Stats", new Vector2(70, 119), new Vector2(600, 30),
                 20, TextAnchor.MiddleCenter, BattleArt.Ink);
             var track = ArtImage(area, "HpBar", "UI/health_track", new Vector2(70, 155), new Vector2(360, 34), true);

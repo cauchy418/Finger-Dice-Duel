@@ -11,6 +11,10 @@ namespace FingerDiceDuel.Tests
     {
         private static PlayerState Make(CharacterDefinition d) => CharacterFactory.CreatePlayer(d.DisplayName, d);
 
+        // 阵营调整后勇士与风流剑客不可同选。此处只保留已验证的倍率组合内核回归。
+        private static PlayerState MechanicsPair(CharacterDefinition primary, CharacterDefinition secondary)
+            => new PlayerState("mechanics-only", new DualGeneralBehavior(Make(primary).Character,Make(secondary).Character));
+
         [Test]
         public void Real_operation_uses_post_operation_sum_and_multiplies_before_stats()
         {
@@ -66,7 +70,7 @@ namespace FingerDiceDuel.Tests
         {
             foreach(bool championFirst in new[]{true,false})
             {
-                var a=DualGeneralFactory.Create("dual",championFirst?CharacterDefinition.Champion:CharacterDefinition.Swashbuckler,
+                var a=MechanicsPair(championFirst?CharacterDefinition.Champion:CharacterDefinition.Swashbuckler,
                     championFirst?CharacterDefinition.Swashbuckler:CharacterDefinition.Champion);
                 var b=Make(CharacterDefinition.Blank); a.LeftHand.SetValue(8);a.RightHand.SetValue(2);
                 var choices=new ScriptedChoiceProvider();choices.ChooseHand(a.RightHand);
@@ -81,7 +85,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Champion_bonus_does_not_make_an_unempowered_dual_swashbuckler_attack_piercing()
         {
-            var a=DualGeneralFactory.Create("dual",CharacterDefinition.Champion,CharacterDefinition.Swashbuckler);
+            var a=MechanicsPair(CharacterDefinition.Champion,CharacterDefinition.Swashbuckler);
             var b=Make(CharacterDefinition.Blank);a.LeftHand.SetValue(4);a.RightHand.SetValue(6);
             var attack=new AttackContext(a,b,a.LeftHand,4);attack.Resolve(null,null);
             Assert.AreEqual(7,attack.AppliedDamage);

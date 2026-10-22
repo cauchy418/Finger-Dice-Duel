@@ -16,12 +16,14 @@ namespace FingerDiceDuel.Core
     /// 所以**无视护盾与攻防加成**，直接扣 2 点。
     /// </summary>
     public sealed class OathOfDevotionLogic : CharacterTemplate, IPreTurnChoiceProvider,
-                                       FingerDiceDuel.Core.IHandEffectRewriter, IHandEffectDisplay,
+                                       FingerDiceDuel.Core.IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay,
                                        IAttackRangeProvider,
                                        FingerDiceDuel.Core.IAttackRedirector,
                                        FingerDiceDuel.Core.IAiMoveAdvisor,
                                        FingerDiceDuel.Core.ISkillUseCounter
     {
+        public bool HandlesResult(int value) => value == 4 || value == 6;
+
         public override string DisplayName => "圣武士·奉献之誓";
 
         /// <summary>

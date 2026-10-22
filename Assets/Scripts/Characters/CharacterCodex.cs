@@ -9,7 +9,7 @@ namespace FingerDiceDuel.Characters
     /// 内容按玩家要求组织：名称（中英文）→ 攻防距离生命 → 技能（一句 + 详细）
     /// → 操作指导 → 如何针对 → 与其他角色的特殊交互。
     ///
-    /// ⚠️ 阵营（<see cref="Alignment"/>）是我按角色气质拟定的，
+    /// ⚠️ 阵营（<see cref="Alignment"/>）以玩家最新确认的分配为准，
     ///    玩家可以随时调整 —— 改动只在这一张表里。
     ///
     /// <b>写新角色前先读这段</b> —— 玩家明确要求「不要长篇大论」，
@@ -39,14 +39,14 @@ namespace FingerDiceDuel.Characters
 
         static CharacterCodex()
         {
-            Add(CharacterDefinition.ChampionId, "Champion", Alignment.TrueNeutral,
+            Add(CharacterDefinition.ChampionId, "Champion", Alignment.NeutralGood,
                 shortSkill: "十点重击：运算后双手和10，发起攻击的基础伤害×1.5。",
                 playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
                 counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
                 interactions: new[]
                 {
                     "与咒法学派：勇士防0，没有正向防御可被无视；护盾仍挡不住空间刃。",
-                    "与风流剑客双将：乘风突刺与十点重击的倍率相乘，按发起攻击时的手值判定。",
+                    "与忍宗双将：十点重击先乘基础伤害，再分段并逐段计算攻防；与风流剑客现为跨阵营，不能同选。",
                 });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulNeutral,
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Characters
                     "与奉献之誓 / 守望者道途 / 王冠之誓：场上盾越多，连锁破盾的选择越多。",
                 });
 
-            Add(CharacterDefinition.SchoolOfConjurationId, "School of Conjuration", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.SchoolOfConjurationId, "School of Conjuration", Alignment.LawfulNeutral,
                 shortSkill: "空间刃穿盾、正防与闪避；王车易位：同手值换座并跳过。",
                 playGuide: "优先合8/6/4。王车易位：点击技能后选双手值相同的存活角色（4/6同6/4），换座并跳过；不限距离，取消不耗回合，冻结不能用。",
                 counter: "盾、闪避、太极与伏击挡不住空间刃，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
@@ -106,7 +106,7 @@ namespace FingerDiceDuel.Characters
                     "与巨人道途：巨人道途的 9 是两段回复，生命领域是一段但可指定目标。",
                 });
 
-            Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.NeutralGood,
+            Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.ChaoticGood,
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离无限，命中附流血2回合。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。"
@@ -187,7 +187,7 @@ namespace FingerDiceDuel.Characters
                     "与破阵者 / 守望者道途 / 王冠之誓：他们也会合盾，场上盾多时双方技能都更活跃。",
                 });
 
-            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
+            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.LawfulEvil,
                 shortSkill: "妖精戏法：手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
@@ -202,7 +202,7 @@ namespace FingerDiceDuel.Characters
                     "与太极宗：太极反弹\"攻击数字视为 0\"，同样无法被取消。",
                 });
 
-            Add(CharacterDefinition.ArcaneArcherId, "Arcane Archer", Alignment.LawfulEvil,
+            Add(CharacterDefinition.ArcaneArcherId, "Arcane Archer", Alignment.LawfulNeutral,
                 shortSkill: "攻击距离 3；4 打两段、6 伤害 +2、8 无视护盾。",
                 playGuide: "距离 3 让你能打到环上更远的人，先手优势明显。"
                          + "8 是穿透盾牌的答案，4/6 是稳定输出 —— 三者都好用。",
@@ -290,8 +290,8 @@ namespace FingerDiceDuel.Characters
                     "与所有角色：被偷的人不触发效果、也不形成盾。",
                 });
 
-            // ---- 幽域追踪者（守序邪恶）----
-            Add(CharacterDefinition.GloomStalkerId, "Gloom Stalker", Alignment.LawfulEvil,
+            // ---- 幽域追踪者（混乱善良）----
+            Add(CharacterDefinition.GloomStalkerId, "Gloom Stalker", Alignment.ChaoticGood,
                 shortSkill: "幽域伏击：运算后两手同为 1/2/3 时，可暗置那只手进入伏击。",
                 playGuide: "点【伏击】把参与运算的那只手暗置：它不能再运算、"
                          + "对手也点不到，但数值可见。"
@@ -307,8 +307,8 @@ namespace FingerDiceDuel.Characters
                         + "他会拿到跳过回合按钮。",
                 });
 
-            // ---- 魔术师（混乱善良）----
-            Add(CharacterDefinition.MagicianId, "Magician", Alignment.TrueNeutral,
+            // ---- 魔术师（混乱中立）----
+            Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticNeutral,
                 shortSkill: "可以拿自己的手当被加数；"
                           + "运算出 2/4/6/8 都是攻击（伤害 = 牌面数字）。",
                 playGuide: "点自己的一只手当加数，再点自己的另一只手当被加数："
@@ -325,8 +325,8 @@ namespace FingerDiceDuel.Characters
                     "与至高妖精：攻击数字是 2/4/6/8，要用相同数字的牌取消。",
                 });
 
-            // ---- 塑能学派（中立善良）----
-            Add(CharacterDefinition.SchoolOfEvocationId, "School of Evocation", Alignment.NeutralGood,
+            // ---- 塑能学派（绝对中立）----
+            Add(CharacterDefinition.SchoolOfEvocationId, "School of Evocation", Alignment.TrueNeutral,
                 shortSkill: "运算出 4/6/8 时可放弃这次攻击，"
                           + "给下一次攻击指定一种伤害类型（10 选 1），命中后挂上负面状态。",
                 playGuide: "算出 4/6/8 时问是否放弃攻击。选放弃就挑一种伤害类型，"
@@ -345,8 +345,8 @@ namespace FingerDiceDuel.Characters
                     "与太极宗：太极减免仍算命中 —— 状态照样挂上。",
                 });
 
-            // ---- 狂野魔法（混乱善良）----
-            Add(CharacterDefinition.WildMagicId, "Wild Magic", Alignment.ChaoticGood,
+            // ---- 狂野魔法（混乱中立）----
+            Add(CharacterDefinition.WildMagicId, "Wild Magic", Alignment.ChaoticNeutral,
                 shortSkill: "每次攻击各 8% 变成 10 种元素之一（共 80%），"
                           + "改写后挂对应状态；余 20% 普攻。",
                 playGuide: "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。"
@@ -376,8 +376,8 @@ namespace FingerDiceDuel.Characters
                     "与风流剑客 / 至高妖精：被闪避或被取消不算命中，距离不会变。",
                 });
 
-            // ---- 勇气学院（守序中立）----
-            Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulNeutral,
+            // ---- 勇气学院（守序善良）----
+            Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
                 shortSkill: "勇气战歌：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
                           + "加/减攻防 ±(4-人数)。",
                 playGuide: "每次行动结算完，若本回合受过伤或回过血就会问你要不要发动。"

@@ -584,7 +584,7 @@ namespace FingerDiceDuel.Assistant
             if (!CanSkipTurn) return false;
 
             // 邪术师·至高妖精：先选目标，不立刻结束回合
-            var theArchfey = ActivePlayer.Character as TheArchfeyLogic;
+            var theArchfey = CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer);
             if (theArchfey != null && StatusRules.CanAct(ActivePlayer))
             {
                 PlayerState victim = FindHealthSwapTarget();
@@ -2636,7 +2636,7 @@ namespace FingerDiceDuel.Assistant
                 if (p == null || !p.IsAlive) continue;
 
                 // 只有人类邪术师·至高妖精才问 —— AI 在结算时自动取消
-                if (!(p.Character is TheArchfeyLogic)) continue;
+                if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) == null) continue;
                 if (GetAi(p) != null) continue;
 
                 if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
@@ -3560,7 +3560,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool TryAiTheArchfeySkip()
         {
-            if (!(ActivePlayer?.Character is TheArchfeyLogic)) return false;
+            if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer) == null) return false;
             if (!CanSkipTurn) return false;
 
             // ⚠️ **安全性**：跳过 = 白送一个回合给对方。

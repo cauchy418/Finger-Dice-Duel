@@ -1,0 +1,84 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/alignment-migration");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Func<UnityEngine.Canvas> battleCanvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,canvas)=>{
+ shot(canvas,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name+" parent="+button.transform.parent.name+" active="+button.gameObject.activeInHierarchy+" enabled="+button.interactable+" phase="+((FingerDiceDuel.Assistant.BoardController)field(boot,"_controller"))?.Phase+" hits="+string.Join(",",hits.Select(h=>h.gameObject.name)));
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+var testType=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.Tests.AlignmentMigrationTests")).FirstOrDefault(t=>t!=null);
+check(testType!=null,"alignment fixture imported");var fixture=System.Activator.CreateInstance(testType);
+foreach(var m in testType.GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.DeclaredOnly)){
+ if(m.GetParameters().Length!=0)continue;try{m.Invoke(fixture,null);check(true,"engine regression "+m.Name);}catch(System.Reflection.TargetInvocationException e){throw e.InnerException;}
+}
+invoke(boot,"OnCodexClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");
+var all=FingerDiceDuel.Core.CharacterDefinition.BuiltIn;
+for(int i=0;i<all.Length;i++){
+ codex.GoTo(i);var alignment=(UnityEngine.UI.Text)field(codex,"_alignmentLabel");
+ var expected=FingerDiceDuel.Characters.Alignments.NameOf(FingerDiceDuel.Characters.CharacterCodex.For(all[i]).Alignment);
+ check(alignment.text.Contains(expected),"codex alignment "+all[i].Id+" "+expected);
+ if(all[i]==FingerDiceDuel.Core.CharacterDefinition.Magician)shot(front,"magician-codex");
+ if(all[i]==FingerDiceDuel.Core.CharacterDefinition.PathOfTheBerserker)shot(front,"berserker-codex");
+}
+foreach(var law in new[]{"守序","中立","混乱"}){
+ invoke(boot,"OnCodexClicked",new object[0]);codex.ToggleAxis(law,true);
+ check(codex.PageCount==FingerDiceDuel.Characters.CharacterCodex.Filter(law,null).Count,"codex law population "+law);
+ foreach(var good in new[]{"善良","中立","邪恶"}){
+  codex.ToggleAxis(good,false);check(codex.PageCount==FingerDiceDuel.Characters.CharacterCodex.Filter(law,good).Count,"codex intersection "+law+good);codex.ToggleAxis(good,false);
+ }
+}
+System.Action<FingerDiceDuel.Core.CharacterDefinition> clickRole=def=>{
+ var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_dgRoster");var defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(roster,"_roster");
+ int index=defs.IndexOf(def);check(index>=0,"selectable "+def.Id);roster.Select(index,false);roster.ScrollToSelected();set(roster,"_selectedIndex",-1);
+ var cards=(System.Collections.Generic.List<UnityEngine.UI.Button>)field(roster,"_cards");click(cards[index],front);
+};
+foreach(bool reverse in new[]{false,true}){
+ boot.ShowScreen(FingerDiceDuel.UI.GameScreen.DualGeneralSelect);invoke(boot,"ResetDualSelection",new object[0]);
+ var primary=reverse?FingerDiceDuel.Core.CharacterDefinition.PathOfTheGiant:FingerDiceDuel.Core.CharacterDefinition.Magician;
+ var secondary=reverse?FingerDiceDuel.Core.CharacterDefinition.Magician:FingerDiceDuel.Core.CharacterDefinition.PathOfTheGiant;
+ clickRole(primary);
+ var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_dgRoster");var defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(roster,"_roster");
+ check(defs.Count==9,"chaotic partner population nine");check(!defs.Contains(FingerDiceDuel.Core.CharacterDefinition.PathOfTheBerserker),"berserker excluded from chaotic partner list");
+ if(!reverse)shot(front,"chaotic-partners");clickRole(secondary);
+ check(object.ReferenceEquals(field(boot,"_dgPrimary"),primary)&&object.ReferenceEquals(field(boot,"_dgSecondary"),secondary),"both selected roles preserved");
+ set(boot,"_pendingDefA",primary);set(boot,"_pendingDefB",FingerDiceDuel.Core.CharacterDefinition.Champion);
+ invoke(boot,"PrepareDualMatch",new object[]{primary,secondary,FingerDiceDuel.Core.CharacterDefinition.Champion,FingerDiceDuel.Core.CharacterDefinition.WayOfTheTaiChi});invoke(boot,"StartPreparedMatch",new object[0]);
+ var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");var board=field(boot,"_board");
+ var me=game.PlayerA;var enemy=game.PlayerB;
+ foreach(int result in new[]{2,5,9,4}){ ((FingerDiceDuel.UI.GameBoardUI)board).SetHistoryOpen(false);
+  game.ResetMatch();me.LeftHand.SetValue(1);me.RightHand.SetValue(result==2?1:3);enemy.LeftHand.SetValue(result-1);enemy.RightHand.SetValue(7);me.TakeDamage(12);
+  controller.SetFirstPlayer(me);controller.BeginTurn();invoke(boot,"RefreshView",new object[0]);
+  shot(battleCanvas(),null);foreach(var n in new[]{"_nameTextA","_nameTextB"}){var text=(UnityEngine.UI.Text)field(board,n);check(text.cachedTextGenerator.lineCount==1,"single line dual name "+n);}
+  var a=(System.Array)field(board,"_cardsA");var b=(System.Array)field(board,"_cardsB");
+  click((UnityEngine.UI.Button)field(a.GetValue(0),"Button"),battleCanvas());
+  click((UnityEngine.UI.Button)field(result==2?a.GetValue(1):b.GetValue(0),"Button"),battleCanvas());
+  check((result==2||result==5)==(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer),"visible target stage matches result "+result+" reverse "+reverse);
+  if(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer)click((UnityEngine.UI.Button)field(b.GetValue(0),"Button"),battleCanvas());
+  check(controller.LastTurn!=null&&controller.LastTurn.ActedHandValueAfter==result,"real UI result "+result);
+  if(result==2)check(controller.LastTurn.DamageDealt==4&&controller.LastTurn.HitCount==1,"self add two deals 4 once");
+  if(result==5)check(controller.LastTurn.DamageDealt==10&&controller.LastTurn.HitCount==2,"five deals two fives");
+  if(result==9)check(controller.LastTurn.HealAmount==6,"nine heals six without target step");
+  if(result==4)check(controller.LastTurn.Effect==FingerDiceDuel.Core.HandEffectType.None&&controller.LastTurn.DamageDealt==0,"four remains dead number");
+  if(!reverse){((FingerDiceDuel.UI.GameBoardUI)board).SetHistoryOpen(true);shot(battleCanvas(),"magician-giant-result-"+result);}
+ }
+}
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+return "Passed "+checks.Count+" alignment and dual UI checks. Evidence: "+output;

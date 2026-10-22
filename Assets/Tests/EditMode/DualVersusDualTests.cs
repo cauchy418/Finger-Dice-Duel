@@ -54,12 +54,13 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Seed_21639_skipping_turns_still_advances_rounds()
         {
-            var a = FindDual("法师·咒法学派", "野蛮人·巨人道途");
-            var b = FindDual("野蛮人·守望者道途", "邪术师·至高妖精");
+            // 这些组合已跨阵营，仅作为原种子的底层回归，不加入可选名单。
+            var a = new DualVersusDualHarness.Dual {Primary=CharacterDefinition.SchoolOfConjuration,Secondary=CharacterDefinition.PathOfTheGiant};
+            var b = new DualVersusDualHarness.Dual {Primary=CharacterDefinition.PathOfTheWarden,Secondary=CharacterDefinition.TheArchfey};
 
             for (int swap = 0; swap < 2; swap++)
             {
-                var outcome = DualVersusDualHarness.Play(a, b, swap == 0, 21639);
+                var outcome = DualVersusDualHarness.Play(a, b, swap == 0, 21639, historicalMechanicsOnly: true);
                 Assert.True(outcome.Error == null, "该种子不应抛异常：" + outcome.Error);
                 Assert.False(outcome.HitLimit,
                     $"座位方向 {swap} 不应被 MaxTurns 强停；turns={outcome.Turns}, reached={outcome.ReachedLimit}");

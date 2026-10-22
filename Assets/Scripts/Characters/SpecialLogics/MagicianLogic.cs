@@ -15,11 +15,13 @@ namespace FingerDiceDuel.Core
     /// \u26a0\ufe0f 第 2 条是与他角色的**关键差别**：别人 2 是死牌，他是攻击。
     /// </summary>
     public sealed class MagicianLogic : CharacterTemplate,
-        ISelfAddendProvider, IHandEffectRewriter, IHandEffectDisplay,
+        ISelfAddendProvider, IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay,
         IResultTargetProvider
     {
         /// <summary>游荡者·魔术师能把结果 2 当攻击打出的伤害（吃攻防加成）。</summary>
         public const int MagicAttackValue = 2;
+
+        public bool HandlesResult(int value) => value == MagicAttackValue;
 
         public override string DisplayName => "游荡者·魔术师";
 

@@ -2384,7 +2384,7 @@ namespace FingerDiceDuel.Core
             //     必须在这里做：手值已经变成结果值（盾就是 5），
             //     但护盾状态还没设 —— 改写后要由我们补上状态，
             //     否则会出现"看起来是盾、实际不是盾"。
-            if (CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(actor) is IHandEffectRewriter rewriter)
+            if (CharacterBehaviors.EffectRewriterFor(actor, actedHand.Value) is IHandEffectRewriter rewriter)
             {
                 HandEffectType rewritten = rewriter.RewriteEffect(
                     actor, actedHand, targetValue, this);
@@ -3239,7 +3239,7 @@ namespace FingerDiceDuel.Core
             // ⚠️ 武僧·太极宗的 5 是「太极」，不是盾。
             if (owner.Character is WayOfTheTaiChiLogic) return false;
 
-            if (!(CharacterBehaviors.FirstImplementer<IHandEffectRewriter>(owner)
+            if (!(CharacterBehaviors.EffectRewriterFor(owner, hand?.Value ?? 5)
                   is IHandEffectRewriter rewriter))
             {
                 return true;                                 // 没有改写者 -> 5 就是盾

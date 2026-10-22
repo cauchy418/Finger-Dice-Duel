@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -134,10 +134,8 @@ namespace FingerDiceDuel.Characters
 
         /// <summary>两名角色是否同属一个**阵营序列**（守序 / 中立 / 混乱）。
         ///
-        /// ⚠️ 这个限制不只是为了风格——它**避开了技能冲突**：
-        ///    会互相覆盖的 5 个"接管型"接口
-        ///    （改写效果 / 攻击段数 / 回复结算 / 取消攻击 / 跳过回合）
-        ///    在三组内**都不重叠**。换成善恶轴就会碰撞（已核对）。
+        /// 同阵营只决定选将资格，不保证技能兼容。多个效果改写器按负责数字分派，真正同时接管同一数字才按主将优先；
+        /// 阵营调整后的冲突检查见 Tools/dual-alignment-audit.md。
         /// </summary>
         public static bool SameAxis(CharacterDefinition a, CharacterDefinition b)
         {

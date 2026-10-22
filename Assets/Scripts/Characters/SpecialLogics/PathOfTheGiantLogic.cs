@@ -17,10 +17,12 @@
     ///   · "邪术师·至高妖精可以通过 5 来一次性取消野蛮人·巨人道途的两段攻击" ——
     ///     因为攻击数字就是 5，取消发生在逐段循环之前，所以天然一次抵消两段
     /// </summary>
-    public sealed class PathOfTheGiantLogic : CharacterTemplate, IHandEffectRewriter,
+    public sealed class PathOfTheGiantLogic : CharacterTemplate, IHandEffectRewriter, ISelectiveHandEffectRewriter,
                                       IMultiHitAttack, IHealOverride, IHealAmountProvider,
                                       IHandEffectDisplay, ILethalThresholdAdvisor
     {
+        public bool HandlesResult(int value) => value == 4 || value == 5 || value == 6 || value == 8 || value == 9;
+
         public override string DisplayName => "野蛮人·巨人道途";
 
         public override int DefaultAttackBonus => 2;
@@ -136,7 +138,7 @@
         /// </summary>
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context == null) return;
+            if (context == null || context.AttackValue != 5) return;
             if (!CharacterBehaviors.ActorHas(context.Attacker, this)) return;
 
             // ⚠️ 用 RewriteEffect 记下的"另一只手点数"，**不要在这里重新推断**：
