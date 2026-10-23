@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -142,7 +142,13 @@ namespace FingerDiceDuel.Core
 
         /// <summary>法师·死灵学派的免费 1 点暗蚀攻击。</summary>
         public bool IsNecromancyFreeAttack { get; set; }
+
+        /// <summary>本次攻击附加状态持续回合数（默认 2；龙族血脉为 3）。</summary>
+        public int StatusDuration { get; set; } = PlayerState.StatusDurationTurns;
         public bool IsStatusDamage { get; set; }
+
+        /// <summary>攻击结算后追加的不可抵挡真实伤害（散打宗共鸣引爆）。</summary>
+        public int ExtraTrueDamage { get; set; }
 
         /// <summary>
         /// **攻击方角色声明的"本次命中要挂的状态"**，优先于伤害类型的默认状态
@@ -264,6 +270,11 @@ namespace FingerDiceDuel.Core
             {
                 AttackType = typeProvider.AttackTypeOf(this);
             }
+
+            // 1a-bis. 防守方的元素反应（武僧·四象宗：消耗气获得抗性）。
+            if (AttackType != AttackDamageType.None
+                && Defender?.Character is IIncomingElementReaction reaction)
+                reaction.OnIncomingElementAttack(this, manager);
 
             // 1b. 攻击方的**伤害规则**改写（战士·魔射手：6 伤害 +2、8 无视护盾）。
             //
@@ -459,6 +470,13 @@ namespace FingerDiceDuel.Core
                 LandedHits++;
             }
 
+            // 散打宗：共鸣引爆的额外真实伤害，不经过护盾/抗性/防御。
+            if (ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
+            {
+                Defender.TakeDamage(ExtraTrueDamage);
+                AppliedDamage += ExtraTrueDamage;
+            }
+
             // 抗性在整次攻击结束时统一消耗；被盾/闪避挡下不会消耗。
             if (LandedHits > 0 && Defender != null)
                 Defender.ClearResistances();
@@ -631,8 +649,8 @@ namespace FingerDiceDuel.Core
             PlayerState victim = Defender;
             if (victim == null || !victim.IsAlive) return;
 
-            victim.ApplyStatus(status, PlayerState.StatusDurationTurns, Attacker);
-            manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {PlayerState.StatusDurationTurns} 回合");
+            victim.ApplyStatus(status, StatusDuration, Attacker);
+            manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {StatusDuration} 回合");
         }
 
         /// <summary>

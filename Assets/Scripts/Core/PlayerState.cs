@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -207,15 +207,21 @@ namespace FingerDiceDuel.Core
         private bool _physicalResistance;
         private readonly System.Collections.Generic.HashSet<AttackDamageType> _elementResistances
             = new System.Collections.Generic.HashSet<AttackDamageType>();
+        private readonly System.Collections.Generic.HashSet<AttackDamageType> _permanentResistances
+            = new System.Collections.Generic.HashSet<AttackDamageType>();
 
         public bool HasPhysicalResistance => _physicalResistance;
+
+        /// <summary>武僧·散打宗的共鸣之气标记。</summary>
+        public bool HasResonance { get; private set; }
+        public void SetResonance(bool value) => HasResonance = value;
         public bool HasResistance(AttackDamageType type)
         {
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
                 || type == AttackDamageType.Slashing)
-                return _physicalResistance;
-            return _elementResistances.Contains(type);
+                return _physicalResistance || _permanentResistances.Contains(AttackDamageType.Bludgeoning);
+            return _elementResistances.Contains(type) || _permanentResistances.Contains(type);
         }
 
         public void AddResistance(AttackDamageType type)
@@ -231,10 +237,22 @@ namespace FingerDiceDuel.Core
                 _elementResistances.Add(type);
         }
 
+        public void AddPermanentResistance(AttackDamageType type)
+        {
+            if (type != AttackDamageType.None) _permanentResistances.Add(type);
+        }
+
+        /// <summary>临时抗性在受到实际伤害后清除；永久抗性保留整场。</summary>
         public void ClearResistances()
         {
             _physicalResistance = false;
             _elementResistances.Clear();
+        }
+
+        public void ClearAllResistances()
+        {
+            ClearResistances();
+            _permanentResistances.Clear();
         }
 
         public void SetLordBonuses(int attack, int defense)
@@ -460,7 +478,8 @@ namespace FingerDiceDuel.Core
             Health = MaximumHealth;
             LeftHand.Reset(1);
             RightHand.Reset(1);
-            ClearResistances();
+            ClearAllResistances();
+            SetResonance(false);
         }
 
         public override string ToString() => $"{Name}(HP={Health}/{MaximumHealth})";

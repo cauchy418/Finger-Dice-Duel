@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -76,6 +76,12 @@ namespace FingerDiceDuel.Core
     public interface IPlayerDeathListener
     {
         void OnPlayerDied(PlayerState dead, GameManager manager);
+    }
+
+    /// <summary>受到元素攻击时自动反应（武僧·四象宗）。</summary>
+    public interface IIncomingElementReaction
+    {
+        void OnIncomingElementAttack(AttackContext context, GameManager manager);
     }
 
     /// <summary>在伤害计算完成后吸收伤害（法师·防护学派的奥术屏障）。</summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -106,6 +106,10 @@ namespace FingerDiceDuel.Core
         public const string SchoolOfDivinationId = "wizard_school_of_divination";
         public const string SchoolOfNecromancyId = "wizard_school_of_necromancy";
         public const string SchoolOfAbjurationId = "wizard_school_of_abjuration";
+        public const string DraconicBloodlineId = "sorcerer_draconic_bloodline";
+        public const string RangerHunterId = "ranger_hunter";
+        public const string WayOfTheOpenHandId = "monk_way_of_the_open_hand";
+        public const string WayOfTheFourElementsId = "monk_way_of_the_four_elements";
         public const string LightDomainId = "cleric_light_domain";
         public const string WarDomainId = "cleric_war_domain";
         public const string BattleMasterId = "fighter_battle_master";
@@ -462,6 +466,26 @@ namespace FingerDiceDuel.Core
             englishName: "Battle Master",
             description: "攻击伤害按数字分型：4为挥砍、6为钝击、8为穿刺。攻击实际造成伤害后（>0，盾挡/闪避/取消不触发），若另一只手为4/8，选择给目标附加流血或跛脚2回合；另一只手为6，选择附加震慑或倒伏2回合。攻防0/0，攻击距离2。");
 
+        public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
+            DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,
+            defenseBonus: -1, englishName: "Draconic Bloodline",
+            description: "开局选择寒冷/火焰/闪电/毒素/强酸之一；攻击改为该类型，获得该元素永久抗性，该类型状态持续3回合。攻0/防-1，距离无限。");
+
+        public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
+            RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
+            defenseBonus: -1, englishName: "Hunter",
+            description: "距离3穿刺。打出7可在攻击范围内标记一名角色；攻击可额外指定射程内的标记角色，伤害分开计算。攻击标记目标时无视正防御并加已损体力/5，随后消耗标记。");
+
+        public static CharacterDefinition WayOfTheOpenHand { get; } = new CharacterDefinition(
+            WayOfTheOpenHandId, "武僧·散打宗", SpecialLogicType.WayOfTheOpenHand,
+            englishName: "Way of the Open Hand",
+            description: "开局2气、上限6；行动后双手相同得1气。攻击时4气挂共鸣，或2气给目标倒伏/震慑2回合。攻击共鸣目标引爆半伤真实伤害。回合开始气=体力可跳回合发动混元体，移除全部气并回复2倍气点。");
+
+        public static CharacterDefinition WayOfTheFourElements { get; } = new CharacterDefinition(
+            WayOfTheFourElementsId, "武僧·四象宗", SpecialLogicType.WayOfTheFourElements,
+            englishName: "Way of the Four Elements",
+            description: "开局2气、上限6；行动后双手相同得1气。攻击可耗2气改火焰/寒冷/闪电/雷鸣/强酸；受到这些元素攻击时有气则自动耗1气获得该元素抗性。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -472,7 +496,8 @@ namespace FingerDiceDuel.Core
             WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
             Oathbreaker, PathOfTheBerserker, Tactician,
             SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
-            LightDomain, WarDomain, BattleMaster
+            LightDomain, WarDomain, BattleMaster,
+            DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

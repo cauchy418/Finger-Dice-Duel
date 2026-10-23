@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -45,11 +45,15 @@ namespace FingerDiceDuel.Tests
             "light|cleric_light_domain|牧师·光明领域|cleric|Light Domain|0|-1|20|2147483647",
             "war|cleric_war_domain|牧师·战争领域|cleric|War Domain|0|-1|20|2147483647",
             "battle_master|fighter_battle_master|战士·战斗大师|fighter|Battle Master|0|0|20|2",
+            "draconic|sorcerer_draconic_bloodline|术士·龙族血脉|sorcerer|Draconic Bloodline|0|-1|20|2147483647",
+            "hunter_marksman|ranger_hunter|游侠·猎人|ranger|Hunter|0|-1|20|3",
+            "open_hand|monk_way_of_the_open_hand|武僧·散打宗|monk|Way of the Open Hand|0|0|20|1",
+            "four_elements|monk_way_of_the_four_elements|武僧·四象宗|monk|Way of the Four Elements|0|0|20|1",
         };
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(33, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(37, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -77,7 +81,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 6, 3, 3, 5, 2, 1, 1, 5, 1, 2, 4, 0 };
+            int[] counts = { 6, 3, 3, 5, 2, 2, 1, 5, 2, 4, 4, 0 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

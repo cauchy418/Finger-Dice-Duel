@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -388,6 +388,23 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.ContainsAll(65,"1暗蚀、2抵挡",1,2));
             Own[CharacterDefinition.SchoolOfAbjurationId]=new HandValueProfile()
                 .Set(2,88).Set(8,78).Set(6,74).Set(4,72).Set(5,72).Set(9,62);
+
+            Own[CharacterDefinition.DraconicBloodlineId] = new HandValueProfile()
+                .Set(8, 80).Set(6, 72).Set(4, 64).Set(5, 64).Set(9, 62)
+                .Set(1, 54).Set(2, 54).Set(3, 54).Set(7, 50);
+
+            Own[CharacterDefinition.RangerHunterId] = new HandValueProfile()
+                .Set(7, 90).Set(8, 78).Set(6, 70).Set(4, 62).Set(5, 60).Set(9, 56)
+                .Set(1, 52).Set(2, 52).Set(3, 52)
+                .AddCombo(ComboRule.ContainsAll(70, "有7可挂猎人标记", 7));
+
+            Own[CharacterDefinition.WayOfTheOpenHandId] = new HandValueProfile()
+                .Set(4, 78).Set(2, 76).Set(1, 70).Set(8, 74).Set(6, 68)
+                .Set(5, 60).Set(9, 56).Set(3, 52).Set(7, 48);
+
+            Own[CharacterDefinition.WayOfTheFourElementsId] = new HandValueProfile()
+                .Set(2, 78).Set(4, 74).Set(8, 76).Set(6, 70)
+                .Set(5, 62).Set(9, 58).Set(1, 56).Set(3, 52).Set(7, 48);
 
             // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），

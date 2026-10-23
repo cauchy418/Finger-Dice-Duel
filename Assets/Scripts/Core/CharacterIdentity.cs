@@ -49,6 +49,10 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("light", "cleric_light_domain", "cleric", "光明领域", "Light Domain"),
             new CharacterIdentity("war", "cleric_war_domain", "cleric", "战争领域", "War Domain"),
             new CharacterIdentity("battle_master", "fighter_battle_master", "fighter", "战斗大师", "Battle Master"),
+            new CharacterIdentity("draconic", "sorcerer_draconic_bloodline", "sorcerer", "龙族血脉", "Draconic Bloodline"),
+            new CharacterIdentity("hunter_marksman", "ranger_hunter", "ranger", "猎人", "Hunter"),
+            new CharacterIdentity("open_hand", "monk_way_of_the_open_hand", "monk", "散打宗", "Way of the Open Hand"),
+            new CharacterIdentity("four_elements", "monk_way_of_the_four_elements", "monk", "四象宗", "Way of the Four Elements"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();
         private static Dictionary<string, CharacterIdentity> BuildIndex()

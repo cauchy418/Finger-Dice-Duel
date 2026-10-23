@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色特殊逻辑标识，用于 CharacterData / CharacterFactory 在编辑器中
@@ -167,6 +167,18 @@
         /// 战士·战斗大师：4=挥砍、6=钝击、8=穿刺；攻击实际造成伤害后，
         /// 按另一只手 4/8 → 流血/跛脚、6 → 眩晕/倒伏 给目标附加 2 回合状态（可选）。
         /// </summary>
-        BattleMaster = 33
+        BattleMaster = 33,
+
+        /// <summary>术士·龙族血脉：选定元素攻击与永久抗性。</summary>
+        DraconicBloodline = 34,
+
+        /// <summary>游侠·猎人：7 标记与印记攻击。</summary>
+        RangerHunter = 35,
+
+        /// <summary>武僧·散打宗：气、共鸣、倒伏/震慑与混元体。</summary>
+        WayOfTheOpenHand = 36,
+
+        /// <summary>武僧·四象宗：气、元素攻击与元素抗性。</summary>
+        WayOfTheFourElements = 37
     }
 }
