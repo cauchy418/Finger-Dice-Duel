@@ -30,6 +30,7 @@ async function importNewRoleIcons() {
   await require('./import-selected-profession-icons.cjs').importSelectedProfessionIcons();
   await require('./import-wizard-school-icons.cjs').importWizardSchoolIcons();
   await require('./import-cleric-martial-icons.cjs').importClericMartialIcons();
+  await require('./import-four-role-emblems.cjs').importFourRoleEmblems();
 }
 module.exports = { importNewRoleIcons };
 if (require.main === module) importNewRoleIcons().catch(error => { console.error(error); process.exitCode = 1; });

@@ -272,6 +272,34 @@
       "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_battle_master.png",
       "sha256": "5de3c27a1b2b80740f403b7fac7aa046fa8cc7c67732f4464d0068529c7e1e5a",
       "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-09c39c4d-33e5-499b-956d-b7c5f0ee6bff.png"
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "source": "Art/Production/four-role-emblems-v1/selected/Subclasses/sorcerer_draconic_bloodline.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_draconic_bloodline.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-60bd67d7-70d7-43bb-8cca-e9fc7498d27d.png",
+      "sha256": "0f83671c84a3e24a7fe49d026b1465f5886ba44e010696ea399536346d030ef5"
+    },
+    {
+      "id": "ranger_hunter",
+      "source": "Art/Production/four-role-emblems-v1/selected/Subclasses/ranger_hunter.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/ranger_hunter.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-1af1e5f7-8a29-46a2-836e-2e23442be712.png",
+      "sha256": "8a54c7f0610bd22a3fb1abd9a0026f81ef9ef0b2fb59e0bc1e541f9367d793f4"
+    },
+    {
+      "id": "monk_way_of_the_open_hand",
+      "source": "Art/Production/four-role-emblems-v1/selected/Subclasses/monk_way_of_the_open_hand.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_open_hand.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-32250a7c-4235-4990-af09-655096ed6e41.png",
+      "sha256": "de59047caa1fd7c06e82ae79257c766f2b702e7e0be55cd45d022c7acd802746"
+    },
+    {
+      "id": "monk_way_of_the_four_elements",
+      "source": "Art/Production/four-role-emblems-v1/selected/Subclasses/monk_way_of_the_four_elements.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/monk_way_of_the_four_elements.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-5188e057-94cc-4b1f-a9da-aec88bd42afb.png",
+      "sha256": "3ca98ab7563bcd255b5625af66351dc2930d046ddc15d3e66be206e39b6ea8a1"
     }
   ]
 }

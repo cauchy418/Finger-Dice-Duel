@@ -21,14 +21,14 @@
 | 测试 | **1151 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派本批真实引擎/UI **95 项通过** |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
-> 当前统计规模：1v1 **42,240** 局、2v2 **67,584** 局、双将 **336,672** 局、集火实验 **118,800** 局；
+> 当前统计规模：1v1 **53,280** 局、2v2 **85,248** 局、双将 **531,720** 局、集火实验 **133,200** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
 
 ## 职业与子职（2026-10-23）
 
 当前 37 个子职，12 个职业大类；德鲁伊仅预留。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
 
-大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 45 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
+大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 49 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
 图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。职业迁移阶段技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
 
@@ -395,3 +395,11 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 战争狂热用目标通知/发起攻击叠层，自己回合结束未攻击清空；重开同时清内部层与动态面板值。战斗大师先确认攻击目标再预选招式/不附加，实际伤害>0才生效；面板图标和文字分区，避免覆盖。新徽记与圣光图标见制作清单；元数据由编辑器生成。
 
 `FrontEndArt.WrapReadableText` 使用真实字体宽度，统一角色详情、手册与规则弹窗排版，保留数字单位、禁止孤立标点、调整短尾行。图鉴交互允许为空，不再强制凑条目；已逐角色删减通用比较和错误交互。验证见 [记录](Art/Integration/cleric-martial/README.md)。
+
+## 四个新增子职正式徽记（2026-10-24）
+
+术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗的4枚绘画徽记已导入。龙族血脉采用用户确认方向的赤红雾气与金色脉络虚化龙影，保留原版下方元素宝石、中央琥珀与旧金框；实体龙首备选留存。
+
+资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
+
+全量1151项测试通过，UI及Unity条件编译通过；真实引擎68项检查覆盖37角色资源、四枚选将与图鉴、职业筛选、旧ID别名及1v1/4人/8人显示。素材和精确提示词见 [制作记录](Art/Production/four-role-emblems-v1/README.md)，截图见 [验收](Art/Integration/four-role-emblems/README.md)。

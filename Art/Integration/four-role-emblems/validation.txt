@@ -1,0 +1,68 @@
+PASS 37 roles registered
+PASS art fighter_champion
+PASS art fighter_breaker
+PASS art wizard_school_of_conjuration
+PASS art barbarian_path_of_the_warden
+PASS art cleric_life_domain
+PASS art rogue_swashbuckler
+PASS art barbarian_path_of_the_beast
+PASS art fighter_swordsman
+PASS art monk_way_of_the_ninja
+PASS art rogue_assassin
+PASS art paladin_oath_of_devotion
+PASS art warlock_the_archfey
+PASS art fighter_arcane_archer
+PASS art rogue_gambler
+PASS art paladin_oath_of_the_crown
+PASS art monk_way_of_the_tai_chi
+PASS art barbarian_path_of_the_giant
+PASS art rogue_thief
+PASS art ranger_gloom_stalker
+PASS art rogue_magician
+PASS art wizard_school_of_evocation
+PASS art sorcerer_wild_magic
+PASS art warlock_the_great_old_one
+PASS art bard_college_of_valor
+PASS art paladin_oathbreaker
+PASS art barbarian_path_of_the_berserker
+PASS art fighter_tactician
+PASS art wizard_school_of_divination
+PASS art wizard_school_of_necromancy
+PASS art wizard_school_of_abjuration
+PASS art cleric_light_domain
+PASS art cleric_war_domain
+PASS art fighter_battle_master
+PASS art sorcerer_draconic_bloodline
+PASS art ranger_hunter
+PASS art monk_way_of_the_open_hand
+PASS art monk_way_of_the_four_elements
+PASS 512 export sorcerer_draconic_bloodline
+PASS legacy alias sorcerer_draconic_bloodline
+PASS selectable sorcerer_draconic_bloodline
+PASS selection painting sorcerer_draconic_bloodline
+PASS 512 export ranger_hunter
+PASS legacy alias ranger_hunter
+PASS selectable ranger_hunter
+PASS selection painting ranger_hunter
+PASS 512 export monk_way_of_the_open_hand
+PASS legacy alias monk_way_of_the_open_hand
+PASS selectable monk_way_of_the_open_hand
+PASS selection painting monk_way_of_the_open_hand
+PASS 512 export monk_way_of_the_four_elements
+PASS legacy alias monk_way_of_the_four_elements
+PASS selectable monk_way_of_the_four_elements
+PASS selection painting monk_way_of_the_four_elements
+PASS 37 codex entries
+PASS codex painting sorcerer_draconic_bloodline
+PASS codex painting ranger_hunter
+PASS codex painting monk_way_of_the_open_hand
+PASS codex painting monk_way_of_the_four_elements
+PASS profession filter sorcerer
+PASS profession filter ranger
+PASS profession filter monk
+PASS battle painting sorcerer_draconic_bloodline
+PASS battle painting ranger_hunter
+PASS battle painting monk_way_of_the_open_hand
+PASS battle painting monk_way_of_the_four_elements
+PASS multiplayer painting 4
+PASS multiplayer painting 8

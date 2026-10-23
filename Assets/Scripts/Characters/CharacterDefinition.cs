@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -469,7 +469,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
             DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,
             defenseBonus: -1, englishName: "Draconic Bloodline",
-            description: "开局选择寒冷/火焰/闪电/毒素/强酸之一；攻击改为该类型，获得该元素永久抗性，该类型状态持续3回合。攻0/防-1，距离无限。");
+            description: "开局选择寒冷/火焰/闪电/毒素/强酸之一；攻击改为该类型，获得该元素永久抗性，该类型状态持续3回合。攻0/防-1，距离∞。");
 
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,

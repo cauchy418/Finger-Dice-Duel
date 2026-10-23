@@ -326,7 +326,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 `GreedyChoiceProvider.FocusPolicy` 三档：`None` / `Self`（打离自己最近的敌人）/
 `Mate`（打离队友最近的敌人，打不到则不生效）。集火分**只加在攻击上**，且目标必须可达。
 
-最新33角色共118,800局对照见 [集火报告](Tools/focus-report.txt)。生产策略由 `FocusPolicies.cs` 读取：默认 `focusSelf`；游侠·幽域追踪者、野蛮人·野兽道途、游荡者·魔术师、邪术师·旧日支配者保留 baseline。此次未按单次采样自动调整这些策略。
+最新33角色共133,200局对照见 [集火报告](Tools/focus-report.txt)。生产策略由 `FocusPolicies.cs` 读取：默认 `focusSelf`；游侠·幽域追踪者、野蛮人·野兽道途、游荡者·魔术师、邪术师·旧日支配者保留 baseline。此次未按单次采样自动调整这些策略。
 
 > 集火分必须加在 `ScoreMove` 的**攻击分支**，不能放进 `TargetPriorityScoreFor`
 > （那个函数也被合盾 / 回血调用）；1v1 直接返回 null，否则所有攻击会偷偷 +25000。
@@ -388,10 +388,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 | 模式 | 规模 | 最新报告 |
 |---|---:|---|
-| 1v1 | 33角色，两两80局，共42,240局 | [1v1](Tools/1v1-report.txt) |
-| 2v2 | 528支二人队，各128局，共67,584局 | [2v2](Tools/2v2-report.txt) |
-| 双将1v1 | 168种合法组合、14,028对，共336,672局 | [双将](Tools/dual-report.txt) |
-| 集火对照 | 33角色×1,200局×3策略，共118,800局 | [集火](Tools/focus-report.txt) |
+| 1v1 | 33角色，两两80局，共53,280局 | [1v1](Tools/1v1-report.txt) |
+| 2v2 | 666支二人队，各128局，共85,248局 | [2v2](Tools/2v2-report.txt) |
+| 双将1v1 | 211种合法组合、22,155对，共531,720局 | [双将](Tools/dual-report.txt) |
+| 集火对照 | 33角色×1,200局×3策略，共133,200局 | [集火](Tools/focus-report.txt) |
 
 1v1、2v2、双将由无头 `GameManager` 驱动；主动技能界面流程另由控制器回归和真实引擎验收覆盖。胜率反映当前启发式 AI 与采样，不能等同角色的理论强度。旧版排名不再作为当前结论。
 
@@ -510,3 +510,11 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 ## 光明、战争与战斗大师（2026-10-24）
 
 三个子职的规则、技能UI、AI、正式徽记与圣光状态图标已完成。全量1146项通过。角色详情、秘法手册和游戏规则共用按字体宽度的排版，避免数字单位拆分及孤立标点；特殊交互只保留例外和优先级，可为空。实现与截图见 [验收](Art/Integration/cleric-martial/README.md)。
+
+## 四个新增子职正式徽记（2026-10-24）
+
+术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗的4枚绘画徽记已导入。龙族血脉采用用户确认方向的赤红雾气与金色脉络虚化龙影，保留原版下方元素宝石、中央琥珀与旧金框；实体龙首备选留存。
+
+资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
+
+全量1151项测试通过，UI及Unity条件编译通过；真实引擎68项检查覆盖37角色资源、四枚选将与图鉴、职业筛选、旧ID别名及1v1/4人/8人显示。素材和精确提示词见 [制作记录](Art/Production/four-role-emblems-v1/README.md)，截图见 [验收](Art/Integration/four-role-emblems/README.md)。
