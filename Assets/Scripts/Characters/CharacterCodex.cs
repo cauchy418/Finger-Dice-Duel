@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -331,26 +331,26 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
 
             Add(CharacterDefinition.DraconicBloodlineId, "Draconic Bloodline", Alignment.ChaoticNeutral,
-                shortSkill: "开局选元素：攻击改该元素，永久抗性；该元素状态持续3回合。",
+                shortSkill: "首次回合选寒冷/火焰/闪电/毒素/强酸；攻击改该元素，永久抗性，状态3回合。",
                 playGuide: "根据对手常见元素/队伍构成选择；选定后攻击和抗性都锁定该元素。",
                 counter: "用非该元素攻击；或用高防御/护盾处理其元素攻击。",
                 interactions: new[] { "与防护学派：两种抗性可叠加保存。" });
 
             Add(CharacterDefinition.RangerHunterId, "Hunter", Alignment.NeutralGood,
                 shortSkill: "7 在射程内标记；攻击标记目标无视正防御并加已损体力/5，消耗标记。",
-                playGuide: "先标记再集火；标记目标不必是主目标，可同时攻击原目标与标记目标。",
+                playGuide: "合出7后选择距离3内的一名其他角色，也可不标记；优先标记受伤或高防御的敌人。",
                 counter: "被标记后尽快离开其射程或逼他先消耗标记。",
                 interactions: new[] { "与多目标：同一次攻击可同时结算原目标与一个标记目标。" });
 
             Add(CharacterDefinition.WayOfTheOpenHandId, "Way of the Open Hand", Alignment.TrueNeutral,
                 shortSkill: "气点：4气共鸣、2气倒伏/震慑；攻击共鸣目标引爆半伤真实伤害；混元体。",
-                playGuide: "先用低气给控制，再攒4气挂共鸣；引爆前确保本次攻击能命中。",
+                playGuide: "攻击前选择招式或保留气点；2气倒伏/震慑、4气共鸣，按局面留气。",
                 counter: "逼他消耗气点；共鸣期间避免被他再次攻击。",
                 interactions: new[] { "与倒伏：共鸣引爆为额外真实伤害，仍吃本次攻击的其他结算。" });
 
             Add(CharacterDefinition.WayOfTheFourElementsId, "Way of the Four Elements", Alignment.TrueNeutral,
                 shortSkill: "气点：2气改元素攻击；受到元素攻击时有气则耗1气获得该元素抗性。",
-                playGuide: "根据对手元素选择攻击类型；留气防守比全部进攻更稳。",
+                playGuide: "攻击前从五种元素中选择或保留气点；利用潮湿/覆霜等联动，留气防守。",
                 counter: "用物理或非元素攻击绕开抗性；连续元素攻击耗尽其气。",
                 interactions: new[] { "与龙族血脉：元素抗性可叠加保存。" });
 

@@ -33,22 +33,20 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                   IPreTurnChoiceSink choiceSink)
         {
             if (owner == null || actedHand == null || actedHand.Value != 7) return;
-            PlayerState best = null;
-            int bestDistance = int.MaxValue;
-            for (int i = 0; i < manager.Players.Count; i++)
-            {
-                PlayerState p = manager.Players[i];
-                if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
-                int d = manager.DistanceBetween(owner, p);
-                if (d > 3 || d >= bestDistance) continue;
-                best = p;
-                bestDistance = d;
-            }
-            if (best != null)
-            {
-                Mark(best);
-                manager.NoteSkill(owner, "猎人标记", $"{best.Name} 被标记");
-            }
+            var targets=new List<PlayerState>();var hands=new List<Hand>();
+            foreach(var p in manager.Players)
+                if(p.IsAlive && !ReferenceEquals(p,owner) && manager.DistanceBetween(owner,p)<=3)
+                {targets.Add(p);hands.Add(p.LeftHand);}
+            if(targets.Count==0) return;
+            var request=new WizardChoice(owner,"猎人标记 · 选择射程3内的角色",hands,true,hand=> {
+                var target=manager.OwnerOfHand(hand);
+                if(target==null || !target.IsAlive || ReferenceEquals(target,owner) || manager.DistanceBetween(owner,target)>3) return;
+                Mark(target);manager.NoteSkill(owner,"猎人标记",$"{target.Name} 被标记");
+            },targetsPlayer:true,declineLabel:"不标记");
+            if(manager.DeferWizardChoice?.Invoke(request)==true) return;
+            var policy=manager.GetSkillPolicy(owner);
+            var pick=policy!=null?policy.HunterMarkTarget(owner,targets,manager):targets[0];
+            request.Choose(pick?.LeftHand);
         }
 
         public override void OnResolveAttack(AttackContext context)

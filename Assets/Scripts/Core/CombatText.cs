@@ -18,6 +18,8 @@
                 case HandEffect.SchoolOfAbjurationBarrier: skill="奥术屏障"; action="可放弃本次攻击，将攻击数字存入屏障。"; break;
                 case HandEffect.SchoolOfAbjurationResistanceTarget: skill="防护抗性"; action="选择存活角色，然后选择抗性类型。"; break;
                 case HandEffect.SchoolOfAbjurationResistanceType: skill="防护抗性"; action="选择物理整组或一种魔法抗性。"; break;
+                case HandEffect.OpenHandTechnique: skill="散打"; action="选择共鸣、倒伏、震慑或保留气点。"; break;
+                case HandEffect.FourElementsTechnique: skill="四象元素"; action="选择本次元素或保留气点。"; break;
                 case HandEffect.BattleMasterManeuver: skill="战斗招式"; action="攻击造成伤害后，按另一只手附加流血/跛脚或震慑/倒伏（2 回合）。"; break;
                 case HandEffect.SchoolOfNecromancyBlock: skill="死灵抵挡"; action="可将一只2变1，抵挡这一段；力场除外。"; break;
                 case HandEffect.ShieldBlock: skill = "格挡"; action = "选择一面盾抵挡。"; break;

@@ -23,6 +23,8 @@ namespace FingerDiceDuel.Core
         /// 允许放弃（放弃 = 本次不附加）。答案的"招式"存于角色侧（IBattleMasterManeuverChoice）。
         /// </summary>
         BattleMasterManeuver = 106,
+        OpenHandTechnique = 107,
+        FourElementsTechnique = 108,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>
@@ -409,6 +411,15 @@ namespace FingerDiceDuel.Core
         ///    （写成 `{ get; set; }` 会报 CS8341）。
         /// </summary>
         public int ResultValue { get; }
+        public IReadOnlyList<SkillChoiceOption> Options { get; }
+        public string OptionKey { get; }
+        private readonly Action<int> _applyOption;
+        public bool ChooseOption(int value)
+        {
+            if(Options!=null) foreach(var option in Options)
+                if(option.Value==value) {_applyOption?.Invoke(value);return true;}
+            return false;
+        }
 
         public ChoiceRequest(HandEffect effect, string prompt,
                              IReadOnlyList<Hand> candidates,
@@ -419,7 +430,10 @@ namespace FingerDiceDuel.Core
                              bool autoResolve = false,
                              int variant = 0,
                              System.Func<bool> skipWhen = null,
-                             int resultValue = 0)
+                             int resultValue = 0,
+                             IReadOnlyList<SkillChoiceOption> options = null,
+                             Action<int> applyOption = null,
+                             string optionKey = null)
         {
             Effect = effect;
             Prompt = prompt ?? "";
@@ -432,6 +446,7 @@ namespace FingerDiceDuel.Core
             Variant = variant;
             SkipWhen = skipWhen;
             ResultValue = resultValue;
+            Options=options??Array.Empty<SkillChoiceOption>();_applyOption=applyOption;OptionKey=optionKey;
         }
 
         /// <summary>这一次是否应被自动跳过（不问玩家，直接按放弃值落地）。</summary>

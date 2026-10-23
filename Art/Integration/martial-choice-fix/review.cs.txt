@@ -1,0 +1,50 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/martial-choice-fix");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Func<UnityEngine.Canvas> battleCanvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,canvas)=>{
+ shot(canvas,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name+" parent="+button.transform.parent.name+" active="+button.gameObject.activeInHierarchy+" enabled="+button.interactable+" phase="+((FingerDiceDuel.Assistant.BoardController)field(boot,"_controller"))?.Phase+" hits="+string.Join(",",hits.Select(h=>h.gameObject.name)));
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+
+
+var fixture=new FingerDiceDuel.Tests.MartialChoiceFlowTests();
+foreach(var method in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){method.Invoke(fixture,null);check(true,"engine test "+method.Name);}
+FingerDiceDuel.Core.GameManager game=null;FingerDiceDuel.Assistant.BoardController controller=null;FingerDiceDuel.UI.GameBoardUI board=null;
+System.Action bind=()=>{game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");};
+System.Action refresh=()=>invoke(boot,"RefreshView",new object[0]);
+System.Func<UnityEngine.UI.Button[]> modalButtons=()=>((UnityEngine.RectTransform)field(board,"_wizardModal")).GetComponentsInChildren<UnityEngine.UI.Button>().Where(b=>b.name.StartsWith("WizardOption")).ToArray();
+System.Action<int,string> inspect=(count,name)=>{
+ refresh();var buttons=modalButtons();check(buttons.Length==count,name+" options "+count);
+ var panel=(UnityEngine.RectTransform)field(board,"_wizardPanel");
+ foreach(var button in buttons){var label=button.GetComponentInChildren<UnityEngine.UI.Text>();var icon=button.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>();if(icon.gameObject.activeInHierarchy)check(icon.sprite!=null,name+" painted icon "+button.name);check(label.preferredHeight<=label.rectTransform.rect.height+1,name+" full label "+label.text);var bounds=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(panel,button.transform);check(bounds.min.y>=panel.rect.yMin&&bounds.max.y<=panel.rect.yMax,name+" option inside panel "+button.name);}
+ shot(battleCanvas(),name);
+};
+System.Action attack=()=>{game.PlayerB.LeftHand.SetValue(3);controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);if(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer)controller.ClickHand(game.PlayerB.LeftHand);};
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.DraconicBloodline,FingerDiceDuel.Core.CharacterDefinition.Champion);bind();inspect(5,"draconic-first-turn");
+click(modalButtons()[0],battleCanvas());check(game.PlayerA.HasResistance(FingerDiceDuel.Core.AttackDamageType.Cold)&&!game.PlayerA.HasResistance(FingerDiceDuel.Core.AttackDamageType.Fire),"dragon explicit Cold only");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.WayOfTheOpenHand,FingerDiceDuel.Core.CharacterDefinition.Champion);bind();attack();inspect(3,"open-hand-control");click(modalButtons()[1],battleCanvas());check(game.PlayerB.HasStatus(FingerDiceDuel.Core.StatusEffect.Stunned),"open hand actual UI stun");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.WayOfTheFourElements,FingerDiceDuel.Core.CharacterDefinition.Champion);bind();attack();inspect(6,"four-elements");click(modalButtons()[1],battleCanvas());check(game.PlayerB.HasStatus(FingerDiceDuel.Core.StatusEffect.Frost)&&game.TurnCount==1,"four elements actual UI cold once");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.RangerHunter,FingerDiceDuel.Core.CharacterDefinition.Champion);bind();game.PlayerB.LeftHand.SetValue(6);controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);inspect(1,"hunter-mark-target");
+check(modalButtons()[0].GetComponentInChildren<UnityEngine.UI.Text>().text==game.PlayerB.Name,"hunter label has no hand suffix");click(modalButtons()[0],battleCanvas());check(((FingerDiceDuel.Core.IHunterMarkSource)game.PlayerA.Character).IsMarked(game.PlayerB),"hunter selected target marked");
+var preview=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.EditorTools.MultiplayerArtPreview")).First(t=>t!=null);preview.GetField("_boot",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).SetValue(null,boot);var build=preview.GetMethod("Build",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+build.Invoke(null,new object[]{4,0,FingerDiceDuel.Core.CharacterDefinition.RangerHunter,false});bind();game.Players[1].LeftHand.SetValue(6);controller.ClickHand(game.Players[0].LeftHand);controller.ClickHand(game.Players[1].LeftHand);inspect(3,"4p-hunter-targets");click(modalButtons()[1],battleCanvas());check(((FingerDiceDuel.Core.IHunterMarkSource)game.Players[0].Character).IsMarked(game.Players[2]),"4p marks selected non-addend target");
+build.Invoke(null,new object[]{8,0,FingerDiceDuel.Core.CharacterDefinition.WayOfTheFourElements,false});bind();game.Players[1].LeftHand.SetValue(3);controller.ClickHand(game.Players[0].LeftHand);controller.ClickHand(game.Players[1].LeftHand);if(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer)controller.ClickHand(game.Players[1].LeftHand);inspect(6,"8p-four-elements");click(modalButtons()[4],battleCanvas());check(controller.LastTurn.AttackType==FingerDiceDuel.Core.AttackDamageType.Acid,"8p acid selection reaches result");
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);return "PASS "+checks.Count+" martial choice checks";

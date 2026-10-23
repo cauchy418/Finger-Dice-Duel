@@ -1200,6 +1200,9 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<HandEffect, int, Hand> AnsweredLookup { get; set; }
         public System.Func<WizardChoice,bool> DeferWizardChoice { get; set; }
+        public System.Func<PlayerState,ISkillChoicePolicy> SkillPolicyFor { get; set; }
+        public ISkillChoicePolicy GetSkillPolicy(PlayerState player)
+            => SkillPolicyFor?.Invoke(player) ?? GetChoiceProvider(player) as ISkillChoicePolicy;
         public System.Func<PlayerState,IWizardChoicePolicy> WizardPolicyFor { get; set; }
         public IWizardChoicePolicy WizardPolicy(PlayerState player)
             => WizardPolicyFor?.Invoke(player) ?? GetChoiceProvider(player) as IWizardChoicePolicy;

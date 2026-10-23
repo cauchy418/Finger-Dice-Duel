@@ -258,6 +258,7 @@ namespace FingerDiceDuel.Assistant
             _game.DeferWizardChoice = QueueWizardChoice;
             _game.DeferWizardAttack = QueueWizardAttack;
             _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
+            _game.SkillPolicyFor = p=>GetChoice(p) as ISkillChoicePolicy;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
@@ -2621,7 +2622,7 @@ namespace FingerDiceDuel.Assistant
                 // 防御性：角色不该提出空候选的抉择，否则玩家永远点不下去
                 for (int i = _pendingRequests.Count - 1; i >= before; i--)
                 {
-                    if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+                    if ((_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0) && _pendingRequests[i].Options.Count==0)
                     {
                         _lastCollectInfo += " (过滤空候选)";
                         _pendingRequests.RemoveAt(i);
@@ -3027,7 +3028,7 @@ namespace FingerDiceDuel.Assistant
             // 防御性：不要空候选
             for (int i = _pendingRequests.Count - 1; i >= before; i--)
             {
-                if (_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0)
+                if ((_pendingRequests[i].Candidates == null || _pendingRequests[i].Candidates.Count == 0) && _pendingRequests[i].Options.Count==0)
                     _pendingRequests.RemoveAt(i);
             }
         }
@@ -3293,6 +3294,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool AcceptPendingChoice()
         {
+            if(PendingRequest?.Options.Count>0) return false;
             if(PendingEffect==HandEffect.SchoolOfAbjurationResistanceType) return false;
             // 战斗招式必须走专属面板（2 选 1 + 不发动），不接受"发动"按钮直接跳过。
             if(PendingEffect==HandEffect.BattleMasterManeuver) return false;
@@ -3406,6 +3408,10 @@ namespace FingerDiceDuel.Assistant
             //    而 ChooseHandFor 的入参里没有 game。
             if (provider is GreedyChoiceProvider greedy) greedy.Game = _game;
 
+            if(request.Options.Count>0)
+            {
+                ChooseSkillOption(SkillChoicePolicy.Choose(request.OptionKey,request.Options,_pendingChoiceDecider,Defender,_game));return;
+            }
             Hand pick = provider?.ChooseHandFor(request, _pendingChoiceDecider);
             var wizardPolicy=provider as IWizardChoicePolicy;
             if(request.Effect==HandEffect.SchoolOfAbjurationResistanceType && wizardPolicy!=null)

@@ -9,8 +9,13 @@ namespace FingerDiceDuel.Assistant
     ///
     /// 这样 UI 层和 AI 层都可以只实现需要的抉择，避免每个实现都被迫写空方法。
     /// </summary>
-    public abstract class AbstractChoiceProvider : IChoiceProvider
+    public abstract class AbstractChoiceProvider : IChoiceProvider, ISkillChoicePolicy
     {
+        public virtual int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
+            => options[0].Value;
+        public virtual PlayerState HunterMarkTarget(PlayerState owner,IReadOnlyList<PlayerState> candidates,GameManager game)
+            => candidates.Count>0?candidates[0]:null;
+
         /// <summary>防守方有两面盾时用哪一面抵挡。默认返回 shieldA（第一面）。</summary>
         public virtual Hand AskWhichShieldToBlock(PlayerState defender, Hand shieldA, Hand shieldB,
                                                   AttackContext context)

@@ -1,0 +1,104 @@
+PASS engine test Open_hand_human_selects_stunned_instead_of_default_knockdown
+PASS engine test Open_hand_can_keep_ki_and_does_not_apply_default_status
+PASS engine test Four_elements_human_selects_cold_and_spends_only_once
+PASS engine test Four_elements_can_save_ki_and_keep_physical_attack
+PASS engine test Draconic_first_turn_requires_one_explicit_element_and_grants_only_that_resistance
+PASS engine test Draconic_reset_asks_again_and_does_not_keep_old_permanent_resistance
+PASS engine test Hunter_seven_waits_for_target_and_supports_decline
+PASS engine test Hunter_target_selection_applies_to_chosen_character
+PASS engine test Ai_four_elements_exploits_wet_and_preserves_ki_for_low_health_defense
+PASS engine test Ai_open_hand_uses_control_avoids_duplicate_and_can_choose_resonance
+PASS engine test Ai_draconic_avoids_resisted_element_and_initializes_without_modal
+PASS engine test Ai_hunter_prefers_wounded_enemy_and_avoids_ally_and_duplicate
+PASS engine test Queued_ai_hunter_uses_real_ai_policy_instead_of_human_sink
+PASS engine test Both_monk_components_in_dual_have_independent_options_and_ki
+PASS engine test Four_elements_all_five_player_choices_use_matching_damage_and_status
+PASS engine test Draconic_chosen_element_applies_its_three_turn_status_on_real_attack
+PASS engine test Ai_choice_flow_answers_monk_options_and_advances_once
+PASS draconic-first-turn options 5
+PASS draconic-first-turn painted icon WizardOption0
+PASS draconic-first-turn full label 寒冷
+PASS draconic-first-turn option inside panel WizardOption0
+PASS draconic-first-turn painted icon WizardOption1
+PASS draconic-first-turn full label 火焰
+PASS draconic-first-turn option inside panel WizardOption1
+PASS draconic-first-turn painted icon WizardOption2
+PASS draconic-first-turn full label 闪电
+PASS draconic-first-turn option inside panel WizardOption2
+PASS draconic-first-turn painted icon WizardOption3
+PASS draconic-first-turn full label 毒素
+PASS draconic-first-turn option inside panel WizardOption3
+PASS draconic-first-turn painted icon WizardOption4
+PASS draconic-first-turn full label 强酸
+PASS draconic-first-turn option inside panel WizardOption4
+PASS raycast reaches WizardOption0 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption0,Panel,WizardChoiceModal,PaintedHandCard
+PASS dragon explicit Cold only
+PASS open-hand-control options 3
+PASS open-hand-control painted icon WizardOption0
+PASS open-hand-control full label 倒伏 · 2气
+PASS open-hand-control option inside panel WizardOption0
+PASS open-hand-control painted icon WizardOption1
+PASS open-hand-control full label 震慑 · 2气
+PASS open-hand-control option inside panel WizardOption1
+PASS open-hand-control painted icon WizardOption2
+PASS open-hand-control full label 保留气点
+PASS open-hand-control option inside panel WizardOption2
+PASS raycast reaches WizardOption1 parent=Panel active=True enabled=True phase=ChoosingLockTarget hits=WizardOption1,Panel,WizardChoiceModal,PaintedHandCard
+PASS open hand actual UI stun
+PASS four-elements options 6
+PASS four-elements painted icon WizardOption0
+PASS four-elements full label 火焰 · 2气
+PASS four-elements option inside panel WizardOption0
+PASS four-elements painted icon WizardOption1
+PASS four-elements full label 寒冷 · 2气
+PASS four-elements option inside panel WizardOption1
+PASS four-elements painted icon WizardOption2
+PASS four-elements full label 闪电 · 2气
+PASS four-elements option inside panel WizardOption2
+PASS four-elements painted icon WizardOption3
+PASS four-elements full label 雷鸣 · 2气
+PASS four-elements option inside panel WizardOption3
+PASS four-elements painted icon WizardOption4
+PASS four-elements full label 强酸 · 2气
+PASS four-elements option inside panel WizardOption4
+PASS four-elements painted icon WizardOption5
+PASS four-elements full label 保留气点
+PASS four-elements option inside panel WizardOption5
+PASS raycast reaches WizardOption1 parent=Panel active=True enabled=True phase=ChoosingLockTarget hits=WizardOption1,Panel,WizardChoiceModal,PaintedHandCard
+PASS four elements actual UI cold once
+PASS hunter-mark-target options 1
+PASS hunter-mark-target full label 战士·勇士
+PASS hunter-mark-target option inside panel WizardOption0
+PASS hunter label has no hand suffix
+PASS raycast reaches WizardOption0 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption0,Panel,WizardChoiceModal,HintPanel
+PASS hunter selected target marked
+PASS 4p-hunter-targets options 3
+PASS 4p-hunter-targets full label 角色2
+PASS 4p-hunter-targets option inside panel WizardOption0
+PASS 4p-hunter-targets full label 角色3
+PASS 4p-hunter-targets option inside panel WizardOption1
+PASS 4p-hunter-targets full label 角色4
+PASS 4p-hunter-targets option inside panel WizardOption2
+PASS raycast reaches WizardOption1 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption1,Panel,WizardChoiceModal
+PASS 4p marks selected non-addend target
+PASS 8p-four-elements options 6
+PASS 8p-four-elements painted icon WizardOption0
+PASS 8p-four-elements full label 火焰 · 2气
+PASS 8p-four-elements option inside panel WizardOption0
+PASS 8p-four-elements painted icon WizardOption1
+PASS 8p-four-elements full label 寒冷 · 2气
+PASS 8p-four-elements option inside panel WizardOption1
+PASS 8p-four-elements painted icon WizardOption2
+PASS 8p-four-elements full label 闪电 · 2气
+PASS 8p-four-elements option inside panel WizardOption2
+PASS 8p-four-elements painted icon WizardOption3
+PASS 8p-four-elements full label 雷鸣 · 2气
+PASS 8p-four-elements option inside panel WizardOption3
+PASS 8p-four-elements painted icon WizardOption4
+PASS 8p-four-elements full label 强酸 · 2气
+PASS 8p-four-elements option inside panel WizardOption4
+PASS 8p-four-elements painted icon WizardOption5
+PASS 8p-four-elements full label 保留气点
+PASS 8p-four-elements option inside panel WizardOption5
+PASS raycast reaches WizardOption4 parent=Panel active=True enabled=True phase=ChoosingLockTarget hits=WizardOption4,Panel,WizardChoiceModal
+PASS 8p acid selection reaches result

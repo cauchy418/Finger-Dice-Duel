@@ -12,6 +12,19 @@ namespace FingerDiceDuel.Assistant
         private Action _wizardAttackContinue;
         public WizardChoice PendingWizardChoice { get; private set; }
 
+        public IReadOnlyList<SkillChoiceOption> PendingSkillOptions => PendingWizardChoice?.Options ?? PendingRequest?.Options ?? Array.Empty<SkillChoiceOption>();
+        public bool ChooseSkillOption(int value)
+        {
+            if(Phase==BoardPhase.ChoosingWizardChoice && PendingWizardChoice!=null)
+            {
+                if(!PendingWizardChoice.ChooseOption(value)) return false;
+                PendingWizardChoice=null;PumpWizardBoundary();return true;
+            }
+            var request=PendingRequest;
+            if(!request.HasValue || !request.Value.ChooseOption(value)) return false;
+            ApplyPreTurnChoiceAndContinue(null);return true;
+        }
+
         private bool QueueWizardChoice(WizardChoice request)
         {
             if(request?.Owner==null || GetAi(request.Owner)!=null) return false;
@@ -137,7 +150,7 @@ namespace FingerDiceDuel.Assistant
             var shields=new List<Hand>();foreach(var hand in attack.Defender.Hands) if(hand.IsShield) shields.Add(hand);
             if(shields.Count>1) _pendingRequests.Add(new ChoiceRequest(HandEffect.ShieldBlock,
                 "选择一面盾抵挡。",shields,allowDecline:false,decider:attack.Defender));
-            _pendingRequests.RemoveAll(r=>r.Candidates==null || r.Candidates.Count==0);
+            _pendingRequests.RemoveAll(r=>(r.Candidates==null || r.Candidates.Count==0) && r.Options.Count==0);
             _wizardAttackContinue=()=>
             {
                 attack.AttackerProvider=_game.GetChoiceProvider(attack.Attacker);
