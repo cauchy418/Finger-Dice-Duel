@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色数值（攻防修正 + 可选最大生命）。
@@ -166,7 +166,7 @@
         protected virtual int AdjustAttackBonus(int baseBonus) => baseBonus;
 
         /// <summary>当前防御修正（含永久成长）。</summary>
-        public int DefenseBonus => _statsApplied ? _defenseBonus : DefaultDefenseBonus;
+        public virtual int DefenseBonus => _statsApplied ? _defenseBonus : DefaultDefenseBonus;
 
         /// <summary>
         /// 由 <see cref="CharacterFactory"/> 调用，用角色数据覆盖攻防修正。

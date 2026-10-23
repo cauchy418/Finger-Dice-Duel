@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>33个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
@@ -53,6 +53,8 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("hunter_marksman", "ranger_hunter", "ranger", "猎人", "Hunter"),
             new CharacterIdentity("open_hand", "monk_way_of_the_open_hand", "monk", "散打宗", "Way of the Open Hand"),
             new CharacterIdentity("four_elements", "monk_way_of_the_four_elements", "monk", "四象宗", "Way of the Four Elements"),
+            new CharacterIdentity("moon", "druid_circle_of_the_moon", "druid", "月亮结社", "Circle of the Moon"),
+            new CharacterIdentity("stars", "druid_circle_of_the_stars", "druid", "星辰结社", "Circle of the Stars"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();
         private static Dictionary<string, CharacterIdentity> BuildIndex()

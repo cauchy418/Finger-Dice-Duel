@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -72,6 +72,8 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.RangerHunter] = () => new RangerHunterLogic();
             _registry[SpecialLogicType.WayOfTheOpenHand] = () => new WayOfTheOpenHandLogic();
             _registry[SpecialLogicType.WayOfTheFourElements] = () => new WayOfTheFourElementsLogic();
+            _registry[SpecialLogicType.CircleOfTheMoon] = () => new CircleOfTheMoonLogic();
+            _registry[SpecialLogicType.CircleOfTheStars] = () => new CircleOfTheStarsLogic();
             _registry[SpecialLogicType.LightDomain] = () => new LightDomainLogic();
             _registry[SpecialLogicType.WarDomain] = () => new WarDomainLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();

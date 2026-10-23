@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -110,6 +110,8 @@ namespace FingerDiceDuel.Core
         public const string RangerHunterId = "ranger_hunter";
         public const string WayOfTheOpenHandId = "monk_way_of_the_open_hand";
         public const string WayOfTheFourElementsId = "monk_way_of_the_four_elements";
+        public const string CircleOfTheMoonId = "druid_circle_of_the_moon";
+        public const string CircleOfTheStarsId = "druid_circle_of_the_stars";
         public const string LightDomainId = "cleric_light_domain";
         public const string WarDomainId = "cleric_war_domain";
         public const string BattleMasterId = "fighter_battle_master";
@@ -486,6 +488,16 @@ namespace FingerDiceDuel.Core
             englishName: "Way of the Four Elements",
             description: "开局2气、上限6；行动后双手相同得1气。攻击可耗2气改火焰/寒冷/闪电/雷鸣/强酸；受到这些元素攻击时有气则自动耗1气获得该元素抗性。");
 
+        public static CharacterDefinition CircleOfTheMoon { get; } = new CharacterDefinition(
+            CircleOfTheMoonId, "德鲁伊·月亮结社", SpecialLogicType.CircleOfTheMoon,
+            englishName: "Circle of the Moon",
+            description: "回合开始双手和10可进入荒野形态；熊-1/+2且4合盾，狼+2/-1且攻击吸血1/2，鹰+1/-1且射程3/攻击全穿刺/6无法攻击，蛇0/0且攻击改毒素。回合结束双手相同可解除；不能直接切换形态。");
+
+        public static CharacterDefinition CircleOfTheStars { get; } = new CharacterDefinition(
+            CircleOfTheStarsId, "德鲁伊·星辰结社", SpecialLogicType.CircleOfTheStars,
+            englishName: "Circle of the Stars",
+            description: "回合开始双手和10可进入星耀形态；射手+2/-1且攻击光耀，圣杯0/0且9的回复可额外给一名其他角色，巨龙+1/+1且运算先加一只手、结算前再加一只手。回合结束双手相同可解除；不能直接切换形态。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -497,7 +509,8 @@ namespace FingerDiceDuel.Core
             Oathbreaker, PathOfTheBerserker, Tactician,
             SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
             LightDomain, WarDomain, BattleMaster,
-            DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements
+            DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
+            CircleOfTheMoon, CircleOfTheStars
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

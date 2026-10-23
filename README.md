@@ -32,9 +32,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1170 项逻辑测试全部通过**（2026-10-24），Unity 条件编译与 UI 编译通过。法师三学派徽记、13类抗性与奥术屏障图标已接入；技能抉择及AI更新见 [验收](Art/Integration/wizard-schools/README.md)。职业迁移阶段编辑器 **321 项检查通过**，当时覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式；新增三所法师学派与专项测试。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
+当前状态：**1173 项逻辑测试全部通过**（2026-10-24），Unity 条件编译与 UI 编译通过。法师三学派徽记、13类抗性与奥术屏障图标已接入；技能抉择及AI更新见 [验收](Art/Integration/wizard-schools/README.md)。职业迁移阶段编辑器 **321 项检查通过**，当时覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式；新增三所法师学派与专项测试。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
 
-**职业·子职**：37 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
+**职业·子职**：39 名角色按新归属命名，12 个职业大类包含德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
 
 **新角色美术已接入**：圣武士·破誓者、野蛮人·狂战士道途、战士·战术家可在选将、图鉴和战斗中显示正式徽记；野蛮人·守望者道途使用新版兽角图腾，原双刃斧移交野蛮人·狂战士道途。图鉴总览每页 12 名角色（4×3，可翻页），共 3 页。圣武士·破誓者持 5 被攻击时，可点持盾角色的【转移至】按钮或【不发动】，随后圣武士·奉献之誓仍可代挡。截图与实际点击检查见 [新角色接入验收](Art/Integration/new-roles/README.md)。
 
@@ -124,7 +124,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 
 ---
 
-## 37 名角色
+## 39 名角色
 
 **勇士调整（2026-10-23）**：攻防 **+1 / 0**，生命20、距离1。十点重击按运算后的双手点数直接相加判定（不是取个位），基础4/6/8变6/9/12后再算攻防；追加、冲击、反弹不触发。双将的另一技能改手不影响发起攻击时的判定。新金狮徽记、原图和提示词见 [制作与验收记录](Art/Production/champion-heavy-strike-v1/README.md)。
 
@@ -168,6 +168,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | 游侠·猎人 Hunter | 0 / −1 | **3** | 7在射程内标记；攻击标记目标无视正防御并加已损体力/5，攻击后消耗 |
 | 武僧·散打宗 Way of the Open Hand | 0 / 0 | 1 | 2气起、上限6；4气共鸣、2气倒伏/震慑；共鸣半伤真实伤害；混元体 |
 | 武僧·四象宗 Way of the Four Elements | 0 / 0 | 1 | 2气改火焰/寒冷/闪电/雷鸣/强酸；受元素攻击耗1气获抗性 |
+| 德鲁伊·月亮结社 Circle of the Moon | 0 / 0 | 1 | 双手和10进入荒野：熊4合盾、狼吸血、鹰射程3穿刺、蛇毒伤 |
+| 德鲁伊·星辰结社 Circle of the Stars | 0 / 0 | 3 | 双手和10进入星耀：射手光耀、圣杯额外治疗、巨龙两次加手 |
 
 > 防护学派不能赋予心灵、力场、毒素、光耀、暗蚀抗性。正式徽记、抗性图标及奥术屏障已接入，法师大类与塑能学派分别使用书杖与五指施法徽记。
 
@@ -463,8 +465,8 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 
 ## 工程结构
 
-`Core`（规则内核）/ `Characters`（37 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1170 项无头测试。
+`Core`（规则内核）/ `Characters`（39 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1173 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴

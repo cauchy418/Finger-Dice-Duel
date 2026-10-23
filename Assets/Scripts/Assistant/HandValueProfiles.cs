@@ -406,6 +406,14 @@ namespace FingerDiceDuel.Assistant
                 .Set(2, 78).Set(4, 74).Set(8, 76).Set(6, 70)
                 .Set(5, 62).Set(9, 58).Set(1, 56).Set(3, 52).Set(7, 48);
 
+            Own[CharacterDefinition.CircleOfTheMoonId] = new HandValueProfile()
+                .Set(8, 76).Set(6, 70).Set(4, 64).Set(5, 64).Set(9, 60)
+                .Set(2, 58).Set(1, 56).Set(3, 54).Set(7, 50);
+
+            Own[CharacterDefinition.CircleOfTheStarsId] = new HandValueProfile()
+                .Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 64).Set(9, 70)
+                .Set(2, 58).Set(1, 56).Set(3, 54).Set(7, 50);
+
             // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），
             // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。

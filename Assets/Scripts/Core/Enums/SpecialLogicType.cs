@@ -179,6 +179,12 @@ namespace FingerDiceDuel.Core
         WayOfTheOpenHand = 36,
 
         /// <summary>武僧·四象宗：气、元素攻击与元素抗性。</summary>
-        WayOfTheFourElements = 37
+        WayOfTheFourElements = 37,
+
+        /// <summary>德鲁伊·月亮结社：荒野形态。</summary>
+        CircleOfTheMoon = 38,
+
+        /// <summary>德鲁伊·星辰结社：星耀形态。</summary>
+        CircleOfTheStars = 39
     }
 }
