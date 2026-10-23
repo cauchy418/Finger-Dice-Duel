@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -13,6 +13,9 @@ namespace FingerDiceDuel.Core
         SchoolOfConjurationCastling = 101,
         /// <summary>法师·防护学派：是否放弃攻击存储奥术屏障。</summary>
         SchoolOfAbjurationBarrier = 102,
+        SchoolOfAbjurationResistanceTarget = 103,
+        SchoolOfAbjurationResistanceType = 104,
+        SchoolOfNecromancyBlock = 105,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>
@@ -531,6 +534,7 @@ namespace FingerDiceDuel.Core
         {
             get
             {
+                if(IsResolvingAttack) return ResultValue;
                 int a = ActedHandValueBefore ?? (ActedHand?.Value ?? 0);
                 int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
                 return Hand.ComputeSum(a, b);

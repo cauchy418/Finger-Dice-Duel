@@ -1199,6 +1199,11 @@ namespace FingerDiceDuel.Core
         /// 于是"选了回复"会读成 null 而被当成"选攻击"（真实 bug）。
         /// </summary>
         public System.Func<HandEffect, int, Hand> AnsweredLookup { get; set; }
+        public System.Func<WizardChoice,bool> DeferWizardChoice { get; set; }
+        public System.Func<PlayerState,IWizardChoicePolicy> WizardPolicyFor { get; set; }
+        public IWizardChoicePolicy WizardPolicy(PlayerState player)
+            => WizardPolicyFor?.Invoke(player) ?? GetChoiceProvider(player) as IWizardChoicePolicy;
+        public System.Func<AttackContext,System.Action,bool> DeferWizardAttack { get; set; }
 
         /// <summary>
         /// "**某位玩家**对某个抉择的作答"（带玩家参数）。
@@ -1975,7 +1980,7 @@ namespace FingerDiceDuel.Core
         /// 与普通运算的攻击走同一套 <see cref="AttackContext"/>，
         /// 所以闪避 / 护盾 / 太极 / 取消都照常生效。
         /// </summary>
-        public TurnResult ResolvePendingStealAttack(PlayerState actor, PlayerState victim)
+        public TurnResult ResolvePendingStealAttack(PlayerState actor, PlayerState victim, AttackContext prepared=null)
         {
             StealAttackAwaitingTarget = false;
 
@@ -1985,16 +1990,20 @@ namespace FingerDiceDuel.Core
 
             if (!SuppressAttackDamage)
             {
-                var ctx = new AttackContext(actor, victim, PendingStealAttackHand,
+                var ctx = prepared ?? new AttackContext(actor, victim, PendingStealAttackHand,
                                             PendingStealAttackValue);
                 ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                 ctx.Resolve(GetChoiceProvider(victim), this);
 
                 result.DamageDealt = ctx.AppliedDamage;
                 result.HitCount = ctx.HitCount;
+                result.Defender=ctx.Defender;
+                result.AttackType=ctx.AttackType;
+                result.WasBlocked=ctx.WasBlocked;
+                result.WasDodged=ctx.WasDodged;
             }
 
-            result.TargetHand = PendingStealAttackHand;
+            result.TargetHand = victim.LeftHand;
             LastTurnResult = result;
 
             MarkAttackedLord(actor, victim);
@@ -2008,6 +2017,8 @@ namespace FingerDiceDuel.Core
             if (!IsGameOver)
             {
                 TurnCount++;
+                BumpOwnTurnOrdinal(actor);
+                _lastStealTurn=CurrentOwnTurnOrdinal(actor);
                 CurrentPlayer = NextPlayerAfter(actor);
                 AdvanceRoundAfter(actor);
                 CheckTurnLimit();
@@ -2300,9 +2311,8 @@ namespace FingerDiceDuel.Core
             {
                 PlayerState p = _players[i];
                 if (p == null || !p.IsAlive || ReferenceEquals(p, actor)) continue;
-                if (p.Character is IActionInvalidator invalidator
-                    && invalidator.TryInvalidateAction(p, actor, actedHand, targetHand, this, out reason))
-                    return true;
+                foreach(var invalidator in CharacterBehaviors.Implementers<IActionInvalidator>(p))
+                    if(invalidator.TryInvalidateAction(p,actor,actedHand,targetHand,this,out reason)) return true;
             }
             return false;
         }
@@ -2553,7 +2563,20 @@ namespace FingerDiceDuel.Core
                 actor, actedHand, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
 
-            // 3b. 分派效果
+            // 3b. 分派效果；防护存储先回读前置答案，运算保留而本次攻击不再结算。
+            if(isAttackEffect(effect))
+            {
+                var abj=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(actor);
+                Hand stored=AnsweredLookupFor?.Invoke(actor,HandEffect.SchoolOfAbjurationBarrier,0);
+                if(AnsweredLookupFor==null) stored=(GetChoiceProvider(actor) as IPreTurnChoiceSink)?.GetExplicitChoice(HandEffect.SchoolOfAbjurationBarrier);
+                if(abj!=null && AnsweredLookupFor==null && stored==null
+                    && WizardPolicy(actor)?.ShouldStoreBarrier(actor,(int)effect,this)==true) stored=actedHand;
+                if(abj!=null && ReferenceEquals(stored,actedHand))
+                {
+                    abj.StoreBarrier((int)effect); SuppressAttackDamage=true;
+                    NoteSkill(actor,"奥术屏障",$"存储{(int)effect}，累计{abj.BarrierPoints}");
+                }
+            }
             int healthBefore = actor.Health;
 
             // 牧师·生命领域可以把 4/6/8 **当回复用**（回复量就是该数字，不受攻防影响）。
@@ -3205,9 +3228,6 @@ namespace FingerDiceDuel.Core
         public void BeginTurn()
         {
             RefreshDynamicStats();
-            for (int i = 0; i < _players.Count; i++)
-                if (_players[i]?.Character is ITurnStartHook hook)
-                    hook.OnTurnStarted(_players[i], this);
             SuppressAttackDamage = false;
 
             if (CurrentPlayer?.Character
@@ -3226,6 +3246,9 @@ namespace FingerDiceDuel.Core
                 _players[i]?.ResetTurnFlags();
 
             SeedBrokenShields();
+            for(int i=0;i<_players.Count;i++)
+                foreach(var hook in CharacterBehaviors.Implementers<ITurnStartHook>(_players[i]))
+                    hook.OnTurnStarted(_players[i],this);
         }
 
         /// <summary>刷新野蛮人·狂战士道途 / 战士·战术家等角色的动态攻防。</summary>
@@ -3360,7 +3383,7 @@ namespace FingerDiceDuel.Core
                 {
                     PlayerState listener = _players[i];
                     if (listener == null || !listener.IsAlive) continue;
-                    if (listener.Character is IPlayerDeathListener hook)
+                    foreach(var hook in CharacterBehaviors.Implementers<IPlayerDeathListener>(listener))
                         hook.OnPlayerDied(dead[d], this);
                 }
         }

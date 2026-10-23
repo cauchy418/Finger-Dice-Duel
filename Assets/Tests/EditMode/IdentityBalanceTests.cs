@@ -120,6 +120,7 @@ namespace FingerDiceDuel.Tests
                         if (controller.CollegeOfValorChoicePending)
                             controller.AutoResolveAiCollegeOfValorChoice();
                         if (controller.Phase == BoardPhase.GameOver) break;
+                        if (controller.ResolvePendingAiChoice()) {steps++;continue;}
                         if (!controller.MakeAutomaticMove())
                         {
                             if (controller.CanSkipTurn && controller.SkipTurn())

@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Assistant
     /// 牧师·生命领域、游荡者·风流剑客、野蛮人·野兽道途、战士·剑士、武僧·忍宗、游荡者·刺客的 AI **完全不会用技能**。
     /// 现在每个角色都有对应的评分与抉择策略。
     /// </summary>
-    public sealed class GreedyChoiceProvider : AbstractChoiceProvider, IMoveSelector,
+    public sealed partial class GreedyChoiceProvider : AbstractChoiceProvider, IMoveSelector,
                                                IDamageTypeChoiceSink
     {
         // ============================================================
@@ -947,20 +947,27 @@ namespace FingerDiceDuel.Assistant
         {
             if (actor == null || victim == null) return 0;
 
-            int atkBonus = actor.Character?.AttackBonus ?? 0;
-            int defBonus = victim.Character?.DefenseBonus ?? 0;
+            int atkBonus = StatusRules.EffectiveAttackBonus(actor);
+            int defBonus = StatusRules.EffectiveDefenseBonus(victim);
 
             var advisor = actor.Character as ILethalThresholdAdvisor;
+            int total;
             if (advisor != null)
             {
                 int other = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
-                return advisor.EstimateLethalDamage(
+                total=advisor.EstimateLethalDamage(
                     new LethalContext(move.ActedHand, move.TargetHand, result, other),
                     result, atkBonus, defBonus);
             }
-
-            return AttackContext.ApplyStatBonuses(result, atkBonus, defBonus,
-                                                  ignorePositiveDefense: false);
+            else total=AttackContext.ApplyStatBonuses(result,atkBonus,defBonus,ignorePositiveDefense:false);
+            var preview=new AttackContext(actor,victim,move.ActedHand,result,Game);
+            var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
+            total=StatusRules.ApplyIncomingDamage(victim,total);
+            total=StatusRules.ApplyResistance(victim,total,type);
+            if(Game!=null) foreach(var p in Game.Players)
+                if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
+                    total=System.Math.Max(0,total-barrier.BarrierPoints);
+            return total;
         }
 
         /// <summary>
@@ -1598,6 +1605,12 @@ namespace FingerDiceDuel.Assistant
 
             switch (request.Effect)
             {
+                case HandEffect.ShieldBlock: return c[0];
+                case HandEffect.SchoolOfNecromancyBlock: return c[0];
+                case HandEffect.SchoolOfAbjurationResistanceTarget: return (Game!=null?ResistanceTarget(decider,Game):decider)?.LeftHand;
+                case HandEffect.SchoolOfAbjurationResistanceType: return c[0];
+                case HandEffect.SchoolOfAbjurationBarrier:
+                    return Game!=null && ShouldStoreBarrier(decider,c[0].Value,Game)?c[0]:null;
                 case HandEffect.PathOfTheWardenLockTarget:
                     {
                         // 锁手该锁**对手最依赖的那只手**，而不是单纯"数值最大"。

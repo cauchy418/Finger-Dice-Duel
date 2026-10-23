@@ -1,69 +1,73 @@
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>
-    /// 法师·防护学派：
-    /// 2 给目标抗性；攻击数字可存为奥术屏障；受伤前消耗全部屏障吸收。
-    /// </summary>
     public sealed class SchoolOfAbjurationLogic : CharacterTemplate,
-        IAttackTypeProvider, IIncomingDamageBarrier
+        IAttackTypeProvider, IIncomingDamageBarrier, IAbjurationSkill
     {
-        private PlayerState _owner;
-
         public override string DisplayName => "法师·防护学派";
         public override int DefaultAttackBonus => 0;
+        public override int ScoreMoveBonus(MoveValueContext context) => context.ActedValueAfter==2?32:0;
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
-
-        /// <summary>当前累计的奥术屏障点数（无上限，重开清空）。</summary>
         public int BarrierPoints { get; private set; }
-
-        public void StoreBarrier(int points)
-        {
-            if (points > 0) BarrierPoints += points;
-        }
-
+        private AttackDamageType _selectedResistance=AttackDamageType.Bludgeoning;
+        public AttackDamageType SelectedResistance
+        { get => _selectedResistance; set { if(ResistanceNames.CanGrant(value)) _selectedResistance=value; } }
+        public void StoreBarrier(int points) { if (points>0) BarrierPoints+=points; }
         public void GrantResistance(PlayerState target, AttackDamageType type)
-        {
-            target?.AddResistance(type);
-        }
-
+        { if(ResistanceNames.CanGrant(type)) target?.AddResistance(type); }
         public override void OnMatchReset(PlayerState owner, GameManager manager)
+        { BarrierPoints=0; SelectedResistance=AttackDamageType.Bludgeoning; }
+
+        public override void CollectPreTargetChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
-            _owner = owner;
-            BarrierPoints = 0;
+            if(context==null || !CharacterBehaviors.ActorHas(context.Actor,this)) return;
+            if(context.EffectiveSum==2)
+            {
+                var targets=new List<Hand>();
+                if(context.Manager!=null) foreach(var p in context.Manager.Players)
+                    if(p.IsAlive) { targets.Add(p.LeftHand); targets.Add(p.RightHand); }
+                if(targets.Count==0) targets.Add(context.Actor.LeftHand);
+                requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationResistanceTarget,
+                    "【防护抗性】选择一名存活角色，再选择物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性。",targets,
+                    allowDecline:false,decider:context.Actor));
+                requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationResistanceType,
+                    "【防护抗性】选择抗性类型；物理整组包含挥砍、钝击和穿刺。",
+                    new List<Hand>{context.ActedHand},allowDecline:false,decider:context.Actor));
+            }
+            else if(context.IsAttack)
+                requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationBarrier,
+                    "【奥术屏障】放弃这次攻击，将攻击数字存为屏障？",
+                    new List<Hand>{context.ActedHand},allowDecline:true,decider:context.Actor,acceptLabel:"存储奥术屏障"));
         }
 
         public override void OnOperationResolved(PlayerState owner, Hand actedHand,
-                                                  int actedHandValueBefore, int targetValue,
-                                                  HandEffectType effect, GameManager manager,
-                                                  IPreTurnChoiceSink choiceSink)
+            int actedHandValueBefore, int targetValue, HandEffectType effect, GameManager manager, IPreTurnChoiceSink sink)
         {
-            _owner = owner;
-            if (owner == null || actedHand == null) return;
-
-            // 2：默认把物理抗性给自己；UI 的目标/类型选择在后续接入。
-            if (actedHand.Value == 2)
+            if(owner==null || actedHand?.Value!=2) return;
+            Hand picked=manager?.AnsweredLookupFor?.Invoke(owner,HandEffect.SchoolOfAbjurationResistanceTarget,0)
+                ?? sink?.GetExplicitChoice(HandEffect.SchoolOfAbjurationResistanceTarget);
+            PlayerState target=owner;
+            if(picked!=null && manager!=null)
+                foreach(var p in manager.Players) if(p.IsAlive && p.Owns(picked)) {target=p;break;}
+            if(manager!=null && manager.AnsweredLookupFor==null && manager.WizardPolicy(owner) is IWizardChoicePolicy policy)
             {
-                owner.AddResistance(AttackDamageType.Bludgeoning);
-                manager?.NoteSkill(owner, "防护抗性", "获得物理抗性（挥砍/钝击/穿刺）");
+                target=policy.ResistanceTarget(owner,manager)??owner;
+                SelectedResistance=policy.ResistanceType(owner,target,manager);
             }
+            GrantResistance(target,SelectedResistance);
+            string label=AttackDamageTypes.IsMagic(SelectedResistance)?ResistanceNames.Name(SelectedResistance):"物理抗性";
+            manager?.NoteSkill(owner,"防护抗性",$"赋予{target.Name}{label}");
         }
-
         public override AttackDamageType AttackTypeOf(AttackContext context)
-        {
-            int distance = context?.Manager?.DistanceBetween(context.Attacker, context.Defender) ?? 1;
-            return distance <= 1 ? AttackDamageType.Bludgeoning : AttackDamageType.Piercing;
-        }
-
+            => (context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1
+                ?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
         public int AbsorbDamage(PlayerState target, int damage, AttackContext context, GameManager manager)
         {
-            if (damage <= 0 || BarrierPoints <= 0) return damage;
-
-            int absorbed = System.Math.Min(damage, BarrierPoints);
-            BarrierPoints = 0; // 使用即全部消耗，不保留
-            return damage - absorbed;
+            if(damage<=0 || BarrierPoints<=0) return damage;
+            int absorbed=System.Math.Min(damage,BarrierPoints); BarrierPoints=0; return damage-absorbed;
         }
     }
 }

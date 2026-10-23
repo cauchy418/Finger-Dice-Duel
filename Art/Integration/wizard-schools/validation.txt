@@ -1,0 +1,95 @@
+PASS engine fixture NewWizardSchoolsTests
+PASS engine test Wizard_schools_have_the_confirmed_base_stats
+PASS engine test Divination_seven_window_invalidates_a_matching_action
+PASS engine test Necromancy_two_blocks_one_segment_and_is_consumed
+PASS engine test Necromancy_start_attack_is_free_and_applies_decay
+PASS engine test Abjuration_resistance_rounds_up_and_barrier_absorbs_after_it
+PASS engine fixture WizardChoiceFlowTests
+PASS engine test Abjuration_stores_without_target_or_defender_shield_choice
+PASS engine test Abjuration_selects_living_target_then_magic_type
+PASS engine test Abjuration_rejects_five_forbidden_resistances_in_ui_and_skill_api
+PASS engine test Gambling_attack_without_legal_target_keeps_roll_and_finishes_once
+PASS engine test Physical_choice_grants_all_three_and_icons_are_distinct
+PASS engine test All_thirteen_resistances_and_barrier_are_present_in_guide_and_state
+PASS engine test Necromancy_human_can_decline_free_attack_without_losing_normal_action
+PASS engine test Necromancy_auto_activates_one_then_human_selects_only_target
+PASS engine test Free_attack_collects_human_necromancy_block_and_resumes_once
+PASS engine test Necromancy_block_respects_decline_and_force_exclusion
+PASS engine test Death_swap_exchanges_two_pairs_each_hand_once
+PASS engine test Death_swap_can_end_at_zero_and_match_end_does_not_prompt
+PASS engine test Stolen_attack_keeps_eight_and_collects_human_block
+PASS engine test Stolen_attack_without_legal_target_is_abandoned_without_reoperation
+PASS engine test New_school_capabilities_are_discovered_in_both_dual_positions
+PASS engine fixture WizardAiPolicyTests
+PASS engine test Every_current_role_has_an_explicit_value_profile
+PASS engine test Resistance_targets_injured_ally_without_granting_forbidden_force
+PASS engine test Headless_abjuration_uses_policy_and_does_not_store_a_lethal_attack
+PASS engine test Necrotic_attack_never_selects_an_ally_and_exchange_uses_skill_value
+PASS engine test Lethal_estimate_accounts_for_resistance_barrier_and_current_stat_offsets_without_consumption
+PASS engine test Ai_forced_skip_resolves_archfey_health_target
+PASS engine test Magician_uses_own_locked_other_hand_as_addend
+PASS role art fighter_champion
+PASS role art fighter_breaker
+PASS role art wizard_school_of_conjuration
+PASS role art barbarian_path_of_the_warden
+PASS role art cleric_life_domain
+PASS role art rogue_swashbuckler
+PASS role art barbarian_path_of_the_beast
+PASS role art fighter_swordsman
+PASS role art monk_way_of_the_ninja
+PASS role art rogue_assassin
+PASS role art paladin_oath_of_devotion
+PASS role art warlock_the_archfey
+PASS role art fighter_arcane_archer
+PASS role art rogue_gambler
+PASS role art paladin_oath_of_the_crown
+PASS role art monk_way_of_the_tai_chi
+PASS role art barbarian_path_of_the_giant
+PASS role art rogue_thief
+PASS role art ranger_gloom_stalker
+PASS role art rogue_magician
+PASS role art wizard_school_of_evocation
+PASS role art sorcerer_wild_magic
+PASS role art warlock_the_great_old_one
+PASS role art bard_college_of_valor
+PASS role art paladin_oathbreaker
+PASS role art barbarian_path_of_the_berserker
+PASS role art fighter_tactician
+PASS role art wizard_school_of_divination
+PASS role art wizard_school_of_necromancy
+PASS role art wizard_school_of_abjuration
+PASS resistance art Slashing
+PASS resistance art Bludgeoning
+PASS resistance art Piercing
+PASS resistance art Thunder
+PASS resistance art Acid
+PASS resistance art Poison
+PASS resistance art Radiant
+PASS resistance art Necrotic
+PASS resistance art Fire
+PASS resistance art Cold
+PASS resistance art Lightning
+PASS resistance art Force
+PASS resistance art Psychic
+PASS barrier artwork
+PASS profession and evocation distinct
+PASS selection exposes all 30 roles
+PASS selection emblem wizard_school_of_abjuration
+PASS selection emblem wizard_school_of_divination
+PASS selection emblem wizard_school_of_necromancy
+PASS wizard profession contains five schools
+PASS manual has four pages
+PASS free necrotic opens target directly
+PASS target labels omit hand
+PASS free attack decline label
+PASS raycast reaches WizardDecline parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardDecline,Panel,WizardChoiceModal
+PASS decline retains normal turn
+PASS resistance modal entered
+PASS only six resistance choices visible
+PASS five forbidden resistance choices absent
+PASS raycast reaches WizardOption4 parent=Panel active=True enabled=True phase=ChoosingPreTargetChoice hits=WizardOption4,Panel,WizardChoiceModal
+PASS allowed cold resistance selected through real UI
+PASS raycast reaches AcceptButton parent=GameCanvas active=True enabled=True phase=ChoosingPreTargetChoice hits=AcceptButton
+PASS barrier button stores actual four
+PASS 13 resistances plus barrier visible
+PASS multiplayer preview bridge

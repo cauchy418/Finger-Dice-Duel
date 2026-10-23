@@ -1,0 +1,118 @@
+{
+  "assets": [
+    {
+      "id": "wizard_school_of_abjuration",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_abjuration.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_abjuration.png",
+      "sha256": "e9bb40f82bf89177da1665c2ad57d4b899cff785abd8863d7925eb1fdfcda49d"
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_divination.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_divination.png",
+      "sha256": "40fe9ab28065435c8da639f38e2f557c232cd05050ca159acc15ef497982d093"
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_necromancy.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_necromancy.png",
+      "sha256": "13d2d8a1e201575683ea8b32a9db137b91d8bb6e6ec6fe1f797c3bbc9d080b7d"
+    },
+    {
+      "id": "resistance_slashing",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_slashing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_slashing.png",
+      "sha256": "f76b3fb091ef1383a9fec9be2ca2b3a2bccc49281f02caa2798365200f6d9eef"
+    },
+    {
+      "id": "resistance_bludgeoning",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_bludgeoning.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_bludgeoning.png",
+      "sha256": "7012adbb11c4569e6f6c99bac98e30970ec1f07346606d5d591c4a8b456c9ce2"
+    },
+    {
+      "id": "resistance_piercing",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_piercing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_piercing.png",
+      "sha256": "7556e9162667f15951b06e201302c4682f71ca30790619ea2291cadf30fdcaf3"
+    },
+    {
+      "id": "resistance_thunder",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_thunder.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_thunder.png",
+      "sha256": "3b532b7ea046c551ec5b379bc5471734d68755db2f7822581675c8efc97f27b5"
+    },
+    {
+      "id": "resistance_acid",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_acid.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_acid.png",
+      "sha256": "3e8ea65f93b7b1a2e93e9372738735d9a2b45ee6715fdd745397a50860d4e2e8"
+    },
+    {
+      "id": "resistance_poison",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_poison.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_poison.png",
+      "sha256": "bd9381ef97cb39eda4e7e2f9f72b216d5bc359536771439fbda5eb50b4f33cc1"
+    },
+    {
+      "id": "resistance_radiant",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_radiant.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_radiant.png",
+      "sha256": "d1891a601b6d99e4becd1cf331e3759ba96e3fe8de919aad4ce82e38a0a6b523"
+    },
+    {
+      "id": "resistance_necrotic",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_necrotic.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_necrotic.png",
+      "sha256": "dcaeb25a0e58f4fa4547045c7656e5cd7e9b5a75efa8556a9e36f803eac5a5ff"
+    },
+    {
+      "id": "resistance_fire",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_fire.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_fire.png",
+      "sha256": "542c99ec868d5ade9108d196bb4c890bb17681a737e902b3d5d5ba92df5b3289"
+    },
+    {
+      "id": "resistance_cold",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_cold.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_cold.png",
+      "sha256": "c3bd3143338a2b39d29101dcf420378ab5dad29b133d3c711251bf138203cbd1"
+    },
+    {
+      "id": "resistance_lightning",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_lightning.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_lightning.png",
+      "sha256": "b8d937a6418570a9a8b94ab921f02bc9b9ffbc24753773f7013eaac33001e3b1"
+    },
+    {
+      "id": "resistance_force",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_force.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_force.png",
+      "sha256": "68c50ddcccfdf0b6e9782eceff67990f78d78e3b0ed2991f490180aeac583744"
+    },
+    {
+      "id": "resistance_psychic",
+      "source": "Art/Production/wizard-schools-v1/selected/Resistance/resistance_psychic.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Resistance/resistance_psychic.png",
+      "sha256": "9d0d11f1e410969861e3de29bf466b6eb897c17d4470fef886da62ed4f7ad06d"
+    },
+    {
+      "id": "arcane_barrier",
+      "source": "Art/Production/wizard-schools-v1/selected/Effects/arcane_barrier.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/arcane_barrier.png",
+      "sha256": "baf403a0236599ad9804f1324dee6b213a4dd80369f96d9a43fb5d3a1b9fa447"
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_evocation.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png",
+      "sha256": "22662be1d97178db027e22fd2b2e3ebe5f069feb19b4576712387616c7b04ae1"
+    },
+    {
+      "id": "wizard",
+      "source": "Art/Production/wizard-schools-v1/selected/Professions/wizard.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Professions/wizard.png",
+      "sha256": "2b2d7f925819007f9c2ce682047bfc934ee0f449fd89882c254eaa7fb9f89ad2"
+    }
+  ]
+}

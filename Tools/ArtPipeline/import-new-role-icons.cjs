@@ -28,6 +28,7 @@ async function importNewRoleIcons() {
   for (const { item, bytes } of prepared) await fs.writeFile(path.join(root, item.runtime), bytes);
   console.log(`Imported ${prepared.length} selected class emblems; engine .meta files untouched.`);
   await require('./import-selected-profession-icons.cjs').importSelectedProfessionIcons();
+  await require('./import-wizard-school-icons.cjs').importWizardSchoolIcons();
 }
 module.exports = { importNewRoleIcons };
 if (require.main === module) importNewRoleIcons().catch(error => { console.error(error); process.exitCode = 1; });

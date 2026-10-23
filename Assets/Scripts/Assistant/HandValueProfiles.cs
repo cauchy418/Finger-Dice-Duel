@@ -69,6 +69,8 @@ namespace FingerDiceDuel.Assistant
         {
             // ---- 战士·勇士（攻+1 / 防0，十点重击）：基础权重；斩杀线由 ChampionLogic 按运算后和10估算 ----
             Own[CharacterDefinition.ChampionId] = new HandValueProfile();
+            // 王冠之誓沿用既有基线，显式登记避免新增角色无意走回退。
+            Own[CharacterDefinition.OathOfTheCrownId] = new HandValueProfile();
 
             // ---- 战士·破阵者（攻 +1）----
             // 5 = 成盾（挡一次伤害）。盾还能当运算源，主动碎掉触发**连锁破盾**
@@ -378,6 +380,15 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.TacticianId] = new HandValueProfile()
                 .Set(8, 70).Set(6, 64).Set(4, 58).Set(5, 54).Set(9, 56)
                 .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48);
+            // 三所新学派：分别重视7的预言、1/2的暗蚀与抵挡、2的抗性。
+            Own[CharacterDefinition.SchoolOfDivinationId]=new HandValueProfile()
+                .Set(7,90).Set(8,76).Set(6,70).Set(4,64).Set(5,72).Set(9,62);
+            Own[CharacterDefinition.SchoolOfNecromancyId]=new HandValueProfile()
+                .Set(2,96).Set(1,90).Set(8,76).Set(6,70).Set(4,64).Set(5,70).Set(9,62)
+                .AddCombo(ComboRule.ContainsAll(65,"1暗蚀、2抵挡",1,2));
+            Own[CharacterDefinition.SchoolOfAbjurationId]=new HandValueProfile()
+                .Set(2,88).Set(8,78).Set(6,74).Set(4,72).Set(5,72).Set(9,62);
+
         }
 
         // ============================================================
@@ -662,6 +673,8 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
 
         /// <summary>角色自己的价值表（拿不到角色时为基线）。</summary>
+        public static bool HasExplicitProfile(CharacterDefinition definition) => definition!=null && Own.ContainsKey(definition.Id);
+
         public static HandValueProfile For(CharacterDefinition definition)
         {
             string id = definition?.Id;

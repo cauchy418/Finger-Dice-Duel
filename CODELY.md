@@ -18,17 +18,17 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1099 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派专项 **5 项通过** |
+| 测试 | **1122 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派本批真实引擎/UI **95 项通过** |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
-> 当前统计规模：1v1 **28,080** 局、2v2 **44,928** 局、双将 **146,520** 局、集火实验 **97,200** 局；
+> 当前统计规模：1v1 **34,800** 局、2v2 **55,680** 局、双将 **220,320** 局、集火实验 **108,000** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
 
 ## 职业与子职（2026-10-23）
 
-当前 27 个子职，12 个职业大类；德鲁伊仅预留。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
+当前 30 个子职，12 个职业大类；德鲁伊仅预留。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
 
-大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 39 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
+大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 42 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
 图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。职业迁移阶段技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
 
@@ -52,7 +52,7 @@
 
 ## 阵营移动与双将兼容（2026-10-23）
 
-10名子职按玩家最终确认移动；狂战士道途撤回、留中立邪恶，魔术师移入混乱中立并修复兼容。最新27项阵营唯一数据仍在 `CharacterCodex`；图鉴筛选、主副将候选、随机配对、阵营局和主公按阵营增益均读取此表。当前守序10／中立7／混乱10人，111种双将、222种主副顺序。
+10名子职按玩家最终确认移动；狂战士道途撤回、留中立邪恶，魔术师移入混乱中立并修复兼容。迁移时27项阵营唯一数据仍在 `CharacterCodex`；图鉴筛选、主副将候选、随机配对、阵营局和主公按阵营增益均读取此表。当时守序10／中立7／混乱10人，111种双将、222种主副顺序。
 
 `ISelectiveHandEffectRewriter.HandlesResult` 声明接管数字，`CharacterBehaviors.EffectRewriterFor` 统一选处理者；结算、`PreTurnChoiceContext`、双将显示与目标预判共用。空改写不屏蔽其他子职，只有同数字真实争用才按主将优先。魔术师2、巨人4/5/6/8/9互不争用；巨人伤害钩子限5，自加能力在双将容器聚合。另补容器的穿透减伤转发、控制器对妖精部件的查询；碎盾射程逐部件转发，避免主将继承的空实现截断副将。双将全名在姓名行内缩放，避免覆盖血条。单角色数值保持不变。
 
@@ -62,7 +62,15 @@
 
 ## 法师三学派（2026-10-23）
 
-新增法师·预言学派、死灵学派、防护学派，统一为攻击距离无限、距离1内钝击/外穿刺。预言学派用 `IActionInvalidator` + `ITurnStartHook` 在 7 后窗口直接无效行动；死灵学派用 `IAttackBlocker` 做 2→1 单段抵挡，并在 `ITurnStartHook` 发起免费 1 点暗蚀攻击；防护学派用 `IIncomingDamageBarrier` 在护盾/抗性后吸收伤害，攻击数字可通过 `SchoolOfAbjurationBarrier` 选择存储。抗性支持物理三类和元素、向上取整减半、叠加保存，实际伤害后统一消耗。死亡通知使用 `IPlayerDeathListener`，仅在对局继续时触发。美术徽记尚未接入，当前走占位/回退；正式图标后续由 Codex 生成。
+三所学派正式徽记已接入；新增塑能徽记，旧书杖划归法师大类；13类抗性与奥术屏障共有19项导出资源（18张新绘、1张复用），见 [制作记录](Art/Production/wizard-schools-v1/README.md)。当前30子职，守序11／中立9／混乱10，共136种双将；历史迁移记录保留当时27人的口径。
+
+`WizardChoice` 将回合开始免费攻击及死亡换手排队，在控制器安全边界暂停/恢复，不重复开始回合或结算状态。死灵有可用1自动进入角色目标选择并提供「放弃攻击」；2→1逐段由人类选择，AI自动；死亡时交换0～2对手值，可提前结束。`DeferWizardAttack` 在免费/偷窃攻击前收集防守抉择。回合开始、死亡通知、预言无效等钩子遍历双将部件。
+
+防护算出2先选角色，再选 **物理整组、雷鸣、强酸、火焰、寒冷、闪电** 六项，`ResistanceNames.Choices/CanGrant` 同时限制UI、AI与技能API；心灵/力场/毒素/光耀/暗蚀不可由此赋予。`ResistanceNames.All` 仍保存13类通用图标。`IAbjurationSkill` 存储屏障；选择存储后不再走攻击目标/盾选择，抗性后、扣血前吸收并全部清空。原有场上保护范围保持不变。
+
+`IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。全部30角色有显式手值配置，新增270组（30角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
+
+`CombatStatusIcons` 统一负面、抗性和屏障显示；图标栏最多32项，超出可视区域可滚动。秘法手册为伤害类型、状态、六条元素反应、抗性与屏障四页；新增页用完整资源键，元素反应未增加心灵条目。
 
 ## 目录结构
 
@@ -129,7 +137,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，按「伤害类型／状态一览／元素反应」分三页，第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（现另有抗性与屏障第四页），第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -307,7 +315,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 - [ ] **8 人角色/阵营平衡** —— 首版抽样中立仅 14.9%，需单独调
 - [ ] 竞技（联网）
 - [ ] 菜单按钮音效
-- [x] 角色选将改为 6 × 4 徽记网格，27 人完整可见（6 × 5 网格）；长名单可竖直滚动
+- [x] 角色选将现为可竖直滚动的6列徽记网格，30人完整可选
 - [ ] **空运算源**那次不该发生的第二次结算（根因未消除，已有守门与 `[FDD异常]` 日志）
 
 ## 已知风险 / 技术债

@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -12,6 +12,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override string DisplayName => "法师·预言学派";
         public override int DefaultAttackBonus => 0;
+        public override int ScoreMoveBonus(MoveValueContext context) => context.ActedValueAfter==7?45:0;
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
 

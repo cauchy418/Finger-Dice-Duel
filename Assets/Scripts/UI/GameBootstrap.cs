@@ -1769,6 +1769,7 @@ namespace FingerDiceDuel.UI
                         {
                             IconKey = e.IconKey,
                             Status = e.Status,
+                            ResourceKey = e.ResourceKey,
                             Color = e.Color,
                             Text = e.Text,
                         });
@@ -3282,6 +3283,7 @@ namespace FingerDiceDuel.UI
                           $"panelVisible={_board.IsDamageTypePanelVisible}");
             }
 
+            _board.SetWizardChoices(_controller,RefreshView);
             if (_controller.Phase == BoardPhase.GameOver)
             {
                 _board.ShowGameOver(WinMessage());

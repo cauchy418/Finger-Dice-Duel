@@ -375,6 +375,12 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public static class CharacterBehaviors
     {
+        public static System.Collections.Generic.IEnumerable<T> Implementers<T>(PlayerState actor) where T:class
+        {
+            if(actor?.Character is ICharacterBehaviorContainer c)
+            { foreach(var p in c.Parts) if(p is T t) yield return t; }
+            else if(actor?.Character is T direct) yield return direct;
+        }
         public static IHandEffectRewriter EffectRewriterFor(PlayerState actor, int result)
         {
             if (actor?.Character is ICharacterBehaviorContainer container)

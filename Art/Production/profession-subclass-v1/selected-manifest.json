@@ -68,9 +68,9 @@
     },
     {
       "id": "wizard",
-      "source": "Art/Production/profession-subclass-v1/selected/Professions/wizard.png",
+      "source": "Art/Production/wizard-schools-v1/selected/Professions/wizard.png",
       "runtime": "Assets/Resources/Art/Battle/v1/Professions/wizard.png",
-      "sha256": "21d4506c3bffd2c40f4e18a6b46e14d6d570e79d5afdd361c199cfec3fad51c4"
+      "sha256": "2b2d7f925819007f9c2ce682047bfc934ee0f449fd89882c254eaa7fb9f89ad2"
     },
     {
       "id": "barbarian_path_of_the_beast",
@@ -230,9 +230,27 @@
     },
     {
       "id": "wizard_school_of_evocation",
-      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_school_of_evocation.png",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_evocation.png",
       "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png",
-      "sha256": "2b2d7f925819007f9c2ce682047bfc934ee0f449fd89882c254eaa7fb9f89ad2"
+      "sha256": "22662be1d97178db027e22fd2b2e3ebe5f069feb19b4576712387616c7b04ae1"
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_abjuration.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_abjuration.png",
+      "sha256": "e9bb40f82bf89177da1665c2ad57d4b899cff785abd8863d7925eb1fdfcda49d"
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_divination.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_divination.png",
+      "sha256": "40fe9ab28065435c8da639f38e2f557c232cd05050ca159acc15ef497982d093"
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "source": "Art/Production/wizard-schools-v1/selected/Subclasses/wizard_school_of_necromancy.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_necromancy.png",
+      "sha256": "13d2d8a1e201575683ea8b32a9db137b91d8bb6e6ec6fe1f797c3bbc9d080b7d"
     }
   ]
 }

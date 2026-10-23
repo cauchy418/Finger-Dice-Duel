@@ -57,6 +57,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         ChoosingHealthSwapTarget = 7,
         ChoosingSeatSwapTarget = 10,
+        ChoosingWizardChoice = 11,
 
         /// <summary>
         /// 等待**游荡者·赌徒**点「开赌」。
@@ -254,6 +255,9 @@ namespace FingerDiceDuel.Assistant
             // 带**玩家参数**的版本：邪术师·至高妖精是场上的第三方，
             // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectTheArchfeyCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
+            _game.DeferWizardChoice = QueueWizardChoice;
+            _game.DeferWizardAttack = QueueWizardAttack;
+            _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
@@ -383,6 +387,7 @@ namespace FingerDiceDuel.Assistant
             {
                 switch (Phase)
                 {
+                    case BoardPhase.ChoosingWizardChoice: return PendingWizardChoice?.Owner;
                     case BoardPhase.ChoosingDefenseShield:
                         return Defender;
 
@@ -871,6 +876,7 @@ namespace FingerDiceDuel.Assistant
 
         public void BeginTurn()
         {
+            if(TryStartWizardBoundary(BeginTurn)) return;
             FlushSkillLog();
             if (_game.IsGameOver)
             {
@@ -936,11 +942,14 @@ namespace FingerDiceDuel.Assistant
                 }
 
                 if (ReferenceEquals(_game.CurrentPlayer, ActivePlayer)) break;
+                // 状态致死换人后，也要初始化新行动者的角色回合开始钩子。
+                _game.BeginTurn();
             }
 
             // 注意：这里**不**清空 LastTurn。它的语义是"最近一次已结算的回合"，
             // 要一直保留到下一次结算为止 —— 界面需要在玩家为新回合做选择时，
             // 仍然显示上一回合打出了什么。
+            if(TryStartWizardBoundary(SetupFirstStep)) return;
             SetupFirstStep();
         }
 
@@ -1099,6 +1108,7 @@ namespace FingerDiceDuel.Assistant
                     // 自己除外 —— 偷自己没有意义。
                     return !ActivePlayer.Owns(hand);
 
+                case BoardPhase.ChoosingWizardChoice: return PendingWizardChoice!=null && ContainsHand(PendingWizardChoice.Candidates,hand);
                 case BoardPhase.ChoosingSeatSwapTarget:
                     return CanCastleWith(OwnerOf(hand));
 
@@ -1143,7 +1153,7 @@ namespace FingerDiceDuel.Assistant
                     //    所以隐含地保证了"加数与被加数不是同一只手"。
                     var selfAddend = ActivePlayer.Character as ISelfAddendProvider;
                     if (selfAddend != null && selfAddend.AllowsSelfAddend)
-                        return hand.CanBeOperated;
+                        return !hand.IsConcealed; // 锁定只禁止当运算源，自己的被加数也同样可用。
 
                     return false;
                 }
@@ -1205,6 +1215,8 @@ namespace FingerDiceDuel.Assistant
             _pendingChoiceCandidates.Clear();
             _pendingChoiceDecider = null;
 
+            context.Manager=_game;
+            context.AnsweredLookup=GetAnsweredChoice;
             provider.CollectPreTargetChoices(context, _pendingRequests);
 
             // 过滤空候选（牧师·生命领域 4/6/8 的"攻击还是回复"等）。
@@ -1466,7 +1478,6 @@ namespace FingerDiceDuel.Assistant
                     if (!BeginTargetPlayerChoice())
                     {
                         GiveUpAttack();
-                        BeginTurn();
                     }
                     return true;
                 }
@@ -1599,9 +1610,16 @@ namespace FingerDiceDuel.Assistant
 
             try
             {
-                LastTurn = _game.ExecuteSteal(ActivePlayer, bestMine, bestTheirs);
-                _statusTurnEndFor = LastTurn?.Actor;   // 法师·塑能学派状态：换人时结算回合结束
-                BeginTurn();          // 必须刷新 ActivePlayer（见 CompleteSteal 的注释）
+                if(!CompleteSteal(bestTheirs)) return false;
+                if(Phase==BoardPhase.ChoosingTargetPlayer)
+                {
+                    if(DefenderCannotBeAttacked) GiveUpAttack();
+                    else
+                    {
+                        _selectedTarget=TargetPlayer?.LeftHand??Defender?.LeftHand;
+                        ConfirmTargetPlayer();
+                    }
+                }
                 ResolvePendingAiChoices();
                 _thiefAiTrace += " / 偷窃成功";
             }
@@ -1734,6 +1752,7 @@ namespace FingerDiceDuel.Assistant
                     ApplyPreTurnChoiceAndContinue(hand);
                     return true;
 
+                case BoardPhase.ChoosingWizardChoice: return ChooseWizardHand(hand);
                 case BoardPhase.ChoosingSeatSwapTarget:
                     return CompleteCastling(OwnerOf(hand));
 
@@ -1957,6 +1976,8 @@ namespace FingerDiceDuel.Assistant
         private bool NeedsTargetAfterOperation()
         {
             if (SelectedHand == null || _selectedTarget == null) return false;
+            if(CharacterBehaviors.FirstImplementer<IAbjurationSkill>(ActivePlayer)!=null
+                && GetAnsweredChoiceFor(ActivePlayer,HandEffect.SchoolOfAbjurationBarrier,0)!=null) return false;
 
             // 用"运算前的快照"构造上下文：此时运算还没执行，
             // 直接读手值会把效果算错（这一点在 PreTurnChoiceContext 里有专门说明）。
@@ -1993,6 +2014,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (Phase != BoardPhase.ChoosingTargetPlayer) return false;
             if (_selectedTarget == null) return false;
+            if(_game.StealAttackAwaitingTarget) return ConfirmStolenAttack();
 
             CommitMove(_selectedTarget);
             return true;
@@ -2082,6 +2104,19 @@ namespace FingerDiceDuel.Assistant
             _log.Add(CombatText.Skill(ActivePlayer, "放弃攻击", "保留运算结果，本次不造成伤害"));
 
             _giveUpAttack = true;
+            if(_game.StealAttackAwaitingTarget)
+            {
+                var actor=ActivePlayer;
+                _game.SuppressAttackDamage=true;
+                LastTurn=_game.ResolvePendingStealAttack(actor,_game.GetOpponent(actor));
+                LastTurn.AttackSuppressed=true;_statusTurnEndFor=actor;
+                foreach(var line in DescribeTurnLines(LastTurn)) _log.Add(line);
+                BeginTurn();return true;
+            }
+
+            // 赌博没有运算加数；沿用已掷结果结算一次，不重新掷骰。
+            if(_pendingGambleRoll>0 && SelectedHand!=null)
+            { _selectedTarget=SelectedHand;ExecuteResolvedTurn();return true; }
 
             // 没有确认过目标时直接结算（运算源已选定，加数也已选定）
             if (Phase == BoardPhase.ChoosingTargetPlayer && _selectedTarget != null)
@@ -2447,6 +2482,8 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool BeginShieldChoiceIfNeeded()
         {
+            if(CharacterBehaviors.FirstImplementer<IAbjurationSkill>(ActivePlayer)!=null
+                && GetAnsweredChoiceFor(ActivePlayer,HandEffect.SchoolOfAbjurationBarrier,0)!=null) return false;
             if (!RequiresDefenseChoice(_pendingActedHand, _pendingTargetHand, out List<Hand> shields))
                 return false;
 
@@ -2623,9 +2660,10 @@ namespace FingerDiceDuel.Assistant
         ///    · 多人模式里不能取消**队友**发起的攻击
         ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
         /// </summary>
-        private void CollectTheArchfeyCancelChoices()
+        private void CollectTheArchfeyCancelChoices(int explicitAttackValue=0,PlayerState explicitActor=null)
         {
-            int attackValue = PredictedAttackValue();
+            var attackActor=explicitActor??ActivePlayer;
+            int attackValue = explicitAttackValue>0?explicitAttackValue:PredictedAttackValue();
             if (attackValue <= 0) return;
             if (ActivePlayer == null || _game == null) return;
 
@@ -2639,8 +2677,8 @@ namespace FingerDiceDuel.Assistant
                 if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) == null) continue;
                 if (GetAi(p) != null) continue;
 
-                if (ReferenceEquals(p, ActivePlayer)) continue;              // 自己不算
-                if (_game.IsTeammate(p, ActivePlayer)) continue;             // 队友不算
+                if (ReferenceEquals(p, attackActor)) continue;              // 自己不算
+                if (_game.IsTeammate(p, attackActor)) continue;             // 队友不算
 
                 // 候选 = 与攻击数字相同的那只手
                 var candidates = new List<Hand>(2);
@@ -2824,6 +2862,11 @@ namespace FingerDiceDuel.Assistant
 
             if (_pendingRequestIndex >= _pendingRequests.Count)
             {
+                if(_wizardAttackContinue!=null)
+                {
+                    var resolve=_wizardAttackContinue; _wizardAttackContinue=null;
+                    resolve(); FlushSkillLog(); PumpWizardBoundary(); return;
+                }
                 // ⚠️ **守卫：运算源必须还在。**
                 //
                 // 走到这里意味着"抉择都问完了，该结算了"，但结算需要
@@ -3092,7 +3135,7 @@ namespace FingerDiceDuel.Assistant
             // 候选校验（放弃时不校验）
             if (hand != null && !IsChoiceCandidate(hand)) return;
 
-            SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand);
+            SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, hand, request.Variant);
 
             // 邪术师·至高妖精的"是否取消攻击"：把玩家的回答（可能是"不发动"）也记进
             // `_askedTheArchfeyCancel` —— 结算时靠它决定放行还是取消。
@@ -3144,6 +3187,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool DeclinePendingChoice()
         {
+            if (Phase == BoardPhase.ChoosingWizardChoice) return ChooseWizardHand(null);
             if (Phase == BoardPhase.ChoosingSeatSwapTarget) return CancelCastling();
             if (!IsInChoicePhase) return false;
 
@@ -3172,7 +3216,7 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>当前待问的抉择是否允许放弃（UI 用来决定是否显示"不发动"按钮）。</summary>
         public bool CanDeclinePendingChoice
-            => Phase == BoardPhase.ChoosingSeatSwapTarget || IsInChoicePhase
+            => Phase == BoardPhase.ChoosingWizardChoice ? PendingWizardChoice?.AllowDecline==true : Phase == BoardPhase.ChoosingSeatSwapTarget || IsInChoicePhase
                && _pendingRequestIndex < _pendingRequests.Count
                && _pendingRequests[_pendingRequestIndex].AllowDecline;
 
@@ -3244,6 +3288,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool AcceptPendingChoice()
         {
+            if(PendingEffect==HandEffect.SchoolOfAbjurationResistanceType) return false;
             if (!IsInChoicePhase) return false;
             if (_pendingRequestIndex >= _pendingRequests.Count) return false;
 
@@ -3355,6 +3400,16 @@ namespace FingerDiceDuel.Assistant
             if (provider is GreedyChoiceProvider greedy) greedy.Game = _game;
 
             Hand pick = provider?.ChooseHandFor(request, _pendingChoiceDecider);
+            var wizardPolicy=provider as IWizardChoicePolicy;
+            if(request.Effect==HandEffect.SchoolOfAbjurationResistanceType && wizardPolicy!=null)
+            {
+                var selected=GetAnsweredChoiceFor(_pendingChoiceDecider,HandEffect.SchoolOfAbjurationResistanceTarget,0);
+                var target=_game.OwnerOfHand(selected)??_pendingChoiceDecider;
+                ChooseResistanceType(wizardPolicy.ResistanceType(_pendingChoiceDecider,target,_game));return;
+            }
+            if(request.Effect==HandEffect.SchoolOfAbjurationBarrier && wizardPolicy!=null)
+                pick=wizardPolicy.ShouldStoreBarrier(_pendingChoiceDecider,
+                    Hand.ComputeSum(SelectedHand.Value,_selectedTarget.Value),_game)?request.Candidates[0]:null;
             bool legal = IsChoiceCandidate(pick);
             if (!legal) pick = null;          // 非法或放弃
 
@@ -3364,7 +3419,7 @@ namespace FingerDiceDuel.Assistant
                          $"pick={(legal ? pick.Value.ToString() : "null/非法")} " +
                          $"cands={request.Candidates.Count}");
 
-            SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, pick);
+            SinkFor(_pendingChoiceDecider)?.SetChoice(request.Effect, pick, request.Variant);
 
             // 另外记一份"本轮有效"的答案：结算时优先读它，避免被 sink 里的旧记录顶掉
             RecordAiDecision(request.Effect, request.Variant, pick);
@@ -3618,7 +3673,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (me?.Character == null) return 8;
 
-            int atk = me.Character.AttackBonus;
+            int atk = StatusRules.EffectiveAttackBonus(me);
 
             // 攻击效果只有 4 / 6 / 8，取最大的 8
             // （手上有 8，或者能凑出 8 —— 这里用"攻击距离内的对手手值"不划算，
@@ -3765,6 +3820,23 @@ namespace FingerDiceDuel.Assistant
         public bool ResolvePendingAiChoice()
         {
             if (_game.IsGameOver) return false;
+            if(Phase==BoardPhase.ChoosingTargetPlayer && GetAi(ActivePlayer)!=null)
+            {
+                if(!BeginTargetPlayerChoice()) return GiveUpAttack();
+                if(_selectedTarget==null) _selectedTarget=_pendingTargetHand??TargetPlayer.LeftHand;
+                return ConfirmTargetPlayer();
+            }
+            if(Phase==BoardPhase.ChoosingHealthSwapTarget && GetAi(ActivePlayer)!=null)
+            {
+                PlayerState best=null;int value=int.MinValue;
+                foreach(var p in _game.Players)
+                {
+                    if(!p.IsAlive || ReferenceEquals(p,ActivePlayer) || p.Health==ActivePlayer.Health) continue;
+                    int benefit=_game.IsTeammate(ActivePlayer,p)?ActivePlayer.Health-p.Health:p.Health-ActivePlayer.Health;
+                    if(benefit>value) {best=p;value=benefit;}
+                }
+                return best!=null && ApplyHealthSwapAndEndTurn(best);
+            }
 
             if (IsInChoicePhase)
             {

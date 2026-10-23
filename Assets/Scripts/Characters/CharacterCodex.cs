@@ -416,14 +416,14 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与死灵学派：免费暗蚀攻击不是正常行动，不触发预言窗口。" });
 
             Add(CharacterDefinition.SchoolOfNecromancyId, "School of Necromancy", Alignment.NeutralEvil,
-                shortSkill: "2→1 挡一段；回合开始可免费打 1 点暗蚀并附腐朽；死亡后可换 0~2 只数字。",
-                playGuide: "保留 2 防守，1 用来开回合暗蚀；死亡换牌优先补高价值手值。",
+                shortSkill: "2→1 挡一段；回合初有1免费暗蚀附腐朽；有人死亡可交换0～2只手值。",
+                playGuide: "保留2防守。回合开始有可用1自动选攻击目标，也可放弃，不用选手。有人死亡后，依次选自己的手和死者的手交换数字，可提前结束。",
                 counter: "力场攻击无视 2 抵挡；用多段攻击消耗多个 2。",
                 interactions: new[] { "与防护学派：屏障在 2 抵挡之后才生效。" });
 
             Add(CharacterDefinition.SchoolOfAbjurationId, "School of Abjuration", Alignment.LawfulGood,
-                shortSkill: "2 附物理/元素抗性；攻击数字可存屏障，受伤后消耗全部屏障吸收。",
-                playGuide: "先存屏障再保护关键角色；抗性只持续到下一次实际伤害。",
+                shortSkill: "2 赋物理整组或五种元素抗性；攻击数字可存屏障，吸收后清空。",
+                playGuide: "算出2先选角色，再选物理整组、雷鸣、强酸、火焰、寒冷或闪电。攻击时可改存屏障；抗性在实际受伤后清除，屏障吸收后清空。",
                 counter: "用多段攻击/不同伤害类型先消耗抗性与屏障。",
                 interactions: new[] { "与死灵学派：2 抵挡先于屏障，屏障只处理剩余伤害。" });
 

@@ -21,7 +21,8 @@ namespace FingerDiceDuel.UI
             _skillActor = actor;
             _battleChoiceOwner = chooser;
             bool chooseHand = chooser != null && effect != HandEffect.None
-                && effect != HandEffect.SchoolOfEvocationDamageType && candidates != null
+                && effect != HandEffect.SchoolOfEvocationDamageType
+                && effect != HandEffect.SchoolOfAbjurationResistanceType && candidates != null
                 && (!hasAcceptButton || (effect == HandEffect.BreakerChainBreak && candidates.Count > 1));
             if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
             int count = chooseHand ? Mathf.Min(candidates.Count, _skillChoiceButtons.Length) : 0;
@@ -67,7 +68,7 @@ namespace FingerDiceDuel.UI
         private static bool TargetsPlayer(HandEffect effect) => effect == HandEffect.LifeDomainHealTarget
             || effect == HandEffect.LifeDomainExtraHealTarget || effect == HandEffect.OathOfDevotionShockTarget
             || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.OathOfDevotionRedirect
-            || effect == HandEffect.SchoolOfConjurationCastling;
+            || effect == HandEffect.SchoolOfConjurationCastling || effect==HandEffect.SchoolOfAbjurationResistanceTarget;
 
         private string ChoiceLabel(HandEffect effect, Hand hand)
         {
@@ -84,6 +85,8 @@ namespace FingerDiceDuel.UI
                 case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
                 case HandEffect.SchoolOfConjurationCastling: return "换位 · " + player;
                 case HandEffect.SchoolOfAbjurationBarrier: return "存储屏障 · " + side;
+                case HandEffect.SchoolOfNecromancyBlock: return "死灵抵挡 · "+side+" 2→1";
+                case HandEffect.SchoolOfAbjurationResistanceTarget: return "赋予抗性 · "+player;
                 case HandEffect.LifeDomainHealTarget: return "回复 · " + player;
                 case HandEffect.LifeDomainExtraHealTarget: return "额外回复 · " + player;
                 case HandEffect.OathOfDevotionShockTarget: return "冲击 · " + player;

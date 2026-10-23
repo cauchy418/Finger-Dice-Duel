@@ -418,13 +418,13 @@ namespace FingerDiceDuel.Core
             SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Necromancy",
-            description: "攻击距离无限，距离1内钝击、1外穿刺。受到攻击时可用2→1完全挡下一段（力场除外）。回合开始若有1，可免费对任意角色发起1点暗蚀攻击并附加2回合腐朽。玩家死亡后可与死者交换0~2只手的数字。");
+            description: "攻击距离无限，距离1内钝击、1外穿刺。受到攻击时可用2→1完全挡下一段（力场除外）。回合开始有可用1时自动进入免费暗蚀选目标，可放弃；攻击1点暗蚀并附加2回合腐朽，不消耗手值和正常行动。玩家死亡后可与死者交换0~2只手的数字。");
 
         public static CharacterDefinition SchoolOfAbjuration { get; } = new CharacterDefinition(
             SchoolOfAbjurationId, "法师·防护学派", SpecialLogicType.SchoolOfAbjuration,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Abjuration",
-            description: "攻击距离无限，距离1内钝击、1外穿刺。打出2可为一名角色附加物理或元素抗性；攻击数字可存储奥术屏障，在伤害后吸收。");
+            description: "攻击距离无限，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术屏障，在护盾/抗性后、扣血前吸收，使用即清空。");
 
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =

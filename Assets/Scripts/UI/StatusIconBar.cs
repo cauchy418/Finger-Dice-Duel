@@ -8,7 +8,7 @@ namespace FingerDiceDuel.UI
     /// <summary>
     /// **法师·塑能学派状态的图标栏**（显示在玩家面板右侧）。
     ///
-    /// 18 种负面状态使用绘制图标，右下角保留剩余回合数。
+    /// 负面状态、13类抗性及屏障共用图标栏；超出固定显示区时可滚动。
     /// 缺图时才回退到既有颜色与符号。
     ///
     /// 为什么不用 Emoji：uGUI 的字体回退不一定带彩色 Emoji，
@@ -24,10 +24,17 @@ namespace FingerDiceDuel.UI
         private const float IconGap = 4f;
 
         /// <summary>最大同时显示的数量（= 状态种类数）。</summary>
-        public const int MaxIcons = 18;
+        public const int MaxIcons = 32;
 
         private readonly RectTransform _root;
         private readonly Font _font;
+        private readonly RectTransform _content;
+        private readonly ScrollRect _scroll;
+        private int _columns=9;
+        private int _maxRows=2;
+        private float _size=42,_gap=4;
+        private Vector2 _position;
+        private PlayerState _shownPlayer;
         private readonly List<Image> _icons = new List<Image>();
         private readonly List<Text> _glyphs = new List<Text>();
         private readonly List<Text> _turns = new List<Text>();
@@ -43,14 +50,16 @@ namespace FingerDiceDuel.UI
 
         public void SetGridLayout(Vector2 position, float size, float gap, int columns)
         {
-            _root.anchorMin = _root.anchorMax = new Vector2(0.5f, 0.5f);
-            _root.pivot = new Vector2(0, 0.5f);
-            _root.anchoredPosition = position;
-            _root.sizeDelta = new Vector2(columns * (size + gap), size);
+            _columns=columns;_size=size;_gap=gap;_position=position;
+            _maxRows=columns<=3?6:2;
+            _root.anchorMin=_root.anchorMax=new Vector2(0.5f,0.5f);
+            _root.pivot=new Vector2(0,1);
+            _root.anchoredPosition=position+new Vector2(0,size*0.5f);
+            UpdateScrollLayout();
             for (int i = 0; i < _icons.Count; i++)
             {
                 _icons[i].rectTransform.sizeDelta = new Vector2(size, size);
-                _icons[i].rectTransform.anchoredPosition = new Vector2(i % columns * (size + gap), -(i / columns) * (size + gap));
+                _icons[i].rectTransform.anchoredPosition = new Vector2(i % columns * (size + gap), -size*0.5f-(i / columns) * (size + gap));
                 _turns[i].rectTransform.anchoredPosition = new Vector2(size / 2 - 3, -size / 2 + 3);
                 _turns[i].rectTransform.sizeDelta = new Vector2(22, 20);
                 _turns[i].fontSize = size >= 34 ? 14 : 11;
@@ -63,7 +72,7 @@ namespace FingerDiceDuel.UI
         {
             _font = font;
 
-            var go = new GameObject(name, typeof(Image));
+            var go = new GameObject(name, typeof(Image), typeof(ScrollRect), typeof(RectMask2D));
             go.transform.SetParent(parent, false);
 
             _root = go.GetComponent<RectTransform>();
@@ -87,36 +96,42 @@ namespace FingerDiceDuel.UI
             go.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0f);
             go.GetComponent<Image>().raycastTarget = false;
 
+            var content=new GameObject("Content",typeof(RectTransform));content.transform.SetParent(_root,false);
+            _content=content.GetComponent<RectTransform>();_content.anchorMin=_content.anchorMax=new Vector2(0,1);
+            _content.pivot=new Vector2(0,1);
+            _scroll=go.GetComponent<ScrollRect>();_scroll.viewport=_root;_scroll.content=_content;
+            _scroll.horizontal=false;_scroll.vertical=true;_scroll.inertia=false;
+            _scroll.movementType=ScrollRect.MovementType.Clamped;_scroll.scrollSensitivity=28;
             EnsureIcons();
+            SetGridLayout(new Vector2(-310,0),30,4,9);
         }
 
         /// <summary>按玩家的当前状态刷新这一栏。</summary>
         public void Refresh(PlayerState player)
         {
-            IReadOnlyList<StatusEffect> list = player?.Statuses;
-            if (list == null) { VisibleCount = 0; HideAll(); return; }
-
-            int count = list.Count;
-            if (count > MaxIcons) count = MaxIcons;
-
-            for (int i = 0; i < MaxIcons; i++)
+            var list=CombatStatusIcons.For(player);
+            int count=System.Math.Min(list.Count,MaxIcons);
+            for(int i=0;i<MaxIcons;i++)
             {
-                bool show = i < count;
-                _icons[i].gameObject.SetActive(show);
-                if (!show) continue;
-
-                StatusEffect s = list[i];
-                string key = BattleArt.StatusKey(s);
-                var sprite = key == null ? null : BattleArt.Get("Status/" + key);
-                _icons[i].sprite = sprite;
-                _icons[i].color = sprite != null ? Color.white : ColorOf(s);
-                _glyphs[i].text = sprite != null ? "" : GlyphOf(s);
-                _turns[i].text = player.StatusTurnsLeft(s).ToString();
-                BattleTooltip.Set(_icons[i], StatusNames.Of(s) + " · 剩余 " + player.StatusTurnsLeft(s)
-                    + " 回合\n" + StatusNames.Describe(s));
+                bool show=i<count;_icons[i].gameObject.SetActive(show);if(!show) continue;
+                var entry=list[i];var sprite=BattleArt.Get(entry.ResourceKey);
+                _icons[i].sprite=sprite;
+                _icons[i].color=sprite!=null?Color.white:ColorOf(entry.NegativeStatus);
+                _glyphs[i].text=sprite!=null?"":GlyphOf(entry.NegativeStatus);
+                _turns[i].text=entry.Counter;
+                _icons[i].transform.Find("Counter").gameObject.SetActive(entry.Counter.Length>0);
+                BattleTooltip.Set(_icons[i],entry.Description);
             }
-
-            VisibleCount = count;
+            bool changed=!ReferenceEquals(player,_shownPlayer)||VisibleCount!=count;
+            _shownPlayer=player;VisibleCount=count;UpdateScrollLayout();
+            if(changed) _scroll.verticalNormalizedPosition=1;
+        }
+        private void UpdateScrollLayout()
+        {
+            int rows=System.Math.Max(1,(VisibleCount+_columns-1)/_columns);
+            _root.sizeDelta=new Vector2(_columns*(_size+_gap)-_gap,System.Math.Min(rows,_maxRows)*(_size+_gap)-_gap);
+            if(_content!=null) _content.sizeDelta=new Vector2(_root.sizeDelta.x,rows*(_size+_gap)-_gap);
+            _root.GetComponent<Image>().raycastTarget=rows>_maxRows;
         }
 
         private void HideAll()
@@ -130,12 +145,12 @@ namespace FingerDiceDuel.UI
             for (int i = 0; i < MaxIcons; i++)
             {
                 var go = new GameObject("Status" + i, typeof(Image));
-                go.transform.SetParent(_root, false);
+                go.transform.SetParent(_content, false);
 
                 // ⚠️ **横排一行**（原来是竖排一列，所以"挂得太远"）。
                 //    pivot 在左端 -> 从锚点往右依次排开，第 0 个最靠左。
                 var rect = go.GetComponent<RectTransform>();
-                rect.anchorMin = rect.anchorMax = new Vector2(0f, 0.5f);
+                rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 0.5f);
                 rect.sizeDelta = new Vector2(IconSize, IconSize);
                 rect.anchoredPosition = new Vector2(i * (IconSize + IconGap), 0f);

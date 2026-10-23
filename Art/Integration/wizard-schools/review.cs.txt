@@ -1,0 +1,106 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/wizard-schools");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Func<UnityEngine.Canvas> battleCanvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,canvas)=>{
+ shot(canvas,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name+" parent="+button.transform.parent.name+" active="+button.gameObject.activeInHierarchy+" enabled="+button.interactable+" phase="+((FingerDiceDuel.Assistant.BoardController)field(boot,"_controller"))?.Phase+" hits="+string.Join(",",hits.Select(h=>h.gameObject.name)));
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+
+foreach(var name in new[]{"NewWizardSchoolsTests","WizardChoiceFlowTests","WizardAiPolicyTests"}){
+ var testType=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.Tests."+name)).FirstOrDefault(t=>t!=null);
+ check(testType!=null,"engine fixture "+name);
+ var fixture=System.Activator.CreateInstance(testType);
+ foreach(var m in testType.GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.DeclaredOnly)){
+  if(m.GetParameters().Length!=0 || m.Name.StartsWith("All_roles"))continue;
+  try{m.Invoke(fixture,null);check(true,"engine test "+m.Name);}catch(System.Reflection.TargetInvocationException e){throw e.InnerException;}
+ }
+}
+foreach(var def in FingerDiceDuel.Core.CharacterDefinition.BuiltIn){
+ var sprite=FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+def.Id);check(sprite!=null&&sprite.texture.width==512,"role art "+def.Id);
+}
+foreach(var type in FingerDiceDuel.Core.ResistanceNames.All){
+ var sprite=FingerDiceDuel.UI.BattleArt.Get(FingerDiceDuel.Core.ResistanceNames.Key(type));check(sprite!=null&&sprite.texture.width==512,"resistance art "+type);
+}
+check(FingerDiceDuel.UI.BattleArt.Get("Effects/arcane_barrier")!=null,"barrier artwork");
+var wizard=FingerDiceDuel.UI.BattleArt.Get("Professions/wizard");
+check(wizard!=FingerDiceDuel.UI.BattleArt.Get("Subclasses/wizard_school_of_evocation"),"profession and evocation distinct");
+invoke(boot,"GoToCharacterSelect",new object[0]);
+var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_rosterViewA");
+var defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(roster,"_roster");
+check(defs.Count==30,"selection exposes all 30 roles");
+foreach(var def in new[]{FingerDiceDuel.Core.CharacterDefinition.SchoolOfAbjuration,FingerDiceDuel.Core.CharacterDefinition.SchoolOfDivination,FingerDiceDuel.Core.CharacterDefinition.SchoolOfNecromancy}){
+ int index=defs.IndexOf(def);roster.Select(index);roster.ScrollToSelected();
+ var cards=(System.Collections.Generic.List<UnityEngine.UI.Button>)field(roster,"_cards");
+ check(cards[index].transform.Find("Emblem").GetComponent<UnityEngine.UI.Image>().sprite==FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+def.Id),"selection emblem "+def.Id);
+}
+shot(front,"selection-three-schools");
+invoke(boot,"OnCodexClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");codex.ToggleProfession("wizard");
+check(codex.PageCount==5,"wizard profession contains five schools");
+codex.GoTo(4);shot(front,"wizard-codex");
+invoke(boot,"OnMagicOrbClicked",new object[0]);
+codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");check(codex.PageCount==4,"manual has four pages");codex.GoTo(3);shot(front,"resistance-manual");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.SchoolOfNecromancy,FingerDiceDuel.Core.CharacterDefinition.Champion);
+var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");
+var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");board.SetHistoryOpen(false);invoke(boot,"RefreshView",new object[0]);
+check(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingWizardChoice&&controller.PendingWizardChoice.TargetsPlayer,"free necrotic opens target directly");
+var options=(UnityEngine.UI.Button[])field(board,"_wizardButtons");
+check(!options[0].GetComponentInChildren<UnityEngine.UI.Text>().text.Contains("手"),"target labels omit hand");
+check(((UnityEngine.UI.Button)field(board,"_wizardDecline")).GetComponentInChildren<UnityEngine.UI.Text>().text=="放弃攻击","free attack decline label");
+shot(battleCanvas(),"necrotic-target");
+click((UnityEngine.UI.Button)field(board,"_wizardDecline"),battleCanvas());check(game.TurnCount==0&&game.PlayerB.Health==20,"decline retains normal turn");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.SchoolOfAbjuration,FingerDiceDuel.Core.CharacterDefinition.Champion);
+game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");board.SetHistoryOpen(false);
+controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);controller.ClickHand(game.PlayerA.RightHand);invoke(boot,"RefreshView",new object[0]);
+check(controller.PendingEffect==FingerDiceDuel.Core.HandEffect.SchoolOfAbjurationResistanceType,"resistance modal entered");
+shot(battleCanvas(),"resistance-selection");
+options=(UnityEngine.UI.Button[])field(board,"_wizardButtons");
+check(options.Count(b=>b.gameObject.activeSelf)==6,"only six resistance choices visible");
+check(!options.Where(b=>b.gameObject.activeSelf).Any(b=>new[]{"心灵","力场","毒素","光耀","暗蚀"}.Any(x=>b.GetComponentInChildren<UnityEngine.UI.Text>().text.Contains(x))),"five forbidden resistance choices absent");
+click(options[4],battleCanvas());
+check(game.PlayerA.HasResistance(FingerDiceDuel.Core.AttackDamageType.Cold),"allowed cold resistance selected through real UI");
+game.PlayerA.LeftHand.SetValue(1);game.PlayerB.LeftHand.SetValue(3);controller.SetFirstPlayer(game.PlayerA);controller.BeginTurn();controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);invoke(boot,"RefreshView",new object[0]);
+click((UnityEngine.UI.Button)field(board,"_acceptButton"),battleCanvas());
+check(((FingerDiceDuel.Core.IAbjurationSkill)game.PlayerA.Character).BarrierPoints==4,"barrier button stores actual four");
+foreach(var type in FingerDiceDuel.Core.ResistanceNames.All)game.PlayerA.AddResistance(type);
+invoke(boot,"RefreshView",new object[0]);
+var status=(FingerDiceDuel.UI.StatusIconBar)field(board,"_statusIconsA");check(status.VisibleCount==14,"13 resistances plus barrier visible");
+shot(battleCanvas(),"battle-protections");
+var preview=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.EditorTools.MultiplayerArtPreview")).FirstOrDefault(t=>t!=null);
+check(preview!=null,"multiplayer preview bridge");
+preview.GetField("_boot",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).SetValue(null,boot);
+var build=preview.GetMethod("Build",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+foreach(int count in new[]{4,8}){
+ build.Invoke(null,new object[]{count,0,FingerDiceDuel.Core.CharacterDefinition.SchoolOfAbjuration,false});
+ game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+ var me=game.Players[0];foreach(var type in FingerDiceDuel.Core.ResistanceNames.All)me.AddResistance(type);
+ ((FingerDiceDuel.Core.IAbjurationSkill)me.Character).StoreBarrier(8);invoke(boot,"RefreshView",new object[0]);board.SetHistoryOpen(false);
+ shot(battleCanvas(),count+"p-protections");
+}
+var profiles=new System.Collections.Generic.List<string>{"ID\t角色\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9"};
+foreach(var def in FingerDiceDuel.Core.CharacterDefinition.BuiltIn){
+ var profile=FingerDiceDuel.Assistant.HandValueProfiles.For(def);
+ profiles.Add(def.Id+"\t"+def.DisplayName+"\t"+string.Join("\t",System.Linq.Enumerable.Range(0,10).Select(v=>profile.WeightOf(v).ToString())));
+}
+System.IO.File.WriteAllLines("Tools/ai-strategy-profiles.tsv",profiles);
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+return "Passed "+checks.Count+" engine/UI checks. Evidence "+output;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
-    /// <summary>27个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
+    /// <summary>30个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
     public sealed class CharacterIdentity
     {
         public string LegacyId { get; }

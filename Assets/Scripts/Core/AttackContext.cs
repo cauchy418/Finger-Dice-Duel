@@ -181,6 +181,9 @@ namespace FingerDiceDuel.Core
         /// <summary>被闪避掉的段数（游荡者·风流剑客每段消耗一只"1"）。</summary>
         public int DodgedHits { get; private set; }
 
+        public AttackContext(PlayerState attacker, PlayerState defender, Hand sourceHand, int rawDamage, GameManager manager)
+            :this(attacker,defender,sourceHand,rawDamage) { Manager=manager; }
+
         public AttackContext(PlayerState attacker, PlayerState defender, Hand sourceHand, int rawDamage)
         {
             Attacker = attacker;
@@ -337,7 +340,7 @@ namespace FingerDiceDuel.Core
                 }
 
                 // 2a-bis. 法师·死灵学派：2→1 完全挡下一段（力场除外）。
-                if (Defender?.Character is IAttackBlocker blocker
+                if (CharacterBehaviors.FirstImplementer<IAttackBlocker>(Defender) is IAttackBlocker blocker
                     && blocker.TryBlockAttack(this, manager, i))
                 {
                     WasBlocked = true;
@@ -396,7 +399,7 @@ namespace FingerDiceDuel.Core
                     {
                         PlayerState protector = manager.Players[mi];
                         if (protector == null || !protector.IsAlive) continue;
-                        if (protector.Character is IIncomingDamageBarrier barrier)
+                        if (CharacterBehaviors.FirstImplementer<IIncomingDamageBarrier>(protector) is IIncomingDamageBarrier barrier)
                         {
                             int before = dealt;
                             dealt = barrier.AbsorbDamage(Defender, dealt, this, manager);
@@ -535,9 +538,10 @@ namespace FingerDiceDuel.Core
         private void ApplyAttackerStatus(GameManager manager)
         {
             if (Attacker == null) return;
-            if (!(Attacker.Character is IStatusApplyingAttack applier)) return;
+            var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
+            if(applier==null) return;
 
-            StatusEffect status = InteractionStatus;
+            StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay : InteractionStatus;
             if (status == StatusEffect.None)
                 status = applier.StatusToApplyOnHit(this);
 
@@ -808,7 +812,7 @@ namespace FingerDiceDuel.Core
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
 
-                if (p.Character is TheArchfeyLogic theArchfey)
+                if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) is TheArchfeyLogic theArchfey)
                 {
                     // 人类的邪术师·至高妖精走"询问式"：按玩家在收集阶段的回答决定。
                     // AI 的邪术师·至高妖精没被问过 -> wasAsked = false -> 自动取消。

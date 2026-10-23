@@ -5,11 +5,13 @@ const { sharp, root } = require('./deps.cjs');
 async function main() {
   const base = path.join(root, 'Art/Production/profession-subclass-v1');
   const { assets } = JSON.parse(await fs.readFile(path.join(base, 'selected-manifest.json'), 'utf8'));
-  const { roles } = JSON.parse(await fs.readFile(path.join(base, 'migration.json'), 'utf8'));
-  const expected = new Set(roles.map(r => `Subclasses/${r.id}.png`));
+  // Validate the current roster; the 27-role migration remains historical.
+  const identitySource = await fs.readFile(path.join(root,'Assets/Scripts/Core/CharacterIdentity.cs'),'utf8');
+  const roles = [...identitySource.matchAll(/new CharacterIdentity\("[^"]+",\s*"([^"]+)"/g)].map(m=>m[1]);
+  const expected = new Set(roles.map(id => 'Subclasses/'+id+'.png'));
   const professions = ['barbarian','bard','cleric','druid','fighter','monk','paladin','ranger','rogue','sorcerer','warlock','wizard'];
   for (const id of professions) expected.add(`Professions/${id}.png`);
-  if (assets.length !== expected.size) throw new Error('Expected exactly 39 selected assets');
+  if (assets.length !== expected.size) throw new Error('Expected exactly '+expected.size+' selected assets');
   const contentHashes = new Set();
   for (const item of assets) {
     const key = item.runtime.split('/v1/')[1];
@@ -25,6 +27,6 @@ async function main() {
       throw new Error(`Invalid dimensions or alpha ${key}`);
   }
   if (expected.size) throw new Error('Missing selected assets');
-  console.log('PASS 39 canonical profession/subclass PNGs, dimensions, alpha, hashes and selected/runtime consistency.');
+  console.log('PASS '+assets.length+' canonical profession/subclass PNGs, dimensions, alpha, hashes and selected/runtime consistency.');
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });

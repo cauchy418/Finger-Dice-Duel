@@ -162,6 +162,9 @@ namespace FingerDiceDuel.Tests
                     //
                     //    （1v1 的 `MatchRunner` 是调了的，所以 1v1 没这个现象。）
                     game.BeginTurn();
+                    // 死灵免费暗蚀可能在回合开始就结束比赛，不能再向选择器要一步。
+                    if(game.IsGameOver) break;
+                    actor=game.CurrentPlayer;
 
                     IChoiceProvider choice = game.GetChoiceProvider(actor);
                     if (choice is not IMoveSelector selector)

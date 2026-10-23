@@ -23,14 +23,15 @@ namespace FingerDiceDuel.Tests
     public class GuideSheetTests
     {
         [Test]
-        public void There_are_three_pages_in_order()
+        public void There_are_four_pages_in_order()
         {
             List<GuideSheet> sheets = GuideSheets.All();
 
-            Assert.AreEqual(3, sheets.Count, "元素反应应独立成第三页。");
+            Assert.AreEqual(4, sheets.Count, "元素反应独立第三页；抗性与屏障为第四页。");
             Assert.AreEqual("伤害类型", sheets[0].TitleZh, "第 1 页应当是伤害类型。");
             Assert.AreEqual("状态一览", sheets[1].TitleZh, "第 2 页应当是状态一览。");
             Assert.AreEqual("元素反应", sheets[2].TitleZh);
+            Assert.AreEqual("抗性与屏障",sheets[3].TitleZh);
         }
 
         [Test]

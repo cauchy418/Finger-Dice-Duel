@@ -76,13 +76,15 @@ namespace FingerDiceDuel.Core
         /// <summary>条目文字。</summary>
         public string Text { get; }
         public StatusEffect Status { get; }
+        public string ResourceKey { get; }
 
-        public GuideEntry(string iconKey, int color, string text, StatusEffect status = StatusEffect.None)
+        public GuideEntry(string iconKey, int color, string text, StatusEffect status = StatusEffect.None, string resourceKey = null)
         {
             IconKey = iconKey;
             Color = color;
             Text = text;
             Status = status;
+            ResourceKey = resourceKey;
         }
     }
 
@@ -209,13 +211,31 @@ namespace FingerDiceDuel.Core
 
         /// <summary>魔法球入口要显示的全部速查表（顺序即翻页顺序）。</summary>
         public static List<GuideSheet> All()
-            => new List<GuideSheet> { DamageTypes(), Statuses(), ElementReactions() };
+            => new List<GuideSheet> { DamageTypes(), Statuses(), ElementReactions(), Protections() };
 
         /// <summary>
         /// **第 1 页「伤害类型」**：10 种类型，各自"附加两回合XX状态"。
         ///
         /// 第 1 页说明伤害附加的状态，第 2 页解释状态，第 3 页单独列出元素反应。
         /// </summary>
+        public static GuideSheet Protections()
+        {
+            var entries=new List<GuideEntry>();
+            var lines=new List<string>();
+            foreach(var type in ResistanceNames.All)
+            {
+                string text=ResistanceNames.Name(type)+"：该类型伤害减半，向上取整";
+                entries.Add(new GuideEntry(AttackDamageTypes.IconKeyOf(type),AttackDamageTypes.ColorOf(type),text,
+                    resourceKey:ResistanceNames.Key(type)));
+                lines.Add(text);
+            }
+            const string barrier="奥术屏障：累计攻击数字；伤害经过抗性后吸收，使用即全部消耗";
+            entries.Add(new GuideEntry("barrier",0x58BFFF,barrier,resourceKey:"Effects/arcane_barrier"));lines.Add(barrier);
+            return new GuideSheet("抗性与屏障","Resistance & Arcane Ward",lines,true,
+                new List<GuideGroup>{new GuideGroup("防护效果",entries)},
+                "防护学派只可赋予物理整组（挥砍、钝击、穿刺）及雷鸣、强酸、火焰、寒冷、闪电抗性。此页保留十三类图标索引；抗性可叠存，实际受伤后全部清除，闪避或盾挡不消耗。");
+        }
+
         public static GuideSheet DamageTypes()
         {
             // 单列（每条前面要画图标 + 中间是文字，两列会挤）

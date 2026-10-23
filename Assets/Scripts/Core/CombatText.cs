@@ -15,6 +15,10 @@
             switch (request.Effect)
             {
                 case HandEffect.SchoolOfConjurationCastling: skill = "王车易位"; action = "选择双手值相同的角色换位并跳过；距离立即更新，下轮按新座位行动。"; break;
+                case HandEffect.SchoolOfAbjurationBarrier: skill="奥术屏障"; action="可放弃本次攻击，将攻击数字存入屏障。"; break;
+                case HandEffect.SchoolOfAbjurationResistanceTarget: skill="防护抗性"; action="选择存活角色，然后选择抗性类型。"; break;
+                case HandEffect.SchoolOfAbjurationResistanceType: skill="防护抗性"; action="选择物理整组或一种魔法抗性。"; break;
+                case HandEffect.SchoolOfNecromancyBlock: skill="死灵抵挡"; action="可将一只2变1，抵挡这一段；力场除外。"; break;
                 case HandEffect.ShieldBlock: skill = "格挡"; action = "选择一面盾抵挡。"; break;
                 case HandEffect.PathOfTheWardenLockTarget: skill = "锁手"; action = "合盾后，可锁定对手一只手；盾碎即解除。"; break;
                 case HandEffect.BreakerChainBreak: skill = "连锁破盾"; action = "自身盾将破碎，可连带打碎场上一面完整盾。"; break;

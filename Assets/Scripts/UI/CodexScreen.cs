@@ -67,6 +67,7 @@ namespace FingerDiceDuel.UI
         {
             public string IconKey;
             public StatusEffect Status;
+            public string ResourceKey;
             public int Color;
             public string Text;
         }
@@ -433,8 +434,8 @@ namespace FingerDiceDuel.UI
                             var entry = group.Entries[i + col];
                             float x = col * 810;
                             string key = entry.IconKey;
-                            string resource = entry.Status == StatusEffect.None ? "Damage/" + key
-                                : "Status/" + BattleArt.StatusKey(entry.Status);
+                            string resource = entry.ResourceKey ?? (entry.Status == StatusEffect.None ? "Damage/" + key
+                                : "Status/" + BattleArt.StatusKey(entry.Status));
                             var icon = FrontEndArt.Rect(_guideContent, "PaintedIcon_" + key, new Vector2(x + 56, -y - 56), new Vector2(112, 112)).gameObject.AddComponent<Image>();
                             icon.rectTransform.anchorMin = icon.rectTransform.anchorMax = new Vector2(0, 1);
                             icon.sprite = BattleArt.Get(resource);
