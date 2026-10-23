@@ -1,10 +1,10 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>武僧·四象宗：气点切换元素攻击，受元素攻击时自动耗气获得抗性。</summary>
     public sealed class WayOfTheFourElementsLogic : CharacterTemplate,
-        IAttackTypeProvider, IIncomingElementReaction
+        IAttackTypeProvider, IIncomingElementReaction, IKiResource
     {
         public const int MaxKi = 6;
         public int Ki { get; private set; } = 2;

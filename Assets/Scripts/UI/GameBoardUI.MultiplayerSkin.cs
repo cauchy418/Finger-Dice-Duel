@@ -104,7 +104,7 @@ namespace FingerDiceDuel.UI
             int range = GameManager.BaseRangeOf(player);
             panel.StatusText.text = "攻 " + Signed(StatusRules.EffectiveAttackBonus(player)) + "   防 " + Signed(StatusRules.EffectiveDefenseBonus(player))
                 + "   距 " + (range == int.MaxValue ? "∞" : range.ToString());
-            panel.StatusIcons.Refresh(player);
+            panel.StatusIcons.Refresh(player,EffectContext);
             BattleTooltip.Set(panel.Emblem, display + "（" + player.Name + "）\n" + player.Definition?.Description);
         }
 

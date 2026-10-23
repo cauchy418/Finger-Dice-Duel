@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Core
     }
     public static class CombatStatusIcons
     {
-        public static List<CombatStatusIcon> For(PlayerState player)
+        public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
             foreach(var status in player.Statuses)
@@ -26,6 +26,18 @@ namespace FingerDiceDuel.Core
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
                 "奥术屏障 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));
+            foreach(var resource in CharacterBehaviors.Implementers<IKiResource>(player))
+                result.Add(new CombatStatusIcon("Effects/ki","气 · "+resource.Ki+" / 6\n武僧技能资源；数字为当前气点，不是剩余回合。",resource.Ki.ToString()));
+            if(game!=null)
+            {
+                var sources=new List<string>();
+                foreach(var marker in game.Players)
+                    if(marker.IsAlive) foreach(var skill in CharacterBehaviors.Implementers<IHunterMarkSource>(marker))
+                        if(skill.IsMarked(player)) {sources.Add(marker.Name);break;}
+                if(sources.Count>0) result.Add(new CombatStatusIcon("Effects/hunters_mark",
+                    "猎人标记 · 来源："+string.Join("、",sources)+"\n标记没有回合倒计时，由对应猎人的攻击消耗。",
+                    sources.Count>1?sources.Count.ToString():""));
+            }
             return result;
         }
     }

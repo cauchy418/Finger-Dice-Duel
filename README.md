@@ -32,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Define FDD_UNITY_TESTS
 ```
 
-当前状态：**1151 项逻辑测试全部通过**（2026-10-23），Unity 条件编译与 UI 编译通过。法师三学派徽记、13类抗性与奥术屏障图标已接入；技能抉择及AI更新见 [验收](Art/Integration/wizard-schools/README.md)。职业迁移阶段编辑器 **321 项检查通过**，当时覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式；新增三所法师学派与专项测试。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
+当前状态：**1153 项逻辑测试全部通过**（2026-10-24），Unity 条件编译与 UI 编译通过。法师三学派徽记、13类抗性与奥术屏障图标已接入；技能抉择及AI更新见 [验收](Art/Integration/wizard-schools/README.md)。职业迁移阶段编辑器 **321 项检查通过**，当时覆盖 12 职业筛选、27 子职详情、选将与全部战斗模式；新增三所法师学派与专项测试。本次阵营与兼容检查见 [记录](Art/Integration/alignment-migration/README.md)。职业重构见 [验收](Art/Integration/profession-subclass/README.md)；新增王车易位及真实按钮验收见 [接入记录](Art/Integration/castling/README.md)。
 
 **职业·子职**：37 名角色按新归属命名，12 个职业大类包含预留德鲁伊。图鉴可按职业与阵营组合查找，详情按“职业中英文斜体小字 → 子职中英文大字 → 阵营”显示。文件、正式 ID 与文档同步迁移，旧 ID 查询兼容；职业迁移阶段保持原玩法；后续勇士的十点重击与防御调整见下方角色表。完整对照与徽记来源见 [制作记录](Art/Production/profession-subclass-v1/README.md)。
 
@@ -463,8 +463,8 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 
 ## 工程结构
 
-`Core`（规则内核）/ `Characters`（33 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
-依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1151 项无头测试。
+`Core`（规则内核）/ `Characters`（37 角色）/ `Assistant`（状态机 + AI + 整局驱动）/ `UI`（唯一引用 Unity 的层）。
+依赖方向：`UI → Assistant → Core`，`Characters → Core`；`Tests` 1153 项无头测试。
 详见 [CODELY.md](CODELY.md)。
 
 ## 角色图鉴
@@ -518,3 +518,9 @@ UI 入口：竞技模式 → 8 人模式 → 身份对局 → AI 练习 / 真人
 资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
 
 全量1151项测试通过，UI及Unity条件编译通过；真实引擎68项检查覆盖37角色资源、四枚选将与图鉴、职业筛选、旧ID别名及1v1/4人/8人显示。素材和精确提示词见 [制作记录](Art/Production/four-role-emblems-v1/README.md)，截图见 [验收](Art/Integration/four-role-emblems/README.md)。
+
+## 气与猎人标记图标（2026-10-24）
+
+新增两枚旧金方框绘画图标。气显示在武僧姓名旁，角标为当前气点，0点仍保留；猎人标记显示在目标姓名旁，悬停查看来源，攻击消耗后移除，多来源角标为人数。已接入1v1、4人和8人界面，秘法手册第四页附两条说明；修正角标底部裁切与手册孤立标点换行。
+
+全量1153项测试通过，UI及Unity条件编译通过，真实引擎33项检查通过。素材和精确提示词见 [制作记录](Art/Production/martial-resource-icons-v1/README.md)，截图见 [验收](Art/Integration/martial-resource-icons/README.md)。

@@ -39,6 +39,17 @@ namespace FingerDiceDuel.UI
                     lines[last]=previous.Substring(previous.Length-take)+lines[last];
                     lines[last-1]=previous.Substring(0,previous.Length-take);
                 }
+                for(int i=1;i<lines.Count;i++)
+                {
+                    string next=lines[i].TrimStart();
+                    if(next.Length>0 && ("，。；：！？、）》】%".Contains(next.Substring(0,1))
+                        || System.Text.RegularExpressions.Regex.IsMatch(next,@"^\d+[）】]")))
+                    {
+                        string previous=lines[i-1];int take=System.Math.Min(2,previous.Length);
+                        lines[i]=previous.Substring(previous.Length-take)+next;
+                        lines[i-1]=previous.Substring(0,previous.Length-take);
+                    }
+                }
                 result.Add(string.Join("\n",lines));
             }
             return string.Join("\n",result);

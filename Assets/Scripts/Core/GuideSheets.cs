@@ -229,10 +229,12 @@ namespace FingerDiceDuel.Core
                     resourceKey:ResistanceNames.Key(type)));
                 lines.Add(text);
             }
-            const string barrier="奥术屏障：累计攻击数字；伤害经过抗性后吸收，使用即全部消耗";
+            const string barrier="奥术屏障：累积攻击数字；抗性后吸收伤害，使用即清空";
             entries.Add(new GuideEntry("barrier",0x58BFFF,barrier,resourceKey:"Effects/arcane_barrier"));lines.Add(barrier);
             return new GuideSheet("抗性与屏障","Resistance & Arcane Ward",lines,true,
-                new List<GuideGroup>{new GuideGroup("防护效果",entries)},
+                new List<GuideGroup>{new GuideGroup("防护效果",entries),new GuideGroup("资源与标记",new List<GuideEntry>{
+                    new GuideEntry("ki",0x82D7C9,"气：武僧技能资源，上限6点。角标为当前气点，不是回合数。",resourceKey:"Effects/ki"),
+                    new GuideEntry("hunters_mark",0xCFAC54,"猎人标记：由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数。",resourceKey:"Effects/hunters_mark")})},
                 "防护学派只可赋予物理整组（挥砍、钝击、穿刺）及雷鸣、强酸、火焰、寒冷、闪电抗性。此页保留十三类图标索引；抗性可叠存，实际受伤后全部清除，闪避或盾挡不消耗。");
         }
 

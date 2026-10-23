@@ -1,0 +1,13 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "ki",
+      "prompt": "Use case: stylized-concept. ONE dark fantasy RPG RESOURCE icon for monk Ki, square canvas. Thin ornate antique gold square frame with pointed corner filigree and small mid-edge diamond details, black iron dark interior, transparent exterior padding. Center: a luminous pale jade pearl encircled by TWO bold flowing ivory-and-teal energy ribbons like disciplined breath, a small bronze engraved circular meridian pattern below; warm gold tiny sparks. Clear elegant unified swirling life-force silhouette at32px, painterly textured metal, restrained jade teal ivory and old gold, matching premium dark fantasy status icon family. Not a yin-yang sign, not a fist, no hand, no number, letter, text, watermark, shield or face. Front view, frame occupies86percent of square with all tips visible."
+    },
+    {
+      "id": "hunters_mark",
+      "prompt": "Use case: stylized-concept. ONE dark fantasy RPG Hunter's Mark EFFECT icon, square canvas. Thin ornate antique gold square border, delicate pointed corner ornaments and small mid-edge diamonds, black iron inner field, genuinely transparent exterior margin, matching painterly status icons. Main symbol: a single sharp silver arrowhead pointing downward, fixed at center of a bold luminous amber-gold circular targeting reticle with four compass ticks, dark forest-green hunting feather tied beneath it, a subtle crimson slash of magic marking the target. Clear readable silhouette at32px, hand-painted worn steel and old gold texture, restrained forest green, silver and amber. A target mark rather than a bow class crest. No letters, numbers, text, watermark, human figure, hand or shield. Front view, frame occupies86percent of square canvas; entire frame visible."
+    }
+  ]
+}

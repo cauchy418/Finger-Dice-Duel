@@ -1,0 +1,33 @@
+PASS resource spend 2 to zero
+PASS mark ownership and consumption
+PASS painted Effects/ki
+PASS painted Effects/hunters_mark
+PASS Ki and mark shown together
+PASS Ki image in battle
+PASS mark image in battle
+PASS Ki counter inside mask
+PASS zero Ki counter current
+PASS mark cleared after hunter attack
+PASS multiplayer resource 4
+PASS multiplayer resource 8
+PASS manual resource group
+PASS manual no dangling punctuation GuideTitle
+PASS manual no dangling punctuation GuideNote
+PASS manual no dangling punctuation GroupTitle
+PASS manual no dangling punctuation Entry_slashing
+PASS manual no dangling punctuation Entry_bludgeoning
+PASS manual no dangling punctuation Entry_piercing
+PASS manual no dangling punctuation Entry_thunder
+PASS manual no dangling punctuation Entry_acid
+PASS manual no dangling punctuation Entry_poison
+PASS manual no dangling punctuation Entry_radiant
+PASS manual no dangling punctuation Entry_necrotic
+PASS manual no dangling punctuation Entry_fire
+PASS manual no dangling punctuation Entry_cold
+PASS manual no dangling punctuation Entry_lightning
+PASS manual no dangling punctuation Entry_force
+PASS manual no dangling punctuation Entry_psychic
+PASS manual no dangling punctuation Entry_barrier
+PASS manual no dangling punctuation GroupTitle
+PASS manual no dangling punctuation Entry_ki
+PASS manual no dangling punctuation Entry_hunters_mark

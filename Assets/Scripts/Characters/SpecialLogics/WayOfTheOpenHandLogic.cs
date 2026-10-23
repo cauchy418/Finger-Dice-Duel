@@ -1,9 +1,9 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>武僧·散打宗：气、共鸣、倒伏/震慑与混元体。</summary>
-    public sealed class WayOfTheOpenHandLogic : CharacterTemplate, IAttackTypeProvider
+    public sealed class WayOfTheOpenHandLogic : CharacterTemplate, IAttackTypeProvider, IKiResource
     {
         public const int MaxKi = 6;
         public int Ki { get; private set; } = 2;

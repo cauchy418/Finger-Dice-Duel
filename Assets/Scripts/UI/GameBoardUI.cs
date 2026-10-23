@@ -46,6 +46,7 @@ namespace FingerDiceDuel.UI
         /// 那四个面板各自建自己的图标栏。
         /// </summary>
         private StatusIconBar _statusIconsA, _statusIconsB;
+        public GameManager EffectContext { private get; set; }
 
         /// <summary>法师·塑能学派的伤害类型选择面板（10 选 1）。</summary>
         private DamageTypePanel _damageTypePanel;
@@ -1495,8 +1496,8 @@ namespace FingerDiceDuel.UI
             RefreshBattleHeader(b, true);
 
             // 法师·塑能学派的状态图标（玩家面板右侧）
-            _statusIconsA?.Refresh(a);
-            _statusIconsB?.Refresh(b);
+            _statusIconsA?.Refresh(a,EffectContext);
+            _statusIconsB?.Refresh(b,EffectContext);
 
             if (turnLimit > 0) SetTurn(turnCount, turnLimit);
 

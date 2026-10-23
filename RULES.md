@@ -1234,7 +1234,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**1151 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**1153 项**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
@@ -1574,3 +1574,6 @@ UI  →  Assistant  →  Core
 > ⚠️ 中立仍然偏弱，这是角色池 / AI 在 8 人局的综合结果，
 > 后续需要单独做 8 人平衡；不要用这张表反推 1v1 / 2v2 的强弱。
 
+### 界面资源与标记
+
+气图标的角标为当前气点（0点仍显示），不是持续回合。猎人标记显示在被标记者姓名旁，悬停查看来源；由对应猎人的攻击消耗，多名猎人标记同一目标时角标为来源人数。秘法手册「抗性与屏障」页附两项说明。

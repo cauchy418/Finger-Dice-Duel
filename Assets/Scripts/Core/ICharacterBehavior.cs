@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -828,14 +828,18 @@ namespace FingerDiceDuel.Core
         }
     }
 
-    /// <summary>
-    /// 角色实现"我要接管某次攻击的结算"（把目标改成自己）。
-    ///
-    /// 由 <see cref="AttackContext"/> 在**判定闪避与护盾之前**询问 ——
-    /// "改目标"必须发生在"谁来承受"这件事确定之前。
-    ///
-    /// 目前的实现者：**圣武士·奉献之誓**（攻击范围内的角色被攻击时可以把目标改成自己）。
-    /// </summary>
+    /// <summary>供状态栏读取武僧当前气点，不提供资源修改入口。</summary>
+    public interface IKiResource
+    {
+        int Ki { get; }
+    }
+
+    /// <summary>供状态栏查询该技能是否标记了指定角色。</summary>
+    public interface IHunterMarkSource
+    {
+        bool IsMarked(PlayerState target);
+    }
+
     /// <summary>角色根据战场状态刷新动态攻防（野蛮人·狂战士道途 / 战士·战术家）。</summary>
     public interface IDynamicStats
     {
@@ -848,6 +852,7 @@ namespace FingerDiceDuel.Core
         PlayerState TransferAttack(AttackContext context, GameManager manager);
     }
 
+    /// <summary>在判定闪避与护盾前询问圣武士·奉献之誓是否代挡。</summary>
     public interface IAttackRedirector
     {
         /// <summary>

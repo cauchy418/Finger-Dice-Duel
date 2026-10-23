@@ -6,9 +6,9 @@ using UnityEngine.UI;
 namespace FingerDiceDuel.UI
 {
     /// <summary>
-    /// **法师·塑能学派状态的图标栏**（显示在玩家面板右侧）。
+    /// 玩家姓名旁的状态、资源与标记图标栏。
     ///
-    /// 负面状态、13类抗性及屏障共用图标栏；超出固定显示区时可滚动。
+    /// 负面状态、13类抗性、屏障、气及猎人标记共用；超出固定显示区时可滚动。
     /// 缺图时才回退到既有颜色与符号。
     ///
     /// 为什么不用 Emoji：uGUI 的字体回退不一定带彩色 Emoji，
@@ -23,8 +23,8 @@ namespace FingerDiceDuel.UI
         private const float IconSize = 30f;
         private const float IconGap = 4f;
 
-        /// <summary>最大同时显示的数量（= 状态种类数）。</summary>
-        public const int MaxIcons = 32;
+        /// <summary>最大同时显示数量，包含状态、资源与标记。</summary>
+        public const int MaxIcons = 36;
 
         private readonly RectTransform _root;
         private readonly Font _font;
@@ -60,8 +60,9 @@ namespace FingerDiceDuel.UI
             {
                 _icons[i].rectTransform.sizeDelta = new Vector2(size, size);
                 _icons[i].rectTransform.anchoredPosition = new Vector2(i % columns * (size + gap), -size*0.5f-(i / columns) * (size + gap));
-                _turns[i].rectTransform.anchoredPosition = new Vector2(size / 2 - 3, -size / 2 + 3);
-                _turns[i].rectTransform.sizeDelta = new Vector2(22, 20);
+                float counterSize=size>=34?19:14;
+                _turns[i].rectTransform.anchoredPosition = new Vector2(size/2-counterSize/2-1,-size/2+counterSize/2+1);
+                _turns[i].rectTransform.sizeDelta = Vector2.one*counterSize;
                 _turns[i].fontSize = size >= 34 ? 14 : 11;
                 var counter = _icons[i].transform.Find("Counter") as RectTransform;
                 if (counter != null) counter.sizeDelta = Vector2.one * (size >= 34 ? 19 : 14);
@@ -107,9 +108,9 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>按玩家的当前状态刷新这一栏。</summary>
-        public void Refresh(PlayerState player)
+        public void Refresh(PlayerState player, GameManager game=null)
         {
-            var list=CombatStatusIcons.For(player);
+            var list=CombatStatusIcons.For(player,game);
             int count=System.Math.Min(list.Count,MaxIcons);
             for(int i=0;i<MaxIcons;i++)
             {
@@ -168,7 +169,8 @@ namespace FingerDiceDuel.UI
                 var counter = counterGo.GetComponent<Image>();
                 counter.rectTransform.anchorMin = counter.rectTransform.anchorMax = new Vector2(1, 0);
                 counter.rectTransform.sizeDelta = new Vector2(19, 19);
-                counter.rectTransform.anchoredPosition = new Vector2(-3, 3);
+                counter.rectTransform.pivot=new Vector2(1,0);
+                counter.rectTransform.anchoredPosition = new Vector2(-1, 1);
                 BattleArt.Apply(counter, "UI/status_counter");
                 counter.raycastTarget = false;
                 _turns.Add(MakeText(rect, "Turns", new Vector2(IconSize / 2f - 3f,

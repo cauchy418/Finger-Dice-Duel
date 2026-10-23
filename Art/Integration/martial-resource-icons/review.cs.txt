@@ -1,0 +1,58 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/martial-resource-icons");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Func<UnityEngine.Canvas> battleCanvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,canvas)=>{
+ shot(canvas,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name+" parent="+button.transform.parent.name+" active="+button.gameObject.activeInHierarchy+" enabled="+button.interactable+" phase="+((FingerDiceDuel.Assistant.BoardController)field(boot,"_controller"))?.Phase+" hits="+string.Join(",",hits.Select(h=>h.gameObject.name)));
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+
+
+var fixture=new FingerDiceDuel.Tests.NewMartialRolesTests();fixture.Ki_icons_follow_current_resource_including_zero();check(true,"resource spend 2 to zero");fixture.Hunter_mark_icons_follow_target_and_actual_consumption();check(true,"mark ownership and consumption");
+foreach(var key in new[]{"Effects/ki","Effects/hunters_mark"})check(FingerDiceDuel.UI.BattleArt.Get(key)?.texture.width==512,"painted "+key);
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.WayOfTheOpenHand,FingerDiceDuel.Core.CharacterDefinition.RangerHunter);
+var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+((FingerDiceDuel.Characters.SpecialLogics.RangerHunterLogic)game.PlayerB.Character).Mark(game.PlayerA);invoke(boot,"RefreshView",new object[0]);
+var bar=(FingerDiceDuel.UI.StatusIconBar)field(board,"_statusIconsA");check(bar.VisibleCount==2,"Ki and mark shown together");
+check(battleCanvas().GetComponentsInChildren<UnityEngine.UI.Image>(true).Any(i=>i.sprite==FingerDiceDuel.UI.BattleArt.Get("Effects/ki")),"Ki image in battle");
+check(battleCanvas().GetComponentsInChildren<UnityEngine.UI.Image>(true).Any(i=>i.sprite==FingerDiceDuel.UI.BattleArt.Get("Effects/hunters_mark")),"mark image in battle");var root=(UnityEngine.RectTransform)field(bar,"_root");
+foreach(var text in root.GetComponentsInChildren<UnityEngine.UI.Text>())if(text.name=="Turns"&&text.text.Length>0){
+ var bounds=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(root,text.transform);
+ check(bounds.min.y>=root.rect.yMin-0.5f&&bounds.max.y<=root.rect.yMax+0.5f,"Ki counter inside mask");
+}
+shot(battleCanvas(),"ki-and-mark");
+game.PlayerB.LeftHand.SetValue(3);game.ExecuteTurn(game.PlayerA,game.PlayerA.LeftHand,game.PlayerB.LeftHand);invoke(boot,"RefreshView",new object[0]);
+check(FingerDiceDuel.Core.CombatStatusIcons.For(game.PlayerA,game).First(i=>i.ResourceKey=="Effects/ki").Counter=="0","zero Ki counter current");
+var attack=new FingerDiceDuel.Core.AttackContext(game.PlayerB,game.PlayerA,game.PlayerB.LeftHand,4);attack.Resolve(new FingerDiceDuel.Assistant.SimpleChoiceProvider(),game);invoke(boot,"RefreshView",new object[0]);
+check(!FingerDiceDuel.Core.CombatStatusIcons.For(game.PlayerA,game).Any(i=>i.ResourceKey=="Effects/hunters_mark"),"mark cleared after hunter attack");shot(battleCanvas(),"spent-ki-mark-consumed");
+var preview=System.AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("FingerDiceDuel.EditorTools.MultiplayerArtPreview")).First(t=>t!=null);preview.GetField("_boot",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).SetValue(null,boot);
+var build=preview.GetMethod("Build",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+foreach(int count in new[]{4,8}){
+ var def=count==4?FingerDiceDuel.Core.CharacterDefinition.WayOfTheFourElements:FingerDiceDuel.Core.CharacterDefinition.RangerHunter;
+ build.Invoke(null,new object[]{count,0,def,false});game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");
+ if(count==8)((FingerDiceDuel.Characters.SpecialLogics.RangerHunterLogic)game.Players[0].Character).Mark(game.Players[1]);invoke(boot,"RefreshView",new object[0]);
+ check(battleCanvas().GetComponentsInChildren<UnityEngine.UI.Image>(true).Any(i=>i.sprite==FingerDiceDuel.UI.BattleArt.Get(count==4?"Effects/ki":"Effects/hunters_mark")),"multiplayer resource "+count);shot(battleCanvas(),count+"p-resource");
+}
+invoke(boot,"OnMagicOrbClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");codex.GoTo(3);((UnityEngine.UI.ScrollRect)field(codex,"_guideScroll")).verticalNormalizedPosition=0;shot(front,"manual-resources");
+check(FingerDiceDuel.Core.GuideSheets.Protections().Groups[1].Entries.Count==2,"manual resource group");
+var content=(UnityEngine.RectTransform)field(codex,"_guideContent");
+foreach(var text in content.GetComponentsInChildren<UnityEngine.UI.Text>())
+ check(!text.text.Split('\n').Any(l=>System.Text.RegularExpressions.Regex.IsMatch(l.Trim(),@"^[，。；：！？、）》】]|^\d+[）】]")),"manual no dangling punctuation "+text.name);
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);boot.PlayerBIsAI=true;boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);return "PASS "+checks.Count+" resource UI checks";

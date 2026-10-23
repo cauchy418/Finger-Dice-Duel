@@ -1,0 +1,19 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "ki",
+      "source": "Art/Production/martial-resource-icons-v1/selected/Effects/ki.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/ki.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-e69f619a-e939-4471-88fd-4118b05b1e54.png",
+      "sha256": "a236d132147a427aecdd90cb3c603654a6743ff8cab403d96a90ae5b34d5b45d"
+    },
+    {
+      "id": "hunters_mark",
+      "source": "Art/Production/martial-resource-icons-v1/selected/Effects/hunters_mark.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/hunters_mark.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-529815d5-fa44-4cc7-a057-f1bdaffbc07a.png",
+      "sha256": "66f08d5ed839de9509c83d35ef7aa2f72e3e0f4b735ce3b2780c1c550dd382a2"
+    }
+  ]
+}

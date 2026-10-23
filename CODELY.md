@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1151 项全部通过**（2026-10-23），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派本批真实引擎/UI **95 项通过** |
+| 测试 | **1153 项全部通过**（2026-10-24），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派本批真实引擎/UI **95 项通过** |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **53,280** 局、2v2 **85,248** 局、双将 **531,720** 局、集火实验 **133,200** 局；
@@ -70,7 +70,7 @@
 
 `IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。全部33角色有显式手值配置，当前297组（33角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
 
-`CombatStatusIcons` 统一负面、抗性和屏障显示；图标栏最多32项，超出可视区域可滚动。秘法手册为伤害类型、状态、六条元素反应、抗性与屏障四页；新增页用完整资源键，元素反应未增加心灵条目。
+`CombatStatusIcons` 统一负面、抗性、屏障、资源与标记显示；图标栏最多36项，超出可视区域可滚动。秘法手册为伤害类型、状态、六条元素反应、抗性与屏障四页；第四页附资源与标记分组，用完整资源键，元素反应未增加心灵条目。
 
 ## 目录结构
 
@@ -403,3 +403,11 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
 
 全量1151项测试通过，UI及Unity条件编译通过；真实引擎68项检查覆盖37角色资源、四枚选将与图鉴、职业筛选、旧ID别名及1v1/4人/8人显示。素材和精确提示词见 [制作记录](Art/Production/four-role-emblems-v1/README.md)，截图见 [验收](Art/Integration/four-role-emblems/README.md)。
+
+## 气与猎人标记显示（2026-10-24）
+
+Core新增只读契约 `IKiResource`、`IHunterMarkSource`，散打宗、四象宗及猎人实现；`CombatStatusIcons.For(player, game)` 经 `CharacterBehaviors` 遍历双将部件，不引用Characters或Unity。气显示当前资源（包括0），标记反查存活来源并合并到被标记者，多来源角标为人数。`GameBootstrap` 每次刷新将当前GameManager传入战斗板，1v1和多人栏共用模型；对应攻击消耗标记后自然移除。
+
+两枚PNG使用 `Effects/ki`、`Effects/hunters_mark`，上限36项；角标完全置于图标裁切范围内。秘法手册第四页增加资源与标记分组，文字说明角标口径；防止孤立标点换行。技能规则、数值与AI不变。
+
+全量1153项测试通过，UI及Unity条件编译通过，真实引擎33项检查通过。素材/提示词见 [制作记录](Art/Production/martial-resource-icons-v1/README.md)，界面与重放见 [验收](Art/Integration/martial-resource-icons/README.md)。

@@ -3132,6 +3132,7 @@ namespace FingerDiceDuel.UI
             //    而这个标记由 SetInteractable 写入。原来 SetInteractable
             //    在 Refresh 之后调用 —— 于是高亮读到的永远是**上一帧**的可点性，
             //    表现成"对手的手明明能点却没有高光"（玩家反复实测到）。
+            _board.EffectContext=_game;
             _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
 
             IReadOnlyList<Hand> choices =

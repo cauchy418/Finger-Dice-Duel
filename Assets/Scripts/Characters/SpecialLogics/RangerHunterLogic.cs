@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>游侠·猎人：7 标记、标记目标无视正防御并追加已损体力/5。</summary>
-    public sealed class RangerHunterLogic : CharacterTemplate, IAttackTypeProvider
+    public sealed class RangerHunterLogic : CharacterTemplate, IAttackTypeProvider, IHunterMarkSource
     {
         private readonly HashSet<PlayerState> _marked = new HashSet<PlayerState>();
         private PlayerState _owner;

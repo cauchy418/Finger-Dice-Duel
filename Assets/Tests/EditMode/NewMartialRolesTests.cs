@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
@@ -19,6 +19,30 @@ namespace FingerDiceDuel.Tests
             return new GameManager(pA, pB, new SimpleChoiceProvider(), new SimpleChoiceProvider());
         }
 
+        [Test] public void Ki_icons_follow_current_resource_including_zero()
+        {
+            foreach(var def in new[]{CharacterDefinition.WayOfTheOpenHand,CharacterDefinition.WayOfTheFourElements})
+            {
+                var a=CharacterFactory.CreatePlayer("A",def);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Champion);
+                var game=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+                var icon=CombatStatusIcons.For(a,game).Find(i=>i.ResourceKey=="Effects/ki");
+                Assert.AreEqual("2",icon.Counter);
+                b.LeftHand.SetValue(3);game.ExecuteTurn(a,a.LeftHand,b.LeftHand);
+                Assert.AreEqual("0",CombatStatusIcons.For(a,game).Find(i=>i.ResourceKey=="Effects/ki").Counter);
+            }
+        }
+        [Test] public void Hunter_mark_icons_follow_target_and_actual_consumption()
+        {
+            var a=CharacterFactory.CreatePlayer("Hunter",CharacterDefinition.RangerHunter);
+            var b=CharacterFactory.CreatePlayer("Target",CharacterDefinition.Champion);
+            var game=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+            ((FingerDiceDuel.Characters.SpecialLogics.RangerHunterLogic)a.Character).Mark(b);
+            Assert.IsFalse(CombatStatusIcons.For(a,game).Exists(i=>i.ResourceKey=="Effects/hunters_mark"));
+            var icon=CombatStatusIcons.For(b,game).Find(i=>i.ResourceKey=="Effects/hunters_mark");
+            Assert.IsTrue(icon.Description.Contains("Hunter"));Assert.AreEqual("",icon.Counter);
+            b.LeftHand.SetValue(3);game.ExecuteTurn(a,a.LeftHand,b.LeftHand);
+            Assert.IsFalse(CombatStatusIcons.For(b,game).Exists(i=>i.ResourceKey=="Effects/hunters_mark"));
+        }
         [Test]
         public void Four_new_subclasses_are_registered_with_expected_stats()
         {
