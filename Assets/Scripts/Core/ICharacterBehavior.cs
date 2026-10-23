@@ -105,6 +105,70 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
+    /// **自己回合结束**通知（牧师·战争领域：本回合未发起攻击则清空加成）。
+    ///
+    /// 由 <see cref="GameManager.ResolveStatusTurnEnd"/> 在"该玩家的回合结束"
+    /// （燃烧 / 状态递减之后）触发 —— 界面与无头两条路径都经过它，
+    /// 所以在这里挂不会出现"某条路径忘了清"的漂移。
+    /// </summary>
+    public interface IFixedNormalAttackDamage
+    {
+        int NormalAttackDamage { get; }
+        AttackDamageType NormalAttackType { get; }
+    }
+
+    public interface ITurnEndHook
+    {
+        void OnTurnEnded(PlayerState owner, GameManager manager);
+    }
+
+    /// <summary>
+    /// **被选为攻击目标**的通知（牧师·战争领域：挨打也是成长）。
+    ///
+    /// 玩家口径：**被选中即算"受到攻击"** —— 被闪避 / 被盾挡 / 伤害为 0 都触发；
+    /// 只有攻击被邪术师·至高妖精**取消**不算（那时攻击没有发生过）。
+    /// 被转移 / 代挡后，**实际承受者**同样收到一次通知。
+    /// </summary>
+    public interface IAttackTargetedHook
+    {
+        void OnTargetedByAttack(PlayerState owner, AttackContext context, GameManager manager);
+    }
+
+    /// <summary>
+    /// 攻击**实际造成伤害之后**的通知（战士·战斗大师的招式附加）。
+    ///
+    /// ⚠️ 与"命中"（<see cref="IStatusApplyingAttack"/>）口径**不同**：
+    ///    只有 <see cref="AttackContext.AppliedDamage"/> &gt; 0 才触发 ——
+    ///    被盾挡（0 伤）、被闪避、被取消、太极减至 0 都不算"造成伤害"。
+    /// 调用点在 <see cref="AttackContext.Resolve"/> 的最后，经
+    /// <see cref="CharacterBehaviors.Implementers{T}"/> 遍历（双将部件也会收到）。
+    /// </summary>
+    public interface IOnDamageLanded
+    {
+        void OnDamageLanded(AttackContext context, GameManager manager);
+    }
+
+    /// <summary>
+    /// 战士·战斗大师的"招式"选择结果归属（**角色侧持有**，UI / 控制器写入）。
+    ///
+    /// 为什么需要它：Controller / UI 在 Assistant 与 UI 层，**不能引用 Characters**
+    /// （分层铁律）；而"选了哪种状态"既不是 <see cref="Hand"/> 也不是抉择器的枚举，
+    /// 只能由角色自己保存。与 <see cref="IAbjurationSkill"/> 的
+    /// <c>SelectedResistance</c> 同一模式。
+    /// </summary>
+    public interface IBattleMasterManeuverChoice
+    {
+        /// <summary>当前分支可选的招式（4/8 → 流血/跛脚；6 → 眩晕/倒伏；无则长度为 0）。</summary>
+        StatusEffect[] ManeuverOptions { get; }
+
+        /// <summary>玩家选定的招式（写入后由结算按当前分支校验）。</summary>
+        void SelectManeuver(StatusEffect status);
+
+        /// <summary>玩家明确选择**不发动**（与"没问过"区分，结算时不再走 AI 默认）。</summary>
+        void DeclineManeuver();
+    }
+
+    /// <summary>
     /// **攻击命中后要给目标挂状态**的角色实现本接口（法师·塑能学派）。
     ///
     /// 为什么单独一个接口：挂状态的时机在 `AttackContext.Resolve` 的最后

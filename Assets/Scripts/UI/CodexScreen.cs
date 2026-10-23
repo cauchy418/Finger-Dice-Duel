@@ -188,6 +188,7 @@ namespace FingerDiceDuel.UI
             _body.rectTransform.anchorMin = _body.rectTransform.anchorMax = new Vector2(0, 1);
             _body.rectTransform.pivot = new Vector2(0, 1);
             _body.verticalOverflow = VerticalWrapMode.Overflow;
+            _body.horizontalOverflow = HorizontalWrapMode.Overflow;
             _body.lineSpacing = 1.18f;
         }
 
@@ -389,7 +390,7 @@ namespace FingerDiceDuel.UI
             _professionLabel.text = (c.ProfessionNameZh ?? identity?.Profession.NameZh ?? "") + "  " + (c.ProfessionNameEn ?? identity?.Profession.NameEn ?? "");
             _title.text = (c.SubclassNameZh ?? identity?.SubclassNameZh ?? c.NameZh) + "  " + (c.SubclassNameEn ?? identity?.SubclassNameEn ?? c.NameEn);
             _alignmentLabel.text = c.Alignment;
-            _stats.text = "生命 " + c.MaxHealth + "　攻 " + Signed(c.Attack) + "　防 " + Signed(c.Defense) + "　距离 " + (c.Range == int.MaxValue ? "无限" : c.Range.ToString());
+            _stats.text = "生命 " + c.MaxHealth + "　攻 " + Signed(c.Attack) + "　防 " + Signed(c.Defense) + "　距离 " + (c.Range == int.MaxValue ? "∞" : c.Range.ToString());
             _emblem.gameObject.SetActive(true);
             _emblem.sprite = BattleArt.Get("Subclasses/" + c.Id);
             var sb = new StringBuilder();
@@ -466,14 +467,15 @@ namespace FingerDiceDuel.UI
         {
             var text = FrontEndArt.Text(parent, name, value, new Vector2(x, -y), new Vector2(w, h), size, TextAnchor.UpperLeft, title);
             text.rectTransform.anchorMin = text.rectTransform.anchorMax = text.rectTransform.pivot = new Vector2(0, 1);
+            if(!title) {text.text=FrontEndArt.WrapReadableText(text,value,w);text.horizontalOverflow=HorizontalWrapMode.Overflow;}
             return text;
         }
         private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();
-        private static void Section(StringBuilder sb, string title, string body)
+        private void Section(StringBuilder sb, string title, string body)
         {
             if (string.IsNullOrEmpty(body)) return;
             sb.AppendLine("<color=#E2C187>" + title + "</color>");
-            sb.AppendLine(body);
+            sb.AppendLine(FrontEndArt.WrapReadableText(_body,body,930));
             sb.AppendLine();
         }
         public void SetVisible(bool visible) { if (_root != null) _root.gameObject.SetActive(visible); }

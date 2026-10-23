@@ -21,7 +21,7 @@ namespace FingerDiceDuel.Characters
     ///   技能一句    8 ~ 15     17 ~ 22    45
     ///   操作指南    30 ~ 38    50 ~ 60    80
     ///   如何针对    19 ~ 40    20 ~ 40    80
-    ///   交互        每角色 2 ~ 3 条
+    ///   交互        仅保留需要解释的例外或优先级，可为0条
     ///
     /// <b>机制简单</b> = 一句能说完（勇士、风流剑客、王冠之誓、野兽道途、巨人道途…）
     /// <b>有机制</b>   = 要说清触发条件与代价（太极宗、盗贼、至高妖精、幽域追踪者、魔术师…）
@@ -43,43 +43,23 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "十点重击：运算后双手和10，发起攻击的基础伤害×1.5。",
                 playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
                 counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
-                interactions: new[]
-                {
-                    "与咒法学派：勇士防0，没有正向防御可被无视；护盾仍挡不住空间刃。",
-                    "与忍宗双将：十点重击先乘基础伤害，再分段并逐段计算攻防；与风流剑客现为跨阵营，不能同选。",
-                });
+                interactions: new[] { "与忍宗双将：十点重击先乘基础伤害，再分段计算攻防。" });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulNeutral,
-                shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换无限距离。",
+                shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
                 playGuide: "核心是主动合盾。"
-                         + "攻击时若另一只手是完整盾，可碎它换本次攻击距离无限 ——"
+                         + "攻击时若另一只手是完整盾，可碎它换本次攻击距离∞ ——"
                          + "够不到远处对手时这是解法；"
                          + "自己的盾本来就要碎时，顺手连锁打碎对手的盾最赚。",
                 counter: "别让他合成 5（那是他合盾的唯一来源）。"
                        + "给他的数字里 1/2/3/4/5 都要压低，4/6/8 次之。",
-                interactions: new[]
-                {
-                    "与咒法学派：他无视护盾，所以你的盾挡不住他的伤害；"
-                        + "但你的两个技能照样能发动 —— "
-                        + "他只是不消耗、不破碎你的盾，"
-                        + "你主动碎盾换射程依然成立，也能连锁打碎他的盾。",
-                    "与奉献之誓 / 守望者道途 / 王冠之誓：场上盾越多，连锁破盾的选择越多。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.SchoolOfConjurationId, "School of Conjuration", Alignment.LawfulNeutral,
                 shortSkill: "空间刃穿盾、正防与闪避；王车易位：同手值换座并跳过。",
                 playGuide: "优先合8/6/4。王车易位：点击技能后选双手值相同的存活角色（4/6同6/4），换座并跳过；不限距离，取消不耗回合，冻结不能用。",
                 counter: "盾、闪避、太极与伏击挡不住空间刃，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
-                interactions: new[]
-                {
-                    "王车易位：可换队友或对手，队伍和身份不变；距离立即变化，本轮按原顺序，下一轮按新座位行动。",
-                    "与太极宗：太极对他不减半、不反弹、5 也不消耗 —— "
-                        + "所以太极宗的 5 面对他时也要降价值，它只是普通的一张 5。",
-                    "与风流剑客：他的攻击不可闪避。",
-                    "与破阵者：他的盾挡不住你，但他的两个技能照样能发动"
-                        + "（主动碎盾换射程 / 连锁打碏你的盾）。",
-                    "与奉献之誓：奉献之誓的盾不挡他的伤害，但合盾仍会触发冲击。",
-                });
+                interactions: new[] { "与太极宗：空间刃不减半、不反弹，也不消耗太极手。", "与幽域追踪者：空间刃穿透伏击，但不解除暗置。" });
 
             Add(CharacterDefinition.PathOfTheWardenId, "Path of the Warden", Alignment.ChaoticGood,
                 shortSkill: "合出盾时可控制对手一只手，盾碎时解锁。",
@@ -87,11 +67,7 @@ namespace FingerDiceDuel.Characters
                          + "锁手在盾碎时解除，所以算好盾能撑多久。",
                 counter: "别让他合成 5。另外注意："
                        + "他的锁手在场上只剩两人时才有额外限制，人多时更凶。",
-                interactions: new[]
-                {
-                    "与巨人道途：巨人道途靠另一只手决定伤害，锁住那只手收益最大。",
-                    "与咒法学派：咒法学派无视护盾，但锁手仍然生效。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.LifeDomainId, "Life Domain", Alignment.LawfulGood,
                 shortSkill: "4/6/8 可转回复；回复先净化再回血；9 可给别人，双9再回一次。",
@@ -100,25 +76,16 @@ namespace FingerDiceDuel.Characters
                          + "2v2 里优先给一队血量最低的人回复。",
                 counter: "尽量阻止他合双 9（双 9 = 9 + 9 = 回 18 血）。"
                        + "9 的原料（4+5、3+6、2+7、1+8）都值得压一点。",
-                interactions: new[]
-                {
-                    "与太极宗：他的回复可以给别人，但 0 只在太极宗手上。",
-                    "与巨人道途：巨人道途的 9 是两段回复，生命领域是一段但可指定目标。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.ChaoticGood,
-                shortSkill: "1→2闪避；2→3强化基础值×1.5、距离无限，命中附流血2回合。",
+                shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。"
-                         + "乘风突刺同时把距离变成无限 —— 够不到远处对手时这是解法。",
+                         + "乘风突刺同时把距离变成∞ —— 够不到远处对手时这是解法。",
                 counter: "别给他 1 与 2 —— 那是他闪避与强化的原料。"
                        + "面对咒法学派时他的 1 完全无效（攻击不可闪避）。",
-                interactions: new[]
-                {
-                    "与咒法学派：闪避无效。",
-                    "与太极宗：太极反弹可以被闪避 —— 所以他的 1 反而是应对手段。",
-                    "与忍宗 / 巨人道途：多段攻击时，一只 1 只能闪掉其中一段。",
-                });
+                interactions: new[] { "与太极宗：反弹可以被闪避；多段攻击每段分别消耗一只1。" });
 
             Add(CharacterDefinition.PathOfTheBeastId, "Path of the Beast", Alignment.ChaoticEvil,
                 shortSkill: "运算后双手之和为 7 → 回半血且攻防永久 +1。",
@@ -128,11 +95,7 @@ namespace FingerDiceDuel.Characters
                 counter: "别让他两手凑成 7（有 1 别给 6、有 2 别给 5、"
                        + "有 3 别给 4）。"
                        + "他每次进化回半血且攻防 +1，拖久了很难消耗。",
-                interactions: new[]
-                {
-                    "与生命领域：他回半血，生命领域回固定 9 —— 血量上限 25 的野兽道途更耐打。",
-                    "与巨人道途：两者生命上限都是 25。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.SwordsmanId, "Swordsman", Alignment.LawfulNeutral,
                 shortSkill: "双4/6/8时追加固定伤害，命中附流血2回合。",
@@ -141,11 +104,7 @@ namespace FingerDiceDuel.Characters
                          + "追加攻击不吃攻防，所以它是一笔稳定的额外伤害。",
                 counter: "别给他 4/6/8（那是他双持的原料）。"
                        + "他血量健康时不必太怕，但被他连续双持会很快崩。",
-                interactions: new[]
-                {
-                    "与咒法学派：追加攻击的\"攻击数字视为 0\"，至高妖精无法取消它。",
-                    "与忍宗：忍宗拆两段各吃攻防，剑士是一次固定追加 —— 算法不同。",
-                });
+                interactions: new[] { "与至高妖精：追加攻击没有攻击数字，不能被取消。" });
 
             Add(CharacterDefinition.WayOfTheNinjaId, "Way of the Ninja", Alignment.TrueNeutral,
                 shortSkill: "攻击拆成两段、伤害减半，每段各自计算攻防。",
@@ -154,13 +113,7 @@ namespace FingerDiceDuel.Characters
                          + "所以 4 不是死牌，只是 8 本身更值钱（排序 8 > 6 > 4）。",
                 counter: "别给他高值（ 8 最该挡，6 次之）。"
                        + "一面盾只能挡下他其中一段，所以自己合盾的价值下降。",
-                interactions: new[]
-                {
-                    "与风流剑客：盾与闪避是逐段独立结算（一面盾 / 一只 1 只挡一段）；"
-                        + "太极也一样只对付一段 —— "
-                        + "所以你的两段里总有一段能打到他。",
-                    "与巨人道途：巨人道途的 5 也是两段，但每段伤害取决于另一只手。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticNeutral,
                 shortSkill: "运算达成双7潜行，不能被攻击；出潜行攻击＋7，命中附流血2回合。",
@@ -169,11 +122,7 @@ namespace FingerDiceDuel.Characters
                          + "⚠️ 开局直接摆出的双 7 不算潜行，必须经运算达成。",
                 counter: "别给他 7（那是潜行的种子）。"
                        + "他潜行期间无法被选中，所以趁他没进潜行时压血线。",
-                interactions: new[]
-                {
-                    "与太极宗：潜行中的攻击照样会被太极化解。",
-                    "与咒法学派：潜行只挡\"被选中\"，取消攻击仍然生效。",
-                });
+                interactions: new[] { "与咒法学派：潜行不能被选为攻击目标；空间刃不能绕过目标选择。" });
 
             Add(CharacterDefinition.OathOfDevotionId, "Oath of Devotion", Alignment.LawfulGood,
                 shortSkill: "4/5/6 都合盾，且合盾 / 碎盾时额外打出 2 点冲击。",
@@ -181,11 +130,7 @@ namespace FingerDiceDuel.Characters
                          + "用完整盾再合盾，会分别触发碎盾和合盾两次冲击。",
                 counter: "别让他合成 5，4/6 也要压 —— "
                        + "他每合一次盾就白赚一次冲击。",
-                interactions: new[]
-                {
-                    "与咒法学派：盾不挡伤害，但合盾仍会触发冲击。",
-                    "与破阵者 / 守望者道途 / 王冠之誓：他们也会合盾，场上盾多时双方技能都更活跃。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.LawfulEvil,
                 shortSkill: "妖精戏法：手上留着与对手攻击数字相同的牌即可取消该攻击。",
@@ -194,13 +139,7 @@ namespace FingerDiceDuel.Characters
                          + "比对方少 8 以上才值得。",
                 counter: "别给他 1/2/7（能凑出最多的攻击数字）；"
                        + "或改用盾 / 回复推进局面。",
-                interactions: new[]
-                {
-                    "与巨人道途：巨人道途的 5 是两段攻击、是高价值数字，"
-                        + "所以至高妖精手上 5 的价值对巨人道途时更高（取消它收益更大）。",
-                    "与剑士：追加攻击\"攻击数字视为 0\"，无法被取消。",
-                    "与太极宗：太极反弹\"攻击数字视为 0\"，同样无法被取消。",
-                });
+                interactions: new[] { "与剑士、太极宗：追加与反弹没有攻击数字，不能取消。" });
 
             Add(CharacterDefinition.ArcaneArcherId, "Arcane Archer", Alignment.LawfulNeutral,
                 shortSkill: "攻击距离 3；4 打两段、6 伤害 +2、8 无视护盾。",
@@ -208,12 +147,7 @@ namespace FingerDiceDuel.Characters
                          + "8 是穿透盾牌的答案，4/6 是稳定输出 —— 三者都好用。",
                 counter: "与咒法学派同构但要弱很多：只有 8 能穿盾，"
                        + "6 会被完全挡下、4 能挡一半。所以你的 5 只小幅贬值。",
-                interactions: new[]
-                {
-                    "与咒法学派：咒法学派无视全部护盾，魔射手只有 8 能穿。",
-                    "与太极宗：你的 4 也是两段，而太极只能对付一段 —— "
-                        + "所以另一段一定能打到他。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.GamblerId, "Gambler", Alignment.ChaoticNeutral,
                 shortSkill: "放弃运算，掷 1d9 直接作为本次行动结果。",
@@ -222,11 +156,7 @@ namespace FingerDiceDuel.Characters
                          + "正常运算过一回合后强制赌博。",
                 counter: "基本不需要针对（与你的手值无关）；"
                        + "他赌博后的下一回合别让他凑出高价值。",
-                interactions: new[]
-                {
-                    "与所有角色：赌博结果与双方手值完全无关。",
-                    "与太极宗：赌出 5 时，太极宗进入太极形态而非合盾。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.OathOfTheCrownId, "Oath of the Crown", Alignment.LawfulGood,
                 shortSkill: "王冠威仪：自己的盾破碎后，攻击距离与攻击加成永久一起 +1。",
@@ -234,11 +164,7 @@ namespace FingerDiceDuel.Characters
                          + "所以主动去打会被破盾的仗，越打越强。",
                 counter: "别给他 5（合成 5 就是给他一面可碎的盾），"
                        + "1/2/3/4 这些凑 5 的原料也要压。",
-                interactions: new[]
-                {
-                    "与破阵者：破阵者想碎盾换射程，正好帮王冠之誓成长。",
-                    "与至高妖精：王冠之誓的攻击加成随距离成长，被取消时损失更大。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.WayOfTheTaiChiId, "Way of the Tai Chi", Alignment.NeutralGood,
                 shortSkill: "5 不合盾而进入太极：被攻击时减半并反弹。",
@@ -247,14 +173,7 @@ namespace FingerDiceDuel.Characters
                          + "自己的 0 被他人当加数触碰后会立刻变成 1。",
                 counter: "别给他 5。一个太极只夹住一段，其余照常吃 ——"
                        + "多段攻击打他反而赚；咒法学派打他则完全失效。",
-                interactions: new[]
-                {
-                    "与咒法学派：太极完全失效，而且那张 5 不会被消耗。",
-                    "与盗贼：盗贼偷太极宗的 5 只会拿到普通盾 / 碎盾（不继承太极）；"
-                        + "反之太极宗收到 5 会变成太极。盗贼偷太极宗的 0 只能偷到 1。",
-                    "与至高妖精：反弹无法被取消。",
-                    "与风流剑客：反弹可以被闪避。",
-                });
+                interactions: new[] { "与咒法学派：空间刃不触发太极，不消耗5。", "与风流剑客：反弹可以被闪避。" });
 
             Add(CharacterDefinition.PathOfTheGiantId, "Path of the Giant", Alignment.ChaoticEvil,
                 shortSkill: "4/6/8 完全无效果、5 不合盾；5 是两段攻击、9 是两段回复。",
@@ -264,31 +183,16 @@ namespace FingerDiceDuel.Characters
                          + "打 9 时同样按另一只手回复。生命上限 25。",
                 counter: "别给他 5 与 9；4/6/8 对他完全无效果，"
                        + "所以那三个数字给他也无所谓（算安全牌）。",
-                interactions: new[]
-                {
-                    "与至高妖精：巨人道途打 5 是两段，但攻击数字就是 5 ——"
-                        + "至高妖精可以用 5 一次性取消两段。",
-                    "与太极宗：你的两段只会被太极减免其中一段，"
-                        + "另一段照常打到他身上 —— "
-                        + "所以用多段攻击对付太极反而占便宜。",
-                    "与忍宗：两者都是多段，但巨人道途每段伤害取决于另一只手。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.ThiefId, "Thief", Alignment.NeutralEvil,
                 shortSkill: "放弃运算改为偷窃：双方点数互换，原先 ≥ 偷来的才生效。",
                 playGuide: "点自己的手 → 点【偷窃】→ 点别人的手。"
                          + "判定看\"原先 ≥ 偷来的\"，所以握着大数字才偷得到好东西；"
-                         + "无限距离、可以偷队友，但上一次行动偷过就不能再偷。",
+                         + "∞距离、可以偷队友，但上一次行动偷过就不能再偷。",
                 counter: "别给他 8 / 9，4 / 6 次之。"
                        + "递出完整 5 其实不亏（被偷会变成碎盾）。",
-                interactions: new[]
-                {
-                    "与太极宗：偷他的 5 只得普通盾 / 碎盾（不继承太极）；"
-                        + "太极宗收到 5 则变成太极；偷他的 0 只能得到 1。",
-                    "与王冠之誓 / 破阵者 / 守望者道途：偷走他们的 5 会让他们的盾"
-                        + "换成碎盾，等于顺手破坏了他们的技能前提。",
-                    "与所有角色：被偷的人不触发效果、也不形成盾。",
-                });
+                interactions: new[] { "与太极宗：偷得5只形成普通盾，不继承太极；被偷者的手值变化不触发效果。" });
 
             // ---- 幽域追踪者（混乱善良）----
             Add(CharacterDefinition.GloomStalkerId, "Gloom Stalker", Alignment.ChaoticGood,
@@ -299,13 +203,7 @@ namespace FingerDiceDuel.Characters
                          + "挨打时恢复那只手并挡下伤害。",
                 counter: "数值可见，能预判他的伏击回合；"
                        + "伏击只有一次，逼他提早用掉即可。",
-                interactions: new[]
-                {
-                    "与咒法学派：咒术攻击穿透伏击，且不会解除它。",
-                    "与太极宗：双将同时有太极与伏击时，太极先生效。",
-                    "与守望者道途：剩余那只手被锁住且另一只已暗置时，"
-                        + "他会拿到跳过回合按钮。",
-                });
+                interactions: new[] { "与咒法学派：空间刃穿透伏击，且不解除暗置。", "双将有太极与伏击时：先太极，再伏击。" });
 
             // ---- 魔术师（混乱中立）----
             Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticNeutral,
@@ -318,12 +216,7 @@ namespace FingerDiceDuel.Characters
                          + "所以 8 打得最疼、2 只打 2 点。",
                 counter: "别让他凑出 2/4/6/8 —— 那四张对他都是攻击。"
                        + "他攻 0 / 防 −1，身材偏软，直接压血线有效。",
-                interactions: new[]
-                {
-                    "与咒法学派：他的攻击同样无视护盾与正向防御。",
-                    "与风流剑客：他的攻击仍可被闪避。",
-                    "与至高妖精：攻击数字是 2/4/6/8，要用相同数字的牌取消。",
-                });
+                interactions: new string[0]);
 
             // ---- 塑能学派（绝对中立）----
             Add(CharacterDefinition.SchoolOfEvocationId, "School of Evocation", Alignment.TrueNeutral,
@@ -337,13 +230,7 @@ namespace FingerDiceDuel.Characters
                        + "腐朽（暗蚀）期间不要指望回血，中毒（毒素）2 点不可抵挡，"
                        + "燃烧（火焰）3 点可以用盾扛。"
                        + "他攻 0 / 防 −1，身材很软，抢在他铺垫完之前解决掉。",
-                interactions: new[]
-                {
-                    "与咒法学派：塑能学派的力场伤害与咒法学派同源 —— 都穿盾、无视正向防御、不可闪避。",
-                    "与风流剑客：除力场外的 9 种伤害都能被闪避；一旦被闪避，这次放弃就白费了。",
-                    "与至高妖精：攻击数字是 4/6/8，要用相同数字的牌取消；取消同样让这次放弃作废。",
-                    "与太极宗：太极减免仍算命中 —— 状态照样挂上。",
-                });
+                interactions: new[] { "与太极宗：减免仍算命中，状态照常附加；闪避和取消不算。" });
 
             // ---- 狂野魔法（混乱中立）----
             Add(CharacterDefinition.WildMagicId, "Wild Magic", Alignment.ChaoticNeutral,
@@ -351,30 +238,21 @@ namespace FingerDiceDuel.Characters
                           + "改写后挂对应状态；余 20% 普攻。",
                 playGuide: "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。"
                          + "普攻距离 1 内是钝击、1 外是穿刺；多段攻击每段各掷一次。",
-                counter: "攻 0 防 −1 但射程无限，躲不掉只能硬扛。"
+                counter: "攻 0 防 −1 但射程∞，躲不掉只能硬扛。"
                        + "闪避或取消能让那一段连属性一起作废；盾与太极挡不住状态。",
-                interactions: new[]
-                {
-                    "与风流剑客 / 至高妖精：被闪避或被取消的那一段不算命中，属性一起作废。",
-                    "与太极宗：太极减免仍算命中；掷到力场时穿盾也照样穿透。",
-                });
+                interactions: new string[0]);
 
             // ---- 旧日支配者（中立邪恶）----
             Add(CharacterDefinition.TheGreatOldOneId, "The Great Old One", Alignment.NeutralEvil,
                 shortSkill: "异界疏离：命中的攻击令你与目标之间的距离 +2，持续他两个回合；"
-                          + "射程无限。",
-                playGuide: "射程无限，站位不用管。打中就把他推开两格，"
+                          + "射程∞。",
+                playGuide: "射程∞，站位不用管。打中就把他推开两格，"
                          + "他射程不够时这两个回合根本打不到你。"
                          + "类型按距离：1 内挥砍、1 外穿刺。",
                 counter: "攻 0 防 −1，很软，抢血就行。"
                        + "闪避与取消能让这一击连带距离一起作废。"
                        + "被推开后先合盾或回复，别硬打。",
-                interactions: new[]
-                {
-                    "与目盲：被推开到距离 3 时，目盲会让他一手都走不出来 —— "
-                    + "按规则此时他可以跳过回合。",
-                    "与风流剑客 / 至高妖精：被闪避或被取消不算命中，距离不会变。",
-                });
+                interactions: new string[0]);
 
             // ---- 勇气学院（守序善良）----
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
@@ -385,47 +263,72 @@ namespace FingerDiceDuel.Characters
                          + "最后点角色。可以选自己，同一人点两只手只算一次。",
                 counter: "持续到你下次发动或你死，所以要盯住他给谁加了什么。"
                        + "他攻 0 防 −1、射程 3，抢血就能逼他先给自己加防御。",
-                interactions: new[]
-                {
-                    "与塑能学派体系：给目标削弱防御会与强酸 −2 叠加，等于双重破防。",
-                    "与旧日支配者：被推开到距离 3 时，他的技能范围也跟着够不到远处的人。",
-                });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.OathbreakerId, "Oathbreaker", Alignment.LawfulEvil,
                 shortSkill: "5 改为 5 点钝击攻击；被攻击时可把目标转给持完整盾者。",
                 playGuide: "5 既能进攻，也保留转移资格。被攻击时点持盾角色的转移按钮，或选不发动。",
                 counter: "先破掉场上的完整盾；他没有5或场上没有合适持盾者时无法转移。",
-                interactions: new[] { "与奉献之誓：转移后奉献之誓仍可代挡。" });
+                interactions: new[] { "与奉献之誓：转移目标后，奉献之誓仍可代挡。" });
 
             Add(CharacterDefinition.PathOfTheBerserkerId, "Path of the Berserker", Alignment.NeutralEvil,
                 shortSkill: "生命上限 +5；9 改为 9 点挥砍攻击；每少 5 血 +1/+1；造成伤害回一半。",
                 playGuide: "血量越低越强，但别把自己送进斩杀线；9 现在是主要输出。",
                 counter: "爆发要一次打死，别让他反复用伤害回血。",
-                interactions: new[] { "与流血/燃烧：持续掉血也会触发他的失血加成。" });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.TacticianId, "Tactician", Alignment.ChaoticGood,
                 shortSkill: "战局推演：按场上最高与最低体力差 ÷3 获得额外攻防；挥砍伤害。",
                 playGuide: "场上血量差越大越强，适合在残局或有人被集火时发力。",
                 counter: "尽量把双方血量拉平，削弱他的动态加成。",
-                interactions: new[] { "与狂战士道途：狂战士道途血量越低，战术家的差值可能越大。" });
+                interactions: new string[0]);
 
             Add(CharacterDefinition.SchoolOfDivinationId, "School of Divination", Alignment.TrueNeutral,
                 shortSkill: "7 后开启一轮窗口：他人行动时手牌等于你另一手快照则整次行动无效。",
                 playGuide: "先用 7 铺设窗口，再围绕快照数字安排自己的手牌；7 本身不产生攻击。",
                 counter: "在窗口内避免留下与预言快照相同的手值，或用额外行动/跳过规避。",
-                interactions: new[] { "与死灵学派：免费暗蚀攻击不是正常行动，不触发预言窗口。" });
+                interactions: new[] { "与死灵学派：回合开始的免费暗蚀不是正常行动，不触发预言窗口。" });
 
             Add(CharacterDefinition.SchoolOfNecromancyId, "School of Necromancy", Alignment.NeutralEvil,
                 shortSkill: "2→1 挡一段；回合初有1免费暗蚀附腐朽；有人死亡可交换0～2只手值。",
                 playGuide: "保留2防守。回合开始有可用1自动选攻击目标，也可放弃，不用选手。有人死亡后，依次选自己的手和死者的手交换数字，可提前结束。",
                 counter: "力场攻击无视 2 抵挡；用多段攻击消耗多个 2。",
-                interactions: new[] { "与防护学派：屏障在 2 抵挡之后才生效。" });
+                interactions: new[] { "与防护学派：先选择2抵挡，剩余伤害再由屏障吸收。" });
 
             Add(CharacterDefinition.SchoolOfAbjurationId, "School of Abjuration", Alignment.LawfulGood,
                 shortSkill: "2 赋物理整组或五种元素抗性；攻击数字可存屏障，吸收后清空。",
                 playGuide: "算出2先选角色，再选物理整组、雷鸣、强酸、火焰、寒冷或闪电。攻击时可改存屏障；抗性在实际受伤后清除，屏障吸收后清空。",
                 counter: "用多段攻击/不同伤害类型先消耗抗性与屏障。",
-                interactions: new[] { "与死灵学派：2 抵挡先于屏障，屏障只处理剩余伤害。" });
+                interactions: new string[0]);
+
+            // ---- 光明领域（中立善良，2026-10-23）----
+            Add(CharacterDefinition.LightDomainId, "Light Domain", Alignment.NeutralGood,
+                shortSkill: "攻击恒为 4 点光耀伤害；命中附带 2 回合圣光：净化目标状态、压制其回血。",
+                playGuide: "4/6/8均造成4点光耀。命中施加圣光，清除其他状态与抗性；"
+                         + "持续两回合，回复减半，回合开始失去1生命。"
+                         + "盾挡仍附圣光，闪避和取消不附加。",
+                counter: "闪避或取消可避免圣光；护盾只挡伤害，仍会中圣光。"
+                       + "用净化解除圣光后再回复。",
+                interactions: new[] { "与生命领域：回复先净化圣光，再按全额治疗。", "双将的追加、反弹、免费暗蚀不改成固定4点，也不附圣光。" });
+
+            // ---- 战争领域（守序中立，2026-10-23）----
+            Add(CharacterDefinition.WarDomainId, "War Domain", Alignment.LawfulNeutral,
+                shortSkill: "受到或发起攻击后攻防 +1（可叠加）；自己回合结束未发起攻击则清零。",
+                playGuide: "越战越强，每回合都要出手：被集火挨打同样 +1/+1，别怕挨刀。"
+                         + "被冻结、眩晕或锁手让他空过一回合，加成就清零重来。"
+                         + "距离 1 内钝击、1 外穿刺。",
+                counter: "逼他空过回合（冻结 / 眩晕 / 锁手）即可清空加成；"
+                       + "他靠滚雪球，前期就要压制，别放任对拼。",
+                interactions: new[] { "与多段攻击：一次攻击只叠一层；反弹是独立攻击，另算一次。", "与至高妖精：被取消的攻击不叠战争狂热。" });
+
+            // ---- 战斗大师（守序中立，2026-10-23）----
+            Add(CharacterDefinition.BattleMasterId, "Battle Master", Alignment.LawfulNeutral,
+                shortSkill: "4=挥砍、6=钝击、8=穿刺；造成伤害后按另一手附加流血/跛脚或震慑/倒伏。",
+                playGuide: "攻击命中后看另一只手：4/8→流血或跛脚、6→震慑或倒伏（各 2 回合，可放弃）。"
+                         + "先把手凑成「攻击数字 + 4/6/8」再出手；6 的震慑/倒伏最强。",
+                counter: "别让他的另一只手停在 4/6/8；"
+                       + "闪避与护盾挡住攻击就完全不给附加机会。",
+                interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
 
         }
 

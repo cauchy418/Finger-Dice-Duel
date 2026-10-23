@@ -103,6 +103,14 @@
 
         /// <summary>眩晕：本次运算结果无效，不触发技能。</summary>
         Dizzy = 18,
+
+        /// <summary>
+        /// **圣光（牧师·光明领域，2026-10-23）**：目标回合开始受 1 点伤害（不可抵挡）、
+        /// 回复量减半（向上取整）；施加时立即清除目标其他全部状态与全部抗性，
+        /// 存在期间阻止新的状态与抗性附加（重复施加圣光 = 刷新时长）。
+        /// 勇气战歌增益与奥术屏障是独立系统，不受圣光影响（玩家口径）。
+        /// </summary>
+        HolyLight = 19,
     }
 
     /// <summary>
@@ -175,6 +183,7 @@
                 case StatusEffect.Charm: return "charm";
                 case StatusEffect.Disabled: return "disabled";
                 case StatusEffect.Dizzy: return "dizzy";
+                case StatusEffect.HolyLight: return "holy_light";
                 default: return null;
             }
         }
@@ -221,6 +230,7 @@
                 case StatusEffect.Charm: return "魅惑";
                 case StatusEffect.Disabled: return "失能";
                 case StatusEffect.Dizzy: return "眩晕";
+                case StatusEffect.HolyLight: return "圣光";
                 default: return "无";
             }
         }
@@ -266,6 +276,8 @@
                     return "攻击伤害改为 0，但保留攻击效果";
                 case StatusEffect.Dizzy:
                     return "本次运算结果无效，不触发任何技能";
+                case StatusEffect.HolyLight:
+                    return "回合开始受 1 点（不可抵挡）、回复减半；已清除并阻止其他状态与抗性";
                 default:
                     return "无";
             }
@@ -303,7 +315,7 @@
             DamageType.Force, DamageType.Psychic,
         };
 
-        /// <summary>全部 18 种状态（排除兼容别名，顺序固定）。</summary>
+        /// <summary>全部 19 种状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -312,6 +324,7 @@
             StatusEffect.Bleed, StatusEffect.Wet, StatusEffect.Frozen,
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
+            StatusEffect.HolyLight,
         };
 
         /// <summary>
@@ -372,6 +385,7 @@
                 case StatusEffect.Charm: return 0xE05AA8;       // 魅紫
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
+                case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
                 default: return 0x9AA0AC;                       // 中性灰
 
                 // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
@@ -410,6 +424,7 @@
                 case StatusEffect.Charm: return "♡";        // ♡ 魅惑
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
+                case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
 
                 // △ 力场（玩家要求："把三角形标记移给力场"）
                 case StatusEffect.None: return "\u25b3";

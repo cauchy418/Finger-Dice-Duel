@@ -29,3 +29,6 @@ fighter_tactician	战士·战术家	0	52	52	52	58	54	64	48	70	56
 wizard_school_of_divination	法师·预言学派	0	60	60	60	64	72	70	90	76	62
 wizard_school_of_necromancy	法师·死灵学派	0	90	96	60	64	70	70	60	76	62
 wizard_school_of_abjuration	法师·防护学派	0	60	88	60	72	72	74	60	78	62
+cleric_light_domain	牧师·光明领域	0	58	58	58	76	66	76	50	76	60
+cleric_war_domain	牧师·战争领域	0	58	58	58	64	62	70	48	74	58
+fighter_battle_master	战士·战斗大师	0	54	54	54	68	56	78	48	74	56

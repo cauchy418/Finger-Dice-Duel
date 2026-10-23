@@ -73,6 +73,9 @@ namespace FingerDiceDuel.Core
         /// <summary>感电：每回合开始时自己与相邻玩家各受 1 点闪电伤害。</summary>
         public const int ShockDamagePerTurn = 1;
 
+        /// <summary>圣光：每回合开始时受 1 点伤害，**不可被抵挡**（牧师·光明领域）。</summary>
+        public const int HolyLightDamagePerTurn = 1;
+
         // ============================================================
         // 运算结果的修正
         // ============================================================
@@ -207,6 +210,11 @@ namespace FingerDiceDuel.Core
             {
                 unstoppable = true;
                 total += BleedDamagePerTurn;
+            }
+            if (p.HasStatus(StatusEffect.HolyLight))
+            {
+                unstoppable = true;
+                total += HolyLightDamagePerTurn;
             }
             return total;
         }

@@ -142,6 +142,21 @@ namespace FingerDiceDuel.Core
 
         /// <summary>法师·死灵学派的免费 1 点暗蚀攻击。</summary>
         public bool IsNecromancyFreeAttack { get; set; }
+        public bool IsStatusDamage { get; set; }
+
+        /// <summary>
+        /// **攻击方角色声明的"本次命中要挂的状态"**，优先于伤害类型的默认状态
+        /// （牧师·光明领域：圣光优先于光耀的目盲）。
+        /// 死灵的免费暗蚀仍保持最高优先（腐朽不可被覆盖）。
+        /// </summary>
+        public StatusEffect AttackerStatusOverride { get; set; } = StatusEffect.None;
+
+        /// <summary>
+        /// true 时跳过 <see cref="StatusRules.ApplyIncomingDamage"/>（倒伏 ×1.5 等
+        /// 目标侧增减）—— 用于"最终伤害恒定"的攻击（牧师·光明领域固定 4）。
+        /// 护盾 / 闪避 / 转移 / 太极 / 抗性 / 屏障等防御机制**不受**本标记影响。
+        /// </summary>
+        public bool IgnoreIncomingModifiers { get; set; }
 
         /// <summary>
         /// 结算过程中询问玩家的回调。**由上层（BoardController）注入**。
@@ -223,6 +238,13 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
+            // 0b. **被选为攻击目标的通知**（牧师·战争领域）。
+            //
+            //     玩家口径：被选中即算"受到攻击"（闪避 / 盾挡 / 零伤害都算），
+            //     被取消不算（上面已经 return）。转移 / 代挡发生时，
+            //     实际承受者稍后也会收到一次通知（见 TryRedirectDefender 之后）。
+            NotifyTargeted(Defender, manager);
+
             // 1. 攻击方钩子介入（如法师·咒法学派设置 IgnoreShield / 修改 FinalDamage / 游荡者·风流剑客设置倍率）
             Attacker.Character?.OnResolveAttack(this);
 
@@ -251,10 +273,15 @@ namespace FingerDiceDuel.Core
             if (Attacker.Character is IAttackDamageRule rule)
                 rule.ApplyAttackRule(this, AttackValue, manager);
 
-            FinalDamage = ApplyBonuses(FinalDamage);
+            var fixedRule=!IsSpecialAttack&&!IsReflected&&!IsNecromancyFreeAttack&&!IsStatusDamage
+                ? CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(Attacker) : null;
+            if(fixedRule!=null)
+            { FinalDamage=fixedRule.NormalAttackDamage;AttackType=fixedRule.NormalAttackType;
+              IgnoreStatBonuses=true;IgnoreIncomingModifiers=true; }
+            else FinalDamage = ApplyBonuses(FinalDamage);
 
             // 失能：攻击伤害归零，但后续命中、状态与技能效果照常结算。
-            if (Attacker != null && Attacker.HasStatus(StatusEffect.Disabled))
+            if (fixedRule==null && Attacker != null && Attacker.HasStatus(StatusEffect.Disabled))
                 FinalDamage = 0;
 
             // ⚠️ 顺序要点：
@@ -266,7 +293,11 @@ namespace FingerDiceDuel.Core
             PlayerState intendedDefender = Defender;
             TryRedirectDefender(manager);
             if (!ReferenceEquals(intendedDefender, Defender))
+            {
                 defenderChoice = manager.GetChoiceProvider(Defender);
+                // 转移 / 代挡后的**实际承受者**同样"受到攻击"（战争领域）。
+                NotifyTargeted(Defender, manager);
+            }
 
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
             if (manager != null && AttackType != AttackDamageType.None)
@@ -389,7 +420,9 @@ namespace FingerDiceDuel.Core
 
                 if (i == 0) perHitReduction = reductionThisSegment;
 
-                dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
+                // **固定伤害**（牧师·光明领域）：跳过目标侧增减（倒伏 ×1.5 等）。
+                if (!IgnoreIncomingModifiers)
+                    dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
                 dealt = StatusRules.ApplyResistance(Defender, dealt, AttackType);
 
                 // 法师·防护学派：在护盾/抗性之后、实际扣血之前吸收。
@@ -498,6 +531,37 @@ namespace FingerDiceDuel.Core
             //    与挂状态同一个位置 —— 那一刻"算不算命中"已经确定
             //    （盾抵挡 / 太极减免算命中，闪避 / 取消不算）。
             ApplyAttackerHitEffect(manager);
+
+            // 6. **实际造成伤害后**的通知（战士·战斗大师的招式附加）。
+            //    口径比"命中"更严：只有 AppliedDamage > 0 才触发。
+            ApplyDamageLandedEffects(manager);
+        }
+
+        /// <summary>
+        /// 通知"被选为攻击目标"（牧师·战争领域的战争狂热）。
+        /// 经 <see cref="CharacterBehaviors.Implementers{T}"/> 遍历，双将部件同样收到。
+        /// </summary>
+        private void NotifyTargeted(PlayerState defender, GameManager manager)
+        {
+            if (IsStatusDamage || defender == null || !defender.IsAlive || manager == null) return;
+
+            foreach (var hook in CharacterBehaviors.Implementers<IAttackTargetedHook>(defender))
+                hook.OnTargetedByAttack(defender, this, manager);
+        }
+
+        /// <summary>
+        /// "实际造成伤害"之后的通知（战士·战斗大师）。
+        /// 只有 <see cref="AppliedDamage"/> &gt; 0 才算（盾挡 / 闪避 / 取消 / 减至 0 都不触发）。
+        /// </summary>
+        private void ApplyDamageLandedEffects(GameManager manager)
+        {
+            if (HitCount == 0 || WasCancelled) return;
+            if (AppliedDamage <= 0) return;
+            if (Attacker == null) return;
+            if (Defender == null || !Defender.IsAlive) return;
+
+            foreach (var hook in CharacterBehaviors.Implementers<IOnDamageLanded>(Attacker))
+                hook.OnDamageLanded(this, manager);
         }
 
         /// <summary>
@@ -539,11 +603,13 @@ namespace FingerDiceDuel.Core
         {
             if (Attacker == null) return;
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
-            if(applier==null) return;
+            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack) return;
 
-            StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay : InteractionStatus;
+            StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
+                : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
+                : InteractionStatus;
             if (status == StatusEffect.None)
-                status = applier.StatusToApplyOnHit(this);
+                status = applier?.StatusToApplyOnHit(this) ?? StatusEffect.None;
 
             // 伤害类型联动：清除目标状态也只在命中后执行。
             if (InteractionDamageType != DamageType.None && HitCount > 0

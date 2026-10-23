@@ -389,6 +389,35 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.SchoolOfAbjurationId]=new HandValueProfile()
                 .Set(2,88).Set(8,78).Set(6,74).Set(4,72).Set(5,72).Set(9,62);
 
+            // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
+            // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），
+            // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。
+            Own[CharacterDefinition.LightDomainId] = new HandValueProfile()
+                .Set(4, 76).Set(6, 76).Set(8, 76)
+                .Set(5, 66).Set(9, 60)
+                .Set(1, 58).Set(2, 58).Set(3, 58)
+                .Set(7, 50);
+
+            // ---- 牧师·战争领域（攻 0 / 防 -1，射程无限，2026-10-23）----
+            // 越打越强：攻击数字是滚雪球的燃料；5 / 9 保证能撑到滚起来。
+            Own[CharacterDefinition.WarDomainId] = new HandValueProfile()
+                .Set(8, 74).Set(6, 70).Set(4, 64)
+                .Set(5, 62).Set(9, 58)
+                .Set(1, 58).Set(2, 58).Set(3, 58)
+                .Set(7, 48);
+
+            // ---- 战士·战斗大师（攻 0 / 防 0，距离 2，2026-10-23）----
+            // 招式吃"另一只手是 4/6/8"：成对出现最理想；6 略高（眩晕/倒伏更强）。
+            Own[CharacterDefinition.BattleMasterId] = new HandValueProfile()
+                .Set(8, 74).Set(6, 78).Set(4, 68)
+                .Set(5, 56).Set(9, 56)
+                .Set(1, 54).Set(2, 54).Set(3, 54)
+                .Set(7, 48)
+                .AddCombo(ComboRule.ContainsAll(45, "攻一手 + 另一手为 4/6/8：招式附加", 4, 6))
+                .AddCombo(ComboRule.ContainsAll(45, "攻一手 + 另一手为 4/6/8：招式附加", 4, 8))
+                .AddCombo(ComboRule.ContainsAll(45, "攻一手 + 另一手为 4/6/8：招式附加", 6, 8))
+                .AddCombo(ComboRule.DoublesOf(45, "双 4/6/8：攻出去后另一手仍是 4/6/8", 4, 6, 8));
+
         }
 
         // ============================================================
@@ -569,6 +598,32 @@ namespace FingerDiceDuel.Assistant
                 new ValueAdjust(5, -12),
             };
 
+            // ---- 面对牧师·光明领域（2026-10-23）----
+            // 他打谁都只有固定 4 点，攻击数字对他"不增值"；
+            // 但被圣光命中后我的回复减半 —— 我的 9 略降，5 正常（盾完全挡得住 4 点）。
+            OpponentAdjust[CharacterDefinition.LightDomainId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(9, -10),
+            };
+
+            // ---- 面对牧师·战争领域（2026-10-23）----
+            // 他靠持续攻击滚雪球叠层：压低攻击数字，别喂养成长。
+            OpponentAdjust[CharacterDefinition.WarDomainId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(8, -14),
+                new ValueAdjust(6, -12),
+                new ValueAdjust(4, -10),
+            };
+
+            // ---- 面对战士·战斗大师（2026-10-23）----
+            // 他的招式吃"另一只手 4/6/8"：成对压低，6 最狠（眩晕/倒伏强于流血/跛脚）。
+            OpponentAdjust[CharacterDefinition.BattleMasterId] = new List<ValueAdjust>
+            {
+                new ValueAdjust(6, -16),
+                new ValueAdjust(4, -12),
+                new ValueAdjust(8, -12),
+            };
+
             // ---- 面对武僧·忍宗 ----
             // 玩家原话："和常规一样，尽量避免给高价值数字，
             //            而 8 本身价值就大于 6 再大于 4。"
@@ -635,8 +690,8 @@ namespace FingerDiceDuel.Assistant
                 //    （盾反正没了，只是换了只手）。
                 new ValueAdjust(5, -10),
             };
-        
-            
+
+
 
             // ---- 武僧·太极宗的太极加值：除法师·咒法学派以外都有 ----
             //

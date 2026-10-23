@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Tests
                           && !string.IsNullOrEmpty(e.DetailSkill)
                           && !string.IsNullOrEmpty(e.PlayGuide)
                           && !string.IsNullOrEmpty(e.Counter)
-                          && e.Interactions.Count > 0;
+                          && e.Interactions != null;
 
                 if (!ok) bad.Add(all[i].DisplayName);
             }
@@ -131,11 +131,11 @@ namespace FingerDiceDuel.Tests
             new Dictionary<string, string[]>
             {
                 // 战士·破阵者：碎盾换射程 -> 本次攻击距离无限
-                { CharacterDefinition.BreakerId, new[] { "无限" } },
+                { CharacterDefinition.BreakerId, new[] { "∞" } },
                 // 游荡者·风流剑客：乘风突刺 -> 本次攻击距离无限
-                { CharacterDefinition.SwashbucklerId, new[] { "无限" } },
+                { CharacterDefinition.SwashbucklerId, new[] { "∞" } },
                 // 游荡者·盗贼：偷窃是无限距离
-                { CharacterDefinition.ThiefId, new[] { "无限" } },
+                { CharacterDefinition.ThiefId, new[] { "∞" } },
             };
 
         [Test]

@@ -68,7 +68,8 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        private const int MaxStatusValue = 18;
+        /// <summary>圣光（第 19 种状态）之后暂无更多值；新增状态时同步上调。</summary>
+        private const int MaxStatusValue = 19;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -91,6 +92,25 @@ namespace FingerDiceDuel.Core
                                 PlayerState source = null)
         {
             if (status == StatusEffect.None || turns <= 0) return;
+
+            // ⚠️ **圣光（牧师·光明领域）的两个特例**（玩家口径，2026-10-23）：
+            //    ① 施加圣光时，先清除目标身上**其他全部状态**与**全部抗性**
+            //       —— 勇气战歌增益与奥术屏障是独立系统，不受影响；
+            //    ② 圣光存在期间，**阻止**其他任何状态被附加；
+            //       再施加圣光本身 = 刷新时长，允许。
+            //
+            // 放在这个唯一入口：塑能 / 狂野魔法 / 技能流血 / 战斗招式等
+            // 所有附加路径都经过这里，不需要逐个判断（与腐朽拦截回血同一思路）。
+            if (status == StatusEffect.HolyLight)
+            {
+                ClearStatuses();
+                ClearResistances();
+            }
+            else if (HasStatus(StatusEffect.HolyLight))
+            {
+                return;
+            }
+
             _statuses[status] = turns;
             if (source != null) _statusSources[status] = source;
         }
@@ -200,6 +220,9 @@ namespace FingerDiceDuel.Core
 
         public void AddResistance(AttackDamageType type)
         {
+            // **圣光存在期间抗性不可附加**（与状态附加同一套拦截口径）。
+            if (HasStatus(StatusEffect.HolyLight)) return;
+
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
                 || type == AttackDamageType.Slashing)
@@ -317,6 +340,10 @@ namespace FingerDiceDuel.Core
         {
             if (amount <= 0) return;
             if (HasStatus(StatusEffect.Decay)) return;      // 腐朽：禁止回血
+
+            // **圣光**：回复量减半（向上取整 —— 与抗性减半同一取整口径）。
+            // 放在最底层的原因与腐朽一致：回血入口不止一处，逐个判断必漏。
+            if (HasStatus(StatusEffect.HolyLight)) amount = (amount + 1) / 2;
 
             int before = Health;
             Health = Math.Min(MaximumHealth, Health + amount);

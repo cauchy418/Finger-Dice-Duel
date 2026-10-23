@@ -188,7 +188,12 @@ namespace FingerDiceDuel.UI
             if (_root == null) return;
 
             if (_title != null) _title.text = title ?? "";
-            if (_body != null) _body.text = body ?? "";
+            if (_body != null)
+            {
+                float width=((RectTransform)_body.transform.parent).sizeDelta.x;
+                _body.text=FrontEndArt.WrapReadableText(_body,body??"",width);
+                _body.horizontalOverflow=HorizontalWrapMode.Overflow;
+            }
 
             _root.SetActive(true);
             _root.transform.SetAsLastSibling();     // 保证盖在一切之上

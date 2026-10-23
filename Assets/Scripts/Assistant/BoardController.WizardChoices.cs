@@ -69,6 +69,46 @@ namespace FingerDiceDuel.Assistant
             if(!valid || abj==null) return false;
             abj.SelectedResistance=type;ApplyPreTurnChoiceAndContinue(null);return true;
         }
+
+        // ---------- 战士·战斗大师：战斗招式（与防护抗性同一模式：答案存角色侧） ----------
+
+        /// <summary>当前待答的战斗招式可选项（无则空数组；供 UI 渲染按钮）。</summary>
+        public StatusEffect[] BattleMasterManeuverOptions
+        {
+            get
+            {
+                if(PendingEffect!=HandEffect.BattleMasterManeuver) return new StatusEffect[0];
+                var master=CharacterBehaviors.FirstImplementer<IBattleMasterManeuverChoice>(
+                    _pendingChoiceDecider ?? ActivePlayer);
+                return master?.ManeuverOptions ?? new StatusEffect[0];
+            }
+        }
+
+        /// <summary>玩家在战斗招式面板选定一种状态后由 UI 调用。</summary>
+        public bool ChooseBattleMasterManeuver(StatusEffect status)
+        {
+            if(PendingEffect!=HandEffect.BattleMasterManeuver) return false;
+            var master=CharacterBehaviors.FirstImplementer<IBattleMasterManeuverChoice>(
+                _pendingChoiceDecider ?? ActivePlayer);
+            if(master==null) return false;
+            bool valid=false;
+            foreach(var option in master.ManeuverOptions) if(option==status) valid=true;
+            if(!valid) return false;
+            master.SelectManeuver(status);
+            ApplyPreTurnChoiceAndContinue(null);
+            return true;
+        }
+
+        /// <summary>玩家在战斗招式面板点「不发动」（与"没问过"区分，结算不再走 AI 默认）。</summary>
+        public bool DeclineBattleMasterManeuver()
+        {
+            if(PendingEffect!=HandEffect.BattleMasterManeuver) return false;
+            var master=CharacterBehaviors.FirstImplementer<IBattleMasterManeuverChoice>(
+                _pendingChoiceDecider ?? ActivePlayer);
+            master?.DeclineManeuver();
+            ApplyPreTurnChoiceAndContinue(null);
+            return true;
+        }
         private bool ConfirmStolenAttack()
         {
             var actor=ActivePlayer;var victim=TargetPlayer??OwnerOf(_selectedTarget);

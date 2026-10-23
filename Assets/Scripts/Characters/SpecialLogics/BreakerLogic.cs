@@ -142,7 +142,7 @@ namespace FingerDiceDuel.Core
 
             other.ForceBreakShield();                   // 完整盾 -> 破碎
             RangeBreakCount++;
-            manager.NoteSkill(actor, "碎盾换射程", $"{CombatText.HandName(actor, other)}盾破碎，本次距离无限");
+            manager.NoteSkill(actor, "碎盾换射程", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞");
         }
 
         /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
@@ -150,7 +150,7 @@ namespace FingerDiceDuel.Core
             => new ChoiceRequest(
                 HandEffect.BreakerRangeBreak,
                 $"战士·破阵者：另一只手是完整的盾牌。可以令它破碎，" +
-                $"使本次攻击距离无限，命中附流血2回合。要发动吗？",
+                $"使本次攻击距离∞，命中附流血2回合。要发动吗？",
                 new List<Hand>(1) { shield },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 保留盾

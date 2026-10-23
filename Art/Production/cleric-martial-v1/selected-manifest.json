@@ -1,0 +1,33 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "cleric_light_domain",
+      "source": "Art/Production/cleric-martial-v1/selected/Subclasses/cleric_light_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_light_domain.png",
+      "sha256": "b0d5067e1385b8d7e983f7ed3a09671406f1f3a872bee2f0f181c9f412208801",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-6fb91d1d-a431-4e80-9ab3-01fe5e481adc.png"
+    },
+    {
+      "id": "cleric_war_domain",
+      "source": "Art/Production/cleric-martial-v1/selected/Subclasses/cleric_war_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_war_domain.png",
+      "sha256": "e8cff2a54f66c1940a337f62750cacc47c3dd91537db438b790df6f3c6f0b1ad",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-8e13a324-b23e-4d14-a16d-5fe96d620342.png"
+    },
+    {
+      "id": "fighter_battle_master",
+      "source": "Art/Production/cleric-martial-v1/selected/Subclasses/fighter_battle_master.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_battle_master.png",
+      "sha256": "5de3c27a1b2b80740f403b7fac7aa046fa8cc7c67732f4464d0068529c7e1e5a",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-09c39c4d-33e5-499b-956d-b7c5f0ee6bff.png"
+    },
+    {
+      "id": "holy_light",
+      "source": "Art/Production/cleric-martial-v1/selected/Status/holy_light.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/holy_light.png",
+      "sha256": "424ea829e3f61f9a117b1448c02ee5a1bac797c3ddc8a9c91a68f1158b41f439",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-559e27b2-09a4-4ef3-9fae-73eafc917756.png"
+    }
+  ]
+}

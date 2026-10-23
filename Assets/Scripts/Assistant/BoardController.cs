@@ -1441,7 +1441,7 @@ namespace FingerDiceDuel.Assistant
             _thiefWantsSteal = true;
 
             Phase = BoardPhase.ChoosingStealTarget;
-            Hint = CombatText.Skill(ActivePlayer, "偷窃", $"选择他人一只手交换（无限距离）；偷得数字≤{SelectedHand.Value} 才触发效果。");
+            Hint = CombatText.Skill(ActivePlayer, "偷窃", $"选择他人一只手交换（∞距离）；偷得数字≤{SelectedHand.Value} 才触发效果。");
             return true;
         }
 
@@ -3210,6 +3210,11 @@ namespace FingerDiceDuel.Assistant
             ChoiceRequest request = _pendingRequests[_pendingRequestIndex];
             if (!request.AllowDecline) return false;
 
+            // ⚠️ **战士·战斗大师的「不发动」**要把"明确放弃"记到角色身上，
+            //    否则结算时无法与"没问过"区分（会把 AI 默认招式附加出去）。
+            if (request.Effect == HandEffect.BattleMasterManeuver)
+                return DeclineBattleMasterManeuver();
+
             ApplyPreTurnChoiceAndContinue(null);
             return true;
         }
@@ -3289,6 +3294,8 @@ namespace FingerDiceDuel.Assistant
         public bool AcceptPendingChoice()
         {
             if(PendingEffect==HandEffect.SchoolOfAbjurationResistanceType) return false;
+            // 战斗招式必须走专属面板（2 选 1 + 不发动），不接受"发动"按钮直接跳过。
+            if(PendingEffect==HandEffect.BattleMasterManeuver) return false;
             if (!IsInChoicePhase) return false;
             if (_pendingRequestIndex >= _pendingRequests.Count) return false;
 

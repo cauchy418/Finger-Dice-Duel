@@ -962,7 +962,9 @@ namespace FingerDiceDuel.Assistant
             else total=AttackContext.ApplyStatBonuses(result,atkBonus,defBonus,ignorePositiveDefense:false);
             var preview=new AttackContext(actor,victim,move.ActedHand,result,Game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
-            total=StatusRules.ApplyIncomingDamage(victim,total);
+            var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
+            if(fixedRule!=null) {total=fixedRule.NormalAttackDamage;type=fixedRule.NormalAttackType;}
+            else total=StatusRules.ApplyIncomingDamage(victim,total);
             total=StatusRules.ApplyResistance(victim,total,type);
             if(Game!=null) foreach(var p in Game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
@@ -1609,6 +1611,10 @@ namespace FingerDiceDuel.Assistant
                 case HandEffect.SchoolOfNecromancyBlock: return c[0];
                 case HandEffect.SchoolOfAbjurationResistanceTarget: return (Game!=null?ResistanceTarget(decider,Game):decider)?.LeftHand;
                 case HandEffect.SchoolOfAbjurationResistanceType: return c[0];
+                // 战斗大师的招式：一律"发动"（白赚的附加状态）。
+                // 具体选哪种由角色侧启发式在落地时决定
+                // （BattleMasterLogic.PickForAi 会跳过打队友的场合）。
+                case HandEffect.BattleMasterManeuver: return c[0];
                 case HandEffect.SchoolOfAbjurationBarrier:
                     return Game!=null && ShouldStoreBarrier(decider,c[0].Value,Game)?c[0]:null;
                 case HandEffect.PathOfTheWardenLockTarget:

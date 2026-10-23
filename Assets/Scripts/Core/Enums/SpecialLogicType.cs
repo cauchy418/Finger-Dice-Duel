@@ -3,7 +3,7 @@
     /// <summary>
     /// 角色特殊逻辑标识，用于 CharacterData / CharacterFactory 在编辑器中
     /// 快速映射到对应的 ICharacterBehavior 实现。
-    /// 
+    ///
     /// 新增角色时，先在此枚举登记，再由 CharacterFactory 注入具体 Behavior。
     /// </summary>
     public enum SpecialLogicType
@@ -149,6 +149,24 @@
         SchoolOfNecromancy = 29,
 
         /// <summary>法师·防护学派：抗性、奥术屏障。</summary>
-        SchoolOfAbjuration = 30
+        SchoolOfAbjuration = 30,
+
+        /// <summary>
+        /// 牧师·光明领域：攻击恒为 4 点光耀伤害（无视攻防与增减益），
+        /// 命中附带 2 回合圣光（净化并阻止附加、回复减半、回合开始掉 1 点）。
+        /// </summary>
+        LightDomain = 31,
+
+        /// <summary>
+        /// 牧师·战争领域：受到攻击（被选为目标即算）或发起攻击后攻防 +1/+1（可叠加）；
+        /// 自己回合结束时若本回合未发起过攻击，加成清零。距离 1 内钝击、外穿刺。
+        /// </summary>
+        WarDomain = 32,
+
+        /// <summary>
+        /// 战士·战斗大师：4=挥砍、6=钝击、8=穿刺；攻击实际造成伤害后，
+        /// 按另一只手 4/8 → 流血/跛脚、6 → 眩晕/倒伏 给目标附加 2 回合状态（可选）。
+        /// </summary>
+        BattleMaster = 33
     }
 }

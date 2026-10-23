@@ -2053,12 +2053,15 @@ namespace FingerDiceDuel.Core
         {
             if (actor == null || !actor.IsAlive) return;
 
-            // ---- 中毒 / 流血：不可被抵挡，提示按真实状态命名 ----
+            // ---- 中毒 / 流血 / 圣光：不可被抵挡，提示按真实状态命名 ----
             int statusDamage = StatusRules.TurnStartDamage(actor, out bool unstoppable);
             if (statusDamage > 0 && unstoppable)
             {
-                string statusName = actor.HasStatus(StatusEffect.Poison)
-                    ? (actor.HasStatus(StatusEffect.Bleed) ? "中毒／流血" : "中毒") : "流血";
+                var statusNames = new List<string>(3);
+                if (actor.HasStatus(StatusEffect.Poison)) statusNames.Add("中毒");
+                if (actor.HasStatus(StatusEffect.Bleed)) statusNames.Add("流血");
+                if (actor.HasStatus(StatusEffect.HolyLight)) statusNames.Add("圣光");
+                string statusName = statusNames.Count > 0 ? string.Join("／", statusNames) : "状态";
                 actor.TakeDamage(statusDamage);
                 NoteSkill(actor, statusName, $"失去 {statusDamage} 生命（不可抵挡）");
                 LastStatusNote = $"{actor.Name} {statusName}，失去 {statusDamage} 点体力（不可抵挡）";
@@ -2077,6 +2080,7 @@ namespace FingerDiceDuel.Core
                 var ctx = new AttackContext(actor, victim, actor.LeftHand,
                                             StatusRules.ShockDamagePerTurn)
                 {
+                    IsStatusDamage = true,
                     IgnoreStatBonuses = true,      // 闪电伤害是固定 1 点
                 };
                 ctx.Resolve(GetChoiceProvider(victim), this);
@@ -2136,6 +2140,7 @@ namespace FingerDiceDuel.Core
                 {
                     var ctx = new AttackContext(actor, actor, actor.LeftHand, burn)
                     {
+                        IsStatusDamage = true,
                         IgnoreStatBonuses = true,      // 固定 3 点
                     };
                     ctx.Resolve(GetChoiceProvider(actor), this);
@@ -2151,6 +2156,12 @@ namespace FingerDiceDuel.Core
 
             // ---- 距离修正递减（邪术师·旧日支配者）：记在**目标**身上，用的也是他自己的回合 ----
             TickDistancePenalties(actor);
+
+            // ---- 回合结束通知（牧师·战争领域：本回合未发起攻击则清空加成）----
+            // 与燃烧 / 递减同一入口：界面（BoardController 的 _statusTurnEndFor）
+            // 与无头（MatchRunner）两条路径都会走到这里，不会漂移。
+            foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
+                hook.OnTurnEnded(actor, this);
         }
 
         /// <summary>最近一次状态结算的说明（供战报 / 测试；空字符串 = 本次没有）。</summary>
@@ -2284,7 +2295,7 @@ namespace FingerDiceDuel.Core
             {
                 _resolveDepth = 0;
                 throw new InvalidOperationException(
-                    "结算重入过深（" + MaxResolveDepth + " 层）：疑似无限递归。" +
+                    "结算重入过深（" + MaxResolveDepth + " 层）：疑似∞递归。" +
                     " 角色=" + (actor?.Definition?.DisplayName ?? "?") +
                     " 手=" + (actedHand?.Value.ToString() ?? "?") +
                     " 目标值=" + targetValue +

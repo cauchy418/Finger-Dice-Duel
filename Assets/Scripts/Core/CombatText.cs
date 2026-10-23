@@ -18,11 +18,12 @@
                 case HandEffect.SchoolOfAbjurationBarrier: skill="奥术屏障"; action="可放弃本次攻击，将攻击数字存入屏障。"; break;
                 case HandEffect.SchoolOfAbjurationResistanceTarget: skill="防护抗性"; action="选择存活角色，然后选择抗性类型。"; break;
                 case HandEffect.SchoolOfAbjurationResistanceType: skill="防护抗性"; action="选择物理整组或一种魔法抗性。"; break;
+                case HandEffect.BattleMasterManeuver: skill="战斗招式"; action="攻击造成伤害后，按另一只手附加流血/跛脚或震慑/倒伏（2 回合）。"; break;
                 case HandEffect.SchoolOfNecromancyBlock: skill="死灵抵挡"; action="可将一只2变1，抵挡这一段；力场除外。"; break;
                 case HandEffect.ShieldBlock: skill = "格挡"; action = "选择一面盾抵挡。"; break;
                 case HandEffect.PathOfTheWardenLockTarget: skill = "锁手"; action = "合盾后，可锁定对手一只手；盾碎即解除。"; break;
                 case HandEffect.BreakerChainBreak: skill = "连锁破盾"; action = "自身盾将破碎，可连带打碎场上一面完整盾。"; break;
-                case HandEffect.BreakerRangeBreak: skill = "碎盾换射程"; action = "可打碎另一只手的盾，使本次攻击距离无限。"; break;
+                case HandEffect.BreakerRangeBreak: skill = "碎盾换射程"; action = "可打碎另一只手的盾，使本次攻击距离∞。"; break;
                 case HandEffect.OathOfDevotionShockTarget:
                     skill = "冲击"; action = (request.Variant == 1 ? "碎盾" : "合盾") + "触发：选择范围内一名角色，固定伤害 2，可格挡或闪避。"; break;
                 case HandEffect.OathbreakerTransfer: skill = "转移攻击"; action = "持有5：选择一名持完整盾的非攻击者承受整次攻击，或不发动。"; break;
@@ -33,7 +34,7 @@
                 case HandEffect.LifeDomainHealTarget: skill = "治疗"; action = "选择一名角色回复生命（可选自己）。"; break;
                 case HandEffect.LifeDomainExtraHealTarget: skill = "双九回复"; action = "双手为 9：选择一名角色，额外回复 9。"; break;
                 case HandEffect.SwashbucklerDodge: skill = "闪避"; action = "可选一只手 1→2，闪避本段攻击。"; break;
-                case HandEffect.SwashbucklerDuelistThrust: skill = "乘风突刺"; action = "可将另一只手 2→3，基础伤害×1.5，本次距离无限。"; break;
+                case HandEffect.SwashbucklerDuelistThrust: skill = "乘风突刺"; action = "可将另一只手 2→3，基础伤害×1.5，本次距离∞。"; break;
                 case HandEffect.SwordsmanFollowUp:
                     int value = request.ResultValue > 0 ? request.ResultValue : request.Candidates[0].Value;
                     skill = "追加攻击"; action = $"双 {value}：可对当前目标追加固定 {value} 点伤害，无视攻防。"; break;

@@ -311,7 +311,7 @@ namespace FingerDiceDuel.Core
                                   groups: new List<GuideGroup>
                                   {
                                       new GuideGroup("负面状态", entries),
-                                  }, note: "共 18 种负面状态，持续目标自己的 2 个完整回合；重复施加只刷新时间，不叠加强度。覆霜到期后再附加 2 回合潮湿。");
+                                  }, note: "共 19 种负面状态，持续目标自己的 2 个完整回合；重复施加只刷新时间，不叠加强度。覆霜到期后再附加 2 回合潮湿。");
         }
 
         /// <summary>

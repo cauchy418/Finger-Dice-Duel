@@ -1,0 +1,643 @@
+PASS Light_war_and_battle_master_have_the_confirmed_base_stats
+PASS Light_domain_attack_is_fixed_four_radiant_damage_with_holy_light
+PASS Light_domain_fixed_damage_ignores_stats_and_knocked_down_multiplier
+PASS Light_domain_blocked_hit_still_applies_holy_light_but_dodge_does_not
+PASS Holy_light_cleanses_statuses_and_resistances_then_blocks_new_attachments
+PASS Holy_light_halves_healing_rounding_up_and_deals_one_at_turn_start
+PASS Life_domain_cleanse_removes_holy_light_and_heals_fully
+PASS Taichi_halves_the_fixed_four_and_reflects_two
+PASS Light_fixed_damage_wins_over_dual_multipliers_in_both_orders
+PASS Light_and_war_do_not_rewrite_status_damage_as_a_skill_attack
+PASS War_domain_stacks_from_attacking_and_being_targeted
+PASS War_domain_gains_a_stack_when_targeted_even_with_zero_damage
+PASS War_domain_clears_stacks_only_when_own_turn_ends_without_an_attack
+PASS War_domain_damage_type_splits_by_distance_one
+PASS War_domain_match_reset_clears_stacks
+PASS Battle_master_types_attacks_by_number
+PASS Battle_master_applies_the_chosen_maneuver_by_other_hand_branch
+PASS Battle_master_without_a_valid_other_hand_applies_nothing
+PASS Battle_master_blocked_attack_applies_no_maneuver
+PASS Battle_master_decline_and_stale_choices_are_respected
+PASS Battle_master_collects_a_request_only_for_attacks_with_valid_other_hand
+PASS Battle_master_ai_skips_teammates
+PASS Battle_master_human_flow_picks_and_declines_through_the_controller
+PASS Dual_parts_keep_the_new_capabilities_in_both_orders
+PASS 33 codex roles
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS no orphan number/punctuation role 0
+PASS art fighter_champion
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS no orphan number/punctuation role 1
+PASS art fighter_breaker
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS no orphan number/punctuation role 2
+PASS art wizard_school_of_conjuration
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS no orphan number/punctuation role 3
+PASS art barbarian_path_of_the_warden
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS no orphan number/punctuation role 4
+PASS art cleric_life_domain
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS no orphan number/punctuation role 5
+PASS art rogue_swashbuckler
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS no orphan number/punctuation role 6
+PASS art barbarian_path_of_the_beast
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS no orphan number/punctuation role 7
+PASS art fighter_swordsman
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS no orphan number/punctuation role 8
+PASS art monk_way_of_the_ninja
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS no orphan number/punctuation role 9
+PASS art rogue_assassin
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS no orphan number/punctuation role 10
+PASS art paladin_oath_of_devotion
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS no orphan number/punctuation role 11
+PASS art warlock_the_archfey
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS no orphan number/punctuation role 12
+PASS art fighter_arcane_archer
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS no orphan number/punctuation role 13
+PASS art rogue_gambler
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS no orphan number/punctuation role 14
+PASS art paladin_oath_of_the_crown
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS no orphan number/punctuation role 15
+PASS art monk_way_of_the_tai_chi
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS no orphan number/punctuation role 16
+PASS art barbarian_path_of_the_giant
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS no orphan number/punctuation role 17
+PASS art rogue_thief
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS no orphan number/punctuation role 18
+PASS art ranger_gloom_stalker
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS no orphan number/punctuation role 19
+PASS art rogue_magician
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS no orphan number/punctuation role 20
+PASS art wizard_school_of_evocation
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS no orphan number/punctuation role 21
+PASS art sorcerer_wild_magic
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS no orphan number/punctuation role 22
+PASS art warlock_the_great_old_one
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS no orphan number/punctuation role 23
+PASS art bard_college_of_valor
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS no orphan number/punctuation role 24
+PASS art paladin_oathbreaker
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS no orphan number/punctuation role 25
+PASS art barbarian_path_of_the_berserker
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS no orphan number/punctuation role 26
+PASS art fighter_tactician
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS no orphan number/punctuation role 27
+PASS art wizard_school_of_divination
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS no orphan number/punctuation role 28
+PASS art wizard_school_of_necromancy
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS no orphan number/punctuation role 29
+PASS art wizard_school_of_abjuration
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS no orphan number/punctuation role 30
+PASS art cleric_light_domain
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS no orphan number/punctuation role 31
+PASS art cleric_war_domain
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS no orphan number/punctuation role 32
+PASS art fighter_battle_master
+PASS maneuver phase
+PASS two maneuver cards
+PASS raycast reaches WizardOption0 parent=Panel active=True enabled=True phase=ChoosingLockTarget hits=WizardOption0,Panel,WizardChoiceModal,HintPanel
+PASS maneuver click resolves once
+PASS holy light applied
+PASS holy light painted icon
+PASS holy light manual no orphan lines
+PASS infinity glyph available
+PASS game rules no orphan lines

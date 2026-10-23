@@ -18,16 +18,20 @@ namespace FingerDiceDuel.UI
         public void SetWizardChoices(BoardController controller, Action changed)
         {
             bool resistance=controller.IsHumanChooser && controller.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType;
+            bool maneuver=controller.IsHumanChooser && controller.PendingEffect==HandEffect.BattleMasterManeuver;
+            var maneuvers=maneuver?controller.BattleMasterManeuverOptions:null;
+            if(maneuver&&(maneuvers==null||maneuvers.Length==0)) maneuver=false;
             var request=controller.IsHumanChooser?controller.PendingWizardChoice:null;
-            bool visible=resistance || request!=null;
+            bool visible=resistance || maneuver || request!=null;
             if(!visible) {if(_wizardModal!=null) _wizardModal.gameObject.SetActive(false);return;}
             if(_wizardModal==null) BuildWizardModal();
             _wizardModal.gameObject.SetActive(true);_wizardModal.SetAsLastSibling();
-            _wizardTitle.text=resistance?"防护抗性 · 选择类型":request.Prompt;
-            int count=resistance?ResistanceNames.Choices.Length:request.Candidates.Count;
+            _wizardTitle.text=resistance?"防护抗性 · 选择类型":maneuver?"战斗招式 · 选择状态":request.Prompt;
+            int count=resistance?ResistanceNames.Choices.Length:maneuver?maneuvers.Length:request.Candidates.Count;
+            bool painted=resistance||maneuver;
             int columns=resistance?3:Mathf.Min(2,count);
-            float panelHeight=resistance?480:Mathf.Max(280,Mathf.Ceil(count/2f)*102+168);
-            _wizardPanel.sizeDelta=new Vector2(resistance?820:count==1?620:990,panelHeight);
+            float panelHeight=resistance?480:maneuver?380:Mathf.Max(280,Mathf.Ceil(count/2f)*102+168);
+            _wizardPanel.sizeDelta=new Vector2(resistance?820:maneuver?620:count==1?620:990,panelHeight);
             _wizardTitle.rectTransform.sizeDelta=new Vector2(_wizardPanel.sizeDelta.x-78,66);
             _wizardTitle.rectTransform.anchoredPosition=new Vector2(0,panelHeight/2-47);
             _wizardDecline.GetComponent<RectTransform>().anchoredPosition=new Vector2(0,-panelHeight/2+44);
@@ -37,14 +41,14 @@ namespace FingerDiceDuel.UI
                 if(i>=count) continue;
                 int index=i;
                 var rect=(RectTransform)button.transform;
-                rect.sizeDelta=new Vector2(resistance?218:428,resistance?144:88);
-                rect.anchoredPosition=new Vector2((i%columns-(columns-1)*0.5f)*(resistance?230:450),
-                    (resistance?75:panelHeight/2-130)-(i/columns)*(resistance?156:102));
+                rect.sizeDelta=new Vector2(painted?218:428,painted?144:88);
+                rect.anchoredPosition=new Vector2((i%columns-(columns-1)*0.5f)*(painted?230:450),
+                    (resistance?75:maneuver?10:panelHeight/2-130)-(i/columns)*(painted?156:102));
                 button.onClick.RemoveAllListeners();
                 var label=button.GetComponentInChildren<Text>();
-                label.rectTransform.anchoredPosition=new Vector2(0,resistance?-45:0);
-                label.rectTransform.sizeDelta=new Vector2(rect.sizeDelta.x-22,resistance?34:74);
-                _wizardIcons[i].gameObject.SetActive(resistance);
+                label.rectTransform.anchoredPosition=new Vector2(0,painted?-45:0);
+                label.rectTransform.sizeDelta=new Vector2(rect.sizeDelta.x-22,painted?34:74);
+                _wizardIcons[i].gameObject.SetActive(resistance||maneuver);
                 if(resistance)
                 {
                     var type=ResistanceNames.Choices[index];
@@ -53,16 +57,28 @@ namespace FingerDiceDuel.UI
                     button.onClick.AddListener(()=> {controller.ChooseResistanceType(type);changed();});
                     BattleTooltip.Set(button.GetComponent<Image>(),index==0?"同时获得挥砍、钝击、穿刺抗性。":"获得"+ResistanceNames.Name(type));
                 }
+                else if(maneuver)
+                {
+                    // 战士·战斗大师：两个招式状态按钮（图标与状态图标栏同源）。
+                    var status=maneuvers[index];
+                    _wizardIcons[i].sprite=BattleArt.Get("Status/"+StatusNames.IconKeyOf(status));
+                    label.text=StatusNames.Of(status);
+                    button.onClick.AddListener(()=> {controller.ChooseBattleMasterManeuver(status);changed();});
+                    BattleTooltip.Set(button.GetComponent<Image>(),StatusNames.Describe(status));
+                }
                 else
                 {
                     var hand=request.Candidates[index];label.text=controller.WizardHandLabel(hand);
                     button.onClick.AddListener(()=> {controller.ChooseWizardHand(hand);changed();});
                 }
             }
-            _wizardDecline.gameObject.SetActive(!resistance && request.AllowDecline);
-            if(!resistance) _wizardDecline.GetComponentInChildren<Text>().text=request.DeclineLabel;
+            _wizardDecline.gameObject.SetActive(maneuver||(!resistance && request!=null && request.AllowDecline));
+            if(!resistance) _wizardDecline.GetComponentInChildren<Text>().text=maneuver?"不附加":request.DeclineLabel;
             _wizardDecline.onClick.RemoveAllListeners();
-            _wizardDecline.onClick.AddListener(()=> {controller.ChooseWizardHand(null);changed();});
+            _wizardDecline.onClick.AddListener(()=> {
+                if(maneuver) controller.DeclineBattleMasterManeuver();
+                else controller.ChooseWizardHand(null);
+                changed();});
             // 模态窗口接管全部本次抉择，避免底层留有重复入口。
             SetAcceptButtonVisible(false);SetDeclineButtonVisible(false);HideSkillChoices();
         }

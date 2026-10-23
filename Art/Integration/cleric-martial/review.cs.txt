@@ -1,0 +1,65 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/cleric-martial");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+boot.PlayerBIsAI=false;boot.AiThinkSeconds=1000;
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+System.Func<UnityEngine.Canvas> battleCanvas=()=>((UnityEngine.RectTransform)field(field(boot,"_board"),"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,canvas)=>{
+ shot(canvas,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast reaches "+button.name+" parent="+button.transform.parent.name+" active="+button.gameObject.activeInHierarchy+" enabled="+button.interactable+" phase="+((FingerDiceDuel.Assistant.BoardController)field(boot,"_controller"))?.Phase+" hits="+string.Join(",",hits.Select(h=>h.gameObject.name)));
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);
+};
+
+
+var fixture=new FingerDiceDuel.Tests.LightWarBattleMasterTests();
+foreach(var m in fixture.GetType().GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.DeclaredOnly))
+{if(m.GetParameters().Length!=0)continue;try{m.Invoke(fixture,null);check(true,m.Name);}catch(System.Reflection.TargetInvocationException e){throw e.InnerException;}}
+invoke(boot,"OnCodexClicked",new object[0]);
+var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");
+check(codex.PageCount==33,"33 codex roles");
+for(int i=0;i<33;i++){
+ codex.GoTo(i);var body=(UnityEngine.UI.Text)field(codex,"_body");
+ foreach(var line in body.text.Split('\n'))check(!System.Text.RegularExpressions.Regex.IsMatch(line.Trim(),@"^[，。；：！？、]+$|^[+-]?\d+$"),"no orphan number/punctuation role "+i);
+ var id=FingerDiceDuel.Core.CharacterDefinition.BuiltIn[i].Id;
+ check(FingerDiceDuel.UI.BattleArt.Get("Subclasses/"+id)!=null,"art "+id);
+ if(i>=30||id=="rogue_swashbuckler")shot(front,"codex-"+id);
+}
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.BattleMaster,FingerDiceDuel.Core.CharacterDefinition.Champion);
+var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+game.PlayerA.LeftHand.SetValue(1);game.PlayerA.RightHand.SetValue(6);game.PlayerB.LeftHand.SetValue(3);
+controller.BeginTurn();controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);controller.ConfirmTargetPlayer();invoke(boot,"RefreshView",new object[0]);
+check(controller.PendingEffect==FingerDiceDuel.Core.HandEffect.BattleMasterManeuver,"maneuver phase");
+var options=(UnityEngine.UI.Button[])field(board,"_wizardButtons");check(options.Count(b=>b.gameObject.activeInHierarchy)==2,"two maneuver cards");shot(battleCanvas(),"maneuver-selection");click(options[0],battleCanvas());check(game.TurnCount==1,"maneuver click resolves once");
+boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.LightDomain,FingerDiceDuel.Core.CharacterDefinition.Champion);
+game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+game.PlayerB.LeftHand.SetValue(3);controller.BeginTurn();controller.ClickHand(game.PlayerA.LeftHand);controller.ClickHand(game.PlayerB.LeftHand);controller.ConfirmTargetPlayer();invoke(boot,"RefreshView",new object[0]);
+check(game.PlayerB.HasStatus(FingerDiceDuel.Core.StatusEffect.HolyLight),"holy light applied");check(FingerDiceDuel.UI.BattleArt.Get("Status/holy_light")!=null,"holy light painted icon");shot(battleCanvas(),"holy-light-battle");
+invoke(boot,"OnMagicOrbClicked",new object[0]);codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");codex.GoTo(1);
+var scroll=(UnityEngine.UI.ScrollRect)field(codex,"_guideScroll");scroll.verticalNormalizedPosition=0;shot(front,"holy-light-manual");
+var holyText=((UnityEngine.RectTransform)field(codex,"_guideContent")).GetComponentsInChildren<UnityEngine.UI.Text>().First(t=>t.text.StartsWith("圣光"));
+check(!holyText.text.Split('\n').Any(l=>System.Text.RegularExpressions.Regex.IsMatch(l.Trim(),@"^\d+$|^[，。；：！？]+$")),"holy light manual no orphan lines");
+invoke(boot,"OnHelpClicked",new object[0]);shot(front,"game-rules");
+FingerDiceDuel.UI.UiFont.Regular.RequestCharactersInTexture("∞",24,UnityEngine.FontStyle.Normal);
+UnityEngine.CharacterInfo infinity;
+check(FingerDiceDuel.UI.UiFont.Regular.GetCharacterInfo('∞',out infinity,24,UnityEngine.FontStyle.Normal),"infinity glyph available");
+var rules=UnityEngine.Resources.FindObjectsOfTypeAll<UnityEngine.UI.Text>().First(t=>t.gameObject.activeInHierarchy&&t.text.StartsWith("【一回合做什么】"));
+check(!rules.text.Split('\n').Any(l=>System.Text.RegularExpressions.Regex.IsMatch(l.Trim(),@"^[+-]?\d+$|^[，。；：！？]+$")),"game rules no orphan lines");
+var profiles=new System.Collections.Generic.List<string>{"ID\t角色\t0\t1\t2\t3\t4\t5\t6\t7\t8\t9"};
+foreach(var def in FingerDiceDuel.Core.CharacterDefinition.BuiltIn)profiles.Add(def.Id+"\t"+def.DisplayName+"\t"+string.Join("\t",System.Linq.Enumerable.Range(0,10).Select(v=>FingerDiceDuel.Assistant.HandValueProfiles.For(def).WeightOf(v).ToString())));
+System.IO.File.WriteAllLines("Tools/ai-strategy-profiles.tsv",profiles);
+System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);return "PASS "+checks.Count+" engine and codex checks";

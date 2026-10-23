@@ -16,6 +16,13 @@ namespace FingerDiceDuel.Core
         SchoolOfAbjurationResistanceTarget = 103,
         SchoolOfAbjurationResistanceType = 104,
         SchoolOfNecromancyBlock = 105,
+
+        /// <summary>
+        /// 战士·战斗大师：攻击命中并**实际造成伤害**后，选择附加哪种招式状态
+        /// （另一手 4/8 → 流血/跛脚；另一手 6 → 眩晕/倒伏；各持续 2 回合）。
+        /// 允许放弃（放弃 = 本次不附加）。答案的"招式"存于角色侧（IBattleMasterManeuverChoice）。
+        /// </summary>
+        BattleMasterManeuver = 106,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>

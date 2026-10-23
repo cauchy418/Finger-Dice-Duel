@@ -106,6 +106,9 @@ namespace FingerDiceDuel.Core
         public const string SchoolOfDivinationId = "wizard_school_of_divination";
         public const string SchoolOfNecromancyId = "wizard_school_of_necromancy";
         public const string SchoolOfAbjurationId = "wizard_school_of_abjuration";
+        public const string LightDomainId = "cleric_light_domain";
+        public const string WarDomainId = "cleric_war_domain";
+        public const string BattleMasterId = "fighter_battle_master";
 
         public static CharacterDefinition Blank { get; } = new CharacterDefinition(
             BlankId, "白板", SpecialLogicType.None,
@@ -196,7 +199,7 @@ namespace FingerDiceDuel.Core
             attackBonus: 0, defenseBonus: -1,
             description: "有人发起攻击时，若该攻击数字与自己某只手相同，可把那只手 +1（永久）" +
                          "以取消这次攻击（最早结算，可取消法师·咒法学派）；追加攻击与冲击不可被取消。" +
-                         "体力不满时可跳过回合，把场上一人的体力改成与自己一致。攻防 0 / -1，攻击距离无限。");
+                         "体力不满时可跳过回合，把场上一人的体力改成与自己一致。攻防 0 / -1，攻击距离∞。");
 
         /// <summary>
         /// 战士·魔射手：4 改为两段各 4；6 伤害 +2；8 无视盾牌（仍可被闪避 / 取消）。
@@ -286,7 +289,7 @@ namespace FingerDiceDuel.Core
                          "效果由偷来的数字决定（偷来 4 即发起攻击、偷来 5 即合成盾牌、" +
                          "偷来 9 即回复）；否则交换照做但没有效果。" +
                          "被偷的人只被改变点数，不触发效果。" +
-                         "上回合发起过偷窃则本回合不能再偷。无限距离，可以偷队友。" +
+                         "上回合发起过偷窃则本回合不能再偷。∞距离，可以偷队友。" +
                          "攻 0 / 防 −1。");
 
         /// <summary>
@@ -357,7 +360,7 @@ namespace FingerDiceDuel.Core
                          "改写后按该元素挂对应的负面状态（力场不挂状态，改为穿盾、无视正向防御、不可闪避）。" +
                          "被盾抵挡 / 太极减免仍算命中，被闪避或被取消仍作废。" +
                          "普通攻击对距离 1 以内为钝击伤害、1 以外为穿刺伤害。" +
-                         "攻 0 / 防 −1，攻击距离无限。");
+                         "攻 0 / 防 −1，攻击距离∞。");
 
 
 
@@ -373,7 +376,7 @@ namespace FingerDiceDuel.Core
                          "距离只影响你与他之间，不改变其他玩家之间的距离；" +
                          "重复命中只刷新时长、不叠加，且不封顶。" +
                          "攻击对距离 1 以内为挥砍伤害、1 以外为穿刺伤害。" +
-                         "攻 0 / 防 -1，攻击距离无限。");
+                         "攻 0 / 防 -1，攻击距离∞。");
 
         /// <summary>
         /// 吟游诗人·勇气学院：攻 0 / 防 -1，攻击距离 3，守序中立，伤害类型穿刺。
@@ -412,19 +415,52 @@ namespace FingerDiceDuel.Core
             SchoolOfDivinationId, "法师·预言学派", SpecialLogicType.SchoolOfDivination,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Divination",
-            description: "攻击距离无限，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，该行动直接无效、不触发技能。");
+            description: "攻击距离∞，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，该行动直接无效、不触发技能。");
 
         public static CharacterDefinition SchoolOfNecromancy { get; } = new CharacterDefinition(
             SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Necromancy",
-            description: "攻击距离无限，距离1内钝击、1外穿刺。受到攻击时可用2→1完全挡下一段（力场除外）。回合开始有可用1时自动进入免费暗蚀选目标，可放弃；攻击1点暗蚀并附加2回合腐朽，不消耗手值和正常行动。玩家死亡后可与死者交换0~2只手的数字。");
+            description: "攻击距离∞，距离1内钝击、1外穿刺。受到攻击时可用2→1完全挡下一段（力场除外）。回合开始有可用1时自动进入免费暗蚀选目标，可放弃；攻击1点暗蚀并附加2回合腐朽，不消耗手值和正常行动。玩家死亡后可与死者交换0~2只手的数字。");
 
         public static CharacterDefinition SchoolOfAbjuration { get; } = new CharacterDefinition(
             SchoolOfAbjurationId, "法师·防护学派", SpecialLogicType.SchoolOfAbjuration,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Abjuration",
-            description: "攻击距离无限，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术屏障，在护盾/抗性后、扣血前吸收，使用即清空。");
+            description: "攻击距离∞，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术屏障，在护盾/抗性后、扣血前吸收，使用即清空。");
+
+        /// <summary>
+        /// 牧师·光明领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，中立善良。
+        /// 攻击为光耀伤害、最终伤害恒为 4（无视攻防与数值增减益，防御机制照常），
+        /// 命中附带 2 回合圣光。
+        /// </summary>
+        public static CharacterDefinition LightDomain { get; } = new CharacterDefinition(
+            LightDomainId, "牧师·光明领域", SpecialLogicType.LightDomain,
+            attackBonus: 0, defenseBonus: -1,
+            englishName: "Light Domain",
+            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面状态与全部抗性（勇气战歌与奥术屏障除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
+
+        /// <summary>
+        /// 牧师·战争领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，守序中立。
+        /// 受到攻击（被选为目标即算）或发起攻击后 +1/+1（可叠加）；
+        /// 自己回合结束时若本回合未发起过攻击，加成清零。
+        /// </summary>
+        public static CharacterDefinition WarDomain { get; } = new CharacterDefinition(
+            WarDomainId, "牧师·战争领域", SpecialLogicType.WarDomain,
+            attackBonus: 0, defenseBonus: -1,
+            englishName: "War Domain",
+            description: "受到攻击（被选为目标即算，闪避/盾挡/零伤害也算）或发起攻击后，攻防各+1、可叠加；自己回合结束时若本回合未发起过攻击，立即清空全部加成。距离1内为钝击伤害、1以外为穿刺伤害。攻防0/-1，攻击距离∞。");
+
+        /// <summary>
+        /// 战士·战斗大师（2026-10-23）：攻 0 / 防 0，攻击距离 2，守序中立。
+        /// 攻击伤害按数字分型（4 挥砍 / 6 钝击 / 8 穿刺）；
+        /// 造成伤害后按另一只手附加招式状态。
+        /// </summary>
+        public static CharacterDefinition BattleMaster { get; } = new CharacterDefinition(
+            BattleMasterId, "战士·战斗大师", SpecialLogicType.BattleMaster,
+            attackBonus: 0, defenseBonus: 0,
+            englishName: "Battle Master",
+            description: "攻击伤害按数字分型：4为挥砍、6为钝击、8为穿刺。攻击实际造成伤害后（>0，盾挡/闪避/取消不触发），若另一只手为4/8，选择给目标附加流血或跛脚2回合；另一只手为6，选择附加震慑或倒伏2回合。攻防0/0，攻击距离2。");
 
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
@@ -435,7 +471,8 @@ namespace FingerDiceDuel.Core
             Swordsman, WayOfTheNinja, Assassin, OathOfDevotion, TheArchfey, ArcaneArcher, Gambler, OathOfTheCrown,
             WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
             Oathbreaker, PathOfTheBerserker, Tactician,
-            SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration
+            SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
+            LightDomain, WarDomain, BattleMaster
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

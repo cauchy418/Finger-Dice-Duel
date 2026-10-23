@@ -7,6 +7,42 @@ namespace FingerDiceDuel.UI
     /// <summary>前台共用的资源、九宫格边距与交互状态；不依赖贴图导入为 Sprite。</summary>
     public static class FrontEndArt
     {
+        // Use measured glyph widths, keep numeric units together, and avoid orphan punctuation.
+        public static string WrapReadableText(Text label,string value,float maxWidth)
+        {
+            value=System.Text.RegularExpressions.Regex.Replace(value,@"(?<=\d) +(?=[\u4e00-\u9fff%])|(?<=[\u4e00-\u9fff]) +(?=[+−-]?\d)","");
+            var settings=label.GetGenerationSettings(new Vector2(maxWidth,0));
+            settings.horizontalOverflow=HorizontalWrapMode.Overflow;
+            var generator=new TextGenerator();
+            System.Func<string,float> width=t=>generator.GetPreferredWidth(t,settings)/label.pixelsPerUnit;
+            var result=new List<string>();
+            foreach(var paragraph in value.Split('\n'))
+            {
+                var lines=new List<string>();string line="";
+                var tokens=System.Text.RegularExpressions.Regex.Matches(paragraph,@"[+−-]?\d+(?:[/.～→+−×]\d+)*(?:回合|生命|点|层|%)?|[A-Za-z]+|.");
+                foreach(System.Text.RegularExpressions.Match match in tokens)
+                {
+                    string token=match.Value;
+                    if(line.Length>0&&width(line+token)>maxWidth-12)
+                    {
+                        if("，。；：！？、）》】%".Contains(token)&&line.Length>1)
+                        {token=line.Substring(line.Length-1)+token;line=line.Substring(0,line.Length-1);}
+                        lines.Add(line.TrimEnd());line="";
+                    }
+                    line+=token;
+                }
+                if(line.Length>0) lines.Add(line.TrimEnd());
+                if(lines.Count>1&&lines[lines.Count-1].Length<4)
+                {
+                    int last=lines.Count-1;string previous=lines[last-1];
+                    int take=Mathf.Min(6,previous.Length/2);
+                    lines[last]=previous.Substring(previous.Length-take)+lines[last];
+                    lines[last-1]=previous.Substring(0,previous.Length-take);
+                }
+                result.Add(string.Join("\n",lines));
+            }
+            return string.Join("\n",result);
+        }
         public static readonly Color Gold = new Color(0.89f, 0.76f, 0.53f);
         public static readonly Color Ink = new Color(0.82f, 0.82f, 0.78f);
         private static readonly Dictionary<string, Sprite> Cache = new Dictionary<string, Sprite>();

@@ -27,8 +27,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_the_full_sixteen_status_pool()
         {
-            Assert.AreEqual(18, StatusNames.AllStatuses.Length,
-                "旧 7 种保留，加上新增状态，共 18 种。");
+            // 2026-10-23：第 19 种状态「圣光」（牧师·光明领域）。
+            Assert.AreEqual(19, StatusNames.AllStatuses.Length,
+                "旧 7 种保留，加上新增状态与圣光，共 19 种。");
         }
 
         [Test]

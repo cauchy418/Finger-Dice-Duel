@@ -22,7 +22,8 @@ namespace FingerDiceDuel.UI
             _battleChoiceOwner = chooser;
             bool chooseHand = chooser != null && effect != HandEffect.None
                 && effect != HandEffect.SchoolOfEvocationDamageType
-                && effect != HandEffect.SchoolOfAbjurationResistanceType && candidates != null
+                && effect != HandEffect.SchoolOfAbjurationResistanceType
+                && effect != HandEffect.BattleMasterManeuver && candidates != null
                 && (!hasAcceptButton || (effect == HandEffect.BreakerChainBreak && candidates.Count > 1));
             if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
             int count = chooseHand ? Mathf.Min(candidates.Count, _skillChoiceButtons.Length) : 0;
