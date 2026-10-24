@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -365,6 +365,24 @@ namespace FingerDiceDuel.Characters
                 playGuide: "根据队形选射手/圣杯/巨龙；巨龙需要两次选被加数。",
                 counter: "射手防御偏低；圣杯优先保护伤员；巨龙只在第二次加手后结算一次效果。",
                 interactions: new[] { "与另一结社双将：两种形态独立叠加、分别解除；伤害类型冲突按主将优先。" });
+
+            Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.TrueNeutral,
+                shortSkill: "回合结束封一只手为被加数；3 可束缚另一名角色2回合。",
+                playGuide: "封锁对手关键手或保护自己的手；3 可用于打断连招。",
+                counter: "换手/用另一只手；被封锁时不要依赖该手作被加数。",
+                interactions: new[] { "与古贤之誓：束缚状态相同，刷新时长。" });
+
+            Add(CharacterDefinition.OathOfTheAncientsId, "Oath of the Ancients", Alignment.NeutralGood,
+                shortSkill: "碎盾可束缚攻击范围内角色2回合；受伤后按体力≥10治疗他人/自己2。",
+                playGuide: "用碎盾打控制；受伤后判断自己是该自愈还是保护范围内队友。",
+                counter: "碎盾前算好范围；逼他低血只能自愈。",
+                interactions: new[] { "与大地结社：束缚状态相同，刷新时长。" });
+
+            Add(CharacterDefinition.TheFiendId, "The Fiend", Alignment.LawfulEvil,
+                shortSkill: "治疗溢出转虚假生命（上限10）；攻击可消耗虚假生命使目标失能/恐慌。",
+                playGuide: "保持虚假生命吸收伤害；攻击前权衡是否消耗它打控制。",
+                counter: "先用小伤害剥虚假生命；不要让他目标半血触发回血。",
+                interactions: new[] { "与治疗：满血治疗也会转虚假生命。" });
 
         }
 

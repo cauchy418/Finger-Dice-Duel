@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -474,9 +474,14 @@ namespace FingerDiceDuel.Core
                     }
                 }
 
+                int healthBefore = Defender.Health;
                 Defender.TakeDamage(dealt);
+                int actualDamage = healthBefore - Defender.Health;
                 AppliedDamage += dealt;
                 LandedHits++;
+
+                if (actualDamage > 0 && Defender.Character is IPostDamageTaken postDamage)
+                    postDamage.OnDamageTaken(Defender, actualDamage, this, manager);
             }
 
             // 散打宗：共鸣引爆的额外真实伤害，不经过护盾/抗性/防御。

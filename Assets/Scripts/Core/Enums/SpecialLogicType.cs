@@ -185,6 +185,15 @@ namespace FingerDiceDuel.Core
         CircleOfTheMoon = 38,
 
         /// <summary>德鲁伊·星辰结社：星耀形态。</summary>
-        CircleOfTheStars = 39
+        CircleOfTheStars = 39,
+
+        /// <summary>德鲁伊·大地结社：封锁运算目标与束缚。</summary>
+        CircleOfTheLand = 40,
+
+        /// <summary>圣武士·古贤之誓：碎盾束缚与受伤治疗。</summary>
+        OathOfTheAncients = 41,
+
+        /// <summary>邪术师·妖魔：虚假生命。</summary>
+        TheFiend = 42
     }
 }

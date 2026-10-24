@@ -414,6 +414,18 @@ namespace FingerDiceDuel.Assistant
                 .Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 64).Set(9, 70)
                 .Set(2, 58).Set(1, 56).Set(3, 54).Set(7, 50);
 
+            Own[CharacterDefinition.CircleOfTheLandId] = new HandValueProfile()
+                .Set(3, 86).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 64).Set(9, 58)
+                .AddCombo(ComboRule.ContainsAll(60, "3可束缚", 3));
+
+            Own[CharacterDefinition.OathOfTheAncientsId] = new HandValueProfile()
+                .Set(5, 76).Set(8, 70).Set(6, 66).Set(4, 60).Set(9, 58)
+                .Set(1, 54).Set(2, 54).Set(3, 56).Set(7, 48);
+
+            Own[CharacterDefinition.TheFiendId] = new HandValueProfile()
+                .Set(9, 78).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 60)
+                .Set(1, 54).Set(2, 54).Set(3, 54).Set(7, 48);
+
             // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），
             // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。

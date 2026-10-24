@@ -55,6 +55,9 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("four_elements", "monk_way_of_the_four_elements", "monk", "四象宗", "Way of the Four Elements"),
             new CharacterIdentity("moon", "druid_circle_of_the_moon", "druid", "月亮结社", "Circle of the Moon"),
             new CharacterIdentity("stars", "druid_circle_of_the_stars", "druid", "星辰结社", "Circle of the Stars"),
+            new CharacterIdentity("land", "druid_circle_of_the_land", "druid", "大地结社", "Circle of the Land"),
+            new CharacterIdentity("ancients", "paladin_oath_of_the_ancients", "paladin", "古贤之誓", "Oath of the Ancients"),
+            new CharacterIdentity("fiend", "warlock_the_fiend", "warlock", "妖魔", "The Fiend"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();
         private static Dictionary<string, CharacterIdentity> BuildIndex()

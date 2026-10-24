@@ -112,6 +112,9 @@ namespace FingerDiceDuel.Core
         public const string WayOfTheFourElementsId = "monk_way_of_the_four_elements";
         public const string CircleOfTheMoonId = "druid_circle_of_the_moon";
         public const string CircleOfTheStarsId = "druid_circle_of_the_stars";
+        public const string CircleOfTheLandId = "druid_circle_of_the_land";
+        public const string OathOfTheAncientsId = "paladin_oath_of_the_ancients";
+        public const string TheFiendId = "warlock_the_fiend";
         public const string LightDomainId = "cleric_light_domain";
         public const string WarDomainId = "cleric_war_domain";
         public const string BattleMasterId = "fighter_battle_master";
@@ -498,6 +501,21 @@ namespace FingerDiceDuel.Core
             englishName: "Circle of the Stars",
             description: "回合开始双手和10可进入星耀形态；射手+2/-1且攻击光耀，圣杯0/0且9的回复可额外给一名其他角色，巨龙+1/+1且运算先加一只手、结算前再加一只手。回合结束双手相同可解除；不能直接切换形态。");
 
+        public static CharacterDefinition CircleOfTheLand { get; } = new CharacterDefinition(
+            CircleOfTheLandId, "德鲁伊·大地结社", SpecialLogicType.CircleOfTheLand,
+            defenseBonus: 1, englishName: "Circle of the Land",
+            description: "回合结束选一只手，直到下回合不能作为被加数；打出3可令另一名角色束缚2回合。攻0/防+1，距离1钝击。");
+
+        public static CharacterDefinition OathOfTheAncients { get; } = new CharacterDefinition(
+            OathOfTheAncientsId, "圣武士·古贤之誓", SpecialLogicType.OathOfTheAncients,
+            attackBonus: -1, defenseBonus: 1, englishName: "Oath of the Ancients",
+            description: "盾牌破碎时可令攻击范围内一名角色束缚2回合；受到实际伤害后，体力≥10时给攻击范围内另一名角色回复2，否则自己回复2。攻-1/防+1，距离1钝击。");
+
+        public static CharacterDefinition TheFiend { get; } = new CharacterDefinition(
+            TheFiendId, "邪术师·妖魔", SpecialLogicType.TheFiend,
+            defenseBonus: -1, englishName: "The Fiend",
+            description: "治疗溢出转为虚假生命（上限10），伤害优先扣虚假生命；攻击时可移除全部虚假生命令目标失能/恐慌2回合；造成伤害后目标≤半血则回复3。攻0/防-1，无限距离，近钝击远穿刺。");
+
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition[] BuiltIn { get; } =
         {
@@ -510,7 +528,8 @@ namespace FingerDiceDuel.Core
             SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
             LightDomain, WarDomain, BattleMaster,
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
-            CircleOfTheMoon, CircleOfTheStars
+            CircleOfTheMoon, CircleOfTheStars,
+            CircleOfTheLand, OathOfTheAncients, TheFiend
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

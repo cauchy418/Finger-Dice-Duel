@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -205,6 +205,18 @@ namespace FingerDiceDuel.Core
     {
         /// <summary>确认命中后调用。</summary>
         void OnHitLanded(AttackContext context, GameManager manager);
+    }
+
+    /// <summary>受到攻击实际伤害后触发（圣武士·古贤之誓）。</summary>
+    public interface IPostDamageTaken
+    {
+        void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager);
+    }
+
+    /// <summary>治疗溢出时触发（邪术师·妖魔转虚假生命）。</summary>
+    public interface IHealingOverflow
+    {
+        void OnHealingOverflow(PlayerState owner, int overflow);
     }
 
     /// <summary>

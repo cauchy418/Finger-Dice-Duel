@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -171,6 +171,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static bool CanUseHandAsAddend(PlayerState actor, Hand hand, GameManager game)
         {
+            if (hand != null && hand.IsTargetRestricted) return false;
             if (actor == null || hand == null || game == null) return true;
             if (!actor.HasStatus(StatusEffect.Blind)) return true;
 

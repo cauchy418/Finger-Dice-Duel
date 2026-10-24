@@ -74,6 +74,9 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.WayOfTheFourElements] = () => new WayOfTheFourElementsLogic();
             _registry[SpecialLogicType.CircleOfTheMoon] = () => new CircleOfTheMoonLogic();
             _registry[SpecialLogicType.CircleOfTheStars] = () => new CircleOfTheStarsLogic();
+            _registry[SpecialLogicType.CircleOfTheLand] = () => new CircleOfTheLandLogic();
+            _registry[SpecialLogicType.OathOfTheAncients] = () => new OathOfTheAncientsLogic();
+            _registry[SpecialLogicType.TheFiend] = () => new TheFiendLogic();
             _registry[SpecialLogicType.LightDomain] = () => new LightDomainLogic();
             _registry[SpecialLogicType.WarDomain] = () => new WarDomainLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();

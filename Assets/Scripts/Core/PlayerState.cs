@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -220,6 +220,15 @@ namespace FingerDiceDuel.Core
         /// <summary>武僧·散打宗的共鸣之气标记。</summary>
         public bool HasResonance { get; private set; }
         public void SetResonance(bool value) => HasResonance = value;
+
+        /// <summary>邪术师·妖魔的虚假生命，先于真实生命扣除。</summary>
+        public int FalseLife { get; private set; }
+        public void GainFalseLife(int amount)
+        {
+            if (amount <= 0) return;
+            FalseLife = System.Math.Min(10, FalseLife + amount);
+        }
+        public void ClearFalseLife() => FalseLife = 0;
         public bool HasResistance(AttackDamageType type)
         {
             if (type == AttackDamageType.Bludgeoning
@@ -345,7 +354,14 @@ namespace FingerDiceDuel.Core
         public void TakeDamage(int amount)
         {
             if (amount <= 0) return;
-            Health = Math.Max(0, Health - amount);
+            // 虚假生命优先扣除；剩余伤害才进入真实生命。
+            if (FalseLife > 0)
+            {
+                int absorbed = Math.Min(FalseLife, amount);
+                FalseLife -= absorbed;
+                amount -= absorbed;
+            }
+            if (amount > 0) Health = Math.Max(0, Health - amount);
             TookDamageThisTurn = true;
         }
 
@@ -369,7 +385,12 @@ namespace FingerDiceDuel.Core
             if (HasStatus(StatusEffect.HolyLight)) amount = (amount + 1) / 2;
 
             int before = Health;
-            Health = Math.Min(MaximumHealth, Health + amount);
+            int allowed = MaximumHealth - before;
+            int actual = Math.Min(Math.Max(0, amount), allowed);
+            Health = Math.Min(MaximumHealth, Health + actual);
+            int overflow = Math.Max(0, amount - actual);
+            if (overflow > 0 && Character is IHealingOverflow overflowHook)
+                overflowHook.OnHealingOverflow(this, overflow);
 
             // ⚠️ 吟游诗人·勇气学院的触发条件是"**实际**回过体力" —— 满血回复不算，
             //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。
@@ -487,6 +508,7 @@ namespace FingerDiceDuel.Core
             ClearVulnerabilities();
             ClearImmunities();
             SetResonance(false);
+            ClearFalseLife();
         }
 
         public override string ToString() => $"{Name}(HP={Health}/{MaximumHealth})";
