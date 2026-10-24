@@ -252,7 +252,8 @@ namespace FingerDiceDuel.UI
         private void RefreshBattleHeader(PlayerState player, bool top)
         {
             var name = top ? _nameTextB : _nameTextA;
-            string display = !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride
+            string display = player.Definition?.Id == CharacterDefinition.BlankId ? player.Name
+                : !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride
                 : player.Definition != null ? player.Definition.DisplayName : player.Name;
             name.text = player.Name == display ? display : display + "（" + player.Name + "）";
             var stats = top ? _statusTextB : _statusTextA;
@@ -262,8 +263,7 @@ namespace FingerDiceDuel.UI
                 + "    " + HandVisual.ShieldSummary(player);
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
             string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
-            if (id == "blank") id = "fighter_champion";
-            (top ? _badgeB : _badgeA).sprite = BattleArt.Get("Subclasses/" + id);
+            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : "Subclasses/" + id);
             BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));
         }
 

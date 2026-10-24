@@ -90,6 +90,34 @@ namespace FingerDiceDuel.UI
         public int CollegeOfValorChoicePanelStep
             => _bardChoicePanel != null ? _bardChoicePanel.CurrentStep : 0;
 
+        /// <summary>冒险模式第一关的引导面板（开场剧情 / 过程旁白 / 胜利要点卡共用）。</summary>
+        private AdventureGuidePanel _adventurePanel;
+
+        /// <summary>显示冒险关卡的开场剧情（模态）。</summary>
+        public void ShowAdventureIntro(string title, string introText, string avatarKey,
+                                       string guideName, System.Action onBegin,
+                                       System.Action onCancel = null, System.Action onSkipTutorial = null)
+            => _adventurePanel?.ShowIntro(title, introText, avatarKey, guideName, onBegin, onCancel, onSkipTutorial);
+
+        /// <summary>显示冒险关卡的胜利要点卡（模态）。</summary>
+        public void ShowAdventureVictory(string title, string victoryText, string avatarKey,
+                                         System.Action onReplay, System.Action onReturn)
+            => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn);
+
+        /// <summary>更新冒险关卡的引导旁白（空文案隐藏）。</summary>
+        public void ShowAdventureNarration(string guideName, string narration, string avatarKey)
+            => _adventurePanel?.ShowNarration(guideName, narration, avatarKey);
+
+        /// <summary>隐藏冒险关卡的引导旁白。</summary>
+        public void HideAdventureNarration() => _adventurePanel?.HideNarration();
+
+        /// <summary>隐藏冒险引导面板（旁白 + 模态全部）。</summary>
+        public void HideAdventureGuide() => _adventurePanel?.HideAll();
+
+        /// <summary>冒险引导的模态层是否可见（开场 / 胜利）。</summary>
+        public bool AdventureModalVisible
+            => _adventurePanel != null && _adventurePanel.IsModalVisible;
+
         private FloatingTextLayer _floats;
         private ScreenShaker _shaker;
         private GamePresentation _presentation;
@@ -246,6 +274,10 @@ namespace FingerDiceDuel.UI
             // 吟游诗人·勇气学院的四步抉择面板（① 是否发动由 GameBootstrap 判断）
             _bardChoicePanel = new CollegeOfValorChoicePanel(_canvasRoot, _font);
             _bardChoicePanel.Hide();
+
+            // 冒险模式第一关的引导面板（开场剧情 / 过程旁白 / 胜利要点卡）
+            _adventurePanel = new AdventureGuidePanel(_canvasRoot, _font);
+            _adventurePanel.HideAll();
         }
 
         private static Font LoadFont() => UiFont.Get();

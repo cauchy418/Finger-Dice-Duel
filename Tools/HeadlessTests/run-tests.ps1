@@ -16,7 +16,10 @@
 param(
     [string]$EditorRoot = $env:FDD_EDITOR_ROOT,
     [string]$Define = "",
-    [switch]$Quiet
+    [switch]$Quiet,
+    # 只跑某个测试类（对应运行器的过滤参数，例如 -Only AdventureLevel1Tests）。
+    # 快速迭代单个 fixture 用；回归仍需跑一次全量。
+    [string]$Only = ""
 )
 
 $ErrorActionPreference = 'Stop'
@@ -181,5 +184,5 @@ if ($unityPathCheck) {
 
 if (-not $Quiet) { Write-Host "编译成功，开始运行测试……" -ForegroundColor Green; Write-Host "" }
 
-& dotnet $exe
+if ($Only) { & dotnet $exe $Only } else { & dotnet $exe }
 exit $LASTEXITCODE

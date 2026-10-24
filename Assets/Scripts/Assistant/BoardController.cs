@@ -559,6 +559,11 @@ namespace FingerDiceDuel.Assistant
             _log.Add(CombatText.Skill(ActivePlayer, "赌博", $"掷出 {_pendingGambleRoll}，无合法攻击目标"));
         }
 
+        /// <summary>关卡可为特定NPC开放休整；默认空，普通对局按原规则。</summary>
+        public Func<PlayerState, bool> ScriptedRestAllowed { get; set; }
+        private bool CanScriptedRest => Phase == BoardPhase.ChoosingAttackerHand
+            && ScriptedRestAllowed?.Invoke(ActivePlayer) == true;
+
         /// <summary>
         /// 当前行动方是否可以跳过本回合。
         ///
@@ -574,7 +579,7 @@ namespace FingerDiceDuel.Assistant
                    || Phase == BoardPhase.ChoosingGamble)
                // ⚠️ 用带 GameManager 的重载：邪术师·至高妖精的跳过条件要查**别人**的体力，
                //    静态版传 null 会让它永远返回 false（按钮不显示）。
-               && _game.CanSkipTurnFor(ActivePlayer);
+               && (_game.CanSkipTurnFor(ActivePlayer) || CanScriptedRest);
 
         /// <summary>
         /// 跳过当前回合（不执行运算，直接把回合交给对方）。
@@ -605,11 +610,13 @@ namespace FingerDiceDuel.Assistant
                 // 找不到目标就退回"直接跳过"（正常不会发生：CanSkipTurn 已判过）
             }
 
-            string reason = !StatusRules.CanAct(ActivePlayer) ? "冻结，无法行动"
+            bool scriptedRest = CanScriptedRest;
+            string reason = scriptedRest ? "休整，等待下一次练习" : !StatusRules.CanAct(ActivePlayer) ? "冻结，无法行动"
                 : !_game.HasAnyLegalOperation(ActivePlayer) ? "无可用运算" : "结束本回合";
             _log.Add(CombatText.Skill(ActivePlayer, "跳过", reason));
             _statusTurnEndFor = ActivePlayer;
-            _game.SkipTurn();
+            if (scriptedRest) _game.SkipTurnAlreadyValidated();
+            else _game.SkipTurn();
 
             SelectedHand = null;
             _selectedTarget = null;
@@ -3466,6 +3473,7 @@ namespace FingerDiceDuel.Assistant
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
             // 冻结、双锁、暗置与距离限制导致无运算时，AI 使用同一个跳过出口。
+            if (CanScriptedRest) return SkipTurn();
             if (!_game.HasAnyLegalOperation(ActivePlayer) && CanSkipTurn) return SkipTurn();
 
             // ⚠️ AI 的邪术师·至高妖精要用"跳过回合改体力"这个技能。

@@ -1,0 +1,85 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/adventure-level-01");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+var canvas=((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action refresh=()=>{invoke(boot,"RefreshView",new object[0]);UnityEngine.Canvas.ForceUpdateCanvases();};
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,c)=>{
+ shot(c,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast "+button.name);
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);UnityEngine.Canvas.ForceUpdateCanvases();
+};
+var key="FingerDiceDuel.Adventure.Level1.Completed";bool had=UnityEngine.PlayerPrefs.HasKey(key);int previous=UnityEngine.PlayerPrefs.GetInt(key,0);float delay=boot.AiThinkSeconds;
+try{
+ UnityEngine.PlayerPrefs.DeleteKey(key);boot.AiThinkSeconds=1000;
+ var fixture=new FingerDiceDuel.Tests.AdventureLevel1Tests();foreach(var m in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){m.Invoke(fixture,null);check(true,"engine "+m.Name);}
+ boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);UnityEngine.Canvas.ForceUpdateCanvases();
+ var menu=(UnityEngine.RectTransform)field(boot,"_selectRoot");click(menu.Find("ModeAdventure").GetComponent<UnityEngine.UI.Button>(),front);
+ check(menu.Find("AdvPve").gameObject.activeInHierarchy,"adventure submenu opens");shot(front,"adventure-menu");
+ click(menu.Find("AdvPve").GetComponent<UnityEngine.UI.Button>(),front);
+ var level=(FingerDiceDuel.Assistant.AdventureLevel1)field(boot,"_adventure");var controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+ var panel=field(board,"_adventurePanel");var modal=(UnityEngine.RectTransform)field(panel,"_modalRoot");
+ check(board.AdventureModalVisible&&!level.Started,"intro blocks tutorial start");
+ check(!((UnityEngine.UI.Button)field(panel,"_skipTutorialButton")).gameObject.activeInHierarchy,"first play cannot skip guide");
+ var introBody=(UnityEngine.UI.Text)field(panel,"_modalBody");check(introBody.preferredHeight<=introBody.rectTransform.rect.height,"intro text fits");
+ check(((UnityEngine.UI.Image)field(board,"_badgeB")).sprite?.name==FingerDiceDuel.Assistant.AdventureLevel1.GuideAvatarKey,"soldier uses helmet emblem");
+ shot(canvas,"intro");
+ click((UnityEngine.UI.Button)field(panel,"_secondButton"),canvas);check(field(boot,"_adventure")==null,"intro cancel discards match");
+ click(menu.Find("AdvPve").GetComponent<UnityEngine.UI.Button>(),front);
+ level=(FingerDiceDuel.Assistant.AdventureLevel1)field(boot,"_adventure");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+ click((UnityEngine.UI.Button)field(panel,"_confirmButton"),canvas);
+ System.Func<FingerDiceDuel.Core.Hand,UnityEngine.UI.Button> handButton=hand=>{
+   foreach(string side in new[]{"_cardsA","_cardsB"})foreach(var card in (System.Array)field(board,side))if(object.ReferenceEquals(field(card,"Hand"),hand))return (UnityEngine.UI.Button)field(card,"Button");return null;};
+ check(handButton(level.Player.LeftHand).interactable&&!handButton(level.Player.RightHand).interactable,"guide white list visible immediately");
+ int turn=level.Game.TurnCount;invoke(boot,"OnHandClicked",new object[]{level.Player,level.Player.RightHand});check(level.Game.TurnCount==turn&&controller.SelectedHand==null,"wrong hand rejected without advancing");
+ System.Action layout=()=>{
+   var guide=(UnityEngine.RectTransform)field(panel,"_guideRoot");var body=(UnityEngine.UI.Text)field(panel,"_guideText");
+   check(body.preferredHeight<=body.rectTransform.rect.height,"narration fits step "+level.StepNumber);
+   var gb=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform,guide);var cb=((UnityEngine.RectTransform)canvas.transform).rect;
+   check(gb.min.x>=cb.xMin&&gb.max.x<=cb.xMax&&gb.min.y>=cb.yMin&&gb.max.y<=cb.yMax,"guide inside canvas");
+   foreach(string side in new[]{"_cardsA","_cardsB"})foreach(var card in (System.Array)field(board,side)){
+    var hb=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform,((UnityEngine.UI.Button)field(card,"Button")).transform);
+    check(gb.max.x<=hb.min.x||gb.min.x>=hb.max.x||gb.max.y<=hb.min.y||gb.min.y>=hb.max.y,"guide does not cover hand");
+   }
+ };
+ System.Action<FingerDiceDuel.Core.Hand,FingerDiceDuel.Core.Hand> human=(a,b)=>{click(handButton(a),canvas);click(handButton(b),canvas);if(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer)click(handButton(level.Soldier.LeftHand),canvas);};
+ System.Action soldier=()=>{for(int guard=0;guard<12;guard++){if(controller.Phase==FingerDiceDuel.Assistant.BoardPhase.GameOver||object.ReferenceEquals(controller.ActivePlayer,level.Player))return;set(boot,"_pauseUntil",0f);set(boot,"_aiDelayTimer",1000f);invoke(boot,"Update",new object[0]);}throw new System.Exception("AI turn stalled");};
+ layout();shot(canvas,"step-01-attack");human(level.Player.LeftHand,level.Soldier.LeftHand);check(level.Soldier.Health==7&&level.StepNumber==2,"first attack 5 damage");
+ soldier();check(level.Player.Health==16&&level.StepNumber==3,"script retaliation 4 damage");layout();shot(canvas,"step-03-shield");
+ human(level.Player.RightHand,level.Soldier.LeftHand);check(level.Player.RightHand.State==FingerDiceDuel.Core.ShieldState.Formed,"shield formed");
+ soldier();check(level.Player.RightHand.State==FingerDiceDuel.Core.ShieldState.Broken&&level.Player.Health==16&&level.StepNumber==5,"shield blocks and healing unlocked");layout();shot(canvas,"step-05-heal");
+ human(level.Player.RightHand,level.Soldier.LeftHand);check(level.Player.Health==20&&level.StepNumber==6,"healing caps at20");
+ soldier();check(level.Soldier.RightHand.Value==1&&level.IsFreeStage,"ten normalizes and free practice unlocks");layout();shot(canvas,"step-07-free");
+ human(level.Player.LeftHand,level.Soldier.RightHand);check(level.Player.LeftHand.State==FingerDiceDuel.Core.ShieldState.Formed,"free stage permits nonlethal shield");soldier();check(level.Player.Health==20&&!level.Soldier.HasAnyShield&&level.Soldier.Health==7,"guarded soldier remains harmless");
+ human(level.Player.LeftHand,level.Soldier.LeftHand);check(level.IsComplete&&board.AdventureModalVisible,"victory summary opens");
+ check(UnityEngine.PlayerPrefs.GetInt(key,0)==1,"completion recorded");check(!((UnityEngine.GameObject)field(board,"_gameOverPanel")).activeInHierarchy,"generic rematch overlay absent");shot(canvas,"victory");
+ click((UnityEngine.UI.Button)field(panel,"_confirmButton"),canvas);
+ level=(FingerDiceDuel.Assistant.AdventureLevel1)field(boot,"_adventure");controller=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+ check(level.Player.Health==20&&level.Soldier.Health==12&&!level.Started,"replay resets game");
+ check(((UnityEngine.UI.Button)field(panel,"_skipTutorialButton")).gameObject.activeInHierarchy,"cleared player can skip guide");shot(canvas,"replay");
+ click((UnityEngine.UI.Button)field(panel,"_skipTutorialButton"),canvas);check(level.IsFreeStage,"replay free practice starts");
+ human(level.Player.LeftHand,level.Soldier.LeftHand);soldier();check(level.Player.Health==20,"skip omits opening attack");
+ invoke(boot,"ReturnToAdventure",new object[0]);check(field(boot,"_adventure")==null&&!board.AdventureModalVisible,"return clears narrative and match");
+ boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Champion,FingerDiceDuel.Core.CharacterDefinition.Breaker);refresh();
+ var normal=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");check(normal.ScriptedRestAllowed==null,"ordinary match has no rest override");
+ check(!((UnityEngine.RectTransform)field(panel,"_guideRoot")).gameObject.activeInHierarchy,"normal battle has no story guide");
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);
+ return "PASS "+checks.Count+" adventure checks";
+}finally{if(had)UnityEngine.PlayerPrefs.SetInt(key,previous);else UnityEngine.PlayerPrefs.DeleteKey(key);UnityEngine.PlayerPrefs.Save();boot.AiThinkSeconds=delay;}

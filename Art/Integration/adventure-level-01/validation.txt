@@ -1,0 +1,80 @@
+PASS engine Full_script_plays_out_with_verified_values_and_player_wins
+PASS engine Guided_beats_reject_wrong_hands_without_advancing
+PASS engine Guarded_soldier_never_heals_or_shields_and_keeps_attacks_reachable
+PASS engine Free_practice_keeps_soldier_safe_for_many_turns_and_round_limit
+PASS engine Soldier_rests_when_every_operation_attacks_heals_or_shields
+PASS engine Skipping_completed_tutorial_omits_opening_and_new_level_resets
+PASS engine Ordinary_match_has_no_scripted_rest_permission
+PASS engine Level_metadata_and_texts_are_ready
+PASS raycast ModeAdventure
+PASS adventure submenu opens
+PASS raycast AdvPve
+PASS intro blocks tutorial start
+PASS first play cannot skip guide
+PASS intro text fits
+PASS soldier uses helmet emblem
+PASS raycast AdventureSecond
+PASS intro cancel discards match
+PASS raycast AdvPve
+PASS raycast AdventureConfirm
+PASS guide white list visible immediately
+PASS wrong hand rejected without advancing
+PASS narration fits step 1
+PASS guide inside canvas
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS first attack 5 damage
+PASS script retaliation 4 damage
+PASS narration fits step 3
+PASS guide inside canvas
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS shield formed
+PASS shield blocks and healing unlocked
+PASS narration fits step 5
+PASS guide inside canvas
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS healing caps at20
+PASS ten normalizes and free practice unlocks
+PASS narration fits step 7
+PASS guide inside canvas
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS guide does not cover hand
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS free stage permits nonlethal shield
+PASS guarded soldier remains harmless
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS victory summary opens
+PASS completion recorded
+PASS generic rematch overlay absent
+PASS raycast AdventureConfirm
+PASS replay resets game
+PASS cleared player can skip guide
+PASS raycast AdventureSkipTutorial
+PASS replay free practice starts
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS skip omits opening attack
+PASS return clears narrative and match
+PASS ordinary match has no rest override
+PASS normal battle has no story guide

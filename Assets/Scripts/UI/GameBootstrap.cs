@@ -118,7 +118,7 @@ namespace FingerDiceDuel.UI
 
         // ---- 界面流程 ----
         // ---- 玩家要求的三大模式层级 ----
-        /// <summary>冒险模式（PVE 占位）。</summary>
+        /// <summary>冒险模式（剧情第一关与预留挑战入口）。</summary>
         private ScreenGroup _screenAdventure;
         /// <summary>竞技模式（原 1v1 / 2v2 / 8 人）。</summary>
         private ScreenGroup _screenCompetition;
@@ -325,6 +325,13 @@ namespace FingerDiceDuel.UI
 
         /// <summary>AI 出手前的倒计时。</summary>
         private float _aiDelayTimer;
+
+        /// <summary>冒险模式第一关（剧情模式）的关卡导演；非冒险对局为 null。</summary>
+        private AdventureLevel1 _adventure;
+
+        /// <summary>冒险关卡胜利要点卡是否已弹过（一关只弹一次）。</summary>
+        private bool _adventureVictoryShown;
+        private const string AdventureLevel1CompletedKey = "FingerDiceDuel.Adventure.Level1.Completed";
 
         // ============================================================
         // 自动启动
@@ -634,15 +641,15 @@ namespace FingerDiceDuel.UI
             return title;
         }
 
-        /// <summary>冒险模式：目前是占位（后续开发 PVE）。</summary>
+        /// <summary>冒险入口：剧情第一关已接入，挑战关卡预留。</summary>
         private void BuildAdventureScreen()
         {
             _screenAdventure = new ScreenGroup();
             _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
 
             Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
-                                           "剧情冒险", "即将开放",
-                                           () => ShowComingSoon("剧情冒险"));
+                                           "剧情冒险", "第一关：初战 · 边境哨站",
+                                           StartAdventureLevel1);
             Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
                                             "挑战关卡", "即将开放",
                                             () => ShowComingSoon("挑战关卡"));
@@ -650,6 +657,78 @@ namespace FingerDiceDuel.UI
             _screenAdventure.Add(pve.gameObject);
             _screenAdventure.Add(chal.gameObject);
             _screenAdventure.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
+        }
+
+        // ============================================================
+        // 冒险模式 · 剧情模式 · 第一关「初战 · 边境哨站」
+        // ============================================================
+
+        /// <summary>
+        /// 教学关入口：勇士 vs 剧本士兵（白板，生命 12）。
+        /// 士兵不走 MakeAI，而是关卡剧本（ScriptedMoveSelector + 收官保护）。
+        /// </summary>
+        private void StartAdventureLevel1()
+        {
+            CleanupMatch();
+            _pendingDefA = CharacterDefinition.Champion;
+            _pendingDefB = CharacterDefinition.Blank;
+
+            _choiceA = new SimpleChoiceProvider();
+            _choiceB = new SimpleChoiceProvider();
+            _game = CharacterFactory.CreateMatch(_pendingDefA, _pendingDefB, _choiceA, _choiceB);
+
+            _controller = new BoardController(_game, _choiceA, _choiceB);
+            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
+
+            _adventure = AdventureLevel1.Attach(_game, _controller);
+            AdventureLevel1.PrepareSoldier(_game.PlayerB);
+            _adventure.Bind(_controller);
+            _adventureVictoryShown = false;
+
+            // 与 PrepareMatch 相同的残留清理：本关固定 1v1，其余模式标志全部复位。
+            _isTwoOnTwo = false;
+            _twoOnTwoSeated = null;
+            _isEightPlayer = false;
+            _eightSeated = null;
+            _isDualGeneral = false;
+
+            StartPreparedMatch();
+            _board.SetTitle("剧情冒险 · 第一关　" + AdventureLevel1.Title);
+
+            // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回冒险菜单。
+            _board.HideAdventureNarration();
+            _board.ShowAdventureIntro("第一关 · " + AdventureLevel1.Title,
+                AdventureLevel1.IntroText, AdventureLevel1.GuideAvatarKey,
+                AdventureLevel1.GuideName, OnAdventureIntroConfirmed, ReturnToAdventure,
+                PlayerPrefs.GetInt(AdventureLevel1CompletedKey, 0) != 0 ? (System.Action)OnAdventureSkipTutorial : null);
+        }
+
+        /// <summary>开场剧情确认：进入第一教学拍。</summary>
+        private void OnAdventureIntroConfirmed()
+        {
+            if (_adventure == null) return;
+            _adventure.BeginTutorial();
+            RefreshView();
+        }
+
+        private void OnAdventureSkipTutorial()
+        {
+            if (_adventure == null) return;
+            _adventure.SkipTutorial();
+            RefreshView();
+        }
+
+        /// <summary>胜利要点卡上的「重打本关」。</summary>
+        private void OnAdventureReplay()
+        {
+            StartAdventureLevel1();
+        }
+
+        /// <summary>从冒险关卡返回冒险模式子菜单。</summary>
+        private void ReturnToAdventure()
+        {
+            CleanupMatch();
+            ShowScreen(GameScreen.Adventure);
         }
 
         /// <summary>
@@ -2797,6 +2876,7 @@ namespace FingerDiceDuel.UI
         /// <summary>重开：回到角色选择（保留已选角色，方便换对手再打）。</summary>
         private void OnRestartClicked()
         {
+            if (_adventure != null) { StartAdventureLevel1(); return; }
             CleanupMatch();
             ShowScreen(GameScreen.CharacterSelect);
         }
@@ -2836,6 +2916,7 @@ namespace FingerDiceDuel.UI
         private void CleanupMatch()
         {
             _board.HideGameOver();
+            _board.HideAdventureGuide();
             _board.SetExitButtonVisible(false);
             _board.SetSkipButtonVisible(false);
             _board.SetAcceptButtonVisible(false);
@@ -2844,6 +2925,8 @@ namespace FingerDiceDuel.UI
 
             _controller = null;      // 丢弃当前对局，避免 Update 里继续推进 AI
             _game = null;
+            _adventure = null;      // 冒险关卡随对局一起丢弃
+            _adventureVictoryShown = false;
             _aiDelayTimer = 0f;
 
             // ⚠️ **把这一局的"模式判定"一起关掉**（玩家要求：
@@ -3017,13 +3100,22 @@ namespace FingerDiceDuel.UI
 
         private void OnHandClicked(PlayerState owner, Hand hand)
         {
-            if (_controller == null) return;
+            if (_controller == null || _board.AdventureModalVisible) return;
 
             // 关键：用 IsHumanChooser 而不是 IsHumanTurn。
             // 进入"选盾"阶段时依然是攻击方的回合，但该做决定的是**防守方**；
             // 如果这里按"行动方是否人类"放行，那么"AI 攻击、人类防守"时
             // 玩家的选盾点击会被直接丢弃。
             if (!_controller.IsHumanChooser) return;
+
+            // 冒险模式第一关：教学白名单外的点击直接拒绝（点错不推进、提示重试）。
+            if (_adventure != null && _adventure.Started
+                && !_adventure.AllowClick(hand))
+            {
+                _board.SetHint(_adventure.RejectionHint ?? "跟着指引走，先完成这一步。",
+                               DescribeLastTurn());
+                return;
+            }
 
             if (_controller.ClickHand(hand))
             {
@@ -3034,10 +3126,31 @@ namespace FingerDiceDuel.UI
             }
         }
 
+        /// <summary>
+        /// 冒险教学关的可点性过滤：教学白名单外的手在界面上也表现为"不可点"。
+        /// 只在"该人类做决定"时收紧；AI 回合与普通对局不受影响。
+        /// </summary>
+        private bool AdventureAllowsClick(Hand hand)
+        {
+            if (_adventure == null) return true;
+            if (!_adventure.Started || _board.AdventureModalVisible) return false;
+            if (!_controller.IsHumanChooser) return true;
+            return _adventure.AllowClick(hand);
+        }
+
+        /// <summary>当前引导建议点击的手（作为战斗桌的额外高亮；无引导时为 null）。</summary>
+        private List<Hand> AdventureHighlights()
+        {
+            if (_adventure == null || !_adventure.Started) return null;
+            Hand suggested = _adventure.SuggestedHand;
+            return suggested != null ? new List<Hand> { suggested } : null;
+        }
+
         private void Update()
         {
             if (_controller == null) return;
             if (_controller.Phase == BoardPhase.GameOver) return;
+            if (_board.AdventureModalVisible || (_adventure != null && !_adventure.Started)) { _aiDelayTimer = 0f; return; }
             if (IsPausing) return;              // 回合间停顿：暂停 AI 推进
 
             // ⚠️⚠️ **吟游诗人·勇气学院的抉择没答完之前，AI 一律不许行动。**
@@ -3124,6 +3237,7 @@ namespace FingerDiceDuel.UI
         private void RefreshView()
         {
             if (_controller == null || _board == null || _game == null) return;
+            _adventure?.Tick();
             SyncSeatLayout();
 
             // ⚠️ **必须先算可点性，再刷新高亮**。
@@ -3133,7 +3247,7 @@ namespace FingerDiceDuel.UI
             //    在 Refresh 之后调用 —— 于是高亮读到的永远是**上一帧**的可点性，
             //    表现成"对手的手明明能点却没有高光"（玩家反复实测到）。
             _board.EffectContext=_game;
-            _board.SetInteractable((owner, hand) => _controller.CanAct(hand));
+            _board.SetInteractable((owner, hand) => _controller.CanAct(hand) && AdventureAllowsClick(hand));
 
             IReadOnlyList<Hand> choices =
                 _controller.Phase == BoardPhase.ChoosingDefenseShield
@@ -3189,7 +3303,7 @@ namespace FingerDiceDuel.UI
                                skipButtonInteractable: _controller.CanSkipTurn,
                                turnCount: _controller.DisplayRound,
                                turnLimit: _controller.RoundLimit,
-                               extraHighlights: null);
+                               extraHighlights: AdventureHighlights());
                 if (_controller.Chooser != null)
                     _board.PlaceChoiceButtonsNextTo(_controller.Chooser);
             }
@@ -3285,7 +3399,28 @@ namespace FingerDiceDuel.UI
             }
 
             _board.SetWizardChoices(_controller,RefreshView);
-            if (_controller.Phase == BoardPhase.GameOver)
+
+            // —— 冒险模式第一关：导演推进 / 引导旁白 / 胜利要点卡 ——
+            if (_adventure != null)
+            {
+                if (_adventure.Started && !_adventure.IsComplete)
+                    _board.ShowAdventureNarration($"{AdventureLevel1.GuideName} · {_adventure.StepNumber}/{_adventure.StepCount}", _adventure.Narration,
+                                                  AdventureLevel1.GuideAvatarKey);
+                else
+                    _board.HideAdventureNarration();
+
+                if (_adventure.IsComplete && !_adventureVictoryShown)
+                {
+                    _adventureVictoryShown = true;
+                    PlayerPrefs.SetInt(AdventureLevel1CompletedKey, 1);
+                    PlayerPrefs.Save();
+                    _board.ShowAdventureVictory("胜利 · " + AdventureLevel1.Title,
+                        AdventureLevel1.VictoryText, AdventureLevel1.GuideAvatarKey,
+                        OnAdventureReplay, ReturnToAdventure);
+                }
+            }
+
+            if (_controller.Phase == BoardPhase.GameOver && _adventure == null)
             {
                 _board.ShowGameOver(WinMessage());
                 _board.SetSkipButtonVisible(false);

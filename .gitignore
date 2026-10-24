@@ -53,3 +53,6 @@ desktop.ini
 /.idea/
 /.vscode/
 *.swp
+
+# Local captured headless test output
+/Tools/headless-run*.log

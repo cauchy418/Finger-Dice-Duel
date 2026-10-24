@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using FingerDiceDuel.Assistant;
 
@@ -42,7 +42,7 @@ namespace FingerDiceDuel.UI
 
         // ---------- 玩家要求的三大模式（新主菜单层级）----------
 
-        /// <summary>冒险模式（后续开发的 PVE，目前是占位）。</summary>
+        /// <summary>冒险模式（剧情第一关已接入，挑战关卡预留）。</summary>
         Adventure = 11,
 
         /// <summary>竞技模式（对战：原本 1v1 / 2v2 / 8 人都在这里）。</summary>

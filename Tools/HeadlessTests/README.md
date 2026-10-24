@@ -6,7 +6,7 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通.NET可执行文件跑测试。当前1184项，包含39角色的1v1 59,280局、
+一个普通.NET可执行文件跑测试。当前1192项，包含39角色的1v1 59,280局、
 2v2 94,848局、双将654,264局、集火140,400局及8人抽样，完整回归需要数分钟；
 专项可按测试类过滤，不必每次重跑全部统计。
 
@@ -38,6 +38,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 |---|---|
 | `-EditorRoot <path>` | 手动指定编辑器 `Editor/Data` 目录 |
 | `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时只编译成库、不执行，并自动引入 `nunit.framework.dll`） |
+| `-Only <filter>` | 编译后只运行类名包含该文本的测试，例如`-Only AdventureLevel1Tests`；全量回归时不传此项 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
 
 运行器还支持两个命令行参数（直接传给 `dotnet bin/HeadlessTests.dll`）：
