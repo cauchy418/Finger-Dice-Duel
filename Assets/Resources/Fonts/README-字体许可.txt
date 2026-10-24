@@ -1,13 +1,15 @@
-Noto Sans CJK SC — 字体许可说明
+界面字体 — 字体许可说明
 =====================================
 
-本目录下的字体文件来自 **Noto Sans CJK SC**（思源黑体的 Google 发行名）：
+本目录包含Noto Sans CJK SC（思源黑体）与Source Han Serif CN（思源宋体），均使用静态OTF。当前资源与用途：
 
 | 文件 | 用途 | 字重 |
 |---|---|---|
 | `NotoSansCJKsc-Medium.otf` | 正文（`UiFont.Regular`） | Medium |
-| `NotoSansCJKsc-Bold.otf` | 标题 / 强调（`UiFont.Bold`） | Bold |
-| `NotoSansCJKsc-LICENSE.txt` | 许可全文 | — |
+| `NotoSansCJKsc-Bold.otf` | 数字 / 强调及标题回退（`UiFont.Bold`） | Bold |
+| `SourceHanSerifCN-SemiBold.otf` | 奇幻界面标题（`UiFont.Title`） | SemiBold |
+| `NotoSansCJKsc-LICENSE.txt` | 思源黑体许可全文 | — |
+| `SourceHanSerif-LICENSE.txt` | 思源宋体许可全文 | — |
 
 许可：**SIL Open Font License 1.1 (OFL-1.1)**
 
@@ -17,7 +19,8 @@ Noto Sans CJK SC — 字体许可说明
 - ❌ 不能单独出售字体文件本身。
 - ❌ 修改后再分发时，不能继续使用 "Noto" 这个保留字体名称（Reserved Font Name）。
 
-上游项目：https://github.com/notofonts/noto-cjk
+思源黑体上游：https://github.com/notofonts/noto-cjk
+思源宋体来源与许可：见同目录SourceHanSerif-README.txt及SourceHanSerif-LICENSE.txt
 许可全文：https://openfontlicense.org/
 
 ────────────────────────────────────────────────────────────
@@ -47,15 +50,15 @@ Noto Sans CJK SC — 字体许可说明
 1. 把 `.otf` 或 `.ttf` 放进本目录。
    **不要放 `.ttc`（字体集合）** —— `Resources.Load<Font>` 读不了。
 2. 改 `Assets/Scripts/UI/UiFont.cs` 里的
-   `RegularResourcePath` / `BoldResourcePath`（相对 `Resources`、不带扩展名）。
-3. 字重建议：正文 `Medium`、标题 `Bold`。
+   `RegularResourcePath` / `BoldResourcePath`，标题在Resolve中加载SourceHanSerifCN-SemiBold（相对Resources、不带扩展名）。
+3. 当前正文Medium、强调Bold、标题SemiBold。
    有真 Bold 时 `UiFont.ApplyBold` 会用真粗体，不再让引擎做伪粗体合成。
 
 ────────────────────────────────────────────────────────────
 
 后续可优化（不急）：
 
-- 这两个 OTF 各约 16 MB，合计 32 MB，会**整份进包**。
+- 三个OTF合计约43MiB，会整份进包。
   若要显著减小包体，可迁移到 TextMeshPro 的「动态 SDF 字体资产」：
   按需烘焙实际用到的字形，通常能省下绝大部分体积。
 - 也可以只保留一个含少量汉字的子集（用 `pyftsubset` 裁掉没用到

@@ -6,11 +6,14 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通 .NET 可执行文件跑测试 —— 一次完整回归约 **60 秒**
-（含 1v1 22,080 局、2v2 35,328 局、双将 83,664 局、集火实验 86,400 局），
-而启动编辑器通常要几分钟。
+一个普通.NET可执行文件跑测试。当前1184项，包含39角色的1v1 59,280局、
+2v2 94,848局、双将654,264局、集火140,400局及8人抽样，完整回归需要数分钟；
+专项可按测试类过滤，不必每次重跑全部统计。
 
-```
+```powershell
+# 本机.NET 6长时间统计关闭分层JIT，避免原生崩溃
+$env:DOTNET_TieredCompilation='0'
+$env:COMPlus_TieredCompilation='0'
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1
 ```
 
@@ -45,7 +48,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-v` / `--verbose` | 失败时打印堆栈 |
 
 > `-Define FDD_UNITY_TESTS` 是**唯一能替代"打开编辑器跑一次"的廉价检查**：
-> 它验证 Unity/NUnit 侧那套条件编译能不能通过。改完 asmdef 或 shim 后建议跑一次。
+> 它只验证Unity/NUnit侧条件编译，不执行测试或验证画面。改完asmdef或shim后建议跑一次。
 
 ## 同一套测试如何兼容两种环境
 
@@ -71,8 +74,8 @@ using NUnit.Framework;
 
 ## 与 Unity Test Runner 的关系
 
-- 无头工具：**日常回归的主力**，秒级反馈。
+- 无头工具：**日常回归的主力**，支持专项过滤；全量含大规模统计。
 - Unity Test Runner：最终验收，会同时覆盖 Unity 侧的程序集定义是否配置正确
   （`Assets/Tests/EditMode/FingerDiceDuel.Tests.EditMode.asmdef`）。
 
-两者跑的是**完全相同的测试文件**，所以不会出现"无头过了、编辑器里挂"的分裂。
+两者使用相同测试文件；条件编译检查能发现编译差异，但不能替代实际引擎的资源、点击与布局验收。

@@ -759,6 +759,7 @@ namespace FingerDiceDuel.UI
                 if (panel.Owner == null) continue;
 
                 RefreshPaintedRingHeader(panel);
+                RefreshDruidForms(panel.Root,panel.Owner,true);
 
                 // ⚠️ **把四块面板的名字行都登记进去**，不能只登记当前行动方。
                 //
@@ -1494,6 +1495,7 @@ namespace FingerDiceDuel.UI
 
             RefreshBattleHeader(a, false);
             RefreshBattleHeader(b, true);
+            RefreshDruidForms(_areaA,a);RefreshDruidForms(_areaB,b);
 
             // 法师·塑能学派的状态图标（玩家面板右侧）
             _statusIconsA?.Refresh(a,EffectContext);

@@ -1,0 +1,83 @@
+PASS engine Moon_human_selects_any_form_without_default_bear
+PASS engine Stars_human_selects_any_form_and_can_keep_base
+PASS engine Dual_druid_forms_stack_and_keep_independent_state
+PASS engine Dragon_second_addend_can_repeat_and_only_final_effect_resolves
+PASS engine Dragon_normalizes_each_addition_and_does_not_fire_intermediate_attack
+PASS engine Dragon_final_attack_snapshot_is_used_by_defense
+PASS engine Wolf_lifesteal_and_snake_poison_apply_in_real_combat
+PASS engine End_of_turn_equal_hands_offer_exit_or_keep_without_extra_turn
+PASS engine Chalice_human_selects_other_character_and_can_decline
+PASS engine Dedicated_ai_chooses_survival_range_support_and_legal_second_addend
+PASS engine Ai_respects_eagle_six_and_rewards_preparing_sum_ten
+PASS 512 emblem druid_circle_of_the_moon
+PASS 512 emblem druid_circle_of_the_stars
+PASS 512 form 熊
+PASS 512 form 狼
+PASS 512 form 鹰
+PASS 512 form 蛇
+PASS 512 form 射手
+PASS 512 form 圣杯
+PASS 512 form 巨龙
+PASS human chooses 德鲁伊·月亮结社
+PASS option count 德鲁伊·月亮结社
+PASS painted choice 熊
+PASS painted choice 狼
+PASS painted choice 鹰
+PASS painted choice 蛇
+PASS painted choice 保持基础形态
+PASS raycast reaches WizardOption1 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption1,Panel,WizardChoiceModal,PaintedHandCard
+PASS right hints count 德鲁伊·月亮结社
+PASS right hint painted Form_moon_1
+PASS right hint in area Form_moon_1
+PASS right hint painted Form_moon_2
+PASS right hint in area Form_moon_2
+PASS right hint painted Form_moon_3
+PASS right hint in area Form_moon_3
+PASS right hint painted Form_moon_4
+PASS right hint in area Form_moon_4
+PASS human chooses 德鲁伊·星辰结社
+PASS option count 德鲁伊·星辰结社
+PASS painted choice 射手
+PASS painted choice 圣杯
+PASS painted choice 巨龙
+PASS painted choice 保持基础形态
+PASS raycast reaches WizardOption2 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption2,Panel,WizardChoiceModal,HintPanel
+PASS right hints count 德鲁伊·星辰结社
+PASS right hint painted Form_stars_1
+PASS right hint in area Form_stars_1
+PASS right hint painted Form_stars_2
+PASS right hint in area Form_stars_2
+PASS right hint painted Form_stars_3
+PASS right hint in area Form_stars_3
+PASS raycast reaches WizardOption0 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption0,Panel,WizardChoiceModal,HintPanel
+PASS dragon second addition actual result
+PASS raycast reaches WizardOption2 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption2,Panel,WizardChoiceModal
+PASS ring forms 4
+PASS ring hint in panel 4Form_moon_1
+PASS ring hint in panel 4Form_moon_2
+PASS ring hint in panel 4Form_moon_3
+PASS ring hint in panel 4Form_moon_4
+PASS raycast reaches WizardOption2 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption2,Panel,WizardChoiceModal,HintPanel
+PASS ring forms 8
+PASS ring hint in panel 8Form_moon_1
+PASS ring hint in panel 8Form_moon_2
+PASS ring hint in panel 8Form_moon_3
+PASS ring hint in panel 8Form_moon_4
+PASS raycast reaches WizardOption1 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption1,Panel,WizardChoiceModal,PaintedHandCard
+PASS raycast reaches WizardOption2 parent=Panel active=True enabled=True phase=ChoosingWizardChoice hits=WizardOption2,Panel,WizardChoiceModal,HintPanel
+PASS dual actual maximum range
+PASS dual has seven separate form hints
+PASS dual has two active highlights
+PASS dual label does not overlap images Current_moon
+PASS dual label does not overlap images Current_stars
+PASS codex gallery druid_circle_of_the_moon
+PASS codex forms druid_circle_of_the_moon
+PASS codex actual painting Form_1
+PASS codex actual painting Form_2
+PASS codex actual painting Form_3
+PASS codex actual painting Form_4
+PASS codex gallery druid_circle_of_the_stars
+PASS codex forms druid_circle_of_the_stars
+PASS codex actual painting Form_1
+PASS codex actual painting Form_2
+PASS codex actual painting Form_3

@@ -393,6 +393,7 @@ namespace FingerDiceDuel.UI
             _stats.text = "生命 " + c.MaxHealth + "　攻 " + Signed(c.Attack) + "　防 " + Signed(c.Defense) + "　距离 " + (c.Range == int.MaxValue ? "∞" : c.Range.ToString());
             _emblem.gameObject.SetActive(true);
             _emblem.sprite = BattleArt.Get("Subclasses/" + c.Id);
+            RefreshDruidGallery(c.Id);
             var sb = new StringBuilder();
             Section(sb, "技能", c.ShortSkill);
             Section(sb, "技能详解", c.DetailSkill);
@@ -479,5 +480,24 @@ namespace FingerDiceDuel.UI
             sb.AppendLine();
         }
         public void SetVisible(bool visible) { if (_root != null) _root.gameObject.SetActive(visible); }
+        private RectTransform _druidGallery;
+        private string _druidGalleryId;
+        private void RefreshDruidGallery(string id)
+        {
+            if(_druidGallery==null)_druidGallery=FrontEndArt.Rect(_detailRoot,"DruidGallery",new Vector2(-385,-200),new Vector2(280,270));
+            if(_druidGalleryId==id)return;_druidGalleryId=id;
+            foreach(Transform child in _druidGallery){child.gameObject.SetActive(false);UnityEngine.Object.Destroy(child.gameObject);}
+            bool moon=id=="druid_circle_of_the_moon",stars=id=="druid_circle_of_the_stars";
+            _druidGallery.gameObject.SetActive(moon||stars);
+            _detailRoot.Find("EmblemCaption").gameObject.SetActive(!moon&&!stars);
+            if(!moon&&!stars)return;
+            var options=DruidForms.Options(moon?"moon":"stars",false);
+            for(int i=0;i<options.Count;i++)
+            {
+                var option=options[i];var image=FrontEndArt.Rect(_druidGallery,"Form_"+option.Value,new Vector2(i%2*130-65,70-i/2*130),Vector2.one*88).gameObject.AddComponent<Image>();image.sprite=BattleArt.Get(option.IconKey);image.preserveAspect=true;
+                BattleTooltip.Set(image,option.Label+"\n"+option.Description);
+                FrontEndArt.Text(_druidGallery,"FormName_"+i,option.Label,new Vector2(i%2*130-65,12-i/2*130),new Vector2(120,28),19);
+            }
+        }
     }
 }

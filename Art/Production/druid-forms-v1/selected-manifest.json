@@ -1,0 +1,68 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "druid_circle_of_the_moon",
+      "source": "Art/Production/druid-forms-v1/selected/Subclasses/druid_circle_of_the_moon.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/druid_circle_of_the_moon.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-d337a062-bafc-4cee-8dce-e3a7a0ec7b35.png",
+      "sha256": "d88e3791bcf3589af043b82dddf9afafb7cc4c88edd02fc4aee0a6683f395260"
+    },
+    {
+      "id": "druid_circle_of_the_stars",
+      "source": "Art/Production/druid-forms-v1/selected/Subclasses/druid_circle_of_the_stars.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/druid_circle_of_the_stars.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-cbcf7040-79b6-4ec1-872f-bc084788c8bb.png",
+      "sha256": "996819a1f70d5df5cbccc3832fde7d7789aca6b72a8c7cabdc91f6eeb90519a5"
+    },
+    {
+      "id": "moon_bear",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/moon_bear.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/moon_bear.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-985c43a3-28aa-4707-866a-aa3afcbec92e.png",
+      "sha256": "6212e8c04b14009022b14ebe88ea7581a2b9f8dfd2e32b32e4c5820ec3de032d"
+    },
+    {
+      "id": "moon_wolf",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/moon_wolf.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/moon_wolf.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-377376d6-46d9-487e-b36c-90b6eb1dbd38.png",
+      "sha256": "71ee2161b6d088b29be08919d26ed87698b4d76d494091258d5f0c3065e61902"
+    },
+    {
+      "id": "moon_eagle",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/moon_eagle.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/moon_eagle.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-d97969b8-3e1a-4426-9fb5-fd824e55a8fd.png",
+      "sha256": "420174f86266e47515b1a5c22f6a01c893d00d78c1d20d6f2545f88e85d0fb63"
+    },
+    {
+      "id": "moon_snake",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/moon_snake.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/moon_snake.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-180fa664-7304-4132-8adc-981241ef75e2.png",
+      "sha256": "d4e721fab1a105f5e6ae710a1adf2fedfdf9adb580a63908e8ee6c77de6d4977"
+    },
+    {
+      "id": "stars_archer",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/stars_archer.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/stars_archer.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-5daee772-d3f0-42ed-b340-93b1b37052d7.png",
+      "sha256": "9c5ff737b244f04bbaf9343c065361aa011e50d5ebc618c2b5eb461b19b30928"
+    },
+    {
+      "id": "stars_chalice",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/stars_chalice.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/stars_chalice.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-c20d46ff-f725-4a9a-b965-4520735f219f.png",
+      "sha256": "abf418331efaacc19d6a21d8e2a167e0576511fce3f0299896d17e66a8ad4a33"
+    },
+    {
+      "id": "stars_dragon",
+      "source": "Art/Production/druid-forms-v1/selected/Forms/stars_dragon.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Forms/stars_dragon.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-32f406a4-a183-447a-8e57-734cd76b87d2.png",
+      "sha256": "600f6415b81e212d03b0f45e5cad0f03daa02d45fab67925fdb250e8291429c4"
+    }
+  ]
+}

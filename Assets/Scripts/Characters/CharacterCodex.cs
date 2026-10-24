@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -357,14 +357,14 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.CircleOfTheMoonId, "Circle of the Moon", Alignment.ChaoticGood,
                 shortSkill: "双手和10进入荒野：熊4合盾、狼吸血、鹰射程3穿刺、蛇毒伤。",
                 playGuide: "回合开始凑10再选形态；熊守、狼攻、鹰远程、蛇上毒。",
-                counter: "不让他保持10；被迫进入形态后优先消耗其形态收益。",
-                interactions: new[] { "与德鲁伊另一结社：形态不叠加，须先解除。" });
+                counter: "不让他保持10；熊形态避免浪费攻击打盾；鹰形态留意其6无法攻击。",
+                interactions: new[] { "与另一结社双将：两种形态独立叠加、分别解除；伤害类型冲突按主将优先。" });
 
             Add(CharacterDefinition.CircleOfTheStarsId, "Circle of the Stars", Alignment.ChaoticNeutral,
                 shortSkill: "双手和10进入星耀：射手光耀、圣杯额外治疗、巨龙两次加手。",
                 playGuide: "根据队形选射手/圣杯/巨龙；巨龙需要两次选被加数。",
-                counter: "逼他解除形态；巨龙结算前打断第二次加手。",
-                interactions: new[] { "与德鲁伊另一结社：形态不叠加，须先解除。" });
+                counter: "射手防御偏低；圣杯优先保护伤员；巨龙只在第二次加手后结算一次效果。",
+                interactions: new[] { "与另一结社双将：两种形态独立叠加、分别解除；伤害类型冲突按主将优先。" });
 
         }
 

@@ -259,6 +259,7 @@ namespace FingerDiceDuel.Assistant
             _game.DeferWizardAttack = QueueWizardAttack;
             _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
             _game.SkillPolicyFor = p=>GetChoice(p) as ISkillChoicePolicy;
+            _game.DruidPolicyFor = p=>GetChoice(p) as IDruidChoicePolicy;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
@@ -1208,7 +1209,7 @@ namespace FingerDiceDuel.Assistant
             if (SelectedHand == null || _selectedTarget == null) return false;
 
             // 运算源已定 -> 用**真实**的两只手构造上下文，结果准确。
-            var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
+            var context = DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
 
             _pendingRequests.Clear();
@@ -1873,6 +1874,7 @@ namespace FingerDiceDuel.Assistant
                     }
 
                     // 第 ② 步：选定"参与运算的那只手"（加法的一个加数）。
+                    if(TryBeginDragonAddend(hand))return true;
                     _selectedTarget = hand;
                     TargetPlayer = OwnerOf(hand) ?? Defender;
 
@@ -1892,7 +1894,7 @@ namespace FingerDiceDuel.Assistant
                     _turnTargetHand = hand;
 
                     // 用与"创建抉择"完全同一个判定，避免两处各写一份（会漂移）
-                    _pendingIsAttack = new PreTurnChoiceContext(
+                    _pendingIsAttack = DruidChoiceContext(
                         ActivePlayer, TargetPlayer ?? Defender,
                         SelectedHand, hand).IsAttack;
 
@@ -1928,7 +1930,7 @@ namespace FingerDiceDuel.Assistant
                     Hint = !hasTarget
                         ? $"没有可攻击的目标。请点右侧「放弃攻击」。"
                         : $"已选择 {SideLabel(hand, Defender)}（{hand.Value}）参与运算，" +
-                          $"结果是 {Hand.ComputeSum(SelectedHand.Value, hand.Value)}。" +
+                          $"结果是 {_game.PreviewOperationResult(ActivePlayer,SelectedHand,hand)}。" +
                           $"请再点一次 {TargetPlayer.Name} 的手牌，确认本次的目标是" +
                           $"{TargetPlayer.Name}。";
                     return true;
@@ -1982,7 +1984,7 @@ namespace FingerDiceDuel.Assistant
 
             // 用"运算前的快照"构造上下文：此时运算还没执行，
             // 直接读手值会把效果算错（这一点在 PreTurnChoiceContext 里有专门说明）。
-            var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
+            var context = DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
 
             var provider = ActivePlayer?.Character as IResultTargetProvider;
@@ -2402,6 +2404,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>取消目标选择，回到第一步。</summary>
         public void CancelSelection()
         {
+            _game.DruidSecondAddend=null;
             if (Phase != BoardPhase.ChoosingTargetHand) return;
 
             SelectedHand = null;
@@ -2496,7 +2499,7 @@ namespace FingerDiceDuel.Assistant
             Hint = $"轮到 {Defender.Name} 选择：用哪一面护盾抵挡 " +
                    $"{ActivePlayer.Name} 的这次攻击" +
                    $"（{_pendingActedHand.Value} + {_pendingTargetHand.Value} = " +
-                   $"{Hand.ComputeSum(_pendingActedHand.Value, _pendingTargetHand.Value)}）？";
+                   $"{_game.PreviewOperationResult(ActivePlayer,_pendingActedHand,_pendingTargetHand)}）？";
 
             // 防守方若是 AI，立刻替它决定，不要让流程卡在这里
             ResolveDefenseChoiceIfAi();
@@ -2512,7 +2515,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private PreTurnChoiceContext BuildChoiceContext()
         {
-            var context = new PreTurnChoiceContext(ActivePlayer, Defender,
+            var context = DruidChoiceContext(ActivePlayer, Defender,
                                                    _pendingActedHand, _pendingTargetHand);
             _pendingIsAttack = context.IsAttack;
 
@@ -2640,9 +2643,9 @@ namespace FingerDiceDuel.Assistant
         {
             if (SelectedHand == null || _selectedTarget == null) return 0;
 
-            int sum = Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
+            int sum = _game.PreviewOperationResult(ActivePlayer,SelectedHand,_selectedTarget);
 
-            return new PreTurnChoiceContext(ActivePlayer, Defender, SelectedHand, _selectedTarget).IsAttack ? sum : 0;
+            return DruidChoiceContext(ActivePlayer, Defender, SelectedHand, _selectedTarget).IsAttack ? sum : 0;
         }
 
         /// <summary>
@@ -2723,7 +2726,7 @@ namespace FingerDiceDuel.Assistant
         private int LastResultValueForHint()
         {
             if (SelectedHand == null || _selectedTarget == null) return 0;
-            return Hand.ComputeSum(SelectedHand.Value, _selectedTarget.Value);
+            return _game.PreviewOperationResult(ActivePlayer,SelectedHand,_selectedTarget);
         }
 
         /// <summary>
@@ -2751,7 +2754,7 @@ namespace FingerDiceDuel.Assistant
             if (provider == null) return false;
             if (SelectedHand == null || _selectedTarget == null) return false;
 
-            var context = new PreTurnChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
+            var context = DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
 
             // ⚠️ 必须挂上"本回合已答"的查询 —— 牧师·生命领域的 4/6/8 靠它读
@@ -3422,7 +3425,7 @@ namespace FingerDiceDuel.Assistant
             }
             if(request.Effect==HandEffect.SchoolOfAbjurationBarrier && wizardPolicy!=null)
                 pick=wizardPolicy.ShouldStoreBarrier(_pendingChoiceDecider,
-                    Hand.ComputeSum(SelectedHand.Value,_selectedTarget.Value),_game)?request.Candidates[0]:null;
+                    _game.PreviewOperationResult(ActivePlayer,SelectedHand,_selectedTarget),_game)?request.Candidates[0]:null;
             bool legal = IsChoiceCandidate(pick);
             if (!legal) pick = null;          // 非法或放弃
 
@@ -4234,8 +4237,8 @@ namespace FingerDiceDuel.Assistant
 
             if (acted == null || target == null) return false;
 
-            int value = Hand.ComputeSum(acted.Value, target.Value);
-            if (!new PreTurnChoiceContext(ActivePlayer, Defender, acted, target).IsAttack) return false;
+            int value = _game.PreviewOperationResult(ActivePlayer,acted,target);
+            if (!DruidChoiceContext(ActivePlayer, Defender, acted, target).IsAttack) return false;
 
             PlayerState defender = Defender;
             if (!defender.HasDoubleShield) return false;

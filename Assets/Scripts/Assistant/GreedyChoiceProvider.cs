@@ -524,7 +524,7 @@ namespace FingerDiceDuel.Assistant
             if (game == null || actor == null) return null;
             if (move.Actor == null || move.TargetHand == null) return null;
 
-            bool isAttack = IsAttackResult(move, actor);
+            bool isAttack = IsAttackResult(move, actor,game);
 
             // ① 被加数是**敌人的手**：这一手本来就打在TA身上（也是评分时的目标）。
             //
@@ -550,11 +550,12 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>这一手的结果在 AI 眼里是不是攻击（含游荡者·魔术师借来的攻击）。</summary>
-        private static bool IsAttackResult(LegalMove move, PlayerState actor)
+        private static bool IsAttackResult(LegalMove move, PlayerState actor,GameManager game)
         {
             if (move.ActedHand == null || move.TargetHand == null) return false;
 
-            int result = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+            int result = DruidScoredResult(move,actor,game);
+            if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null)return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
             HandEffectType effect = Hand.GetEffectType(result);
 
             if (IsAttackEffect(effect)) return true;
@@ -671,7 +672,7 @@ namespace FingerDiceDuel.Assistant
                 LegalMove m = moves[i];
                 if (m.Actor == null || m.ActedHand == null || m.TargetHand == null) continue;
                 int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
-                if (!IsAttackResult(m, actor)) continue;
+                if (!IsAttackResult(m, actor,game)) continue;
 
                 PlayerState victim = game.OwnerOfHand(m.TargetHand);
                 if (victim == null) continue;
@@ -686,10 +687,10 @@ namespace FingerDiceDuel.Assistant
         private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)        {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
-            int result = Hand.ComputeSum(acted, target);
+            int result = DruidScoredResult(move,actor,game);
 
             int score;
-            switch (Hand.GetEffectType(result))
+            switch (CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null?CharacterBehaviors.DisplayedEffectOf(actor,result):Hand.GetEffectType(result))
             {
                 case HandEffectType.Attack4: score = 44; break;
                 case HandEffectType.Attack6: score = 66; break;
@@ -840,7 +841,7 @@ namespace FingerDiceDuel.Assistant
             //
             //    预测挨打对象：结果是攻击时 = 默认攻击目标 = 第一位对手
             //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
-            int resultForPriority = Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value);
+            int resultForPriority = result;
             bool priorityIsAttack =
                 Hand.GetEffectType(resultForPriority) == HandEffectType.Attack4
                 || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack6
@@ -873,7 +874,7 @@ namespace FingerDiceDuel.Assistant
             // 1v1 里 `ResolveFocusTarget` 直接返回 null（只有一位对手），
             // 所以 baseline 行为与旧版完全一致。
             if (priorityIsAttack && actor != null && game != null
-                && IsAttackResult(move, actor))
+                && IsAttackResult(move, actor,game))
             {
                 PlayerState victim = ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor)
                     ? (game.OpponentsOf(actor).Count > 0 ? game.OpponentsOf(actor)[0] : null)

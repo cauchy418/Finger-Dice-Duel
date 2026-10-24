@@ -18,19 +18,19 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1173 项全部通过**（2026-10-24），含三套统计与集火实验；Unity 条件编译和 UI 编译通过；职业·子职真实界面 **321 项检查通过**；王车易位真实引擎/UI **143 项通过**；本次阵营/双将 **127 项通过**；三所法师学派本批真实引擎/UI **95 项通过** |
+| 测试 | **1184项全部通过**（2026-10-24），含整局统计与集火实验；Unity条件编译和UI编译通过。最新德鲁伊实际引擎/UI **83项通过**；各阶段验收保存在 `Art/Integration/` |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
-> 当前统计规模：1v1 **53,280** 局、2v2 **85,248** 局、双将 **531,720** 局、集火实验 **133,200** 局；
+> 当前统计规模：1v1 **59,280** 局、2v2 **94,848** 局、双将 **654,264** 局、集火实验 **140,400** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
 
-## 职业与子职（2026-10-23）
+## 职业与子职
 
 当前 39 个子职，12 个职业大类；德鲁伊已接入月亮/星辰结社。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
 
-大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。最终 49 枚图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
+大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。职业重构阶段的图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
-图鉴职业筛选与阵营筛选取交集，德鲁伊显示空态；详情依次为斜体小字职业中英文、大字子职中英文、阵营。职业迁移阶段技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
+图鉴职业筛选与阵营筛选取交集，德鲁伊当前包含2个子职；详情依次为斜体小字职业中英文、大字子职中英文、阵营。职业迁移阶段技能只做名称与设定调整（如乘风突刺、空间刃、王冠威仪、勇气战歌），原数值、条件与流程不变。重构后的最新检查见 [验收](Art/Integration/profession-subclass/README.md)，完整旧名对照见 [制作记录](Art/Production/profession-subclass-v1/README.md)。历史截图与日志保留其当时含义。
 
 ## 勇士十点重击（2026-10-23 后续平衡调整）
 
@@ -56,7 +56,7 @@
 
 `ISelectiveHandEffectRewriter.HandlesResult` 声明接管数字，`CharacterBehaviors.EffectRewriterFor` 统一选处理者；结算、`PreTurnChoiceContext`、双将显示与目标预判共用。空改写不屏蔽其他子职，只有同数字真实争用才按主将优先。魔术师2、巨人4/5/6/8/9互不争用；巨人伤害钩子限5，自加能力在双将容器聚合。另补容器的穿透减伤转发、控制器对妖精部件的查询；碎盾射程逐部件转发，避免主将继承的空实现截断副将。双将全名在姓名行内缩放，避免覆盖血条。单角色数值保持不变。
 
-`AlignmentMigrationTests` 13项覆盖最新阵营、111对双顺序、数字分派、真实运算、自加、目标、穿透及两个跳过技能独立选择；1332次运算逐行保存在 `Tools/dual-alignment-probes.tsv`。完整结论与组合增减见 [检查报告](Tools/dual-alignment-audit.md)，真实界面见 [验收](Art/Integration/alignment-migration/README.md)。检查接口竞争及选定场景，不将零异常解释为所有局面无问题或数值平衡。
+`AlignmentMigrationTests` 13项保留迁移阶段27角色阵营与111对双顺序回归、数字分派、真实运算、自加、目标、穿透及两个跳过技能独立选择；1332次运算逐行保存在 `Tools/dual-alignment-probes.tsv`。完整结论与组合增减见 [检查报告](Tools/dual-alignment-audit.md)，真实界面见 [验收](Art/Integration/alignment-migration/README.md)。检查接口竞争及选定场景，不将零异常解释为所有局面无问题或数值平衡。
 
 旧勇士+风流剑客倍率与旧跨阵营种子21639仍以测试专用原始容器保留回归；正式工厂不放宽跨阵营限制。旧制作/验收记录与历史统计保持当时含义，当前规则以本段、RULES和最新检查为准。
 
@@ -68,7 +68,7 @@
 
 防护算出2先选角色，再选 **物理整组、雷鸣、强酸、火焰、寒冷、闪电** 六项，`ResistanceNames.Choices/CanGrant` 同时限制UI、AI与技能API；心灵/力场/毒素/光耀/暗蚀不可由此赋予。`ResistanceNames.All` 仍保存13类通用图标。`IAbjurationSkill` 存储屏障；选择存储后不再走攻击目标/盾选择，抗性后、扣血前吸收并全部清空。原有场上保护范围保持不变。
 
-`IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。全部33角色有显式手值配置，当前297组（33角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
+`IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。当前39角色有显式手值配置，351组（39角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
 
 `CombatStatusIcons` 统一负面、抗性、屏障、资源与标记显示；图标栏最多36项，超出可视区域可滚动。秘法手册为伤害类型、状态、六条元素反应、抗性与屏障四页；第四页附资源与标记分组，用完整资源键，元素反应未增加心灵条目。
 
@@ -105,12 +105,16 @@ UI  →  Assistant  →  Core
   > 颜色 / 图标键也只有 `AttackDamageTypes` 一份 ——
   > 所以"伤害飘字颜色 = 攻击类型图标颜色"是**结构上**成立的。
 
-**这套约束是"全部游戏逻辑都能秒级无头测试"的前提。** 破坏它 = 失去测试能力。
+**这套约束让逻辑可脱离编辑器测试。** 专项通常很快，含大规模统计的完整回归需要数分钟。
 
 ## 构建与验证
 
 ```powershell
-# 逻辑测试（秒级，不需要编辑器）
+# 本机.NET 6长时间统计关闭分层JIT
+$env:DOTNET_TieredCompilation='0'
+$env:COMPlus_TieredCompilation='0'
+
+# 逻辑测试（含统计，需要数分钟，不需要编辑器）
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1
 
 # 校验 Unity/NUnit 侧能否编译
@@ -137,7 +141,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版：18 种状态统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（现另有抗性与屏障第四页），第三页只有六条反应，心灵概率留在伤害类型页。多人三列六行容纳 18 种。当前验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版当时包含18种，现加圣光共19种，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（现另有抗性与屏障第四页），第三页只有六条反应，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -312,10 +316,10 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 - [x] **2v2**（入门 / 经典 + 先攻界面 + 环形布局 + 攻击距离）
 - [x] **8 人阵营混战**（单将、三阵营 3/3/2、50 轮、按阵营总血量判胜）
 - [x] **8 人身份对局** —— AI 练习已接入；80 轮、主公 +10 / +1/+1、内奸 5 人亮身份、忠臣替死；真人对战占位
-- [ ] **8 人角色/阵营平衡** —— 首版抽样中立仅 14.9%，需单独调
+- [ ] **8人角色/阵营平衡** —— 最新39角色采样仍有阵营差异，见 `Tools/8p-report.txt`；需单独调整
 - [ ] 竞技（联网）
 - [ ] 菜单按钮音效
-- [x] 角色选将现为可竖直滚动的6列徽记网格，30人完整可选
+- [x] 39子职可完整选取；大徽记纵向拖动，双侧三列、单侧四列；图鉴12名一页并按职业/阵营筛选
 - [ ] **空运算源**那次不该发生的第二次结算（根因未消除，已有守门与 `[FDD异常]` 日志）
 
 ## 已知风险 / 技术债
@@ -323,8 +327,8 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | 项 | 说明 |
 |---|---|
 | **批处理启动不可用** | `Tuanjie.exe` 批处理崩溃；已有运行中的编辑器可执行前台／1v1 预览检查，结果见 `Art/Integration/` |
-| **平衡隐患** | 单回合最大伤害 8 < 一次回复 9，双方都只顾活命时可拖延；靠轮次上限兜底（见 `RULES.md` §17） |
-| **AI 给队友回血未实现** | 1v1 里给对手回血是资敌；2v2 已支持队友但 AI 尚未利用 |
+| **平衡隐患** | 基础攻击4/6/8与回复9可能形成拖延；技能可突破此基础伤害范围。轮次上限兜底，模式统计见 `Tools/*-report.txt` |
+| **AI治疗仍是启发式** | 生命领域与圣杯已按实际缺血选择队友；尚未穷举未来收益、净化价值和所有双将组合 |
 | **空运算源** | 2v2 AI 对局里偶发"用空运算源去结算"，已由两道守门拦住（不再抛异常、不再崩），改为记录 `[FDD异常]` 现场。**根因未消除** |
 | **AI 游荡者·赌徒的"是否赌博"策略较简单** | 目前只判"有没有任何有用的运算"，未考虑血量 / 局势 |
 | **诊断字段曾多次跨回合残留** | `LastIllegalOperation` / `_advanceTrace` / `_pendingGambleRoll` 都踩过，统一在回合边界清空（`ResetDiagnostics` / `SetupFirstStep`） |
@@ -334,9 +338,9 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | 文件 | 职责 |
 |---|---|
 | `Assistant/GreedyChoiceProvider.cs` | `FocusPolicy`（None / Self / Mate）、`FocusBonus = 25000`、`IntendedVictim`；集火分**只加在攻击**上，且目标必须真的可达 |
-| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师·旧日支配者 / 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师）。邪术师·旧日支配者 2v2 62.5% / 8.7% 平局，先处理平局，暂不叠加集火 |
+| `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师·旧日支配者 / 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师）。旧日支配者基于早期实验暂不叠加集火；最新表现见统计报告 |
 | `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
-| `Tests/EditMode/FocusPolicyExperimentTests.cs` | 24 角色 × 600 局 × 2 段种子 × 3 组 = 86,400 局，写 `Tools/focus-report.txt` |
+| `Tests/EditMode/FocusPolicyExperimentTests.cs` | 39角色 × 600局 × 2段种子 × 3组 = 140,400局，写 `Tools/focus-report.txt` |
 
 ### 新角色触发测试
 
@@ -349,7 +353,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | `Tests/EditMode/AiCharacterTests.cs` | AI 驱动冒烟：已覆盖术士·狂野魔法 / 邪术师·旧日支配者 / 吟游诗人·勇气学院；另有旧角色技能使用回归 |
 
 ```powershell
-# 只跑集火实验（约 20 秒）
+# 只跑集火实验（耗时随机器与角色池变化）
 dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 ```
 
@@ -364,7 +368,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 | `Characters/DualGeneralBehavior.cs` | **能力容器**：实现全部组合接口，按规则合并并转发给子角色 |
 | `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
 | `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
-| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：84 个双将、3486 对 |
+| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：当前234个双将、27,261对，每对24局，共654,264局 |
 | `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
 | `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
 
@@ -400,7 +404,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 
 术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗的4枚绘画徽记已导入。龙族血脉采用用户确认方向的赤红雾气与金色脉络虚化龙影，保留原版下方元素宝石、中央琥珀与旧金框；实体龙首备选留存。
 
-资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
+资源位于 `Assets/Resources/Art/Battle/v1/Subclasses/`，同一正式资源键用于选将、图鉴、1v1与多人面板。该阶段37个子职与12职业共49枚正式徽记通过尺寸、Alpha、哈希及无重复校验。新四枚导入步骤挂在旧图集总导入末尾，避免被覆盖；元数据由编辑器生成。
 
 全量1151项测试通过，UI及Unity条件编译通过；真实引擎68项检查覆盖37角色资源、四枚选将与图鉴、职业筛选、旧ID别名及1v1/4人/8人显示。素材和精确提示词见 [制作记录](Art/Production/four-role-emblems-v1/README.md)，截图见 [验收](Art/Integration/four-role-emblems/README.md)。
 
@@ -421,3 +425,28 @@ Core新增只读契约 `IKiResource`、`IHunterMarkSource`，散打宗、四象�
 `ISkillChoicePolicy` 由Assistant实现，`GameManager.SkillPolicyFor` 注入真实AI对象，不能从人类sink反查AI。Greedy专属策略选择血脉元素、猎人标记目标、散打招式和四象元素/留气；直接无头结算读取同一策略。UI统一命名选项模态框，复用既有绘画图标。
 
 全量1170项、17项专项及104项真实引擎检查通过，UI与Unity条件编译通过。操作、截图和重放见 [验收](Art/Integration/martial-choice-fix/README.md)。
+
+## 德鲁伊形态接入（2026-10-24）
+
+Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键、中文名称和规则提示，`IDruidChoicePolicy`承载AI选择。月亮/星辰的回合开始、结束分别排队 `WizardChoice`，玩家可保留基础/当前形态；形态按 `TurnCount`防重复询问，重开清零。两结社可双将叠加，类型竞争按先执行的主将优先；其他加值遵循原双将规则。
+
+巨龙座在选择第一次加数后独立选择第二只手，允许重复。`GameManager.DruidSecondAddend`在结算前保存，完成/取消/重开清空。预览、抉择、最终运算和攻击快照共用连续两次归一化结果，效果及状态修正只处理最终值；战报写出两段算式。直接内核调用从同一AI策略选第二加数；第二手再次验证合法性。
+
+圣杯在结算后安全边界选择额外治疗对象；人类可选其他存活角色/放弃，AI优先受伤队友，不给敌人无意回血。狼按实际伤害吸血；蛇和射手通过统一命中接口附加元素状态。Greedy形态策略考虑生存、距离、抗性、队友治疗需求；评分鼓励凑10、识别熊4合盾/鹰6不攻击，并评估巨龙最终结果。
+
+`BaseRangeOf`优先读取容器聚合接口，修正双将此前仅取主将射程而丢失副将距离的问题。右侧形态提示在1v1玩家区域和多人各自面板中绘制；当前形态高亮，其余变暗，悬停同源说明，双将各一列。图鉴详情有独立形态图库；资源使用BattleArt完整键。51枚职业/子职与7张形态图通过尺寸/透明度/哈希校验，元数据均由引擎生成。
+
+全量1184项测试、11项专项及83项实际界面检查通过；验收见 [记录](Art/Integration/druid-forms/README.md)，素材/精确提示词见 [制作记录](Art/Production/druid-forms-v1/README.md)。
+
+## Codely Structured Memories
+
+### User
+
+### Feedback
+- [2026-10-24 06:09:37] 做新徽记等美术资源必须与现有徽记画风一致（用户要求）：沿用 Art/Production/champion-heavy-strike-v1/prompt.txt 提示词模板（旧金双层圆框+四方位菱饰+近黑珐琅内底+写实手绘+雕刻金属纹章主体），以已定稿徽记 PNG 作参考图，产出 512×512 透明 PNG，经 selected-manifest 清单（SHA-256）+ Tools/ArtPipeline 导入脚本入库；状态图标走 status-icons-v3 风格迁移模板（黑铁底旧金方框）。用户还会点名让我判断现有图案与新角色主题是否匹配（先例：圣杯经纹章学分析改判给光明领域、生命领域另绘）。
+- [2026-10-24 06:09:37] 实现类任务先交方案再动手（用户两次明确要求"先列工作清单/设计稿给我看，检查后再开始"）：开工前给出分阶段工作清单或设计稿供用户检查；规则口径有歧义时用带选项的问题让用户逐条拍板，未拍板不实现；文档三处同步（RULES.md/代码/测试）是项目铁律。
+
+### Project
+
+### Reference
+- [2026-10-24 06:09:37] 冒险模式·剧情模式第一关设计稿（2026-10-24 已交付，用户未确认、未实现）：勇士 vs 生命12旧伤白板士兵，7 回合强制脚本教学（攻击/合盾/碎盾/满十归一/回血/半自由决胜），逐回合数值已演算核对；完整设计与三个待拍板决策（士兵HP 12 vs 20、引导员形式、是否做三星）见 .codely-cli/memory/adventure-level-01-design.md；确认后实现需同步 RULES.md 与 README 玩法模式表。

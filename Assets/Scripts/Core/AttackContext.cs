@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -73,6 +73,7 @@ namespace FingerDiceDuel.Core
         /// 想判断"运算前手里有没有 2"这类条件必须用本属性。
         /// </summary>
         public int SourceHandValueBefore { get; set; }
+        public int SecondAddendValueBefore { get; set; }
 
         /// <summary>是否无视护盾（法师·咒法学派）。</summary>
         public bool IgnoreShield { get; set; }
@@ -838,7 +839,8 @@ namespace FingerDiceDuel.Core
                     return RawDamage;
                 }
 
-                return Hand.ComputeSum(SourceHandValueBefore, TargetHandValueBefore);
+                int value=Hand.ComputeSum(SourceHandValueBefore, TargetHandValueBefore);
+                return SecondAddendValueBefore>0?Hand.ComputeSum(value,SecondAddendValueBefore):value;
             }
         }
 
@@ -943,6 +945,7 @@ namespace FingerDiceDuel.Core
                 TargetHandValueBefore = TargetHandValueBefore,
                 AutoResolveChoice = AutoResolveDodge,
                 IsResolvingAttack = true,
+                ResultValue=AttackValue,
                 Manager = manager,
                 Gatherer = ChoiceGatherer,
                 AiDecisionLookup = AiDecisionLookup,

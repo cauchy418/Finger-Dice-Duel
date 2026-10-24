@@ -32,6 +32,7 @@ namespace FingerDiceDuel.Assistant
             {
                 int sum = Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
                 head = $"{t.Actor.Name} {CombatText.HandName(t.Actor, t.ActedHand)}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {sum}";
+                if(t.SecondAddendValue>0){int final=Hand.ComputeSum(sum,t.SecondAddendValue);head+=$"；{sum} + {t.SecondAddendValue} = {final}";sum=final;}
                 if (sum != t.ResultValue)
                     head += t.FreezeHalvedFrom > 0 ? $"【冰冻】→{t.ResultValue}" : $" → {t.ResultValue}";
             }

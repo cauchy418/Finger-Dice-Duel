@@ -559,7 +559,9 @@ namespace FingerDiceDuel.Core
                 if(IsResolvingAttack) return ResultValue;
                 int a = ActedHandValueBefore ?? (ActedHand?.Value ?? 0);
                 int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
-                return Hand.ComputeSum(a, b);
+                int value=Hand.ComputeSum(a,b);
+                return Manager!=null && DruidForms.IsDragon(Actor) && Manager.DruidSecondAddend!=null
+                    ?Hand.ComputeSum(value,Manager.DruidSecondAddend.Value):value;
             }
         }
 
@@ -668,15 +670,7 @@ namespace FingerDiceDuel.Core
         public int? TargetHandValueBefore { get; set; }
 
         /// <summary>本次运算的结果（优先用保存的快照重算，保证运算后被改写也不出错）。</summary>
-        public int EffectiveSum
-        {
-            get
-            {
-                int a = ActedHandValueBefore ?? (ActedHand?.Value ?? 0);
-                int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
-                return Hand.ComputeSum(a, b);
-            }
-        }
+        public int EffectiveSum => IsResolvingAttack ? ResultValue : EffectiveResult;
 
         /// <summary>本次运算产生的效果（基于 <see cref="EffectiveSum"/>）。</summary>
         public HandEffectType EffectiveEffect => Hand.GetEffectType(EffectiveSum);

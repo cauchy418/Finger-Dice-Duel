@@ -1,0 +1,51 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "druid_circle_of_the_moon",
+      "folder": "Subclasses",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy RPG Druid Circle of the Moon subclass emblem. A circular ornate worn antique gold frame with pointed filigree and diamonds, transparent exterior margin, black iron midnight woodland inset. Main subject is an elegant silver lunar PHASE RING: full moon at center encircled by crescent and gibbous moon phases, woven with detailed dark emerald oak leaves, tiny roots and ivory mist into a ritual druid sigil. Moonlight silver blue and moss green, painterly aged metal and enamel, clear at small UI size. No animals, animal heads, paws, wolves, bears, antlers, human, hands, letters, text or watermark. Entire frame visible with transparent padding. Distinct from a werewolf or beast-class emblem."
+    },
+    {
+      "id": "druid_circle_of_the_stars",
+      "folder": "Subclasses",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Circular ornate old gold medallion, an antique brass celestial astrolabe holds a luminous eight-point star with small constellations on deep indigo cosmic inner field; turquoise and ivory starlight, fine astronomy rings. Druid circle of stars identity."
+    },
+    {
+      "id": "moon_bear",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Powerful brown bear head and broad shoulders emerging from night forest mist, subtle silver crescent behind brow, dense painterly fur, earth brown and muted moonlight blue. Protective sturdy bear wild shape."
+    },
+    {
+      "id": "moon_wolf",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. A silver grey wolf in three-quarter profile with keen pale blue eyes, spectral moonlit fur, a silver crescent and midnight forest mist. Natural druid wild shape, focused predator, no armor."
+    },
+    {
+      "id": "moon_eagle",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Noble eagle head with hooked golden beak and two compact sweeping wings, moonlit ivory feathers, blue black woodland sky, silver crescent. Clear bird silhouette, natural druid wild shape, not heraldic flat vector."
+    },
+    {
+      "id": "moon_snake",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Emerald viper coiled into an elegant S, raised head with clearly visible two small fangs and a drop of venom, moss and moon mist, dark green and silver crescent accents. Natural druid wild shape."
+    },
+    {
+      "id": "stars_archer",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Luminous celestial bow and single drawn arrow constructed from silver-blue constellations and gold star nodes, crossing a deep indigo nebula, no archer figure. Starry archer form, radiant cyan and ivory starlight."
+    },
+    {
+      "id": "stars_chalice",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Elegant antique gold chalice filled with turquoise starlight, stream of tiny constellations rises from its cup as a nurturing aura, deep indigo cosmic field, ivory stars. Starry chalice form, healing theme."
+    },
+    {
+      "id": "stars_dragon",
+      "folder": "Forms",
+      "prompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Square ornate old gold frame. Graceful ethereal dragon constellation coiled through deep indigo space, translucent blue cyan stardust body with bright star nodes, elegant wings and long serpentine neck; purely astral creature, no solid scaled head or humanoid. Starry dragon form."
+    }
+  ],
+  "discardedMoonPrompt": "Use case: stylized-concept. ONE premium dark fantasy painted RPG UI icon, front view, black iron inset, ornate worn antique gold border, careful hand-painted metal and detailed illustrative subject, dramatic restrained light, fully visible frame, transparent exterior margin. Crisp strong silhouette legible at small game UI sizes. No letters, numbers, watermark, extra panels, human hands or humanoid portraits. Circular ornate old gold class medallion, silver crescent moon embraces a bear paw carved from moonstone, tiny oak leaves and blue mist beneath, midnight woodland inner field. Moon circle druid identity, polished silver blue highlights distinct from gold frame."
+}

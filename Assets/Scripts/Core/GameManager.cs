@@ -59,6 +59,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>运算时对方那只手的数值（快照）。</summary>
         public int TargetHandValue;
+        public int SecondAddendValue;
 
         public int ResultValue;
         public HandEffectType Effect;
@@ -870,8 +871,8 @@ namespace FingerDiceDuel.Core
 
         /// <summary>某人的基础攻击距离（没实现接口时按 1 处理）。</summary>
         public static int BaseRangeOf(PlayerState player)
-            => CharacterBehaviors.FirstImplementer<IAttackRangeProvider>(player) is IAttackRangeProvider p
-                ? p.BaseAttackRange : 1;
+            => player?.Character is IAttackRangeProvider combined ? combined.BaseAttackRange
+                : CharacterBehaviors.FirstImplementer<IAttackRangeProvider>(player) is IAttackRangeProvider p ? p.BaseAttackRange : 1;
 
         /// <summary>这张手牌属于谁（在**全部**参战玩家里查）。
         ///
@@ -1200,6 +1201,16 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public System.Func<HandEffect, int, Hand> AnsweredLookup { get; set; }
         public System.Func<WizardChoice,bool> DeferWizardChoice { get; set; }
+        public System.Func<PlayerState,IDruidChoicePolicy> DruidPolicyFor { get; set; }
+        public IDruidChoicePolicy GetDruidPolicy(PlayerState owner)=>DruidPolicyFor?.Invoke(owner)??GetChoiceProvider(owner) as IDruidChoicePolicy;
+        public Hand DruidSecondAddend { get; set; }
+        public int PreviewOperationResult(PlayerState owner,Hand acted,Hand first)
+        {
+            int result=Hand.ComputeSum(acted.Value,first.Value);
+            if(DruidForms.IsDragon(owner)&&DruidSecondAddend!=null)result=Hand.ComputeSum(result,DruidSecondAddend.Value);
+            return result;
+        }
+
         public System.Func<PlayerState,ISkillChoicePolicy> SkillPolicyFor { get; set; }
         public ISkillChoicePolicy GetSkillPolicy(PlayerState player)
             => SkillPolicyFor?.Invoke(player) ?? GetChoiceProvider(player) as ISkillChoicePolicy;
@@ -1275,6 +1286,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            DruidSecondAddend=null;
             ResetSeats();
             _skillLog.Clear();
             _brokenThisTurn.Clear();
@@ -1537,8 +1549,14 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException($"非法运算：{reason}");
 
             MarkSelfAddendIfAny(actor, targetHand);
-            return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,
-                               extraAction: extraAction);
+            if(DruidForms.IsDragon(actor))
+            {
+                var candidates=new List<Hand>();foreach(var p in Players)foreach(var h in p.Hands)if(IsLegalMove(actor,actedHand,h,out _))candidates.Add(h);
+                if(DruidSecondAddend==null) DruidSecondAddend=GetDruidPolicy(actor)?.SecondAddend(actor,actedHand,targetHand,candidates,this)??targetHand;
+                if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
+            }
+            try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
+            finally{DruidSecondAddend=null;}
         }
 
         /// <summary>
@@ -2450,6 +2468,12 @@ namespace FingerDiceDuel.Core
             else
             {
                 effect = actedHand.PerformOperation(targetValue);
+                if(DruidForms.IsDragon(actor)&&DruidSecondAddend!=null)
+                {
+                    result.SecondAddendValue=DruidSecondAddend.Value;
+                    effect=actedHand.PerformOperation(result.SecondAddendValue);
+                    NoteSkill(actor,"巨龙座",$"再加 {result.SecondAddendValue}，结果 {actedHand.Value}");
+                }
             }
 
             // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
@@ -2710,6 +2734,7 @@ namespace FingerDiceDuel.Core
                         ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
+                        ctx.SecondAddendValueBefore=result.SecondAddendValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);
 
