@@ -3,8 +3,9 @@ try{
  boot.AiThinkSeconds=1000;
  for(int n=1;n<=9;n++){
   invoke(boot,"StartAdventureLevel",new object[]{n,true});reload();
-  check(lesson.Soldier.Name==FingerDiceDuel.Assistant.AdventureChapter.InstructorName,"opponent unified in battle "+n);
-  check(((UnityEngine.UI.Text)field(board,"_nameTextB")).text=="哨站教官","battle header unified "+n);
+  var expected=n==1?FingerDiceDuel.Assistant.AdventureLevel1.GuideName:FingerDiceDuel.Assistant.AdventureChapter.InstructorName;
+  check(lesson.Soldier.Name==expected,"opponent unified in battle "+n);
+  check(((UnityEngine.UI.Text)field(board,"_nameTextB")).text==expected,"battle header correct "+n);
   if(n==1)shot(canvas,"first-unified-instructor");
   if(n==5){click(confirm,canvas);var dice=(FingerDiceDuel.UI.DiceRollScreen)field(boot,"_diceRoll");check(((UnityEngine.UI.Text)field(field(dice,"_dieB"),"_caption")).text=="哨站教官","fifth initiative opponent unified");}
  }

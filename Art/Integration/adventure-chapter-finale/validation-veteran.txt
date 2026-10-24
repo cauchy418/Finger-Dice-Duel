@@ -1,0 +1,24 @@
+PASS veteran engine Full_script_plays_out_with_verified_values_and_player_wins
+PASS veteran engine Guided_beats_reject_wrong_hands_without_advancing
+PASS veteran engine Guarded_soldier_never_heals_or_shields_and_keeps_attacks_reachable
+PASS veteran engine Free_practice_keeps_soldier_safe_for_many_turns_and_round_limit
+PASS veteran engine Soldier_rests_when_every_operation_attacks_heals_or_shields
+PASS veteran engine Skipping_completed_tutorial_omits_opening_and_new_level_resets
+PASS veteran engine Ordinary_match_has_no_scripted_rest_permission
+PASS veteran engine Level_metadata_and_texts_are_ready
+PASS modal fits lesson 1
+PASS first opponent veteran
+PASS first battle header veteran
+PASS opening matches requested wording
+PASS old instructor name removed from first opening
+PASS raycast AdventureConfirm
+PASS guide fits lesson 1 step 1
+PASS first instructions veteran
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS first combat log veteran
+PASS guide fits lesson 1 step 3
+PASS second opponent remains instructor
+PASS second opening follows first veteran
+PASS modal fits lesson 2

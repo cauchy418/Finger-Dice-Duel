@@ -454,7 +454,7 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 三份设计先落盘再编码：[三战](Docs/Adventure/level-03.md)、[四战](Docs/Adventure/level-04.md)、[五战](Docs/Adventure/level-05.md)。新增12项后续关卡专项、3项指引历史专项，全量1215项通过，Unity条件/UI编译通过；含初战/次战原16项回归。实际引擎138项检查覆盖老兵投骰解释、真实随机先攻、失败与胜利、重投/返回、石头避让及翻页，见[最新验收](Art/Integration/adventure-later-training/README.md)。旧双教学[验收](Art/Integration/adventure-chapter-01/README.md)保留历史截图。占位石头以内置imagegen绘制，[原图与提示词](Art/Production/border-outpost-stone-v1/README.md)；不手改meta。挑战仍预留。
 
-`AdventureChapter`统一十战名称、入口提示、固定训练角色及终战战士池；前九战对手统一使用InstructorName“哨站教官”。终战开场明确显示实际所选子职，骑士属性与经典流程单独分行。六战魔射手单NPC20生命，连续穿盾8伤、增伤8伤、两段4先破盾再击杀，NPC主动改变盾手并重新正常合盾，无中途造盾。八战剑士追加固定4先附流血，再主7，共11；九战战术家体力差0/5/13，动态攻防0/1/4，攻击5/8/13。七战40生命、训练射程2教官以普通核心动作展示四状态，`Beat.Maneuver`和`AllowManeuver`只约束教学状态按钮，最后必须拒绝附加；NPC算出8因震慑无目标而放弃，倒伏下一击4→6后完成目标，NPC仍可存活。普通/终战抉择不受限制。跛脚后的实际射程同步显示于1v1和多人面板。
+`AdventureChapter`统一十战名称、入口提示、固定训练角色及终战战士池；初战对手使用AdventureLevel1.GuideName“老兵”，开场为“身负旧伤的老兵拦住了去路”，各步指引和战报姓名一致；第二至九战使用InstructorName“哨站教官”。终战开场明确显示实际所选子职，骑士属性与经典流程单独分行。六战魔射手单NPC20生命，连续穿盾8伤、增伤8伤、两段4先破盾再击杀，NPC主动改变盾手并重新正常合盾，无中途造盾。八战剑士追加固定4先附流血，再主7，共11；九战战术家体力差0/5/13，动态攻防0/1/4，攻击5/8/13。七战40生命、训练射程2教官以普通核心动作展示四状态，`Beat.Maneuver`和`AllowManeuver`只约束教学状态按钮，最后必须拒绝附加；NPC算出8因震慑无目标而放弃，倒伏下一击4→6后完成目标，NPC仍可存活。普通/终战抉择不受限制。跛脚后的实际射程同步显示于1v1和多人面板。
 
 终战`AdventureFinaleSelect`独立选角，`AdventureChapter.FinaleRoster`仅包含已注册的6个战士子职，三列两行完整可见；详情跟随选择。对手`AdventureChapter.Knight`为关卡定义（None逻辑，20生命，攻防+1/+1、射程1），不加入BuiltIn，也不使用王冠之誓。`Adventure/knight_original.png`直接复用`Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_the_crown.png`原骑士徽记；选角与战斗都用同一资源。终战复用第五战真实经典流程、Greedy AI，重打保留选择并重新投骰，返回章内可重选。胜利保存Level10及`FingerDiceDuel.Adventure.Chapter1.Completed`，失败/平局不覆盖既有记录。所有新增关卡共用哨站背景，退出清理章节专属状态。
 

@@ -11,10 +11,13 @@
 
 补充统一前九战对手名为“哨站教官”，终战开场直接显示所选战士子职、分行说明骑士属性与经典流程；**41项冒险专项回归、44项实际引擎姓名与文案复验通过**，详见[补充结果](validation-names-and-intro.txt)，引擎检查合计219项。全量1225项后仅调整这些名称/文案及对应断言，随后再次通过Unity条件/UI编译。
 
+最新剧情调整：初战对手及全部指引改为“老兵”，开场“身负旧伤的老兵拦住了去路”，与次战“老兵请来哨站教官”衔接。第二至九战仍为哨站教官。仅调整名称与叙事，41项冒险测试、UI编译及[24项引擎检查](validation-veteran.txt)通过；旧统一教官截图是前一版，当前初战见下表。
+
 ## 截图
 
 | 画面 | 文件 |
 |---|---|
+| 初战与次战衔接 | [初战老兵开场](first-veteran-intro.png)／[老兵指引](first-veteran-guide.png)／[次战请来教官](second-veteran-transition.png) |
 | 十战入口 | [章内列表](chapter-ten-battles.png) |
 | 六战 | [8穿盾](sixth-pierce.png)／[4两段破盾击杀前](sixth-double-hit.png)／[胜利](sixth-complete.png) |
 | 七战 | [流血](seventh-bleed.png)／[跛脚，实际射程1](seventh-limp.png)／[震慑](seventh-stunned.png)／[倒伏](seventh-prone.png)／[目标完成](seventh-complete.png) |

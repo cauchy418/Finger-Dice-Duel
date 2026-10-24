@@ -82,7 +82,9 @@ namespace FingerDiceDuel.Tests
             PlayerState player = level.Player;
             PlayerState soldier = level.Soldier;
 
-            Assert.AreEqual(AdventureChapter.InstructorName, soldier.Name);
+            Assert.AreEqual(AdventureLevel1.GuideName, soldier.Name);
+            Assert.IsTrue(AdventureLevel1.IntroText.Contains("身负旧伤的老兵拦住了去路"));
+            Assert.IsFalse(AdventureLevel1.IntroText.Contains("哨站教官"));
             Assert.AreEqual(AdventureLevel1.SoldierMaxHealth, soldier.Health, "士兵生命 12（旧伤）");
             Assert.AreEqual(3, soldier.LeftHand.Value);
             Assert.AreEqual(1, soldier.RightHand.Value);

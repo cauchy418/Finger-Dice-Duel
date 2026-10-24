@@ -1,0 +1,12 @@
+var originalDelay=boot.AiThinkSeconds;
+try{
+ boot.AiThinkSeconds=1000;
+ var fixture=new FingerDiceDuel.Tests.AdventureLevel1Tests();foreach(var m in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){m.Invoke(fixture,null);check(true,"veteran engine "+m.Name);}
+ invoke(boot,"StartAdventureLevel",new object[]{1,true});reload();modalLayout();
+ check(lesson.Soldier.Name=="老兵","first opponent veteran");check(((UnityEngine.UI.Text)field(board,"_nameTextB")).text=="老兵","first battle header veteran");
+ var body=(UnityEngine.UI.Text)field(panel,"_modalBody");check(body.text.Contains("身负旧伤的老兵拦住了去路"),"opening matches requested wording");check(!body.text.Contains("哨站教官"),"old instructor name removed from first opening");
+ shot(canvas,"first-veteran-intro");click(confirm,canvas);layout();check(lesson.Narration.Contains("老兵")&&!lesson.Narration.Contains("教官"),"first instructions veteran");shot(canvas,"first-veteran-guide");human();npc();
+ check(string.Join(" | ",control.Log).Contains("老兵")&&!string.Join(" | ",control.Log).Contains("哨站教官"),"first combat log veteran");layout();
+ invoke(boot,"StartAdventureLevel",new object[]{2,true});reload();check(lesson.Soldier.Name=="哨站教官","second opponent remains instructor");check(lesson.OpeningText.Contains("老兵请来哨站教官"),"second opening follows first veteran");modalLayout();shot(canvas,"second-veteran-transition");
+ invoke(boot,"ReturnToAdventure",new object[0]);System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-veteran.txt"),checks);return "PASS "+checks.Count+" veteran checks";
+}finally{boot.AiThinkSeconds=originalDelay;}
