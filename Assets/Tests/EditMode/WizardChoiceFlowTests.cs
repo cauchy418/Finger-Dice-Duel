@@ -93,9 +93,10 @@ namespace FingerDiceDuel.Tests
             ((IAbjurationSkill)p.Character).StoreBarrier(12);
             var icons=CombatStatusIcons.For(p);Assert.AreEqual(14,icons.Count);
             Assert.AreEqual("12",icons[13].Counter);Assert.AreEqual("Effects/arcane_barrier",icons[13].ResourceKey);
-            var guide=GuideSheets.Protections();Assert.AreEqual(14,guide.Groups[0].Entries.Count);
+            var guide=GuideSheets.Protections();Assert.AreEqual(13,guide.Groups[0].Entries.Count);
             var keys=new HashSet<string>();foreach(var e in guide.Groups[0].Entries) keys.Add(e.ResourceKey);
-            Assert.AreEqual(14,keys.Count);
+            Assert.AreEqual(13,keys.Count);
+            Assert.AreEqual("Effects/arcane_barrier",GuideSheets.CharacterMarks().Groups[0].Entries[0].ResourceKey);
         }
         [Test] public void Necromancy_human_can_decline_free_attack_without_losing_normal_action()
         {

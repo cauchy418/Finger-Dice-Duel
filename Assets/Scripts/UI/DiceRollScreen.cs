@@ -206,7 +206,7 @@ namespace FingerDiceDuel.UI
                 words = "「大失败，由对手代选。」\n" + _controller.Assignee.Name + "投出1，由" + _controller.Decider.Name + "指定其两手。\n这只改变分配权，先攻仍看骰点。\n本场" + _controller.FirstToAct.Name + "先行动。";
             else
                 words = "「骰点已定：你" + _controller.RollA + "，教官" + _controller.RollB + "。」\n本场" + _controller.FirstToAct.Name + "先行动。\n现在由" + (_controller.Decider?.Name ?? "双方") + "分配手值。\n小点先选，大点后选；后选可参考已公开的手值。";
-            _lessonNarration.text = FrontEndArt.WrapReadableText(_lessonNarration, words, 236f);
+            FrontEndArt.SetNarrationText(_lessonNarration, words, 236f, 19, reflow: true);
         }
 
         public void SetVisible(bool visible)

@@ -111,6 +111,8 @@
         /// 勇气战歌增益与奥术屏障是独立系统，不受圣光影响（玩家口径）。
         /// </summary>
         HolyLight = 19,
+        Restrained = 20,
+        Greased = 21,
     }
 
     /// <summary>
@@ -184,6 +186,8 @@
                 case StatusEffect.Disabled: return "disabled";
                 case StatusEffect.Dizzy: return "dizzy";
                 case StatusEffect.HolyLight: return "holy_light";
+                case StatusEffect.Restrained: return "restrained";
+                case StatusEffect.Greased: return "greased";
                 default: return null;
             }
         }
@@ -231,6 +235,8 @@
                 case StatusEffect.Disabled: return "失能";
                 case StatusEffect.Dizzy: return "眩晕";
                 case StatusEffect.HolyLight: return "圣光";
+                case StatusEffect.Restrained: return "束缚";
+                case StatusEffect.Greased: return "油腻";
                 default: return "无";
             }
         }
@@ -277,7 +283,11 @@
                 case StatusEffect.Dizzy:
                     return "本次运算结果无效，不触发任何技能";
                 case StatusEffect.HolyLight:
-                    return "回合开始受 1 点（不可抵挡）、回复减半；已清除并阻止其他状态与抗性";
+                    return "回合开始失去1生命（不可抵挡），回复减半；清除并阻止其他状态及临时抗性／易伤／免疫";
+                case StatusEffect.Restrained:
+                    return "每个自身回合随机一只手不能主动运算，仍可被借作加数；不解开原有锁手";
+                case StatusEffect.Greased:
+                    return "每次运算完成后50%概率倒伏2回合；火焰命中清除油腻、伤害×1.5，照常附燃烧";
                 default:
                     return "无";
             }
@@ -315,7 +325,7 @@
             DamageType.Force, DamageType.Psychic,
         };
 
-        /// <summary>全部 19 种状态（排除兼容别名，顺序固定）。</summary>
+        /// <summary>全部21种状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -325,6 +335,7 @@
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
+            StatusEffect.Restrained, StatusEffect.Greased,
         };
 
         /// <summary>
@@ -386,6 +397,8 @@
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
+                case StatusEffect.Restrained: return 0x638653;
+                case StatusEffect.Greased: return 0xB8993C;
                 default: return 0x9AA0AC;                       // 中性灰
 
                 // ⚠️ 力场的颜色单独给（它没有状态，走 default 会拿到中性灰）
@@ -425,6 +438,8 @@
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
                 case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
+                case StatusEffect.Restrained: return "♧";
+                case StatusEffect.Greased: return "◒";
 
                 // △ 力场（玩家要求："把三角形标记移给力场"）
                 case StatusEffect.None: return "\u25b3";

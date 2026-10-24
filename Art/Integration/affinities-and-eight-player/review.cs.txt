@@ -1,0 +1,42 @@
+var originalDelay=boot.AiThinkSeconds;boot.AiThinkSeconds=1000;
+try{
+ foreach(var fixture in new object[]{new FingerDiceDuel.Tests.DamageAffinityTests(),new FingerDiceDuel.Tests.EightPlayerPresentationAndShockTests()})
+  foreach(var method in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){method.Invoke(fixture,null);check(true,"engine "+method.Name);}
+ invoke(boot,"OnMagicOrbClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");check(codex.PageCount==5,"manual has five pages");
+ System.Action checkGuide=()=>{var content=(UnityEngine.RectTransform)field(codex,"_guideContent");foreach(var icon in content.GetComponentsInChildren<UnityEngine.UI.Image>())if(icon.name.StartsWith("PaintedIcon_"))check(icon.sprite!=null,"loaded "+icon.sprite.name);foreach(var t in content.GetComponentsInChildren<UnityEngine.UI.Text>())check(t.preferredHeight<=t.rectTransform.rect.height+1,"text fits "+t.name);};
+ codex.GoTo(2);UnityEngine.Canvas.ForceUpdateCanvases();checkGuide();var content=(UnityEngine.RectTransform)field(codex,"_guideContent");check(content.GetComponentsInChildren<UnityEngine.UI.Image>().Count(x=>x.name.StartsWith("PaintedIcon_"))==9,"nine reactions");((UnityEngine.UI.ScrollRect)field(codex,"_guideScroll")).verticalNormalizedPosition=0;shot(front,"manual-eight-reactions");
+ click((UnityEngine.UI.Button)field(codex,"_nextButton"),front);check(codex.CurrentName=="抗性、易伤与免疫","new combined affinity page");checkGuide();content=(UnityEngine.RectTransform)field(codex,"_guideContent");check(content.GetComponentsInChildren<UnityEngine.UI.Image>().Count(x=>x.name.StartsWith("PaintedIcon_"))==39,"all thirty nine affinity icons");
+ var scroll=(UnityEngine.UI.ScrollRect)field(codex,"_guideScroll");scroll.verticalNormalizedPosition=1;shot(front,"manual-resistances");scroll.verticalNormalizedPosition=0.5f;shot(front,"manual-vulnerabilities");scroll.verticalNormalizedPosition=0;shot(front,"manual-immunities");
+ click((UnityEngine.UI.Button)field(codex,"_nextButton"),front);check(codex.CurrentName=="角色标记","dedicated character marks page");checkGuide();content=(UnityEngine.RectTransform)field(codex,"_guideContent");check(content.GetComponentsInChildren<UnityEngine.UI.Image>().Count(x=>x.name.StartsWith("PaintedIcon_"))==3,"three character marks");shot(front,"manual-character-marks");click(codex.Root.Find("Close").GetComponent<UnityEngine.UI.Button>(),front);
+ FingerDiceDuel.Core.GameManager game=null;FingerDiceDuel.Assistant.BoardController control=null;System.Collections.Generic.List<FingerDiceDuel.Core.PlayerState> players=null;
+ var roles=new[]{FingerDiceDuel.Core.IdentityRole.Lord,FingerDiceDuel.Core.IdentityRole.Loyalist,FingerDiceDuel.Core.IdentityRole.Loyalist,FingerDiceDuel.Core.IdentityRole.Rebel,FingerDiceDuel.Core.IdentityRole.Rebel,FingerDiceDuel.Core.IdentityRole.Rebel,FingerDiceDuel.Core.IdentityRole.Rebel,FingerDiceDuel.Core.IdentityRole.Traitor};
+ System.Action<int,bool> build=(humanSeat,identity)=>{
+  invoke(boot,"CleanupMatch",new object[0]);players=new System.Collections.Generic.List<FingerDiceDuel.Core.PlayerState>();var providers=new System.Collections.Generic.List<FingerDiceDuel.Core.IChoiceProvider>();var sinks=new System.Collections.Generic.List<FingerDiceDuel.Assistant.SimpleChoiceProvider>();
+  for(int i=0;i<8;i++){players.Add(FingerDiceDuel.Core.CharacterFactory.CreatePlayer("P"+(i+1),i==humanSeat?FingerDiceDuel.Core.CharacterDefinition.OathOfDevotion:FingerDiceDuel.Core.CharacterDefinition.Blank));var sink=new FingerDiceDuel.Assistant.SimpleChoiceProvider();providers.Add(sink);sinks.Add(sink);}
+  game=identity?FingerDiceDuel.Core.GameManager.CreateIdentityEight(players,providers,roles):FingerDiceDuel.Core.GameManager.CreateEight(players,providers,new[]{0,1,2,0,1,2,0,1});
+  control=new FingerDiceDuel.Assistant.BoardController(game,sinks[0],sinks[1]);for(int i=0;i<8;i++)control.BindPlayer(players[i],i==humanSeat?null:new FingerDiceDuel.Assistant.GreedyChoiceProvider(),sinks[i]);
+  players[humanSeat].LeftHand.SetValue(3);players[(humanSeat+4)%8].LeftHand.SetValue(1);control.SetFirstPlayer(players[humanSeat]);
+  set(boot,"_game",game);set(boot,"_controller",control);set(boot,"_choiceA",sinks[0]);set(boot,"_choiceB",sinks[1]);set(boot,"_isIdentity",identity);set(boot,"_isEightPlayer",true);set(boot,"_eightSeated",players);set(boot,"_eightHumanPlayer",players[humanSeat]);set(boot,"_pendingDefA",players[0].Definition);set(boot,"_pendingDefB",players[1].Definition);
+  invoke(boot,"StartPreparedMatch",new object[]{true});refresh();
+ };
+ System.Func<FingerDiceDuel.Core.Hand,UnityEngine.UI.Button> handButton=hand=>{foreach(var panel in (System.Collections.IEnumerable)field(board,"_ringPanels"))foreach(var card in (System.Array)field(panel,"Cards"))if(object.ReferenceEquals(field(card,"Hand"),hand))return (UnityEngine.UI.Button)field(card,"Button");throw new System.Exception("missing hand");};
+ System.Action<int,bool> shock=(seat,identity)=>{
+  build(seat,identity);var owner=players[seat];var far=players[(seat+4)%8];var selected=players[System.Math.Max((seat+1)%8,(seat+7)%8)];int before=selected.Health;
+  click(handButton(owner.LeftHand),canvas);click(handButton(far.LeftHand),canvas);check(control.PendingEffect==FingerDiceDuel.Core.HandEffect.OathOfDevotionShockTarget,"eight player human shock prompt");
+  foreach(var hand in control.PendingRequest.Value.Candidates)check(game.CanReach(owner,game.OwnerOfHand(hand)),"shock candidate in reach");shot(canvas,identity?"identity-shock-choice":"faction-shock-choice");
+  var hands=(FingerDiceDuel.Core.Hand[])field(board,"_skillHands");var buttons=(UnityEngine.UI.Button[])field(board,"_skillChoiceButtons");int chosen=-1;for(int i=0;i<hands.Length;i++)if(hands[i]!=null&&object.ReferenceEquals(game.OwnerOfHand(hands[i]),selected)){chosen=i;break;}check(chosen>=0,"selected neighbor button exists");click(buttons[chosen],canvas);
+  check(selected.Health==before-2,"selected neighbor lost exactly two");check(far.Health==far.MaximumHealth,"far addend was not damaged");check(string.Join(" | ",control.Log).Contains("冲击"),"shock log present");shot(canvas,identity?"identity-shock-landed":"faction-shock-landed");
+ };
+ shock(0,false);shock(1,true);
+ foreach(int viewer in new[]{0,1,3,7}){
+  build(viewer,true);var title=((UnityEngine.UI.Text)field(board,"_titleText")).text;int mates=viewer<=1?2:viewer==3?3:0;int foes=7-mates;check(title.Contains("队友 "+mates+" 人")&&title.Contains("对手 "+foes+" 人"),"identity actual side totals viewer "+viewer);
+  foreach(var panel in (System.Collections.IEnumerable)field(board,"_ringPanels")){var owner=field(panel,"Owner") as FingerDiceDuel.Core.PlayerState;if(owner==null)continue;var relation=FingerDiceDuel.Assistant.IdentityPresentation.Relation(game,players[viewer],owner);var label=((UnityEngine.UI.Text)field(panel,"SeatText")).text;
+   check(relation!=FingerDiceDuel.Assistant.RingRelation.Unknown||!label.Contains("队友")&&!label.Contains("对手"),"hidden identity unlabelled "+owner.Name+" viewer "+viewer);
+   if(relation==FingerDiceDuel.Assistant.RingRelation.Teammate)check(label.Contains("队友"),"known teammate label");if(relation==FingerDiceDuel.Assistant.RingRelation.Opponent)check(label.Contains("对手"),"known opponent label");}
+  shot(canvas,"identity-relations-"+viewer);
+ }
+ // Runtime icon bar: all 39 independent affinities must remain reachable through scrolling.
+ invoke(boot,"CleanupMatch",new object[0]);boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Champion,FingerDiceDuel.Core.CharacterDefinition.Blank);game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");
+ foreach(var type in FingerDiceDuel.Core.ResistanceNames.All){game.PlayerB.AddResistance(type);game.PlayerB.AddVulnerability(type);game.PlayerB.AddImmunity(type);}refresh();check(FingerDiceDuel.Core.CombatStatusIcons.For(game.PlayerB).Count==39,"battle can display all thirty nine affinities");shot(canvas,"battle-affinity-icons");
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);return "PASS "+checks.Count+" affinity and eight-player checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=originalDelay;}

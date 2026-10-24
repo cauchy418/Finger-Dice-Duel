@@ -49,10 +49,12 @@ namespace FingerDiceDuel.Assistant
             }
             if(target==null) return 0;
             var type=(AttackDamageType)value;
+            if(target.HasImmunity(type)) return -100;
             double score=ElementDamageScore(type,owner,target);
             if(type==AttackDamageType.Lightning && target.HasStatus(StatusEffect.Wet)) score+=15;
             if(type==AttackDamageType.Cold && (target.HasStatus(StatusEffect.Frost)||target.HasStatus(StatusEffect.Wet))) score+=22;
             if(type==AttackDamageType.Thunder && target.HasStatus(StatusEffect.Resonance)) score+=20;
+            if(type==AttackDamageType.Fire && target.HasStatus(StatusEffect.Greased) && !target.HasImmunity(type)) score+=8;
             return score;
         }
 
@@ -75,11 +77,15 @@ namespace FingerDiceDuel.Assistant
             int damage=Math.Max(0,6+StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(target));
             var magic=AttackDamageTypes.ToDamageType(type);
             damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out var ignored,out var clear);
-            double score=damage*(target.HasResistance(type)?0.5:1);
+            damage=StatusRules.ApplyDamageAffinities(target,damage,type);
+            if(target.HasImmunity(type)) return 0;
+            double score=damage;
             var status=StatusNames.StatusOf(magic);
             if(status!=StatusEffect.None && !target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight))
                 score+=type==AttackDamageType.Cold?5:type==AttackDamageType.Thunder?4:3;
-            if(target.Health<=damage && !target.HasResistance(type)) score+=15;
+            if(target.Health<=damage) score+=15;
+            if(type==AttackDamageType.Acid && target.HasStatus(StatusEffect.Poison)
+                || type==AttackDamageType.Poison && target.HasStatus(StatusEffect.Acid)) score+=2;
             return score;
         }
 

@@ -1340,8 +1340,8 @@ namespace FingerDiceDuel.UI
             _game.RoundLimit = GameManager.IdentityRoundLimit;
             for (int i = 0; i < 8; i++) ApplyEightOpeningHands(seated[i], _idRng);
 
-            var sinkA = new SimpleChoiceProvider();
-            var sinkB = new SimpleChoiceProvider();
+            var sinkA = sinks[0];
+            var sinkB = sinks[1];
             _controller = new BoardController(_game, sinkA, sinkB);
             for (int i = 0; i < 8; i++)
                 _controller.BindPlayer(seated[i], selectors[i], sinks[i]);
@@ -2841,7 +2841,10 @@ namespace FingerDiceDuel.UI
                     : role == IdentityRole.Lord ? _game.IdentityLordTitle
                     : IdentityRoleInfo.DisplayName(role);
                 _board.SetRingIdentity(p, label, true);
+                _board.SetRingRelation(p, IdentityPresentation.Relation(_game, _eightHumanPlayer, p));
             }
+            IdentityPresentation.Counts(_game, _eightHumanPlayer, out int mates, out int foes);
+            _board.SetTitle($"8 人身份局　我（{_eightHumanPlayer.Definition?.DisplayName ?? _eightHumanPlayer.Name}）　存活队友 {mates} 人　对手 {foes} 人");
         }
 
         /// <summary>
@@ -2869,7 +2872,7 @@ namespace FingerDiceDuel.UI
                 int mySeat = _eightSeated.IndexOf(me) + 1;
                 var relations = new List<RingRelation>(8);
                 for (int i = 0; i < 8; i++)
-                    relations.Add(ReferenceEquals(_eightSeated[i], me)
+                    relations.Add(_isIdentity ? IdentityPresentation.Relation(_game, me, _eightSeated[i]) : ReferenceEquals(_eightSeated[i], me)
                         ? RingRelation.Self
                         : _game.IsTeammate(me, _eightSeated[i])
                             ? RingRelation.Teammate : RingRelation.Opponent);

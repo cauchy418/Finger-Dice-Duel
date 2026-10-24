@@ -8,12 +8,11 @@ namespace FingerDiceDuel.Core
     /// 玩家确认的规则：
     ///   · **4 与 6 不再攻击**，改为**合出护盾**
     ///   · **合出盾、主动碎盾、被动被打碎盾**时，
-    ///     对**攻击范围内一名角色**（**含队友**）造成 **2 点真实伤害**
+    ///     对**攻击范围内一名角色**（**含队友**）造成固定 **2 点伤害**
     ///     —— **强制发动**（不能放弃），但**目标由玩家选**
     ///   · 攻击范围内的角色被攻击时，**可以把目标改成自己**
     ///
-    /// "真实伤害"= 直接扣血、**经过护盾才算挡**？不 —— 规则说的是"真实伤害"，
-    /// 所以**无视护盾与攻防加成**，直接扣 2 点。
+    /// 冲击不计攻防，可被护盾、闪避、太极及类型修正处理；攻击数字视为0，不能被取消。
     /// </summary>
     public sealed class OathOfDevotionLogic : CharacterTemplate, IPreTurnChoiceProvider,
                                        FingerDiceDuel.Core.IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay,
@@ -142,6 +141,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public override void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager)
         {
+            if (manager?.ResolvingPassiveShieldBreak == true) return;
             TriggerShock(owner, brokenHand, "主动碎盾", manager, ShockVariantBreak);
         }
 
@@ -179,7 +179,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 落实一次冲击：选一个范围内的人，直接扣 2 点（无视护盾与攻防加成）。
+        /// 落实一次冲击：选一个范围内的人，以固定2点进入正常防守结算（不计攻防加成）。
         ///
         /// ⚠️ 只**回读已记录的答案**，不在结算里索取输入 ——
         ///    结算一旦开始就一次跑完（本项目反复踩过的坑）。
@@ -264,13 +264,20 @@ namespace FingerDiceDuel.Core
                 decider: owner,
                 variant: variant);            // 合盾 / 碎盾 各一份答案
 
-            Hand chosen = PreTurnChoiceReader.Read(
+            Hand chosen = manager.AnsweredLookupFor?.Invoke(owner, HandEffect.OathOfDevotionShockTarget, variant);
+            if (chosen != null)
+            {
+                PlayerState recordedTarget = manager.OwnerOfHand(chosen);
+                if (recordedTarget != null && candidates.Contains(recordedTarget)) return recordedTarget;
+            }
+            chosen = PreTurnChoiceReader.Read(
                 manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
                 manager.GetChoiceProvider(owner), request, owner);
 
             if (chosen == null) return null;
 
-            return manager.OwnerOfHand(chosen);
+            PlayerState target = manager.OwnerOfHand(chosen);
+            return target != null && candidates.Contains(target) ? target : null;
         }
 
         // ============================================================
@@ -445,7 +452,7 @@ namespace FingerDiceDuel.Core
                 ? ShockCandidates(owner, manager)
                 : new List<PlayerState>(1);
 
-            if (other != null && !ReferenceEquals(other, owner) && other.IsAlive
+            if (manager == null && other != null && !ReferenceEquals(other, owner) && other.IsAlive
                 && !candidates.Contains(other))
             {
                 candidates.Add(other);      // 兜底：至少让对面那位可选

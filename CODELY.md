@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1225项全部通过**（2026-10-24），含整局统计与集火实验；Unity条件编译和UI编译通过。德鲁伊实际引擎/UI **83项通过**，边境哨站章节教学验收见下文；各阶段验收保存在 `Art/Integration/` |
+| 测试 | **1261项全部通过**（2026-10-25），含整局统计与集火实验；Unity条件编译和UI编译通过。德鲁伊实际引擎/UI **83项通过**，边境哨站章节教学验收见下文；各阶段验收保存在 `Art/Integration/` |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **59,280** 局、2v2 **94,848** 局、双将 **654,264** 局、集火实验 **140,400** 局；
@@ -70,7 +70,7 @@
 
 `IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。当前39角色有显式手值配置，351组（39角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
 
-`CombatStatusIcons` 统一负面、抗性、屏障、资源与标记显示；图标栏最多36项，超出可视区域可滚动。秘法手册为伤害类型、状态、六条元素反应、抗性与屏障四页；第四页附资源与标记分组，用完整资源键，元素反应未增加心灵条目。
+`CombatStatusIcons` 统一负面、抗性、屏障、资源与标记显示；图标栏最多72项，超出可视区域可滚动。秘法手册为伤害类型、状态、九条元素反应、抗性／易伤／免疫、角色标记五页；第四页三组各13类型，第五页集中奥术屏障、气、猎人标记，使用完整资源键，元素反应不增加心灵条目。
 
 ## 目录结构
 
@@ -141,7 +141,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版当时包含18种，现加圣光共19种，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（现另有抗性与屏障第四页），第三页只有六条反应，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版当时包含18种，圣光阶段曾为19种，现加束缚／油腻共21种，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，现增强酸／中毒互刷与火焰／油腻共九条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -412,7 +412,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 
 Core新增只读契约 `IKiResource`、`IHunterMarkSource`，散打宗、四象宗及猎人实现；`CombatStatusIcons.For(player, game)` 经 `CharacterBehaviors` 遍历双将部件，不引用Characters或Unity。气显示当前资源（包括0），标记反查存活来源并合并到被标记者，多来源角标为人数。`GameBootstrap` 每次刷新将当前GameManager传入战斗板，1v1和多人栏共用模型；对应攻击消耗标记后自然移除。
 
-两枚PNG使用 `Effects/ki`、`Effects/hunters_mark`，上限36项；角标完全置于图标裁切范围内。秘法手册第四页增加资源与标记分组，文字说明角标口径；防止孤立标点换行。技能规则、数值与AI不变。
+两枚PNG使用 `Effects/ki`、`Effects/hunters_mark`，当时上限36项（现72项）；角标完全置于图标裁切范围内。秘法手册当时第四页增加资源与标记分组，现已独立第五页，文字说明角标口径；防止孤立标点换行。技能规则、数值与AI不变。
 
 全量1153项测试通过，UI及Unity条件编译通过，真实引擎33项检查通过。素材/提示词见 [制作记录](Art/Production/martial-resource-icons-v1/README.md)，界面与重放见 [验收](Art/Integration/martial-resource-icons/README.md)。
 
@@ -472,3 +472,29 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 ### Reference
 - [2026-10-24 12:45:47] 冒险模式·剧情模式第一关（2026-10-24 已确认并实现）：勇士 vs 生命12旧伤白板士兵，7 回合强制脚本教学（攻击/合盾/碎盾/满十归一/回血/半自由决胜）；三个决策已拍板（士兵HP12、引导员头像=原士兵徽记 guide_soldier、不做三星）。权威设计文档已入库 Docs/Adventure/level-01.md；实现=Assistant/AdventureLevel1.cs（剧本+导演+收官保护，点击守门只在界面层）+ UI/AdventureGuidePanel.cs + 初稿AdventureLevel1Tests 4项（收尾增至8项，当前验收见上文）；RULES.md §20 已同步。
+
+## 伤害保护与8人界面收尾（2026-10-24）
+
+`DamageAffinities.cs`将`PlayerState`拆为partial，新增逐类型`Vulnerabilities/Immunities`和Add/Has/Clear接口。`ClearTemporaryDamageAffinities`一起清除临时抗性、易伤、免疫，保留永久抗性。`StatusRules.ApplyDamageAffinities`统一免疫优先、易伤向上取整、抗性向上取整；攻击在转移后快照`WasTypeImmune`，防止消耗后错误追加状态。全部段结算后按`LandedHits`消费一次，盾挡／闪避保留；零伤命中仍消费，物理免疫不阻止技能流血。
+
+`RefreshAcidPoisonInteraction`仅在命中结算刷新既有对方状态至2，保留其来源；AI预览不修改状态。通用图标新增26张，雷鸣用声波、暗蚀为幽绿；精确提示与来源见[制作记录](Art/Production/damage-affinities-v1/README.md)。现有角色的抗性赋予范围仍为原六项，没有新增易伤／免疫授予能力。
+
+奉献冲击的8人问题包括：身份控制器使用了与对局不同的答复容器，结算可能误选回退目标；候选曾含超距加数角色。现在复用真实sinks，并通过`AnsweredLookupFor`读已选目标、校验射程。`ResolvingPassiveShieldBreak`区分被动破盾通知，避免OnOwn/OnOther双触发；主动旧盾碎＋新盾成仍各冲击2点、各选目标。
+
+`IdentityPresentation`将身份阵线与战斗Teams分开：只按存活同阵线计数；已知关系才标队友／对手，未知关系为`RingRelation.Unknown`。身份8个独立战斗队伍、可攻击范围与友伤规则均保留。
+
+新增16项伤害保护、6项八人专项；全量1247项通过。Unity条件/UI编译通过，实际引擎212项包括全部图标、手册滚动、阵营／身份真人按钮冲击及四身份视角，见[验收](Art/Integration/affinities-and-eight-player/README.md)。七份统计报告重跑，README117项角色胜率及模式摘要同步。
+
+## 共同规则与冒险旁白排版（2026-10-24）
+
+游戏内`RuleBook.Full/BasicRules`重写为运算、数字效果、攻防／距离／防护、先攻、跳过、状态与模式胜负的共同规则；删除具体子职和专属技能举例，图鉴仍保存完整技能，RULES仍为详细规则参考。`FrontEndArt.WrapReadableText`按完整数字词组调整末行，避免拆开数字、单位或将下一行挤出宽度。`SetNarrationText`按固定面板高度微调字号，过程指引连续排版，开场与总结保留段落；同样用于先攻老兵提示。覆盖十关开场／全部Beat／总结与先攻，并检查规则滚动页；见[验收](Art/Integration/narration-and-common-rules/README.md)。
+
+## 束缚／油腻与圣光图标（2026-10-24）
+
+`StatusEffect.Restrained/Greased`为20/21，登记名称、说明、图标及颜色；`PlayerState`显示枚举上限同步。`GameManager.MovementStatuses.cs`共享`StatusRandom`与行动序号：束缚每次自身行动只选择一次手，`Hand.IsRestrained`与原技能`IsLocked`独立；合法步、直接入口、偷窃、赌博、跳过、UI与AI一致。清除状态立即撤销临时限制。油腻只在`ResolveTurnCore`完整运算后调用一次（赌博排除），触发后对倒伏延后本次Tick，确保两个后续自身回合；跳过与偷窃不触发。
+
+火焰／油腻反应优先于覆霜／潮湿熔化，增伤一次，命中后只清油腻并附燃烧。免疫快照、盾挡／闪避口径沿用通用规则。元素AI加油腻收益，免疫元素不会因联动奖励反被优先选择。14项新增`MovementStatusTests`覆盖随机两端、稳定手选择、锁手叠加、净化／重开、真实控制器、直接API、持续时长、火焰盾挡／闪避／免疫、反应优先级与预览。
+
+新图标[制作记录](Art/Production/status-icons-v4/README.md)：束缚按用户补充选藤蔓，油腻为油壶与油池，内置imagegen逐张绘制。圣光（用户称圣火）的可见框原约350px，原因是透明度极低的远处像素影响裁边；按Alpha>8重新裁取主体、统一448px并居中至512px，更新selected清单和运行时图片。没有放大UI槽位或改meta。实际引擎69项及截图见[验收](Art/Integration/movement-statuses/README.md)。
+
+本轮最终收尾（2026-10-25）：1261项全量通过、0失败，Unity条件/UI编译通过；最新引擎验收为伤害保护与8人214项、老兵／共同规则排版798项、新状态69项。README保留入门规则、完整39子职图鉴、阵营、13伤害／21状态与全部胜率表；七份报告及117项角色胜率同步最终采样。

@@ -56,7 +56,9 @@ namespace FingerDiceDuel.Core
         /// ⚠️ **被锁**与**暗置**都不行**，而已成型盾 / 太极**可以**
         ///    （拿它运算会主动破盾）。
         /// </summary>
-        public bool CanBeOperated => !IsLocked && !IsConcealed;
+        public bool CanBeOperated => !IsLocked && !IsConcealed && !IsRestrained;
+        /// <summary>束缚的临时运算限制，与护盾锁手独立，清除时不解开技能锁。</summary>
+        public bool IsRestrained { get; internal set; }
 
         /// <summary>暗置这只手（进入伏击）。</summary>
         public void Conceal() => State = ShieldState.Concealed;
@@ -153,6 +155,7 @@ namespace FingerDiceDuel.Core
 
         public void Reset(int initialValue = 1)
         {
+            IsRestrained = false;
             Value = Clamp(initialValue);
             State = ShieldState.None;
             IsLocked = false;

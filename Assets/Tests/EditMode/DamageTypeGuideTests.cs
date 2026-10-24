@@ -25,11 +25,10 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Status_list_contains_the_full_sixteen_status_pool()
+        public void Status_list_contains_all_twenty_one_statuses()
         {
-            // 2026-10-23：第 19 种状态「圣光」（牧师·光明领域）。
-            Assert.AreEqual(19, StatusNames.AllStatuses.Length,
-                "旧 7 种保留，加上新增状态与圣光，共 19 种。");
+            Assert.AreEqual(21, StatusNames.AllStatuses.Length,
+                "包含圣光、束缚和油腻，共21种。");
         }
 
         [Test]

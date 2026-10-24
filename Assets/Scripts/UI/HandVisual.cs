@@ -26,7 +26,7 @@ namespace FingerDiceDuel.UI
         public static Color CardColor(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return NormalCard;
-            if (hand.IsLocked) return LockedCard;
+            if (hand.IsLocked || hand.IsRestrained) return LockedCard;
 
             switch (hand.State)
             {
@@ -98,6 +98,7 @@ namespace FingerDiceDuel.UI
         {
             if (hand == null) return "";
 
+            if (hand.IsRestrained) return "束缚 · 无法运算";
             if (hand.IsLocked) return "已锁定";
         if (hand.IsConcealed) return "伏击 · 已暗置";
 

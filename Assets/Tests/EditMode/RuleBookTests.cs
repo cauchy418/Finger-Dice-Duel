@@ -181,6 +181,11 @@ namespace FingerDiceDuel.Tests
             Assert.True(text.Contains("一回合做什么"), "应含基础规则。");
             Assert.True(text.Contains("图鉴"), "应指向图鉴。");
             Assert.False(text.Contains("角色技能"), "不应再列出角色介绍。");
+            foreach (CharacterDefinition def in roster)
+                Assert.False(text.Contains(def.DisplayName), "共同规则不应混入子职技能：" + def.DisplayName);
+            foreach (string skill in new[] { "王车易位", "妖精契约", "盾牌冲击", "防护学派" })
+                Assert.False(text.Contains(skill), "共同规则不应混入专属效果：" + skill);
+            Assert.True(text.Contains("九条") && text.Contains("易伤") && text.Contains("免疫"), "共同伤害规则应为最新版本。");
         }
 
         [Test]

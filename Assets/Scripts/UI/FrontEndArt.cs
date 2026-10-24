@@ -10,6 +10,7 @@ namespace FingerDiceDuel.UI
         // Use measured glyph widths, keep numeric units together, and avoid orphan punctuation.
         public static string WrapReadableText(Text label,string value,float maxWidth)
         {
+            value=(value??"").Replace("\r\n","\n").Replace("\r","\n");
             value=System.Text.RegularExpressions.Regex.Replace(value,@"(?<=\d) +(?=[\u4e00-\u9fff%])|(?<=[\u4e00-\u9fff]) +(?=[+−-]?\d)","");
             var settings=label.GetGenerationSettings(new Vector2(maxWidth,0));
             settings.horizontalOverflow=HorizontalWrapMode.Overflow;
@@ -19,40 +20,63 @@ namespace FingerDiceDuel.UI
             foreach(var paragraph in value.Split('\n'))
             {
                 var lines=new List<string>();string line="";
-                var tokens=System.Text.RegularExpressions.Regex.Matches(paragraph,@"[+−-]?\d+(?:[/.～→+−×]\d+)*(?:回合|生命|点|层|%)?|[A-Za-z]+|.");
-                foreach(System.Text.RegularExpressions.Match match in tokens)
+                foreach(string token in ReadableTokens(paragraph))
                 {
-                    string token=match.Value;
-                    if(line.Length>0&&width(line+token)>maxWidth-12)
+                    if(line.Length>0&&width(line+token)>maxWidth-8)
                     {
-                        if("，。；：！？、）》】%".Contains(token)&&line.Length>1)
-                        {token=line.Substring(line.Length-1)+token;line=line.Substring(0,line.Length-1);}
                         lines.Add(line.TrimEnd());line="";
                     }
-                    line+=token;
+                    line+=line.Length==0?token.TrimStart():token;
                 }
                 if(line.Length>0) lines.Add(line.TrimEnd());
-                if(lines.Count>1&&lines[lines.Count-1].Length<4)
+                if(lines.Count>1&&width(lines[lines.Count-1])<label.fontSize*3)
                 {
                     int last=lines.Count-1;string previous=lines[last-1];
-                    int take=Mathf.Min(6,previous.Length/2);
-                    lines[last]=previous.Substring(previous.Length-take)+lines[last];
-                    lines[last-1]=previous.Substring(0,previous.Length-take);
-                }
-                for(int i=1;i<lines.Count;i++)
-                {
-                    string next=lines[i].TrimStart();
-                    if(next.Length>0 && ("，。；：！？、）》】%".Contains(next.Substring(0,1))
-                        || System.Text.RegularExpressions.Regex.IsMatch(next,@"^\d+[）】]")))
+                    // Move complete tokens: substring balancing can split 1.5 or 2回合.
+                    while(width(lines[last])<label.fontSize*5 && previous.Length>0)
                     {
-                        string previous=lines[i-1];int take=System.Math.Min(2,previous.Length);
-                        lines[i]=previous.Substring(previous.Length-take)+next;
-                        lines[i-1]=previous.Substring(0,previous.Length-take);
+                        string tail=LastReadableToken(previous);
+                        if(previous.Length==tail.Length || width(tail+lines[last])>maxWidth-8)break;
+                        lines[last]=tail+lines[last];previous=previous.Substring(0,previous.Length-tail.Length);
                     }
+                    lines[last-1]=previous.TrimEnd();
                 }
                 result.Add(string.Join("\n",lines));
             }
             return string.Join("\n",result);
+        }
+
+        private static string LastReadableToken(string value)
+        {
+            var tokens=ReadableTokens(value);
+            return tokens.Count>0?tokens[tokens.Count-1]:"";
+        }
+
+        private static List<string> ReadableTokens(string value)
+        {
+            var tokens=new List<string>();string opening="";
+            foreach(System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(value,@"束缚|油腻|倒伏|圣光|燃烧|残响|强酸|中毒|目盲|腐朽|覆霜|感电|恐慌|流血|潮湿|冻结|震慑|跛脚|魅惑|失能|眩晕|基础伤害|攻击|运算|左手|右手|队友|对手|教官|老兵|目标|确认|点数|[+−-]?\d+(?:[/.～→+−×]\d+)*(?:回合|生命|点|层|%)?|[A-Za-z]+|."))
+            {
+                string token=match.Value;
+                if("（《【「『(".Contains(token)){opening+=token;continue;}
+                if(opening.Length==0&&tokens.Count>0&&"，。；：！？、）》】%」』)]".Contains(token))
+                    tokens[tokens.Count-1]+=token;
+                else{tokens.Add(opening+token);opening="";}
+            }
+            if(opening.Length>0)tokens.Add(opening);
+            return tokens;
+        }
+
+        /// <summary>旁白按面板宽度连续排版；在固定高度内保持完整文字。</summary>
+        public static void SetNarrationText(Text label,string value,float width,int fontSize,bool reflow=false)
+        {
+            if(reflow)value=(value??"").Replace("\r","").Replace("\n"," ");
+            for(int size=fontSize;size>=17;size--)
+            {
+                label.fontSize=size;
+                label.text=WrapReadableText(label,value,width);
+                if(label.preferredHeight<=label.rectTransform.rect.height+1)break;
+            }
         }
         public static readonly Color Gold = new Color(0.89f, 0.76f, 0.53f);
         public static readonly Color Ink = new Color(0.82f, 0.82f, 0.78f);

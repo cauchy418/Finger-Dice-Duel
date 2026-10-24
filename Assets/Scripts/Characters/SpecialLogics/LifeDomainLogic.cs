@@ -343,7 +343,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static void CleanseAndHeal(PlayerState owner, PlayerState target, int amount, GameManager manager)
         {
             if (target == null) return;
-            int removed = target.Statuses.Count;
+              int removed = target.Statuses.Count + target.Vulnerabilities.Count;
             target.ClearStatuses();
             target.Heal(amount);
             if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态");

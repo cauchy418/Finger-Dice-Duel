@@ -122,6 +122,9 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次攻击由伤害类型联动决定的状态（命中后使用）。</summary>
         public StatusEffect InteractionStatus { get; set; } = StatusEffect.None;
+        public bool WasTypeImmune { get; private set; }
+        private bool _acidPoisonReaction;
+        private bool _greaseReaction;
 
         /// <summary>本次攻击需要清除的状态（伤害类型联动）。</summary>
         public DamageType InteractionDamageType { get; set; } = DamageType.None;
@@ -312,7 +315,12 @@ namespace FingerDiceDuel.Core
             }
 
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
-            if (manager != null && AttackType != AttackDamageType.None)
+            WasTypeImmune = Defender != null && Defender.HasImmunity(AttackType);
+            _greaseReaction = Defender != null && !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Greased);
+            _acidPoisonReaction = Defender != null && !WasTypeImmune &&
+                (AttackType == AttackDamageType.Acid && Defender.HasStatus(StatusEffect.Poison)
+                 || AttackType == AttackDamageType.Poison && Defender.HasStatus(StatusEffect.Acid));
+            if (manager != null && AttackType != AttackDamageType.None && !WasTypeImmune)
             {
                 DamageType dtype = AttackDamageTypes.ToDamageType(AttackType);
                 InteractionStatus = StatusEffect.None;
@@ -435,7 +443,7 @@ namespace FingerDiceDuel.Core
                 // **固定伤害**（牧师·光明领域）：跳过目标侧增减（倒伏 ×1.5 等）。
                 if (!IgnoreIncomingModifiers)
                     dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
-                dealt = StatusRules.ApplyResistance(Defender, dealt, AttackType);
+                dealt = StatusRules.ApplyDamageAffinities(Defender, dealt, AttackType);
 
                 // 法师·防护学派：在护盾/抗性之后、实际扣血之前吸收。
                 if (manager != null && dealt > 0)
@@ -480,7 +488,11 @@ namespace FingerDiceDuel.Core
 
             // 抗性在整次攻击结束时统一消耗；被盾/闪避挡下不会消耗。
             if (LandedHits > 0 && Defender != null)
-                Defender.ClearResistances();
+            {
+                if (WasTypeImmune) manager?.NoteSkill(Defender, "伤害免疫", AttackDamageTypes.NameOf(AttackType));
+                else if (Defender.HasVulnerability(AttackType)) manager?.NoteSkill(Defender, "伤害易伤", AttackDamageTypes.NameOf(AttackType) + "×1.5");
+                Defender.ClearTemporaryDamageAffinities();
+            }
 
             // 保持旧行为：第一段的最终伤害写入属性（供诊断与测试读）
             if (taichiUsed) MitigatedPerHit = perHit - perHitReduction;
@@ -622,7 +634,7 @@ namespace FingerDiceDuel.Core
         {
             if (Attacker == null) return;
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
-            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack) return;
+            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction) return;
 
             StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
                 : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
@@ -631,15 +643,19 @@ namespace FingerDiceDuel.Core
                 status = applier?.StatusToApplyOnHit(this) ?? StatusEffect.None;
 
             // 伤害类型联动：清除目标状态也只在命中后执行。
-            if (InteractionDamageType != DamageType.None && HitCount > 0
+            if (!WasTypeImmune && InteractionDamageType != DamageType.None && HitCount > 0
                 && (LandedHits > 0 || BlockedHits > 0))
             {
                 StatusRules.ClearInteractionStatuses(Defender, InteractionDamageType);
+                if (_greaseReaction) manager?.NoteSkill(Attacker, "元素反应", $"{Defender.Name}：清除油腻，伤害×1.5，附加燃烧");
             }
 
             // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
             if (Attacker.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
                 mage.ConsumeDamageType();
+
+            // 使用攻击开始时的免疫快照：临时修正已在整次攻击末消耗，仍须阻止本击的元素状态。
+            if (WasTypeImmune && AttackDamageTypes.IsMagic(AttackType)) return;
 
             if (status == StatusEffect.None) return;
 
@@ -649,6 +665,13 @@ namespace FingerDiceDuel.Core
 
             PlayerState victim = Defender;
             if (victim == null || !victim.IsAlive) return;
+
+            if (_acidPoisonReaction)
+            {
+                var refreshed = StatusRules.RefreshAcidPoisonInteraction(victim, InteractionDamageType);
+                if (refreshed != StatusEffect.None)
+                    manager?.NoteSkill(Attacker, "元素反应", $"{victim.Name}：{StatusNames.Of(refreshed)}刷新至2回合");
+            }
 
             victim.ApplyStatus(status, StatusDuration, Attacker);
             manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {StatusDuration} 回合");

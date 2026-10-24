@@ -24,7 +24,7 @@ namespace FingerDiceDuel.UI
         private const float IconGap = 4f;
 
         /// <summary>最大同时显示数量，包含状态、资源与标记。</summary>
-        public const int MaxIcons = 36;
+        public const int MaxIcons = 72;
 
         private readonly RectTransform _root;
         private readonly Font _font;

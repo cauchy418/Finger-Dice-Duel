@@ -1074,6 +1074,8 @@ namespace FingerDiceDuel.Assistant
             var parts = new List<string>(2);
             if (ActivePlayer.LeftHand.IsLocked) parts.Add("左手被锁");
             if (ActivePlayer.RightHand.IsLocked) parts.Add("右手被锁");
+            if (ActivePlayer.LeftHand.IsRestrained) parts.Add("左手被藤蔓束缚");
+            if (ActivePlayer.RightHand.IsRestrained) parts.Add("右手被藤蔓束缚");
             if (parts.Count > 0) Hint += "（" + string.Join("、", parts) + "）";
         }
 
@@ -1566,7 +1568,7 @@ namespace FingerDiceDuel.Assistant
             for (int m = 0; m < mine.Count; m++)
             {
                 Hand myHand = mine[m];
-                if (myHand == null || myHand.IsLocked) continue;
+                if (myHand == null || myHand.IsLocked || myHand.IsRestrained) continue;
 
                 for (int p = 0; p < all.Count; p++)
                 {

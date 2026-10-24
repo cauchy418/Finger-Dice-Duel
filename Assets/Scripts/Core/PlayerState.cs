@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -6,7 +6,7 @@ namespace FingerDiceDuel.Core
     /// 管理单个玩家的状态：生命值、双手（Hand）、绑定的角色行为。
     /// 是连接 Hand（数值运算层）与 GameManager（流程控制层）的核心容器。
     /// </summary>
-    public class PlayerState
+    public partial class PlayerState
     {
         // ============ 常量 ============
         /// <summary>默认最大生命。实际数值由 <see cref="MaximumHealth"/> 决定，可按角色配置。</summary>
@@ -68,8 +68,8 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        /// <summary>圣光（第 19 种状态）之后暂无更多值；新增状态时同步上调。</summary>
-        private const int MaxStatusValue = 19;
+        /// <summary>枚举上限包含束缚、油腻；用于稳定顺序显示状态。</summary>
+        private const int MaxStatusValue = (int)StatusEffect.Greased;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -104,7 +104,7 @@ namespace FingerDiceDuel.Core
             if (status == StatusEffect.HolyLight)
             {
                 ClearStatuses();
-                ClearResistances();
+                ClearTemporaryDamageAffinities();
             }
             else if (HasStatus(StatusEffect.HolyLight))
             {
@@ -125,6 +125,8 @@ namespace FingerDiceDuel.Core
         /// <summary>移除一个状态。</summary>
         public void RemoveStatus(StatusEffect status)
         {
+            if (status == StatusEffect.Restrained) ClearRestraintHands();
+            if (status == StatusEffect.KnockedDown) _deferOilProneTick = false;
             _statuses.Remove(status);
             _statusSources.Remove(status);
         }
@@ -144,11 +146,11 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < keys.Count; i++)
             {
+                if (SkipFreshOilProneTick(keys[i])) continue;
                 int left = _statuses[keys[i]] - 1;
                 if (left <= 0)
                 {
-                    _statuses.Remove(keys[i]);
-                    _statusSources.Remove(keys[i]);
+                    RemoveStatus(keys[i]);
                     expired.Add(keys[i]);
                     if (keys[i] == StatusEffect.Frost)
                         ApplyStatus(StatusEffect.Wet, StatusDurationTurns);
@@ -165,8 +167,11 @@ namespace FingerDiceDuel.Core
         /// <summary>清空所有状态（开局复位用）。</summary>
         public void ClearStatuses()
         {
+            ClearRestraintHands();
+            _deferOilProneTick = false;
             _statuses.Clear();
             _statusSources.Clear();
+            ClearVulnerabilities();
         }
 
         // ============ 双手 ============
@@ -479,6 +484,8 @@ namespace FingerDiceDuel.Core
             LeftHand.Reset(1);
             RightHand.Reset(1);
             ClearAllResistances();
+            ClearVulnerabilities();
+            ClearImmunities();
             SetResonance(false);
         }
 

@@ -23,15 +23,16 @@ namespace FingerDiceDuel.Tests
     public class GuideSheetTests
     {
         [Test]
-        public void There_are_four_pages_in_order()
+        public void There_are_five_pages_in_order()
         {
             List<GuideSheet> sheets = GuideSheets.All();
 
-            Assert.AreEqual(4, sheets.Count, "元素反应独立第三页；抗性与屏障为第四页。");
+            Assert.AreEqual(5, sheets.Count, "元素反应第三页，伤害修正第四页，角色标记第五页。");
             Assert.AreEqual("伤害类型", sheets[0].TitleZh, "第 1 页应当是伤害类型。");
             Assert.AreEqual("状态一览", sheets[1].TitleZh, "第 2 页应当是状态一览。");
             Assert.AreEqual("元素反应", sheets[2].TitleZh);
-            Assert.AreEqual("抗性与屏障",sheets[3].TitleZh);
+            Assert.AreEqual("抗性、易伤与免疫",sheets[3].TitleZh);
+            Assert.AreEqual("角色标记",sheets[4].TitleZh);
         }
 
         [Test]
@@ -114,7 +115,7 @@ namespace FingerDiceDuel.Tests
             //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
             Assert.AreEqual(1, s.Groups.Count);
-            Assert.AreEqual(19, s.Groups[0].Entries.Count, "19 种负面状态（含圣光）。");
+            Assert.AreEqual(21, s.Groups[0].Entries.Count, "21种负面状态，含束缚、油腻。");
             var uniqueKeys = new HashSet<string>();
 
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
@@ -147,7 +148,8 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(StatusNames.Describe(StatusEffect.Stunned).Contains("不能攻击"));
             Assert.IsTrue(StatusNames.Describe(StatusEffect.Dizzy).Contains("不触发任何技能"));
             Assert.IsTrue(StatusNames.Describe(StatusEffect.Disabled).Contains("保留攻击效果"));
-            Assert.IsTrue(GuideSheets.Statuses().Note.Contains("自己的 2 个完整回合"));
+            Assert.IsTrue(GuideSheets.Statuses().Note.Contains("目标自己的2个回合"));
+            Assert.IsTrue(GuideSheets.Statuses().Note.Contains("倒伏保留两个后续自身回合"));
         }
 
         [Test]
@@ -157,8 +159,8 @@ namespace FingerDiceDuel.Tests
             foreach (string phrase in new[] { "眩晕", "冻结", "不附加燃烧", "保留潮湿", "×1.5" })
                 Assert.IsTrue(text.Contains(phrase), phrase);
             GuideSheet page = GuideSheets.ElementReactions();
-            Assert.AreEqual(6, page.Lines.Count);
-            Assert.AreEqual(6, page.Groups[0].Entries.Count);
+            Assert.AreEqual(9, page.Lines.Count);
+            Assert.AreEqual(9, page.Groups[0].Entries.Count);
             Assert.IsFalse(text.Contains("心灵"));
             Assert.IsFalse(text.Contains("50%"));
             Assert.IsTrue(page.Note.Contains("向上取整"));

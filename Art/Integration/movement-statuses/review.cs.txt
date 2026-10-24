@@ -1,0 +1,29 @@
+var originalDelay=boot.AiThinkSeconds;boot.AiThinkSeconds=1000;
+try{
+ var fixture=new FingerDiceDuel.Tests.MovementStatusTests();
+ foreach(var method in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){method.Invoke(fixture,null);check(true,"engine "+method.Name);}
+ invoke(boot,"OnMagicOrbClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");codex.GoTo(1);UnityEngine.Canvas.ForceUpdateCanvases();
+ var content=(UnityEngine.RectTransform)field(codex,"_guideContent");
+ check(content.GetComponentsInChildren<UnityEngine.UI.Image>().Count(x=>x.name.StartsWith("PaintedIcon_"))==21,"all 21 status icons");
+ foreach(var image in content.GetComponentsInChildren<UnityEngine.UI.Image>())if(image.name.StartsWith("PaintedIcon_"))check(image.sprite!=null,"status resource "+image.name);
+ foreach(var text in content.GetComponentsInChildren<UnityEngine.UI.Text>())check(text.preferredHeight<=text.rectTransform.rect.height+1,"status text fits "+text.name);
+ ((UnityEngine.UI.ScrollRect)field(codex,"_guideScroll")).verticalNormalizedPosition=0;shot(front,"manual-vines-grease-holy-light");
+ codex.GoTo(2);((UnityEngine.UI.ScrollRect)field(codex,"_guideScroll")).verticalNormalizedPosition=0;shot(front,"manual-grease-reaction");click(codex.Root.Find("Close").GetComponent<UnityEngine.UI.Button>(),front);
+ boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Blank,FingerDiceDuel.Core.CharacterDefinition.Blank);
+ var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var control=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+ int seed=0;for(;seed<1000;seed++){var rng=new System.Random(seed);if(rng.Next(2)==0&&rng.Next(2)==0)break;}
+ game.StatusRandom=new System.Random(seed);game.PlayerA.ApplyStatus(FingerDiceDuel.Core.StatusEffect.Restrained,2,game.PlayerB);game.PlayerA.ApplyStatus(FingerDiceDuel.Core.StatusEffect.Greased,2,game.PlayerB);control.BeginTurn();refresh();
+ System.Func<FingerDiceDuel.Core.Hand,UnityEngine.UI.Button> card=hand=>{
+  foreach(string side in new[]{"_cardsA","_cardsB"})foreach(var c in (System.Array)field(board,side))if(object.ReferenceEquals(field(c,"Hand"),hand))return (UnityEngine.UI.Button)field(c,"Button");throw new System.Exception("hand card missing");};
+ check(game.PlayerA.LeftHand.IsRestrained&&!card(game.PlayerA.LeftHand).interactable,"vine-bound hand visibly disabled");check(card(game.PlayerA.RightHand).interactable,"other hand available");
+ check(control.Hint.Contains("束缚"),"human hint names bound hand");shot(canvas,"vines-hand-disabled");
+ click(card(game.PlayerA.RightHand),canvas);click(card(game.PlayerB.LeftHand),canvas);check(game.PlayerA.StatusTurnsLeft(FingerDiceDuel.Core.StatusEffect.KnockedDown)==2,"real click oil proc keeps two turns");shot(canvas,"grease-operation-prone");
+ invoke(boot,"CleanupMatch",new object[0]);boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Blank,FingerDiceDuel.Core.CharacterDefinition.Blank);game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");
+ game.PlayerA.ApplyStatus(FingerDiceDuel.Core.StatusEffect.Poison);game.PlayerB.ApplyStatus(FingerDiceDuel.Core.StatusEffect.HolyLight);refresh();
+ var a=game.PlayerA;var b=game.PlayerB;check(FingerDiceDuel.UI.BattleArt.Get("Status/holy_light").rect.width==512,"holy light uses same export canvas");
+ var bars=((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponentsInChildren<UnityEngine.UI.Image>();
+ var holy=bars.Single(i=>i.sprite!=null&&i.sprite.name=="Status/holy_light");var poison=bars.Single(i=>i.sprite!=null&&i.sprite.name=="Status/poison");
+ check(holy.rectTransform.rect.size==poison.rectTransform.rect.size,"holy light and poison UI dimensions match");shot(canvas,"holy-light-normalized-size");
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);return "PASS "+checks.Count+" movement status and icon checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=originalDelay;}

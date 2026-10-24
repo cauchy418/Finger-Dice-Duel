@@ -1,0 +1,69 @@
+PASS engine Restraint_selects_one_hand_once_per_turn_and_can_change_next_turn
+PASS engine Restraint_filters_human_buttons_AI_moves_and_direct_execution
+PASS engine Restraint_does_not_block_borrowing_the_hand_as_an_addend
+PASS engine Restraint_combined_with_other_lock_allows_skip_and_expires_cleanly
+PASS engine Cleanse_removal_HolyLight_and_reset_clear_restraint_without_unlocking_skill_locks
+PASS engine Restraint_cannot_be_bypassed_by_steal_or_gamble
+PASS engine Grease_proc_applies_two_full_subsequent_turns_and_preserves_source
+PASS engine Grease_other_half_does_not_knock_down_and_preview_does_not_roll
+PASS engine Skip_and_gamble_do_not_roll_grease
+PASS engine Fire_grease_increases_damage_clears_oil_and_applies_burn
+PASS engine Fire_grease_shield_still_clears_oil_and_burns_but_dodge_preserves_it
+PASS engine Fire_immunity_preserves_existing_oil_and_blocks_burn_and_reaction
+PASS engine Oil_reaction_has_priority_over_melting_and_preview_does_not_clear_anything
+PASS engine Manual_and_combat_icons_include_both_new_statuses_and_ninth_reaction
+PASS all 21 status icons
+PASS status resource PaintedIcon_resonance
+PASS status resource PaintedIcon_acid
+PASS status resource PaintedIcon_poison
+PASS status resource PaintedIcon_blind
+PASS status resource PaintedIcon_decay
+PASS status resource PaintedIcon_burn
+PASS status resource PaintedIcon_frost
+PASS status resource PaintedIcon_shock
+PASS status resource PaintedIcon_panic
+PASS status resource PaintedIcon_bleed
+PASS status resource PaintedIcon_wet
+PASS status resource PaintedIcon_frozen
+PASS status resource PaintedIcon_stunned
+PASS status resource PaintedIcon_limp
+PASS status resource PaintedIcon_knocked_down
+PASS status resource PaintedIcon_charm
+PASS status resource PaintedIcon_disabled
+PASS status resource PaintedIcon_dizzy
+PASS status resource PaintedIcon_holy_light
+PASS status resource PaintedIcon_restrained
+PASS status resource PaintedIcon_greased
+PASS status text fits GuideTitle
+PASS status text fits GuideNote
+PASS status text fits GroupTitle
+PASS status text fits Entry_resonance
+PASS status text fits Entry_acid
+PASS status text fits Entry_poison
+PASS status text fits Entry_blind
+PASS status text fits Entry_decay
+PASS status text fits Entry_burn
+PASS status text fits Entry_frost
+PASS status text fits Entry_shock
+PASS status text fits Entry_panic
+PASS status text fits Entry_bleed
+PASS status text fits Entry_wet
+PASS status text fits Entry_frozen
+PASS status text fits Entry_stunned
+PASS status text fits Entry_limp
+PASS status text fits Entry_knocked_down
+PASS status text fits Entry_charm
+PASS status text fits Entry_disabled
+PASS status text fits Entry_dizzy
+PASS status text fits Entry_holy_light
+PASS status text fits Entry_restrained
+PASS status text fits Entry_greased
+PASS raycast Close
+PASS vine-bound hand visibly disabled
+PASS other hand available
+PASS human hint names bound hand
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS real click oil proc keeps two turns
+PASS holy light uses same export canvas
+PASS holy light and poison UI dimensions match

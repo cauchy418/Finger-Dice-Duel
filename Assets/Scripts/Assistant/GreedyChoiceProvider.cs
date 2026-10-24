@@ -966,7 +966,7 @@ namespace FingerDiceDuel.Assistant
             var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
             if(fixedRule!=null) {total=fixedRule.NormalAttackDamage;type=fixedRule.NormalAttackType;}
             else total=StatusRules.ApplyIncomingDamage(victim,total);
-            total=StatusRules.ApplyResistance(victim,total,type);
+            total=StatusRules.ApplyDamageAffinities(victim,total,type);
             if(Game!=null) foreach(var p in Game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
@@ -982,10 +982,14 @@ namespace FingerDiceDuel.Assistant
         private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim,
                                                 int result)
         {
-            return AttackContext.ApplyStatBonuses(result,
+            int damage = AttackContext.ApplyStatBonuses(result,
                                                   attacker.Character?.AttackBonus ?? 0,
                                                   victim.Character?.DefenseBonus ?? 0,
                                                   ignorePositiveDefense: false);
+            var context = new AttackContext(attacker, victim, attacker.LeftHand, result);
+            var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
+            // 原有估算保持不变，只补齐新增易伤/免疫；抗性仍由既有评分路径处理。
+            return StatusRules.ApplyDamageAffinities(victim, damage, type, false);
         }
 
         // ============================================================

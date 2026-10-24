@@ -65,7 +65,7 @@ namespace FingerDiceDuel.UI
             if (_modalRoot == null) return;
 
             _modalTitle.text = title;
-            _modalBody.text = FrontEndArt.WrapReadableText(_modalBody, introText, 630f);
+            FrontEndArt.SetNarrationText(_modalBody, introText, 630f, 20);
             _modalGuideName.text = guideName;   // 头像下方的署名
             SetAvatar(_modalAvatar, avatarKey);
 
@@ -91,7 +91,7 @@ namespace FingerDiceDuel.UI
             if (_modalRoot == null) return;
 
             _modalTitle.text = title;
-            _modalBody.text = FrontEndArt.WrapReadableText(_modalBody, victoryText, 630f);
+            FrontEndArt.SetNarrationText(_modalBody, victoryText, 630f, 20);
             _modalGuideName.text = AdventureLevel1.GuideName;
             _skipTutorialButton.GetComponentInChildren<Text>().text = nextLabel;
             _skipTutorialButton.gameObject.SetActive(onNext != null);
@@ -136,7 +136,7 @@ namespace FingerDiceDuel.UI
             var page = _history.Current;
             if (page == null) return;
             _guideName.text = page.Title;
-            _guideText.text = FrontEndArt.WrapReadableText(_guideText, page.Text, 278f);
+            FrontEndArt.SetNarrationText(_guideText, page.Text, 278f, 19, reflow: true);
             _previousGuide.interactable = _history.CanPrevious;
             _nextGuide.interactable = _history.CanNext;
             _currentGuide.interactable = _history.CanNext;

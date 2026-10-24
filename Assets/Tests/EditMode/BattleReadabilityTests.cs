@@ -144,8 +144,9 @@ namespace FingerDiceDuel.Tests
         public void Rules_describe_current_opening_modes_and_health_tiebreak()
         {
             string rules = RuleBook.Full(null);
-            foreach (string term in new[] { "1d20", "19", "20", "队友", "总血量", "80", "冲击", "战斗记录", "角色图鉴" })
+            foreach (string term in new[] { "1d20", "19", "20", "队友", "总血量", "80", "易伤", "免疫", "战斗记录", "角色图鉴" })
                 Assert.IsTrue(rules.Contains(term), term);
+            Assert.IsFalse(rules.Contains("冲击"), "共同规则不再混入子职技能。");
             Assert.IsFalse(rules.Contains("主菜单右上角"));
             Assert.IsFalse(rules.Contains("仍未分出胜负则判和局"));
         }

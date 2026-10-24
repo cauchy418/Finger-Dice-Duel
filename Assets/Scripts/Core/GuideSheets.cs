@@ -211,7 +211,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>魔法球入口要显示的全部速查表（顺序即翻页顺序）。</summary>
         public static List<GuideSheet> All()
-            => new List<GuideSheet> { DamageTypes(), Statuses(), ElementReactions(), Protections() };
+            => new List<GuideSheet> { DamageTypes(), Statuses(), ElementReactions(), Protections(), CharacterMarks() };
 
         /// <summary>
         /// **第 1 页「伤害类型」**：10 种类型，各自"附加两回合XX状态"。
@@ -220,22 +220,35 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static GuideSheet Protections()
         {
-            var entries=new List<GuideEntry>();
-            var lines=new List<string>();
-            foreach(var type in ResistanceNames.All)
+            var groups = new List<GuideGroup>(); var lines = new List<string>();
+            foreach (var affinity in new[] { DamageAffinity.Resistance, DamageAffinity.Vulnerability, DamageAffinity.Immunity })
             {
-                string text=ResistanceNames.Name(type)+"：该类型伤害减半，向上取整";
-                entries.Add(new GuideEntry(AttackDamageTypes.IconKeyOf(type),AttackDamageTypes.ColorOf(type),text,
-                    resourceKey:ResistanceNames.Key(type)));
-                lines.Add(text);
+                var entries = new List<GuideEntry>();
+                foreach (var type in ResistanceNames.All)
+                {
+                    string effect = affinity == DamageAffinity.Resistance ? "伤害减半，向上取整"
+                        : affinity == DamageAffinity.Vulnerability ? "伤害×1.5，向上取整"
+                        : AttackDamageTypes.IsMagic(type) ? "伤害为0，阻止本击附加状态与元素反应" : "伤害为0，不额外免疫物理技能状态";
+                    string text = DamageAffinityNames.Name(affinity, type) + "：" + effect;
+                    entries.Add(new GuideEntry(AttackDamageTypes.IconKeyOf(type), AttackDamageTypes.ColorOf(type), text,
+                        resourceKey: DamageAffinityNames.Key(affinity, type))); lines.Add(text);
+                }
+                groups.Add(new GuideGroup(DamageAffinityNames.Name(affinity), entries));
             }
-            const string barrier="奥术屏障：累积攻击数字；抗性后吸收伤害，使用即清空";
-            entries.Add(new GuideEntry("barrier",0x58BFFF,barrier,resourceKey:"Effects/arcane_barrier"));lines.Add(barrier);
-            return new GuideSheet("抗性与屏障","Resistance & Arcane Ward",lines,true,
-                new List<GuideGroup>{new GuideGroup("防护效果",entries),new GuideGroup("资源与标记",new List<GuideEntry>{
-                    new GuideEntry("ki",0x82D7C9,"气：武僧技能资源，上限6点。角标为当前气点，不是回合数。",resourceKey:"Effects/ki"),
-                    new GuideEntry("hunters_mark",0xCFAC54,"猎人标记：由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数。",resourceKey:"Effects/hunters_mark")})},
-                "防护学派只可赋予物理整组（挥砍、钝击、穿刺）及雷鸣、强酸、火焰、寒冷、闪电抗性。此页保留十三类图标索引；抗性可叠存，实际受伤后全部清除，闪避或盾挡不消耗。");
+            return new GuideSheet("抗性、易伤与免疫", "Resistance, Vulnerability & Immunity", lines, true, groups,
+                "十三种伤害各有抗性、易伤、免疫图标。同类型免疫优先；否则先算易伤×1.5，再算抗性减半，逐步向上取整。一次攻击落地后，全部临时修正一起消耗；盾挡／闪避不消耗，多段整次生效。免疫不清除既有状态。防护学派仍只能赋予原有六项抗性，不新增赋予易伤或免疫的技能。");
+        }
+
+        public static GuideSheet CharacterMarks()
+        {
+            var entries = new List<GuideEntry> {
+                new GuideEntry("arcane_barrier", 0x58BFFF, "奥术屏障：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
+                new GuideEntry("ki", 0x82D7C9, "气：武僧·散打宗／四象宗的技能资源，上限6点。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
+                new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark") };
+            var lines = new List<string>(); foreach(var entry in entries) lines.Add(entry.Text);
+            return new GuideSheet("角色标记", "Character Marks", lines, true,
+                new List<GuideGroup> { new GuideGroup("角色专属资源与标记", entries) },
+                "屏障、气和猎人标记是角色机制，不计入21种负面状态；各自按对应技能规则获得、消耗和显示。");
         }
 
         public static GuideSheet DamageTypes()
@@ -313,7 +326,7 @@ namespace FingerDiceDuel.Core
                                   groups: new List<GuideGroup>
                                   {
                                       new GuideGroup("负面状态", entries),
-                                  }, note: "共 19 种负面状态，持续目标自己的 2 个完整回合；重复施加只刷新时间，不叠加强度。覆霜到期后再附加 2 回合潮湿。");
+                                  }, note: "共21种负面状态，通常持续目标自己的2个回合；重复施加刷新时间、不叠加强度。覆霜到期附2回合潮湿。油腻运算后触发的倒伏保留两个后续自身回合，跳过或赌博不作油腻判定。");
         }
 
         /// <summary>
@@ -346,6 +359,9 @@ namespace FingerDiceDuel.Core
                 "寒冷＋燃烧：清除燃烧，伤害 ×1.5，不附加覆霜",
                 "火焰＋覆霜／潮湿：清除这两种状态，伤害 ×1.5，不附加燃烧",
                 "闪电＋潮湿：伤害 ×1.5，保留潮湿，照常附加感电",
+                "强酸＋中毒：附加强酸，中毒刷新至2回合",
+                "毒素＋强酸：附加中毒，强酸刷新至2回合",
+                "火焰＋油腻：清除油腻，伤害×1.5，照常附加燃烧",
             };
         }
 
@@ -353,7 +369,7 @@ namespace FingerDiceDuel.Core
         {
             var lines = InteractionLines();
             var types = new[] { DamageType.Thunder, DamageType.Cold, DamageType.Cold,
-                DamageType.Cold, DamageType.Fire, DamageType.Lightning };
+                DamageType.Cold, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Fire };
             var entries = new List<GuideEntry>();
             for (int i = 0; i < lines.Count; i++)
                 entries.Add(new GuideEntry(IconKeyOf(types[i]), ColorOf(types[i]), lines[i]));
@@ -363,6 +379,6 @@ namespace FingerDiceDuel.Core
         public static GuideSheet ElementReactions()
             => new GuideSheet("元素反应", "Elemental Reactions", InteractionLines(), twoColumn: false,
                 groups: new List<GuideGroup> { InteractionGroup() },
-                note: "只在命中后触发；护盾／太极抵挡仍算命中，闪避／取消不算。增伤按常规伤害 ×1.5 向上取整。");
+                note: "只在命中后触发；护盾／太极抵挡仍算命中，闪避／取消不算。增伤按常规伤害 ×1.5 向上取整。酸毒反应不增伤，刷新已有状态；免疫该魔法伤害时不附加、不刷新、不清除状态。");
     }
 }

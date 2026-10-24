@@ -204,7 +204,7 @@ namespace FingerDiceDuel.Core
             if (p.HasStatus(StatusEffect.Poison))
             {
                 unstoppable = true;
-                total += PoisonDamagePerTurn;
+                total += ApplyDamageAffinities(p, PoisonDamagePerTurn, AttackDamageType.Poison, false);
             }
             if (p.HasStatus(StatusEffect.Bleed))
             {
@@ -214,7 +214,7 @@ namespace FingerDiceDuel.Core
             if (p.HasStatus(StatusEffect.HolyLight))
             {
                 unstoppable = true;
-                total += HolyLightDamagePerTurn;
+                total += ApplyDamageAffinities(p, HolyLightDamagePerTurn, AttackDamageType.Radiant, false);
             }
             return total;
         }
@@ -237,7 +237,7 @@ namespace FingerDiceDuel.Core
         {
             statusToApply = StatusEffect.None;
             statusToClear = StatusEffect.None;
-            if (target == null || damage <= 0) return damage;
+            if (target == null) return damage;
 
             switch (type)
             {
@@ -251,7 +251,13 @@ namespace FingerDiceDuel.Core
                     break;
 
                 case DamageType.Fire:
-                    if (target.HasStatus(StatusEffect.Frost) || target.HasStatus(StatusEffect.Wet))
+                    if (target.HasStatus(StatusEffect.Greased))
+                    {
+                        statusToClear = StatusEffect.Greased;
+                        damage = (damage * 3 + 1) / 2;
+                        statusToApply = StatusEffect.Burn;
+                    }
+                    else if (target.HasStatus(StatusEffect.Frost) || target.HasStatus(StatusEffect.Wet))
                     {
                         statusToClear = StatusEffect.Frost; // 两个都清由调用方处理
                         damage = (damage * 3 + 1) / 2;
@@ -302,8 +308,8 @@ namespace FingerDiceDuel.Core
             if (target == null) return;
             if (type == DamageType.Fire)
             {
-                target.RemoveStatus(StatusEffect.Frost);
-                target.RemoveStatus(StatusEffect.Wet);
+                if (target.HasStatus(StatusEffect.Greased)) target.RemoveStatus(StatusEffect.Greased);
+                else { target.RemoveStatus(StatusEffect.Frost); target.RemoveStatus(StatusEffect.Wet); }
             }
             else if (type == DamageType.Cold)
             {
@@ -331,6 +337,26 @@ namespace FingerDiceDuel.Core
             if (defender == null || damage <= 0 || type == AttackDamageType.None) return damage;
             if (!defender.HasResistance(type)) return damage;
             return (damage + 1) / 2;
+        }
+
+        /// <summary>免疫优先；易伤向上取整×1.5，再计算抗性。不可抵挡的状态扣血不经抗性。</summary>
+        public static int ApplyDamageAffinities(PlayerState defender, int damage, AttackDamageType type, bool includeResistance = true)
+        {
+            if (defender == null || damage <= 0 || type == AttackDamageType.None) return damage;
+            if (defender.HasImmunity(type)) return 0;
+            if (defender.HasVulnerability(type)) damage = (damage * 3 + 1) / 2;
+            return includeResistance ? ApplyResistance(defender, damage, type) : damage;
+        }
+
+        /// <summary>仅在命中提交时刷新已有的酸/毒状态；不在伤害预览阶段写入状态。</summary>
+        public static StatusEffect RefreshAcidPoisonInteraction(PlayerState target, DamageType type)
+        {
+            if (target == null) return StatusEffect.None;
+            StatusEffect refresh = type == DamageType.Acid ? StatusEffect.Poison
+                : type == DamageType.Poison ? StatusEffect.Acid : StatusEffect.None;
+            if (refresh == StatusEffect.None || !target.HasStatus(refresh)) return StatusEffect.None;
+            target.ApplyStatus(refresh, PlayerState.StatusDurationTurns, target.StatusSourceOf(refresh));
+            return refresh;
         }
 
         /// <summary>**感电**：自己与环上相邻的玩家都要吃 1 点闪电伤害。</summary>

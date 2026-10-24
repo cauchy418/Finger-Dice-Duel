@@ -744,6 +744,14 @@ namespace FingerDiceDuel.UI
             panel.IdentityText.gameObject.SetActive(visible);
         }
 
+        public void SetRingRelation(PlayerState owner, RingRelation relation)
+        {
+            RingPanel panel = FindPanelOf(owner);
+            if (panel == null) return;
+            panel.Relation = relation;
+            panel.SeatText.text = SeatLabel(panel);
+        }
+
         private RingPanel FindPanelOf(PlayerState owner)
         {
             if (owner == null) return null;
@@ -823,7 +831,7 @@ namespace FingerDiceDuel.UI
 
             string relation = panel.Relation == RingRelation.Self ? "（我）"
                 : panel.Relation == RingRelation.Teammate ? "（队友）"
-                : "（对手）";
+                : panel.Relation == RingRelation.Opponent ? "（对手）" : "";
 
             return $"{SeatName(panel.Seat)}位{relation}";
         }

@@ -1,0 +1,136 @@
+[
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-5bbd4f8e-f867-4e2a-ac93-8dbf22b27bbc.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_slashing.png",
+    "name": "挥砍易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-20365ec0-7a28-4e7c-819f-7469c82302e1.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_bludgeoning.png",
+    "name": "钝击易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-702c1c2f-4fe0-461b-846e-15ddba575440.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_piercing.png",
+    "name": "穿刺易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-60d39415-b6b6-48e1-bce1-98ba869c94ee.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_thunder.png",
+    "name": "雷鸣易伤",
+    "original_source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-f0b7d50d-959e-4417-9705-8f13b7342984.png",
+    "edit_prompt_file": "edits.json"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-6177d7db-cbb5-402d-acf9-2782dbb449d9.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_acid.png",
+    "name": "强酸易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-9d777275-bad4-4e78-a726-c992e5d86a94.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_poison.png",
+    "name": "毒素易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-b98b165c-d8e8-430e-8236-cc0db27e0b62.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_radiant.png",
+    "name": "光耀易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-36cae009-d442-4f71-9230-4ce05d8ca0fb.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_necrotic.png",
+    "name": "暗蚀易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-eec001c0-baaa-4dad-a9dd-5a9186300ff7.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_fire.png",
+    "name": "火焰易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-7c4c9ab4-d0b2-4d74-a406-4a5b3f113de2.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_cold.png",
+    "name": "寒冷易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-8fdfaf06-9ae8-4b15-a912-b7edfd83f6b3.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_lightning.png",
+    "name": "闪电易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3271c571-f493-4d57-b5e1-79e411d95ee8.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_force.png",
+    "name": "力场易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-4f00cd57-e7ce-443c-8ebc-3908eeea1a75.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_psychic.png",
+    "name": "心灵易伤"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-1126bc4e-519c-4962-a524-8b5ec0742185.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_slashing.png",
+    "name": "挥砍免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-4969e25e-e5a7-4203-9171-2251b9d83624.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_bludgeoning.png",
+    "name": "钝击免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-5b126623-a784-4fcc-a65c-10cd6154dc26.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_piercing.png",
+    "name": "穿刺免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-4b3eb44e-e1bf-4085-b851-b2c816ef9a28.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_thunder.png",
+    "name": "雷鸣免疫",
+    "original_source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-95ebe09f-2800-45d5-85c4-f8084e2f97c7.png",
+    "edit_prompt_file": "edits.json"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-bc50d335-047e-4994-8730-bbfd7da2ce3d.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_acid.png",
+    "name": "强酸免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3de4fcad-ecb2-48ad-9802-fc2bc5a9acf7.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_poison.png",
+    "name": "毒素免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-c044d18b-b430-4906-a9c2-73fc0af6963c.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_radiant.png",
+    "name": "光耀免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-95d7f1e5-ac5b-4e07-95c0-43e6bab8cc6e.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_necrotic.png",
+    "name": "暗蚀免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-d3b93cde-af70-4818-872b-56430ea3dc3e.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_fire.png",
+    "name": "火焰免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-1a691f78-db05-4804-a67a-58e232995c4e.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_cold.png",
+    "name": "寒冷免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-c53f5765-fbb6-4548-b204-80eb1af01c72.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_lightning.png",
+    "name": "闪电免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-22a3c000-964d-4ae3-800c-f91e45743fbf.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_force.png",
+    "name": "力场免疫"
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-de2a9d53-1fc6-4f77-b277-fc508d0d374f.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_psychic.png",
+    "name": "心灵免疫"
+  }
+]

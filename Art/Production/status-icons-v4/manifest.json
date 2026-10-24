@@ -1,0 +1,30 @@
+[
+  {
+    "id": "restrained",
+    "prompt": "Use case: stylized-concept. Asset type: one square dark fantasy RPG status icon for RESTRAINED BY VINES. Subject: one CLOSED leather-gloved fist and wrist tightly entangled in living thorny green vines, thick curling stems and a few dark leaves binding the gauntlet to prevent movement. The grasp is caused by PLANTS, not chains, ropes, magic rings or metal manacles. No open fingers, no full person. Style: richly hand-painted fantasy miniature, realistic brush textures and dramatic chiaroscuro. Black iron square background, thin ornate antique old-gold frame with delicate four corner points, same painted gilded status icon family. Muted emerald and olive-green vines with pale sap highlights, worn brown glove. Big clear silhouette at 42px. Centered square 1:1, framed artwork occupies 88 percent of square, small even transparent outer margin. Genuine transparent alpha outside the gold frame; near-black textured inside. No text, letters, digits, caption, watermark, UI sheet or multiple icons.",
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-489070d0-e598-4390-8028-3c261da04983.png",
+    "crop_alpha_gt_8": [
+      27,
+      32,
+      1226,
+      1220
+    ],
+    "selected": "Art/Production/status-icons-v4/selected/restrained.png",
+    "runtime": "Assets/Resources/Art/Battle/v1/Status/restrained.png",
+    "sha256": "0920dfcc1eac8f981ed0075743a9bd37481caf4681281895a637d69c1d394f1e"
+  },
+  {
+    "id": "greased",
+    "prompt": "Use case: stylized-concept. Asset type: a single square dark fantasy RPG status icon for GREASED / slippery oil. Subject: a tipped small tarnished bronze oil flask spilling thick glossy amber-black oil into a broad slick puddle; one clear large amber droplet, viscous reflective surface suggests a slipping hazard. No flames, no foot, no hand or person. Style: rich hand-painted miniature illustration, blackened iron textured background enclosed in an ornate antique old-gold square frame with four delicate pointed corners. Same cohesive dark tabletop fantasy art system as gilded status icons. Amber-gold oil and bronze flask, subtle dark olive shadows, warm old gold frame. Composition: bold central silhouette legible at 42px, icon fills 88 percent of square, centered, generous clean small margin, square 1:1. Genuine transparent alpha OUTSIDE the frame, inside near-black painted background. No lettering, text, digits, caption, grid or watermark. One icon only.",
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-6d336d2d-87c3-4501-9f72-2b9b91337bd0.png",
+    "crop_alpha_gt_8": [
+      15,
+      18,
+      1239,
+      1212
+    ],
+    "selected": "Art/Production/status-icons-v4/selected/greased.png",
+    "runtime": "Assets/Resources/Art/Battle/v1/Status/greased.png",
+    "sha256": "8ee35604461221ce20a3aaa6fcf47cbb9f71f2821aac29c54e73ee581e47bf32"
+  }
+]

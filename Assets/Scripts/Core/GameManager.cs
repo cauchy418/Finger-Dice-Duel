@@ -1373,6 +1373,7 @@ namespace FingerDiceDuel.Core
         {
             _legalMoves.Clear();
             if (actor == null || IsGameOver) return _legalMoves;
+            PrepareRestraint(actor);
             if (!StatusRules.CanAct(actor)) return _legalMoves;
 
             // ⚠️ 用"所有对手"而不是"某一个对手" ——
@@ -1533,7 +1534,8 @@ namespace FingerDiceDuel.Core
             //    期望的是**静默忽略**（判平局）而不是抛异常。
             //    两者语义冲突，而"过滤合法移动"已经足够解决问题，所以不在这里重复拒绝。
 
-            if (actedHand.IsLocked) { reason = "被锁定的手不能作为运算源。"; return false; }
+            PrepareRestraint(actor);
+            if (actedHand.IsLocked || actedHand.IsRestrained) { reason = "被锁定或束缚的手不能作为运算源。"; return false; }
 
             return true;
         }
@@ -1732,7 +1734,8 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法运算：行动方为空。");
 
             Hand actedHand = actor.GetHand(actedHandIndex);
-            if (actedHand.IsLocked)
+            PrepareRestraint(actor);
+            if (actedHand.IsLocked || actedHand.IsRestrained)
                 throw new InvalidOperationException("非法运算：被锁定的手不能作为运算源。");
 
             return ResolveTurn(actor, actedHand, otherHandValue, null);
@@ -1843,7 +1846,8 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法偷窃：该角色不是游荡者·盗贼。");
             if (myHand == null || !actor.Owns(myHand))
                 throw new InvalidOperationException("非法偷窃：必须用自己的一只手。");
-            if (myHand.IsLocked)
+            PrepareRestraint(actor);
+            if (myHand.IsLocked || myHand.IsRestrained)
                 throw new InvalidOperationException("非法偷窃：被锁定的手不能用来偷窃。");
             if (theirHand == null)
                 throw new InvalidOperationException("非法偷窃：没有指定被偷的手。");
@@ -2156,6 +2160,7 @@ namespace FingerDiceDuel.Core
         public void ResolveStatusTurnEnd(PlayerState actor)
         {
             if (actor == null) return;
+            _statusActionSerial++;
 
             // ---- 燃烧 ----
             if (actor.IsAlive)
@@ -2291,7 +2296,8 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法赌博：该角色不是游荡者·赌徒。");
             if (actedHand == null || !actor.Owns(actedHand))
                 throw new InvalidOperationException("非法赌博：运算源必须是自己的手。");
-            if (actedHand.IsLocked)
+            PrepareRestraint(actor);
+            if (actedHand.IsLocked || actedHand.IsRestrained)
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
             return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
@@ -2536,6 +2542,9 @@ namespace FingerDiceDuel.Core
                     result.FreezeHalvedFrom = before;
                 }
             }
+
+            // 油腻只在一次完整运算后判定；巨龙两次加数仍算一次，赌博不算运算。
+            if (gambleResult == 0) ResolveGreaseAfterOperation(actor);
 
             // 2d. **法师·塑能学派：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
             //
@@ -3175,6 +3184,7 @@ namespace FingerDiceDuel.Core
         public bool HasAnyLegalOperation(PlayerState actor)
         {
             if (actor == null || !actor.IsAlive) return false;
+            PrepareRestraint(actor);
             if (!StatusRules.CanAct(actor)) return false;
 
             Hand[] mine = { actor.LeftHand, actor.RightHand };
@@ -3194,7 +3204,7 @@ namespace FingerDiceDuel.Core
                     for (int k = 0; k < theirs.Length; k++)
                     {
                         Hand h = theirs[k];
-                        if (h == null || !h.CanBeOperated) continue;
+                        if (h == null || h.IsConcealed) continue;
                         if (!StatusRules.CanUseHandAsAddend(actor, h, this)) continue;
 
                         return true;      // 找到一步就够
@@ -3220,9 +3230,18 @@ namespace FingerDiceDuel.Core
             // ⚠️ 这条路径是"**被动被打碎**"（被攻击消耗、或被连锁破盾打碎）。
             //    它与"自己主动破盾"（`NotifyOwnShieldBroken`）**不是同一件事** ——
             //    圣武士·奉献之誓要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
-            NotifyOwnShieldBroken(owner, shield);
-            owner.Character?.OnOtherShieldBroken(owner, shield, this);
+            bool previous = ResolvingPassiveShieldBreak;
+            ResolvingPassiveShieldBreak = true;
+            try
+            {
+                NotifyOwnShieldBroken(owner, shield);
+                owner.Character?.OnOtherShieldBroken(owner, shield, this);
+            }
+            finally { ResolvingPassiveShieldBreak = previous; }
         }
+
+        /// <summary>被攻击/连锁破盾的通知上下文，供同时实现主动与被动钩子的角色去重。</summary>
+        public bool ResolvingPassiveShieldBreak { get; private set; }
 
         /// <summary>
         /// 通知角色"自己的盾碎了"。
@@ -3271,6 +3290,7 @@ namespace FingerDiceDuel.Core
         public void BeginTurn()
         {
             RefreshDynamicStats();
+            PrepareRestraint(CurrentPlayer);
             SuppressAttackDamage = false;
 
             if (CurrentPlayer?.Character

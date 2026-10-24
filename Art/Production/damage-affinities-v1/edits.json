@@ -1,0 +1,12 @@
+[
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-60d39415-b6b6-48e1-bce1-98ba869c94ee.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Vulnerability/vulnerability_thunder.png",
+    "prompt": "Use case: precise-object-edit. Edit target: the attached THUNDER damage Vulnerability icon. Make exactly one correction: REPLACE THE CENTRAL LIGHTNING BOLT with THREE CLEAR CONCENTRIC CIRCULAR SONIC RIPPLES, representing thunder SOUND resonance, with a small round central pulse. Also replace the surrounding zigzag lightning streaks with soft curved sound-wave rings, NOT electrical bolts. No lightning bolt, zigzags, spear, rune or letters anywhere. Keep the same violet/indigo blue color, shattered split shield, antique-gold ornate square frame, dark iron texture, painterly polish, original geometry, margins and transparency. Retain the Vulnerability visual identity. No text, numerals, caption or watermarks."
+  },
+  {
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-4b3eb44e-e1bf-4085-b851-b2c816ef9a28.png",
+    "target": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Immunity/immunity_thunder.png",
+    "prompt": "Use case: precise-object-edit. Edit target: the attached THUNDER damage Immunity icon. Make exactly one correction: REPLACE THE CENTRAL LIGHTNING BOLT with THREE CLEAR CONCENTRIC CIRCULAR SONIC RIPPLES, representing thunder SOUND resonance, with a small round central pulse. Also replace the surrounding zigzag lightning streaks with soft curved sound-wave rings, NOT electrical bolts. No lightning bolt, zigzags, spear, rune or letters anywhere. Keep the same violet/indigo blue color, intact shield and unbroken golden ward circle, antique-gold ornate square frame, dark iron texture, painterly polish, original geometry, margins and transparency. Retain the Immunity visual identity. No text, numerals, caption or watermarks."
+  }
+]

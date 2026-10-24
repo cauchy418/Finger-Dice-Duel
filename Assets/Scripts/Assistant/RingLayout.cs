@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Assistant
 {
@@ -65,6 +65,7 @@ namespace FingerDiceDuel.Assistant
         Self = 0,
         Teammate = 1,
         Opponent = 2,
+        Unknown = 3,
     }
 
     /// <summary>四人 UI 的布局推导（纯函数，无状态）。</summary>

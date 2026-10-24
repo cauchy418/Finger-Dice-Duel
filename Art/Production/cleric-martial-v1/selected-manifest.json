@@ -26,8 +26,9 @@
       "id": "holy_light",
       "source": "Art/Production/cleric-martial-v1/selected/Status/holy_light.png",
       "runtime": "Assets/Resources/Art/Battle/v1/Status/holy_light.png",
-      "sha256": "424ea829e3f61f9a117b1448c02ee5a1bac797c3ddc8a9c91a68f1158b41f439",
-      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-559e27b2-09a4-4ef3-9fae-73eafc917756.png"
+      "sha256": "7d02afc6d502e2fe425acec6f035f5d683054ca6ced9690b73964035cd83c6fd",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-559e27b2-09a4-4ef3-9fae-73eafc917756.png",
+      "normalization": "alpha > 8 visible bounds, fit 448px, centered 512px"
     }
   ]
 }

@@ -1,0 +1,798 @@
+PASS height intro 1 84.08305/270
+PASS width intro 1 边境哨站。身负旧伤的老兵拦住了去路。
+PASS no orphan punctuation intro 1
+PASS width intro 1 「新兵，先学会指尖骰术，再谈闯荡。」
+PASS no orphan punctuation intro 1
+PASS width intro 1 —— 两只手指相加，个位定乾坤：4/6/8攻击、5合盾、9回血。
+PASS no orphan punctuation intro 1
+PASS height narration 1/1 162.5606/250
+PASS width narration 1/1 先点自己的左手1，再点老兵
+PASS no orphan punctuation narration 1/1
+PASS width narration 1/1 左手3。 1+3=4，发动攻击。
+PASS no orphan punctuation narration 1/1
+PASS width narration 1/1 4/6/8是攻击数字，基础伤害等于
+PASS no orphan punctuation narration 1/1
+PASS width narration 1/1 点数。 勇士攻击+1，本次造成5
+PASS no orphan punctuation narration 1/1
+PASS width narration 1/1 伤。 最后点老兵，
+PASS no orphan punctuation narration 1/1
+PASS width narration 1/1 确认攻击目标。
+PASS no orphan punctuation narration 1/1
+PASS text preserved 1/1
+PASS height narration 1/2 81.28028/250
+PASS width narration 1/2 老兵用同样的方式还手了——注
+PASS no orphan punctuation narration 1/2
+PASS width narration 1/2 意你的生命条，被攻击就会掉
+PASS no orphan punctuation narration 1/2
+PASS width narration 1/2 血。别慌，老兵这就教你防御。
+PASS no orphan punctuation narration 1/2
+PASS text preserved 1/2
+PASS height narration 1/3 162.5606/250
+PASS width narration 1/3 结果是【5】就是合盾！点你的
+PASS no orphan punctuation narration 1/3
+PASS width narration 1/3 右手（1），再点老兵的左手
+PASS no orphan punctuation narration 1/3
+PASS width narration 1/3 （4）——1+4=5，那只手变成一
+PASS no orphan punctuation narration 1/3
+PASS width narration 1/3 面盾，可完全挡下一次攻击。注
+PASS no orphan punctuation narration 1/3
+PASS width narration 1/3 意：合盾作用于自己，
+PASS no orphan punctuation narration 1/3
+PASS width narration 1/3 没有第三步。
+PASS no orphan punctuation narration 1/3
+PASS text preserved 1/3
+PASS height narration 1/4 108.3737/250
+PASS width narration 1/4 观察护盾如何挡下老兵这次
+PASS no orphan punctuation narration 1/4
+PASS width narration 1/4 攻击。 抵挡一段后，护盾变为破
+PASS no orphan punctuation narration 1/4
+PASS width narration 1/4 碎；手上的数字5仍可用于下一
+PASS no orphan punctuation narration 1/4
+PASS width narration 1/4 次运算。
+PASS no orphan punctuation narration 1/4
+PASS text preserved 1/4
+PASS height narration 1/5 135.4671/250
+PASS width narration 1/5 该你出招了：结果是【9】就是
+PASS no orphan punctuation narration 1/5
+PASS width narration 1/5 回复！点你的碎盾手（5），再
+PASS no orphan punctuation narration 1/5
+PASS width narration 1/5 点老兵的左手（4）——5+4=9，
+PASS no orphan punctuation narration 1/5
+PASS width narration 1/5 回复9点生命。注意：回复不能
+PASS no orphan punctuation narration 1/5
+PASS width narration 1/5 超过上限，超出的部分会浪费。
+PASS no orphan punctuation narration 1/5
+PASS text preserved 1/5
+PASS height narration 1/6 108.3737/250
+PASS width narration 1/6 老兵演示6+4=10——满十归一！
+PASS no orphan punctuation narration 1/6
+PASS width narration 1/6 个位变成【1】。1/2/3/7都没有
+PASS no orphan punctuation narration 1/6
+PASS width narration 1/6 效果，只改变手值。凑数
+PASS no orphan punctuation narration 1/6
+PASS width narration 1/6 时要小心十。
+PASS no orphan punctuation narration 1/6
+PASS text preserved 1/6
+PASS height narration 1/7 108.3737/250
+PASS width narration 1/7 老兵还剩7点生命，试着赢下切
+PASS no orphan punctuation narration 1/7
+PASS width narration 1/7 磋！提示：左手4 + 老兵左手4 =
+PASS no orphan punctuation narration 1/7
+PASS width narration 1/7 8。这一步由你决定。老兵停止
+PASS no orphan punctuation narration 1/7
+PASS width narration 1/7 进攻，你可以放心尝试。
+PASS no orphan punctuation narration 1/7
+PASS text preserved 1/7
+PASS height summary 1 224.2215/270
+PASS width summary 1 本课要点
+PASS no orphan punctuation summary 1
+PASS width summary 1 4/6/8：攻击，基础伤害等于点数。
+PASS no orphan punctuation summary 1
+PASS width summary 1 5：合盾，抵挡一段攻击后破碎。
+PASS no orphan punctuation summary 1
+PASS width summary 1 9：回复9点生命，不超过上限。
+PASS no orphan punctuation summary 1
+PASS width summary 1 1/2/3/7：无基础效果；满十归一，10变1。
+PASS no orphan punctuation summary 1
+PASS width summary 1
+PASS no orphan punctuation summary 1
+PASS width summary 1 下一课：勇士「十点重击」。
+PASS no orphan punctuation summary 1
+PASS width summary 1 运算后双手和10，发起攻击的基础伤害×1.5。
+PASS no orphan punctuation summary 1
+PASS height intro 2 112.1107/270
+PASS width intro 2 初战过后，老兵请来哨站教官。
+PASS no orphan punctuation intro 2
+PASS width intro 2 「勇士不只会凑攻击数字，还要让两只手相互配合。」
+PASS no orphan punctuation intro 2
+PASS width intro 2 本课学习十点重击：运算后，自身双手和为10时，攻击自动发动重击。
+PASS no orphan punctuation intro 2
+PASS width intro 2 基础伤害先×1.5，再计算攻防。
+PASS no orphan punctuation intro 2
+PASS height narration 2/1 162.5606/250
+PASS width narration 2/1 先作对照：点你的左手1，再点
+PASS no orphan punctuation narration 2/1
+PASS width narration 2/1 教官左手5，得到6。 你的双手变
+PASS no orphan punctuation narration 2/1
+PASS width narration 2/1 成6/6，和为12，不触发重击。
+PASS no orphan punctuation narration 2/1
+PASS width narration 2/1 普通攻击：6＋攻击1＝7伤。最
+PASS no orphan punctuation narration 2/1
+PASS width narration 2/1 后点教官确认目标。 教官起手的
+PASS no orphan punctuation narration 2/1
+PASS width narration 2/1 5是普通手，没有盾。
+PASS no orphan punctuation narration 2/1
+PASS text preserved 2/1
+PASS height narration 2/2 108.3737/250
+PASS width narration 2/2 教官左手5＋你的左手6＝11，取
+PASS no orphan punctuation narration 2/2
+PASS width narration 2/2 个位变成1，无效果。 留意教官
+PASS no orphan punctuation narration 2/2
+PASS width narration 2/2 右手8：下一步用它配
+PASS no orphan punctuation narration 2/2
+PASS width narration 2/2 出十点重击。
+PASS no orphan punctuation narration 2/2
+PASS text preserved 2/2
+PASS height narration 2/3 189.654/250
+PASS width narration 2/3 点你的左手6，再点教官右手8：
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 14取个位，得到4。 你的双手变
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 成4/6，和为10！ 点教官确认
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 攻击，自动发动十点重击：
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 4×1.5＋攻击1＝7伤。 判定看自
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 己的两只手，不是运算
+PASS no orphan punctuation narration 2/3
+PASS width narration 2/3 的两个加数。
+PASS no orphan punctuation narration 2/3
+PASS text preserved 2/3
+PASS height narration 2/4 108.3737/250
+PASS width narration 2/4 刚才普通6与重击4都打出7伤，
+PASS no orphan punctuation narration 2/4
+PASS width narration 2/4 区别在于重击先乘基础伤害。
+PASS no orphan punctuation narration 2/4
+PASS width narration 2/4 教官右手8＋你的左手4＝12，变
+PASS no orphan punctuation narration 2/4
+PASS width narration 2/4 成2。接下来由你自由练习。
+PASS no orphan punctuation narration 2/4
+PASS text preserved 2/4
+PASS height narration 2/5 108.3737/250
+PASS width narration 2/5 自由练习：教官停止进攻，尝试
+PASS no orphan punctuation narration 2/5
+PASS width narration 2/5 改变手值或凑10重击。 也可直接
+PASS no orphan punctuation narration 2/5
+PASS width narration 2/5 用右手6＋教官右手2＝
+PASS no orphan punctuation narration 2/5
+PASS width narration 2/5 8结束本课。
+PASS no orphan punctuation narration 2/5
+PASS text preserved 2/5
+PASS height summary 2 168.1661/270
+PASS width summary 2 本课要点
+PASS no orphan punctuation summary 2
+PASS width summary 2 十点重击：发起攻击时，运算后的自身双手和为10。
+PASS no orphan punctuation summary 2
+PASS width summary 2 先将基础伤害×1.5，再加攻击、减防御。
+PASS no orphan punctuation summary 2
+PASS width summary 2 本课普通6：6＋1＝7伤；重击4：4×1.5＋1＝7伤。
+PASS no orphan punctuation summary 2
+PASS width summary 2 技能自动发动，战报与提示显示「十点重击」。
+PASS no orphan punctuation summary 2
+PASS width summary 2 双手和10但未攻击，不触发；重击仍遵守护盾与闪避规则。
+PASS no orphan punctuation summary 2
+PASS height intro 3 112.1107/270
+PASS width intro 3 老兵递来一面盾。
+PASS no orphan punctuation intro 3
+PASS width intro 3 「破阵者既能守，也能用碎盾撕开敌阵。」
+PASS no orphan punctuation intro 3
+PASS width intro 3 本课学习连锁破盾、合盾修复与主动碎盾攻击。教官右手的完整盾，是
+PASS no orphan punctuation intro 3
+PASS width intro 3 训练前已经合成的。
+PASS no orphan punctuation intro 3
+PASS height narration 3/1 108.3737/250
+PASS width narration 3/1 先准备盾：己左2＋教官左3＝
+PASS no orphan punctuation narration 3/1
+PASS width narration 3/1 5。 点自己的左手，再点教官
+PASS no orphan punctuation narration 3/1
+PASS width narration 3/1 左手。 教官右手是提前合
+PASS no orphan punctuation narration 3/1
+PASS width narration 3/1 好的完整盾。
+PASS no orphan punctuation narration 3/1
+PASS text preserved 3/1
+PASS height narration 3/2 108.3737/250
+PASS width narration 3/2 教官攻击会被你的盾挡下。 自己
+PASS no orphan punctuation narration 3/2
+PASS width narration 3/2 的盾碎时，发动【连锁破盾】，
+PASS no orphan punctuation narration 3/2
+PASS width narration 3/2 点教官的右盾。 本次是被动破
+PASS no orphan punctuation narration 3/2
+PASS width narration 3/2 盾，不会附流血。
+PASS no orphan punctuation narration 3/2
+PASS text preserved 3/2
+PASS height narration 3/3 81.28028/250
+PASS width narration 3/3 修复另一面盾：己右1＋教官左4
+PASS no orphan punctuation narration 3/3
+PASS width narration 3/3 ＝5。 右手新合成完整盾时，
+PASS no orphan punctuation narration 3/3
+PASS width narration 3/3 左手碎盾也会被修复。
+PASS no orphan punctuation narration 3/3
+PASS text preserved 3/3
+PASS height narration 3/4 81.28028/250
+PASS width narration 3/4 观察教官：右5＋己左5＝
+PASS no orphan punctuation narration 3/4
+PASS width narration 3/4 10→1，无效果。 下一步用完整
+PASS no orphan punctuation narration 3/4
+PASS width narration 3/4 盾作运算源，主动出击。
+PASS no orphan punctuation narration 3/4
+PASS text preserved 3/4
+PASS height narration 3/5 135.4671/250
+PASS width narration 3/5 己左完整盾5＋教官右1＝6。 点
+PASS no orphan punctuation narration 3/5
+PASS width narration 3/5 击保留另一面盾，本次不连锁自
+PASS no orphan punctuation narration 3/5
+PASS width narration 3/5 己的盾。 攻击教官造成7伤，并
+PASS no orphan punctuation narration 3/5
+PASS width narration 3/5 附流血2回合。 用盾运算，会先
+PASS no orphan punctuation narration 3/5
+PASS width narration 3/5 主动碎盾。
+PASS no orphan punctuation narration 3/5
+PASS text preserved 3/5
+PASS height narration 3/6 108.3737/250
+PASS width narration 3/6 教官回合开始，流血失去1点体
+PASS no orphan punctuation narration 3/6
+PASS width narration 3/6 力；攻防也各降低1。 教官左4＋
+PASS no orphan punctuation narration 3/6
+PASS width narration 3/6 己左6＝10→1。 流血来自刚才的
+PASS no orphan punctuation narration 3/6
+PASS width narration 3/6 主动碎盾攻击。
+PASS no orphan punctuation narration 3/6
+PASS text preserved 3/6
+PASS height narration 3/7 81.28028/250
+PASS width narration 3/7 自由练习合盾、修复或继续
+PASS no orphan punctuation narration 3/7
+PASS width narration 3/7 攻击。教官不再进攻，
+PASS no orphan punctuation narration 3/7
+PASS width narration 3/7 也不新增盾。
+PASS no orphan punctuation narration 3/7
+PASS text preserved 3/7
+PASS height summary 3 196.1938/270
+PASS width summary 3 本课要点
+PASS no orphan punctuation summary 3
+PASS width summary 3 自己的盾碎，可选择连带打碎场上一面完整盾。
+PASS no orphan punctuation summary 3
+PASS width summary 3 新合成5时，另一只碎盾5会被修复。
+PASS no orphan punctuation summary 3
+PASS width summary 3 主动用完整盾运算后攻击，命中附流血2回合。
+PASS no orphan punctuation summary 3
+PASS width summary 3 被动挨打碎盾、连锁破盾本身不附流血。
+PASS no orphan punctuation summary 3
+PASS width summary 3 流血：攻防−1，自己回合开始失去1点体力。
+PASS no orphan punctuation summary 3
+PASS width summary 3 下一课：牺牲另一面盾，换本次攻击距离∞。
+PASS no orphan punctuation summary 3
+PASS height intro 4 112.1107/270
+PASS width intro 4 老兵在你左右各放下一块石头，教官站在对面。
+PASS no orphan punctuation intro 4
+PASS width intro 4 「石头不出招，却占着座位。借得到数字，不代表打得到人。」
+PASS no orphan punctuation intro 4
+PASS width intro 4 环上双方距离2，破阵者通常射程1。本课先体验超距，再用碎盾换射程
+PASS no orphan punctuation intro 4
+PASS width intro 4 命中教官。
+PASS no orphan punctuation intro 4
+PASS height narration 4/1 135.4671/250
+PASS width narration 4/1 己左1＋教官左3＝4。 双方距离
+PASS no orphan punctuation narration 4/1
+PASS width narration 4/1 2，通常射程1：能借数字，却不
+PASS no orphan punctuation narration 4/1
+PASS width narration 4/1 能攻击教官。 尝试确认会被拒
+PASS no orphan punctuation narration 4/1
+PASS width narration 4/1 绝；点击【放弃攻击】继续，
+PASS no orphan punctuation narration 4/1
+PASS width narration 4/1 左手保留4。
+PASS no orphan punctuation narration 4/1
+PASS text preserved 4/1
+PASS height narration 4/2 81.28028/250
+PASS width narration 4/2 教官左3＋己左4＝7，无效果。
+PASS no orphan punctuation narration 4/2
+PASS width narration 4/2 石头不行动，只占据
+PASS no orphan punctuation narration 4/2
+PASS width narration 4/2 环上的位置。
+PASS no orphan punctuation narration 4/2
+PASS text preserved 4/2
+PASS height narration 4/3 81.28028/250
+PASS width narration 4/3 先准备射程资源：己右1＋教官
+PASS no orphan punctuation narration 4/3
+PASS width narration 4/3 右4＝5。 这面完整盾既能防守，
+PASS no orphan punctuation narration 4/3
+PASS width narration 4/3 也能主动牺牲。
+PASS no orphan punctuation narration 4/3
+PASS text preserved 4/3
+PASS height narration 4/4 54.18686/250
+PASS width narration 4/4 教官左7＋己左4＝11→1。 现在
+PASS no orphan punctuation narration 4/4
+PASS width narration 4/4 你有左4、右盾5；距离仍为2。
+PASS no orphan punctuation narration 4/4
+PASS text preserved 4/4
+PASS height narration 4/5 135.4671/250
+PASS width narration 4/5 己左4＋教官右4＝8。 点击【碎
+PASS no orphan punctuation narration 4/5
+PASS width narration 4/5 盾换射程】，牺牲右盾，使本次
+PASS no orphan punctuation narration 4/5
+PASS width narration 4/5 距离∞；再选教官确认。 造成9
+PASS no orphan punctuation narration 4/5
+PASS width narration 4/5 伤，附流血2回合。通常
+PASS no orphan punctuation narration 4/5
+PASS width narration 4/5 射程仍为1。
+PASS no orphan punctuation narration 4/5
+PASS text preserved 4/5
+PASS height summary 4 196.1938/270
+PASS width summary 4 本课要点
+PASS no orphan punctuation summary 4
+PASS width summary 4 距离按座位环最短步数计算，左右石头使双方距离为2。
+PASS no orphan punctuation summary 4
+PASS width summary 4 石头只占位，两手为−，不可选择或行动。
+PASS no orphan punctuation summary 4
+PASS width summary 4 可借远处角色的手值；攻击目标另行检查射程。
+PASS no orphan punctuation summary 4
+PASS width summary 4 没有合法目标时，放弃攻击，保留运算结果。
+PASS no orphan punctuation summary 4
+PASS width summary 4 碎掉另一只手的完整盾，使本次攻击距离∞，命中附流血2回合。
+PASS no orphan punctuation summary 4
+PASS width summary 4 基础射程仍为1；下一课用经典先攻自由实战。
+PASS no orphan punctuation summary 4
+PASS height intro 5 140.1384/270
+PASS width intro 5 老兵收起指引，开始正式校验。
+PASS no orphan punctuation intro 5
+PASS width intro 5 双方各投1d20：小点先分配手值，大点先行动；同点同时分配，
+PASS no orphan punctuation intro 5
+PASS width intro 5 玩家先行动。
+PASS no orphan punctuation intro 5
+PASS width intro 5 2～18按骰点总和拆分；1由对手指定，19至少一手9，20自由分配。
+PASS no orphan punctuation intro 5
+PASS width intro 5 本关自由对战，教官正常进攻，你也可能失败。
+PASS no orphan punctuation intro 5
+PASS height narration 5/1 135.4671/250
+PASS width narration 5/1 经典实战：先攻由骰点决定，5
+PASS no orphan punctuation narration 5/1
+PASS width narration 5/1 起手是碎盾，9不会立即回复。
+PASS no orphan punctuation narration 5/1
+PASS width narration 5/1 教官正常进攻；留意血量、盾牌
+PASS no orphan punctuation narration 5/1
+PASS width narration 5/1 和流血。自由选择合法操作，击
+PASS no orphan punctuation narration 5/1
+PASS width narration 5/1 败教官即可通关。
+PASS no orphan punctuation narration 5/1
+PASS text preserved 5/1
+PASS height summary 5 196.1938/270
+PASS width summary 5 本课要点
+PASS no orphan punctuation summary 5
+PASS width summary 5 分配先后和行动先后不同：小点先分配，大点先行动。
+PASS no orphan punctuation summary 5
+PASS width summary 5 1由对手指定；19至少一手9；20自由分配。
+PASS no orphan punctuation summary 5
+PASS width summary 5 起手只设置数字：5不是完整盾，9不立即回复。
+PASS no orphan punctuation summary 5
+PASS width summary 5 经典实战正常结算攻防、技能与状态。
+PASS no orphan punctuation summary 5
+PASS width summary 5 接下来学习魔射手、战斗大师、剑士与战术家，最后自由选
+PASS no orphan punctuation summary 5
+PASS width summary 5 角挑战骑士。
+PASS no orphan punctuation summary 5
+PASS height initiative veteran 189.654/248
+PASS width initiative veteran 「先看清：谁先选，谁先
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 动。」 双方各投1d20。小
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 点先分配手值，大点先行
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 动。 同点同时分配，本场
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 玩家先行动。 起手只分数
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 字，5不是完整盾，9
+PASS no orphan punctuation initiative veteran
+PASS width initiative veteran 不立即回复。
+PASS no orphan punctuation initiative veteran
+PASS height intro 6 112.1107/270
+PASS width intro 6 老兵拉开靶场的弓。
+PASS no orphan punctuation intro 6
+PASS width intro 6 「魔射手的4、6、8，各有用法。」
+PASS no orphan punctuation intro 6
+PASS width intro 6 本课依次练习穿盾、增伤、两段破盾击杀。教官20生命，右手提前合成
+PASS no orphan punctuation intro 6
+PASS width intro 6 完整盾。
+PASS no orphan punctuation intro 6
+PASS height narration 6/1 108.3737/250
+PASS width narration 6/1 魔射三式，先看8：己右3＋教官
+PASS no orphan punctuation narration 6/1
+PASS width narration 6/1 右盾5＝8。 【魔射穿盾】造成8
+PASS no orphan punctuation narration 6/1
+PASS width narration 6/1 伤；盾仍完整。 穿盾不
+PASS no orphan punctuation narration 6/1
+PASS width narration 6/1 等于打碎盾。
+PASS no orphan punctuation narration 6/1
+PASS text preserved 6/1
+PASS height narration 6/2 81.28028/250
+PASS width narration 6/2 教官用右盾5＋己右8＝13→3。
+PASS no orphan punctuation narration 6/2
+PASS width narration 6/2 盾手主动运算，失去盾牌；现在
+PASS no orphan punctuation narration 6/2
+PASS width narration 6/2 可以直击体力。
+PASS no orphan punctuation narration 6/2
+PASS text preserved 6/2
+PASS height narration 6/3 81.28028/250
+PASS width narration 6/3 再看6：己右8＋教官左8＝
+PASS no orphan punctuation narration 6/3
+PASS width narration 6/3 16→6。 【魔射增伤】6＋2＝8
+PASS no orphan punctuation narration 6/3
+PASS width narration 6/3 伤；教官12→4。
+PASS no orphan punctuation narration 6/3
+PASS text preserved 6/3
+PASS height narration 6/4 81.28028/250
+PASS width narration 6/4 教官右3＋己左2＝5，重新合成
+PASS no orphan punctuation narration 6/4
+PASS width narration 6/4 完整盾。 留意最后一式如何穿过
+PASS no orphan punctuation narration 6/4
+PASS width narration 6/4 这一面盾。
+PASS no orphan punctuation narration 6/4
+PASS text preserved 6/4
+PASS height narration 6/5 108.3737/250
+PASS width narration 6/5 最后看4：己右6＋教官左8＝
+PASS no orphan punctuation narration 6/5
+PASS width narration 6/5 14→4。 【魔射连击】两段各4：
+PASS no orphan punctuation narration 6/5
+PASS width narration 6/5 第一段破盾，第二段造成4伤完
+PASS no orphan punctuation narration 6/5
+PASS width narration 6/5 成击杀。
+PASS no orphan punctuation narration 6/5
+PASS text preserved 6/5
+PASS height summary 6 140.1384/270
+PASS width summary 6 魔射三式
+PASS no orphan punctuation summary 6
+PASS width summary 6 8：无视盾牌造成伤害，盾牌保留。
+PASS no orphan punctuation summary 6
+PASS width summary 6 6：伤害额外＋2。
+PASS no orphan punctuation summary 6
+PASS width summary 6 4：两段各以4为基础伤害，分别判盾与闪避。
+PASS no orphan punctuation summary 6
+PASS width summary 6 面对单盾，第一段破盾，第二段仍能命中。
+PASS no orphan punctuation summary 6
+PASS height intro 7 112.1107/270
+PASS width intro 7 老兵换上训练护具。
+PASS no orphan punctuation intro 7
+PASS width intro 7 「战斗大师看另一只手决定招式。」
+PASS no orphan punctuation intro 7
+PASS width intro 7 教官40生命、攻防0/0、训练射程2；双方距离2。
+PASS no orphan punctuation intro 7
+PASS width intro 7 本课依次选择流血、跛脚、震慑、倒伏，并验证状态效果。
+PASS no orphan punctuation intro 7
+PASS height narration 7/1 81.28028/250
+PASS width narration 7/1 己左1＋教官右3＝4，另一手4。
+PASS no orphan punctuation narration 7/1
+PASS width narration 7/1 在招式面板选【流血】：攻防
+PASS no orphan punctuation narration 7/1
+PASS width narration 7/1 −1，自己回合开始失去1体力。
+PASS no orphan punctuation narration 7/1
+PASS text preserved 7/1
+PASS height narration 7/2 81.28028/250
+PASS width narration 7/2 教官回合开始，流血扣1体力；
+PASS no orphan punctuation narration 7/2
+PASS width narration 7/2 攻防栏显示−1。 教官右3＋己左4
+PASS no orphan punctuation narration 7/2
+PASS width narration 7/2 ＝7，无效果。
+PASS no orphan punctuation narration 7/2
+PASS text preserved 7/2
+PASS height narration 7/3 108.3737/250
+PASS width narration 7/3 己左4＋教官左2＝6，另一手4。
+PASS no orphan punctuation narration 7/3
+PASS width narration 7/3 选择【跛脚】：教官射程2减为
+PASS no orphan punctuation narration 7/3
+PASS width narration 7/3 1，够不到距离2的你。 此击仍受
+PASS no orphan punctuation narration 7/3
+PASS width narration 7/3 流血防−1影响。
+PASS no orphan punctuation narration 7/3
+PASS text preserved 7/3
+PASS height narration 7/4 81.28028/250
+PASS width narration 7/4 观察教官射程2→1，脚边的石头
+PASS no orphan punctuation narration 7/4
+PASS width narration 7/4 仍占位。 跛脚不禁止运算：教官
+PASS no orphan punctuation narration 7/4
+PASS width narration 7/4 右7＋己右4＝11→1。
+PASS no orphan punctuation narration 7/4
+PASS text preserved 7/4
+PASS height narration 7/5 108.3737/250
+PASS width narration 7/5 己右4＋教官左2＝6，此时另一
+PASS no orphan punctuation narration 7/5
+PASS width narration 7/5 手6。 选择【震慑】：不能
+PASS no orphan punctuation narration 7/5
+PASS width narration 7/5 攻击，仍能运算。 不要与不能行
+PASS no orphan punctuation narration 7/5
+PASS width narration 7/5 动的冻结混淆。
+PASS no orphan punctuation narration 7/5
+PASS text preserved 7/5
+PASS height narration 7/6 81.28028/250
+PASS width narration 7/6 教官左2＋己左6＝8，但震慑使
+PASS no orphan punctuation narration 7/6
+PASS width narration 7/6 其不能攻击。 无合法攻击目标，
+PASS no orphan punctuation narration 7/6
+PASS width narration 7/6 放弃攻击；左手保留8。
+PASS no orphan punctuation narration 7/6
+PASS text preserved 7/6
+PASS height narration 7/7 108.3737/250
+PASS width narration 7/7 己左6＋教官左8＝14→4，另一
+PASS no orphan punctuation narration 7/7
+PASS width narration 7/7 手6。 选择【倒伏】：受到伤害
+PASS no orphan punctuation narration 7/7
+PASS width narration 7/7 ×1.5。 招式在造成伤害后附
+PASS no orphan punctuation narration 7/7
+PASS width narration 7/7 加，不放大施加它的这一击。
+PASS no orphan punctuation narration 7/7
+PASS text preserved 7/7
+PASS height narration 7/8 54.18686/250
+PASS width narration 7/8 教官休整，倒伏仍在。 下一击验
+PASS no orphan punctuation narration 7/8
+PASS width narration 7/8 证易伤，不再附加其它招式。
+PASS no orphan punctuation narration 7/8
+PASS text preserved 7/8
+PASS height narration 7/9 108.3737/250
+PASS width narration 7/9 己右6＋教官左8＝14→4，另一
+PASS no orphan punctuation narration 7/9
+PASS width narration 7/9 手4。 本次选择【不附加】，只
+PASS no orphan punctuation narration 7/9
+PASS width narration 7/9 观察倒伏：4×1.5＝6伤。 完成
+PASS no orphan punctuation narration 7/9
+PASS width narration 7/9 四种状态演示即可结束训练。
+PASS no orphan punctuation narration 7/9
+PASS text preserved 7/9
+PASS height summary 7 168.1661/270
+PASS width summary 7 另一手4或8：可附流血／跛脚。
+PASS no orphan punctuation summary 7
+PASS width summary 7 另一手6：可附震慑／倒伏。
+PASS no orphan punctuation summary 7
+PASS width summary 7 流血：攻防−1，回合开始失去1体力。
+PASS no orphan punctuation summary 7
+PASS width summary 7 跛脚：射程减半，至少1。震慑：不能攻击。
+PASS no orphan punctuation summary 7
+PASS width summary 7 倒伏：受到伤害×1.5，向上取整。
+PASS no orphan punctuation summary 7
+PASS width summary 7 招式仅在实际造成伤害后附加，持续目标自己的2回合。
+PASS no orphan punctuation summary 7
+PASS height intro 8 84.08305/270
+PASS width intro 8 老兵并起双剑。
+PASS no orphan punctuation intro 8
+PASS width intro 8 「运算后双手同为4、6、8，剑士就能先追加一击。」
+PASS no orphan punctuation intro 8
+PASS width intro 8 本课先打无盾教官，分别观察追加与主攻击；教官11生命。
+PASS no orphan punctuation intro 8
+PASS height narration 8/1 162.5606/250
+PASS width narration 8/1 己左2＋教官左2＝4，双手成为
+PASS no orphan punctuation narration 8/1
+PASS width narration 8/1 双4。 点击【发动追加】：先固
+PASS no orphan punctuation narration 8/1
+PASS width narration 8/1 定4伤并附流血，随后主攻击4＋
+PASS no orphan punctuation narration 8/1
+PASS width narration 8/1 攻2＋流血易伤1＝7伤。 战报会
+PASS no orphan punctuation narration 8/1
+PASS width narration 8/1 分别显示两次结算，共
+PASS no orphan punctuation narration 8/1
+PASS width narration 8/1 11伤击杀。
+PASS no orphan punctuation narration 8/1
+PASS text preserved 8/1
+PASS height summary 8 112.1107/270
+PASS width summary 8 运算后双4／双6／双8，可选择追加。
+PASS no orphan punctuation summary 8
+PASS width summary 8 追加在主攻击之前结算，固定4／6／8伤，无视双方攻防。
+PASS no orphan punctuation summary 8
+PASS width summary 8 追加命中附流血2回合，使随后主攻击也受防−1影响。
+PASS no orphan punctuation summary 8
+PASS width summary 8 两击独立判盾，单盾只能挡其中一次。
+PASS no orphan punctuation summary 8
+PASS height intro 9 112.1107/270
+PASS width intro 9 老兵摊开战术图。
+PASS no orphan punctuation intro 9
+PASS width intro 9 「战术家利用场上体力差，同时提高攻防。」
+PASS no orphan punctuation intro 9
+PASS width intro 9 双方20生命；依次观察差0、差5、差13时的攻击。
+PASS no orphan punctuation intro 9
+PASS width intro 9 额外攻防＝⌊存活者最高与最低体力差/3⌋。
+PASS no orphan punctuation intro 9
+PASS height narration 9/1 81.28028/250
+PASS width narration 9/1 双方20生命，体力差0，额外攻
+PASS no orphan punctuation narration 9/1
+PASS width narration 9/1 防0。 己左1＋教官右3＝4，按攻
+PASS no orphan punctuation narration 9/1
+PASS width narration 9/1 +1造成5伤。
+PASS no orphan punctuation narration 9/1
+PASS text preserved 9/1
+PASS height narration 9/2 81.28028/250
+PASS width narration 9/2 教官剩15，体力差5；⌊5/3⌋＝1。
+PASS no orphan punctuation narration 9/2
+PASS width narration 9/2 你的攻防变为+2／0。 教官右3＋
+PASS no orphan punctuation narration 9/2
+PASS width narration 9/2 己左4＝7，无效果。
+PASS no orphan punctuation narration 9/2
+PASS text preserved 9/2
+PASS height narration 9/3 81.28028/250
+PASS width narration 9/3 带着额外1攻防再次攻击： 己左4
+PASS no orphan punctuation narration 9/3
+PASS width narration 9/3 ＋教官左2＝6，6＋攻2＝8伤。
+PASS no orphan punctuation narration 9/3
+PASS width narration 9/3 攻击前的体力差决定本击加成。
+PASS no orphan punctuation narration 9/3
+PASS text preserved 9/3
+PASS height narration 9/4 81.28028/250
+PASS width narration 9/4 教官剩7，差13；⌊13/3⌋＝4。 你
+PASS no orphan punctuation narration 9/4
+PASS width narration 9/4 的攻防变为+5／+3。 教官左2＋
+PASS no orphan punctuation narration 9/4
+PASS width narration 9/4 己右1＝3，无效果。
+PASS no orphan punctuation narration 9/4
+PASS text preserved 9/4
+PASS height narration 9/5 108.3737/250
+PASS width narration 9/5 己右1＋教官右7＝8，8＋攻5＝
+PASS no orphan punctuation narration 9/5
+PASS width narration 9/5 13伤，完成击杀。 统计所有存活
+PASS no orphan punctuation narration 9/5
+PASS width narration 9/5 角色的最高与最低当前体力，额
+PASS no orphan punctuation narration 9/5
+PASS width narration 9/5 外攻防会动态更新。
+PASS no orphan punctuation narration 9/5
+PASS text preserved 9/5
+PASS height summary 9 140.1384/270
+PASS width summary 9 基础攻+1／防−1。
+PASS no orphan punctuation summary 9
+PASS width summary 9 额外攻防＝⌊场上存活角色最高与最低体力差/3⌋。
+PASS no orphan punctuation summary 9
+PASS width summary 9 差0→额外0；差5→额外1；差13→额外4。
+PASS no orphan punctuation summary 9
+PASS width summary 9 比较当前体力，死亡者不参与；攻击与回复后动态更新。
+PASS no orphan punctuation summary 9
+PASS width summary 9 下一战自由选角，接受骑士的经典模式试炼。
+PASS no orphan punctuation summary 9
+PASS height intro 10 196.1938/270
+PASS width intro 10 哨站骑士举盾致意。
+PASS no orphan punctuation intro 10
+PASS width intro 10 「选好你的道路，就用真正的战斗证明它。」
+PASS no orphan punctuation intro 10
+PASS width intro 10 本场子职：战士·勇士。
+PASS no orphan punctuation intro 10
+PASS width intro 10 对手：哨站骑士，生命20。
+PASS no orphan punctuation intro 10
+PASS width intro 10 骑士攻击+1、防御+1、距离1，无额外技能。
+PASS no orphan punctuation intro 10
+PASS width intro 10 投掷先攻后，按经典规则自由对战。
+PASS no orphan punctuation intro 10
+PASS width intro 10 获胜即第一章通关。
+PASS no orphan punctuation intro 10
+PASS height narration 10/1 135.4671/250
+PASS width narration 10/1 骑士试炼：自由运用所选角色的
+PASS no orphan punctuation narration 10/1
+PASS width narration 10/1 技能。 对手20生命，攻+1／防
+PASS no orphan punctuation narration 10/1
+PASS width narration 10/1 +1，距离1。 经典模式正常攻
+PASS no orphan punctuation narration 10/1
+PASS width narration 10/1 防，无安全保护；击败骑
+PASS no orphan punctuation narration 10/1
+PASS width narration 10/1 士即可通关。
+PASS no orphan punctuation narration 10/1
+PASS text preserved 10/1
+PASS height summary 10 112.1107/270
+PASS width summary 10 第一章：边境哨站 · 通关
+PASS no orphan punctuation summary 10
+PASS width summary 10 你已击败骑士，完成指尖骰术的入门试炼。
+PASS no orphan punctuation summary 10
+PASS width summary 10 可以更换角色再次挑战，或进入竞技模式实战。
+PASS no orphan punctuation summary 10
+PASS width summary 10 经典先攻、距离、盾牌、状态和角色技能均按普通规则结算。
+PASS no orphan punctuation summary 10
+PASS rules only common mechanics
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation
+PASS rules line fits
+PASS rules no orphan punctuation

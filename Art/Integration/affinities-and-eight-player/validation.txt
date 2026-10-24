@@ -1,0 +1,214 @@
+PASS engine All_thirteen_vulnerabilities_multiply_real_damage_and_round_up
+PASS engine All_thirteen_immunities_negate_damage_and_magic_status_after_consumption
+PASS engine Different_types_are_independent_and_any_landed_attack_consumes_all_temporary_affinities
+PASS engine Immunity_has_priority_and_vulnerability_then_resistance_are_both_applied
+PASS engine Shield_block_preserves_affinities_and_immunity_also_prevents_on_block_magic_status
+PASS engine All_segments_share_affinities_until_the_end_of_one_attack
+PASS engine Physical_immunity_does_not_immunize_the_separate_bleed_skill
+PASS engine Immune_fire_preserves_existing_frost_and_does_not_trigger_reaction
+PASS engine Immune_damage_does_not_spend_arcane_ward
+PASS engine Acid_on_poison_and_poison_on_acid_refresh_only_on_hit_and_preserve_source
+PASS engine Acid_poison_reaction_works_through_shield_but_not_immunity
+PASS engine Preview_of_element_reaction_does_not_refresh_or_add_statuses
+PASS engine Reset_and_cleanse_remove_vulnerability_while_positive_immunity_survives_cleanse
+PASS engine Unstoppable_poison_tick_respects_typed_immunity_and_vulnerability_without_spending_attack_tokens
+PASS engine Guide_and_combat_icons_cover_thirty_nine_affinities_and_three_separate_marks
+PASS engine Ai_lethal_estimate_respects_immunity_and_vulnerability
+PASS engine Human_paladin_in_each_eight_player_seat_shocks_exact_selected_neighbor_in_both_modes
+PASS engine Active_break_and_reforming_shocks_keep_distinct_selected_targets
+PASS engine Passive_shield_break_shock_hits_the_defending_humans_selected_target_once
+PASS engine No_shock_target_is_offered_when_all_real_players_are_out_of_range
+PASS engine Identity_counts_follow_actual_sides_not_distinct_attack_teams
+PASS engine Hidden_identity_relationships_stay_unlabelled_and_known_relationships_are_correct
+PASS manual has five pages
+PASS loaded Damage/thunder
+PASS loaded Damage/cold
+PASS loaded Damage/cold
+PASS loaded Damage/cold
+PASS loaded Damage/fire
+PASS loaded Damage/lightning
+PASS loaded Damage/acid
+PASS loaded Damage/poison
+PASS loaded Damage/fire
+PASS text fits GuideTitle
+PASS text fits GuideNote
+PASS text fits GroupTitle
+PASS text fits Entry_thunder
+PASS text fits Entry_cold
+PASS text fits Entry_cold
+PASS text fits Entry_cold
+PASS text fits Entry_fire
+PASS text fits Entry_lightning
+PASS text fits Entry_acid
+PASS text fits Entry_poison
+PASS text fits Entry_fire
+PASS nine reactions
+PASS raycast Next
+PASS new combined affinity page
+PASS loaded Resistance/resistance_slashing
+PASS loaded Resistance/resistance_bludgeoning
+PASS loaded Resistance/resistance_piercing
+PASS loaded Resistance/resistance_thunder
+PASS loaded Resistance/resistance_acid
+PASS loaded Resistance/resistance_poison
+PASS loaded Resistance/resistance_radiant
+PASS loaded Resistance/resistance_necrotic
+PASS loaded Resistance/resistance_fire
+PASS loaded Resistance/resistance_cold
+PASS loaded Resistance/resistance_lightning
+PASS loaded Resistance/resistance_force
+PASS loaded Resistance/resistance_psychic
+PASS loaded Vulnerability/vulnerability_slashing
+PASS loaded Vulnerability/vulnerability_bludgeoning
+PASS loaded Vulnerability/vulnerability_piercing
+PASS loaded Vulnerability/vulnerability_thunder
+PASS loaded Vulnerability/vulnerability_acid
+PASS loaded Vulnerability/vulnerability_poison
+PASS loaded Vulnerability/vulnerability_radiant
+PASS loaded Vulnerability/vulnerability_necrotic
+PASS loaded Vulnerability/vulnerability_fire
+PASS loaded Vulnerability/vulnerability_cold
+PASS loaded Vulnerability/vulnerability_lightning
+PASS loaded Vulnerability/vulnerability_force
+PASS loaded Vulnerability/vulnerability_psychic
+PASS loaded Immunity/immunity_slashing
+PASS loaded Immunity/immunity_bludgeoning
+PASS loaded Immunity/immunity_piercing
+PASS loaded Immunity/immunity_thunder
+PASS loaded Immunity/immunity_acid
+PASS loaded Immunity/immunity_poison
+PASS loaded Immunity/immunity_radiant
+PASS loaded Immunity/immunity_necrotic
+PASS loaded Immunity/immunity_fire
+PASS loaded Immunity/immunity_cold
+PASS loaded Immunity/immunity_lightning
+PASS loaded Immunity/immunity_force
+PASS loaded Immunity/immunity_psychic
+PASS text fits GuideTitle
+PASS text fits GuideNote
+PASS text fits GroupTitle
+PASS text fits Entry_slashing
+PASS text fits Entry_bludgeoning
+PASS text fits Entry_piercing
+PASS text fits Entry_thunder
+PASS text fits Entry_acid
+PASS text fits Entry_poison
+PASS text fits Entry_radiant
+PASS text fits Entry_necrotic
+PASS text fits Entry_fire
+PASS text fits Entry_cold
+PASS text fits Entry_lightning
+PASS text fits Entry_force
+PASS text fits Entry_psychic
+PASS text fits GroupTitle
+PASS text fits Entry_slashing
+PASS text fits Entry_bludgeoning
+PASS text fits Entry_piercing
+PASS text fits Entry_thunder
+PASS text fits Entry_acid
+PASS text fits Entry_poison
+PASS text fits Entry_radiant
+PASS text fits Entry_necrotic
+PASS text fits Entry_fire
+PASS text fits Entry_cold
+PASS text fits Entry_lightning
+PASS text fits Entry_force
+PASS text fits Entry_psychic
+PASS text fits GroupTitle
+PASS text fits Entry_slashing
+PASS text fits Entry_bludgeoning
+PASS text fits Entry_piercing
+PASS text fits Entry_thunder
+PASS text fits Entry_acid
+PASS text fits Entry_poison
+PASS text fits Entry_radiant
+PASS text fits Entry_necrotic
+PASS text fits Entry_fire
+PASS text fits Entry_cold
+PASS text fits Entry_lightning
+PASS text fits Entry_force
+PASS text fits Entry_psychic
+PASS all thirty nine affinity icons
+PASS raycast Next
+PASS dedicated character marks page
+PASS loaded Effects/arcane_barrier
+PASS loaded Effects/ki
+PASS loaded Effects/hunters_mark
+PASS text fits GuideTitle
+PASS text fits GuideNote
+PASS text fits GroupTitle
+PASS text fits Entry_arcane_barrier
+PASS text fits Entry_ki
+PASS text fits Entry_hunters_mark
+PASS three character marks
+PASS raycast Close
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS eight player human shock prompt
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS selected neighbor button exists
+PASS raycast SkillChoice1
+PASS selected neighbor lost exactly two
+PASS far addend was not damaged
+PASS shock log present
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS eight player human shock prompt
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS shock candidate in reach
+PASS selected neighbor button exists
+PASS raycast SkillChoice1
+PASS selected neighbor lost exactly two
+PASS far addend was not damaged
+PASS shock log present
+PASS identity actual side totals viewer 0
+PASS hidden identity unlabelled P1 viewer 0
+PASS hidden identity unlabelled P6 viewer 0
+PASS hidden identity unlabelled P4 viewer 0
+PASS hidden identity unlabelled P8 viewer 0
+PASS hidden identity unlabelled P2 viewer 0
+PASS hidden identity unlabelled P5 viewer 0
+PASS hidden identity unlabelled P7 viewer 0
+PASS hidden identity unlabelled P3 viewer 0
+PASS identity actual side totals viewer 1
+PASS hidden identity unlabelled P2 viewer 1
+PASS hidden identity unlabelled P7 viewer 1
+PASS hidden identity unlabelled P5 viewer 1
+PASS hidden identity unlabelled P1 viewer 1
+PASS known teammate label
+PASS hidden identity unlabelled P3 viewer 1
+PASS hidden identity unlabelled P6 viewer 1
+PASS hidden identity unlabelled P8 viewer 1
+PASS hidden identity unlabelled P4 viewer 1
+PASS identity actual side totals viewer 3
+PASS hidden identity unlabelled P4 viewer 3
+PASS hidden identity unlabelled P1 viewer 3
+PASS known opponent label
+PASS hidden identity unlabelled P7 viewer 3
+PASS hidden identity unlabelled P3 viewer 3
+PASS hidden identity unlabelled P5 viewer 3
+PASS hidden identity unlabelled P8 viewer 3
+PASS hidden identity unlabelled P2 viewer 3
+PASS hidden identity unlabelled P6 viewer 3
+PASS identity actual side totals viewer 7
+PASS hidden identity unlabelled P8 viewer 7
+PASS hidden identity unlabelled P5 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P3 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P7 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P1 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P4 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P6 viewer 7
+PASS known opponent label
+PASS hidden identity unlabelled P2 viewer 7
+PASS known opponent label
+PASS battle can display all thirty nine affinities

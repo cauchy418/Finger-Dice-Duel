@@ -1,0 +1,39 @@
+var originalDelay=boot.AiThinkSeconds;boot.AiThinkSeconds=1000;
+var panel=(FingerDiceDuel.UI.AdventureGuidePanel)field(board,"_adventurePanel");
+System.Action<UnityEngine.UI.Text,string> layout=(label,key)=>{
+ UnityEngine.Canvas.ForceUpdateCanvases();
+ check(label.preferredHeight<=label.rectTransform.rect.height+1,"height "+key+" "+label.preferredHeight+"/"+label.rectTransform.rect.height);
+ var settings=label.GetGenerationSettings(new UnityEngine.Vector2(label.rectTransform.rect.width,0));settings.horizontalOverflow=UnityEngine.HorizontalWrapMode.Overflow;
+ var generator=new UnityEngine.TextGenerator();
+ foreach(var line in label.text.Split('\n')){
+  check(generator.GetPreferredWidth(line,settings)/label.pixelsPerUnit<=label.rectTransform.rect.width+1,"width "+key+" "+line);
+  check(!System.Text.RegularExpressions.Regex.IsMatch(line,@"^[，。；：！？、）》】%]"),"no orphan punctuation "+key);
+ }
+};
+try{
+ for(int n=1;n<=10;n++){
+  if(n==10)invoke(boot,"StartAdventureLevel",new object[]{10,false});
+  invoke(boot,"StartAdventureLevel",new object[]{n,true});
+  var lesson=(FingerDiceDuel.Assistant.AdventureLesson)field(boot,"_adventure");
+  layout((UnityEngine.UI.Text)field(panel,"_modalBody"),"intro "+n);
+  if(n==1||n==10)shot(canvas,"intro-"+n);
+  panel.HideModal();
+  var beats=(System.Collections.Generic.List<FingerDiceDuel.Assistant.AdventureLesson.Beat>)typeof(FingerDiceDuel.Assistant.AdventureLesson).GetField("_beats",flags).GetValue(lesson);
+  for(int i=0;i<beats.Count;i++){
+   panel.ShowNarration("老兵 · "+(i+1)+"/"+beats.Count,beats[i].Narration,FingerDiceDuel.Assistant.AdventureLevel1.GuideAvatarKey);
+   var label=(UnityEngine.UI.Text)field(panel,"_guideText");layout(label,"narration "+n+"/"+(i+1));
+   check(System.Text.RegularExpressions.Regex.Replace(label.text,@"\s","")==System.Text.RegularExpressions.Regex.Replace(beats[i].Narration,@"\s",""),"text preserved "+n+"/"+(i+1));
+   if(n==1&&i==0||n==8)shot(canvas,"narration-"+n+"-"+(i+1));
+  }
+  panel.ShowVictory(lesson.DisplayTitle,lesson.SummaryText,FingerDiceDuel.Assistant.AdventureLevel1.GuideAvatarKey,()=>{},()=>{});
+  layout((UnityEngine.UI.Text)field(panel,"_modalBody"),"summary "+n);panel.HideAll();
+  if(n==5){invoke(boot,"OnAdventureIntroConfirmed",new object[0]);var dice=(FingerDiceDuel.UI.DiceRollScreen)field(boot,"_diceRoll");layout((UnityEngine.UI.Text)field(dice,"_lessonNarration"),"initiative veteran");shot(front,"initiative-veteran");}
+ }
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);invoke(boot,"OnHelpClicked",new object[0]);
+ var modal=field(boot,"_modal");var body=(UnityEngine.UI.Text)field(modal,"_body");
+ check(!body.text.Contains("王车易位")&&!body.text.Contains("奉献之誓")&&!body.text.Contains("防护学派"),"rules only common mechanics");
+ var settings2=body.GetGenerationSettings(new UnityEngine.Vector2(body.rectTransform.rect.width,0));settings2.horizontalOverflow=UnityEngine.HorizontalWrapMode.Overflow;var gen2=new UnityEngine.TextGenerator();
+ foreach(var line in body.text.Split('\n')){check(gen2.GetPreferredWidth(line,settings2)/body.pixelsPerUnit<=body.rectTransform.rect.width+1,"rules line fits");check(!System.Text.RegularExpressions.Regex.IsMatch(line,@"^[，。；：！？、）》】%]"),"rules no orphan punctuation");}
+ shot(front,"common-rules-top");((UnityEngine.UI.ScrollRect)field(modal,"_scroll")).verticalNormalizedPosition=0;shot(front,"common-rules-bottom");invoke(modal,"Hide",new object[0]);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);return "PASS "+checks.Count+" narration and common rules checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=originalDelay;}
