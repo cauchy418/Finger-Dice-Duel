@@ -8,7 +8,7 @@ namespace FingerDiceDuel.UI
         private RectTransform _adventureObstaclesRoot;
 
         /// <summary>关卡石头只有图像与说明，没有手牌模型或按钮；真实距离来自内核静态占位。</summary>
-        public void ShowAdventureObstacles(bool visible)
+        public void ShowAdventureObstacles(bool visible, int playerRange = 1)
         {
             if (!visible && _adventureObstaclesRoot == null) return;
             if (_adventureObstaclesRoot == null)
@@ -35,6 +35,8 @@ namespace FingerDiceDuel.UI
                 distance.text = "环形座位：你 → 石头 → 教官 → 石头    双方距离2 · 通常射程1";
                 distance.raycastTarget = false;
             }
+            _adventureObstaclesRoot.Find("DistanceLesson").GetComponent<Text>().text =
+                "环形座位：你 → 石头 → 教官 → 石头    双方距离2 · 你的通常射程" + playerRange;
             _adventureObstaclesRoot.gameObject.SetActive(visible);
         }
     }

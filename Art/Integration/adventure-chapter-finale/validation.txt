@@ -1,0 +1,175 @@
+PASS engine Sixth_real_controller_pierces_then_adds_two_then_breaks_and_kills
+PASS engine Seventh_bleed_limp_and_stunned_apply_real_penalties
+PASS engine Seventh_knocked_down_increases_next_hit_not_application_hit_and_completes_alive
+PASS engine Seventh_maneuver_gate_requires_all_four_choices_then_decline
+PASS engine Eighth_follow_up_hits_first_bleed_increases_main_and_total_is_eleven
+PASS engine Ninth_health_gaps_zero_five_thirteen_produce_five_eight_thirteen_damage
+PASS engine Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster
+PASS engine Finale_all_six_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded
+PASS engine Finale_real_free_ai_can_defeat_player_and_does_not_complete_on_loss
+PASS engine New_lessons_are_replayable_have_distinct_keys_and_cannot_skip_demonstrations
+PASS raycast StoryChapter01
+PASS ten battles scroll
+PASS raycast StorySixth
+PASS modal fits lesson 6
+PASS raycast AdventureConfirm
+PASS guide fits lesson 6 step 1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS eight pierces and preserves shield
+PASS guide fits lesson 6 step 3
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS six bonus eight damage
+PASS NPC reforms shield normally
+PASS guide fits lesson 6 step 5
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS sixth win recorded
+PASS modal fits lesson 6
+PASS raycast AdventureSkipTutorial
+PASS sixth continues seventh
+PASS modal fits lesson 7
+PASS raycast AdventureConfirm
+PASS guide fits lesson 7 step 1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS required status offered
+PASS only taught maneuver enabled WizardOption0
+PASS only taught maneuver enabled WizardOption1
+PASS raycast WizardOption0
+PASS bleed turn-start damage visible
+PASS guide fits lesson 7 step 3
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS required status offered
+PASS only taught maneuver enabled WizardOption0
+PASS only taught maneuver enabled WizardOption1
+PASS raycast WizardOption1
+PASS limp halves real range
+PASS guide fits lesson 7 step 5
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS required status offered
+PASS only taught maneuver enabled WizardOption0
+PASS only taught maneuver enabled WizardOption1
+PASS raycast WizardOption0
+PASS stunned attack abandoned without damage
+PASS guide fits lesson 7 step 7
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS required status offered
+PASS only taught maneuver enabled WizardOption0
+PASS only taught maneuver enabled WizardOption1
+PASS raycast WizardOption1
+PASS knocked down applied
+PASS guide fits lesson 7 step 9
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast WizardDecline
+PASS prone next attack six objective
+PASS modal fits lesson 7
+PASS raycast AdventureSkipTutorial
+PASS seventh continues eighth
+PASS raycast AdventureConfirm
+PASS guide fits lesson 8 step 1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS swordsman human choice visible
+PASS tutorial requires follow-up
+PASS raycast AcceptButton
+PASS swordsman real four plus seven kill
+PASS modal fits lesson 8
+PASS raycast AdventureSkipTutorial
+PASS eighth continues ninth
+PASS raycast AdventureConfirm
+PASS guide fits lesson 9 step 1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS guide fits lesson 9 step 3
+PASS gap five attack plus two
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS guide fits lesson 9 step 5
+PASS gap thirteen attack plus five
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS ninth victory
+PASS modal fits lesson 9
+PASS raycast AdventureSkipTutorial
+PASS ninth continues finale selection
+PASS only six fighter subclasses in finale
+PASS no other professions on finale cards
+PASS no other professions on finale cards
+PASS no other professions on finale cards
+PASS no other professions on finale cards
+PASS no other professions on finale cards
+PASS no other professions on finale cards
+PASS selected fighter detail fits
+PASS knight preview text fits Name
+PASS knight preview text fits Stats
+PASS original knight emblem loaded
+PASS raycast FinaleStart
+PASS selected fighter starts finale
+PASS dedicated old knight
+PASS modal fits lesson 10
+PASS raycast AdventureConfirm
+PASS finale true classic setup
+PASS finale dice title
+PASS raycast RollButton
+PASS real rolled initiative starts correct actor
+PASS finale normal AI no protection
+PASS guide fits lesson 10 step 1
+PASS original knight badge on battle header
+PASS normal knight can defeat player
+PASS loss does not complete chapter
+PASS failure heading
+PASS failure no next battle
+PASS modal fits lesson 10
+PASS raycast AdventureConfirm
+PASS retry preserves fighter and resets match
+PASS raycast AdventureConfirm
+PASS retry rerolls
+PASS raycast LessonReturn
+PASS raycast StoryFinale
+PASS raycast Card0
+PASS all fighter selections update fitting detail fighter_champion
+PASS raycast Card1
+PASS all fighter selections update fitting detail fighter_breaker
+PASS raycast Card2
+PASS all fighter selections update fitting detail fighter_swordsman
+PASS raycast Card3
+PASS all fighter selections update fitting detail fighter_arcane_archer
+PASS raycast Card4
+PASS all fighter selections update fitting detail fighter_tactician
+PASS raycast Card5
+PASS all fighter selections update fitting detail fighter_battle_master
+PASS battle master selected
+PASS raycast FinaleStart
+PASS raycast AdventureConfirm
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS finale fighter skill interface works
+PASS finale maneuvers and decline all available
+PASS raycast WizardOption0
+PASS victory saves battle and chapter completion
+PASS chapter complete title
+PASS finale has no eleventh battle
+PASS modal fits lesson 10
+PASS raycast AdventureSecond
+PASS ordinary battle has no lesson
+PASS ordinary battle no training stones
+PASS ordinary dice no lesson hint

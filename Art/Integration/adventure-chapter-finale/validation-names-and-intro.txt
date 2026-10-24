@@ -1,0 +1,44 @@
+PASS opponent unified in battle 1
+PASS battle header unified 1
+PASS opponent unified in battle 2
+PASS battle header unified 2
+PASS opponent unified in battle 3
+PASS battle header unified 3
+PASS opponent unified in battle 4
+PASS battle header unified 4
+PASS opponent unified in battle 5
+PASS battle header unified 5
+PASS raycast AdventureConfirm
+PASS fifth initiative opponent unified
+PASS opponent unified in battle 6
+PASS battle header unified 6
+PASS opponent unified in battle 7
+PASS battle header unified 7
+PASS opponent unified in battle 8
+PASS battle header unified 8
+PASS opponent unified in battle 9
+PASS battle header unified 9
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_champion
+PASS knight stats clearly separate fighter_champion
+PASS intro has no ambiguous old wording or split distance fighter_champion
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_breaker
+PASS knight stats clearly separate fighter_breaker
+PASS intro has no ambiguous old wording or split distance fighter_breaker
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_swordsman
+PASS knight stats clearly separate fighter_swordsman
+PASS intro has no ambiguous old wording or split distance fighter_swordsman
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_arcane_archer
+PASS knight stats clearly separate fighter_arcane_archer
+PASS intro has no ambiguous old wording or split distance fighter_arcane_archer
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_tactician
+PASS knight stats clearly separate fighter_tactician
+PASS intro has no ambiguous old wording or split distance fighter_tactician
+PASS modal fits lesson 10
+PASS intro actual selected subclass fighter_battle_master
+PASS knight stats clearly separate fighter_battle_master
+PASS intro has no ambiguous old wording or split distance fighter_battle_master

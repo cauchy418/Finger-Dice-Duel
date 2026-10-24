@@ -17,6 +17,7 @@ namespace FingerDiceDuel.UI
         private int _selectedIndex = -1;
         private int _columns = 4;
         private float _rowHeight;
+        private float _maxRowHeight = float.PositiveInfinity;
         private Vector2 _size = new Vector2(1120, 540);
         private Func<CharacterDefinition, string> _skillText;
         public event Action<int> SelectionChanged;
@@ -35,10 +36,11 @@ namespace FingerDiceDuel.UI
             SetRoster(roster, initialIndex);
         }
 
-        public void ConfigureGrid(Vector2 position, Vector2 size, int columns = 4)
+        public void ConfigureGrid(Vector2 position, Vector2 size, int columns = 4, float maxRowHeight = float.PositiveInfinity)
         {
             _size = size;
             _columns = columns;
+            _maxRowHeight = maxRowHeight;
             _view.anchoredPosition = position;
             _view.sizeDelta = size;
             Transform track = _view.Find("Scrollbar");
@@ -61,7 +63,7 @@ namespace FingerDiceDuel.UI
             _roster.Clear();
             for (int i = 0; i < roster.Count; i++) _roster.Add(roster[i]);
             float width = (_size.x - 44) / _columns;
-            float height = Mathf.Max(220, width * 0.94f);
+            float height = Mathf.Min(_maxRowHeight, Mathf.Max(220, width * 0.94f));
             _rowHeight = height;
             _content.sizeDelta = new Vector2(_size.x - 24, Mathf.Max(_size.y, Mathf.CeilToInt(roster.Count / (float)_columns) * height + 64));
             _content.anchoredPosition = Vector2.zero;

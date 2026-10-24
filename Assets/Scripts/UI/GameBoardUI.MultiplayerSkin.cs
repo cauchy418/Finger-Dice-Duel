@@ -102,6 +102,8 @@ namespace FingerDiceDuel.UI
             panel.SeatText.color = panel.Relation == RingRelation.Self ? BattleArt.Gold
                 : panel.Relation == RingRelation.Teammate ? new Color(0.5f, 0.85f, 0.85f) : BattleArt.Ink;
             int range = GameManager.BaseRangeOf(player);
+            int statusRange = StatusRules.EffectiveAttackRange(player, EffectContext);
+            if (statusRange >= 0) range = statusRange;
             panel.StatusText.text = "攻 " + Signed(StatusRules.EffectiveAttackBonus(player)) + "   防 " + Signed(StatusRules.EffectiveDefenseBonus(player))
                 + "   距 " + (range == int.MaxValue ? "∞" : range.ToString());
             panel.StatusIcons.Refresh(player,EffectContext);

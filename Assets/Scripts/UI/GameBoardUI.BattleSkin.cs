@@ -265,12 +265,16 @@ namespace FingerDiceDuel.UI
             name.text = player.Name == display ? display : display + "（" + player.Name + "）";
             var stats = top ? _statusTextB : _statusTextA;
             int range = GameManager.BaseRangeOf(player);
+            int statusRange = StatusRules.EffectiveAttackRange(player, EffectContext);
+            if (statusRange >= 0) range = statusRange;
             stats.text = "攻 " + Signed(StatusRules.EffectiveAttackBonus(player)) + "    防 " +
                 Signed(StatusRules.EffectiveDefenseBonus(player)) + "    距 " + (range == int.MaxValue ? "∞" : range.ToString())
                 + "    " + HandVisual.ShieldSummary(player);
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
             string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
-            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : "Subclasses/" + id);
+            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == FingerDiceDuel.Assistant.AdventureChapter.KnightId
+                ? FingerDiceDuel.Assistant.AdventureChapter.KnightEmblem
+                : id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : "Subclasses/" + id);
             BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));
         }
 

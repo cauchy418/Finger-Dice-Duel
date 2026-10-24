@@ -68,6 +68,9 @@ namespace FingerDiceDuel.Assistant
             /// <summary>true = 半自由阶段（提示但不限制点击）。</summary>
             public bool FreeClicks;
 
+            /// <summary>战斗大师教学：指定本拍状态；None表示必须不附加。</summary>
+            public StatusEffect? Maneuver;
+
             // 引导抉择：非null必须选这只手；null必须放弃。不覆盖普通对局或自由练习。
             public readonly Dictionary<HandEffect, Hand> Choices = new Dictionary<HandEffect, Hand>();
 
@@ -151,6 +154,9 @@ namespace FingerDiceDuel.Assistant
         /// <summary>教程白名单：这张手当前允许被【玩家】点击吗？</summary>
         public bool AllowAcceptChoice => !TryRequiredChoice(out var hand) || hand != null;
         public bool AllowDeclineChoice => !TryRequiredChoice(out var hand) || hand == null;
+
+        public bool AllowManeuver(StatusEffect status)
+            => IsFreeStage || CurrentBeat?.Maneuver == null || CurrentBeat.Maneuver.Value == status;
 
         private bool TryRequiredChoice(out Hand hand)
         {

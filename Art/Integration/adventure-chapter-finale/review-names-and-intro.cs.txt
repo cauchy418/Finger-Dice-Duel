@@ -1,0 +1,23 @@
+var originalDelay=boot.AiThinkSeconds;
+try{
+ boot.AiThinkSeconds=1000;
+ for(int n=1;n<=9;n++){
+  invoke(boot,"StartAdventureLevel",new object[]{n,true});reload();
+  check(lesson.Soldier.Name==FingerDiceDuel.Assistant.AdventureChapter.InstructorName,"opponent unified in battle "+n);
+  check(((UnityEngine.UI.Text)field(board,"_nameTextB")).text=="哨站教官","battle header unified "+n);
+  if(n==1)shot(canvas,"first-unified-instructor");
+  if(n==5){click(confirm,canvas);var dice=(FingerDiceDuel.UI.DiceRollScreen)field(boot,"_diceRoll");check(((UnityEngine.UI.Text)field(field(dice,"_dieB"),"_caption")).text=="哨站教官","fifth initiative opponent unified");}
+ }
+ invoke(boot,"ReturnToAdventure",new object[0]);invoke(boot,"StartAdventureLevel",new object[]{10,false});
+ var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_finaleRoster");var roles=FingerDiceDuel.Assistant.AdventureChapter.FinaleRoster;
+ for(int i=0;i<roles.Count;i++){
+  roster.Select(i);invoke(boot,"StartAdventureLevel",new object[]{10,true});reload();modalLayout();
+  var body=(UnityEngine.UI.Text)field(panel,"_modalBody");check(body.text.Contains("本场子职："+roles[i].DisplayName),"intro actual selected subclass "+roles[i].Id);
+  check(body.text.Contains("对手：哨站骑士")&&body.text.Contains("骑士攻击+1、防御+1、距离1"),"knight stats clearly separate "+roles[i].Id);
+  check(!body.text.Contains("刚才选择")&&!body.text.Contains("距离\n1"),"intro has no ambiguous old wording or split distance "+roles[i].Id);
+  if(i==roles.Count-1)shot(canvas,"finale-intro");
+  invoke(boot,"ReturnToAdventure",new object[0]);invoke(boot,"StartAdventureLevel",new object[]{10,false});
+ }
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.StoryBattleSelect);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-names-and-intro.txt"),checks);return "PASS "+checks.Count+" names and intro checks";
+}finally{boot.AiThinkSeconds=originalDelay;}

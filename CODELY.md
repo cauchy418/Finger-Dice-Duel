@@ -18,7 +18,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | **1215项全部通过**（2026-10-24），含整局统计与集火实验；Unity条件编译和UI编译通过。德鲁伊实际引擎/UI **83项通过**，边境哨站章节教学验收见下文；各阶段验收保存在 `Art/Integration/` |
+| 测试 | **1225项全部通过**（2026-10-24），含整局统计与集火实验；Unity条件编译和UI编译通过。德鲁伊实际引擎/UI **83项通过**，边境哨站章节教学验收见下文；各阶段验收保存在 `Art/Integration/` |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **59,280** 局、2v2 **94,848** 局、双将 **654,264** 局、集火实验 **140,400** 局；
@@ -438,11 +438,11 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 全量1184项测试、11项专项及83项实际界面检查通过；验收见 [记录](Art/Integration/druid-forms/README.md)，素材/精确提示词见 [制作记录](Art/Production/druid-forms-v1/README.md)。
 
-## 第一章：边境哨站五战（2026-10-24）
+## 第一章：边境哨站十战（2026-10-24）
 
-剧情冒险→章节列表→“第一章：边境哨站”→初战至五战滚动列表，各战独立PlayerPrefs键`FingerDiceDuel.Adventure.LevelN.Completed`，保留初战旧键。前三战通关可跳入安全自由练习；四战重打完整指引，五战每次真实投骰。完成前四战可继续下一战。所有关卡共用`Backgrounds/border_outpost_chapter_01`，退出清理后恢复普通桌面。NPC使用旧头盔徽记，不增可玩角色。
+剧情冒险→章节列表→“第一章：边境哨站”→初战至终战滚动列表，各战独立PlayerPrefs键`FingerDiceDuel.Adventure.LevelN.Completed`，保留初战旧键。前三战通关可跳入安全自由练习；四战重打完整指引，五战每次真实投骰。完成前九战可继续下一战（九战进入终战选角）。所有关卡共用`Backgrounds/border_outpost_chapter_01`，退出清理后恢复普通桌面。NPC使用旧头盔徽记，不增可玩角色。
 
-`AdventureLesson`共享导演、点击与选择白名单、安全AI；`AdventureLevel1..5`保存关卡数据。初战7步基础教学，次战5步十点重击。三战7步：2/1对3/预成盾5，合盾→受击连锁→再合盾修复双盾→教官5＋5→1→主动盾5＋1＝6（7伤/流血）→教官4＋6→1→安全练习。教程不替玩家自动作答；必须发动的连锁/射程隐藏放弃，须保留盾时隐藏发动，防止误选后卡关。自由阶段无此约束。
+`AdventureLesson`共享导演、点击与选择白名单、安全AI；`AdventureLevel1..10`保存关卡数据。初战7步基础教学，次战5步十点重击。三战7步：2/1对3/预成盾5，合盾→受击连锁→再合盾修复双盾→教官5＋5→1→主动盾5＋1＝6（7伤/流血）→教官4＋6→1→安全练习。教程不替玩家自动作答；必须发动的连锁/射程隐藏放弃，须保留盾时隐藏发动，防止误选后卡关。自由阶段无此约束。
 
 `IShieldBreakChoiceProvider`由破阵者实现，控制器在实际防守盾确定后暂停，收集被动连锁，再继续同次结算；不再用加数手猜盾。双盾由玩家先选防守盾，连锁可选另一面完整盾，拒绝不循环。`_preTargetRangeAnswered`记住已答的射程选择，确认目标时不重复提问。`ConfirmTargetPlayer`拒绝不可达攻击，四战配置固定占位时，射程选择后仍回到目标确认。普通1v1原有射程抉择后直接结算流程保留。
 
@@ -453,6 +453,12 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 `AdventureGuideHistory`只保存已解锁文字，不持有对局状态；上一页/下一页/回到当前，浏览旧页时刷新和新步骤不强制跳走，跟随当前时正常前进；新关卡清空记录。翻页按钮位于指引面板底部，正文保留独立空间。
 
 三份设计先落盘再编码：[三战](Docs/Adventure/level-03.md)、[四战](Docs/Adventure/level-04.md)、[五战](Docs/Adventure/level-05.md)。新增12项后续关卡专项、3项指引历史专项，全量1215项通过，Unity条件/UI编译通过；含初战/次战原16项回归。实际引擎138项检查覆盖老兵投骰解释、真实随机先攻、失败与胜利、重投/返回、石头避让及翻页，见[最新验收](Art/Integration/adventure-later-training/README.md)。旧双教学[验收](Art/Integration/adventure-chapter-01/README.md)保留历史截图。占位石头以内置imagegen绘制，[原图与提示词](Art/Production/border-outpost-stone-v1/README.md)；不手改meta。挑战仍预留。
+
+`AdventureChapter`统一十战名称、入口提示、固定训练角色及终战战士池；前九战对手统一使用InstructorName“哨站教官”。终战开场明确显示实际所选子职，骑士属性与经典流程单独分行。六战魔射手单NPC20生命，连续穿盾8伤、增伤8伤、两段4先破盾再击杀，NPC主动改变盾手并重新正常合盾，无中途造盾。八战剑士追加固定4先附流血，再主7，共11；九战战术家体力差0/5/13，动态攻防0/1/4，攻击5/8/13。七战40生命、训练射程2教官以普通核心动作展示四状态，`Beat.Maneuver`和`AllowManeuver`只约束教学状态按钮，最后必须拒绝附加；NPC算出8因震慑无目标而放弃，倒伏下一击4→6后完成目标，NPC仍可存活。普通/终战抉择不受限制。跛脚后的实际射程同步显示于1v1和多人面板。
+
+终战`AdventureFinaleSelect`独立选角，`AdventureChapter.FinaleRoster`仅包含已注册的6个战士子职，三列两行完整可见；详情跟随选择。对手`AdventureChapter.Knight`为关卡定义（None逻辑，20生命，攻防+1/+1、射程1），不加入BuiltIn，也不使用王冠之誓。`Adventure/knight_original.png`直接复用`Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_the_crown.png`原骑士徽记；选角与战斗都用同一资源。终战复用第五战真实经典流程、Greedy AI，重打保留选择并重新投骰，返回章内可重选。胜利保存Level10及`FingerDiceDuel.Adventure.Chapter1.Completed`，失败/平局不覆盖既有记录。所有新增关卡共用哨站背景，退出清理章节专属状态。
+
+五份设计先落盘：[六战](Docs/Adventure/level-06.md)、[七战](Docs/Adventure/level-07.md)、[八战](Docs/Adventure/level-08.md)、[九战](Docs/Adventure/level-09.md)、[终战](Docs/Adventure/level-10.md)。新增`AdventureChapterFinaleTests`10项，实际控制器覆盖完整演算、四状态与必选门禁、6子职池、终战无安全AI及重开；旧关卡专项保持通过；全量1225项、Unity条件/UI编译、实际引擎175项主流程通过；姓名/终战开场文案补充后，41项冒险专项与44项引擎复验通过（引擎合计219项）。最新编译/回归/引擎与截图见[验收记录](Art/Integration/adventure-chapter-finale/README.md)。此前138项五战验收保留历史版本口径。
 
 ## Codely Structured Memories
 

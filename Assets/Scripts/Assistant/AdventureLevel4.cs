@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Assistant
         public static void Prepare(GameManager game)
         {
             game.PlayerA.LeftHand.SetValue(1); game.PlayerA.RightHand.SetValue(1);
-            game.PlayerB.Rename("训练教官"); game.PlayerB.SetMaxHealth(18);
+            game.PlayerB.Rename(AdventureChapter.InstructorName); game.PlayerB.SetMaxHealth(18);
             game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(4);
             game.ConfigureSeatObstacles(1, 1);
         }

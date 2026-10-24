@@ -15,7 +15,7 @@ namespace FingerDiceDuel.UI
         private readonly Image[] _wizardIcons=new Image[16];
         private Button _wizardDecline;
 
-        public void SetWizardChoices(BoardController controller, Action changed)
+        public void SetWizardChoices(BoardController controller, Action changed, Func<StatusEffect, bool> allowManeuver = null)
         {
             bool resistance=controller.IsHumanChooser && controller.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType;
             bool maneuver=controller.IsHumanChooser && controller.PendingEffect==HandEffect.BattleMasterManeuver;
@@ -47,6 +47,7 @@ namespace FingerDiceDuel.UI
                 rect.anchoredPosition=new Vector2((i%columns-(columns-1)*0.5f)*(painted?230:450),
                     (skill?panelHeight/2-145:resistance?75:maneuver?10:panelHeight/2-130)-(i/columns)*(painted?156:102));
                 button.onClick.RemoveAllListeners();
+                button.interactable=true;
                 var label=button.GetComponentInChildren<Text>();
                 label.rectTransform.anchoredPosition=new Vector2(0,painted?-45:0);
                 label.rectTransform.sizeDelta=new Vector2(rect.sizeDelta.x-22,painted?34:74);
@@ -70,9 +71,10 @@ namespace FingerDiceDuel.UI
                 {
                     // 战士·战斗大师：两个招式状态按钮（图标与状态图标栏同源）。
                     var status=maneuvers[index];
+                    button.interactable=allowManeuver==null || allowManeuver(status);
                     _wizardIcons[i].sprite=BattleArt.Get("Status/"+StatusNames.IconKeyOf(status));
                     label.text=StatusNames.Of(status);
-                    button.onClick.AddListener(()=> {controller.ChooseBattleMasterManeuver(status);changed();});
+                    button.onClick.AddListener(()=> {if(allowManeuver==null || allowManeuver(status)) controller.ChooseBattleMasterManeuver(status);changed();});
                     BattleTooltip.Set(button.GetComponent<Image>(),StatusNames.Describe(status));
                 }
                 else
@@ -85,8 +87,9 @@ namespace FingerDiceDuel.UI
             _wizardDecline.gameObject.SetActive(!skill && (maneuver||(!resistance && request!=null && request.AllowDecline)));
             if(!resistance && !skill) _wizardDecline.GetComponentInChildren<Text>().text=maneuver?"不附加":request.DeclineLabel;
             _wizardDecline.onClick.RemoveAllListeners();
+            _wizardDecline.interactable=!maneuver || allowManeuver==null || allowManeuver(StatusEffect.None);
             _wizardDecline.onClick.AddListener(()=> {
-                if(maneuver) controller.DeclineBattleMasterManeuver();
+                if(maneuver) {if(allowManeuver==null || allowManeuver(StatusEffect.None)) controller.DeclineBattleMasterManeuver();}
                 else controller.ChooseWizardHand(null);
                 changed();});
             // 模态窗口接管全部本次抉择，避免底层留有重复入口。

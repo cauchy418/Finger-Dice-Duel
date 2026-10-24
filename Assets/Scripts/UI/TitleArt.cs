@@ -83,6 +83,8 @@ namespace FingerDiceDuel.UI
 
         /// <summary>章节内战斗选择，初战/次战与后续关卡。</summary>
         StoryBattleSelect = 24,
+
+        AdventureFinaleSelect = 25,
     }
 
     /// <summary>

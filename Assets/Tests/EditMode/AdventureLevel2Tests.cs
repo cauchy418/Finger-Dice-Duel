@@ -58,6 +58,7 @@ namespace FingerDiceDuel.Tests
         public void Full_script_compares_ordinary_seven_with_heavy_seven_and_wins()
         {
             var level = Setup(out var board);
+            Assert.AreEqual(AdventureChapter.InstructorName, level.Soldier.Name);
             level.BeginTutorial();
             Assert.AreEqual(5, level.StepCount);
             Assert.IsFalse(level.Soldier.LeftHand.IsShield, "起手5不是完整盾（遵循初始5的碎盾口径）");

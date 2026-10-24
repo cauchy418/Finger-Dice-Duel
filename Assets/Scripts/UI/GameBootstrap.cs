@@ -124,7 +124,7 @@ namespace FingerDiceDuel.UI
         private ScreenGroup _screenStoryBattles;
         private Text _storyFirstStatus;
         private Text _storySecondStatus;
-        private readonly Text[] _storyStatuses = new Text[5];
+        private readonly Text[] _storyStatuses = new Text[AdventureChapter.BattleCount];
         /// <summary>竞技模式（原 1v1 / 2v2 / 8 人）。</summary>
         private ScreenGroup _screenCompetition;
         /// <summary>娱乐模式（现只有双将）。</summary>
@@ -466,6 +466,7 @@ namespace FingerDiceDuel.UI
             // 玩家要求的三大模式层级
             BuildAdventureScreen();
             BuildStoryChapterScreen();
+            BuildAdventureFinaleScreen();
             BuildCompetitionScreen();
             BuildCasualScreen();
             BuildDualGeneralScreen();
@@ -646,14 +647,14 @@ namespace FingerDiceDuel.UI
             return title;
         }
 
-        /// <summary>冒险入口：剧情五场训练已接入，挑战关卡预留。</summary>
+        /// <summary>冒险入口：剧情十场训练已接入，挑战关卡预留。</summary>
         private void BuildAdventureScreen()
         {
             _screenAdventure = new ScreenGroup();
             _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
 
             Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
-                                           "剧情冒险", "第一章：边境哨站 · 五场训练",
+                                           "剧情冒险", "第一章：边境哨站 · 十场训练",
                                            () => ShowScreen(GameScreen.StoryChapterSelect));
             Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
                                             "挑战关卡", "即将开放",
@@ -669,7 +670,7 @@ namespace FingerDiceDuel.UI
             _screenStoryChapter = new ScreenGroup();
             _screenStoryChapter.Add(MakeSubTitle(_selectRoot, "StoryChaptersTitle", "剧情冒险").gameObject);
             _screenStoryChapter.Add(MakeSubModeButton(_selectRoot, "StoryChapter01", new Vector2(0f, 60f),
-                "第一章：边境哨站", "初战至五战 · 老兵的指尖骰术指导",
+                "第一章：边境哨站", "初战至终战 · 老兵的指尖骰术指导",
                 () => ShowScreen(GameScreen.StoryBattleSelect)).gameObject);
             _screenStoryChapter.Add(MakeBackButton(_selectRoot, GameScreen.Adventure).gameObject);
 
@@ -679,14 +680,13 @@ namespace FingerDiceDuel.UI
             _screenStoryBattles.Add(heading.gameObject);
             var scroll = FrontEndArt.Scroll(_selectRoot, "StoryBattleScroll", new Vector2(0, -10),
                 new Vector2(880, 680), out RectTransform content);
-            content.sizeDelta = new Vector2(880, 760);
-            string[] names = { "StoryFirst", "StorySecond", "StoryThird", "StoryFourth", "StoryFifth" };
-            string[] hints = { "攻击 / 合盾 / 回复", "勇士 · 十点重击", "破阵者 · 连锁 / 修复 / 流血", "座位距离 / 碎盾换射程", "经典先攻 / 自由实战" };
-            for (int i = 0; i < 5; i++)
+            content.sizeDelta = new Vector2(880, AdventureChapter.BattleCount * 148 + 20);
+            string[] names = { "StoryFirst", "StorySecond", "StoryThird", "StoryFourth", "StoryFifth", "StorySixth", "StorySeventh", "StoryEighth", "StoryNinth", "StoryFinale" };
+            for (int i = 0; i < AdventureChapter.BattleCount; i++)
             {
                 int number = i + 1;
                 Button battle = MakeSubModeButton(content, names[i], new Vector2(0, -76 - i * 148),
-                    "边境哨站·" + AdventureBattleName(number), hints[i], () => StartAdventureLevel(number));
+                    "边境哨站·" + AdventureBattleName(number), AdventureChapter.Hint(number), () => StartAdventureLevel(number));
                 battle.GetComponent<RectTransform>().anchorMin = battle.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
                 _storyStatuses[i] = battle.transform.Find("Sub").GetComponent<Text>();
             }
@@ -696,14 +696,13 @@ namespace FingerDiceDuel.UI
         }
 
         private static string AdventureBattleName(int number)
-            => new[] { "初战", "次战", "三战", "四战", "五战" }[number - 1];
+            => AdventureChapter.BattleName(number);
 
         private void RefreshStoryProgress()
         {
-            string[] hints = { "攻击 / 合盾 / 回复", "勇士 · 十点重击", "破阵者 · 连锁 / 修复 / 流血", "座位距离 / 碎盾换射程", "经典先攻 / 自由实战" };
             for (int i = 0; i < _storyStatuses.Length; i++)
                 if (_storyStatuses[i] != null)
-                    _storyStatuses[i].text = hints[i] + "  ·  " +
+                    _storyStatuses[i].text = AdventureChapter.Hint(i + 1) + "  ·  " +
                         (PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level" + (i + 1) + ".Completed", 0) != 0 ? "已通关" : i == 0 ? "推荐先学" : "待练习");
         }
 
@@ -718,11 +717,13 @@ namespace FingerDiceDuel.UI
         private void StartAdventureLevel1() => StartAdventureLevel(1);
         private void StartAdventureLevel2() => StartAdventureLevel(2);
 
-        private void StartAdventureLevel(int levelNumber)
+        private void StartAdventureLevel(int levelNumber, bool launchFinale = false)
         {
+            if (levelNumber < 1 || levelNumber > AdventureChapter.BattleCount) throw new ArgumentOutOfRangeException(nameof(levelNumber));
             CleanupMatch();
-            _pendingDefA = levelNumber >= 3 ? CharacterDefinition.Breaker : CharacterDefinition.Champion;
-            _pendingDefB = CharacterDefinition.Blank;
+            if (levelNumber == 10 && !launchFinale) { ShowScreen(GameScreen.AdventureFinaleSelect); return; }
+            _pendingDefA = levelNumber == 10 ? AdventureChapter.FinaleRoster[Mathf.Clamp(_finaleIndex, 0, AdventureChapter.FinaleRoster.Count - 1)] : AdventureChapter.PlayerDefinition(levelNumber);
+            _pendingDefB = levelNumber == 10 ? AdventureChapter.Knight : CharacterDefinition.Blank;
 
             _choiceA = new SimpleChoiceProvider();
             _choiceB = new SimpleChoiceProvider();
@@ -737,7 +738,12 @@ namespace FingerDiceDuel.UI
                 case 2: AdventureLevel2.Prepare(_game); _adventure = AdventureLevel2.Attach(_game, _controller); break;
                 case 3: AdventureLevel3.Prepare(_game); _adventure = AdventureLevel3.Attach(_game, _controller); break;
                 case 4: AdventureLevel4.Prepare(_game); _adventure = AdventureLevel4.Attach(_game, _controller); break;
-                case 5: _game.PlayerB.Rename("训练教官"); _adventure = AdventureLevel5.Attach(_game, _controller); break;
+                case 5: _game.PlayerB.Rename(AdventureChapter.InstructorName); _adventure = AdventureLevel5.Attach(_game, _controller); break;
+                case 6: AdventureLevel6.Prepare(_game); _adventure = AdventureLevel6.Attach(_game, _controller); break;
+                case 7: AdventureLevel7.Prepare(_game); _adventure = AdventureLevel7.Attach(_game, _controller); break;
+                case 8: AdventureLevel8.Prepare(_game); _adventure = AdventureLevel8.Attach(_game, _controller); break;
+                case 9: AdventureLevel9.Prepare(_game); _adventure = AdventureLevel9.Attach(_game, _controller); break;
+                case 10: _adventure = AdventureLevel10.Attach(_game, _controller); break;
                 default: throw new ArgumentOutOfRangeException(nameof(levelNumber));
             }
             _adventure.Bind(_controller);
@@ -753,7 +759,7 @@ namespace FingerDiceDuel.UI
             StartPreparedMatch(beginTurn: !_adventure.UsesClassicSetup);
             _board.SetTitle(_adventure.DisplayTitle);
             _board.SetBattleBackground(_adventure.BattleBackgroundKey);
-            _board.ShowAdventureObstacles(_adventure.LevelNumber == 4);
+            _board.ShowAdventureObstacles(_adventure.LevelNumber == 4 || _adventure.LevelNumber == 7, _adventure.LevelNumber == 7 ? 2 : 1);
 
             // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回章内战斗列表。
             _board.HideAdventureNarration();
@@ -772,7 +778,7 @@ namespace FingerDiceDuel.UI
             {
                 _board.SetVisible(false);
                 _diceRoll.Begin(_game);
-                _diceRoll.SetLesson("边境哨站·五战 · 经典先攻", ReturnToAdventure);
+                _diceRoll.SetLesson("边境哨站·" + AdventureBattleName(_adventure.LevelNumber) + " · 经典先攻", ReturnToAdventure);
                 ShowScreen(GameScreen.DiceRoll);
                 return;
             }
@@ -790,7 +796,7 @@ namespace FingerDiceDuel.UI
         /// <summary>胜利要点卡上的「重打本关」。</summary>
         private void OnAdventureReplay()
         {
-            StartAdventureLevel(_adventure?.LevelNumber ?? 1);
+            StartAdventureLevel(_adventure?.LevelNumber ?? 1, true);
         }
 
         /// <summary>从冒险关卡返回章节页。</summary>
@@ -2464,6 +2470,7 @@ namespace FingerDiceDuel.UI
             _screenAdventure?.SetVisible(screen == GameScreen.Adventure);
             _screenStoryChapter?.SetVisible(screen == GameScreen.StoryChapterSelect);
             _screenStoryBattles?.SetVisible(screen == GameScreen.StoryBattleSelect);
+            _screenAdventureFinale?.SetVisible(screen == GameScreen.AdventureFinaleSelect);
             if (screen == GameScreen.StoryBattleSelect) RefreshStoryProgress();
             _screenCompetition?.SetVisible(screen == GameScreen.Competition);
             _screenCasual?.SetVisible(screen == GameScreen.Casual);
@@ -2956,7 +2963,7 @@ namespace FingerDiceDuel.UI
         /// <summary>重开：回到角色选择（保留已选角色，方便换对手再打）。</summary>
         private void OnRestartClicked()
         {
-            if (_adventure != null) { StartAdventureLevel(_adventure.LevelNumber); return; }
+            if (_adventure != null) { StartAdventureLevel(_adventure.LevelNumber, true); return; }
             CleanupMatch();
             ShowScreen(GameScreen.CharacterSelect);
         }
@@ -3483,7 +3490,7 @@ namespace FingerDiceDuel.UI
                           $"panelVisible={_board.IsDamageTypePanelVisible}");
             }
 
-            _board.SetWizardChoices(_controller,RefreshView);
+            _board.SetWizardChoices(_controller,RefreshView, _adventure == null ? (Func<StatusEffect, bool>)null : _adventure.AllowManeuver);
 
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
@@ -3500,6 +3507,7 @@ namespace FingerDiceDuel.UI
                     if (_adventure.IsComplete)
                     {
                         PlayerPrefs.SetInt(_adventure.CompletionKey, 1);
+                        if (_adventure.LevelNumber == 10) PlayerPrefs.SetInt(AdventureChapter.CompletionKey, 1);
                         PlayerPrefs.Save();
                     }
                     string heading = _adventure.IsComplete ? _adventure.ResultHeading
@@ -3508,8 +3516,8 @@ namespace FingerDiceDuel.UI
                     _board.ShowAdventureVictory(heading + " · " + _adventure.DisplayTitle,
                         _adventure.IsComplete ? _adventure.SummaryText : _adventure.FailureText, AdventureLevel1.GuideAvatarKey,
                         OnAdventureReplay, ReturnToAdventure,
-                        _adventure.IsComplete && next <= 5 ? (System.Action)(() => StartAdventureLevel(next)) : null,
-                        next <= 5 ? "继续" + AdventureBattleName(next) : null,
+                        _adventure.IsComplete && next <= AdventureChapter.BattleCount ? (System.Action)(() => StartAdventureLevel(next)) : null,
+                        next <= AdventureChapter.BattleCount ? "继续" + AdventureBattleName(next) : null,
                         _adventure.UsesClassicSetup ? "重新投骰" : "重打本关");
                 }
             }

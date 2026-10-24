@@ -235,6 +235,7 @@ namespace FingerDiceDuel.Tests
             foreach (int n in new[] { 3, 4, 5 })
             {
                 var l = Setup(n, false);
+                Assert.AreEqual(AdventureChapter.InstructorName, l.Soldier.Name);
                 Assert.AreEqual(n, l.LevelNumber);
                 Assert.AreEqual("FingerDiceDuel.Adventure.Level" + n + ".Completed", l.CompletionKey);
                 Assert.AreEqual("Backgrounds/border_outpost_chapter_01", l.BattleBackgroundKey);

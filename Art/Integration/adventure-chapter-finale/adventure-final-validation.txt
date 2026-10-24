@@ -1,0 +1,53 @@
+── AdventureChapterFinaleTests  (10 项)
+   PASS  Eighth_follow_up_hits_first_bleed_increases_main_and_total_is_eleven
+   PASS  Finale_all_six_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded
+   PASS  Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster
+   PASS  Finale_real_free_ai_can_defeat_player_and_does_not_complete_on_loss
+   PASS  New_lessons_are_replayable_have_distinct_keys_and_cannot_skip_demonstrations
+   PASS  Ninth_health_gaps_zero_five_thirteen_produce_five_eight_thirteen_damage
+   PASS  Seventh_bleed_limp_and_stunned_apply_real_penalties
+   PASS  Seventh_knocked_down_increases_next_hit_not_application_hit_and_completes_alive
+   PASS  Seventh_maneuver_gate_requires_all_four_choices_then_decline
+   PASS  Sixth_real_controller_pierces_then_adds_two_then_breaks_and_kills
+
+── AdventureGuideHistoryTests  (3 项)
+   PASS  Navigation_only_visits_unlocked_pages_and_returns_to_current
+   PASS  Refresh_and_new_step_preserve_manual_history_reading
+   PASS  Reset_between_lessons_clears_history_and_cannot_show_future_guides
+
+── AdventureLaterLevelsTests  (12 项)
+   PASS  Fifth_ai_can_attack_kill_player_and_failure_is_not_completion
+   PASS  Fifth_ai_can_heal_and_form_shields_without_protection_filter
+   PASS  Fifth_uses_real_classic_allocation_and_higher_roller_first
+   PASS  Fourth_out_of_range_can_borrow_addend_but_must_abandon_without_damage
+   PASS  Fourth_range_break_enables_target_deals_nine_and_finishes_objective
+   PASS  Later_lesson_metadata_keys_background_and_replay_data_are_independent
+   PASS  Passive_chain_uses_actual_selected_shield_even_when_addend_is_not_shield
+   PASS  Seat_obstacle_setup_rejects_invalid_counts_and_tracks_seats_after_swap
+   PASS  Seat_obstacles_do_not_change_normal_distance_targets_or_winner
+   PASS  Third_active_shield_attack_adds_bleed_and_free_stage_is_reached
+   PASS  Third_choice_gate_requires_enemy_chain_and_declines_own_extra_shields
+   PASS  Third_passive_break_chains_without_bleed_and_reforming_repairs_both
+
+── AdventureLevel1Tests  (8 项)
+   PASS  Free_practice_keeps_soldier_safe_for_many_turns_and_round_limit
+   PASS  Full_script_plays_out_with_verified_values_and_player_wins
+   PASS  Guarded_soldier_never_heals_or_shields_and_keeps_attacks_reachable
+   PASS  Guided_beats_reject_wrong_hands_without_advancing
+   PASS  Level_metadata_and_texts_are_ready
+   PASS  Ordinary_match_has_no_scripted_rest_permission
+   PASS  Skipping_completed_tutorial_omits_opening_and_new_level_resets
+   PASS  Soldier_rests_when_every_operation_attacks_heals_or_shields
+
+── AdventureLevel2Tests  (8 项)
+   PASS  Both_initial_player_choices_and_observation_beats_have_correct_guidance
+   PASS  Free_practice_stays_safe_over_random_games_and_round_limit
+   PASS  Full_script_compares_ordinary_seven_with_heavy_seven_and_wins
+   PASS  Heavy_strike_step_restricts_source_and_addend_and_waits_for_confirmation
+   PASS  Instructor_rests_if_every_operation_has_an_effect
+   PASS  Metadata_uses_distinct_keys_and_full_chapter_names
+   PASS  Replay_resets_health_hands_skill_uses_and_guided_progress
+   PASS  Skipping_guide_uses_safe_moves_instead_of_opening_script
+
+────────────────────────────────────────────────────────────
+通过 41 / 失败 0

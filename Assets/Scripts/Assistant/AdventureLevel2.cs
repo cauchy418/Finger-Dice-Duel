@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Assistant
         public const string Title = "第一章：边境哨站·次战";
         public const int InstructorMaxHealth = 18;
         public const string IntroText =
-            "初战过后，老兵请来训练教官。\n" +
+            "初战过后，老兵请来哨站教官。\n" +
             "「勇士不只会凑攻击数字，还要让两只手相互配合。」\n" +
             "本课学习十点重击：运算后，自身双手和为10时，攻击自动发动重击。\n" +
             "基础伤害先×1.5，再计算攻防。";
@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Assistant
         {
             game.PlayerA.LeftHand.SetValue(1);
             game.PlayerA.RightHand.SetValue(6);
-            game.PlayerB.Rename("训练教官");
+            game.PlayerB.Rename(AdventureChapter.InstructorName);
             game.PlayerB.LeftHand.SetValue(5);
             game.PlayerB.RightHand.SetValue(8);
             game.PlayerB.SetMaxHealth(InstructorMaxHealth);

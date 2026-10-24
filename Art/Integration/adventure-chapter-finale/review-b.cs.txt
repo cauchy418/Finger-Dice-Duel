@@ -1,0 +1,31 @@
+checks.AddRange(System.IO.File.ReadAllLines(System.IO.Path.Combine(output,"validation-a.txt")));
+try{
+ var dice=(FingerDiceDuel.UI.DiceRollScreen)field(boot,"_diceRoll");
+ if(boot.CurrentScreen==FingerDiceDuel.UI.GameScreen.DiceRoll){
+  var narration=(UnityEngine.UI.Text)field(dice,"_lessonNarration");check(narration.preferredHeight<=narration.rectTransform.rect.height,"finale initiative narration fits");shot(front,"finale-allocation");
+  var available=((System.Collections.Generic.List<UnityEngine.GameObject>)field(dice,"_optionButtons")).FirstOrDefault(o=>o.activeInHierarchy);
+  if(available==null)return "WAIT AI assignment";click(available.GetComponent<UnityEngine.UI.Button>(),front);
+  if(boot.CurrentScreen==FingerDiceDuel.UI.GameScreen.DiceRoll)return "WAIT remaining AI assignment";
+ }
+ reload();var start=(FingerDiceDuel.Assistant.MatchStartController)field(dice,"_controller");
+ check(lesson.Started&&object.ReferenceEquals(control.ActivePlayer,start.FirstToAct),"real rolled initiative starts correct actor");check(control.ScriptedRestAllowed==null,"finale normal AI no protection");layout();shot(canvas,"finale-free-battle");
+ check(((UnityEngine.UI.Image)field(board,"_badgeB")).sprite.name==FingerDiceDuel.Assistant.AdventureChapter.KnightEmblem,"original knight badge on battle header");
+ // A controlled lethal scenario verifies loss/retry UI; attacks still use the actual AI/controller.
+ lesson.Player.SetHealthExact(1);lesson.Player.LeftHand.SetValue(1);lesson.Player.RightHand.SetValue(1);lesson.Soldier.LeftHand.SetValue(3);lesson.Soldier.RightHand.SetValue(7);control.SetFirstPlayer(lesson.Soldier);control.BeginTurn();refresh();npc();
+ check(lesson.IsFinished&&!lesson.IsComplete,"normal knight can defeat player");check(UnityEngine.PlayerPrefs.GetInt(keys[9],0)==0&&UnityEngine.PlayerPrefs.GetInt(keys[10],0)==0,"loss does not complete chapter");
+ check(((UnityEngine.UI.Text)field(panel,"_modalTitle")).text.Contains("训练失利"),"failure heading");check(!skip.gameObject.activeInHierarchy,"failure no next battle");modalLayout();shot(canvas,"finale-defeat");
+ var selected=lesson.Player.Definition.Id;click(confirm,canvas);reload();check(!lesson.Started&&lesson.Player.Definition.Id==selected&&lesson.Player.Health==20&&lesson.Soldier.Health==20,"retry preserves fighter and resets match");click(confirm,canvas);check(((FingerDiceDuel.Assistant.MatchStartController)field(dice,"_controller")).RollA==0,"retry rerolls");click((UnityEngine.UI.Button)field(dice,"_lessonReturn"),front);
+ var scroll=menu.Find("StoryBattleScroll").GetComponent<UnityEngine.UI.ScrollRect>();scroll.verticalNormalizedPosition=0;UnityEngine.Canvas.ForceUpdateCanvases();click(button("StoryFinale"),front);
+ var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_finaleRoster");var options=FingerDiceDuel.Assistant.AdventureChapter.FinaleRoster;
+ for(int i=0;i<options.Count;i++){click(roster.Root.Find("Content/Card"+i).GetComponent<UnityEngine.UI.Button>(),front);var text=(UnityEngine.UI.Text)field(boot,"_finaleDetail");check(text.text.Contains(options[i].DisplayName)&&text.preferredHeight<=text.rectTransform.rect.height,"all fighter selections update fitting detail "+options[i].Id);}
+ // Last selected is Battle Master. Verify free choices are not constrained by lesson seven.
+ check(options[roster.SelectedIndex].Id==FingerDiceDuel.Core.CharacterDefinition.BattleMaster.Id,"battle master selected");click(button("FinaleStart"),front);reload();click(confirm,canvas);
+ var winStart=(FingerDiceDuel.Assistant.MatchStartController)field(dice,"_controller");winStart.RollWith(20,18);while(!winStart.IsComplete)winStart.Submit(winStart.Candidates[0]);invoke(boot,"OnDiceRollFinished",new object[0]);reload();
+ lesson.Soldier.SetHealthExact(1);lesson.Player.LeftHand.SetValue(1);lesson.Player.RightHand.SetValue(4);lesson.Soldier.LeftHand.SetValue(3);lesson.Soldier.RightHand.SetValue(3);control.SetFirstPlayer(lesson.Player);control.BeginTurn();refresh();
+ click(handButton(lesson.Player.LeftHand),canvas);click(handButton(lesson.Soldier.LeftHand),canvas);if(control.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer)click(handButton(lesson.Soldier.LeftHand),canvas);
+ check(control.PendingEffect==FingerDiceDuel.Core.HandEffect.BattleMasterManeuver,"finale fighter skill interface works");var choices=(UnityEngine.UI.Button[])field(board,"_wizardButtons");check(choices[0].interactable&&choices[1].interactable&&((UnityEngine.UI.Button)field(board,"_wizardDecline")).interactable,"finale maneuvers and decline all available");shot(canvas,"finale-free-maneuver");click(choices[0],canvas);
+ check(lesson.IsComplete&&UnityEngine.PlayerPrefs.GetInt(keys[9],0)==1&&UnityEngine.PlayerPrefs.GetInt(keys[10],0)==1,"victory saves battle and chapter completion");check(((UnityEngine.UI.Text)field(panel,"_modalTitle")).text.Contains("第一章通关"),"chapter complete title");check(!skip.gameObject.activeInHierarchy,"finale has no eleventh battle");modalLayout();shot(canvas,"finale-chapter-complete");click(back,canvas);
+ boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.BattleMaster,FingerDiceDuel.Core.CharacterDefinition.Blank);refresh();check(field(boot,"_adventure")==null,"ordinary battle has no lesson");check(!((UnityEngine.RectTransform)field(board,"_adventureObstaclesRoot")).gameObject.activeInHierarchy,"ordinary battle no training stones");check(!((UnityEngine.UI.Text)field(dice,"_lessonHint")).gameObject.activeInHierarchy,"ordinary dice no lesson hint");
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.StoryBattleSelect);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);restore();return "PASS "+checks.Count+" chapter finale checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-b-failure.txt"),checks);restore();throw;}
