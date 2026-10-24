@@ -1,0 +1,93 @@
+PASS engine New_roles_have_correct_stats_alignments_profiles_and_aliases
+PASS engine Lore_records_unique_actual_results_but_not_initial_hands
+PASS engine Lore_growth_is_optional_clears_records_and_stacks_permanent_stats
+PASS engine Lore_human_defense_uses_matching_record_and_respects_decline
+PASS engine Lore_cannot_defend_an_unrecorded_number_and_reset_clears_growth
+PASS engine Storm_offers_both_resistances_at_initialization_and_human_picks_thunder
+PASS engine Storm_initializes_even_before_its_first_active_turn_and_resets
+PASS engine Storm_random_boundaries_are_thirty_thirty_forty_and_preview_does_not_roll
+PASS engine Storm_extra_operation_is_optional_and_changes_only_hand_without_healing
+PASS engine Storm_extra_operation_can_be_declined_at_each_step
+PASS engine Extra_operation_never_calls_lore_recording_or_numeric_effects_in_a_raw_container
+PASS engine Illusion_fifty_percent_boundaries_and_cached_choice_are_deterministic
+PASS engine Illusion_respects_alternate_hand_legality_and_preview_never_rolls
+PASS engine Illusion_controller_uses_redirected_sum_for_target_prompt_and_actual_attack
+PASS engine Illusion_defense_asks_owner_and_changes_only_smaller_hand_when_accepted
+PASS engine Whole_attack_defenses_halve_stat_bonuses_in_the_actual_controller
+PASS engine Whole_attack_defenses_apply_to_every_segment_after_stat_bonuses
+PASS engine Status_damage_does_not_spend_lore_records_or_change_illusion_hands
+PASS engine New_resource_icon_displays_actual_recorded_digits_and_count
+PASS engine Ai_extra_operation_chooses_only_beneficial_preparation_and_preserves_shields
+PASS engine Ai_preserves_a_record_when_a_single_hit_will_be_shielded
+PASS engine Ai_damage_preview_accounts_for_new_defenses_without_consuming_records_or_changing_hands
+PASS engine Storm_board_ai_uses_the_real_policy_and_never_leaves_a_human_modal
+PASS all forty five subclasses selectable
+PASS selectable bard_college_of_lore
+PASS raycast Card42
+PASS emblem loaded bard_college_of_lore
+PASS selectable sorcerer_storm_sorcery
+PASS raycast Card43
+PASS emblem loaded sorcerer_storm_sorcery
+PASS selectable wizard_school_of_illusion
+PASS raycast Card44
+PASS emblem loaded wizard_school_of_illusion
+PASS profession count bard
+PASS codex has bard_college_of_lore
+PASS alignment bard_college_of_lore
+PASS codex text fits bard_college_of_lore
+PASS profession count sorcerer
+PASS codex has sorcerer_storm_sorcery
+PASS alignment sorcerer_storm_sorcery
+PASS codex text fits sorcerer_storm_sorcery
+PASS profession count wizard
+PASS codex has wizard_school_of_illusion
+PASS alignment wizard_school_of_illusion
+PASS codex text fits wizard_school_of_illusion
+PASS raycast Close
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS all nine records offer growth or keep
+PASS raycast WizardOption0
+PASS growth changed stats and cleared records
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS lore defense belongs to defender
+PASS raycast WizardOption0
+PASS lore real reduction and record cost
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS illusion redirected sum asks for attack
+PASS raycast PaintedHandCard
+PASS illusion actual redirected eight damage
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS illusion defense visible
+PASS raycast WizardOption0
+PASS illusion changed smaller hand and halved
+PASS storm initial resistance picker visible
+PASS raycast WizardOption1
+PASS storm human picks thunder
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS storm lightning status actually attached
+PASS storm extra source visible
+PASS raycast WizardOption0
+PASS raycast WizardOption0
+PASS storm extra nine did not heal or advance; next-turn shock dealt one
+PASS raycast WizardOption1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast WizardOption0
+PASS storm multiplayer addends 4
+PASS raycast WizardOption5
+PASS last extra addend clickable 4
+PASS raycast WizardOption1
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast WizardOption0
+PASS storm multiplayer addends 8
+PASS raycast WizardOption13
+PASS last extra addend clickable 8

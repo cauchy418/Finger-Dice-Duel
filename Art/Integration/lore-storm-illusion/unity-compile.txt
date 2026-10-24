@@ -1,0 +1,1 @@
+FDD_UNITY_TESTS conditional compilation: PASS (exit 0).

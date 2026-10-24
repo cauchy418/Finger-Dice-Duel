@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -211,6 +211,11 @@ namespace FingerDiceDuel.Core
     public interface IPostDamageTaken
     {
         void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager);
+    }
+    /// <summary>一次攻击造成伤害后通知；致死目标也通知，供妖魔汲取等自身收益。</summary>
+    public interface IOnDamageDealt
+    {
+        void OnDamageDealt(AttackContext context, GameManager manager);
     }
 
     /// <summary>治疗溢出时触发（邪术师·妖魔转虚假生命）。</summary>

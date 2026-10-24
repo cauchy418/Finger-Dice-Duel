@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -389,8 +389,9 @@ namespace FingerDiceDuel.Core
             int actual = Math.Min(Math.Max(0, amount), allowed);
             Health = Math.Min(MaximumHealth, Health + actual);
             int overflow = Math.Max(0, amount - actual);
-            if (overflow > 0 && Character is IHealingOverflow overflowHook)
-                overflowHook.OnHealingOverflow(this, overflow);
+            if (overflow > 0)
+                foreach(var overflowHook in CharacterBehaviors.Implementers<IHealingOverflow>(this))
+                    overflowHook.OnHealingOverflow(this, overflow);
 
             // ⚠️ 吟游诗人·勇气学院的触发条件是"**实际**回过体力" —— 满血回复不算，
             //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。

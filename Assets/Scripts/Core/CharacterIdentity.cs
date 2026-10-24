@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>33个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
@@ -58,6 +58,9 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("land", "druid_circle_of_the_land", "druid", "大地结社", "Circle of the Land"),
             new CharacterIdentity("ancients", "paladin_oath_of_the_ancients", "paladin", "古贤之誓", "Oath of the Ancients"),
             new CharacterIdentity("fiend", "warlock_the_fiend", "warlock", "妖魔", "The Fiend"),
+            new CharacterIdentity("lore", "bard_college_of_lore", "bard", "逸闻学院", "College of Lore"),
+            new CharacterIdentity("storm", "sorcerer_storm_sorcery", "sorcerer", "风暴术法", "Storm Sorcery"),
+            new CharacterIdentity("illusion", "wizard_school_of_illusion", "wizard", "幻术学派", "School of Illusion"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();
         private static Dictionary<string, CharacterIdentity> BuildIndex()

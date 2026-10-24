@@ -1,0 +1,21 @@
+var oldDelay=boot.AiThinkSeconds;var oldAI=boot.PlayerBIsAI;boot.AiThinkSeconds=1000;boot.PlayerBIsAI=false;
+try{
+ var fixture=new FingerDiceDuel.Tests.FeyStarsAlignmentTests();foreach(var m in fixture.GetType().GetMethods().Where(x=>x.DeclaringType==fixture.GetType()&&x.GetParameters().Length==0)){m.Invoke(fixture,null);check(true,"engine "+m.Name);}
+ invoke(boot,"OnCodexClicked",new object[0]);var codex=(FingerDiceDuel.UI.CodexScreen)field(boot,"_codex");
+ foreach(var row in new[]{new[]{"warlock","warlock_the_archfey","混乱中立"},new[]{"druid","druid_circle_of_the_stars","守序中立"}}){
+  if(codex.ProfessionFilter!=row[0])codex.ToggleProfession(row[0]);var data=(System.Collections.Generic.List<FingerDiceDuel.UI.CodexCardData>)field(codex,"_filtered");codex.GoTo(data.FindIndex(x=>x.Id==row[1]));UnityEngine.Canvas.ForceUpdateCanvases();check(((UnityEngine.UI.Text)field(codex,"_alignmentLabel")).text.Contains(row[2]),"codex actual alignment "+row[1]);shot(front,"alignment-"+row[1]);
+ }
+ click(codex.Root.Find("Close").GetComponent<UnityEngine.UI.Button>(),front);
+ foreach(var row in new[]{new[]{"warlock_the_archfey","rogue_assassin","wizard_school_of_conjuration","14"},new[]{"druid_circle_of_the_stars","cleric_life_domain","druid_circle_of_the_moon","14"}}){
+  invoke(boot,"ResetDualSelection",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.DualGeneralSelect);var roster=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_dgRoster");var defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(roster,"_roster");var cards=(System.Collections.Generic.List<UnityEngine.UI.Button>)field(roster,"_cards");int ix=defs.FindIndex(x=>x.Id==row[0]);roster.Select(ix,false);roster.ScrollToSelected();set(roster,"_selectedIndex",-1);click(cards[ix],front);
+  defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(roster,"_roster");check(defs.Count==int.Parse(row[3]),"dual partner count "+row[0]);check(defs.Any(x=>x.Id==row[1])&&!defs.Any(x=>x.Id==row[2]),"dual candidate migration "+row[0]);shot(front,"dual-partners-"+row[0]);
+ }
+ foreach(bool wait in new[]{false,true}){
+  invoke(boot,"CleanupMatch",new object[0]);var a=FingerDiceDuel.Characters.DualGeneralFactory.Create("妖精刺客",FingerDiceDuel.Core.CharacterDefinition.TheArchfey,FingerDiceDuel.Core.CharacterDefinition.Assassin);var b=FingerDiceDuel.Core.CharacterFactory.CreatePlayer("对手",FingerDiceDuel.Core.CharacterDefinition.Blank);var ca=new FingerDiceDuel.Assistant.SimpleChoiceProvider();var cb=new FingerDiceDuel.Assistant.SimpleChoiceProvider();var game=new FingerDiceDuel.Core.GameManager(a,b,ca,cb);var control=new FingerDiceDuel.Assistant.BoardController(game,ca,cb);
+  a.LeftHand.SetValue(7);a.RightHand.SetValue(7);FingerDiceDuel.Core.CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.AssassinLogic>(a).EnterStealthForTest();a.TakeDamage(5);
+  set(boot,"_game",game);set(boot,"_controller",control);set(boot,"_choiceA",ca);set(boot,"_choiceB",cb);set(boot,"_pendingDefA",a.Definition);set(boot,"_pendingDefB",b.Definition);set(boot,"_isDualGeneral",true);set(boot,"_dgSecondary",FingerDiceDuel.Core.CharacterDefinition.Assassin);set(boot,"_dgFoeSecondary",FingerDiceDuel.Core.CharacterDefinition.Blank);invoke(boot,"StartPreparedMatch",new object[]{true});refresh();
+  click((UnityEngine.UI.Button)field(board,"_skipButton"),canvas);check(control.PendingWizardChoice!=null&&control.PendingWizardChoice.AllowDecline,"dual skip offers player and wait");shot(canvas,"fey-assassin-skip-choice");
+  click(wait?(UnityEngine.UI.Button)field(board,"_wizardDecline"):((UnityEngine.UI.Button[])field(board,"_wizardButtons"))[0],canvas);check(b.Health==(wait?20:15)&&game.TurnCount==1,"actual dual skip click "+wait);shot(canvas,wait?"fey-assassin-wait":"fey-assassin-health-rewrite");
+ }
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-alignment.txt"),checks);return "PASS "+checks.Count+" alignment and dual skip UI checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-alignment-failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=oldDelay;boot.PlayerBIsAI=oldAI;}

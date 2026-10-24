@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -54,11 +54,14 @@ namespace FingerDiceDuel.Tests
             "land|druid_circle_of_the_land|德鲁伊·大地结社|druid|Circle of the Land|0|1|20|1",
             "ancients|paladin_oath_of_the_ancients|圣武士·古贤之誓|paladin|Oath of the Ancients|-1|1|20|1",
             "fiend|warlock_the_fiend|邪术师·妖魔|warlock|The Fiend|0|-1|20|2147483647",
+            "lore|bard_college_of_lore|吟游诗人·逸闻学院|bard|College of Lore|0|-1|20|1",
+            "storm|sorcerer_storm_sorcery|术士·风暴术法|sorcerer|Storm Sorcery|0|-1|20|2147483647",
+            "illusion|wizard_school_of_illusion|法师·幻术学派|wizard|School of Illusion|0|-1|20|2147483647",
         };
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(42, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(45, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -86,7 +89,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 6, 4, 3, 5, 3, 2, 1, 5, 2, 4, 4, 3 };
+            int[] counts = { 6, 4, 3, 6, 3, 3, 2, 5, 2, 4, 4, 3 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

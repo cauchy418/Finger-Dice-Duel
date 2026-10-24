@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -86,6 +86,92 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(0, ctx.AppliedDamage);
             Assert.AreEqual(1, ctx.HitCount);
+        }
+
+        [Test]
+        public void Disabled_suppresses_attack_bonus_and_negative_defense_on_every_hit()
+        {
+            foreach (int attack in new[] { 0, 4 })
+            foreach (int defense in new[] { 0, -3 })
+            foreach (int hits in new[] { 1, 2 })
+            {
+                var a = Make(); var b = Make();
+                a.SetDynamicBonuses(attack, 0); b.SetDynamicBonuses(0, defense);
+                a.ApplyStatus(StatusEffect.Disabled);
+                var ctx = new AttackContext(a, b, a.LeftHand, 8) { HitCount = hits };
+                ctx.Resolve(new SimpleChoiceProvider(), null);
+                Assert.AreEqual(0, ctx.AppliedDamage);
+                Assert.AreEqual(20, b.Health);
+                Assert.AreEqual(hits, ctx.LandedHits);
+            }
+        }
+
+        [Test]
+        public void Disabled_keeps_elemental_and_skill_statuses_without_dealing_damage()
+        {
+            var a = Make(); var b = Make();
+            a.SetDynamicBonuses(5, 0); b.SetDynamicBonuses(0, -2);
+            a.ApplyStatus(StatusEffect.Disabled); b.ApplyStatus(StatusEffect.KnockedDown);
+            b.AddVulnerability(AttackDamageType.Fire);
+            var ctx = new AttackContext(a, b, a.LeftHand, 6)
+            { AttackType = AttackDamageType.Fire, AttackerStatusOverride = StatusEffect.Burn, InflictsBleed = true };
+            ctx.Resolve(new SimpleChoiceProvider(), null);
+            Assert.AreEqual(0, ctx.AppliedDamage); Assert.AreEqual(20, b.Health);
+            Assert.True(b.HasStatus(StatusEffect.Burn)); Assert.True(b.HasStatus(StatusEffect.Bleed));
+        }
+
+        [Test]
+        public void Disabled_still_breaks_shields_instead_of_cancelling_the_attack()
+        {
+            var a = Make(); var b = Make(); a.ApplyStatus(StatusEffect.Disabled);
+            a.SetDynamicBonuses(5, 0); b.SetDynamicBonuses(0, -2);
+            b.LeftHand.SetValue(5); b.LeftHand.SetShieldState(ShieldState.Formed);
+            var ctx = new AttackContext(a, b, a.LeftHand, 6) { HitCount = 2 };
+            ctx.Resolve(new SimpleChoiceProvider(), null);
+            Assert.AreEqual(1, ctx.BlockedHits); Assert.AreEqual(1, ctx.LandedHits);
+            Assert.False(b.LeftHand.IsShield); Assert.AreEqual(20, b.Health);
+        }
+
+        [Test]
+        public void Disabled_suppresses_special_and_extra_true_damage_without_consuming_false_life()
+        {
+            var a = Make(); var b = Make(); a.ApplyStatus(StatusEffect.Disabled); b.GainFalseLife(8);
+            var ctx = new AttackContext(a, b, a.LeftHand, 6)
+            { IsSpecialAttack = true, IgnoreStatBonuses = true, ExtraTrueDamage = 5 };
+            ctx.Resolve(new SimpleChoiceProvider(), null);
+            Assert.AreEqual(0, ctx.AppliedDamage); Assert.AreEqual(20, b.Health); Assert.AreEqual(8, b.FalseLife);
+        }
+
+        [Test]
+        public void Ai_disabled_damage_preview_is_zero_including_role_followups()
+        {
+            foreach (var def in new[] { CharacterDefinition.Blank, CharacterDefinition.Swordsman })
+            {
+                var a = CharacterFactory.CreatePlayer("A", def); var b = Make();
+                a.ApplyStatus(StatusEffect.Disabled); a.SetDynamicBonuses(4, 0); b.SetDynamicBonuses(0, -3);
+                a.RightHand.SetValue(6);
+                var ai = new GreedyChoiceProvider();
+                Assert.AreEqual(0, ai.TotalLethalDamage(new LegalMove(a, a.LeftHand, b.LeftHand), a, b, 6));
+            }
+        }
+
+        [Test]
+        public void Disabled_does_not_protect_its_owner_from_periodic_burning()
+        {
+            var a = Make(); var b = Make();
+            var game = new GameManager(a, b, new SimpleChoiceProvider(), new SimpleChoiceProvider());
+            a.ApplyStatus(StatusEffect.Disabled, 2); a.ApplyStatus(StatusEffect.Burn, 2);
+            game.ResolveStatusTurnEnd(a);
+            Assert.AreEqual(17, a.Health, "失能只清零发起攻击的伤害，不能免除已有燃烧。");
+        }
+
+        [Test]
+        public void Ordinary_attack_without_disabled_still_applies_stat_bonuses_per_hit()
+        {
+            var a = Make(); var b = Make(); a.SetDynamicBonuses(2, 0); b.SetDynamicBonuses(0, -1);
+            var ctx = new AttackContext(a, b, a.LeftHand, 8) { HitCount = 2 };
+            ctx.Resolve(new SimpleChoiceProvider(), null);
+            Assert.AreEqual(14, ctx.AppliedDamage); Assert.AreEqual(6, b.Health);
         }
 
         [Test]

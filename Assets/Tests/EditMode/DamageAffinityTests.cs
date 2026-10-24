@@ -158,7 +158,7 @@ namespace FingerDiceDuel.Tests
             foreach (var icon in icons) { keys.Add(icon.ResourceKey); Assert.AreEqual("", icon.Counter); }
             Assert.AreEqual(39, keys.Count); var guide = GuideSheets.Protections(); Assert.AreEqual(39, guide.Lines.Count);
             Assert.AreEqual(3, guide.Groups.Count); foreach(var group in guide.Groups) Assert.AreEqual(13, group.Entries.Count);
-            Assert.AreEqual("角色标记", GuideSheets.CharacterMarks().TitleZh); Assert.AreEqual(3, GuideSheets.CharacterMarks().Lines.Count);
+            Assert.AreEqual("角色标记", GuideSheets.CharacterMarks().TitleZh); Assert.AreEqual(4, GuideSheets.CharacterMarks().Lines.Count);
         }
         [Test] public void Ai_lethal_estimate_respects_immunity_and_vulnerability()
         {

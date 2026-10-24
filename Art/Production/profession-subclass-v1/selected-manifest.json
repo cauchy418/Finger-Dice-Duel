@@ -314,6 +314,81 @@
       "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/druid_circle_of_the_stars.png",
       "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-cbcf7040-79b6-4ec1-872f-bc084788c8bb.png",
       "sha256": "996819a1f70d5df5cbccc3832fde7d7789aca6b72a8c7cabdc91f6eeb90519a5"
+    },
+    {
+      "id": "druid_circle_of_the_land",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/druid_circle_of_the_land.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/druid_circle_of_the_land.png",
+      "sha256": "ba34ffcb54340981899210b5e788acfcd7b489efc97cc1ab4e86bedde5c7a1d1",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3bdafb83-9380-4e6d-9025-bbcd16438f50.png",
+      "crop_alpha_gt_8": [
+        23,
+        5,
+        1230,
+        1222
+      ]
+    },
+    {
+      "id": "paladin_oath_of_the_ancients",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/paladin_oath_of_the_ancients.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_ancients.png",
+      "sha256": "3ffa0d242617d0e5b332f8dbd130371b180e4dbc7278b7db5eadef58256a77df",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-2dbc9418-c0c8-4de1-b78e-c4ddad1fb7fa.png",
+      "crop_alpha_gt_8": [
+        64,
+        51,
+        1185,
+        1174
+      ]
+    },
+    {
+      "id": "warlock_the_fiend",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/warlock_the_fiend.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_fiend.png",
+      "sha256": "ca1bc6fb62352d55613d0f02afbea2f98b5835eff06a8567fb3bc960616d4508",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-5062de14-50e7-4953-946e-43a62a414ee7.png",
+      "crop_alpha_gt_8": [
+        19,
+        30,
+        1235,
+        1210
+      ]
+    },
+    {
+      "id": "bard_college_of_lore",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/bard_college_of_lore.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_lore.png",
+      "sha256": "d4e4f38e39c19085969de6631eb661981fae4b65b6abc2bcedce39a366c76ec6",
+      "crop_alpha_gt_8": [
+        57,
+        34,
+        1196,
+        1178
+      ]
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/sorcerer_storm_sorcery.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_storm_sorcery.png",
+      "sha256": "504e1ea899475a6a6f5d5196853e52f0855eb891e9a18b78d9b1f934c29bb86f",
+      "crop_alpha_gt_8": [
+        46,
+        35,
+        1205,
+        1188
+      ]
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/wizard_school_of_illusion.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_illusion.png",
+      "sha256": "cc347ac4e3fc32cfa7afadab4b14288aee4ea7290a30547dc76683fdb3c2829f",
+      "crop_alpha_gt_8": [
+        28,
+        25,
+        1224,
+        1205
+      ]
     }
   ]
 }

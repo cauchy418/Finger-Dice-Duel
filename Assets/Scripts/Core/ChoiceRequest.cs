@@ -25,6 +25,9 @@ namespace FingerDiceDuel.Core
         BattleMasterManeuver = 106,
         OpenHandTechnique = 107,
         FourElementsTechnique = 108,
+        TheFiendPact = 109,
+        CollegeOfLoreDefense = 110,
+        SchoolOfIllusionDefense = 111,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>

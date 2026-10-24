@@ -33,6 +33,8 @@ async function importNewRoleIcons() {
   await require('./import-four-role-emblems.cjs').importFourRoleEmblems();
   await require('./import-martial-resource-icons.cjs').importMartialResourceIcons();
   await require('./import-druid-art.cjs').importDruidArt();
+  await require('./import-ancient-role-art.cjs').importAncientRoleArt();
+  await require('./import-lore-storm-illusion.cjs').importLoreStormIllusion();
 }
 module.exports = { importNewRoleIcons };
 if (require.main === module) importNewRoleIcons().catch(error => { console.error(error); process.exitCode = 1; });

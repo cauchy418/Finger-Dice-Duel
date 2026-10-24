@@ -1,0 +1,6 @@
+引擎     : C:\Program Files\Tuanjie\Hub\Editor\2022.3.62t15-x86_64\Editor\Data
+UI 程序集: C:\Users\29391\Finger Dice Duel\Library\ScriptAssemblies\UnityEngine.UI.dll
+源文件   : 164 个
+
+表现层编译通过（164 个脚本），且无组件冲突。
+提醒：这只能证明能编译，界面效果仍需在编辑器里实机确认。

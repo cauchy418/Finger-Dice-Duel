@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int BaseAttackRange => 1;
 
         public override void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager)
-            => RestrainInRange(owner, manager);
+        { if(manager?.ResolvingPassiveShieldBreak!=true)RestrainInRange(owner, manager); }
 
         public override void OnOtherShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager)
             => RestrainInRange(owner, manager);
@@ -20,40 +20,21 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         private static void RestrainInRange(PlayerState owner, GameManager manager)
         {
             if (owner == null || manager == null) return;
-            PlayerState best = null;
-            int bestHealth = int.MaxValue;
-            for (int i = 0; i < manager.Players.Count; i++)
-            {
-                PlayerState p = manager.Players[i];
-                if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
-                if (!manager.CanReach(owner, p)) continue;
-                if (p.Health < bestHealth) { best = p; bestHealth = p.Health; }
-            }
-            if (best == null) return;
-            best.ApplyStatus(StatusEffect.Restrained, 2, owner);
-            manager.NoteSkill(owner, "古贤束缚", $"{best.Name} 束缚 2 回合");
+            AncientRoleChoices.Offer(AncientRoleChoices.AncientRestrain,"古贤束缚 · 选择射程内角色或不发动",owner,manager,
+                AncientRoleChoices.OtherPlayers(owner,manager,true),true,true,hand=>{
+                    var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
+                    target.ApplyStatus(StatusEffect.Restrained,2,owner);manager.NoteSkill(owner,"古贤束缚",$"{target.Name} 束缚2回合");});
         }
 
         public void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager)
         {
-            if (owner == null || damage <= 0 || manager == null) return;
+            if (owner == null || !owner.IsAlive || damage <= 0 || manager == null) return;
             if (owner.Health >= 10)
             {
-                // 目标必须在攻击范围内；优先血量最低的其他角色。
-                PlayerState best = null;
-                int bestHealth = int.MaxValue;
-                for (int i = 0; i < manager.Players.Count; i++)
-                {
-                    PlayerState p = manager.Players[i];
-                    if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
-                    if (!manager.CanReach(owner, p)) continue;
-                    if (p.Health < bestHealth) { best = p; bestHealth = p.Health; }
-                }
-                if (best != null)
-                {
-                    best.Heal(2);
-                    manager.NoteSkill(owner, "古贤庇护", $"回复 {best.Name} 2 点");
-                }
+                AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"古贤庇护 · 选择射程内另一名角色回复2",owner,manager,
+                    AncientRoleChoices.OtherPlayers(owner,manager,true),false,true,hand=>{
+                        var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
+                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"古贤庇护",$"{target.Name} 回复{target.Health-before}");});
             }
             else
             {

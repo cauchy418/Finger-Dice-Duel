@@ -1,4 +1,4 @@
-> 本页保留原27角色迁移时的制作与验收记录。当前39子职、12职业共51枚独立徽记，正式资源以本目录 `selected-manifest.json` 为准；德鲁伊已有月亮/星辰结社及7张形态图，见 [德鲁伊制作记录](../druid-forms-v1/README.md)。后续法师大类已采用旧塑能书杖，塑能学派另绘独立施法徽记，见 [法师更新](../wizard-schools-v1/README.md)。
+> 本页保留原27角色迁移时的制作与验收记录。当前45子职、12职业共57枚独立徽记，正式资源以本目录 `selected-manifest.json` 为准；德鲁伊已有月亮/星辰/大地结社及7张形态图，见 [德鲁伊制作记录](../druid-forms-v1/README.md)。后续法师大类已采用旧塑能书杖，塑能学派另绘独立施法徽记，见 [法师更新](../wizard-schools-v1/README.md)。
 
 > 后续平衡与美术更新：勇士新增十点重击，攻防改为+1/0，并使用金狮徽记。迁移前快照仍保留历史原值；当前规则与新稿见 [勇士更新](../champion-heavy-strike-v1/README.md)。本页“玩法保持不变”仅指职业迁移阶段。
 
@@ -43,7 +43,7 @@
 - `Assets/Resources/Art/Battle/v1/Professions/`：12 枚职业大类徽记；德鲁伊与野蛮人、吟游诗人、牧师、战士、武僧、圣武士、游荡者、术士、法师均新绘。游侠与邪术师沿用旧图，但对应子职已重绘。
 - `Assets/Resources/Art/Battle/v1/Subclasses/`：27 枚子职徽记。新绘守望者道途、风流剑客、咒法学派、至高妖精、旧日支配者、战术家、王冠之誓、幽域追踪者、勇气学院；其余沿用对应旧徽记。职业与子职共 39 枚图案全部独立，无共用图案。
 - 所有运行素材为 512×512 透明 PNG。新绘采用内置 `image_gen`，完整原图在 `source/`，完整提示词在 `prompts/`，只按已获许可进行透明裁切、居中和缩放。旧金圆框、暗色内底、绘画主体保持一致。
-- `previous/` 保留被替换的旧版；迁移时 `selected/` 固定39枚素材；`selected-manifest.json`现随新增子职维护51枚正式素材及SHA-256。旧图集导入器最后会应用这套素材，避免恢复旧身份。
+- `previous/` 保留被替换的旧版；迁移时 `selected/` 固定39枚素材；`selected-manifest.json`现随新增子职维护57枚正式素材及SHA-256。旧图集导入器最后会应用这套素材，避免恢复旧身份。
 - 重新导入最终素材：`node Tools/ArtPipeline/import-selected-profession-icons.cjs`。原图归一化：`python Tools/ArtPipeline/import-profession-icons.py`；之后若另选版本，应同步更新 selected 清单。
 
 ## 大类与子职区分（追加重绘）
@@ -88,3 +88,7 @@
 ## 验收
 
 1052 项逻辑测试通过；Unity 条件编译与 UI 编译通过。编辑器 321 项检查通过，含 39 枚资源、旧路径兼容、12 职业实际射线点击、27 子职详情、27 选将卡、三页总览、德鲁伊空态和 1v1/2v2/8 人显示。见 [验收记录](../../Integration/profession-subclass/README.md)。
+
+大地结社、古贤之誓和妖魔新增独立徽记，见[制作记录](../ancient-roles-v1/README.md)。
+
+新增逸闻学院、风暴术法与幻术学派，见[制作记录](../lore-storm-illusion-v1/README.md)。

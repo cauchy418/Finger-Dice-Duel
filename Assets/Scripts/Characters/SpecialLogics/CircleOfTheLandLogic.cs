@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -22,39 +22,32 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         private void ClearRestriction()
         {
-            if (_restricted != null) _restricted.SetTargetRestricted(false);
+            if (_restricted != null) _restricted.SetTargetRestricted(this,false);
             _restricted = null;
         }
 
         public bool RestrictHand(Hand hand, GameManager manager)
         {
-            if (hand == null) return false;
+            if (hand == null || manager?.OwnerOfHand(hand)?.IsAlive!=true) return false;
             ClearRestriction();
             _restricted = hand;
-            hand.SetTargetRestricted(true);
-            manager?.NoteSkill(_owner, "大地封锁", "一只手直到下回合不能作为被加数");
+            hand.SetTargetRestricted(this,true);
+            var target=manager.OwnerOfHand(hand);
+            manager.NoteSkill(_owner, "大地封锁", $"{target.Name}{(ReferenceEquals(target.LeftHand,hand)?"左手":"右手")}禁作加数，至下次回合开始");
             return true;
         }
 
         public void OnTurnStarted(PlayerState owner, GameManager manager)
         {
-            if (ReferenceEquals(manager?.CurrentPlayer, owner)) ClearRestriction();
+            if (!owner.IsAlive || ReferenceEquals(manager?.CurrentPlayer, owner)) ClearRestriction();
         }
 
         public void OnTurnEnded(PlayerState owner, GameManager manager)
         {
-            if (!ReferenceEquals(manager?.CurrentPlayer, owner) || _restricted != null) return;
-            // 无 UI 时默认封锁最近的对手一只手。
-            for (int i = 0; i < manager.Players.Count; i++)
-            {
-                PlayerState p = manager.Players[i];
-                if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
-                if (manager.DistanceBetween(owner, p) <= 1)
-                {
-                    RestrictHand(p.LeftHand, manager);
-                    return;
-                }
-            }
+            if (!owner.IsAlive || manager==null) return;
+            var hands=new System.Collections.Generic.List<Hand>();
+            foreach(var p in manager.Players)if(p.IsAlive)foreach(var h in p.Hands)hands.Add(h);
+            AncientRoleChoices.Offer(AncientRoleChoices.LandSeal,"大地封锁 · 选择禁作加数的一只手",owner,manager,hands,false,false,hand=>RestrictHand(hand,manager));
         }
 
         public override void OnOperationResolved(PlayerState owner, Hand actedHand,
@@ -63,22 +56,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                   IPreTurnChoiceSink choiceSink)
         {
             if (owner == null || actedHand == null || actedHand.Value != 3) return;
-            PlayerState best = null;
-            int bestDistance = int.MaxValue;
-            for (int i = 0; i < manager.Players.Count; i++)
-            {
-                PlayerState p = manager.Players[i];
-                if (p == null || !p.IsAlive || ReferenceEquals(p, owner)) continue;
-                int d = manager.DistanceBetween(owner, p);
-                if (d >= bestDistance) continue;
-                best = p;
-                bestDistance = d;
-            }
-            if (best != null)
-            {
-                best.ApplyStatus(StatusEffect.Restrained, 2, owner);
-                manager.NoteSkill(owner, "大地束缚", $"{best.Name} 束缚 2 回合");
-            }
+            AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"大地束缚 · 选择角色或不发动",owner,manager,
+                AncientRoleChoices.OtherPlayers(owner,manager,false),true,true,hand=>{
+                    var target=manager.OwnerOfHand(hand);target.ApplyStatus(StatusEffect.Restrained,2,owner);
+                    manager.NoteSkill(owner,"大地束缚",$"{target.Name} 束缚2回合");});
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context)

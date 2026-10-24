@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色特殊逻辑标识，用于 CharacterData / CharacterFactory 在编辑器中
@@ -194,6 +194,9 @@ namespace FingerDiceDuel.Core
         OathOfTheAncients = 41,
 
         /// <summary>邪术师·妖魔：虚假生命。</summary>
-        TheFiend = 42
+        TheFiend = 42,
+        CollegeOfLore = 43,
+        StormSorcery = 44,
+        SchoolOfIllusion = 45
     }
 }

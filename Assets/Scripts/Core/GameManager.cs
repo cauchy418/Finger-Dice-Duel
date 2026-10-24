@@ -1290,6 +1290,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            ClearPreparedOperationAddend();
             DruidSecondAddend=null;
             ResetSeats();
             _skillLog.Clear();
@@ -1554,6 +1555,7 @@ namespace FingerDiceDuel.Core
             if (!IsLegalMove(actor, actedHand, targetHand, out string reason))
                 throw new InvalidOperationException($"非法运算：{reason}");
 
+            targetHand=PrepareOperationAddend(actor,actedHand,targetHand);
             MarkSelfAddendIfAny(actor, targetHand);
             if(DruidForms.IsDragon(actor))
             {
@@ -1562,7 +1564,7 @@ namespace FingerDiceDuel.Core
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
             }
             try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
-            finally{DruidSecondAddend=null;}
+            finally{DruidSecondAddend=null;ClearPreparedOperationAddend();}
         }
 
         /// <summary>
@@ -2091,7 +2093,13 @@ namespace FingerDiceDuel.Core
                 if (actor.HasStatus(StatusEffect.Bleed)) statusNames.Add("流血");
                 if (actor.HasStatus(StatusEffect.HolyLight)) statusNames.Add("圣光");
                 string statusName = statusNames.Count > 0 ? string.Join("／", statusNames) : "状态";
+                int healthBeforeStatus=actor.Health;
+                int falseLifeBeforeStatus=actor.FalseLife;
                 actor.TakeDamage(statusDamage);
+                if(falseLifeBeforeStatus>actor.FalseLife)NoteSkill(actor,"虚假生命",$"吸收{falseLifeBeforeStatus-actor.FalseLife}，剩余{actor.FalseLife}");
+                if(healthBeforeStatus>actor.Health)
+                    foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(actor))
+                        hook.OnDamageTaken(actor,healthBeforeStatus-actor.Health,new AttackContext(actor,actor,actor.LeftHand,statusDamage,this){IsStatusDamage=true},this);
                 NoteSkill(actor, statusName, $"失去 {statusDamage} 生命（不可抵挡）");
                 LastStatusNote = $"{actor.Name} {statusName}，失去 {statusDamage} 点体力（不可抵挡）";
                 CheckGameOver();
@@ -3089,13 +3097,12 @@ namespace FingerDiceDuel.Core
             if (player == null) return false;
 
             // 角色可以自己接管跳过规则（例如游荡者·刺客的潜行）
-            if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
-            {
-                rule.SyncSkipState(player);
-                return rule.CanSkip(player, null);
-            }
-
-            return player.HasDoubleShield;
+            bool hasRule=false;
+            foreach(var rule in CharacterBehaviors.Implementers<ITurnSkipRule>(player))
+            { hasRule=true;rule.SyncSkipState(player); }
+            foreach(var rule in CharacterBehaviors.Implementers<ITurnSkipRule>(player))
+                if(rule.CanSkip(player,null))return true;
+            return !hasRule && player.HasDoubleShield;
         }
 
         /// <summary>
@@ -3165,13 +3172,12 @@ namespace FingerDiceDuel.Core
             //    而不是去改目盲 / 距离的判定。
             if (!HasAnyLegalOperation(player)) return true;
 
-            if (CharacterBehaviors.FirstImplementer<ITurnSkipRule>(player) is ITurnSkipRule rule)
-            {
-                rule.SyncSkipState(player);
-                return rule.CanSkip(player, this);
-            }
-
-            return player.HasDoubleShield;
+            bool hasRule=false;
+            foreach(var rule in CharacterBehaviors.Implementers<ITurnSkipRule>(player))
+            { hasRule=true;rule.SyncSkipState(player); }
+            foreach(var rule in CharacterBehaviors.Implementers<ITurnSkipRule>(player))
+                if(rule.CanSkip(player,this))return true;
+            return !hasRule && player.HasDoubleShield;
         }
 
         /// <summary>

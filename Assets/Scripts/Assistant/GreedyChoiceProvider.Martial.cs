@@ -12,7 +12,13 @@ namespace FingerDiceDuel.Assistant
             foreach(var option in options)
             {
                 double score;
-                if(key==MartialSkillChoices.Draconic) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
+                if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
+                else if(key==NewSubclassChoices.LoreGrowth) score=option.Value==1?20:0;
+                else if(key==NewSubclassChoices.LoreDefense)
+                {bool shield=false;foreach(var h in owner.Hands)if(h.IsShield)shield=true;score=option.Value==0?0:shield&&target!=null&&CharacterFactory.MaxAttackHits(target)==1?-10:20;}
+                else if(key==NewSubclassChoices.IllusionDefense)score=option.Value==1?20:0;
+                else if(key==AncientRoleChoices.FiendPact) score=FiendPactScore(option.Value,owner,target,game);
+                else if(key==MartialSkillChoices.Draconic) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==MartialSkillChoices.OpenHand) score=OpenHandScore(option.Value,owner,target);
                 else if(key==MartialSkillChoices.FourElements) score=ElementScore(option.Value,owner,target,game);
                 else score=0;

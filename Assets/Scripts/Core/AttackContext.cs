@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -154,6 +154,10 @@ namespace FingerDiceDuel.Core
         /// <summary>攻击结算后追加的不可抵挡真实伤害（散打宗共鸣引爆）。</summary>
         public int ExtraTrueDamage { get; set; }
 
+        private int _wholeAttackHalvings;
+        /// <summary>整次攻击减半：在每段攻防修正后计算，避免加成绕过减伤。</summary>
+        public void HalveWholeAttackDamage() => _wholeAttackHalvings++;
+
         /// <summary>
         /// **攻击方角色声明的"本次命中要挂的状态"**，优先于伤害类型的默认状态
         /// （牧师·光明领域：圣光优先于光耀的目盲）。
@@ -296,7 +300,8 @@ namespace FingerDiceDuel.Core
             else FinalDamage = ApplyBonuses(FinalDamage);
 
             // 失能：攻击伤害归零，但后续命中、状态与技能效果照常结算。
-            if (fixedRule==null && Attacker != null && Attacker.HasStatus(StatusEffect.Disabled))
+            bool damageDisabled = !IsStatusDamage && fixedRule == null && Attacker != null && Attacker.HasStatus(StatusEffect.Disabled);
+            if (damageDisabled)
                 FinalDamage = 0;
 
             // ⚠️ 顺序要点：
@@ -315,6 +320,9 @@ namespace FingerDiceDuel.Core
             }
 
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
+            if(!IgnoreIncomingModifiers && !IsStatusDamage)
+                foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(Defender))
+                    defense.ReduceWholeAttack(this,manager);
             WasTypeImmune = Defender != null && Defender.HasImmunity(AttackType);
             _greaseReaction = Defender != null && !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Greased);
             _acidPoisonReaction = Defender != null && !WasTypeImmune &&
@@ -339,14 +347,17 @@ namespace FingerDiceDuel.Core
             // 武僧·忍宗的每一段都要各自用一次"1 变 2"才能完全闪过，
             // 战士·剑士的追加攻击也算**独立的一次攻击**（可以单独被闪避/挡盾）。
             //
-            // 注意这里先把加成从基础伤害里剥掉，再分段，最后每段各自加回去：
+            // 倍率后的基础伤害先分段，随后每段各自结算攻防加成：
             //   武僧·忍宗基础 4、攻 +1 -> 每段 (4/2) + 1 = 3，共 6（而不是 (4+1)/2 = 2，共 4）。
             int hits = HitCount < 1 ? 1 : HitCount;
 
             // 基础伤害用 **FinalDamage**（钩子可能改过它，例如游荡者·刺客的出潜行 +7），
             // 而不是 RawDamage —— 否则钩子对伤害的修改会被静默丢弃。
             int perHitBase = SplitDamage(FinalDamage, hits);
-            int perHit = IgnoreStatBonuses ? perHitBase : ApplyStatBonuses(perHitBase);
+            // 失能约束最终伤害，不能在基础伤害清零后又加回攻防修正。
+            int perHit = damageDisabled ? 0 : IgnoreStatBonuses ? perHitBase : ApplyStatBonuses(perHitBase);
+            for (int reduction = 0; reduction < _wholeAttackHalvings; reduction++)
+                perHit = (perHit + 1) / 2;
 
             // 2°. **太极化解**（武僧·太极宗）：在逐段结算之前询问。
             //
@@ -475,19 +486,29 @@ namespace FingerDiceDuel.Core
                 }
 
                 int healthBefore = Defender.Health;
+                int falseLifeBefore = Defender.FalseLife;
                 Defender.TakeDamage(dealt);
+                int absorbedFalseLife=falseLifeBefore-Defender.FalseLife;
+                if(absorbedFalseLife>0)manager?.NoteSkill(Defender,"虚假生命",$"吸收{absorbedFalseLife}，剩余{Defender.FalseLife}");
                 int actualDamage = healthBefore - Defender.Health;
                 AppliedDamage += dealt;
                 LandedHits++;
 
-                if (actualDamage > 0 && Defender.Character is IPostDamageTaken postDamage)
-                    postDamage.OnDamageTaken(Defender, actualDamage, this, manager);
+                if (actualDamage > 0)
+                    foreach(var postDamage in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
+                        postDamage.OnDamageTaken(Defender, actualDamage, this, manager);
             }
 
             // 散打宗：共鸣引爆的额外真实伤害，不经过护盾/抗性/防御。
-            if (ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
+            if (!damageDisabled && ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
             {
+                int healthBeforeTrue=Defender.Health;
+                int falseLifeBeforeTrue=Defender.FalseLife;
                 Defender.TakeDamage(ExtraTrueDamage);
+                if(falseLifeBeforeTrue>Defender.FalseLife)manager?.NoteSkill(Defender,"虚假生命",$"吸收{falseLifeBeforeTrue-Defender.FalseLife}，剩余{Defender.FalseLife}");
+                if(healthBeforeTrue>Defender.Health)
+                    foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
+                        hook.OnDamageTaken(Defender,healthBeforeTrue-Defender.Health,this,manager);
                 AppliedDamage += ExtraTrueDamage;
             }
 
@@ -571,6 +592,8 @@ namespace FingerDiceDuel.Core
             // 6. **实际造成伤害后**的通知（战士·战斗大师的招式附加）。
             //    口径比"命中"更严：只有 AppliedDamage > 0 才触发。
             ApplyDamageLandedEffects(manager);
+            if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
+                foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
         }
 
         /// <summary>
@@ -1017,7 +1040,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 把总伤害平均分成 <paramref name="hits"/> 段（向下取整，余数补给前几段）。
+        /// 把总伤害平均分成 <paramref name="hits"/> 段（每段向下取整）。
         /// 例：4 -> 2+2、6 -> 3+3、8 -> 4+4。
         /// </summary>
         public static int SplitDamage(int total, int hits)

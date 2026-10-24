@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -425,6 +425,11 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.TheFiendId] = new HandValueProfile()
                 .Set(9, 78).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 60)
                 .Set(1, 54).Set(2, 54).Set(3, 54).Set(7, 48);
+
+            Own[CharacterDefinition.CollegeOfLoreId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,64).Set(5,66).Set(9,70);
+            Own[CharacterDefinition.StormSorceryId]=new HandValueProfile().Set(8,76).Set(6,70).Set(4,64).Set(5,65).Set(9,70);
+            Own[CharacterDefinition.SchoolOfIllusionId]=new HandValueProfile().Set(2,90).Set(4,75).Set(8,70).Set(6,68).Set(5,65).Set(9,65)
+                .AddCombo(ComboRule.ContainsAll(70,"差2且持2的幻术防守",2,4));
 
             // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），

@@ -1,0 +1,12 @@
+var oldDelay=boot.AiThinkSeconds;var oldAI=boot.PlayerBIsAI;boot.AiThinkSeconds=1000;boot.PlayerBIsAI=false;
+try{
+ foreach(var fixture in new object[]{new FingerDiceDuel.Tests.StatusOverhaulTests(),new FingerDiceDuel.Tests.LoreStormIllusionTests()})
+  foreach(var m in fixture.GetType().GetMethods().Where(x=>x.DeclaringType==fixture.GetType()&&x.GetParameters().Length==0)){m.Invoke(fixture,null);check(true,"engine "+m.Name);}
+ invoke(boot,"CleanupMatch",new object[0]);boot.StartMatch(FingerDiceDuel.Core.CharacterDefinition.Champion,FingerDiceDuel.Core.CharacterDefinition.SchoolOfEvocation);
+ var game=(FingerDiceDuel.Core.GameManager)field(boot,"_game");var control=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");
+ System.Func<FingerDiceDuel.Core.Hand,UnityEngine.UI.Button> handButton=hand=>{foreach(var key in new[]{"_cardsA","_cardsB"})foreach(var card in (System.Array)field(board,key))if(object.ReferenceEquals(field(card,"Hand"),hand))return (UnityEngine.UI.Button)field(card,"Button");throw new System.Exception("missing hand");};
+ game.PlayerA.ApplyStatus(FingerDiceDuel.Core.StatusEffect.Disabled,2);game.PlayerA.SetDynamicBonuses(4,0);game.PlayerB.SetDynamicBonuses(0,-2);game.PlayerB.GainFalseLife(8);game.PlayerA.LeftHand.SetValue(1);game.PlayerA.RightHand.SetValue(1);game.PlayerB.LeftHand.SetValue(3);game.PlayerB.RightHand.SetValue(1);control.SetFirstPlayer(game.PlayerA);control.BeginTurn();refresh();shot(canvas,"disabled-before-attack");
+ click(handButton(game.PlayerA.LeftHand),canvas);click(handButton(game.PlayerB.LeftHand),canvas);click(handButton(game.PlayerB.LeftHand),canvas);refresh();
+ check(game.PlayerB.Health==20,"actual UI attack with +5/-3 stats dealt no health damage");check(game.PlayerB.FalseLife==8,"actual UI attack did not consume false life");check(game.TurnCount==1,"zero damage still completed the turn");shot(canvas,"disabled-zero-damage");
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);return "PASS "+checks.Count+" disabled and whole-attack defense engine/UI checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=oldDelay;boot.PlayerBIsAI=oldAI;}

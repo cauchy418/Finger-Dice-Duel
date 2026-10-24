@@ -947,6 +947,8 @@ namespace FingerDiceDuel.Assistant
                                      int result)
         {
             if (actor == null || victim == null) return 0;
+            if (actor.HasStatus(StatusEffect.Disabled)
+                && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor) == null) return 0;
 
             int atkBonus = StatusRules.EffectiveAttackBonus(actor);
             int defBonus = StatusRules.EffectiveDefenseBonus(victim);
@@ -965,12 +967,17 @@ namespace FingerDiceDuel.Assistant
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
             var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
             if(fixedRule!=null) {total=fixedRule.NormalAttackDamage;type=fixedRule.NormalAttackType;}
-            else total=StatusRules.ApplyIncomingDamage(victim,total);
+            else
+            {
+                foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
+                    if(defense.CanReduceAttack(victim,result))total=(total+1)/2;
+                total=StatusRules.ApplyIncomingDamage(victim,total);
+            }
             total=StatusRules.ApplyDamageAffinities(victim,total,type);
             if(Game!=null) foreach(var p in Game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
-            return total;
+            return System.Math.Max(0,total-victim.FalseLife);
         }
 
         /// <summary>
@@ -982,14 +989,19 @@ namespace FingerDiceDuel.Assistant
         private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim,
                                                 int result)
         {
+            if (attacker.HasStatus(StatusEffect.Disabled)
+                && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker) == null) return 0;
             int damage = AttackContext.ApplyStatBonuses(result,
                                                   attacker.Character?.AttackBonus ?? 0,
                                                   victim.Character?.DefenseBonus ?? 0,
                                                   ignorePositiveDefense: false);
             var context = new AttackContext(attacker, victim, attacker.LeftHand, result);
             var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
+            if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)
+                foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
+                    if(defense.CanReduceAttack(victim,result))damage=(damage+1)/2;
             // 原有估算保持不变，只补齐新增易伤/免疫；抗性仍由既有评分路径处理。
-            return StatusRules.ApplyDamageAffinities(victim, damage, type, false);
+            return System.Math.Max(0,StatusRules.ApplyDamageAffinities(victim, damage, type, false)-victim.FalseLife);
         }
 
         // ============================================================

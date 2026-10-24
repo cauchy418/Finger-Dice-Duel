@@ -1,0 +1,41 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "bard_college_of_lore",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/bard_college_of_lore.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_lore.png",
+      "sha256": "d4e4f38e39c19085969de6631eb661981fae4b65b6abc2bcedce39a366c76ec6",
+      "crop_alpha_gt_8": [
+        57,
+        34,
+        1196,
+        1178
+      ]
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/sorcerer_storm_sorcery.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_storm_sorcery.png",
+      "sha256": "504e1ea899475a6a6f5d5196853e52f0855eb891e9a18b78d9b1f934c29bb86f",
+      "crop_alpha_gt_8": [
+        46,
+        35,
+        1205,
+        1188
+      ]
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "source": "Art/Production/lore-storm-illusion-v1/selected/Subclasses/wizard_school_of_illusion.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_illusion.png",
+      "sha256": "cc347ac4e3fc32cfa7afadab4b14288aee4ea7290a30547dc76683fdb3c2829f",
+      "crop_alpha_gt_8": [
+        28,
+        25,
+        1224,
+        1205
+      ]
+    }
+  ]
+}

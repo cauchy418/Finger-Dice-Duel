@@ -260,6 +260,8 @@ namespace FingerDiceDuel.Assistant
             _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
             _game.SkillPolicyFor = p=>GetChoice(p) as ISkillChoicePolicy;
             _game.DruidPolicyFor = p=>GetChoice(p) as IDruidChoicePolicy;
+            _game.AncientPolicyFor = p=>GetChoice(p) as IAncientRoleChoicePolicy;
+            _game.NewSubclassPolicyFor = p=>GetChoice(p) as INewSubclassChoicePolicy;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
@@ -597,11 +599,26 @@ namespace FingerDiceDuel.Assistant
 
             // 邪术师·至高妖精：先选目标，不立刻结束回合
             var theArchfey = CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer);
-            if (theArchfey != null && StatusRules.CanAct(ActivePlayer))
+            if (theArchfey != null && StatusRules.CanAct(ActivePlayer) && theArchfey.CanSkip(ActivePlayer,_game))
             {
                 PlayerState victim = FindHealthSwapTarget();
                 if (victim != null)
                 {
+                    var assassin=CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.AssassinLogic>(ActivePlayer);
+                    if(assassin!=null && assassin.CanSkip(ActivePlayer,_game) && GetAi(ActivePlayer)==null)
+                    {
+                        var candidates=new List<Hand>();
+                        foreach(var p in _game.Players)
+                            if(p.IsAlive && !ReferenceEquals(p,ActivePlayer) && p.Health!=ActivePlayer.Health)candidates.Add(p.LeftHand);
+                        Hand picked=null;
+                        QueueWizardChoice(new WizardChoice(ActivePlayer,"跳过回合 · 选择体力改写目标，或仅潜行等待",candidates,true,
+                            hand=>picked=hand,true,"仅潜行等待"));
+                        TryStartWizardBoundary(()=>{
+                            if(picked==null)FinishBasicSkip();
+                            else{Phase=BoardPhase.ChoosingHealthSwapTarget;ApplyHealthSwapAndEndTurn(_game.OwnerOfHand(picked));}
+                        });
+                        return true;
+                    }
                     Phase = BoardPhase.ChoosingHealthSwapTarget;
                     Hint = $"{ActivePlayer.Name}（邪术师·至高妖精）：点一个人的手，" +
                            $"把那个人的体力改成与自己一致（{ActivePlayer.Health}）。";
@@ -610,6 +627,11 @@ namespace FingerDiceDuel.Assistant
                 // 找不到目标就退回"直接跳过"（正常不会发生：CanSkipTurn 已判过）
             }
 
+            return FinishBasicSkip();
+        }
+
+        private bool FinishBasicSkip()
+        {
             bool scriptedRest = CanScriptedRest;
             string reason = scriptedRest ? "休整，等待下一次练习" : !StatusRules.CanAct(ActivePlayer) ? "冻结，无法行动"
                 : !_game.HasAnyLegalOperation(ActivePlayer) ? "无可用运算" : "结束本回合";
@@ -1888,6 +1910,7 @@ namespace FingerDiceDuel.Assistant
                     }
 
                     // 第 ② 步：选定"参与运算的那只手"（加法的一个加数）。
+                    hand=_game.PrepareOperationAddend(ActivePlayer,SelectedHand,hand);
                     if(TryBeginDragonAddend(hand))return true;
                     _selectedTarget = hand;
                     TargetPlayer = OwnerOf(hand) ?? Defender;
@@ -3657,7 +3680,8 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool TryAiTheArchfeySkip()
         {
-            if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer) == null) return false;
+            var fey=CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer);
+            if (fey == null || !fey.CanSkip(ActivePlayer,_game)) return false;
             if (!CanSkipTurn) return false;
 
             // ⚠️ **安全性**：跳过 = 白送一个回合给对方。

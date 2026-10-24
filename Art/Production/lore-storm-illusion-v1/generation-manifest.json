@@ -1,0 +1,20 @@
+[
+  {
+    "id": "bard_college_of_lore",
+    "ref": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Subclasses/bard_college_of_valor.png",
+    "prompt": "Use case: style-transfer. Create a NEW independent BARD — COLLEGE OF LORE subclass emblem, reference image is STYLE ONLY. Preserve the premium dark fantasy UI look: double antique GOLD circular frame, compass diamond ornaments, black enamel interior, realistic detailed hand-painted engraved metal with worn highlights. Replace war horn, shield and flag with an OPEN PARCHMENT CHRONICLE BOOK, a single elegant silver quill and a compact antique lyre at its base. Fine luminous azure ink wisps suggest stories remembered and expended; restrained blue/gold palette, warm ivory pages. No readable writing, numbers or letters. Compact centered iconic silhouette readable at42px; objects all inside circle, genuine transparent alpha outside with small even safe margin. No portraits, hands, skulls, banners, typography or watermark.",
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-460739c9-18d3-4e47-acee-52e5624c773a.png"
+  },
+  {
+    "id": "sorcerer_storm_sorcery",
+    "ref": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_wild_magic.png",
+    "prompt": "Use case: style-transfer. Create a NEW independent SORCERER — STORM SORCERY subclass emblem, image is STYLE reference ONLY. Keep double antique old-GOLD circular medallion, compass diamond ornaments, near-black enamel interior, realistic hand-painted engraved metal fantasy finish. Replace fiery wild crystal with a LARGE FACETED DEEP BLUE STORM CRYSTAL, a clear bright cyan lightning bolt crossing it diagonally, three restrained violet concentric THUNDER SOUND RINGS expanding behind it and a few small storm-cloud curls. Two elements lightning and thunder, strong simple silhouette at42px. Navy, electric blue, violet and gold, no fire, orange glow, dragon, faces, hands, writing or symbols resembling text. All content within medallion, genuine transparency outside circle, even small safe margin, no external shadow, numbers, letters or watermark.",
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-20633000-1144-4559-834b-dbed1b1cb8b3.png"
+  },
+  {
+    "id": "wizard_school_of_illusion",
+    "ref": "C:/Users/29391/Finger Dice Duel/Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_abjuration.png",
+    "prompt": "Use case: style-transfer. Create a NEW independent WIZARD — SCHOOL OF ILLUSION subclass emblem. Reference image is STYLE ONLY: antique old-GOLD double circular medallion with compass diamonds, black enamel depth, rich realistic hand-painted fantasy UI with worn engraved metal. Replace barrier, shield and book with a single elegant SILVER THEATRICAL HALF-MASK reflected as an offset pale translucent duplicate inside a cracked oval handheld mirror WITHOUT any human hand; ethereal turquoise and violet ribbons make the reflection shimmer. Mask and mirror are inanimate wizard ritual props, not a face portrait, no eyes drawn outside mask. Focused central silhouette, compact legible42px. No shield, books, blue barrier dome, skulls, body parts, text, numbers or watermark. Keep all objects inside circle, genuine transparent alpha outside with even small margin.",
+    "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-de96aa90-d895-406e-8498-d35e7072f27a.png"
+  }
+]

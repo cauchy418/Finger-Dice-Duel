@@ -1,0 +1,57 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "druid_circle_of_the_land",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/druid_circle_of_the_land.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/druid_circle_of_the_land.png",
+      "sha256": "ba34ffcb54340981899210b5e788acfcd7b489efc97cc1ab4e86bedde5c7a1d1",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3bdafb83-9380-4e6d-9025-bbcd16438f50.png",
+      "crop_alpha_gt_8": [
+        23,
+        5,
+        1230,
+        1222
+      ]
+    },
+    {
+      "id": "paladin_oath_of_the_ancients",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/paladin_oath_of_the_ancients.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_the_ancients.png",
+      "sha256": "3ffa0d242617d0e5b332f8dbd130371b180e4dbc7278b7db5eadef58256a77df",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-2dbc9418-c0c8-4de1-b78e-c4ddad1fb7fa.png",
+      "crop_alpha_gt_8": [
+        64,
+        51,
+        1185,
+        1174
+      ]
+    },
+    {
+      "id": "warlock_the_fiend",
+      "source": "Art/Production/ancient-roles-v1/selected/Subclasses/warlock_the_fiend.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_fiend.png",
+      "sha256": "ca1bc6fb62352d55613d0f02afbea2f98b5835eff06a8567fb3bc960616d4508",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-5062de14-50e7-4953-946e-43a62a414ee7.png",
+      "crop_alpha_gt_8": [
+        19,
+        30,
+        1235,
+        1210
+      ]
+    },
+    {
+      "id": "false_life",
+      "source": "Art/Production/ancient-roles-v1/selected/Effects/false_life.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/false_life.png",
+      "sha256": "75d479413bd3c2b84df807009e0c744697d1e0a4bbc2ae24e257aad45e2165b5",
+      "generatedSource": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3d4bedd1-a82e-4228-894a-af2ccc9eac0b.png",
+      "crop_alpha_gt_8": [
+        74,
+        82,
+        1181,
+        1155
+      ]
+    }
+  ]
+}

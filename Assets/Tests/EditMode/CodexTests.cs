@@ -255,7 +255,7 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.WayOfTheNinjaId, Alignment.TrueNeutral },
                 { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.OathOfDevotionId, Alignment.LawfulGood },
-                { CharacterDefinition.TheArchfeyId, Alignment.LawfulEvil },
+                { CharacterDefinition.TheArchfeyId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.ArcaneArcherId, Alignment.LawfulNeutral },
                 { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.OathOfTheCrownId, Alignment.LawfulGood },

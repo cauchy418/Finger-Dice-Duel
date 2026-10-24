@@ -1,0 +1,21 @@
+PASS engine Latest_axes_reject_old_partners_and_allow_new_partners
+PASS engine Fey_assassin_can_wait_without_rewriting_health_in_both_orders
+PASS engine Fey_assassin_can_rewrite_health_and_advance_once_in_both_orders
+PASS engine Full_health_fey_assassin_only_waits_and_does_not_gain_an_illegal_rewrite
+PASS codex actual alignment warlock_the_archfey
+PASS codex actual alignment druid_circle_of_the_stars
+PASS raycast Close
+PASS raycast Card11
+PASS dual partner count warlock_the_archfey
+PASS dual candidate migration warlock_the_archfey
+PASS raycast Card38
+PASS dual partner count druid_circle_of_the_stars
+PASS dual candidate migration druid_circle_of_the_stars
+PASS raycast SkipTurnButton
+PASS dual skip offers player and wait
+PASS raycast WizardOption0
+PASS actual dual skip click False
+PASS raycast SkipTurnButton
+PASS dual skip offers player and wait
+PASS raycast WizardDecline
+PASS actual dual skip click True

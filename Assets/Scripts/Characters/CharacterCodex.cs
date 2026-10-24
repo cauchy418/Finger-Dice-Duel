@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -132,7 +132,7 @@ namespace FingerDiceDuel.Characters
                        + "他每合一次盾就白赚一次冲击。",
                 interactions: new string[0]);
 
-            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.LawfulEvil,
+            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticNeutral,
                 shortSkill: "妖精戏法：手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
@@ -358,31 +358,47 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "双手和10进入荒野：熊4合盾、狼吸血、鹰射程3穿刺、蛇毒伤。",
                 playGuide: "回合开始凑10再选形态；熊守、狼攻、鹰远程、蛇上毒。",
                 counter: "不让他保持10；熊形态避免浪费攻击打盾；鹰形态留意其6无法攻击。",
-                interactions: new[] { "与另一结社双将：两种形态独立叠加、分别解除；伤害类型冲突按主将优先。" });
+                interactions: new[] { "与月亮结社分属不同阵营，当前不能组成双将。" });
 
-            Add(CharacterDefinition.CircleOfTheStarsId, "Circle of the Stars", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.CircleOfTheStarsId, "Circle of the Stars", Alignment.LawfulNeutral,
                 shortSkill: "双手和10进入星耀：射手光耀、圣杯额外治疗、巨龙两次加手。",
                 playGuide: "根据队形选射手/圣杯/巨龙；巨龙需要两次选被加数。",
                 counter: "射手防御偏低；圣杯优先保护伤员；巨龙只在第二次加手后结算一次效果。",
-                interactions: new[] { "与另一结社双将：两种形态独立叠加、分别解除；伤害类型冲突按主将优先。" });
+                interactions: new[] { "与月亮结社分属不同阵营，当前不能组成双将。" });
+
+            Add(CharacterDefinition.CollegeOfLoreId,"College of Lore",Alignment.LawfulNeutral,
+                shortSkill:"记录1～9；集齐可成长，消耗对应记录可减伤。",
+                playGuide:"打出新数自动记录；集齐后选成长或保留。受击时选择清除对应记录减半，或保留。",
+                counter:"留意其已有记录；换数字攻击，逼其消耗成长进度。",
+                interactions:new[]{"风暴余势只改手值，不触发记录。"});
+            Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
+                shortSkill:"选永久雷抗；攻击30%闪电、30%雷鸣，行动后可无效果运算。",
+                playGuide:"开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
+                counter:"额外运算不能直接打伤害或回血；根据其永久抗性调整元素。",
+                interactions:new[]{"额外运算不触发数字效果、碎盾或运算后技能，不额外推进回合与状态。"});
+            Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticNeutral,
+                shortSkill:"持2可随机改换加数手；双手差2可变小手为2减伤。",
+                playGuide:"持2自动50%错位，按实际加数结算；受击时双手差2，可选择小手变2减半。",
+                counter:"选加数前比较两只手；压制其2或拆开差2，降低减伤机会。",
+                interactions:new[]{"替换手也须是合法加数；隐藏或被封锁的另一手不会被强行借用。"});
 
             Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.TrueNeutral,
-                shortSkill: "回合结束封一只手为被加数；3 可束缚另一名角色2回合。",
-                playGuide: "封锁对手关键手或保护自己的手；3 可用于打断连招。",
-                counter: "换手/用另一只手；被封锁时不要依赖该手作被加数。",
-                interactions: new[] { "与古贤之誓：束缚状态相同，刷新时长。" });
+                shortSkill: "结束封一手禁作加数至下回合；3可束缚2回合。",
+                playGuide: "3后先选束缚对象或不发动；回合结束再选一只手封锁，可选自己。封锁不影响该手主动运算。",
+                counter: "封锁只禁加数，可用该手主动运算；束缚则随机限制运算手。",
+                interactions: new[] { "多人封锁同手：各自持续，直到各来源下回合开始解除。" });
 
             Add(CharacterDefinition.OathOfTheAncientsId, "Oath of the Ancients", Alignment.NeutralGood,
-                shortSkill: "碎盾可束缚攻击范围内角色2回合；受伤后按体力≥10治疗他人/自己2。",
-                playGuide: "用碎盾打控制；受伤后判断自己是该自愈还是保护范围内队友。",
-                counter: "碎盾前算好范围；逼他低血只能自愈。",
-                interactions: new[] { "与大地结社：束缚状态相同，刷新时长。" });
+                shortSkill: "盾碎可束缚射程内角色；受伤后按血量分支回复2。",
+                playGuide: "主动或被动盾碎后选角色或不发动；受伤后≥10选射程内他人回复2，低于10自动自愈2。",
+                counter: "利用射程隔开治疗对象；碎盾会给他控制机会。",
+                interactions: new[] { "虚假生命：只扣虚假生命不触发庇护；致死不自愈。" });
 
             Add(CharacterDefinition.TheFiendId, "The Fiend", Alignment.LawfulEvil,
-                shortSkill: "治疗溢出转虚假生命（上限10）；攻击可消耗虚假生命使目标失能/恐慌。",
-                playGuide: "保持虚假生命吸收伤害；攻击前权衡是否消耗它打控制。",
-                counter: "先用小伤害剥虚假生命；不要让他目标半血触发回血。",
-                interactions: new[] { "与治疗：满血治疗也会转虚假生命。" });
+                shortSkill: "溢出治疗存10点虚假生命；可耗尽令目标失能/恐慌。",
+                playGuide: "攻击时选失能、恐慌或保留；虚假生命先吸伤。造成伤害后目标半血以下（含击杀）回复3。",
+                counter: "少量伤害先消耗其防护；用腐朽阻止回复与溢出转化。",
+                interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣光移除。" });
 
         }
 

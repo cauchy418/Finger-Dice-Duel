@@ -1,0 +1,109 @@
+PASS engine Land_three_offers_target_then_mandatory_end_seal_without_default_selection
+PASS engine Land_three_can_be_declined_but_end_seal_still_occurs
+PASS engine Land_end_hook_runs_after_current_player_has_already_changed
+PASS engine Multiple_land_seals_have_independent_sources_and_death_clears_own_source
+PASS engine Seal_rejects_foreign_hands_and_reset_cleans_all_sources
+PASS engine Ancient_passive_break_queues_one_optional_player_target_in_actual_range
+PASS engine Ancient_active_break_uses_human_target_choice_after_attack
+PASS engine Ancient_high_health_healing_is_a_target_choice_not_an_automatic_enemy_heal
+PASS engine Ancient_threshold_is_after_damage_and_lethal_damage_does_not_revive
+PASS engine Ancient_direct_poison_damage_also_runs_the_after_damage_hook
+PASS engine Fiend_human_can_pick_either_status_or_keep_false_life
+PASS engine Fiend_full_health_and_dual_healing_overflow_grants_false_life_in_both_orders
+PASS engine Ancient_dual_after_damage_hook_works_in_both_orders
+PASS engine Fiend_killing_a_low_health_target_still_heals_and_can_overflow
+PASS engine False_life_absorbs_without_triggering_actual_health_damage_hooks_and_AI_subtracts_it
+PASS engine Ancient_AI_controls_enemies_heals_allies_and_fiend_preserves_emergency_buffer
+PASS engine Fiend_periodic_damage_neither_spends_pact_buffer_nor_triggers_life_drain
+PASS engine False_life_marker_and_manual_show_points_not_turns_and_reset_removes_it
+PASS engine Land_restricts_a_hand_as_addend_only
+PASS engine Paladin_heals_itself_when_below_ten_after_damage
+PASS engine Fiend_healing_overflow_becomes_false_life_and_absorbs_damage
+PASS engine Fiend_attack_spends_false_life_for_disabled
+PASS selection contains forty five subclasses
+PASS selectable druid_circle_of_the_land
+PASS raycast Card39
+PASS loaded emblem druid_circle_of_the_land
+PASS selectable paladin_oath_of_the_ancients
+PASS raycast Card40
+PASS loaded emblem paladin_oath_of_the_ancients
+PASS selectable warlock_the_fiend
+PASS raycast Card41
+PASS loaded emblem warlock_the_fiend
+PASS raycast Profession_druid
+PASS profession count druid
+PASS codex new entry druid_circle_of_the_land
+PASS codex content fits druid_circle_of_the_land
+PASS raycast Profession_paladin
+PASS profession count paladin
+PASS codex new entry paladin_oath_of_the_ancients
+PASS codex content fits paladin_oath_of_the_ancients
+PASS raycast Profession_warlock
+PASS profession count warlock
+PASS codex new entry warlock_the_fiend
+PASS codex content fits warlock_the_fiend
+PASS raycast Close
+PASS manual contains four character marks
+PASS loaded mark Effects/arcane_barrier
+PASS loaded mark Effects/ki
+PASS loaded mark Effects/hunters_mark
+PASS loaded mark Effects/false_life
+PASS manual text fits GuideTitle
+PASS manual text fits GuideNote
+PASS manual text fits GroupTitle
+PASS manual text fits Entry_arcane_barrier
+PASS manual text fits Entry_ki
+PASS manual text fits Entry_hunters_mark
+PASS manual text fits Entry_false_life
+PASS raycast Close
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS land bind optional player target
+PASS land bind waits for human
+PASS raycast WizardOption0
+PASS land chosen bind applied
+PASS land end seal mandatory
+PASS raycast WizardOption1
+PASS land selected own right seal
+PASS seal keeps source usable
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS ancient active break player target
+PASS raycast WizardOption0
+PASS ancient bind applied
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS ancient post damage threshold
+PASS ancient healing target required
+PASS raycast WizardOption0
+PASS ancient chosen target healed
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS fiend waits for human pact
+PASS raycast WizardOption1
+PASS fiend resource choice False
+PASS fiend selected panic or keep
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS fiend waits for human pact
+PASS raycast WizardOption2
+PASS fiend resource choice True
+PASS fiend selected panic or keep
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS green false life absorbs actual incoming damage
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS land all multiplayer hands 4
+PASS raycast WizardOption7
+PASS last multiplayer hand reachable 4
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS land all multiplayer hands 8
+PASS raycast WizardOption15
+PASS last multiplayer hand reachable 8

@@ -27,6 +27,7 @@ namespace FingerDiceDuel.UI
         {
             if (hand == null) return NormalCard;
             if (hand.IsLocked || hand.IsRestrained) return LockedCard;
+            if (hand.IsTargetRestricted) return new Color(0.16f,0.25f,0.18f);
 
             switch (hand.State)
             {
@@ -97,6 +98,7 @@ namespace FingerDiceDuel.UI
         public static string StatusText(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return "";
+            if(hand.IsTargetRestricted)return (hand.IsRestrained?"束缚":hand.IsLocked?"已锁定":"大地封锁")+" · 禁作加数";
 
             if (hand.IsRestrained) return "束缚 · 无法运算";
             if (hand.IsLocked) return "已锁定";

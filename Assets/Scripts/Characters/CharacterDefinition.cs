@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -115,6 +115,9 @@ namespace FingerDiceDuel.Core
         public const string CircleOfTheLandId = "druid_circle_of_the_land";
         public const string OathOfTheAncientsId = "paladin_oath_of_the_ancients";
         public const string TheFiendId = "warlock_the_fiend";
+        public const string CollegeOfLoreId = "bard_college_of_lore";
+        public const string StormSorceryId = "sorcerer_storm_sorcery";
+        public const string SchoolOfIllusionId = "wizard_school_of_illusion";
         public const string LightDomainId = "cleric_light_domain";
         public const string WarDomainId = "cleric_war_domain";
         public const string BattleMasterId = "fighter_battle_master";
@@ -514,9 +517,19 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition TheFiend { get; } = new CharacterDefinition(
             TheFiendId, "邪术师·妖魔", SpecialLogicType.TheFiend,
             defenseBonus: -1, englishName: "The Fiend",
-            description: "治疗溢出转为虚假生命（上限10），伤害优先扣虚假生命；攻击时可移除全部虚假生命令目标失能/恐慌2回合；造成伤害后目标≤半血则回复3。攻0/防-1，无限距离，近钝击远穿刺。");
+            description: "治疗溢出转为虚假生命（上限10），伤害优先扣虚假生命；攻击时可移除全部虚假生命令目标失能/恐慌2回合；造成伤害后目标≤半血则回复3。攻0/防-1，距离∞，近钝击远穿刺。");
 
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
+        public static CharacterDefinition CollegeOfLore { get; } = new CharacterDefinition(
+            CollegeOfLoreId,"吟游诗人·逸闻学院",SpecialLogicType.CollegeOfLore,defenseBonus:-1,englishName:"College of Lore",
+            description:"记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半。攻0／防−1，距离1，钝击。");
+        public static CharacterDefinition StormSorcery { get; } = new CharacterDefinition(
+            StormSorceryId,"术士·风暴术法",SpecialLogicType.StormSorcery,defenseBonus:-1,englishName:"Storm Sorcery",
+            description:"开局选择永久闪电或雷鸣抗性；攻击30%闪电、30%雷鸣，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
+        public static CharacterDefinition SchoolOfIllusion { get; } = new CharacterDefinition(
+            SchoolOfIllusionId,"法师·幻术学派",SpecialLogicType.SchoolOfIllusion,defenseBonus:-1,englishName:"School of Illusion",
+            description:"持有2时，他人选你的手作加数有50%改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
+
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -529,7 +542,8 @@ namespace FingerDiceDuel.Core
             LightDomain, WarDomain, BattleMaster,
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
             CircleOfTheMoon, CircleOfTheStars,
-            CircleOfTheLand, OathOfTheAncients, TheFiend
+            CircleOfTheLand, OathOfTheAncients, TheFiend,
+            CollegeOfLore, StormSorcery, SchoolOfIllusion
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

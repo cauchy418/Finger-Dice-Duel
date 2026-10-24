@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -61,8 +61,12 @@ namespace FingerDiceDuel.Core
         public bool IsRestrained { get; internal set; }
 
         /// <summary>大地结社：直到下回合不能被任何人选为被加数，但仍可作运算源。</summary>
-        public bool IsTargetRestricted { get; internal set; }
-        public void SetTargetRestricted(bool value) => IsTargetRestricted = value;
+        private bool _legacyTargetRestriction;
+        private readonly System.Collections.Generic.HashSet<object> _targetRestrictionSources = new System.Collections.Generic.HashSet<object>();
+        public bool IsTargetRestricted => _legacyTargetRestriction || _targetRestrictionSources.Count>0;
+        public void SetTargetRestricted(bool value) => _legacyTargetRestriction = value;
+        public void SetTargetRestricted(object source,bool value)
+        { if(source==null)return;if(value)_targetRestrictionSources.Add(source);else _targetRestrictionSources.Remove(source); }
 
         /// <summary>暗置这只手（进入伏击）。</summary>
         public void Conceal() => State = ShieldState.Concealed;
@@ -160,7 +164,8 @@ namespace FingerDiceDuel.Core
         public void Reset(int initialValue = 1)
         {
             IsRestrained = false;
-            IsTargetRestricted = false;
+            _legacyTargetRestriction = false;
+            _targetRestrictionSources.Clear();
             Value = Clamp(initialValue);
             State = ShieldState.None;
             IsLocked = false;

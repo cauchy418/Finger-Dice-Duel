@@ -1,10 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
+using FingerDiceDuel.Characters.SpecialLogics;
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
 #endif
@@ -26,7 +27,7 @@ namespace FingerDiceDuel.Tests
             "WayOfTheNinja|TrueNeutral",
             "Assassin|ChaoticNeutral",
             "OathOfDevotion|LawfulGood",
-            "TheArchfey|LawfulEvil",
+            "TheArchfey|ChaoticNeutral",
             "ArcaneArcher|LawfulNeutral",
             "Gambler|ChaoticNeutral",
             "OathOfTheCrown|LawfulGood",
@@ -53,10 +54,13 @@ namespace FingerDiceDuel.Tests
             "WayOfTheOpenHand|TrueNeutral",
             "WayOfTheFourElements|TrueNeutral",
             "CircleOfTheMoon|ChaoticGood",
-            "CircleOfTheStars|ChaoticNeutral",
+            "CircleOfTheStars|LawfulNeutral",
             "CircleOfTheLand|TrueNeutral",
             "OathOfTheAncients|NeutralGood",
             "TheFiend|LawfulEvil",
+            "CollegeOfLore|LawfulNeutral",
+            "StormSorcery|ChaoticNeutral",
+            "SchoolOfIllusion|ChaoticNeutral",
         };
         private static PlayerState Solo(CharacterDefinition d) => CharacterFactory.CreatePlayer(d.DisplayName,d);
         private static bool Attack(HandEffectType effect) => effect==HandEffectType.Attack4 || effect==HandEffectType.Attack6 || effect==HandEffectType.Attack8;
@@ -77,9 +81,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void All_27_alignments_match_the_latest_assignment_and_cancelled_berserker_move()
+        public void All_45_alignments_match_the_latest_assignment_and_cancelled_berserker_move()
         {
-            Assert.AreEqual(42,Expected.Length);
+            Assert.AreEqual(45,Expected.Length);
             foreach(string row in Expected)
             {
                 var v=row.Split('|');
@@ -98,14 +102,13 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void New_axis_populations_produce_111_pairs_and_both_orders_can_be_built()
+        public void Current_axis_populations_produce_315_pairs_and_both_orders_can_be_built()
         {
-            // 2026-10-23 后：守序 13（光明/战争/战斗大师中战争与战斗大师入守序）、
-            // 中立 10（光明入中立善良）、混乱 10；C(13,2)+C(10,2)+C(10,2) = 168 种双将。
-            Assert.AreEqual(14,CharacterCodex.Filter("守序",null).Count);
+            // 当前45子职：三阵营各15名，3×C(15,2)=315。
+            Assert.AreEqual(15,CharacterCodex.Filter("守序",null).Count);
             Assert.AreEqual(15,CharacterCodex.Filter("中立",null).Count);
-            Assert.AreEqual(13,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(274,all.Count);
+            Assert.AreEqual(15,CharacterCodex.Filter("混乱",null).Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(315,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -115,7 +118,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(548,built);
+            Assert.AreEqual(630,built);
         }
 
         [Test]
@@ -228,11 +231,11 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Newly_lawful_archfey_duals_keep_health_swap_skip_in_both_orders()
+        public void Newly_chaotic_archfey_duals_keep_health_swap_skip_in_both_orders()
         {
             foreach(bool reverse in new[]{false,true})
             {
-                var a=Pair(reverse,CharacterDefinition.TheArchfey,CharacterDefinition.SchoolOfConjuration);
+                var a=Pair(reverse,CharacterDefinition.TheArchfey,CharacterDefinition.Magician);
                 var g=Arrange(a,2,3,out var b);a.TakeDamage(5);
                 var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();
                 Assert.IsTrue(board.CanSkipTurn);Assert.IsTrue(board.SkipTurn());
@@ -243,11 +246,14 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Castling_and_archfey_skip_remain_independent_choices()
+        public void Historical_castling_and_archfey_skip_remain_independent_choices()
         {
             foreach(bool reverse in new[]{false,true})
             {
-                var a=Pair(reverse,CharacterDefinition.TheArchfey,CharacterDefinition.SchoolOfConjuration);
+                // 已跨阵营，只验证旧机制；正式工厂不放宽资格。
+                var a=new PlayerState("历史双将",new DualGeneralBehavior(
+                    CharacterFactory.CreateBehavior(reverse?CharacterDefinition.SchoolOfConjuration:CharacterDefinition.TheArchfey),
+                    CharacterFactory.CreateBehavior(reverse?CharacterDefinition.TheArchfey:CharacterDefinition.SchoolOfConjuration)));
                 var g=Arrange(a,2,1,out var b);a.TakeDamage(5);b.LeftHand.SetValue(1);b.RightHand.SetValue(1);
                 var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();
                 Assert.IsTrue(board.CanCastle);Assert.IsTrue(board.CanSkipTurn);
@@ -282,7 +288,13 @@ namespace FingerDiceDuel.Tests
                 var x=Solo(pair.Primary).Character;var y=Solo(pair.Secondary).Character;
                 foreach(var capability in new[]{typeof(IHealOverride),typeof(IHealAmountProvider),typeof(IHealTargetAdvisor),
                     typeof(IAttackCanceller),typeof(IAttackDamageRule),typeof(IAttackRedirector),typeof(IRangeBreakEffect),typeof(ITurnSkipRule)})
-                    if(ActiveCapability(x,capability)&&ActiveCapability(y,capability))clashes.Add(pair.Name+" "+capability.Name);
+                    if(ActiveCapability(x,capability)&&ActiveCapability(y,capability))
+                    {
+                        // 此组合在控制器显式分开体力改写与潜行等待，并有双序回归；其余竞争仍报警。
+                        bool separateSkip=capability==typeof(ITurnSkipRule)
+                            && (x is AssassinLogic && y is TheArchfeyLogic || x is TheArchfeyLogic && y is AssassinLogic);
+                        if(!separateSkip)clashes.Add(pair.Name+" "+capability.Name);
+                    }
                 if(x is ISelectiveHandEffectRewriter a && y is ISelectiveHandEffectRewriter b)
                     for(int v=1;v<=9;v++)if(a.HandlesResult(v)&&b.HandlesResult(v))clashes.Add(pair.Name+" value "+v);
                 foreach(bool reverse in new[]{false,true})foreach(int v in new[]{2,4,5,6,8,9})
@@ -294,7 +306,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(3288,operations);
+            Assert.AreEqual(3780,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

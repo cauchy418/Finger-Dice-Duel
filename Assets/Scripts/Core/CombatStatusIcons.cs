@@ -16,6 +16,13 @@ namespace FingerDiceDuel.Core
         public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
+            foreach(var book in CharacterBehaviors.Implementers<ILoreRecord>(player))
+            {
+                var values=new List<string>();for(int n=1;n<=9;n++)if(book.HasRecord(n))values.Add(n.ToString());
+                result.Add(new CombatStatusIcon("Subclasses/bard_college_of_lore","逸闻记录 · "+book.RecordCount+" / 9\n已记录："+(values.Count==0?"无":string.Join("、",values))+"\n成长"+book.LoreLevel+"次；消耗对应记录可使本次伤害减半。",book.RecordCount+"/9"));
+            }
+            if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
+                "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；妖魔契约可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
                 result.Add(new CombatStatusIcon("Status/"+StatusNames.IconKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),
