@@ -186,6 +186,13 @@ namespace FingerDiceDuel.UI
             SetBattleSkinLayout(true);
         }
 
+        /// <summary>章节背景仅覆盖当前战斗，默认键恢复竞技桌面；不改变手牌、面板与规则。</summary>
+        public void SetBattleBackground(string key = null)
+        {
+            if (_battleBackground == null) return;
+            BattleArt.Apply(_battleBackground, key ?? "Backgrounds/battle_table");
+        }
+
         private void SetBattleSkinLayout(bool painted)
         {
             _paintedBattle = painted;

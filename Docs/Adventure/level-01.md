@@ -1,9 +1,9 @@
-# 冒险模式 · 剧情模式 · 第一关「初战 · 边境哨站」
+# 第一章：边境哨站·初战
 
 > 状态：**已接入并验收（2026-10-24）**。实际操作与截图见 [验收记录](../../Art/Integration/adventure-level-01/README.md)。
 > 三个已拍板决策：士兵生命 12；引导员头像 = 已有原士兵徽记（金狮之前的头盔盾版本，
 > 资源键 `Adventure/guide_soldier`）；本关不做三星评价。
-> 实现入口：`Assets/Scripts/Assistant/AdventureLevel1.cs`（剧本 + 导演 + 收官保护）、
+> 实现入口：`Assets/Scripts/Assistant/AdventureLevel1.cs`（初战剧本）与`AdventureLesson.cs`（共享导演、点击指引与收官保护）、
 > 回归测试 `Assets/Tests/EditMode/AdventureLevel1Tests.cs`。
 
 ## 一、定位与设计原则
@@ -28,7 +28,7 @@
 
 ## 三、教学点 → 规则对应
 
-三步点击（点自己的手 → 点对方的手 → 仅攻击时点目标）；攻击 4/6/8=数字伤害、攻防加成修正（§3）；合盾 5 挡下一次、作用于自己无第三步（§4）；盾挡与碎盾（§4）；满十归一 10→1、1/2/3/7 无效果（§2/§3）；回血 9=回 9、上限截断浪费（§3）；半自由决胜 + 预告勇士十点重击（留给第二关）。
+三步点击（点自己的手 → 点对方的手 → 仅攻击时点目标）；攻击 4/6/8=数字伤害、攻防加成修正（§3）；合盾 5 挡下一次、作用于自己无第三步（§4）；盾挡与碎盾（§4）；满十归一 10→1、1/2/3/7 无效果（§2/§3）；回血 9=回 9、上限截断浪费（§3）；半自由决胜 + 预告勇士十点重击（见[次战设计](level-02.md)）。
 
 ## 四、逐回合指导流程（已演算核对，含收官推演）
 
@@ -46,7 +46,7 @@
 
 ## 五、引导交互
 
-- 点击守门在**界面层**：`AdventureLevel1.AllowClick` 按"选运算源/选加数/确认目标"三个子阶段给出白名单，接进 `OnHandClicked` 与 `SetInteractable`。不能放进 BoardController——AI 的 MakeAutomaticMove 复用 ClickHand 路径，控制器内守门会挡死士兵脚本。
+- 点击守门在**界面层**：`AdventureLesson.AllowClick` 按"选运算源/选加数/确认目标"三个子阶段给出白名单，接进 `OnHandClicked` 与 `SetInteractable`。不能放进 BoardController——AI 的 MakeAutomaticMove 复用 ClickHand 路径，控制器内守门会挡死士兵脚本。
 - 引导面板：老兵头像 + 步骤进度 + 按字体宽度排版的旁白文案；高亮 = `GameBoardUI.Refresh` 的 `extraHighlights` 传当前建议手。
 - 点错：提示气泡（`RejectionHint`），不推进、无惩罚。
 - 首次强制引导；通关后保存本地完成标记，再次进入开场可选“已通关 · 自由练习”。自由练习不回放前三次士兵进攻；重打创建全新对局。本关不做三星。
@@ -57,8 +57,12 @@
 
 ## 七、落地记录
 
-- `Assistant/AdventureLevel1.cs`：剧本数据、Beat 状态机（完成条件轮询推进）、点击白名单、收官保护评分。
-- 士兵出招：独立 `IMoveSelector` 内含前三步脚本，收官策略持续生效，不退回通用合法步。`BoardController.ScriptedRestAllowed`只由本关给士兵配置；经正常跳过出口完成轮转与状态收尾。
+- `Assistant/AdventureLevel1.cs`保留初战剧本；共享Beat状态机、点击白名单与收官保护评分已提取到`AdventureLesson.cs`。
+- 士兵出招：独立 `IMoveSelector` 内含前三步脚本，收官策略持续生效，不退回通用合法步。`BoardController.ScriptedRestAllowed`只由教学关给对应NPC配置；经正常跳过出口完成轮转与状态收尾。
 - 引导头像：`Assets/Resources/Art/Battle/v1/Adventure/guide_soldier.png`（复制自 `Art/Production/champion-heavy-strike-v1/previous.png`，即原士兵头盔徽记；512 透明 PNG）。
-- 无头回归：`AdventureLevel1Tests`共8项——全剧本数值、守门拒绝、收官持续安全、无安全运算休整、跳过与重打复位、普通对局隔离；包含32组自由练习直至击杀或到限的采样。全量1192项、Unity条件编译与UI编译通过；实际引擎80项通过。
+- 无头回归：`AdventureLevel1Tests`共8项——全剧本数值、守门拒绝、收官持续安全、无安全运算休整、跳过与重打复位、普通对局隔离；包含32组自由练习直至击杀或到限的采样。原验收全量1192项、实际引擎80项通过；章节接入后全量1200项、Unity条件编译与UI编译通过，最新章节引擎验收见下文。
 - 规则口径沿用主线（RULES.md 基础章节），本关不引入新数值规则；关卡专属设定（士兵 12 血、固定起手）属于关卡数据而非规则变更。
+
+## 章节接续
+
+剧情冒险先显示章节列表，点击“第一章：边境哨站”后再选“边境哨站·初战／次战”，本章共用专属哨站庭院背景；初战胜利可继续次战、重打或返回章节。旧通关键`FingerDiceDuel.Adventure.Level1.Completed`保持不变。次战单独保存，不因初战通关而允许跳过。旧验收截图保留当时名称，章节改名与双教学验收见[最新记录](../../Art/Integration/adventure-chapter-01/README.md)。

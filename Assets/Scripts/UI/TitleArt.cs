@@ -42,7 +42,7 @@ namespace FingerDiceDuel.UI
 
         // ---------- 玩家要求的三大模式（新主菜单层级）----------
 
-        /// <summary>冒险模式（剧情第一关已接入，挑战关卡预留）。</summary>
+        /// <summary>冒险模式（剧情两场教学已接入，挑战关卡预留）。</summary>
         Adventure = 11,
 
         /// <summary>竞技模式（对战：原本 1v1 / 2v2 / 8 人都在这里）。</summary>
@@ -77,6 +77,12 @@ namespace FingerDiceDuel.UI
 
         /// <summary>8 人身份局选将。</summary>
         IdentitySelect = 22,
+
+        /// <summary>剧情冒险：章节与教学选择。</summary>
+        StoryChapterSelect = 23,
+
+        /// <summary>章节内战斗选择，初战/次战与后续关卡。</summary>
+        StoryBattleSelect = 24,
     }
 
     /// <summary>

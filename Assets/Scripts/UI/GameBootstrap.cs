@@ -118,8 +118,12 @@ namespace FingerDiceDuel.UI
 
         // ---- 界面流程 ----
         // ---- 玩家要求的三大模式层级 ----
-        /// <summary>冒险模式（剧情第一关与预留挑战入口）。</summary>
+        /// <summary>冒险模式（章节教学与预留挑战入口）。</summary>
         private ScreenGroup _screenAdventure;
+        private ScreenGroup _screenStoryChapter;
+        private ScreenGroup _screenStoryBattles;
+        private Text _storyFirstStatus;
+        private Text _storySecondStatus;
         /// <summary>竞技模式（原 1v1 / 2v2 / 8 人）。</summary>
         private ScreenGroup _screenCompetition;
         /// <summary>娱乐模式（现只有双将）。</summary>
@@ -326,12 +330,11 @@ namespace FingerDiceDuel.UI
         /// <summary>AI 出手前的倒计时。</summary>
         private float _aiDelayTimer;
 
-        /// <summary>冒险模式第一关（剧情模式）的关卡导演；非冒险对局为 null。</summary>
-        private AdventureLevel1 _adventure;
+        /// <summary>冒险剧情教学的关卡导演；非冒险对局为 null。</summary>
+        private AdventureLesson _adventure;
 
         /// <summary>冒险关卡胜利要点卡是否已弹过（一关只弹一次）。</summary>
         private bool _adventureVictoryShown;
-        private const string AdventureLevel1CompletedKey = "FingerDiceDuel.Adventure.Level1.Completed";
 
         // ============================================================
         // 自动启动
@@ -461,6 +464,7 @@ namespace FingerDiceDuel.UI
 
             // 玩家要求的三大模式层级
             BuildAdventureScreen();
+            BuildStoryChapterScreen();
             BuildCompetitionScreen();
             BuildCasualScreen();
             BuildDualGeneralScreen();
@@ -641,15 +645,15 @@ namespace FingerDiceDuel.UI
             return title;
         }
 
-        /// <summary>冒险入口：剧情第一关已接入，挑战关卡预留。</summary>
+        /// <summary>冒险入口：剧情两场教学已接入，挑战关卡预留。</summary>
         private void BuildAdventureScreen()
         {
             _screenAdventure = new ScreenGroup();
             _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
 
             Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
-                                           "剧情冒险", "第一关：初战 · 边境哨站",
-                                           StartAdventureLevel1);
+                                           "剧情冒险", "第一章：边境哨站 · 初战 / 次战",
+                                           () => ShowScreen(GameScreen.StoryChapterSelect));
             Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
                                             "挑战关卡", "即将开放",
                                             () => ShowComingSoon("挑战关卡"));
@@ -659,15 +663,50 @@ namespace FingerDiceDuel.UI
             _screenAdventure.Add(MakeBackButton(_selectRoot, GameScreen.MainMenu).gameObject);
         }
 
+        private void BuildStoryChapterScreen()
+        {
+            _screenStoryChapter = new ScreenGroup();
+            _screenStoryChapter.Add(MakeSubTitle(_selectRoot, "StoryChaptersTitle", "剧情冒险").gameObject);
+            _screenStoryChapter.Add(MakeSubModeButton(_selectRoot, "StoryChapter01", new Vector2(0f, 60f),
+                "第一章：边境哨站", "初战 / 次战 · 老兵的指尖骰术指导",
+                () => ShowScreen(GameScreen.StoryBattleSelect)).gameObject);
+            _screenStoryChapter.Add(MakeBackButton(_selectRoot, GameScreen.Adventure).gameObject);
+
+            _screenStoryBattles = new ScreenGroup();
+            _screenStoryBattles.Add(MakeSubTitle(_selectRoot, "StoryChapterTitle", "第一章：边境哨站").gameObject);
+            Button first = MakeSubModeButton(_selectRoot, "StoryFirst", new Vector2(0f, 60f),
+                "边境哨站·初战", "攻击 · 合盾 · 回复 · 满十归一", StartAdventureLevel1);
+            Button second = MakeSubModeButton(_selectRoot, "StorySecond", new Vector2(0f, -96f),
+                "边境哨站·次战", "勇士技能 · 十点重击", StartAdventureLevel2);
+            _storyFirstStatus = first.transform.Find("Sub").GetComponent<Text>();
+            _storySecondStatus = second.transform.Find("Sub").GetComponent<Text>();
+            _screenStoryBattles.Add(first.gameObject);
+            _screenStoryBattles.Add(second.gameObject);
+            _screenStoryBattles.Add(MakeBackButton(_selectRoot, GameScreen.StoryChapterSelect).gameObject);
+        }
+
+        private void RefreshStoryProgress()
+        {
+            if (_storyFirstStatus != null)
+                _storyFirstStatus.text = "攻击 / 合盾 / 回复  ·  " +
+                    (PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level1.Completed", 0) != 0 ? "已通关" : "推荐先学");
+            if (_storySecondStatus != null)
+                _storySecondStatus.text = "十点重击  ·  " +
+                    (PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level2.Completed", 0) != 0 ? "已通关" : "待练习");
+        }
+
         // ============================================================
-        // 冒险模式 · 剧情模式 · 第一关「初战 · 边境哨站」
+        // 冒险模式 · 剧情模式 · 第一章：边境哨站
         // ============================================================
 
         /// <summary>
-        /// 教学关入口：勇士 vs 剧本士兵（白板，生命 12）。
+        /// 教学关入口：勇士 vs 关卡脚本NPC（初战生命12，次战生命18）。
         /// 士兵不走 MakeAI，而是关卡剧本（ScriptedMoveSelector + 收官保护）。
         /// </summary>
-        private void StartAdventureLevel1()
+        private void StartAdventureLevel1() => StartAdventureLevel(1);
+        private void StartAdventureLevel2() => StartAdventureLevel(2);
+
+        private void StartAdventureLevel(int levelNumber)
         {
             CleanupMatch();
             _pendingDefA = CharacterDefinition.Champion;
@@ -680,8 +719,16 @@ namespace FingerDiceDuel.UI
             _controller = new BoardController(_game, _choiceA, _choiceB);
             _controller.AiResolver = new AiChoiceResolver(ProviderFor);
 
-            _adventure = AdventureLevel1.Attach(_game, _controller);
-            AdventureLevel1.PrepareSoldier(_game.PlayerB);
+            if (levelNumber == 2)
+            {
+                AdventureLevel2.Prepare(_game);
+                _adventure = AdventureLevel2.Attach(_game, _controller);
+            }
+            else
+            {
+                AdventureLevel1.PrepareSoldier(_game.PlayerB);
+                _adventure = AdventureLevel1.Attach(_game, _controller);
+            }
             _adventure.Bind(_controller);
             _adventureVictoryShown = false;
 
@@ -693,14 +740,15 @@ namespace FingerDiceDuel.UI
             _isDualGeneral = false;
 
             StartPreparedMatch();
-            _board.SetTitle("剧情冒险 · 第一关　" + AdventureLevel1.Title);
+            _board.SetTitle(_adventure.DisplayTitle);
+            _board.SetBattleBackground(_adventure.BattleBackgroundKey);
 
-            // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回冒险菜单。
+            // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回章内战斗列表。
             _board.HideAdventureNarration();
-            _board.ShowAdventureIntro("第一关 · " + AdventureLevel1.Title,
-                AdventureLevel1.IntroText, AdventureLevel1.GuideAvatarKey,
+            _board.ShowAdventureIntro(_adventure.DisplayTitle,
+                _adventure.OpeningText, AdventureLevel1.GuideAvatarKey,
                 AdventureLevel1.GuideName, OnAdventureIntroConfirmed, ReturnToAdventure,
-                PlayerPrefs.GetInt(AdventureLevel1CompletedKey, 0) != 0 ? (System.Action)OnAdventureSkipTutorial : null);
+                PlayerPrefs.GetInt(_adventure.CompletionKey, 0) != 0 ? (System.Action)OnAdventureSkipTutorial : null);
         }
 
         /// <summary>开场剧情确认：进入第一教学拍。</summary>
@@ -721,14 +769,14 @@ namespace FingerDiceDuel.UI
         /// <summary>胜利要点卡上的「重打本关」。</summary>
         private void OnAdventureReplay()
         {
-            StartAdventureLevel1();
+            StartAdventureLevel(_adventure?.LevelNumber ?? 1);
         }
 
-        /// <summary>从冒险关卡返回冒险模式子菜单。</summary>
+        /// <summary>从冒险关卡返回章节页。</summary>
         private void ReturnToAdventure()
         {
             CleanupMatch();
-            ShowScreen(GameScreen.Adventure);
+            ShowScreen(GameScreen.StoryBattleSelect);
         }
 
         /// <summary>
@@ -2393,6 +2441,9 @@ namespace FingerDiceDuel.UI
 
             _screenMainMenu?.SetVisible(screen == GameScreen.MainMenu);
             _screenAdventure?.SetVisible(screen == GameScreen.Adventure);
+            _screenStoryChapter?.SetVisible(screen == GameScreen.StoryChapterSelect);
+            _screenStoryBattles?.SetVisible(screen == GameScreen.StoryBattleSelect);
+            if (screen == GameScreen.StoryBattleSelect) RefreshStoryProgress();
             _screenCompetition?.SetVisible(screen == GameScreen.Competition);
             _screenCasual?.SetVisible(screen == GameScreen.Casual);
             _screenDualGeneral?.SetVisible(screen == GameScreen.DualGeneral);
@@ -2876,7 +2927,7 @@ namespace FingerDiceDuel.UI
         /// <summary>重开：回到角色选择（保留已选角色，方便换对手再打）。</summary>
         private void OnRestartClicked()
         {
-            if (_adventure != null) { StartAdventureLevel1(); return; }
+            if (_adventure != null) { StartAdventureLevel(_adventure.LevelNumber); return; }
             CleanupMatch();
             ShowScreen(GameScreen.CharacterSelect);
         }
@@ -2917,6 +2968,7 @@ namespace FingerDiceDuel.UI
         {
             _board.HideGameOver();
             _board.HideAdventureGuide();
+            _board.SetBattleBackground();
             _board.SetExitButtonVisible(false);
             _board.SetSkipButtonVisible(false);
             _board.SetAcceptButtonVisible(false);
@@ -3108,7 +3160,7 @@ namespace FingerDiceDuel.UI
             // 玩家的选盾点击会被直接丢弃。
             if (!_controller.IsHumanChooser) return;
 
-            // 冒险模式第一关：教学白名单外的点击直接拒绝（点错不推进、提示重试）。
+            // 冒险教学：教学白名单外的点击直接拒绝（点错不推进、提示重试）。
             if (_adventure != null && _adventure.Started
                 && !_adventure.AllowClick(hand))
             {
@@ -3400,7 +3452,7 @@ namespace FingerDiceDuel.UI
 
             _board.SetWizardChoices(_controller,RefreshView);
 
-            // —— 冒险模式第一关：导演推进 / 引导旁白 / 胜利要点卡 ——
+            // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
             {
                 if (_adventure.Started && !_adventure.IsComplete)
@@ -3412,11 +3464,12 @@ namespace FingerDiceDuel.UI
                 if (_adventure.IsComplete && !_adventureVictoryShown)
                 {
                     _adventureVictoryShown = true;
-                    PlayerPrefs.SetInt(AdventureLevel1CompletedKey, 1);
+                    PlayerPrefs.SetInt(_adventure.CompletionKey, 1);
                     PlayerPrefs.Save();
-                    _board.ShowAdventureVictory("胜利 · " + AdventureLevel1.Title,
-                        AdventureLevel1.VictoryText, AdventureLevel1.GuideAvatarKey,
-                        OnAdventureReplay, ReturnToAdventure);
+                    _board.ShowAdventureVictory("胜利 · " + _adventure.DisplayTitle,
+                        _adventure.SummaryText, AdventureLevel1.GuideAvatarKey,
+                        OnAdventureReplay, ReturnToAdventure,
+                        _adventure.LevelNumber == 1 ? (System.Action)StartAdventureLevel2 : null);
                 }
             }
 

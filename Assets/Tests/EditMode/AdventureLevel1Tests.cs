@@ -8,7 +8,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// 冒险模式 · 剧情模式 · 第一关「初战 · 边境哨站」的剧本回归。
+    /// 冒险模式 · 剧情模式 · 第一关「第一章：边境哨站·初战」的剧本回归。
     ///
     /// 玩家 = 战士·勇士（攻+1/防0/生命20），士兵 = 白板（攻0/防0/生命12）。
     /// 逐回合数值与 Docs/Adventure/level-01.md 的演算一一对应：
@@ -321,7 +321,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Level_metadata_and_texts_are_ready()
         {
-            Assert.AreEqual("初战 · 边境哨站", AdventureLevel1.Title);
+            Assert.AreEqual("第一章：边境哨站·初战", AdventureLevel1.Title);
             Assert.AreEqual("Adventure/guide_soldier", AdventureLevel1.GuideAvatarKey);
             Assert.AreEqual("老兵", AdventureLevel1.GuideName);
             Assert.IsTrue(AdventureLevel1.IntroText.Contains("边境哨站"));

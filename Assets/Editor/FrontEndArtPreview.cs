@@ -207,8 +207,8 @@ namespace FingerDiceDuel.EditorTools
             Shot("RulesBottom");
             Add(() => Click("Close"));
             Add(() => Click("ModeAdventure")); Shot("Adventure");
-            Add(() => Click("AdvPve")); Shot("ComingSoon");
-            Add(() => Click("Close"));
+            Add(() => { Click("AdvPve"); Screen(GameScreen.StoryChapterSelect); }); Shot("StoryChapter");
+            Add(() => { Click("StoryChapter01"); Screen(GameScreen.StoryBattleSelect); }); Shot("StoryBattles");
             foreach (GameScreen screen in new[] { GameScreen.Competition, GameScreen.Casual, GameScreen.OneOnOneMenu,
                 GameScreen.TwoOnTwoMenu, GameScreen.ModeMenu, GameScreen.DifficultyMenu, GameScreen.DualGeneral,
                 GameScreen.DualGeneralMenu, GameScreen.DualFactionMenu, GameScreen.EightPlayerMenu,

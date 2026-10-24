@@ -90,7 +90,7 @@ namespace FingerDiceDuel.UI
         public int CollegeOfValorChoicePanelStep
             => _bardChoicePanel != null ? _bardChoicePanel.CurrentStep : 0;
 
-        /// <summary>冒险模式第一关的引导面板（开场剧情 / 过程旁白 / 胜利要点卡共用）。</summary>
+        /// <summary>冒险教学的引导面板（开场剧情 / 过程旁白 / 胜利要点卡共用）。</summary>
         private AdventureGuidePanel _adventurePanel;
 
         /// <summary>显示冒险关卡的开场剧情（模态）。</summary>
@@ -101,8 +101,8 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示冒险关卡的胜利要点卡（模态）。</summary>
         public void ShowAdventureVictory(string title, string victoryText, string avatarKey,
-                                         System.Action onReplay, System.Action onReturn)
-            => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn);
+                                         System.Action onReplay, System.Action onReturn, System.Action onNext = null)
+            => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn, onNext);
 
         /// <summary>更新冒险关卡的引导旁白（空文案隐藏）。</summary>
         public void ShowAdventureNarration(string guideName, string narration, string avatarKey)
@@ -275,7 +275,7 @@ namespace FingerDiceDuel.UI
             _bardChoicePanel = new CollegeOfValorChoicePanel(_canvasRoot, _font);
             _bardChoicePanel.Hide();
 
-            // 冒险模式第一关的引导面板（开场剧情 / 过程旁白 / 胜利要点卡）
+            // 冒险教学的引导面板（开场剧情 / 过程旁白 / 胜利要点卡）
             _adventurePanel = new AdventureGuidePanel(_canvasRoot, _font);
             _adventurePanel.HideAll();
         }

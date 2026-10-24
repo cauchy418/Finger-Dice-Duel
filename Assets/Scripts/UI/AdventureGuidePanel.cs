@@ -6,12 +6,12 @@ using UnityEngine.UI;
 namespace FingerDiceDuel.UI
 {
     /// <summary>
-    /// **冒险模式第一关的引导面板**（自包含、纯代码构建，与勇气学院面板同一做法）。
+    /// **冒险教学的引导面板**（自包含、纯代码构建，与勇气学院面板同一做法）。
     ///
     /// 三种形态共用一套构件：
     ///   · **开场剧情**：全屏暗化 + 旁白 + 「跟随指引」按钮（模态，挡住桌面点击）；
     ///   · **过程引导**：左侧小面板（老兵头像 + 旁白），不挡点击、不压手牌；
-    ///   · **胜利结算**：全屏暗化 + 要点卡 + 「重打本关」/「返回冒险模式」。
+    ///   · **胜利结算**：全屏暗化 + 要点卡 + 「重打本关」/「返回章节」。
     /// </summary>
     public sealed class AdventureGuidePanel
     {
@@ -68,6 +68,7 @@ namespace FingerDiceDuel.UI
 
             _confirmLabel.text = "跟随指引";
             _secondLabel.text = "稍后再来";
+            _skipTutorialButton.GetComponentInChildren<Text>().text = "已通关 · 自由练习";
             _skipTutorialAction = onSkipTutorial;
             _skipTutorialButton.gameObject.SetActive(onSkipTutorial != null);
             _confirmAction = onBegin;
@@ -81,19 +82,20 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示胜利要点卡。</summary>
         public void ShowVictory(string title, string victoryText, string avatarKey,
-                                Action onReplay, Action onReturn)
+                                Action onReplay, Action onReturn, Action onNext = null)
         {
             if (_modalRoot == null) return;
 
             _modalTitle.text = title;
             _modalBody.text = FrontEndArt.WrapReadableText(_modalBody, victoryText, 630f);
             _modalGuideName.text = AdventureLevel1.GuideName;
-            _skipTutorialButton.gameObject.SetActive(false);
-            _skipTutorialAction = null;
+            _skipTutorialButton.GetComponentInChildren<Text>().text = "继续次战";
+            _skipTutorialButton.gameObject.SetActive(onNext != null);
+            _skipTutorialAction = onNext;
             SetAvatar(_modalAvatar, avatarKey);
 
             _confirmLabel.text = "重打本关";
-            _secondLabel.text = "返回冒险模式";
+            _secondLabel.text = "返回章节";
             _confirmAction = onReplay;
             _secondAction = onReturn;
 
