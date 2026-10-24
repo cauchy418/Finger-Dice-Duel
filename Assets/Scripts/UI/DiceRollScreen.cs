@@ -56,6 +56,11 @@ namespace FingerDiceDuel.UI
         /// （目前左右手作用完全相同）。
         /// </summary>
         private bool _flipped;
+        private Text _lessonHint;
+        private Button _lessonReturn;
+        private Action _onLessonReturn;
+        private RectTransform _lessonNarrator;
+        private Text _lessonNarration;
 
         private Font _font;
         private Font _boldFont;
@@ -152,7 +157,56 @@ namespace FingerDiceDuel.UI
 
             _dieA = D20DieView.Build(panelRect, "InitiativeDieA", "玩家", new Vector2(-300, 200), 250);
             _dieB = D20DieView.Build(panelRect, "InitiativeDieB", "对手", new Vector2(300, 200), 250);
+            _lessonHint = MakeText(panelRect, "InitiativeLesson", new Vector2(0, 10), new Vector2(1400, 28),
+                21, TextAnchor.MiddleCenter, FrontEndArt.Gold);
+            _lessonReturn = MakeButton(panelRect, "LessonReturn", new Vector2(-675, 430), new Vector2(160, 52), "返回章节", fontSize: 22);
+            _lessonReturn.onClick.AddListener(() => _onLessonReturn?.Invoke());
+            _lessonNarrator = FrontEndArt.Rect(panelRect, "VeteranInitiative", new Vector2(-660, 130), new Vector2(280, 400));
+            BattleArt.Apply(_lessonNarrator.gameObject.AddComponent<Image>(), "UI/panel_tooltip", true);
+            var portrait = FrontEndArt.Rect(_lessonNarrator, "VeteranPortrait", new Vector2(-83, 140), new Vector2(64, 64)).gameObject.AddComponent<Image>();
+            BattleArt.Apply(portrait, AdventureLevel1.GuideAvatarKey); portrait.preserveAspect = true; portrait.raycastTarget = false;
+            FrontEndArt.Text(_lessonNarrator, "VeteranName", "老兵 · 先攻指引", new Vector2(35, 140), new Vector2(154, 36), 18, TextAnchor.MiddleLeft);
+            _lessonNarration = FrontEndArt.Text(_lessonNarrator, "VeteranWords", "", new Vector2(0, -26), new Vector2(236, 248), 18, TextAnchor.UpperLeft);
+            _lessonNarration.color = Color.white;
+            _lessonNarration.horizontalOverflow = HorizontalWrapMode.Overflow;
+            _lessonNarration.verticalOverflow = VerticalWrapMode.Truncate;
+            SetLesson(null, null);
             _root.gameObject.SetActive(false);
+        }
+
+        public void SetLesson(string title, Action onReturn)
+        {
+            bool enabled = !string.IsNullOrEmpty(title);
+            if (_titleText != null) { _titleText.text = enabled ? title : "掷骰决定初始手值"; _titleText.fontSize = enabled ? 32 : 44; }
+            if (_lessonHint != null) { _lessonHint.text = enabled ? AdventureLevel5.InitiativeHint : ""; _lessonHint.gameObject.SetActive(enabled); }
+            if (_lessonReturn != null) _lessonReturn.gameObject.SetActive(enabled);
+            _onLessonReturn = onReturn;
+            if (_lessonNarrator != null) _lessonNarrator.gameObject.SetActive(enabled);
+            UpdateLessonNarrator();
+            if (enabled) _hintText.text = "2～18按总和拆分；1由对手指定，19至少一手9，20自由分配。";
+            if (_orderText != null) { _orderText.rectTransform.anchoredPosition = new Vector2(0, enabled ? -45 : -10); _orderText.fontSize = enabled ? 22 : 28; }
+            if (_prevText != null) { _prevText.rectTransform.anchoredPosition = new Vector2(0, enabled ? -95 : -75); _prevText.fontSize = enabled ? 24 : 30; }
+            if (_hintText != null)
+            {
+                _hintText.rectTransform.anchoredPosition = new Vector2(0, enabled ? -160 : -138);
+                _hintText.rectTransform.sizeDelta = new Vector2(1400, enabled ? 52 : 56);
+                _hintText.fontSize = enabled ? 23 : 28;
+            }
+        }
+
+        private void UpdateLessonNarrator()
+        {
+            if (_lessonNarrator == null || !_lessonNarrator.gameObject.activeSelf || _lessonNarration == null) return;
+            string words;
+            if (_controller == null || _controller.RollA == 0)
+                words = "「先看清：谁先选，谁先动。」\n双方各投1d20。小点先分配手值，大点先行动。\n同点同时分配，本场玩家先行动。\n起手只分数字，5不是完整盾，9不立即回复。";
+            else if (_animating)
+                words = "「等骰点落定，再作决定。」\n小点先分配，大点先行动；分配先后与行动先后是两件事。";
+            else if (_controller.IsNamingOpponent)
+                words = "「大失败，由对手代选。」\n" + _controller.Assignee.Name + "投出1，由" + _controller.Decider.Name + "指定其两手。\n这只改变分配权，先攻仍看骰点。\n本场" + _controller.FirstToAct.Name + "先行动。";
+            else
+                words = "「骰点已定：你" + _controller.RollA + "，教官" + _controller.RollB + "。」\n本场" + _controller.FirstToAct.Name + "先行动。\n现在由" + (_controller.Decider?.Name ?? "双方") + "分配手值。\n小点先选，大点后选；后选可参考已公开的手值。";
+            _lessonNarration.text = FrontEndArt.WrapReadableText(_lessonNarration, words, 236f);
         }
 
         public void SetVisible(bool visible)
@@ -174,6 +228,7 @@ namespace FingerDiceDuel.UI
         /// <summary>用给定的 GameManager 准备一次掷骰（先不掷，等玩家点按钮）。</summary>
         public void Begin(GameManager game)
         {
+            SetLesson(null, null);
             _game = game;
             _controller = new MatchStartController(game);
             _dieA.SetName(_controller.NameA); _dieB.SetName(_controller.NameB);
@@ -211,6 +266,7 @@ namespace FingerDiceDuel.UI
             _orderText.text = _controller.OrderText;
 
             _animCoroutine = StartCoroutine(PlayRollAnimation());
+            UpdateLessonNarrator();
         }
 
         /// <summary>
@@ -267,6 +323,7 @@ namespace FingerDiceDuel.UI
         private void ShowAssignment()
         {
             if (_controller == null) return;
+            UpdateLessonNarrator();
 
             if (_controller.IsComplete) { Finish(); return; }
 

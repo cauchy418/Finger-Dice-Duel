@@ -23,6 +23,11 @@ namespace FingerDiceDuel.Assistant
         }
 
         public virtual string BattleBackgroundKey => "Backgrounds/border_outpost_chapter_01";
+        public virtual bool UsesClassicSetup => false;
+        public virtual bool AllowsTutorialSkip => true;
+        public virtual string ResultHeading => "胜利";
+        public virtual string FailureText => "本次训练未获胜。可重试或返回章节。";
+        public bool IsFinished => IsComplete || _game.IsGameOver;
         public abstract int LevelNumber { get; }
         public abstract string DisplayTitle { get; }
         public abstract string OpeningText { get; }
@@ -35,10 +40,10 @@ namespace FingerDiceDuel.Assistant
         public IMoveSelector SoldierSelector => new SoldierMoves(this);
 
         /// <summary>把士兵的脚本 AI 绑到控制器（BindPlayer 会覆盖既有绑定）。</summary>
-        public void Bind(BoardController board)
+        public virtual void Bind(BoardController board)
         {
             if (board == null) return;
-            board.BindPlayer(_soldier, SoldierSelector, new SimpleChoiceProvider());
+            board.BindPlayer(_soldier, SoldierSelector, _game.ChoiceProviderB as IPlayerChoiceSink ?? new SimpleChoiceProvider());
             board.ScriptedRestAllowed = actor => ReferenceEquals(actor, _soldier)
                 && IsFreeStage && ChooseGuardedMove(_game, _soldier).Actor == null;
         }
@@ -63,6 +68,9 @@ namespace FingerDiceDuel.Assistant
             /// <summary>true = 半自由阶段（提示但不限制点击）。</summary>
             public bool FreeClicks;
 
+            // 引导抉择：非null必须选这只手；null必须放弃。不覆盖普通对局或自由练习。
+            public readonly Dictionary<HandEffect, Hand> Choices = new Dictionary<HandEffect, Hand>();
+
             /// <summary>完成条件：Tick 里轮询，满足即切下一拍。</summary>
             public Func<AdventureLesson, bool> Complete;
         }
@@ -72,7 +80,7 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
 
         /// <summary>关卡是否已按剧本完成（胜利且玩家是赢家）。</summary>
-        public bool IsComplete => _game.IsGameOver
+        public virtual bool IsComplete => _game.IsGameOver
                                   && _game.Winner != null
                                   && ReferenceEquals(_game.Winner, _player);
 
@@ -81,7 +89,7 @@ namespace FingerDiceDuel.Assistant
             => _beatIndex >= 0 && _beatIndex < _beats.Count ? _beats[_beatIndex] : null;
 
         /// <summary>当前引导文案（无拍时为 null）。</summary>
-        public string Narration
+        public virtual string Narration
         {
             get
             {
@@ -141,10 +149,21 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
 
         /// <summary>教程白名单：这张手当前允许被【玩家】点击吗？</summary>
+        public bool AllowAcceptChoice => !TryRequiredChoice(out var hand) || hand != null;
+        public bool AllowDeclineChoice => !TryRequiredChoice(out var hand) || hand == null;
+
+        private bool TryRequiredChoice(out Hand hand)
+        {
+            hand = null;
+            return CurrentBeat != null && !IsFreeStage && CurrentBeat.Choices.TryGetValue(_board.PendingEffect, out hand);
+        }
+
         public bool AllowClick(Hand hand)
         {
             var beat = CurrentBeat;
             if (beat == null || beat.FreeClicks) return true;
+
+            if (TryRequiredChoice(out var required)) return required != null && ReferenceEquals(hand, required);
 
             switch (_board.Phase)
             {
@@ -168,7 +187,8 @@ namespace FingerDiceDuel.Assistant
             get
             {
                 var beat = CurrentBeat;
-                if (beat == null || !_board.IsHumanTurn) return null;
+                if (beat == null || !_board.IsHumanChooser) return null;
+                if (TryRequiredChoice(out var required)) return required;
                 if (beat.FreeClicks)
                 {
                     var move = RecommendedAttack();

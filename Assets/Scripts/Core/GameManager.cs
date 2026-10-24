@@ -735,7 +735,11 @@ namespace FingerDiceDuel.Core
             // 只把**活着的人**排成环（阵亡者不计入距离计算）
             var ring = new List<PlayerState>(4);
             for (int i = 0; i < _players.Count; i++)
+            {
                 if (_players[i].IsAlive) ring.Add(_players[i]);
+                if (_seatObstacles != null)
+                    for (int gap = 0; gap < _seatObstacles[i]; gap++) ring.Add(null);
+            }
 
             int ia = ring.IndexOf(a);
             int ib = ring.IndexOf(b);

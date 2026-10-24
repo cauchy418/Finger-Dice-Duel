@@ -975,6 +975,8 @@ namespace FingerDiceDuel.Assistant
 
         private void SetupFirstStep()
         {
+            _shieldBreakChoiceCollected = _afterShieldBreakChoice = false;
+            _preTargetRangeAnswered.Clear();
             SelectedHand = null;
             _selectedTarget = null;
             _chosenDefenseShield = null;
@@ -1251,6 +1253,9 @@ namespace FingerDiceDuel.Assistant
         /// `ChoosingPreTurnChoice`（阶段名不改成 PreTarget）。
         /// </summary>
         private bool _returnToTargetAfterChoice;
+        private bool _shieldBreakChoiceCollected;
+        private bool _afterShieldBreakChoice;
+        private readonly HashSet<HandEffect> _preTargetRangeAnswered = new HashSet<HandEffect>();
 
         /// <summary>
         /// 游荡者·盗贼已经按过「偷窃」按钮（本回合）。
@@ -2024,6 +2029,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (Phase != BoardPhase.ChoosingTargetPlayer) return false;
             if (_selectedTarget == null) return false;
+            if (_pendingIsAttack && !CanBeAttacked(TargetPlayer ?? Defender)) return false;
             if(_game.StealAttackAwaitingTarget) return ConfirmStolenAttack();
 
             CommitMove(_selectedTarget);
@@ -2568,6 +2574,7 @@ namespace FingerDiceDuel.Assistant
 
             CollectFrom(context.Actor, context);
             CollectFrom(context.Defender, context);
+            _pendingRequests.RemoveAll(r => _preTargetRangeAnswered.Contains(r.Effect));
 
             // 邪术师·至高妖精的"是否取消这次攻击"：取消者是**场上的第三方**，
             // 不属于上面的行动方/防守方，所以单独收集。
@@ -2837,7 +2844,7 @@ namespace FingerDiceDuel.Assistant
             // 攻击距离类抉择回答完以后仍要回到"确认目标"；
             // 纯回复目标则直接进入治疗结算。
             // 1v1 只有一个目标，旧交互不再多问一次；多人局必须回到确认目标。
-            if (hasNonHeal && _game.Players.Count > 2)
+            if (hasNonHeal && (_game.Players.Count > 2 || _game.StaticSeatObstacleCount > 0))
                 _returnToTargetAfterChoice = true;
 
             // 纯回复目标不设 `_preTargetChoiceActive`（答完直接结算）；
@@ -2873,6 +2880,12 @@ namespace FingerDiceDuel.Assistant
 
             if (_pendingRequestIndex >= _pendingRequests.Count)
             {
+                if (_afterShieldBreakChoice)
+                {
+                    _afterShieldBreakChoice = false;
+                    ExecuteResolvedTurn();
+                    return;
+                }
                 if(_wizardAttackContinue!=null)
                 {
                     var resolve=_wizardAttackContinue; _wizardAttackContinue=null;
@@ -3186,6 +3199,9 @@ namespace FingerDiceDuel.Assistant
                 // `CommitMove` 靠它**不再收集一遍**（否则又弹一次 -> 死循环）。
                 _wizardDeclineAnswered = true;
             }
+
+            if (request.Effect == HandEffect.BreakerRangeBreak || request.Effect == HandEffect.SwashbucklerDuelistThrust)
+                _preTargetRangeAnswered.Add(request.Effect);
 
             AppendFollowUpChoices(request, hand);
 
@@ -4030,6 +4046,27 @@ namespace FingerDiceDuel.Assistant
                 _preTargetChoiceActive = false;
                 SetupFirstStep();
                 return;
+            }
+
+            // 在实际选盾之后收集被动连锁。加数可能不是盾，不能据此猜测哪面盾会碎。
+            if (!_shieldBreakChoiceCollected)
+            {
+                _shieldBreakChoiceCollected = true;
+                var provider = CharacterBehaviors.FirstImplementer<IShieldBreakChoiceProvider>(Defender);
+                Hand shield = _chosenDefenseShield;
+                if (shield == null && Defender != null)
+                    shield = Defender.LeftHand.IsShield ? Defender.LeftHand : Defender.RightHand.IsShield ? Defender.RightHand : null;
+                if (!_giveUpAttack && _pendingIsAttack && provider != null && shield != null)
+                {
+                    _pendingRequests.Clear(); _pendingRequestIndex = 0;
+                    provider.CollectShieldBreakChoices(Defender, shield, _game, _pendingRequests);
+                    if (_pendingRequests.Count > 0)
+                    {
+                        _afterShieldBreakChoice = true;
+                        AdvanceCharacterChoice();
+                        return;
+                    }
+                }
             }
 
             // 入口就把阶段记下来 —— 异常处理里的 `Phase` 可能已被改动，

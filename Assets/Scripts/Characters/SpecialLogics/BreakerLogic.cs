@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Core
     ///   - `IPreTurnChoiceProvider`：运算前声明"要不要发动连锁破盾、打碎哪面盾"。
     ///   - `GameManager.BreakShieldAndNotify(...)`：统一破盾入口，保证连锁链正确触发。
     /// </summary>
-    public class BreakerLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter,
+    public class BreakerLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter, IShieldBreakChoiceProvider,
                                 IAiMoveAdvisor
     {
         public override string DisplayName => "战士·破阵者";
@@ -113,6 +113,16 @@ namespace FingerDiceDuel.Core
                 declineResult: null,                        // 放弃 = 不连锁
                 decider: context.Actor,
                 acceptLabel: "发动连锁破盾"));
+        }
+
+        public void CollectShieldBreakChoices(PlayerState owner, Hand breakingShield, GameManager game, IList<ChoiceRequest> requests)
+        {
+            if (owner == null || breakingShield == null || !owner.Owns(breakingShield) || !breakingShield.IsShield) return;
+            var candidates = CollectFormedShields(game.PlayerA, game.PlayerB, breakingShield, game);
+            if (candidates.Count == 0) return;
+            requests.Add(new ChoiceRequest(HandEffect.BreakerChainBreak,
+                "自己的盾将挡下攻击并破碎：可连带打碎场上一面完整盾，或放弃。",
+                ToHands(candidates), allowDecline: true, declineResult: null, decider: owner, acceptLabel: "发动连锁破盾"));
         }
 
         /// <summary>

@@ -1,9 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
     public partial class GameManager
     {
+        private int[] _seatObstacles;
+        public int StaticSeatObstacleCount { get; private set; }
+
+        /// <summary>关卡开局配置各物理座位之后的固定占位物；不登记角色、不参与行动或胜负。</summary>
+        public void ConfigureSeatObstacles(params int[] obstaclesAfterSeats)
+        {
+            if (TurnCount != 0) throw new InvalidOperationException("占位物须在开局前配置。");
+            if (obstaclesAfterSeats == null || obstaclesAfterSeats.Length != _players.Count)
+                throw new ArgumentException("每个角色座位需对应一项占位物数量。");
+            int total = 0;
+            foreach (int count in obstaclesAfterSeats)
+            {
+                if (count < 0) throw new ArgumentOutOfRangeException(nameof(obstaclesAfterSeats));
+                total = checked(total + count);
+            }
+            _seatObstacles = (int[])obstaclesAfterSeats.Clone();
+            StaticSeatObstacleCount = total;
+        }
+
         // 换位只改物理座位。本轮首次换位时锁定行动名单，下轮才采用新座位。
         private List<PlayerState> _roundActionOrder;
         private List<PlayerState> _originalSeatOrder;

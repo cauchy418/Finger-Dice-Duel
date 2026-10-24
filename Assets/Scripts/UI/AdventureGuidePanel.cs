@@ -37,6 +37,9 @@ namespace FingerDiceDuel.UI
         private Text _guideName;
         private Text _guideText;
         private Image _guideAvatar;
+        private readonly AdventureGuideHistory _history = new AdventureGuideHistory();
+        private Button _previousGuide, _nextGuide, _currentGuide;
+        private Text _guidePage;
 
         /// <summary>模态层是否可见（开场 / 胜利 —— 挡住桌面输入）。</summary>
         public bool IsModalVisible => _modalRoot != null && _modalRoot.gameObject.activeSelf;
@@ -57,7 +60,7 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示开场剧情：「跟随指引」进入教学；「稍后再来」走 onCancel（默认只关面板）。</summary>
         public void ShowIntro(string title, string introText, string avatarKey,
-                              string guideName, Action onBegin, Action onCancel = null, Action onSkipTutorial = null)
+                              string guideName, Action onBegin, Action onCancel = null, Action onSkipTutorial = null, string beginLabel = "跟随指引")
         {
             if (_modalRoot == null) return;
 
@@ -66,7 +69,8 @@ namespace FingerDiceDuel.UI
             _modalGuideName.text = guideName;   // 头像下方的署名
             SetAvatar(_modalAvatar, avatarKey);
 
-            _confirmLabel.text = "跟随指引";
+            _history.Clear();
+            _confirmLabel.text = beginLabel;
             _secondLabel.text = "稍后再来";
             _skipTutorialButton.GetComponentInChildren<Text>().text = "已通关 · 自由练习";
             _skipTutorialAction = onSkipTutorial;
@@ -82,19 +86,19 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示胜利要点卡。</summary>
         public void ShowVictory(string title, string victoryText, string avatarKey,
-                                Action onReplay, Action onReturn, Action onNext = null)
+                                Action onReplay, Action onReturn, Action onNext = null, string nextLabel = "继续次战", string replayLabel = "重打本关")
         {
             if (_modalRoot == null) return;
 
             _modalTitle.text = title;
             _modalBody.text = FrontEndArt.WrapReadableText(_modalBody, victoryText, 630f);
             _modalGuideName.text = AdventureLevel1.GuideName;
-            _skipTutorialButton.GetComponentInChildren<Text>().text = "继续次战";
+            _skipTutorialButton.GetComponentInChildren<Text>().text = nextLabel;
             _skipTutorialButton.gameObject.SetActive(onNext != null);
             _skipTutorialAction = onNext;
             SetAvatar(_modalAvatar, avatarKey);
 
-            _confirmLabel.text = "重打本关";
+            _confirmLabel.text = replayLabel;
             _secondLabel.text = "返回章节";
             _confirmAction = onReplay;
             _secondAction = onReturn;
@@ -121,10 +125,22 @@ namespace FingerDiceDuel.UI
             if (_guideRoot == null) return;
             if (string.IsNullOrEmpty(narration)) { _guideRoot.gameObject.SetActive(false); return; }
 
-            _guideName.text = guideName;
-            _guideText.text = FrontEndArt.WrapReadableText(_guideText, narration, 278f);
+            _history.Update(guideName, guideName, narration);
+            RefreshGuidePage();
             SetAvatar(_guideAvatar, avatarKey);
             _guideRoot.gameObject.SetActive(true);
+        }
+
+        private void RefreshGuidePage()
+        {
+            var page = _history.Current;
+            if (page == null) return;
+            _guideName.text = page.Title;
+            _guideText.text = FrontEndArt.WrapReadableText(_guideText, page.Text, 278f);
+            _previousGuide.interactable = _history.CanPrevious;
+            _nextGuide.interactable = _history.CanNext;
+            _currentGuide.interactable = _history.CanNext;
+            _guidePage.text = "指引 " + (_history.Index + 1) + "/" + _history.Count;
         }
 
         public void HideNarration()
@@ -258,7 +274,22 @@ namespace FingerDiceDuel.UI
                                   new Vector2(278f, 292f), 19,
                                   TextAnchor.UpperLeft, Color.white);
 
+            _previousGuide = MakeGuideButton("GuidePrevious", "上一页", new Vector2(-99, -197), () => { _history.Previous(); RefreshGuidePage(); });
+            _nextGuide = MakeGuideButton("GuideNext", "下一页", new Vector2(0, -197), () => { _history.Next(); RefreshGuidePage(); });
+            _currentGuide = MakeGuideButton("GuideCurrent", "回到当前", new Vector2(99, -197), () => { _history.Latest(); RefreshGuidePage(); });
+            _guidePage = MakeText(_guideRoot, "GuidePage", new Vector2(0, -150), new Vector2(278, 24), 16, TextAnchor.MiddleCenter, BattleArt.Ink);
+            _guideText.rectTransform.sizeDelta = new Vector2(278, 250);
+            _guideText.rectTransform.anchoredPosition = new Vector2(0, -7);
             go.SetActive(false);
+        }
+
+        private Button MakeGuideButton(string name, string label, Vector2 position, Action action)
+        {
+            var button = MakeButton(_guideRoot, name, label, position, action);
+            button.GetComponent<RectTransform>().sizeDelta = new Vector2(92, 34);
+            var text = button.GetComponentInChildren<Text>();
+            text.rectTransform.sizeDelta = new Vector2(88, 30); text.fontSize = 16;
+            return button;
         }
 
         private Button MakeButton(RectTransform parent, string name, string label,

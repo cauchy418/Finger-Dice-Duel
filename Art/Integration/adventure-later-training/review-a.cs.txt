@@ -1,0 +1,94 @@
+// Run via execute_csharp_script in Play mode. Names, resources, raycast clicks and layout.
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Instance;
+System.Func<object,string,object> field=(o,n)=>o.GetType().GetField(n,flags).GetValue(o);
+System.Action<object,string,object[]> invoke=(o,n,a)=>o.GetType().GetMethod(n,flags).Invoke(o,a);
+var output=System.IO.Path.GetFullPath("Art/Integration/adventure-later-training");System.IO.Directory.CreateDirectory(output);
+var checks=new System.Collections.Generic.List<string>();
+System.Action<bool,string> check=(ok,msg)=>{if(!ok)throw new System.Exception(msg);checks.Add("PASS "+msg);};
+System.Action<UnityEngine.Canvas,string> shot=(canvas,name)=>{
+ var go=new UnityEngine.GameObject("ProfessionReviewCamera",typeof(UnityEngine.Camera));var cam=go.GetComponent<UnityEngine.Camera>();cam.enabled=false;cam.orthographic=true;cam.clearFlags=UnityEngine.CameraClearFlags.SolidColor;
+ var rt=new UnityEngine.RenderTexture(1920,1080,24);var pixels=new UnityEngine.Texture2D(1920,1080,UnityEngine.TextureFormat.RGB24,false);var prior=UnityEngine.RenderTexture.active;var mode=canvas.renderMode;var oldCam=canvas.worldCamera;var distance=canvas.planeDistance;
+ try{cam.targetTexture=rt;canvas.renderMode=UnityEngine.RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=10;UnityEngine.Canvas.ForceUpdateCanvases();cam.Render();if(name!=null){UnityEngine.RenderTexture.active=rt;pixels.ReadPixels(new UnityEngine.Rect(0,0,1920,1080),0,0);pixels.Apply();System.IO.File.WriteAllBytes(System.IO.Path.Combine(output,name+".png"),UnityEngine.ImageConversion.EncodeToPNG(pixels));}}
+ finally{canvas.renderMode=mode;canvas.worldCamera=oldCam;canvas.planeDistance=distance;cam.targetTexture=null;UnityEngine.RenderTexture.active=prior;UnityEngine.Object.DestroyImmediate(pixels);UnityEngine.Object.DestroyImmediate(rt);UnityEngine.Object.DestroyImmediate(go);UnityEngine.Canvas.ForceUpdateCanvases();}
+};
+
+
+System.Action<object,string,object> set=(o,n,v)=>o.GetType().GetField(n,flags).SetValue(o,v);
+var front=((UnityEngine.RectTransform)field(boot,"_selectRoot")).GetComponentInParent<UnityEngine.Canvas>();
+var board=(FingerDiceDuel.UI.GameBoardUI)field(boot,"_board");
+var canvas=((UnityEngine.RectTransform)field(board,"_canvasRoot")).GetComponent<UnityEngine.Canvas>();
+System.Action refresh=()=>{invoke(boot,"RefreshView",new object[0]);UnityEngine.Canvas.ForceUpdateCanvases();};
+System.Action<UnityEngine.UI.Button,UnityEngine.Canvas> click=(button,c)=>{
+ shot(c,null);var data=new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current){position=UnityEngine.RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+ var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();UnityEngine.EventSystems.EventSystem.current.RaycastAll(data,hits);
+ check(button.gameObject.activeInHierarchy&&button.interactable&&hits.Count>0&&UnityEngine.EventSystems.ExecuteEvents.GetEventHandler<UnityEngine.EventSystems.IPointerClickHandler>(hits[0].gameObject)==button.gameObject,"raycast "+button.name);
+ UnityEngine.EventSystems.ExecuteEvents.Execute(button.gameObject,data,UnityEngine.EventSystems.ExecuteEvents.pointerClickHandler);UnityEngine.Canvas.ForceUpdateCanvases();
+};
+
+
+var menu=(UnityEngine.RectTransform)field(boot,"_selectRoot");
+System.Func<string,UnityEngine.UI.Button> button=name=>menu.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single(b=>b.name==name);
+var panel=field(board,"_adventurePanel");
+var confirm=(UnityEngine.UI.Button)field(panel,"_confirmButton");var back=(UnityEngine.UI.Button)field(panel,"_secondButton");var skip=(UnityEngine.UI.Button)field(panel,"_skipTutorialButton");
+FingerDiceDuel.Assistant.AdventureLesson lesson=field(boot,"_adventure") as FingerDiceDuel.Assistant.AdventureLesson;
+FingerDiceDuel.Assistant.BoardController control=field(boot,"_controller") as FingerDiceDuel.Assistant.BoardController;
+System.Action reload=()=>{lesson=(FingerDiceDuel.Assistant.AdventureLesson)field(boot,"_adventure");control=(FingerDiceDuel.Assistant.BoardController)field(boot,"_controller");};
+System.Func<FingerDiceDuel.Core.Hand,UnityEngine.UI.Button> handButton=hand=>{
+ foreach(string side in new[]{"_cardsA","_cardsB"})foreach(var card in (System.Array)field(board,side))if(object.ReferenceEquals(field(card,"Hand"),hand))return (UnityEngine.UI.Button)field(card,"Button");return null;};
+System.Action npc=()=>{for(int guard=0;guard<20;guard++){if(lesson.IsFinished||object.ReferenceEquals(control.ActivePlayer,lesson.Player)||control.IsHumanChooser)return;set(boot,"_pauseUntil",0f);set(boot,"_aiDelayTimer",1000f);invoke(boot,"Update",new object[0]);}throw new System.Exception("AI stalled");};
+System.Action<FingerDiceDuel.Core.Hand,FingerDiceDuel.Core.Hand> human=(a,b)=>{click(handButton(a),canvas);click(handButton(b),canvas);for(int i=0;i<12;i++){
+ if(lesson.IsFinished||!object.ReferenceEquals(control.ActivePlayer,lesson.Player))return;
+ if(control.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer){if(control.CanGiveUpAttack)click((UnityEngine.UI.Button)field(board,"_declineButton"),canvas);else click(handButton(lesson.Soldier.LeftHand),canvas);}
+ else if(control.PendingRequest.HasValue){if(lesson.CurrentBeat.Choices.TryGetValue(control.PendingEffect,out var required)){if(required==null)click((UnityEngine.UI.Button)field(board,"_declineButton"),canvas);else click(handButton(required),canvas);}else if(control.CanDeclinePendingChoice)click((UnityEngine.UI.Button)field(board,"_declineButton"),canvas);else return;}
+ else return;
+}};
+System.Action layout=()=>{var text=(UnityEngine.UI.Text)field(panel,"_guideText");check(text.preferredHeight<=text.rectTransform.rect.height,"guide fits lesson "+lesson.LevelNumber+" step "+lesson.StepNumber);};
+System.Action modalLayout=()=>{var text=(UnityEngine.UI.Text)field(panel,"_modalBody");check(text.preferredHeight<=text.rectTransform.rect.height,"modal fits lesson "+lesson.LevelNumber);};
+var keys=System.Linq.Enumerable.Range(1,5).Select(i=>"FingerDiceDuel.Adventure.Level"+i+".Completed").ToArray();
+var backup=System.IO.Path.GetFullPath("Tools/UiCompileCheck/bin/later-review-prefs.txt");
+System.Action restore=()=>{if(System.IO.File.Exists(backup)){var saved=System.IO.File.ReadAllLines(backup);for(int i=0;i<5;i++){var parts=saved[i].Split('|');if(parts[0]=="1")UnityEngine.PlayerPrefs.SetInt(keys[i],int.Parse(parts[1]));else UnityEngine.PlayerPrefs.DeleteKey(keys[i]);}UnityEngine.PlayerPrefs.Save();boot.AiThinkSeconds=float.Parse(saved[5],System.Globalization.CultureInfo.InvariantCulture);boot.VerboseLogging=saved[6]=="True";System.IO.File.Delete(backup);}};
+
+if(!System.IO.File.Exists(backup))System.IO.File.WriteAllLines(backup,keys.Select(k=>(UnityEngine.PlayerPrefs.HasKey(k)?"1":"0")+"|"+UnityEngine.PlayerPrefs.GetInt(k,0)).Concat(new[]{boot.AiThinkSeconds.ToString(System.Globalization.CultureInfo.InvariantCulture),boot.VerboseLogging.ToString()}).ToArray());
+try{
+ foreach(var key in keys)UnityEngine.PlayerPrefs.DeleteKey(key);boot.AiThinkSeconds=1000;boot.VerboseLogging=false;
+ foreach(var fixture in new object[]{new FingerDiceDuel.Tests.AdventureLaterLevelsTests(),new FingerDiceDuel.Tests.AdventureGuideHistoryTests(),new FingerDiceDuel.Tests.AdventureLevel1Tests(),new FingerDiceDuel.Tests.AdventureLevel2Tests()})foreach(var m in fixture.GetType().GetMethods().Where(m=>m.DeclaringType==fixture.GetType()&&m.GetParameters().Length==0)){m.Invoke(fixture,null);check(true,"engine "+m.Name);}
+ boot.ShowScreen(FingerDiceDuel.UI.GameScreen.StoryChapterSelect);UnityEngine.Canvas.ForceUpdateCanvases();click(button("StoryChapter01"),front);
+ var scroll=menu.Find("StoryBattleScroll").GetComponent<UnityEngine.UI.ScrollRect>();scroll.verticalNormalizedPosition=0;UnityEngine.Canvas.ForceUpdateCanvases();shot(front,"five-battles");
+ click(button("StoryThird"),front);reload();modalLayout();shot(canvas,"third-intro");click(confirm,canvas);layout();
+ human(lesson.Player.LeftHand,lesson.Soldier.LeftHand);check(lesson.StepNumber==2,"third first shield formed");
+ var prev=(UnityEngine.UI.Button)field(panel,"_previousGuide");var next=(UnityEngine.UI.Button)field(panel,"_nextGuide");var latest=(UnityEngine.UI.Button)field(panel,"_currentGuide");
+ int turns=lesson.Game.TurnCount;click(prev,canvas);check(((UnityEngine.UI.Text)field(panel,"_guideText")).text.Contains("先准备盾"),"previous guide text available");
+ refresh();check(lesson.Game.TurnCount==turns&&((UnityEngine.UI.Text)field(panel,"_guideText")).text.Contains("先准备盾"),"history survives refresh without rewinding game");shot(canvas,"guide-history");click(next,canvas);click(prev,canvas);click(latest,canvas);
+ npc();check(control.PendingEffect==FingerDiceDuel.Core.HandEffect.BreakerChainBreak&&control.IsHumanChooser,"passive chain asks defending human");layout();shot(canvas,"third-passive-chain");
+ check(!((UnityEngine.UI.Button)field(board,"_declineButton")).gameObject.activeInHierarchy,"required chain cannot be declined");click(handButton(lesson.Soldier.RightHand),canvas);
+ check(lesson.StepNumber==3&&!lesson.Soldier.HasStatus(FingerDiceDuel.Core.StatusEffect.Bleed)&&lesson.Player.Health==20,"passive chain breaks enemy shield without bleed");
+ human(lesson.Player.RightHand,lesson.Soldier.LeftHand);check(lesson.Player.LeftHand.IsShield&&lesson.Player.RightHand.IsShield,"repair produces two full shields");shot(canvas,"third-repaired");npc();layout();
+ human(lesson.Player.LeftHand,lesson.Soldier.RightHand);check(control.LastTurn.DamageDealt==7&&lesson.Soldier.HasStatus(FingerDiceDuel.Core.StatusEffect.Bleed),"active shield attack causes seven and bleed");shot(canvas,"third-bleed");npc();check(lesson.IsFreeStage,"third free practice");layout();
+ for(int i=0;i<20&&!lesson.IsFinished;i++){var moves=lesson.Game.GetLegalMoves(lesson.Player);var move=moves.FirstOrDefault(m=>new[]{4,6,8}.Contains(FingerDiceDuel.Core.Hand.ComputeSum(m.ActedHand.Value,m.TargetHand.Value)));if(move.Actor==null)move=moves[0];human(move.ActedHand,move.TargetHand);npc();}
+ check(lesson.IsComplete&&skip.GetComponentInChildren<UnityEngine.UI.Text>().text=="继续四战","third victory offers fourth");modalLayout();click(skip,canvas);reload();check(lesson.LevelNumber==4,"continue to fourth");modalLayout();click(confirm,canvas);layout();
+ var rocks=(UnityEngine.RectTransform)field(board,"_adventureObstaclesRoot");check(rocks.gameObject.activeInHierarchy&&rocks.GetComponentsInChildren<UnityEngine.UI.Button>(true).Length==0,"stones have no selectable buttons");
+ check(lesson.Game.Players.Count==2&&lesson.Game.DistanceBetween(lesson.Player,lesson.Soldier)==2,"two occupied stones create distance two without adding actors");
+ click(handButton(lesson.Player.LeftHand),canvas);click(handButton(lesson.Soldier.LeftHand),canvas);
+ var decline=(UnityEngine.UI.Button)field(board,"_declineButton");check(control.CanGiveUpAttack&&!handButton(lesson.Soldier.LeftHand).interactable,"unreachable target offers abandon");
+ foreach(string stone in new[]{"LeftStone","RightStone"}){var rb=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform,rocks.Find(stone));var bb=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(canvas.transform,decline.transform);check(rb.max.x<=bb.min.x||rb.min.x>=bb.max.x||rb.max.y<=bb.min.y||rb.min.y>=bb.max.y,"stone clear of abandon "+stone);}
+ shot(canvas,"fourth-out-of-range");click(decline,canvas);check(lesson.Player.LeftHand.Value==4&&lesson.Soldier.Health==18,"abandon preserves hand four and health");npc();human(lesson.Player.RightHand,lesson.Soldier.RightHand);npc();layout();
+ click(handButton(lesson.Player.LeftHand),canvas);click(handButton(lesson.Soldier.RightHand),canvas);
+ var accept=(UnityEngine.UI.Button)field(board,"_acceptButton");check(accept.gameObject.activeInHierarchy&&!decline.gameObject.activeInHierarchy,"fourth requires range break");shot(canvas,"fourth-range-choice");click(accept,canvas);check(control.Phase==FingerDiceDuel.Assistant.BoardPhase.ChoosingTargetPlayer,"range break returns target confirmation once");click(handButton(lesson.Soldier.LeftHand),canvas);
+ check(lesson.IsComplete&&lesson.Soldier.IsAlive&&control.LastTurn.DamageDealt==9,"fourth objective completes after real nine damage");check(((UnityEngine.UI.Text)field(panel,"_modalTitle")).text.Contains("训练完成"),"objective result does not claim a kill");modalLayout();shot(canvas,"fourth-complete");click(skip,canvas);reload();check(lesson.LevelNumber==5,"continue to fifth");modalLayout();
+ check(confirm.GetComponentInChildren<UnityEngine.UI.Text>().text=="学习先攻","fifth intro explicitly teaches initiative");shot(canvas,"fifth-intro");click(confirm,canvas);
+ var dice=(FingerDiceDuel.UI.DiceRollScreen)field(boot,"_diceRoll");check(boot.CurrentScreen==FingerDiceDuel.UI.GameScreen.DiceRoll&&!lesson.Started&&lesson.Game.TurnCount==0,"fifth waits for dice before beginning turn");
+ check(((UnityEngine.UI.Text)field(dice,"_lessonHint")).text.Contains("大点先行动"),"initiative hint remains on dice page");var hintRect=((UnityEngine.UI.Text)field(dice,"_lessonHint")).rectTransform;
+ var hintBounds=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(front.transform,hintRect);
+ foreach(string die in new[]{"_dieA","_dieB"}){var caption=(UnityEngine.UI.Text)field(field(dice,die),"_caption");var bounds=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(front.transform,caption.rectTransform);check(hintBounds.max.y<bounds.min.y,"initiative hint clear of die caption "+die);}
+ var orderBounds=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(front.transform,((UnityEngine.UI.Text)field(dice,"_orderText")).rectTransform);check(orderBounds.max.y<hintBounds.min.y,"initiative hint clear of order line");
+ check(((UnityEngine.UI.Text)field(dice,"_lessonHint")).preferredHeight<=hintRect.rect.height,"initiative hint text fits");
+ var veteran=(UnityEngine.RectTransform)field(dice,"_lessonNarrator");var veteranText=(UnityEngine.UI.Text)field(dice,"_lessonNarration");
+ check(veteran.gameObject.activeInHierarchy&&veteranText.text.Contains("小点先分配"),"veteran explains initiative on dice screen");
+ check(veteranText.preferredHeight<=veteranText.rectTransform.rect.height,"veteran explanation fits");
+ var vb=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(front.transform,veteran);
+ var db=UnityEngine.RectTransformUtility.CalculateRelativeRectTransformBounds(front.transform,((FingerDiceDuel.UI.D20DieView)field(dice,"_dieA")).Root);
+ check(vb.max.x<db.min.x,"veteran clear of die and allocation options");
+ shot(front,"fifth-before-roll");click((UnityEngine.UI.Button)field(dice,"_rollButton"),front);
+ System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation.txt"),checks);return "PASS "+checks.Count+" stage A; real dice animation running";
+}catch{restore();throw;}

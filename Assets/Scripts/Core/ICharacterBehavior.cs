@@ -861,4 +861,10 @@ namespace FingerDiceDuel.Core
         bool TryRedirectToSelf(PlayerState owner, PlayerState attacker,
                                PlayerState intendedTarget, GameManager manager);
     }
+    /// <summary>已确定防守盾后收集其破碎的选择，避免将加数手误当成防守盾。</summary>
+    public interface IShieldBreakChoiceProvider
+    {
+        void CollectShieldBreakChoices(PlayerState owner, Hand breakingShield, GameManager game, IList<ChoiceRequest> requests);
+    }
+
 }
