@@ -25,9 +25,10 @@ async function prepare() {
     if (x1 < 0) throw Error(`Empty asset: ${item.id}`);
     const crop = { left: x0, top: y0, width: x1 - x0 + 1, height: y1 - y0 + 1 };
     const side = item.status ? 448 : 480;
-    const png = await sharp(sourcePath).extract(crop)
-      .resize(side, side, { fit: 'inside' })
-      .resize(512, 512, { fit: 'contain', background: '#00000000' }).png().toBuffer();
+    const resized = await sharp(sourcePath).extract(crop)
+      .resize(side, side, { fit: 'inside' }).png().toBuffer();
+    const png = await sharp(resized)
+      .resize(512, 512, { fit: 'contain', withoutEnlargement: true, background: '#00000000' }).png().toBuffer();
     const kind = item.status ? 'Status' : item.unit ? 'Units' : 'Subclasses';
     const selected = `${folder}/selected/${kind}/${item.id}.png`;
     await fs.mkdir(path.dirname(path.join(root, selected)), { recursive: true });

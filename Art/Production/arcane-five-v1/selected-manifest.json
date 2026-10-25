@@ -6,7 +6,7 @@
       "source": "Art/Production/arcane-five-v1/sources/wizard_school_of_transmutation.png",
       "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_school_of_transmutation.png",
       "kind": "Subclasses",
-      "sha256": "f928e119670f58c6a0b57167eb1314a364f1f04159cce75ca7a17592bfcb7b22",
+      "sha256": "23a1dc36cd3a30c8b050941ae915076ed87ee00f7f8ce964ef31537c6b5d7041",
       "crop": {
         "left": 8,
         "top": 0,
@@ -19,7 +19,7 @@
       "source": "Art/Production/arcane-five-v1/sources/wizard_school_of_enchantment.png",
       "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_school_of_enchantment.png",
       "kind": "Subclasses",
-      "sha256": "49240683967dbd7bc237877c6960b6c017b167e7de920e5b52e0f10b580937ad",
+      "sha256": "8ccb49a9c389fb63197cdd53d65b1732eaedffb149a78b6a7aa395e226e49b23",
       "crop": {
         "left": 12,
         "top": 9,
@@ -32,7 +32,7 @@
       "source": "Art/Production/arcane-five-v1/sources/fighter_eldritch_knight.png",
       "selected": "Art/Production/arcane-five-v1/selected/Subclasses/fighter_eldritch_knight.png",
       "kind": "Subclasses",
-      "sha256": "dc3d04d2bfc95858118c94c086300039b4a9c013fd3a35839ad004e7443e334b",
+      "sha256": "6b79c5116ff31894398daa1cb2d151ac5d57f283ed782035acb60695281c8a79",
       "crop": {
         "left": 53,
         "top": 34,
@@ -45,7 +45,7 @@
       "source": "Art/Production/arcane-five-v1/sources/wizard_bladesinging.png",
       "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_bladesinging.png",
       "kind": "Subclasses",
-      "sha256": "475f969cb70f514b4bb485020feb4f06bd8a5298e445f430db591c1ccd10af46",
+      "sha256": "a58590d5f924be992410bfb1ef5e5e95d7a5f1d44087f878d67a601d685576c9",
       "crop": {
         "left": 11,
         "top": 0,
@@ -58,7 +58,7 @@
       "source": "Art/Production/arcane-five-v1/sources/warlock_the_hexblade.png",
       "selected": "Art/Production/arcane-five-v1/selected/Subclasses/warlock_the_hexblade.png",
       "kind": "Subclasses",
-      "sha256": "f65f6dc1ba35209a9615a4f593df33d58d605fb0d640160af53880cd86a0f683",
+      "sha256": "1a3e09d51c054e59f46afcbf1606f5b40f7fe81e5adb57f9247988d777ef9eda",
       "crop": {
         "left": 39,
         "top": 18,
@@ -71,7 +71,7 @@
       "source": "Art/Production/arcane-five-v1/sources/polymorph.png",
       "selected": "Art/Production/arcane-five-v1/selected/Status/polymorph.png",
       "kind": "Status",
-      "sha256": "7075fc90584e4d89c75ff3081d08d50ec501e0b3cec8e9e662801fa2a04942af",
+      "sha256": "7919f034bf17a3d44a1a53b14adea89a7bd8ded19cbbb3e15d32b4321bcf88a2",
       "crop": {
         "left": 74,
         "top": 75,
@@ -84,7 +84,7 @@
       "source": "Art/Production/arcane-five-v1/sources/hexbound_specter.png",
       "selected": "Art/Production/arcane-five-v1/selected/Units/hexbound_specter.png",
       "kind": "Units",
-      "sha256": "01cb7101c8f52a1e180be28db1ef78f7092a1987bf481619ac5bd49be1cccd16",
+      "sha256": "d4eb0c14c67466d6be4c0456a88a75dee16c90c1c4e4675bf810760ffd918c61",
       "crop": {
         "left": 56,
         "top": 44,
@@ -97,7 +97,7 @@
       "source": "Art/Production/arcane-five-v1/sources/polymorphed_sheep.png",
       "selected": "Art/Production/arcane-five-v1/selected/Units/polymorphed_sheep.png",
       "kind": "Units",
-      "sha256": "5f47a7ff62bf1e0f01a0991c37caa38a8fc44fc7928ad678452a04f3bcde09dc",
+      "sha256": "cb2656d46035bf0497ff193978fa9647cabd56c9e8800cc86d094e6247b52c1d",
       "crop": {
         "left": 24,
         "top": 2,
