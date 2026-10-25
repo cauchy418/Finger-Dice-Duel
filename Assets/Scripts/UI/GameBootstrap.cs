@@ -2490,6 +2490,7 @@ namespace FingerDiceDuel.UI
             _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
             _screenTwoOnTwoInitiative?.SetVisible(screen == GameScreen.TwoOnTwoInitiative);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
+            ResetProfessionNavigation(screen);
 
             // ⚠️ 图鉴也必须在这里管住！
             //

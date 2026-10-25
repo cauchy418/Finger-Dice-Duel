@@ -1,0 +1,182 @@
+PASS 1v1 starts with profession categories True Intro
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Start
+PASS 1v1 actual match uses chosen subclasses True Intro
+PASS 1v1 starts with profession categories True Classic
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Start
+PASS 1v1 actual match uses chosen subclasses True Classic
+PASS 1v1 starts with profession categories False Intro
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Start
+PASS 1v1 actual match uses chosen subclasses False Intro
+PASS 1v1 starts with profession categories False Classic
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Start
+PASS 1v1 actual match uses chosen subclasses False Classic
+PASS 2v2 categories for self and teammate Intro
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast TtStart
+PASS 2v2 intro starts with chosen subclasses
+PASS 2v2 categories for self and teammate Classic
+PASS raycast Profession_wizard
+PASS eligible wizard_school_of_evocation
+PASS raycast Card20
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS raycast TtStart
+PASS 2v2 classic passes chosen subclasses to initiative
+PASS 8p faction category entry
+PASS raycast Profession_fighter
+PASS eligible fighter_swordsman
+PASS raycast Card7
+PASS raycast FbStart
+PASS 8p faction actual match selected role
+PASS identity eligible pool True
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS identity explicitly confirms even default index zero True
+PASS identity refresh keeps current profession True
+PASS raycast IdStart
+PASS identity actual match uses correct subclass True
+PASS identity eligible pool False
+PASS AI lord subclass remains excluded
+PASS raycast Profession_fighter
+PASS eligible fighter_swordsman
+PASS raycast Card6
+PASS identity explicitly confirms even default index zero False
+PASS identity refresh keeps current profession False
+PASS raycast IdStart
+PASS identity actual match uses correct subclass False
+PASS dual primary profession entry False
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS dual secondary starts at professions with fourteen legal partners False
+PASS dual same-axis and no-duplicate restrictions False
+PASS raycast Profession_barbarian
+PASS dual filtered profession False barbarian
+PASS raycast ProfessionBack
+PASS return does not reset primary barbarian
+PASS raycast Profession_cleric
+PASS dual filtered profession False cleric
+PASS raycast ProfessionBack
+PASS return does not reset primary cleric
+PASS raycast Profession_druid
+PASS dual filtered profession False druid
+PASS raycast ProfessionBack
+PASS return does not reset primary druid
+PASS raycast Profession_monk
+PASS dual filtered profession False monk
+PASS raycast ProfessionBack
+PASS return does not reset primary monk
+PASS raycast Profession_paladin
+PASS dual filtered profession False paladin
+PASS raycast ProfessionBack
+PASS return does not reset primary paladin
+PASS raycast Profession_ranger
+PASS dual filtered profession False ranger
+PASS raycast ProfessionBack
+PASS return does not reset primary ranger
+PASS raycast Profession_rogue
+PASS dual filtered profession False rogue
+PASS raycast ProfessionBack
+PASS return does not reset primary rogue
+PASS raycast Profession_warlock
+PASS dual filtered profession False warlock
+PASS raycast ProfessionBack
+PASS return does not reset primary warlock
+PASS raycast Profession_wizard
+PASS dual filtered profession False wizard
+PASS raycast ProfessionBack
+PASS return does not reset primary wizard
+PASS raycast Profession_paladin
+PASS eligible paladin_oath_of_the_ancients
+PASS raycast Card13
+PASS dual relative index selected correct partner False
+PASS dual start enabled after two subclasses False
+PASS raycast DgStart
+PASS dual actual match starts False
+PASS dual primary profession entry True
+PASS raycast Profession_fighter
+PASS eligible fighter_champion
+PASS raycast Card0
+PASS dual secondary starts at professions with fourteen legal partners True
+PASS dual same-axis and no-duplicate restrictions True
+PASS raycast Profession_barbarian
+PASS dual filtered profession True barbarian
+PASS raycast ProfessionBack
+PASS return does not reset primary barbarian
+PASS raycast Profession_cleric
+PASS dual filtered profession True cleric
+PASS raycast ProfessionBack
+PASS return does not reset primary cleric
+PASS raycast Profession_druid
+PASS dual filtered profession True druid
+PASS raycast ProfessionBack
+PASS return does not reset primary druid
+PASS raycast Profession_monk
+PASS dual filtered profession True monk
+PASS raycast ProfessionBack
+PASS return does not reset primary monk
+PASS raycast Profession_paladin
+PASS dual filtered profession True paladin
+PASS raycast ProfessionBack
+PASS return does not reset primary paladin
+PASS raycast Profession_ranger
+PASS dual filtered profession True ranger
+PASS raycast ProfessionBack
+PASS return does not reset primary ranger
+PASS raycast Profession_rogue
+PASS dual filtered profession True rogue
+PASS raycast ProfessionBack
+PASS return does not reset primary rogue
+PASS raycast Profession_warlock
+PASS dual filtered profession True warlock
+PASS raycast ProfessionBack
+PASS return does not reset primary warlock
+PASS raycast Profession_wizard
+PASS dual filtered profession True wizard
+PASS raycast ProfessionBack
+PASS return does not reset primary wizard
+PASS raycast Profession_paladin
+PASS eligible paladin_oath_of_the_ancients
+PASS raycast Card13
+PASS dual relative index selected correct partner True
+PASS dual start enabled after two subclasses True
+PASS raycast DgStart
+PASS dual actual match starts True
+PASS finale first shows only fighter profession
+PASS raycast Profession_fighter
+PASS eligible fighter_tactician
+PASS raycast Card4
+PASS finale maps selected subclass
+PASS raycast FinaleStart
+PASS finale challenge uses selected subclass

@@ -1,0 +1,14 @@
+── CharacterRosterTests  (10 项)
+   PASS  Blank_card_shows_the_default_max_health
+   PASS  Card_stats_show_attack_and_defense_with_signs
+   PASS  Card_stats_show_positive_bonuses_with_a_plus
+   PASS  Every_built_in_character_produces_a_readable_card
+   PASS  MaxHealthOf_matches_what_a_real_player_gets
+   PASS  PathOfTheBeast_card_shows_the_real_max_health_of_twenty_five
+   PASS  Shorten_keeps_a_short_description_intact
+   PASS  Shorten_prefers_the_first_sentence
+   PASS  Shorten_tolerates_null_and_empty
+   PASS  Shorten_truncates_a_long_description_with_an_ellipsis
+
+────────────────────────────────────────────────────────────
+通过 10 / 失败 0

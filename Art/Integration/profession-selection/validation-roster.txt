@@ -1,0 +1,228 @@
+PASS 1v1 opens twelve profession categories for forty-five subclasses
+PASS profession emblem barbarian
+PASS raycast Profession_barbarian
+PASS entered barbarian
+PASS category navigation did not select a subclass barbarian
+PASS filtered count barbarian
+PASS raycast Card3
+PASS original callback index barbarian_path_of_the_warden
+PASS correct details barbarian_path_of_the_warden
+PASS raycast Card6
+PASS original callback index barbarian_path_of_the_beast
+PASS correct details barbarian_path_of_the_beast
+PASS raycast Card16
+PASS original callback index barbarian_path_of_the_giant
+PASS correct details barbarian_path_of_the_giant
+PASS raycast Card25
+PASS original callback index barbarian_path_of_the_berserker
+PASS correct details barbarian_path_of_the_berserker
+PASS raycast ProfessionBack
+PASS back retains selected role barbarian
+PASS profession emblem bard
+PASS raycast Profession_bard
+PASS entered bard
+PASS category navigation did not select a subclass bard
+PASS filtered count bard
+PASS raycast Card23
+PASS original callback index bard_college_of_valor
+PASS correct details bard_college_of_valor
+PASS raycast Card42
+PASS original callback index bard_college_of_lore
+PASS correct details bard_college_of_lore
+PASS raycast ProfessionBack
+PASS back retains selected role bard
+PASS profession emblem cleric
+PASS raycast Profession_cleric
+PASS entered cleric
+PASS category navigation did not select a subclass cleric
+PASS filtered count cleric
+PASS raycast Card4
+PASS original callback index cleric_life_domain
+PASS correct details cleric_life_domain
+PASS raycast Card30
+PASS original callback index cleric_light_domain
+PASS correct details cleric_light_domain
+PASS raycast Card31
+PASS original callback index cleric_war_domain
+PASS correct details cleric_war_domain
+PASS raycast ProfessionBack
+PASS back retains selected role cleric
+PASS profession emblem druid
+PASS raycast Profession_druid
+PASS entered druid
+PASS category navigation did not select a subclass druid
+PASS filtered count druid
+PASS raycast Card37
+PASS original callback index druid_circle_of_the_moon
+PASS correct details druid_circle_of_the_moon
+PASS raycast Card38
+PASS original callback index druid_circle_of_the_stars
+PASS correct details druid_circle_of_the_stars
+PASS raycast Card39
+PASS original callback index druid_circle_of_the_land
+PASS correct details druid_circle_of_the_land
+PASS raycast ProfessionBack
+PASS back retains selected role druid
+PASS profession emblem fighter
+PASS raycast Profession_fighter
+PASS entered fighter
+PASS category navigation did not select a subclass fighter
+PASS filtered count fighter
+PASS raycast Card0
+PASS original callback index fighter_champion
+PASS correct details fighter_champion
+PASS raycast Card1
+PASS original callback index fighter_breaker
+PASS correct details fighter_breaker
+PASS raycast Card7
+PASS original callback index fighter_swordsman
+PASS correct details fighter_swordsman
+PASS raycast Card12
+PASS original callback index fighter_arcane_archer
+PASS correct details fighter_arcane_archer
+PASS raycast Card26
+PASS original callback index fighter_tactician
+PASS correct details fighter_tactician
+PASS raycast Card32
+PASS original callback index fighter_battle_master
+PASS correct details fighter_battle_master
+PASS raycast ProfessionBack
+PASS back retains selected role fighter
+PASS profession emblem monk
+PASS raycast Profession_monk
+PASS entered monk
+PASS category navigation did not select a subclass monk
+PASS filtered count monk
+PASS raycast Card8
+PASS original callback index monk_way_of_the_ninja
+PASS correct details monk_way_of_the_ninja
+PASS raycast Card15
+PASS original callback index monk_way_of_the_tai_chi
+PASS correct details monk_way_of_the_tai_chi
+PASS raycast Card35
+PASS original callback index monk_way_of_the_open_hand
+PASS correct details monk_way_of_the_open_hand
+PASS raycast Card36
+PASS original callback index monk_way_of_the_four_elements
+PASS correct details monk_way_of_the_four_elements
+PASS raycast ProfessionBack
+PASS back retains selected role monk
+PASS profession emblem paladin
+PASS raycast Profession_paladin
+PASS entered paladin
+PASS category navigation did not select a subclass paladin
+PASS filtered count paladin
+PASS raycast Card10
+PASS original callback index paladin_oath_of_devotion
+PASS correct details paladin_oath_of_devotion
+PASS raycast Card14
+PASS original callback index paladin_oath_of_the_crown
+PASS correct details paladin_oath_of_the_crown
+PASS raycast Card24
+PASS original callback index paladin_oathbreaker
+PASS correct details paladin_oathbreaker
+PASS raycast Card40
+PASS original callback index paladin_oath_of_the_ancients
+PASS correct details paladin_oath_of_the_ancients
+PASS raycast ProfessionBack
+PASS back retains selected role paladin
+PASS profession emblem ranger
+PASS raycast Profession_ranger
+PASS entered ranger
+PASS category navigation did not select a subclass ranger
+PASS filtered count ranger
+PASS raycast Card18
+PASS original callback index ranger_gloom_stalker
+PASS correct details ranger_gloom_stalker
+PASS raycast Card34
+PASS original callback index ranger_hunter
+PASS correct details ranger_hunter
+PASS raycast ProfessionBack
+PASS back retains selected role ranger
+PASS profession emblem rogue
+PASS raycast Profession_rogue
+PASS entered rogue
+PASS category navigation did not select a subclass rogue
+PASS filtered count rogue
+PASS raycast Card5
+PASS original callback index rogue_swashbuckler
+PASS correct details rogue_swashbuckler
+PASS raycast Card9
+PASS original callback index rogue_assassin
+PASS correct details rogue_assassin
+PASS raycast Card13
+PASS original callback index rogue_gambler
+PASS correct details rogue_gambler
+PASS raycast Card17
+PASS original callback index rogue_thief
+PASS correct details rogue_thief
+PASS raycast Card19
+PASS original callback index rogue_magician
+PASS correct details rogue_magician
+PASS raycast ProfessionBack
+PASS back retains selected role rogue
+PASS profession emblem sorcerer
+PASS raycast Profession_sorcerer
+PASS entered sorcerer
+PASS category navigation did not select a subclass sorcerer
+PASS filtered count sorcerer
+PASS raycast Card21
+PASS original callback index sorcerer_wild_magic
+PASS correct details sorcerer_wild_magic
+PASS raycast Card33
+PASS original callback index sorcerer_draconic_bloodline
+PASS correct details sorcerer_draconic_bloodline
+PASS raycast Card43
+PASS original callback index sorcerer_storm_sorcery
+PASS correct details sorcerer_storm_sorcery
+PASS raycast ProfessionBack
+PASS back retains selected role sorcerer
+PASS profession emblem warlock
+PASS raycast Profession_warlock
+PASS entered warlock
+PASS category navigation did not select a subclass warlock
+PASS filtered count warlock
+PASS raycast Card11
+PASS original callback index warlock_the_archfey
+PASS correct details warlock_the_archfey
+PASS raycast Card22
+PASS original callback index warlock_the_great_old_one
+PASS correct details warlock_the_great_old_one
+PASS raycast Card41
+PASS original callback index warlock_the_fiend
+PASS correct details warlock_the_fiend
+PASS raycast ProfessionBack
+PASS back retains selected role warlock
+PASS profession emblem wizard
+PASS raycast Profession_wizard
+PASS entered wizard
+PASS category navigation did not select a subclass wizard
+PASS filtered count wizard
+PASS raycast Card2
+PASS original callback index wizard_school_of_conjuration
+PASS correct details wizard_school_of_conjuration
+PASS raycast Card20
+PASS original callback index wizard_school_of_evocation
+PASS correct details wizard_school_of_evocation
+PASS raycast Card27
+PASS original callback index wizard_school_of_divination
+PASS correct details wizard_school_of_divination
+PASS raycast Card28
+PASS original callback index wizard_school_of_necromancy
+PASS correct details wizard_school_of_necromancy
+PASS raycast Card29
+PASS original callback index wizard_school_of_abjuration
+PASS correct details wizard_school_of_abjuration
+PASS raycast Card44
+PASS original callback index wizard_school_of_illusion
+PASS correct details wizard_school_of_illusion
+PASS raycast ProfessionBack
+PASS back retains selected role wizard
+PASS re-entering role selection starts with professions again
+PASS raycast Profession_wizard
+PASS raycast Card44
+PASS opponent has independent profession navigation and index mapping
+PASS left category page remains independent
+PASS same legal roster refresh preserves profession
+PASS restricted pool exposes only eligible profession
+PASS unavailable profession cannot be entered

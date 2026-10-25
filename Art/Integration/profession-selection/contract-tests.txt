@@ -1,0 +1,6 @@
+── ProfessionContractTests  (2 项)
+   PASS  All_27_identities_keep_their_approved_stats_and_legacy_aliases
+   PASS  Profession_and_alignment_filters_intersect_without_adding_druid_roles
+
+────────────────────────────────────────────────────────────
+通过 2 / 失败 0

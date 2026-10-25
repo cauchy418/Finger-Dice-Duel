@@ -130,7 +130,7 @@ namespace FingerDiceDuel.UI
             _rosterView2Me.ConfigureGrid(new Vector2(-410, -25), new Vector2(780, 450), 3);
             _rosterView2Mate.ConfigureGrid(new Vector2(410, -25), new Vector2(780, 450), 3);
             foreach (string name in new[] { "玩家角色", "AI 角色", "我的角色", "队友角色（人机）" })
-                _selectRoot.Find(name).GetComponent<Text>().text = name + " · 拖动浏览";
+                _selectRoot.Find(name).GetComponent<Text>().text = name + " · 职业 → 子职";
             DetailLayout(_detail2Me, -410, -320, 780, 120);
             DetailLayout(_detail2Mate, 410, -320, 780, 120);
             Place("TtFoes", 0, -404, 1600, 34);
@@ -168,6 +168,16 @@ namespace FingerDiceDuel.UI
         private void RefreshIdentityArt()
         {
             if (_identityDetail != null && _idHumanPick != null) RefreshDetail(_identityDetail, _idHumanPick);
+        }
+
+        private void ResetProfessionNavigation(GameScreen screen)
+        {
+            if (screen == GameScreen.CharacterSelect) { _rosterViewA?.ShowProfessions(); _rosterViewB?.ShowProfessions(); }
+            else if (screen == GameScreen.TwoOnTwoCharacter) { _rosterView2Me?.ShowProfessions(); _rosterView2Mate?.ShowProfessions(); }
+            else if (screen == GameScreen.FactionSelect) _fbRoster?.ShowProfessions();
+            else if (screen == GameScreen.IdentitySelect) _idRoster?.ShowProfessions();
+            else if (screen == GameScreen.DualGeneralSelect) _dgRoster?.ShowProfessions();
+            else if (screen == GameScreen.AdventureFinaleSelect) _finaleRoster?.ShowProfessions();
         }
     }
 }

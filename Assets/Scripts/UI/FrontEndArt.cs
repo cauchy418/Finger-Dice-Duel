@@ -198,7 +198,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>徽记在装饰框正中，名称单独占下方一行，避免框饰穿过名字。</summary>
-        public static void RoleTile(Button button, string id, string displayName, int fontSize)
+        public static void RoleTile(Button button, string id, string displayName, int fontSize, string iconKey = null)
         {
             var rect = (RectTransform)button.transform;
             float height = rect.sizeDelta.y;
@@ -212,7 +212,14 @@ namespace FingerDiceDuel.UI
             float iconSize = Mathf.Min(rect.sizeDelta.x - 20, frameHeight - 12);
             var halo = Image(rect, "SelectionHalo", "UI/selection_halo", center, new Vector2(iconSize + 12, iconSize + 12), false);
             halo.gameObject.SetActive(false);
-            Emblem(rect, "Emblem", id, center, new Vector2(iconSize, iconSize));
+            if (iconKey == null) Emblem(rect, "Emblem", id, center, new Vector2(iconSize, iconSize));
+            else
+            {
+                var emblem = Rect(rect, "Emblem", center, new Vector2(iconSize, iconSize)).gameObject.AddComponent<Image>();
+                BattleArt.Apply(emblem, iconKey);
+                emblem.preserveAspect = true;
+                emblem.raycastTarget = false;
+            }
             var label = button.GetComponentInChildren<Text>();
             label.text = displayName;
             label.font = UiFont.Bold;

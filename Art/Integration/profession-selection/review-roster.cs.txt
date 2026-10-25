@@ -1,0 +1,22 @@
+var oldDelay=boot.AiThinkSeconds;var oldAI=boot.PlayerBIsAI;var oldMode=boot.Mode;boot.AiThinkSeconds=1000;boot.PlayerBIsAI=false;
+try{
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.CharacterSelect);
+ var view=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_rosterViewA");
+ System.Func<FingerDiceDuel.UI.CharacterRosterView,string,UnityEngine.UI.Button> tile=(v,n)=>v.Root.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single(b=>b.gameObject.activeInHierarchy&&b.name==n);
+ check(view.IsChoosingProfession&&view.Professions.Count==12&&view.Count==45,"1v1 opens twelve profession categories for forty-five subclasses");shot(front,"1v1-professions");
+ var defs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(view,"_roster");
+ foreach(var profession in view.Professions.ToArray()){
+  int before=(int)field(boot,"_indexA");var professionButton=tile(view,"Profession_"+profession.Id);check(professionButton.transform.Find("Emblem").GetComponent<UnityEngine.UI.Image>().sprite==FingerDiceDuel.UI.BattleArt.Get(profession.IconKey),"profession emblem "+profession.Id);click(professionButton,front);
+  check(!view.IsChoosingProfession&&view.ProfessionId==profession.Id,"entered "+profession.Id);check((int)field(boot,"_indexA")==before,"category navigation did not select a subclass "+profession.Id);
+  var indices=view.VisibleIndices.ToArray();check(indices.Length==defs.Count(d=>d.Profession.Id==profession.Id),"filtered count "+profession.Id);
+  foreach(int index in indices){click(tile(view,"Card"+index),front);check((int)field(boot,"_indexA")==index&&view.SelectedIndex==index,"original callback index "+defs[index].Id);check(((UnityEngine.UI.Text)field(boot,"_detailA")).text.Contains(defs[index].DisplayName),"correct details "+defs[index].Id);}
+  if(profession.Id=="wizard")shot(front,"1v1-wizard-subclasses");
+  int selected=view.SelectedIndex;click(view.Root.Find("ProfessionBack").GetComponent<UnityEngine.UI.Button>(),front);check(view.IsChoosingProfession&&view.SelectedIndex==selected,"back retains selected role "+profession.Id);
+ }
+ view.SelectProfession("wizard");boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);invoke(boot,"GoToCharacterSelect",new object[0]);check(view.IsChoosingProfession,"re-entering role selection starts with professions again");
+ var right=(FingerDiceDuel.UI.CharacterRosterView)field(boot,"_rosterViewB");click(tile(right,"Profession_wizard"),front);var rightDefs=(System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>)field(right,"_roster");int rightIndex=rightDefs.FindIndex(d=>d.Id=="wizard_school_of_illusion");click(tile(right,"Card"+rightIndex),front);check((int)field(boot,"_indexB")==rightIndex,"opponent has independent profession navigation and index mapping");check(view.IsChoosingProfession,"left category page remains independent");
+ // Preserve an open profession on refresh; changing the legal pool must return to categories.
+ var prior=right.ProfessionId;right.SetRoster(rightDefs.ToArray(),rightIndex);check(right.ProfessionId==prior,"same legal roster refresh preserves profession");
+ var subset=rightDefs.Where(d=>d.Profession.Id=="fighter").ToArray();right.SetRoster(subset,-1);check(right.IsChoosingProfession&&right.Professions.Count==1&&right.Professions[0].Id=="fighter","restricted pool exposes only eligible profession");check(!right.SelectProfession("wizard"),"unavailable profession cannot be entered");right.SetRoster(rightDefs= new System.Collections.Generic.List<FingerDiceDuel.Core.CharacterDefinition>(FingerDiceDuel.Core.CharacterDefinition.BuiltIn.Where(d=>d.Id!="blank"&&FingerDiceDuel.Core.CharacterFactory.IsRegistered(d.Logic))),rightIndex);
+ invoke(boot,"CleanupMatch",new object[0]);boot.ShowScreen(FingerDiceDuel.UI.GameScreen.MainMenu);System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-roster.txt"),checks);return "PASS "+checks.Count+" profession navigation and all-subclass actual UI checks";
+}catch{System.IO.File.WriteAllLines(System.IO.Path.Combine(output,"validation-roster-failure.txt"),checks);throw;}finally{boot.AiThinkSeconds=oldDelay;boot.PlayerBIsAI=oldAI;boot.Mode=oldMode;}
