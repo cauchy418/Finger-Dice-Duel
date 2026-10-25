@@ -1,0 +1,109 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "wizard_school_of_transmutation",
+      "source": "Art/Production/arcane-five-v1/sources/wizard_school_of_transmutation.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_school_of_transmutation.png",
+      "kind": "Subclasses",
+      "sha256": "f928e119670f58c6a0b57167eb1314a364f1f04159cce75ca7a17592bfcb7b22",
+      "crop": {
+        "left": 8,
+        "top": 0,
+        "width": 1237,
+        "height": 1221
+      }
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "source": "Art/Production/arcane-five-v1/sources/wizard_school_of_enchantment.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_school_of_enchantment.png",
+      "kind": "Subclasses",
+      "sha256": "49240683967dbd7bc237877c6960b6c017b167e7de920e5b52e0f10b580937ad",
+      "crop": {
+        "left": 12,
+        "top": 9,
+        "width": 1229,
+        "height": 1215
+      }
+    },
+    {
+      "id": "fighter_eldritch_knight",
+      "source": "Art/Production/arcane-five-v1/sources/fighter_eldritch_knight.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Subclasses/fighter_eldritch_knight.png",
+      "kind": "Subclasses",
+      "sha256": "dc3d04d2bfc95858118c94c086300039b4a9c013fd3a35839ad004e7443e334b",
+      "crop": {
+        "left": 53,
+        "top": 34,
+        "width": 1146,
+        "height": 1138
+      }
+    },
+    {
+      "id": "wizard_bladesinging",
+      "source": "Art/Production/arcane-five-v1/sources/wizard_bladesinging.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Subclasses/wizard_bladesinging.png",
+      "kind": "Subclasses",
+      "sha256": "475f969cb70f514b4bb485020feb4f06bd8a5298e445f430db591c1ccd10af46",
+      "crop": {
+        "left": 11,
+        "top": 0,
+        "width": 1232,
+        "height": 1221
+      }
+    },
+    {
+      "id": "warlock_the_hexblade",
+      "source": "Art/Production/arcane-five-v1/sources/warlock_the_hexblade.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Subclasses/warlock_the_hexblade.png",
+      "kind": "Subclasses",
+      "sha256": "f65f6dc1ba35209a9615a4f593df33d58d605fb0d640160af53880cd86a0f683",
+      "crop": {
+        "left": 39,
+        "top": 18,
+        "width": 1175,
+        "height": 1172
+      }
+    },
+    {
+      "id": "polymorph",
+      "source": "Art/Production/arcane-five-v1/sources/polymorph.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Status/polymorph.png",
+      "kind": "Status",
+      "sha256": "7075fc90584e4d89c75ff3081d08d50ec501e0b3cec8e9e662801fa2a04942af",
+      "crop": {
+        "left": 74,
+        "top": 75,
+        "width": 1107,
+        "height": 1100
+      }
+    },
+    {
+      "id": "hexbound_specter",
+      "source": "Art/Production/arcane-five-v1/sources/hexbound_specter.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Units/hexbound_specter.png",
+      "kind": "Units",
+      "sha256": "01cb7101c8f52a1e180be28db1ef78f7092a1987bf481619ac5bd49be1cccd16",
+      "crop": {
+        "left": 56,
+        "top": 44,
+        "width": 1141,
+        "height": 1130
+      }
+    },
+    {
+      "id": "polymorphed_sheep",
+      "source": "Art/Production/arcane-five-v1/sources/polymorphed_sheep.png",
+      "selected": "Art/Production/arcane-five-v1/selected/Units/polymorphed_sheep.png",
+      "kind": "Units",
+      "sha256": "5f47a7ff62bf1e0f01a0991c37caa38a8fc44fc7928ad678452a04f3bcde09dc",
+      "crop": {
+        "left": 24,
+        "top": 2,
+        "width": 1202,
+        "height": 1204
+      }
+    }
+  ]
+}
