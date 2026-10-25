@@ -45,7 +45,7 @@ namespace FingerDiceDuel.Characters
                 counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
                 interactions: new[] { "与忍宗双将：十点重击先乘基础伤害，再分段计算攻防。" });
 
-            Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulNeutral,
+            Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulEvil,
                 shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
                 playGuide: "核心是主动合盾。"
                          + "攻击时若另一只手是完整盾，可碎它换本次攻击距离∞ ——"
@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Characters
                        + "一面盾只能挡下他其中一段，所以自己合盾的价值下降。",
                 interactions: new string[0]);
 
-            Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticEvil,
                 shortSkill: "运算达成双7潜行，不能被攻击；出潜行攻击＋7，命中附流血2回合。",
                 playGuide: "要的是双 7，一手做不出来 ——"
                          + "先保留一只 7，再用另一只去凑 7。"
@@ -132,7 +132,7 @@ namespace FingerDiceDuel.Characters
                        + "他每合一次盾就白赚一次冲击。",
                 interactions: new string[0]);
 
-            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
                 shortSkill: "妖精戏法：手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
@@ -404,9 +404,9 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"结束可将同数角色变羊；独立10生命、距离1、无原技能。",playGuide:"回合结束选无序匹配双手的角色或不发动，可选自己；变羊两回合，形态血池被击破也解除。",counter:"改变自己的手值避开匹配；打破羊形态时溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
             Add(CharacterDefinition.SchoolOfEnchantmentId,"School of Enchantment",Alignment.NeutralEvil,
                 shortSkill:"伤害后可施加失能或魅惑；之后受伤解除。",playGuide:"整次攻击结算后选失能、魅惑或不发动；造成伤害选受伤者，受到伤害选来源。",counter:"后续实际掉血能解除惑控；虚假生命吸收不算实际掉血。",interactions:new[]{"只清除惑控来源效果；其他来源的同名状态仍保留。"});
-            Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulNeutral,
+            Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulGood,
                 shortSkill:"碎盾选五元素，受魔法伤可记录该类型，附魔下次攻击。",playGuide:"主动用完整盾运算先选元素，本次算出攻击立即生效；受非物理伤害可记录。附魔覆盖，攻击发起即消耗。",counter:"用盾挡或闪避消耗附魔；留意其记录的伤害类型。",interactions:new[]{"只被虚假生命吸收不触发记录；免疫或零伤不触发。"});
-            Add(CharacterDefinition.BladesingingId,"Bladesinging",Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.BladesingingId,"Bladesinging",Alignment.ChaoticGood,
                 shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,
                 shortSkill:"持7可诅咒；每段+2，亲自击杀召唤咒缚幽灵。",playGuide:"回合开始选诅咒对象或不发动。击杀诅咒者后，幽灵占死者座位、继承手值，由AI从下轮行动。",counter:"避开诅咒伤害；击杀召唤者可使幽灵消失。",interactions:new[]{"幽灵占位计距，不计原玩家胜负人数；状态扣血与幽灵击杀不触发召唤。"});

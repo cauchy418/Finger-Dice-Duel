@@ -245,7 +245,7 @@ namespace FingerDiceDuel.Tests
             var expect = new Dictionary<string, Alignment>
             {
                 { CharacterDefinition.ChampionId, Alignment.NeutralGood },
-                { CharacterDefinition.BreakerId, Alignment.LawfulNeutral },
+                { CharacterDefinition.BreakerId, Alignment.LawfulEvil },
                 { CharacterDefinition.SchoolOfConjurationId, Alignment.LawfulNeutral },
                 { CharacterDefinition.PathOfTheWardenId, Alignment.ChaoticGood },
                 { CharacterDefinition.LifeDomainId, Alignment.LawfulGood },
@@ -253,9 +253,9 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.PathOfTheBeastId, Alignment.ChaoticEvil },
                 { CharacterDefinition.SwordsmanId, Alignment.LawfulNeutral },
                 { CharacterDefinition.WayOfTheNinjaId, Alignment.TrueNeutral },
-                { CharacterDefinition.AssassinId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.AssassinId, Alignment.ChaoticEvil },
                 { CharacterDefinition.OathOfDevotionId, Alignment.LawfulGood },
-                { CharacterDefinition.TheArchfeyId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.TheArchfeyId, Alignment.ChaoticEvil },
                 { CharacterDefinition.ArcaneArcherId, Alignment.LawfulNeutral },
                 { CharacterDefinition.GamblerId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.OathOfTheCrownId, Alignment.LawfulGood },

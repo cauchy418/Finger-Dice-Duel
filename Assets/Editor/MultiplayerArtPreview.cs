@@ -67,6 +67,12 @@ namespace FingerDiceDuel.EditorTools
             ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerClickHandler);
         }
         private static void Click(string name) => Click(Find(name));
+        private static void HandClick(Hand hand)
+        {
+            var owner = Game.OwnerOfHand(hand);
+            Click(PanelOf(owner).GetComponentsInChildren<Button>()
+                .Where(b => b.name == "PaintedHandCard").ElementAt(ReferenceEquals(owner.LeftHand, hand) ? 0 : 1));
+        }
         private static void Add(Action action) => Steps.Enqueue(action);
         private static void Shot(string name, int width = 1920, int height = 1080) => Add(() => { Canvas.ForceUpdateCanvases(); CheckActionLabels(); Capture(name + ".png", width, height); });
 
@@ -128,7 +134,7 @@ namespace FingerDiceDuel.EditorTools
                 Set(_boot, "_game", game); Set(_boot, "_controller", controller); Set(_boot, "_eightSeated", _players); Set(_boot, "_eightHumanPlayer", _me);
             }
             for (int i = 0; i < count; i++) Controller.BindPlayer(_players[i], null, sinks[i]);
-            Controller.SetFirstPlayer(_me); Invoke(_boot, "StartPreparedMatch"); Refresh();
+            Controller.SetFirstPlayer(_me); Invoke(_boot, "StartPreparedMatch", true); Refresh();
         }
         private static RectTransform PanelOf(PlayerState owner)
         {
@@ -221,8 +227,8 @@ namespace FingerDiceDuel.EditorTools
                 Controller.SetFirstPlayer(attacker); Controller.BeginTurn(); Controller.ClickHand(attacker.LeftHand); Controller.ClickHand(_me.LeftHand);
                 if (Controller.Phase == BoardPhase.ChoosingTargetPlayer) Controller.ConfirmTargetPlayer(); Refresh();
                 Check(Controller.PendingEffect == HandEffect.SwashbucklerDodge, "2v2 real swashbuckler defense request");
-                Check(Find("SkillChoice1").transform.parent == Field<RectTransform>(Board, "_ringActionContent"), "multiplayer skills use action tray");
-            }); Shot("2v2-swashbuckler-defense"); Add(() => { Click("SkillChoice1"); Check(_me.RightHand.Value == 2 && _me.Health == _me.MaximumHealth, "2v2 dodge button routes to right hand"); });
+                Check(!Root.GetComponentsInChildren<Button>().Any(b => b.name.StartsWith("SkillChoice")), "hand skill does not list hand buttons");
+            }); Shot("2v2-swashbuckler-defense"); Add(() => { HandClick(_me.RightHand); Check(_me.RightHand.Value == 2 && _me.Health == _me.MaximumHealth, "2v2 direct dodge selects right hand"); });
             for (int seat = 0; seat < 8; seat++)
             {
                 int index = seat;
@@ -249,10 +255,10 @@ namespace FingerDiceDuel.EditorTools
                 Build(8, 0, CharacterDefinition.Breaker, true); Controller.ClickHand(_me.LeftHand); Controller.ClickHand(_players[1].LeftHand); Refresh();
                 Check(Controller.PendingEffect == HandEffect.BreakerChainBreak, "8p real chain break request");
                 Check(Controller.ChoiceCandidates.Count > 8, "many shield candidates collected");
-                Check(Root.GetComponentsInChildren<Button>().Count(b => b.name.StartsWith("SkillChoice")) == Controller.ChoiceCandidates.Count, "no multiplayer target truncated");
-            }); Shot("8p-chain-scroll-top");
-            Add(() => { Field<ScrollRect>(Board, "_ringActionScroll").verticalNormalizedPosition = 0; }); Shot("8p-chain-scroll-bottom");
-            Add(() => { Click("SkillChoice" + (Controller.ChoiceCandidates.Count - 1)); Check(Controller.PendingEffect != HandEffect.BreakerChainBreak, "last scrolled shield target can be clicked"); });
+                Check(!Root.GetComponentsInChildren<Button>().Any(b => b.name.StartsWith("SkillChoice")), "many shields are selected on battlefield without a list");
+                Check(Controller.ChoiceCandidates.All(h => Controller.CanAct(h)), "all shield candidates remain directly clickable");
+            }); Shot("8p-chain-direct");
+            Add(() => { HandClick(Controller.ChoiceCandidates.Last()); Check(Controller.PendingEffect != HandEffect.BreakerChainBreak, "last shield is directly selectable"); });
             Add(() => { Click("HistoryButton"); Check(Board.IsHistoryOpen, "eight-player history opens"); }); Shot("8p-history");
             Add(() => { Click("HistoryButton"); Check(!Board.IsHistoryOpen, "history toggle closes drawer"); });
             Add(() => { Build(8, 7, CharacterDefinition.CollegeOfValor); _me.TakeDamage(3); Refresh(); Check(Board.IsCollegeOfValorChoicePanelVisible, "8p collegeOfValor opens skill panel"); Click("CollegeOfValor增幅攻击"); });

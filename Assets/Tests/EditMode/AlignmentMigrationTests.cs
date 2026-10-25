@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Tests
     {
         private static readonly string[] Expected={
             "Champion|NeutralGood",
-            "Breaker|LawfulNeutral",
+            "Breaker|LawfulEvil",
             "SchoolOfConjuration|LawfulNeutral",
             "PathOfTheWarden|ChaoticGood",
             "LifeDomain|LawfulGood",
@@ -25,9 +25,9 @@ namespace FingerDiceDuel.Tests
             "PathOfTheBeast|ChaoticEvil",
             "Swordsman|LawfulNeutral",
             "WayOfTheNinja|TrueNeutral",
-            "Assassin|ChaoticNeutral",
+            "Assassin|ChaoticEvil",
             "OathOfDevotion|LawfulGood",
-            "TheArchfey|ChaoticNeutral",
+            "TheArchfey|ChaoticEvil",
             "ArcaneArcher|LawfulNeutral",
             "Gambler|ChaoticNeutral",
             "OathOfTheCrown|LawfulGood",
@@ -63,8 +63,8 @@ namespace FingerDiceDuel.Tests
             "SchoolOfIllusion|ChaoticNeutral",
             "SchoolOfTransmutation|ChaoticNeutral",
             "SchoolOfEnchantment|NeutralEvil",
-            "EldritchKnight|LawfulNeutral",
-            "Bladesinging|ChaoticNeutral",
+            "EldritchKnight|LawfulGood",
+            "Bladesinging|ChaoticGood",
             "TheHexblade|NeutralEvil",
         };
         private static PlayerState Solo(CharacterDefinition d) => CharacterFactory.CreatePlayer(d.DisplayName,d);

@@ -24,6 +24,16 @@ namespace FingerDiceDuel.UI
             var request=controller.IsHumanChooser?controller.PendingWizardChoice:null;
             var options=controller.PendingSkillOptions;
             bool skill=controller.IsHumanChooser && options.Count>0;
+            // 回合边界的选手／选人请求也走战场交互：手牌直接点，角色由技能栏列出。
+            // 不能让全屏遮罩挡住风暴额外运算、死者易手、大地封锁等候选手。
+            if(request!=null && !skill)
+            {
+                if(_wizardModal!=null) _wizardModal.gameObject.SetActive(false);
+                SetAcceptButtonVisible(false);
+                SetDeclineButtonVisible(request.AllowDecline);
+                if(request.AllowDecline) SetDeclineButtonLabel(request.DeclineLabel);
+                return;
+            }
             bool visible=resistance || maneuver || request!=null || skill;
             if(!visible) {if(_wizardModal!=null) _wizardModal.gameObject.SetActive(false);return;}
             if(_wizardModal==null) BuildWizardModal();

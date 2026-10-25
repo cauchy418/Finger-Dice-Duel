@@ -1,0 +1,153 @@
+PASS storm resistance retains named options 2
+PASS raycast WizardOption0
+PASS storm source hand choice 2
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS all storm addends on battlefield 2
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS storm direct operation only changes selected hand 2
+PASS storm can prompt again 2
+PASS raycast DeclineButton
+PASS storm decline exits 2
+PASS storm resistance retains named options 4
+PASS raycast WizardOption0
+PASS storm source hand choice 4
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS all storm addends on battlefield 4
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS storm direct operation only changes selected hand 4
+PASS storm can prompt again 4
+PASS raycast DeclineButton
+PASS storm decline exits 4
+PASS storm resistance retains named options 8
+PASS raycast WizardOption0
+PASS storm source hand choice 8
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS all storm addends on battlefield 8
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS storm direct operation only changes selected hand 8
+PASS storm can prompt again 8
+PASS raycast DeclineButton
+PASS storm decline exits 8
+PASS land seal exposes sixteen hands
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS land seals directly clicked hand
+PASS curse is a player choice
+PASS curse keeps one button per character
+PASS player label fits SkillChoice0
+PASS player label fits SkillChoice1
+PASS player label fits SkillChoice2
+PASS player label fits SkillChoice3
+PASS player label fits SkillChoice4
+PASS player label fits SkillChoice5
+PASS player label fits SkillChoice6
+PASS raycast SkillChoice0
+PASS player button completes curse choice
+PASS defending human chooses dodge hand
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS no duplicate accept for hand selection
+PASS raycast PaintedHandCard
+PASS direct right hand dodge protects human
+PASS chain break has many real candidates
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS last chain target directly selectable
+PASS eight heal player buttons remain deduplicated
+PASS raycast SkillChoice7
+PASS raycast SkillChoice0
+PASS both heal player choices finish
+PASS death exchange selects own hand directly
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS death exchange next selects dead hands
+PASS no blocking hand modal
+PASS no per-hand list
+PASS candidate hand clickable
+PASS candidate hand clickable
+PASS raycast PaintedHandCard
+PASS dead hand raycast exchange succeeds
+PASS raycast DeclineButton
+PASS death exchange can stop after one hand
+PASS resistance target remains a player list
+PASS raycast SkillChoice0
+PASS six resistance types retain named modal
+PASS raycast WizardOption0

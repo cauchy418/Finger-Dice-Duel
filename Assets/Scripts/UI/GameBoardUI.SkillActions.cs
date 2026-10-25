@@ -12,28 +12,30 @@ namespace FingerDiceDuel.UI
         private readonly Button[] _skillChoiceButtons = new Button[16];
         private readonly Hand[] _skillHands = new Hand[16];
 
-        /// <summary>绑定全部技能抉择；目标按钮等价于点击对应的高亮手牌。</summary>
+        /// <summary>选手直接点击战场手牌；选角色按主人去重后列出按钮；确认／类型选择另行展示。</summary>
         public void SetSkillActionContext(HandEffect effect, PlayerState chooser, PlayerState actor,
-            IReadOnlyList<Hand> candidates, bool hasAcceptButton)
+            IReadOnlyList<Hand> candidates, bool hasAcceptButton, bool? targetsPlayer = null)
         {
             bool changed = _skillEffect != effect || !ReferenceEquals(_battleChoiceOwner, chooser);
             _skillEffect = effect;
             _skillActor = actor;
             _battleChoiceOwner = chooser;
-            bool chooseHand = chooser != null && effect != HandEffect.None
+            bool hasCandidates = chooser != null && candidates != null && candidates.Count > 0;
+            bool choosePlayer = hasCandidates && (targetsPlayer ?? TargetsPlayer(effect));
+            bool chooseHand = hasCandidates && !choosePlayer
                 && effect != HandEffect.SchoolOfEvocationDamageType
                 && effect != HandEffect.SchoolOfAbjurationResistanceType
-                && effect != HandEffect.BattleMasterManeuver && candidates != null
-                && (!hasAcceptButton || ((effect == HandEffect.BreakerChainBreak || effect == HandEffect.BreakerRangeChainBreak) && candidates.Count > 1));
-            if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
-            int count = chooseHand ? Mathf.Min(candidates.Count, _skillChoiceButtons.Length) : 0;
-            // 以角色为目标的技能，两只手代表同一人，只列一次。
+                && effect != HandEffect.BattleMasterManeuver
+                && (targetsPlayer.HasValue || !IsConfirmationChoice(effect));
+            if ((chooseHand || choosePlayer) && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
+            // 只为角色目标创建按钮；先去重再限制数量，避免16只手截掉第9个角色。
             var shownOwners = new HashSet<PlayerState>();
             int next = 0;
-            for (int i = 0; i < count; i++)
+            for (int i = 0; choosePlayer && i < candidates.Count && next < _skillChoiceButtons.Length; i++)
             {
                 Hand hand = candidates[i];
-                if (TargetsPlayer(effect) && !shownOwners.Add(OwnerOf(hand))) continue;
+                var owner = OwnerOf(hand);
+                if (owner == null || !shownOwners.Add(owner)) continue;
                 _skillHands[next++] = hand;
             }
             for (int i = 0; i < _skillChoiceButtons.Length; i++)
@@ -52,7 +54,7 @@ namespace FingerDiceDuel.UI
                 if (!visible) _skillHands[i] = null;
                 if (_skillChoiceButtons[i] == null) continue;
                 _skillChoiceButtons[i].gameObject.SetActive(visible);
-                if (visible) _skillChoiceButtons[i].GetComponentInChildren<Text>().text = ChoiceLabel(effect, _skillHands[i]);
+                if (visible) _skillChoiceButtons[i].GetComponentInChildren<Text>().text = PlayerChoiceLabel(_skillHands[i]);
             }
             LayoutBattleActions();
             if (changed && _ringActionScroll != null) _ringActionScroll.verticalNormalizedPosition = 1;
@@ -71,32 +73,19 @@ namespace FingerDiceDuel.UI
             || effect == HandEffect.OathbreakerTransfer || effect == HandEffect.OathOfDevotionRedirect
             || effect == HandEffect.SchoolOfConjurationCastling || effect==HandEffect.SchoolOfAbjurationResistanceTarget;
 
-        private string ChoiceLabel(HandEffect effect, Hand hand)
+        // 这些候选只是“发动”的占位答案，不需要玩家选择哪只手。
+        private static bool IsConfirmationChoice(HandEffect effect) => effect == HandEffect.None
+            || effect == HandEffect.LifeDomainAttackOrHeal || effect == HandEffect.SwordsmanFollowUp
+            || effect == HandEffect.SchoolOfAbjurationBarrier || effect == HandEffect.SchoolOfEvocationAbandonAttack;
+
+        private string PlayerChoiceLabel(Hand hand)
         {
             var owner = OwnerOf(hand);
-            string side = ReferenceEquals(owner?.LeftHand, hand) ? "左手" : "右手";
-            string player = !_paintedBattle ? SeatName(FindPanelOf(owner)?.Seat ?? 0) + "号"
+            string position = !_paintedBattle ? SeatName(FindPanelOf(owner)?.Seat ?? 0) + "号"
                 : ReferenceEquals(owner, _cardsA?[0].Owner) ? "我方" : "对手";
-            switch (effect)
-            {
-                case HandEffect.SwashbucklerDodge: return "闪避" + side + " · 1→2";
-                case HandEffect.SwashbucklerDuelistThrust: return "强化" + side + " · 2→3";
-                case HandEffect.PathOfTheWardenLockTarget: return "锁定 · " + player + side;
-                case HandEffect.BreakerChainBreak:
-                case HandEffect.BreakerRangeChainBreak: return "破盾 · " + player + side;
-                case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
-                case HandEffect.SchoolOfConjurationCastling: return "换位 · " + player;
-                case HandEffect.SchoolOfAbjurationBarrier: return "存储屏障 · " + side;
-                case HandEffect.SchoolOfNecromancyBlock: return "死灵抵挡 · "+side+" 2→1";
-                case HandEffect.SchoolOfAbjurationResistanceTarget: return "赋予抗性 · "+player;
-                case HandEffect.LifeDomainHealTarget: return "回复 · " + player;
-                case HandEffect.LifeDomainExtraHealTarget: return "额外回复 · " + player;
-                case HandEffect.OathOfDevotionShockTarget: return "冲击 · " + player;
-                case HandEffect.OathbreakerTransfer: return "转移至 · " + player + (owner?.Definition?.DisplayName ?? "角色");
-                case HandEffect.OathOfDevotionRedirect: return "代挡 · 由我承受";
-                case HandEffect.ShieldBlock: return "抵挡 · " + side;
-                default: return "发动 · " + side;
-            }
+            string name = owner?.DisplayNameOverride ?? CharacterIdentity.Find(owner?.Definition?.Id)?.SubclassNameZh
+                ?? owner?.Name ?? "角色";
+            return position + " · " + name;
         }
 
         private void LayoutSkillActions()
@@ -142,6 +131,9 @@ namespace FingerDiceDuel.UI
 
         private void DecorateSkillAction(Button button, PlayerState owner, Vector2 position, float height, float width = 250)
         {
+            // 角色候选显示目标本人的徽记与说明，技能用途由当前提示统一说明。
+            for (int i = 0; i < _skillChoiceButtons.Length; i++)
+                if (button == _skillChoiceButtons[i] && _skillHands[i] != null) { owner = OwnerOf(_skillHands[i]); break; }
             Position((RectTransform)button.transform, position, new Vector2(width, height));
             BattleArt.Button(button);
             var icon = button.transform.Find("SkillIcon")?.GetComponent<Image>();
@@ -154,6 +146,9 @@ namespace FingerDiceDuel.UI
             var label = button.GetComponentInChildren<Text>();
             label.font = UiFont.Bold;
             label.fontSize = _paintedBattle ? 20 : 18;
+            label.resizeTextForBestFit = true;
+            label.resizeTextMinSize = 14;
+            label.resizeTextMaxSize = label.fontSize;
             if (!_paintedBattle) label.text = label.text.Replace(" · ", "\n");
             label.rectTransform.sizeDelta = new Vector2(width - 96, height - 8);
             label.rectTransform.anchoredPosition = new Vector2(15, 0);

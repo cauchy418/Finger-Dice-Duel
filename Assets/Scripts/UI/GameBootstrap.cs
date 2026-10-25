@@ -3475,10 +3475,22 @@ namespace FingerDiceDuel.UI
                 _board.SetDeclineButtonVisible(false);
             }
 
+            var wizardChoice = _controller.IsHumanChooser ? _controller.PendingWizardChoice : null;
+            bool healthSwap = _controller.Phase == BoardPhase.ChoosingHealthSwapTarget;
+            IReadOnlyList<Hand> skillCandidates = wizardChoice?.Candidates
+                ?? (_controller.Phase == BoardPhase.ChoosingSeatSwapTarget ? _controller.ChoiceCandidates
+                    : _controller.PendingRequest?.Candidates);
+            if (healthSwap)
+            {
+                var targets = new List<Hand>();
+                foreach (var player in _game.Players)
+                    if (_controller.CanAct(player.LeftHand)) targets.Add(player.LeftHand);
+                skillCandidates = targets;
+            }
             _board.SetSkillActionContext(_controller.PendingEffect,
                 _controller.IsHumanChooser ? _controller.Chooser : null, _controller.ActivePlayer,
-                _controller.Phase == BoardPhase.ChoosingSeatSwapTarget ? _controller.ChoiceCandidates
-                    : _controller.PendingRequest?.Candidates, canAccept);
+                skillCandidates, canAccept, wizardChoice != null ? (bool?)wizardChoice.TargetsPlayer
+                    : healthSwap ? true : (bool?)null);
             _board.SetSeatSwapActionVisible(_controller.IsHumanTurn
                 && ReferenceEquals(_controller.ActivePlayer,HumanPlayer()) && _controller.CanCastle);
 
