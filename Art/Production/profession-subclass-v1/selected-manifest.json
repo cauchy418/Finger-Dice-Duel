@@ -389,6 +389,36 @@
         1224,
         1205
       ]
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_school_of_transmutation.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_transmutation.png",
+      "sha256": "23a1dc36cd3a30c8b050941ae915076ed87ee00f7f8ce964ef31537c6b5d7041"
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_school_of_enchantment.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_enchantment.png",
+      "sha256": "8ccb49a9c389fb63197cdd53d65b1732eaedffb149a78b6a7aa395e226e49b23"
+    },
+    {
+      "id": "fighter_eldritch_knight",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/fighter_eldritch_knight.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/fighter_eldritch_knight.png",
+      "sha256": "6b79c5116ff31894398daa1cb2d151ac5d57f283ed782035acb60695281c8a79"
+    },
+    {
+      "id": "wizard_bladesinging",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/wizard_bladesinging.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/wizard_bladesinging.png",
+      "sha256": "a58590d5f924be992410bfb1ef5e5e95d7a5f1d44087f878d67a601d685576c9"
+    },
+    {
+      "id": "warlock_the_hexblade",
+      "source": "Art/Production/profession-subclass-v1/selected/Subclasses/warlock_the_hexblade.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_hexblade.png",
+      "sha256": "1a3e09d51c054e59f46afcbf1606f5b40f7fe81e5adb57f9247988d777ef9eda"
     }
   ]
 }

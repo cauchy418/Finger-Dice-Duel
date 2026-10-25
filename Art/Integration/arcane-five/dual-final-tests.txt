@@ -1,0 +1,21 @@
+── BreakerAttackOrderTests  (8 项)
+   PASS  Breaker_knight_dual_range_shield_can_enchant_the_same_attack
+   PASS  Declining_range_break_does_not_ask_for_its_chain
+   PASS  Declining_source_shield_chain_allows_enemy_shield_to_block
+   PASS  Operating_a_complete_shield_breaks_enemy_shield_before_same_attack
+   PASS  Range_break_can_decline_chain_and_still_gain_range
+   PASS  Range_break_collects_chain_and_breaks_shield_before_same_attack
+   PASS  Range_chain_ai_chooses_enemy_shield_and_never_allied_shield
+   PASS  Range_chain_hits_a_distant_shielded_enemy_in_four_and_eight_player_boards
+
+────────────────────────────────────────────────────────────
+通过 8 / 失败 0
+Started 8 isolated simulation processes.
+PASS 1,839,264 unique matches from 8 isolated processes; build/roster headers match
+── DualVersusDualTests  (3 项)
+   PASS  All_dual_general_matchups_run_without_crashing
+   PASS  Repeated_dual_games_use_the_same_per_match_random_sources
+   PASS  Seed_21639_skipping_turns_still_advances_rounds
+
+────────────────────────────────────────────────────────────
+通过 3 / 失败 0

@@ -175,7 +175,7 @@ namespace FingerDiceDuel.Tests
         {
             Board(CharacterDefinition.TheFiend,out var g);g.PlayerA.GainFalseLife(7);
             var icons=CombatStatusIcons.For(g.PlayerA);Assert.AreEqual(1,icons.Count);Assert.AreEqual("7",icons[0].Counter);
-            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(4,GuideSheets.CharacterMarks().Lines.Count);
+            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(8,GuideSheets.CharacterMarks().Lines.Count);
             Assert.True(GuideSheets.CharacterMarks().Lines[3].Contains("绿色"));g.ResetMatch();Assert.AreEqual(0,CombatStatusIcons.For(g.PlayerA).Count);
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -22,6 +22,8 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static int EffectiveAttackBonus(PlayerState p)
         {
+            if(p?.IsPolymorphed==true)return -2;
+            if(p?.IsSummon==true)return 0;
             int bonus = p?.Character?.AttackBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.Panic)) bonus -= PanicAttackPenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
@@ -37,6 +39,8 @@ namespace FingerDiceDuel.Core
         /// <inheritdoc cref="EffectiveAttackBonus"/>
         public static int EffectiveDefenseBonus(PlayerState p)
         {
+            if(p?.IsPolymorphed==true)return -2;
+            if(p?.IsSummon==true)return -1;
             int bonus = p?.Character?.DefenseBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
@@ -226,7 +230,9 @@ namespace FingerDiceDuel.Core
         public static int TurnEndDamage(PlayerState p)
             => p != null && p.HasStatus(StatusEffect.Burn) ? BurnDamagePerTurn : 0;
 
-        private static readonly System.Random _interactionRng = new System.Random();
+        private static System.Random _interactionRng = new System.Random();
+        /// <summary>仅供可复现的单线程模拟重置随机源；正常对战不调用。</summary>
+        public static void ResetInteractionRandomForTest(int seed) => _interactionRng = new System.Random(seed);
 
         /// <summary>
         /// 伤害类型与目标状态的联动。

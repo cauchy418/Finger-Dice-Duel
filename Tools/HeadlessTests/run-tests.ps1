@@ -19,7 +19,10 @@ param(
     [switch]$Quiet,
     # 只跑某个测试类（对应运行器的过滤参数，例如 -Only AdventureLevel1Tests）。
     # 快速迭代单个 fixture 用；回归仍需跑一次全量。
-    [string]$Only = ""
+    [string]$Only = "",
+    # 独立构建目录，便于完整统计运行期间验证新修复，不覆盖正在执行的 DLL。
+    [string]$OutputDirectory = "",
+    [switch]$SkipStatistics
 )
 
 $ErrorActionPreference = 'Stop'
@@ -58,6 +61,7 @@ foreach ($p in @($cscSource, $bcl, $unityMgd)) {
 
 $projectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $outDir      = Join-Path $PSScriptRoot 'bin'
+if ($OutputDirectory) { $outDir = [System.IO.Path]::GetFullPath($OutputDirectory) }
 New-Item -ItemType Directory -Force -Path $outDir | Out-Null
 
 # ---------- 2. 复制 Roslyn（放在同目录的 runtime 下，避免 deps.json 问题） ----------
@@ -146,7 +150,7 @@ if ($unityPathCheck) {
 $buildTarget = if ($unityPathCheck) { 'library' } else { 'exe' }
 
 $cscArgs = @(
-    $csc, '-nologo', "-target:$buildTarget", '-langversion:9.0', '-nostdlib+',
+    $csc, '-nologo', "-target:$buildTarget", '-langversion:9.0', '-nostdlib+', '-optimize+',
     '-warn:4', '-warnaserror-',
     "-out:$exe"
 )
@@ -184,5 +188,8 @@ if ($unityPathCheck) {
 
 if (-not $Quiet) { Write-Host "编译成功，开始运行测试……" -ForegroundColor Green; Write-Host "" }
 
-if ($Only) { & dotnet $exe $Only } else { & dotnet $exe }
+$taskRunArgs = @($exe)
+if($Only){$taskRunArgs += $Only}
+if($SkipStatistics){$taskRunArgs += '--skip-statistics'}
+& dotnet @taskRunArgs
 exit $LASTEXITCODE

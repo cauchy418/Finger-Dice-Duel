@@ -7,7 +7,7 @@ namespace FingerDiceDuel.Core
     /// 单次攻击的结算上下文。角色钩子可以修改本对象来影响结算（如无视护盾、增伤等）。
     /// 本类型不依赖任何 Unity 类型，可在纯 .NET 下编译与测试。
     /// </summary>
-    public class AttackContext
+    public partial class AttackContext
     {
         public PlayerState Attacker { get; }
 
@@ -95,6 +95,10 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次结算实际造成的生命损失（多段攻击为各段之和；被抵挡时为 0）。</summary>
         public int AppliedDamage { get; private set; }
+        public int ActualHealthDamage {get;private set;}
+        public int OriginalFormHealthDamage {get;private set;}
+        public PlayerState DamageOrigin {get;set;}
+        public PlayerState ActualDamageSource=>IsStatusDamage?DamageOrigin:Attacker;
 
         /// <summary>
         /// 本次攻击的段数（默认 1）。武僧·忍宗把它设为 2：伤害平均分配，每段独立结算。
@@ -260,6 +264,7 @@ namespace FingerDiceDuel.Core
             NotifyTargeted(Defender, manager);
 
             // 1. 攻击方钩子介入（如法师·咒法学派设置 IgnoreShield / 修改 FinalDamage / 游荡者·风流剑客设置倍率）
+            if(!IsStatusDamage&&!IsReflected)Attacker.BeganAttackThisTurn=true;
             Attacker.Character?.OnResolveAttack(this);
 
             // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
@@ -280,6 +285,7 @@ namespace FingerDiceDuel.Core
             }
 
             // 1a-bis. 防守方的元素反应（武僧·四象宗：消耗气获得抗性）。
+            if(AttackType==AttackDamageType.Force){IgnoreShield=true;IgnorePositiveDefense=true;}
             if (AttackType != AttackDamageType.None
                 && Defender?.Character is IIncomingElementReaction reaction)
                 reaction.OnIncomingElementAttack(this, manager);
@@ -425,6 +431,9 @@ namespace FingerDiceDuel.Core
                 //     不是"每段只询问一次"。
                 //     玩家确认："两个太极对一段攻击是能都弹的：
                 //     第一次弹一半，第二次弹剩余伤害的一半。"
+                perHit=damageDisabled?0:IgnoreStatBonuses?perHitBase:ApplyStatBonuses(perHitBase);
+                if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
+                for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
                 int dealt = perHit;
                 int reductionThisSegment = 0;
 
@@ -487,16 +496,17 @@ namespace FingerDiceDuel.Core
 
                 int healthBefore = Defender.Health;
                 int falseLifeBefore = Defender.FalseLife;
-                Defender.TakeDamage(dealt);
+                int actualDamage=Defender.TakeDamageResolved(dealt);
+                ActualHealthDamage+=actualDamage;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
                 int absorbedFalseLife=falseLifeBefore-Defender.FalseLife;
                 if(absorbedFalseLife>0)manager?.NoteSkill(Defender,"虚假生命",$"吸收{absorbedFalseLife}，剩余{Defender.FalseLife}");
-                int actualDamage = healthBefore - Defender.Health;
+
                 AppliedDamage += dealt;
                 LandedHits++;
 
-                if (actualDamage > 0)
+                if (Defender.LastDamageToOriginalForm > 0)
                     foreach(var postDamage in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
-                        postDamage.OnDamageTaken(Defender, actualDamage, this, manager);
+                        postDamage.OnDamageTaken(Defender, Defender.LastDamageToOriginalForm, this, manager);
             }
 
             // 散打宗：共鸣引爆的额外真实伤害，不经过护盾/抗性/防御。
@@ -504,11 +514,11 @@ namespace FingerDiceDuel.Core
             {
                 int healthBeforeTrue=Defender.Health;
                 int falseLifeBeforeTrue=Defender.FalseLife;
-                Defender.TakeDamage(ExtraTrueDamage);
+                int actualTrue=Defender.TakeDamageResolved(ExtraTrueDamage);ActualHealthDamage+=actualTrue;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
                 if(falseLifeBeforeTrue>Defender.FalseLife)manager?.NoteSkill(Defender,"虚假生命",$"吸收{falseLifeBeforeTrue-Defender.FalseLife}，剩余{Defender.FalseLife}");
-                if(healthBeforeTrue>Defender.Health)
+                if(Defender.LastDamageToOriginalForm>0)
                     foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
-                        hook.OnDamageTaken(Defender,healthBeforeTrue-Defender.Health,this,manager);
+                        hook.OnDamageTaken(Defender,Defender.LastDamageToOriginalForm,this,manager);
                 AppliedDamage += ExtraTrueDamage;
             }
 
@@ -594,6 +604,7 @@ namespace FingerDiceDuel.Core
             ApplyDamageLandedEffects(manager);
             if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
                 foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
+            NotifyCompletedHealthDamage(manager);
         }
 
         /// <summary>
@@ -823,6 +834,11 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void TryRedirectDefender(GameManager manager)
         {
+            if(manager==null)return;var previous=manager.CurrentRedirectAttack;manager.CurrentRedirectAttack=this;
+            try{TryRedirectDefenderCore(manager);}finally{manager.CurrentRedirectAttack=previous;}
+        }
+        private void TryRedirectDefenderCore(GameManager manager)
+        {
             if (manager == null) return;
 
             PlayerState original = Defender;
@@ -948,6 +964,7 @@ namespace FingerDiceDuel.Core
                 // ⚠️ 多人模式里**不能取消队友的攻击**。
                 //    队友在攻击敌人，取消掉等于自伤。
                 if (manager.IsTeammate(p, Attacker)) continue;
+                if(manager.GetSkillPolicy(p) is IChoiceProvider&&manager.IsKnownAlly(p,Attacker)&&!(AskedCancelLookup?.Invoke(p)??false))continue;
 
                 if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) is TheArchfeyLogic theArchfey)
                 {
@@ -988,6 +1005,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private bool TryDodgeThisHit(IPreTurnChoiceSink sink, GameManager manager, int hitIndex)
         {
+            if(AttackType==AttackDamageType.Force)return false;
             var dodgeCtx = new PreTurnChoiceContext(
                 Attacker, Defender, Defender.LeftHand, Defender.RightHand)
             {

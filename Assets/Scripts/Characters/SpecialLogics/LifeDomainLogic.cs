@@ -153,7 +153,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// 抉择自身的回退值，于是"选了攻击"会被误判成"选了回复"。
         /// </summary>
         public static bool ChoseToHeal(PlayerState owner, GameManager manager,
-                                       IPreTurnChoiceSink sink) 
+                                       IPreTurnChoiceSink sink)
             => ChoseToHeal(owner, manager, sink, null);
 
         /// <summary>
@@ -479,9 +479,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if (p == null || !p.IsAlive) continue;
 
                 // 只看"自己这一队"（自己也算）
-                if (!ReferenceEquals(p, owner) && !manager.IsTeammate(owner, p)) continue;
+                if (!ReferenceEquals(p, owner) && !manager.IsKnownAlly(owner, p)) continue;
 
-                if (best == null || p.Health < best.Health) best = p;
+                int need=(p.MaximumHealth-p.Health)*2;
+                if(p.Health*4<=p.MaximumHealth)need+=30;
+                foreach(var status in p.Statuses)need+=status==StatusEffect.Frozen?35:status==StatusEffect.Charm||status==StatusEffect.Disabled?25:status==StatusEffect.Decay?20:5;
+                int bestNeed=best==null?-1:(best.MaximumHealth-best.Health)*2+(best.Health*4<=best.MaximumHealth?30:0);
+                if(best!=null)foreach(var status in best.Statuses)bestNeed+=status==StatusEffect.Frozen?35:status==StatusEffect.Charm||status==StatusEffect.Disabled?25:status==StatusEffect.Decay?20:5;
+                if (best == null || need>bestNeed) best = p;
             }
 
             return best ?? owner;

@@ -92,11 +92,11 @@ namespace FingerDiceDuel.UI
         {
             var player = panel.Owner;
             string display = !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride : player.Definition?.DisplayName ?? player.Name;
-            panel.NameText.text = display;
+            panel.NameText.text = display+(player.IsPolymorphed?" · 变羊":"");
             panel.HpText.text = player.Health + " / " + player.MaximumHealth;
             UpdateHealthBar(panel.HpFill, player);
             string id = player.Definition?.Id ?? "fighter_champion";
-            panel.Emblem.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
+            panel.Emblem.sprite = BattleArt.Get(player.BattleEmblemKey);
             panel.Emblem.color = player.IsAlive ? Color.white : new Color(0.5f, 0.5f, 0.5f);
             panel.Root.GetComponent<Image>().color = player.IsAlive ? Color.white : new Color(0.58f, 0.58f, 0.58f);
             panel.SeatText.color = panel.Relation == RingRelation.Self ? BattleArt.Gold

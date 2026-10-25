@@ -35,6 +35,7 @@
 # 由 run-tests.ps1 在首次运行时自动重新复制，不需要入库。
 /Tools/HeadlessTests/bin/
 /Tools/UiCompileCheck/bin/
+/Tools/AiTuning/bin/
 
 # ---------- Codely / 编辑器插件缓存 ----------
 /.codely-cli/

@@ -258,7 +258,7 @@ namespace FingerDiceDuel.Core
             {
                 int n = 0;
                 for (int i = 0; i < _players.Count; i++)
-                    if (_players[i] != null && !_players[i].IsAlive
+                    if (_players[i] != null && !_players[i].IsOriginalAlive
                         && IdentityOf(_players[i]) == IdentityRole.Rebel) n++;
                 return n;
             }
@@ -270,7 +270,7 @@ namespace FingerDiceDuel.Core
             {
                 int n = 0;
                 for (int i = 0; i < _players.Count; i++)
-                    if (_players[i] != null && !_players[i].IsAlive) n++;
+                    if (_players[i] != null && !_players[i].IsOriginalAlive) n++;
                 return n;
             }
         }
@@ -279,7 +279,7 @@ namespace FingerDiceDuel.Core
         {
             int n = 0;
             for (int i = 0; i < _players.Count; i++)
-                if (_players[i] != null && _players[i].IsAlive
+                if (_players[i] != null && _players[i].IsOriginalAlive
                     && IdentityOf(_players[i]) == role) n++;
             return n;
         }
@@ -467,6 +467,7 @@ namespace FingerDiceDuel.Core
         public int TeamOf(PlayerState player)
         {
             if (player == null) return -1;
+            if(player.IsSummon)return TeamOf(player.SummonOwner);
             return _team.TryGetValue(player, out int team) ? team : -1;
         }
 
@@ -565,7 +566,7 @@ namespace FingerDiceDuel.Core
             {
                 int alive = 0;
                 for (int i = 0; i < _players.Count; i++)
-                    if (_players[i].IsAlive) alive++;
+                    if (_players[i].IsOriginalAlive) alive++;
 
                 return alive;
             }
@@ -581,7 +582,7 @@ namespace FingerDiceDuel.Core
                 if (TeamOf(_players[i]) != team) continue;
 
                 any = true;
-                if (_players[i].IsAlive) return false;
+                if (_players[i].IsOriginalAlive) return false;
             }
 
             // 该队一个人都没有时不算"全灭"（避免判定误伤）
@@ -595,7 +596,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p != null && p.IsAlive && TeamOf(p) == team) count++;
+                if (p != null && p.IsOriginalAlive && TeamOf(p) == team) count++;
             }
 
             return count;
@@ -913,7 +914,7 @@ namespace FingerDiceDuel.Core
             get
             {
                 for (int i = 0; i < ActionOrder.Count; i++)
-                    if (ActionOrder[i] != null && ActionOrder[i].IsAlive) return ActionOrder[i];
+                    if (CanTakeTurn(ActionOrder[i])) return ActionOrder[i];
                 return null;
             }
         }
@@ -938,6 +939,7 @@ namespace FingerDiceDuel.Core
             if (next != null && actorIndex >= 0 && ActionOrder.IndexOf(next) <= actorIndex)
             {
                 RoundCount++;
+                CurrentPlayer=NextPlayerAfter(actor);
                 if (_roundActionOrder != null)
                 {
                     _roundActionOrder = null;
@@ -958,7 +960,7 @@ namespace FingerDiceDuel.Core
             for (int step = 1; step <= count; step++)
             {
                 PlayerState candidate = ActionOrder[(start + step) % count];
-                if (candidate.IsAlive) return candidate;
+                if (CanTakeTurn(candidate)) return candidate;
             }
 
             return null;
@@ -1092,13 +1094,13 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void RefreshIdentityLordBonus()
         {
-            if (!IsIdentityMode || _identityLord == null || !_identityLord.IsAlive) return;
+            if (!IsIdentityMode || _identityLord == null || !_identityLord.IsOriginalAlive) return;
 
             int count = 0;
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p == null || !p.IsAlive) continue;
+                if (p == null || !p.IsOriginalAlive) continue;
                 if (LawAxisOfDefinition(p.Definition) == _identityLordAxis) count++;
             }
 
@@ -1265,6 +1267,11 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public IChoiceProvider GetChoiceProvider(PlayerState p)
         {
+            var provider=RawChoiceProvider(p);(provider as IDamageTypeChoiceSink)?.SetGameForChoices(this);return provider;
+        }
+        private IChoiceProvider RawChoiceProvider(PlayerState p)
+        {
+            if(p?.IsSummon==true)return SummonProviderFor?.Invoke(p)??RawChoiceProvider(p.SummonOwner);
             if (ReferenceEquals(p, PlayerA)) return ChoiceProviderA;
             if (ReferenceEquals(p, PlayerB)) return ChoiceProviderB;
             if (ReferenceEquals(p, PlayerC)) return ChoiceProviderC;
@@ -1290,13 +1297,14 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            _pendingSpecters.Clear();
+            foreach(var p in _players)p.RestoreDeadSeat();
             ClearPreparedOperationAddend();
             DruidSecondAddend=null;
             ResetSeats();
             _skillLog.Clear();
             _brokenThisTurn.Clear();
-            PlayerA.Reset();
-            PlayerB.Reset();
+            foreach(var p in _players)p.Reset();
 
             // ⚠️ **法师·塑能学派的负面状态必须一起清掉** —— 否则第二局会带着上一局的
             //    中毒 / 燃烧 / 震慑开局（与"野蛮人·守望者道途的锁手映射"同一类坑）。
@@ -1321,8 +1329,7 @@ namespace FingerDiceDuel.Core
 
         private void NotifyMatchReset()
         {
-            PlayerA.Character?.OnMatchReset(PlayerA, this);
-            PlayerB.Character?.OnMatchReset(PlayerB, this);
+            foreach(var p in _players)p.Character?.OnMatchReset(p,this);
         }
 
         /// <summary>
@@ -1936,6 +1943,7 @@ namespace FingerDiceDuel.Core
             if (effect == HandEffectType.Shield)
             {
                 myHand.SetShieldState(ShieldState.Formed);
+                actor.FormedShieldThisTurn=true;
                 actor.Character?.OnShieldFormed(actor, myHand, this);
             }
             else if (effect == HandEffectType.Heal)
@@ -2095,11 +2103,28 @@ namespace FingerDiceDuel.Core
                 string statusName = statusNames.Count > 0 ? string.Join("／", statusNames) : "状态";
                 int healthBeforeStatus=actor.Health;
                 int falseLifeBeforeStatus=actor.FalseLife;
-                actor.TakeDamage(statusDamage);
+                int actualStatus=actor.TakeDamageResolved(statusDamage);
+                int originalStatus=actor.LastDamageToOriginalForm;
                 if(falseLifeBeforeStatus>actor.FalseLife)NoteSkill(actor,"虚假生命",$"吸收{falseLifeBeforeStatus-actor.FalseLife}，剩余{actor.FalseLife}");
-                if(healthBeforeStatus>actor.Health)
+                if(originalStatus>0)
                     foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(actor))
-                        hook.OnDamageTaken(actor,healthBeforeStatus-actor.Health,new AttackContext(actor,actor,actor.LeftHand,statusDamage,this){IsStatusDamage=true},this);
+                        hook.OnDamageTaken(actor,originalStatus,new AttackContext(actor,actor,actor.LeftHand,statusDamage,this){IsStatusDamage=true},this);
+
+                int remainingActual=actualStatus,remainingFalseLife=falseLifeBeforeStatus,remainingOriginal=originalStatus;
+                foreach(var status in new[]{StatusEffect.Poison,StatusEffect.Bleed,StatusEffect.HolyLight})
+                {
+                    if(!actor.HasStatus(status))continue;
+                    int raw=status==StatusEffect.Poison
+                        ?StatusRules.ApplyDamageAffinities(actor,StatusRules.PoisonDamagePerTurn,AttackDamageType.Poison,false)
+                        :status==StatusEffect.HolyLight
+                            ?StatusRules.ApplyDamageAffinities(actor,StatusRules.HolyLightDamagePerTurn,AttackDamageType.Radiant,false)
+                            :StatusRules.BleedDamagePerTurn;
+                    int absorbed=Math.Min(raw,remainingFalseLife);remainingFalseLife-=absorbed;
+                    int actual=Math.Min(remainingActual,raw-absorbed);remainingActual-=actual;
+                    int original=Math.Min(remainingOriginal,actual);remainingOriginal-=original;
+                    var type=status==StatusEffect.Poison?AttackDamageType.Poison:status==StatusEffect.HolyLight?AttackDamageType.Radiant:AttackDamageType.None;
+                    AttackContext.NotifyStatusHealthDamage(actor.StatusSourceOf(status),actor,actual,original,type,this);
+                }
                 NoteSkill(actor, statusName, $"失去 {statusDamage} 生命（不可抵挡）");
                 LastStatusNote = $"{actor.Name} {statusName}，失去 {statusDamage} 点体力（不可抵挡）";
                 CheckGameOver();
@@ -2117,7 +2142,7 @@ namespace FingerDiceDuel.Core
                 var ctx = new AttackContext(actor, victim, actor.LeftHand,
                                             StatusRules.ShockDamagePerTurn)
                 {
-                    IsStatusDamage = true,
+                    IsStatusDamage = true,DamageOrigin=actor.StatusSourceOf(StatusEffect.Shock),
                     IgnoreStatBonuses = true,      // 闪电伤害是固定 1 点
                 };
                 ctx.Resolve(GetChoiceProvider(victim), this);
@@ -2168,6 +2193,7 @@ namespace FingerDiceDuel.Core
         public void ResolveStatusTurnEnd(PlayerState actor)
         {
             if (actor == null) return;
+            bool endedAsSheep=actor.IsPolymorphed;
             _statusActionSerial++;
 
             // ---- 燃烧 ----
@@ -2178,7 +2204,7 @@ namespace FingerDiceDuel.Core
                 {
                     var ctx = new AttackContext(actor, actor, actor.LeftHand, burn)
                     {
-                        IsStatusDamage = true,
+                        IsStatusDamage = true,DamageOrigin=actor.StatusSourceOf(StatusEffect.Burn),
                         IgnoreStatBonuses = true,      // 固定 3 点
                     };
                     ctx.Resolve(GetChoiceProvider(actor), this);
@@ -2198,8 +2224,9 @@ namespace FingerDiceDuel.Core
             // ---- 回合结束通知（牧师·战争领域：本回合未发起攻击则清空加成）----
             // 与燃烧 / 递减同一入口：界面（BoardController 的 _statusTurnEndFor）
             // 与无头（MatchRunner）两条路径都会走到这里，不会漂移。
-            foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
+            if(!endedAsSheep)foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
                 hook.OnTurnEnded(actor, this);
+            ArcaneTurnEnded(actor);
         }
 
         /// <summary>最近一次状态结算的说明（供战报 / 测试；空字符串 = 本次没有）。</summary>
@@ -2792,6 +2819,7 @@ namespace FingerDiceDuel.Core
                     }
 
                 case HandEffectType.Shield:
+                    actor.FormedShieldThisTurn=true;
                     actor.Character?.OnShieldFormed(actor, actedHand, this);
                     break;
 
@@ -2993,7 +3021,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p == null || !p.IsAlive || TeamOf(p) != team) continue;
+                if (p == null || !p.IsOriginalAlive || TeamOf(p) != team) continue;
                 if (best == null || p.Health > best.Health) best = p;
             }
 
@@ -3246,6 +3274,12 @@ namespace FingerDiceDuel.Core
             finally { ResolvingPassiveShieldBreak = previous; }
         }
 
+        public void BreakActiveShieldAndNotify(PlayerState owner,Hand shield)
+        {
+            if(owner==null||shield==null||!owner.Owns(shield)||!shield.IsShield)return;
+            shield.ForceBreakShield();NotifyOwnShieldBroken(owner,shield);
+        }
+
         /// <summary>被攻击/连锁破盾的通知上下文，供同时实现主动与被动钩子的角色去重。</summary>
         public bool ResolvingPassiveShieldBreak { get; private set; }
 
@@ -3459,13 +3493,14 @@ namespace FingerDiceDuel.Core
 
         private void CheckGameOver()
         {
+            RemoveInvalidSpecters();
             List<PlayerState> newlyDead = CollectNewDeaths();
 
             if (IsIdentityMode)
             {
                 RefreshIdentityLordBonus();
                 CheckIdentityGameOver();
-                if (!IsGameOver) NotifyDeaths(newlyDead);
+                if (!IsGameOver) {NotifyDeaths(newlyDead);CreatePendingSpecters();}
                 return;
             }
 
@@ -3480,19 +3515,19 @@ namespace FingerDiceDuel.Core
                 int team = TeamOf(_players[i]);
                 if (team < 0) continue;
 
-                if (_players[i].IsAlive) aliveTeams.Add(team);
+                if (_players[i].IsOriginalAlive) aliveTeams.Add(team);
             }
 
             // 队伍数（含已全灭的）—— 只有一支队伍时不必判负
             var allTeams = new HashSet<int>();
             for (int i = 0; i < _players.Count; i++)
             {
-                int team = TeamOf(_players[i]);
+                int team = _team.TryGetValue(_players[i],out int originalTeam)?originalTeam:-1;
                 if (team >= 0) allTeams.Add(team);
             }
 
-            if (aliveTeams.Count > 1) { NotifyDeaths(newlyDead); return; }
-            if (allTeams.Count <= 1) { NotifyDeaths(newlyDead); return; }      // 只有一队时不算"分出胜负"
+            if (aliveTeams.Count > 1) { NotifyDeaths(newlyDead); CreatePendingSpecters(); return; }
+            if (allTeams.Count <= 1) { NotifyDeaths(newlyDead); CreatePendingSpecters(); return; }      // 只有一队时不算"分出胜负"
 
             IsGameOver = true;
 
@@ -3518,7 +3553,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
                 if (_players[i] != null && IdentityOf(_players[i]) == IdentityRole.Lord)
                     earlyLord = _players[i];
-            if (earlyLord != null && !earlyLord.IsAlive && DeadPlayerCount <= 3)
+            if (earlyLord != null && !earlyLord.IsOriginalAlive && DeadPlayerCount <= 3)
             {
                 EndIdentity(IdentityRole.Rebel);
                 return;
@@ -3535,7 +3570,7 @@ namespace FingerDiceDuel.Core
                 if (p == null) continue;
                 IdentityRole r = IdentityOf(p);
                 if (r == IdentityRole.Lord) lord = p;
-                if (!p.IsAlive) continue;
+                if (!p.IsOriginalAlive) continue;
                 if (r == IdentityRole.Lord) lordAlive = true;
                 else if (r == IdentityRole.Loyalist) loyalAlive = true;
                 else if (r == IdentityRole.Rebel) rebelAlive = true;
@@ -3583,7 +3618,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p != null && p.IsAlive
+                if (p != null && p.IsOriginalAlive
                     && IdentityOf(p) == IdentityRole.Loyalist)
                     p.SetHealthExact(0);
             }
@@ -3600,7 +3635,7 @@ namespace FingerDiceDuel.Core
             if (incomingDamage <= 0 || incomingDamage < lord.Health) return null;
 
             if (HumanSacrificeCandidate != null
-                && HumanSacrificeCandidate.IsAlive
+                && HumanSacrificeCandidate.IsOriginalAlive
                 && IdentityOf(HumanSacrificeCandidate) == IdentityRole.Loyalist)
             {
                 HumanSacrificeCandidate.SetHealthExact(0);
@@ -3610,7 +3645,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p != null && p.IsAlive && IdentityOf(p) == IdentityRole.Loyalist)
+                if (p != null && p.IsOriginalAlive && IdentityOf(p) == IdentityRole.Loyalist)
                 {
                     p.SetHealthExact(0);
                     return p;
@@ -3628,7 +3663,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 PlayerState p = _players[i];
-                if (p == null || !p.IsAlive) continue;
+                if (p == null || !p.IsOriginalAlive) continue;
                 alive++;
                 if (IdentityOf(p) == IdentityRole.Traitor) traitor = p;
             }
@@ -3659,7 +3694,7 @@ namespace FingerDiceDuel.Core
         private PlayerState FirstAliveByIdentity(IdentityRole role)
         {
             for (int i = 0; i < _players.Count; i++)
-                if (_players[i] != null && _players[i].IsAlive
+                if (_players[i] != null && _players[i].IsOriginalAlive
                     && IdentityOf(_players[i]) == role)
                     return _players[i];
             return null;
@@ -3671,7 +3706,7 @@ namespace FingerDiceDuel.Core
             for (int i = 0; i < _players.Count; i++)
             {
                 if (TeamOf(_players[i]) != team) continue;
-                if (_players[i].IsAlive) return _players[i];
+                if (_players[i].IsOriginalAlive) return _players[i];
             }
 
             return null;

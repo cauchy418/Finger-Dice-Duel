@@ -18,6 +18,16 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class DualVersusDualTests
     {
+        [Test] public void Repeated_dual_games_use_the_same_per_match_random_sources()
+        {
+            var duals=DualVersusDualHarness.AllDuals();
+            foreach(int index in new[]{0,101,200,390})for(int seed=1;seed<=4;seed++)
+            {
+                var a=DualVersusDualHarness.Play(duals[index],duals[(index+1)%duals.Count],true,seed);
+                var b=DualVersusDualHarness.Play(duals[index],duals[(index+1)%duals.Count],true,seed);
+                Assert.AreEqual(a.FirstWon,b.FirstWon);Assert.AreEqual(a.Turns,b.Turns);Assert.AreEqual(a.Error,b.Error);
+            }
+        }
         /// <summary>每个配对跑多少轮（每轮含交换座位，即 2 局）。</summary>
         private const int GamesPerPair = 12;
 

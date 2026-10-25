@@ -466,6 +466,7 @@ namespace FingerDiceDuel.Assistant
         public LegalMove ChooseMove(GameManager game, PlayerState actor)
         {
             if (game == null || actor == null) return default;
+            if(UseValidatedTuning)ValidatedAiTuning.Apply(this,game,actor);
 
             IReadOnlyList<LegalMove> moves = game.GetLegalMoves(actor);
             if (moves.Count == 0) return default;
@@ -534,7 +535,7 @@ namespace FingerDiceDuel.Assistant
             //       就会**把到手的胜利送掉**（测试抓到过）。
             PlayerState owner = game.OwnerOfHand(move.TargetHand);
             if (owner != null && !ReferenceEquals(owner, actor)
-                && !game.IsTeammate(actor, owner) && owner.IsAlive)
+                && !game.IsKnownAlly(actor, owner) && owner.IsAlive)
                 return owner;
 
             // ② 被加数是自己的手（游荡者·魔术师自加）/ 队友的手：攻击目标本来就能单独选，
@@ -749,6 +750,7 @@ namespace FingerDiceDuel.Assistant
 
             if (actor.Character is IAiMoveAdvisor advisor)
             {
+                score += AvoidFriendlyShock(actor,move,result,game)+ArcaneMoveBonus(actor,move,result,game);
                 score += advisor.ScoreMoveBonus(new MoveValueContext(
                     move.ActedHand, result, move.TargetHand, other.Value));
             }
@@ -793,7 +795,7 @@ namespace FingerDiceDuel.Assistant
             //    不能用"是不是 PlayerA/PlayerB"那种两人假设。
             if (game != null && actor != null && move.TargetHand != null)
             {
-                PlayerState owner = game.OwnerOfHand(move.TargetHand);
+                PlayerState owner = ResolveIntendedVictim(move,actor,game);
 
                 // ⚠️⚠️ **必须排除"被加数就是自己的手"**（游荡者·魔术师的自加）。
                 //
@@ -824,7 +826,7 @@ namespace FingerDiceDuel.Assistant
             //  在自己血量低时，要大幅增加阻止对方合成攻击数字的意愿。
             //  但阻止对方的减值数值**不能比让自己合成高价值的数值多**，
             //  比率要调整到合适的值如 3：7 左右。"
-            score += SituationalDenyScore(move, actor, game);
+            score += UseProjectedCounterplay ? ProjectedCounterplayScore(move,actor,game) : SituationalDenyScore(move, actor, game);
 
             // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
             //
@@ -926,11 +928,11 @@ namespace FingerDiceDuel.Assistant
                             || effect == HandEffectType.Attack8;
             if (!isAttack) return false;
 
-            PlayerState victim = game.OwnerOfHand(move.TargetHand);
+            PlayerState victim = ResolveIntendedVictim(move,actor,game);
             if (victim == null || !victim.IsAlive) return false;
 
             // ⚠️ 打队友不算"斩杀"（那是负收益，另有惩罚）
-            if (game.IsTeammate(actor, victim)) return false;
+            if (game.IsKnownAlly(actor, victim)) return false;
 
             // 角色特有的增伤 / 额外段数（游荡者·风流剑客强化、战士·剑士追加、游荡者·刺客潜行、野蛮人·巨人道途两段…）
             // 由 TotalLethalDamage 统一处理（传**原始值**给角色自算）。
@@ -963,6 +965,7 @@ namespace FingerDiceDuel.Assistant
                     result, atkBonus, defBonus);
             }
             else total=AttackContext.ApplyStatBonuses(result,atkBonus,defBonus,ignorePositiveDefense:false);
+            total+=ArcaneChoices.BonusAgainst(actor,victim)*CharacterFactory.MaxAttackHits(actor);
             var preview=new AttackContext(actor,victim,move.ActedHand,result,Game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
             var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
@@ -1033,26 +1036,9 @@ namespace FingerDiceDuel.Assistant
         //   · 但"阻止对方"的减值**不能比**"让自己合成高价值"的数值多，
         //     比率调到 **3 : 7** 左右
         //
-        // ## 3 : 7 是怎么落地的
-        //
-        // 走子总分里"自己的价值"与"对方的价值"原本就分开算：
-        //   · **我方**：<see cref="HandValueScore"/> -> `preference / 10 * HandValueWeight`
-        //     其中 `HandValueWeight` 默认 12 -> 满权重 12 分
-        //   · **对方**：本方法 -> `* DenyRatioPercent / 100`
-        //
-        // 所以只要取 **DenyRatioPercent ≈ 43**，
-        // 对方那一侧的权重就是 `12 * 0.43 ≈ 5`，
-        // 与我方的 12 之比正好是 **5 : 12 ≈ 3 : 7**。
-        //
-        // ⚠️ 关键：`DenyRatioPercent` 是**作用在对方价值之上的缩放**，
-        //    所以它天然保证了"阻挡的减值**永远不会超过**自己合成的收益" ——
-        //    这正是玩家那条约束的意思。
-
-        /// <summary>
-        /// "阻挡对方"相对于"发展自己"的比率（百分比）。
-        ///
-        /// 43 ≈ 3/7 的比值（5 : 12）。**调平衡改这里。**
-        /// </summary>
+        // 旧版曾把这两项描述为3:7，但量纲不同，不是总决策的固定占比。
+        // 生产按角色及模式采用独立留出实验验证的配置，见 ValidatedAiTuning。
+        /// <summary>敌方机会项的缩放百分比，与自身手值偏好、斩杀及技能分开计算。</summary>
         public int DenyRatioPercent { get; set; } = 43;
 
         /// <summary>
@@ -1068,7 +1054,7 @@ namespace FingerDiceDuel.Assistant
             PlayerState victim = game.OwnerOfHand(move.TargetHand);
             if (victim == null || !victim.IsAlive) return 0;
 
-            // 只对**对手**算（给队友的数字无所谓）
+            // 借用队友数字也可攻击敌人，按实际预期攻击对象判断。
             if (ReferenceEquals(victim, actor) || game.IsTeammate(actor, victim)) return 0;
 
             // ⚠️ 被加数的手值**不会被改变**（见 GetLegalMoves 的说明），
@@ -1079,7 +1065,7 @@ namespace FingerDiceDuel.Assistant
             //    因为**对手下一手可以拿它当被加数**。
             //    运算源会变成结果值，另一只手不变 —— 两只都要算。
             int otherValue = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
-            int actedAfter = move.ActedHand.Value;
+            int actedAfter = DruidScoredResult(move,actor,game);
 
             // 用**对手自己的价值表**衡量：他看重什么，我就少留什么
             HandValueProfile foeProfile = HandValueProfiles.For(victim.Definition);
@@ -1108,7 +1094,7 @@ namespace FingerDiceDuel.Assistant
                 denyWeight += exposure;
             }
 
-            // ⚠️ 负数（= 扣分），且**按比率缩放** —— 保证永不超过我方收益
+            // 负数扣分，仅表示这一启发项的尺度，不保证占总决策的固定比率。
             int score = -(denyWeight * DenyRatioPercent) / 100;
 
             // ---- 游荡者·魔术师专属（玩家给的规则）----
@@ -1233,7 +1219,7 @@ namespace FingerDiceDuel.Assistant
             if (game == null || actor == null || target == null) return 0;
 
             // 只对**对手**算这套优先级（打队友另有惩罚）
-            if (ReferenceEquals(target, actor) || game.IsTeammate(actor, target)) return 0;
+            if (ReferenceEquals(target, actor) || game.IsKnownAlly(actor, target)) return 0;
 
             int score = 0;
 
@@ -1242,8 +1228,8 @@ namespace FingerDiceDuel.Assistant
             //    主公/忠臣没有公开的反贼目标，沿用普通优先级。
             if (game.IsIdentityMode)
             {
-                IdentityRole actorRole = game.IdentityOf(actor);
-                IdentityRole targetRole = game.IdentityOf(target);
+                IdentityRole actorRole = game.ActingIdentityOf(actor);
+                IdentityRole targetRole = game.ActingIdentityOf(target);
                 bool targetIsLord = targetRole == IdentityRole.Lord;
 
                 int suspicion = game.RebelSuspicionOf(target);
@@ -1602,7 +1588,7 @@ namespace FingerDiceDuel.Assistant
 
             // 优先破对手的盾
             for (int i = 0; i < candidates.Count; i++)
-                if (candidates[i].Owner != breaker) return candidates[i];
+                if (candidates[i].Owner != breaker&&(Game==null||!Game.IsKnownAlly(breaker,candidates[i].Owner))) return candidates[i];
 
             return default;
         }
@@ -1624,6 +1610,14 @@ namespace FingerDiceDuel.Assistant
 
             switch (request.Effect)
             {
+                case HandEffect.OathOfDevotionShockTarget:return DevotionShockTarget(request,decider);
+                case HandEffect.OathOfDevotionRedirect:return DevotionProtect(request,decider);
+                case HandEffect.WayOfTheTaiChiTaichi:return c[0];
+                case HandEffect.TheArchfeyCancel:return c[0];
+                case HandEffect.BreakerRangeBreak:
+                    if(Game!=null&&IntendedVictim!=null&&!Game.CanReach(decider,IntendedVictim))return c[0];
+                    if(Game!=null)foreach(var target in Game.OpponentsOf(decider))if(Game.CanReach(decider,target))return request.DeclineResult;
+                    return c[0];
                 case HandEffect.ShieldBlock: return c[0];
                 case HandEffect.SchoolOfNecromancyBlock: return c[0];
                 case HandEffect.SchoolOfAbjurationResistanceTarget: return (Game!=null?ResistanceTarget(decider,Game):decider)?.LeftHand;
@@ -1668,7 +1662,7 @@ namespace FingerDiceDuel.Assistant
                     for (int i = 0; i < c.Count; i++)
                     {
                         PlayerState target = Game?.OwnerOfHand(c[i]);
-                        if (target != null && !Game.IsTeammate(decider, target)) return c[i];
+                        if (target != null && !Game.IsKnownAlly(decider, target)) return c[i];
                     }
                     return request.DeclineResult;
 
@@ -1735,7 +1729,10 @@ namespace FingerDiceDuel.Assistant
                     bool danger = decider.Health * 100
                                   <= decider.MaximumHealth * LifeDomainHealHealthPercent;
 
-                    if (!danger) return null;      // 不危险 -> 全部进攻（放弃 = 当攻击打）
+                    if(Game!=null)foreach(var ally in Game.Players)
+                        if(ally.IsAlive&&Game.IsKnownAlly(decider,ally)&&(ally.Health*100<=ally.MaximumHealth*LifeDomainHealHealthPercent
+                            ||ally.HasStatus(StatusEffect.Frozen)||ally.HasStatus(StatusEffect.Disabled)||ally.HasStatus(StatusEffect.Charm)||ally.HasStatus(StatusEffect.Decay)))danger=true;
+                    if (!danger) return null;      // 无需紧急救助或净化时保留进攻。
 
                     // 危险 -> 优先回血，且回给"自己这一队血最低的人"
                     var healAdvisor = decider.Character as IHealTargetAdvisor;
@@ -1803,13 +1800,14 @@ namespace FingerDiceDuel.Assistant
                     }
 
                 case HandEffect.BreakerChainBreak:
+                case HandEffect.BreakerRangeChainBreak:
                     {
                         if (!UseChainBreak || c.Count == 0) return null;   // 默认放弃
 
                         // 优先破**对手**的盾：候选里自己的手在前、对手的在后，
                         // 所以挑第一个不属于自己的。
                         for (int i = 0; i < c.Count; i++)
-                            if (decider == null || !decider.Owns(c[i])) return c[i];
+                            if (decider != null&&Game?.OwnerOfHand(c[i]) is PlayerState chainTarget&&!Game.IsKnownAlly(decider,chainTarget)) return c[i];
 
                         return null;    // 只有自己的盾可破 -> 没必要（自伤）
                     }

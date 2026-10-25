@@ -77,11 +77,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override void CollectFollowUpChoices(ChoiceRequest answered, Hand answer, IList<ChoiceRequest> requests)
         {
-            if (answered.Effect != HandEffect.OathbreakerTransfer || answer == null || _transferContext?.Manager == null) return;
+            if (answered.Effect != HandEffect.OathbreakerTransfer || _transferContext?.Manager == null) return;
             var context = _transferContext;
             var manager = context.Manager;
-            var target = manager.OwnerOfHand(answer);
-            if (!Eligible(context.Defender, context.Actor, target)) return;
+            var target = answer==null?context.Defender:manager.OwnerOfHand(answer);
+            if (answer!=null&&!Eligible(context.Defender, context.Actor, target)) return;
             var defense = new PreTurnChoiceContext(context.Actor, target, context.ActedHand, context.TargetHand)
             {
                 Manager = manager, AlivePlayerCount = context.AlivePlayerCount,
@@ -93,10 +93,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var defenses = new List<ChoiceRequest>();
             (target.Character as IPreTurnChoiceProvider)?.CollectPreTurnChoices(defense, defenses);
             foreach (var request in defenses)
-                if (request.Effect != HandEffect.OathbreakerTransfer) requests.Add(request);
+                if(answer!=null)if (request.Effect != HandEffect.OathbreakerTransfer) requests.Add(request);
             foreach (var p in manager.Players)
                 CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(p)
-                    ?.CollectRedirectChoice(p, context.Actor, target, manager, requests);
+                    ?.CollectRedirectChoice(p, context.Actor, target, manager, requests,context.EffectiveResult);
         }
 
         public PlayerState TransferAttack(AttackContext context, GameManager manager)

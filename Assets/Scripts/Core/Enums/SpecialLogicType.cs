@@ -197,6 +197,11 @@
         TheFiend = 42,
         CollegeOfLore = 43,
         StormSorcery = 44,
-        SchoolOfIllusion = 45
+        SchoolOfIllusion = 45,
+        SchoolOfTransmutation = 46,
+        SchoolOfEnchantment = 47,
+        EldritchKnight = 48,
+        Bladesinging = 49,
+        TheHexblade = 50
     }
 }

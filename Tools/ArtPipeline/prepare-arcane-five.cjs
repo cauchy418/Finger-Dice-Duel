@@ -29,7 +29,7 @@ async function prepare() {
       .resize(side, side, { fit: 'inside' }).png().toBuffer();
     const png = await sharp(resized)
       .resize(512, 512, { fit: 'contain', withoutEnlargement: true, background: '#00000000' }).png().toBuffer();
-    const kind = item.status ? 'Status' : item.unit ? 'Units' : 'Subclasses';
+    const kind = item.kind || (item.status ? 'Status' : item.unit ? 'Units' : 'Subclasses');
     const selected = `${folder}/selected/${kind}/${item.id}.png`;
     await fs.mkdir(path.dirname(path.join(root, selected)), { recursive: true });
     await fs.writeFile(path.join(root, selected), png);

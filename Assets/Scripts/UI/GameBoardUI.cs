@@ -671,7 +671,8 @@ namespace FingerDiceDuel.UI
                 if (panel == null) continue;
 
                 panel.Owner = owner;
-                panel.Relation = slot.Relation;
+                panel.Relation = relationBySeat != null && slot.Seat <= relationBySeat.Count
+                    ? relationBySeat[slot.Seat - 1] : slot.Relation;
                 panel.Seat = slot.Seat;
                 panel.Root.gameObject.SetActive(true);
                 LayoutPaintedRingPanel(panel, playersBySeat.Count == 8);

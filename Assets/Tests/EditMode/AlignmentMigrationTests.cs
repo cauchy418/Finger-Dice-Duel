@@ -61,6 +61,11 @@ namespace FingerDiceDuel.Tests
             "CollegeOfLore|LawfulNeutral",
             "StormSorcery|ChaoticNeutral",
             "SchoolOfIllusion|ChaoticNeutral",
+            "SchoolOfTransmutation|ChaoticNeutral",
+            "SchoolOfEnchantment|NeutralEvil",
+            "EldritchKnight|LawfulNeutral",
+            "Bladesinging|ChaoticNeutral",
+            "TheHexblade|NeutralEvil",
         };
         private static PlayerState Solo(CharacterDefinition d) => CharacterFactory.CreatePlayer(d.DisplayName,d);
         private static bool Attack(HandEffectType effect) => effect==HandEffectType.Attack4 || effect==HandEffectType.Attack6 || effect==HandEffectType.Attack8;
@@ -81,9 +86,9 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void All_45_alignments_match_the_latest_assignment_and_cancelled_berserker_move()
+        public void All_50_alignments_match_the_latest_assignment_and_cancelled_berserker_move()
         {
-            Assert.AreEqual(45,Expected.Length);
+            Assert.AreEqual(50,Expected.Length);
             foreach(string row in Expected)
             {
                 var v=row.Split('|');
@@ -102,13 +107,13 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Current_axis_populations_produce_315_pairs_and_both_orders_can_be_built()
+        public void Current_axis_populations_produce_392_pairs_and_both_orders_can_be_built()
         {
-            // 当前45子职：三阵营各15名，3×C(15,2)=315。
-            Assert.AreEqual(15,CharacterCodex.Filter("守序",null).Count);
-            Assert.AreEqual(15,CharacterCodex.Filter("中立",null).Count);
-            Assert.AreEqual(15,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(315,all.Count);
+            // 当前50子职：守序16、中立17、混乱17，共392对。
+            Assert.AreEqual(16,CharacterCodex.Filter("守序",null).Count);
+            Assert.AreEqual(17,CharacterCodex.Filter("中立",null).Count);
+            Assert.AreEqual(17,CharacterCodex.Filter("混乱",null).Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(392,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -118,7 +123,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(630,built);
+            Assert.AreEqual(784,built);
         }
 
         [Test]
@@ -306,7 +311,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(3780,operations);
+            Assert.AreEqual(4704,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

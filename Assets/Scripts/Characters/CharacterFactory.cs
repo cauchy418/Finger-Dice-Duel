@@ -80,6 +80,12 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.CollegeOfLore] = () => new CollegeOfLoreLogic();
             _registry[SpecialLogicType.StormSorcery] = () => new StormSorceryLogic();
             _registry[SpecialLogicType.SchoolOfIllusion] = () => new SchoolOfIllusionLogic();
+            _registry[SpecialLogicType.SchoolOfTransmutation] = () => new SchoolOfTransmutationLogic();
+            _registry[SpecialLogicType.SchoolOfEnchantment] = () => new SchoolOfEnchantmentLogic();
+            _registry[SpecialLogicType.EldritchKnight] = () => new EldritchKnightLogic();
+            _registry[SpecialLogicType.Bladesinging] = () => new BladesingingLogic();
+            _registry[SpecialLogicType.TheHexblade] = () => new HexbladeLogic();
+
             _registry[SpecialLogicType.LightDomain] = () => new LightDomainLogic();
             _registry[SpecialLogicType.WarDomain] = () => new WarDomainLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();

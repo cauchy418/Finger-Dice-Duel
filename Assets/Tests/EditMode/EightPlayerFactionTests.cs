@@ -136,7 +136,7 @@ namespace FingerDiceDuel.Tests
                     CharacterDefinition[] pair = pairs[i];
                     PlayerState p = DualGeneralFactory.Create(
                         "P" + (i + 1), pair[0], pair[1]);
-                    var ai = new GreedyChoiceProvider();
+                    var ai = new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true };
                     seated.Add(p);
                     providers.Add(ai);
                     selectors.Add(ai);

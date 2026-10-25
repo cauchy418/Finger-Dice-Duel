@@ -249,8 +249,8 @@ namespace FingerDiceDuel.Tests
                 PlayerState pA = CharacterFactory.CreatePlayer(defA.DisplayName, defA);
                 PlayerState pB = CharacterFactory.CreatePlayer(defB.DisplayName, defB);
 
-                var game = new GameManager(pA, pB, new GreedyChoiceProvider(),
-                                           new GreedyChoiceProvider());
+                var game = new GameManager(pA, pB, new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true },
+                                           new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true });
 
                 // 1v1 经典：先掷 1d20 决定初始手值（见 PrepareClassicStart）
                 PrepareClassicStart(game, seed);
@@ -260,8 +260,8 @@ namespace FingerDiceDuel.Tests
                 game.RoundLimit = GameManager.DefaultRoundLimit;
 
                 var runner = new MatchRunner { RecordHistory = false, MaxTurns = 200 };
-                MatchResult r = runner.Run(game, new GreedyChoiceProvider(),
-                                           new GreedyChoiceProvider());
+                MatchResult r = runner.Run(game, new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true },
+                                           new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true });
 
                 if (r.HitTurnLimit)
                 {

@@ -28,6 +28,7 @@
                 case HandEffect.ShieldBlock: skill = "格挡"; action = "选择一面盾抵挡。"; break;
                 case HandEffect.PathOfTheWardenLockTarget: skill = "锁手"; action = "合盾后，可锁定对手一只手；盾碎即解除。"; break;
                 case HandEffect.BreakerChainBreak: skill = "连锁破盾"; action = "自身盾将破碎，可连带打碎场上一面完整盾。"; break;
+                case HandEffect.BreakerRangeChainBreak: skill = "连锁破盾"; action = "碎盾换射程触发：先破一面完整盾，再结算本次攻击。"; break;
                 case HandEffect.BreakerRangeBreak: skill = "碎盾换射程"; action = "可打碎另一只手的盾，使本次攻击距离∞。"; break;
                 case HandEffect.OathOfDevotionShockTarget:
                     skill = "冲击"; action = (request.Variant == 1 ? "碎盾" : "合盾") + "触发：选择范围内一名角色，固定伤害 2，可格挡或闪避。"; break;

@@ -2838,7 +2838,7 @@ namespace FingerDiceDuel.UI
                 IdentityRole role = _game.IdentityOf(p);
                 bool reveal = _game.IsIdentityPublic(p)
                               || ReferenceEquals(p, _eightHumanPlayer);
-                string label = !reveal ? "？"
+                string label = p.IsSummon ? "召唤物" : !reveal ? "？"
                     : role == IdentityRole.Lord ? _game.IdentityLordTitle
                     : IdentityRoleInfo.DisplayName(role);
                 _board.SetRingIdentity(p, label, true);
@@ -2948,7 +2948,8 @@ namespace FingerDiceDuel.UI
             {
                 var ai = new GreedyChoiceProvider
                 {
-                    UseChainBreak = false,   // P1：AI 暂不发动连锁破盾
+                    UseChainBreak = true,   // 连锁目标已按实际队友关系过滤。
+                    UseValidatedTuning = true,
 
                     // 2v2 集火策略（按角色查表，见 FocusPolicies / Tools/focus-report.txt）：
                     // 只对实验证明有效的 8 个角色启用 focusSelf；1v1 里天然无副作用。

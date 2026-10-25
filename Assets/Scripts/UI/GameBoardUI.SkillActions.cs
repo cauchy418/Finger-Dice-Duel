@@ -24,7 +24,7 @@ namespace FingerDiceDuel.UI
                 && effect != HandEffect.SchoolOfEvocationDamageType
                 && effect != HandEffect.SchoolOfAbjurationResistanceType
                 && effect != HandEffect.BattleMasterManeuver && candidates != null
-                && (!hasAcceptButton || (effect == HandEffect.BreakerChainBreak && candidates.Count > 1));
+                && (!hasAcceptButton || ((effect == HandEffect.BreakerChainBreak || effect == HandEffect.BreakerRangeChainBreak) && candidates.Count > 1));
             if (chooseHand && hasAcceptButton) _acceptButton.gameObject.SetActive(false);
             int count = chooseHand ? Mathf.Min(candidates.Count, _skillChoiceButtons.Length) : 0;
             // 以角色为目标的技能，两只手代表同一人，只列一次。
@@ -82,7 +82,8 @@ namespace FingerDiceDuel.UI
                 case HandEffect.SwashbucklerDodge: return "闪避" + side + " · 1→2";
                 case HandEffect.SwashbucklerDuelistThrust: return "强化" + side + " · 2→3";
                 case HandEffect.PathOfTheWardenLockTarget: return "锁定 · " + player + side;
-                case HandEffect.BreakerChainBreak: return "破盾 · " + player + side;
+                case HandEffect.BreakerChainBreak:
+                case HandEffect.BreakerRangeChainBreak: return "破盾 · " + player + side;
                 case HandEffect.TheArchfeyCancel: return "取消攻击 · " + side + "+1";
                 case HandEffect.SchoolOfConjurationCastling: return "换位 · " + player;
                 case HandEffect.SchoolOfAbjurationBarrier: return "存储屏障 · " + side;

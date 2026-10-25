@@ -262,7 +262,7 @@ namespace FingerDiceDuel.UI
             string display = player.Definition?.Id == CharacterDefinition.BlankId ? player.Name
                 : !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride
                 : player.Definition != null ? player.Definition.DisplayName : player.Name;
-            name.text = player.Name == display ? display : display + "（" + player.Name + "）";
+            name.text = (player.Name == display ? display : display + "（" + player.Name + "）")+(player.IsPolymorphed?" · 变羊":"");
             var stats = top ? _statusTextB : _statusTextA;
             int range = GameManager.BaseRangeOf(player);
             int statusRange = StatusRules.EffectiveAttackRange(player, EffectContext);
@@ -272,7 +272,7 @@ namespace FingerDiceDuel.UI
                 + "    " + HandVisual.ShieldSummary(player);
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
             string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
-            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == FingerDiceDuel.Assistant.AdventureChapter.KnightId
+            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(player.IsPolymorphed||player.IsSummon?player.BattleEmblemKey:id == FingerDiceDuel.Assistant.AdventureChapter.KnightId
                 ? FingerDiceDuel.Assistant.AdventureChapter.KnightEmblem
                 : id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : "Subclasses/" + id);
             BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));

@@ -31,6 +31,9 @@ namespace FingerDiceDuel.Core
                                 IAiMoveAdvisor
     {
         public override string DisplayName => "战士·破阵者";
+        private GameManager _choiceGame;
+        private Hand _choiceActedHand;
+        private bool _resolvingRangeBreak;
 
         /// <summary>
         /// 让 AI **主动去合盾**（玩家指出："武僧·太极宗和战士·破阵者一起做，因为两人都是 5 高价值"）。
@@ -91,6 +94,7 @@ namespace FingerDiceDuel.Core
         {
             if (context == null || requests == null) return;
             if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;   // 只有自己行动时才会"自己的盾碎"
+            _choiceGame=context.Manager;_choiceActedHand=context.ActedHand;
 
             // ① 新增技能：碎掉另一只手上的**完整盾牌**，换本次攻击距离无限。
             //
@@ -106,7 +110,7 @@ namespace FingerDiceDuel.Core
 
             requests.Add(new ChoiceRequest(
                 HandEffect.BreakerChainBreak,
-                $"战士·破阵者的盾已碎：要连带打碎场上一面完好的盾吗？" +
+                $"战士·破阵者的盾即将破碎：要连带打碎场上一面完好的盾吗？" +
                 $"（同意后点那面盾牌；被打碎的可能是自己的，也可能是对手的）",
                 ToHands(candidates),
                 allowDecline: true,
@@ -150,7 +154,9 @@ namespace FingerDiceDuel.Core
             if (chosen == null) return;
             if (!ReferenceEquals(chosen, other)) return;
 
-            other.ForceBreakShield();                   // 完整盾 -> 破碎
+            _resolvingRangeBreak=true;
+            try { manager.BreakActiveShieldAndNotify(actor,other); }
+            finally { _resolvingRangeBreak=false; }
             RangeBreakCount++;
             manager.NoteSkill(actor, "碎盾换射程", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞");
         }
@@ -262,7 +268,7 @@ namespace FingerDiceDuel.Core
 
             Hand picked = PreTurnChoiceReader.Read(
                 provider as IPreTurnChoiceSink, provider,
-                BuildReadRequest(owner, candidates), owner);
+                BuildReadRequest(owner, candidates,_resolvingRangeBreak?HandEffect.BreakerRangeChainBreak:HandEffect.BreakerChainBreak), owner);
 
             if (picked == null) return;                     // 放弃
 
@@ -279,14 +285,28 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>回读答案用的请求（候选与收集阶段保持一致）。</summary>
-        private static ChoiceRequest BuildReadRequest(PlayerState owner, List<ChainBreakTarget> candidates)
+        private static ChoiceRequest BuildReadRequest(PlayerState owner, List<ChainBreakTarget> candidates,HandEffect effect=HandEffect.BreakerChainBreak)
             => new ChoiceRequest(
-                HandEffect.BreakerChainBreak,
+                effect,
                 "战士·破阵者：要连带打碎哪一面完好的盾？",
                 ToHands(candidates),
                 allowDecline: true,
                 declineResult: null,
                 decider: owner);
+
+        public override void CollectFollowUpChoices(ChoiceRequest answered,Hand answer,IList<ChoiceRequest> requests)
+        {
+            if(answered.Effect!=HandEffect.BreakerRangeBreak||answer==null||_choiceGame==null)return;
+            var owner=answered.Decider??_choiceGame.OwnerOfHand(answer);
+            if(owner==null||!owner.Owns(answer)||!answer.IsShield)return;
+            var candidates=CollectFormedShields(null,null,answer,_choiceGame);
+            // 另一面完整盾若本身也是运算源，会先主动破碎，不能再选作连锁目标。
+            candidates.RemoveAll(c=>ReferenceEquals(c.Shield,_choiceActedHand));
+            if(candidates.Count==0)return;
+            requests.Add(new ChoiceRequest(HandEffect.BreakerRangeChainBreak,
+                "碎盾换射程：先连带打碎一面完整盾，再结算本次攻击；也可不连锁。",
+                ToHands(candidates),allowDecline:true,declineResult:null,decider:owner,acceptLabel:"发动连锁破盾"));
+        }
 
         /// <summary>收集场上所有 `Formed` 的盾（排除 <paramref name="exclude"/> 那一面）。</summary>
         private static List<ChainBreakTarget> CollectFormedShields(PlayerState a, PlayerState b, Hand exclude, GameManager manager = null)

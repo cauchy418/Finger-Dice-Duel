@@ -870,6 +870,8 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>在判定闪避与护盾前询问圣武士·奉献之誓是否代挡。</summary>
+    public interface IProtectionChoiceProvider
+    {void CollectRedirectChoice(PlayerState owner,PlayerState attacker,PlayerState target,GameManager game,IList<ChoiceRequest> requests,int attackValue=0);}
     public interface IAttackRedirector
     {
         /// <summary>

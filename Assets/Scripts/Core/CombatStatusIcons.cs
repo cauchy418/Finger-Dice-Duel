@@ -21,6 +21,15 @@ namespace FingerDiceDuel.Core
                 var values=new List<string>();for(int n=1;n<=9;n++)if(book.HasRecord(n))values.Add(n.ToString());
                 result.Add(new CombatStatusIcon("Subclasses/bard_college_of_lore","逸闻记录 · "+book.RecordCount+" / 9\n已记录："+(values.Count==0?"无":string.Join("、",values))+"\n成长"+book.LoreLevel+"次；消耗对应记录可使本次伤害减半。",book.RecordCount+"/9"));
             }
+            if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立10生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
+            if(player.IsSummon)result.Add(new CombatStatusIcon("Units/hexbound_specter","咒缚幽灵 · 来源："+player.SummonOwner?.Name+"\n占位计距，AI行动；召唤者死亡或替换时消失，不计胜负存活人数。",""));
+            foreach(var spell in CharacterBehaviors.Implementers<IElementEnchantment>(player))
+                if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法附魔 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));
+            foreach(var song in CharacterBehaviors.Implementers<IBladesong>(player))
+                if(song.Singing)result.Add(new CombatStatusIcon("Subclasses/wizard_bladesinging","剑歌 · 攻防+1，"+AttackDamageTypes.NameOf(song.SongElement)+"攻击\n后续自身回合须攻击、合盾或实际回复以维持。",""));
+            if(game!=null)foreach(var source in game.Players)
+                if(source.IsAlive)foreach(var curse in CharacterBehaviors.Implementers<IHexbladeCurse>(source))
+                    if(ReferenceEquals(curse.CurseTarget,player)&&curse.CurseTurns>0)result.Add(new CombatStatusIcon("Effects/hexblades_curse","咒剑诅咒 · 来源："+source.Name+"\n该来源对你每段攻击伤害+2；本人击杀后召唤咒缚幽灵。",curse.CurseTurns.ToString()));
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
                 "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；妖魔契约可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
@@ -29,14 +38,14 @@ namespace FingerDiceDuel.Core
                     player.StatusTurnsLeft(status).ToString(),status));
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
-                    ResistanceNames.Name(type)+"：该类型伤害减半，向上取整。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。",""));
+                    ResistanceNames.Name(type)+(player.IsSummon?"：永久抗性，该类型伤害减半，向上取整。":"：该类型伤害减半，向上取整。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
             foreach (var type in ResistanceNames.All)
             {
                 if (player.HasVulnerability(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
                     DamageAffinityNames.Name(DamageAffinity.Vulnerability, type) + "：该类型伤害×1.5，向上取整。一次攻击落地后，全部临时伤害修正清除。", ""));
                 if (player.HasImmunity(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Immunity, type),
-                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + "：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。", ""));
+                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.IsSummon?"：永久免疫，不受该类型伤害及其附加状态。":"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
             }
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
                 "奥术屏障 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));

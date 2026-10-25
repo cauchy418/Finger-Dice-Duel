@@ -426,6 +426,11 @@ namespace FingerDiceDuel.Assistant
                 .Set(9, 78).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 60)
                 .Set(1, 54).Set(2, 54).Set(3, 54).Set(7, 48);
 
+            Own[CharacterDefinition.SchoolOfTransmutationId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,65).Set(5,67).Set(9,72);
+            Own[CharacterDefinition.SchoolOfEnchantmentId]=new HandValueProfile().Set(8,84).Set(6,78).Set(4,74).Set(5,66).Set(9,70);
+            Own[CharacterDefinition.EldritchKnightId]=new HandValueProfile().Set(5,82).Set(8,78).Set(6,73).Set(4,68).Set(9,65);
+            Own[CharacterDefinition.BladesingingId]=new HandValueProfile().Set(8,78).Set(6,75).Set(4,70).Set(5,70).Set(9,73);
+            Own[CharacterDefinition.TheHexbladeId]=new HandValueProfile().Set(7,100).Set(8,78).Set(6,72).Set(4,67).Set(5,68).Set(9,70);
             Own[CharacterDefinition.CollegeOfLoreId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,64).Set(5,66).Set(9,70);
             Own[CharacterDefinition.StormSorceryId]=new HandValueProfile().Set(8,76).Set(6,70).Set(4,64).Set(5,65).Set(9,70);
             Own[CharacterDefinition.SchoolOfIllusionId]=new HandValueProfile().Set(2,90).Set(4,75).Set(8,70).Set(6,68).Set(5,65).Set(9,65)

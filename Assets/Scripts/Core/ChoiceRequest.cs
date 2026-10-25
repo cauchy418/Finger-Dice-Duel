@@ -28,6 +28,7 @@ namespace FingerDiceDuel.Core
         TheFiendPact = 109,
         CollegeOfLoreDefense = 110,
         SchoolOfIllusionDefense = 111,
+        BreakerRangeChainBreak = 112,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>
@@ -414,6 +415,8 @@ namespace FingerDiceDuel.Core
         ///    （写成 `{ get; set; }` 会报 CS8341）。
         /// </summary>
         public int ResultValue { get; }
+        public PlayerState RelatedTarget {get;}
+        public PlayerState RelatedActor {get;}
         public IReadOnlyList<SkillChoiceOption> Options { get; }
         public string OptionKey { get; }
         private readonly Action<int> _applyOption;
@@ -436,7 +439,7 @@ namespace FingerDiceDuel.Core
                              int resultValue = 0,
                              IReadOnlyList<SkillChoiceOption> options = null,
                              Action<int> applyOption = null,
-                             string optionKey = null)
+                             string optionKey = null,PlayerState relatedTarget=null,PlayerState relatedActor=null)
         {
             Effect = effect;
             Prompt = prompt ?? "";
@@ -448,7 +451,7 @@ namespace FingerDiceDuel.Core
             AutoResolve = autoResolve;
             Variant = variant;
             SkipWhen = skipWhen;
-            ResultValue = resultValue;
+            ResultValue = resultValue;RelatedTarget=relatedTarget;RelatedActor=relatedActor;
             Options=options??Array.Empty<SkillChoiceOption>();_applyOption=applyOption;OptionKey=optionKey;
         }
 

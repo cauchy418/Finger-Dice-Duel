@@ -57,6 +57,14 @@
       "native": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-2f56e6ac-04e8-4ad4-8e84-21a4c909e23d.png",
       "prompt": "Use case: game-asset. Asset type: circular dark fantasy subclass/unit emblem for Finger Dice Duel.\nEdit the reference into a NEW distinct asset. The reference is the frame, material, and brushwork template: preserve its antique gold double circular rim and diamond-point ornaments, dark black-iron interior, centered silhouette, and painterly realistic texture. Completely replace the existing interior subject with: A dignified ivory-wool sheep shown as a compact sculptural head-and-shoulders symbol, its fleece dissolving into teal and amber transmutation motes and a single geometric alchemical crystal. No humanoid, no staff, no masks, no mirror. Clearly a sheep transformation magic emblem.\nMaterials: worn gilded metal, hand-painted highlights, rich deep shadows, restrained magical glow; do not turn into flat vector art or cartoon. Large readable central subject with generous separation from the border. No lettering, digits, labels, watermark, UI mockup or contact sheet. Output one square image. Preserve true transparent alpha outside the frame, with no black square, checkerboard or ground shadow outside it.",
       "unit": true
+    },
+    {
+      "id": "hexblades_curse",
+      "kind": "Effects",
+      "status": true,
+      "native": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-9ac757ba-9bee-4a49-96c0-9e9bbfa80e4e.png",
+      "prompt": "Use case: stylized-concept. Game UI status icon, Hexblade's Curse. Use the supplied square icon as style and framing reference only. Preserve the antique gold square border with small pointed corner ornaments, dark iron inset, hand-painted material and transparent outer margin. Replace the entire vine-bound fist subject with a clear central violet curse sigil: a small black straight sword pointing down, pierced through an amethyst magical diamond, three spectral purple chain links curling outward to bind the victim. Dominant purple-magenta glow with black steel and antique gold highlights, bold single readable silhouette at 48 pixels. No hand, no human, no skull, no sheep, no lettering, no runic text, no watermark. Fill the inner square consistently with existing status icons; genuine transparent outside the frame.",
+      "ref": "Assets/Resources/Art/Battle/v1/Status/restrained.png"
     }
   ]
 }

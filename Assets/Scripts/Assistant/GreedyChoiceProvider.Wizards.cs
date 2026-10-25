@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Assistant
         {
             var best=owner;
             foreach(var p in game.Players)
-                if(p.IsAlive && (ReferenceEquals(p,owner)||game.IsTeammate(owner,p))
+                if(p.IsAlive && (ReferenceEquals(p,owner)||game.IsKnownAlly(owner,p))
                     && (best==null || p.Health<best.Health)) best=p;
             return best;
         }

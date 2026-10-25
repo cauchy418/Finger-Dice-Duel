@@ -7,8 +7,7 @@ namespace FingerDiceDuel.Assistant
     public sealed partial class GreedyChoiceProvider : IAncientRoleChoicePolicy
     {
         private static bool AncientAlly(GameManager game,PlayerState owner,PlayerState target)
-            => ReferenceEquals(owner,target)|| (game.IsIdentityMode
-                ? IdentityPresentation.SameSide(game.IdentityOf(owner),game.IdentityOf(target)) : game.IsTeammate(owner,target));
+            => ReferenceEquals(owner,target)||ReferenceEquals(owner,target?.SummonOwner)|| game.IsKnownAlly(owner,target);
         public Hand ChooseAncientTarget(string key,PlayerState owner,IReadOnlyList<Hand> candidates,GameManager game)
         {
             Hand best=null;double bestScore=double.NegativeInfinity;

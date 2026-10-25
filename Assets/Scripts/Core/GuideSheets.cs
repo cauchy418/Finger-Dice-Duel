@@ -245,11 +245,15 @@ namespace FingerDiceDuel.Core
                 new GuideEntry("arcane_barrier", 0x58BFFF, "奥术屏障：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
                 new GuideEntry("ki", 0x82D7C9, "气：武僧·散打宗／四象宗的技能资源，上限6点。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
                 new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark"),
-                new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life") };
+                new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
+                new GuideEntry("hexblades_curse",0xA05FDD,"咒剑诅咒：咒剑持7时可选择或移动一个目标，持续该目标2回合；来源每段攻击+2，亲自击杀后召唤幽灵。",resourceKey:"Effects/hexblades_curse"),
+                new GuideEntry("polymorph",0x58BEAD,"变羊：变化学派的2回合形态；独立10生命、攻防−2/−2、距离1，无原技能。解除恢复原生命，击破的溢伤扣原生命。",resourceKey:"Status/polymorph"),
+                new GuideEntry("bladesong",0x58A5EB,"剑歌：剑咏者双手和等于体力可进入，选择元素攻击、攻防+1；后续自身回合须攻击、合盾或实际回复维持。",resourceKey:"Subclasses/wizard_bladesinging"),
+                new GuideEntry("hexbound_specter",0x58BEAD,"咒缚幽灵：10生命，继承死者手值与座位、占位计距，从下轮开始AI行动；不计胜负人数。暗蚀/毒素永久免疫，五元素永久抗性。",resourceKey:"Units/hexbound_specter") };
             var lines = new List<string>(); foreach(var entry in entries) lines.Add(entry.Text);
             return new GuideSheet("角色标记", "Character Marks", lines, true,
                 new List<GuideGroup> { new GuideGroup("角色专属资源与标记", entries) },
-                "屏障、气、猎人标记和虚假生命是角色机制，不计入21种负面状态；各自按对应技能规则获得、消耗和显示。");
+                "此页均为角色技能的资源、标记或形态，不计入21种负面状态；各自按对应技能规则获得、消耗和显示。");
         }
 
         public static GuideSheet DamageTypes()

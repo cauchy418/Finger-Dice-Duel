@@ -133,9 +133,9 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(l.UsesClassicSetup); Assert.IsFalse(l.Started); Assert.AreEqual(0, l.Game.TurnCount); Assert.IsTrue(l.Board.ScriptedRestAllowed == null);
         }
         [Test]
-        public void Finale_all_six_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded()
+        public void Finale_all_seven_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded()
         {
-            Assert.AreEqual(6, AdventureChapter.FinaleRoster.Count);
+            Assert.AreEqual(7, AdventureChapter.FinaleRoster.Count);
             foreach (var role in AdventureChapter.FinaleRoster)
             {
                 Assert.AreEqual("fighter", role.Profession.Id);

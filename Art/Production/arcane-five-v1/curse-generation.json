@@ -1,0 +1,8 @@
+{
+  "id": "hexblades_curse",
+  "kind": "Effects",
+  "status": true,
+  "native": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-9ac757ba-9bee-4a49-96c0-9e9bbfa80e4e.png",
+  "prompt": "Use case: stylized-concept. Game UI status icon, Hexblade's Curse. Use the supplied square icon as style and framing reference only. Preserve the antique gold square border with small pointed corner ornaments, dark iron inset, hand-painted material and transparent outer margin. Replace the entire vine-bound fist subject with a clear central violet curse sigil: a small black straight sword pointing down, pierced through an amethyst magical diamond, three spectral purple chain links curling outward to bind the victim. Dominant purple-magenta glow with black steel and antique gold highlights, bold single readable silhouette at 48 pixels. No hand, no human, no skull, no sheep, no lettering, no runic text, no watermark. Fill the inner square consistently with existing status icons; genuine transparent outside the frame.",
+  "ref": "Assets/Resources/Art/Battle/v1/Status/restrained.png"
+}

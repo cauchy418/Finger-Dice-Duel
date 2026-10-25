@@ -21,11 +21,13 @@ namespace FingerDiceDuel.Core
     public partial class PlayerState
     {
         private readonly HashSet<AttackDamageType> _vulnerabilities = new HashSet<AttackDamageType>();
+        private readonly HashSet<AttackDamageType> _permanentImmunities=new HashSet<AttackDamageType>();
+        public void AddPermanentImmunity(AttackDamageType type)=>_permanentImmunities.Add(type);
         private readonly HashSet<AttackDamageType> _immunities = new HashSet<AttackDamageType>();
         public IReadOnlyCollection<AttackDamageType> Vulnerabilities => _vulnerabilities;
         public IReadOnlyCollection<AttackDamageType> Immunities => _immunities;
         public bool HasVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
-        public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type);
+        public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type)||_permanentImmunities.Contains(type);
         public void AddVulnerability(AttackDamageType type)
         {
             if (!HasStatus(StatusEffect.HolyLight) && System.Array.IndexOf(ResistanceNames.All, type) >= 0)

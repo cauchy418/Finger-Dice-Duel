@@ -112,10 +112,10 @@ namespace FingerDiceDuel.Tests
             {
                 providers = new List<IChoiceProvider>(4)
                 {
-                    new GreedyChoiceProvider { UseLearnedFocus = true },
-                    new GreedyChoiceProvider { UseLearnedFocus = true },
-                    new GreedyChoiceProvider { UseLearnedFocus = true },
-                    new GreedyChoiceProvider { UseLearnedFocus = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true, UseValidatedTuning = true, UseChainBreak = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true, UseValidatedTuning = true, UseChainBreak = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true, UseValidatedTuning = true, UseChainBreak = true },
+                    new GreedyChoiceProvider { UseLearnedFocus = true, UseValidatedTuning = true, UseChainBreak = true },
                 };
             }
 

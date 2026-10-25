@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Assistant
                 foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&!p.HasResistance(AttackDamageType.Poison)&&StatusRules.EffectiveDefenseBonus(p)>=2)return 4;
                 return owner.Health<owner.MaximumHealth?2:4;
             }
-            int missing=0;foreach(var p in game.Players)if(p.IsAlive&&game.IsTeammate(owner,p))missing=Math.Max(missing,p.MaximumHealth-p.Health);
+            int missing=0;foreach(var p in game.Players)if(p.IsAlive&&game.IsKnownAlly(owner,p))missing=Math.Max(missing,p.MaximumHealth-p.Health);
             if(missing>=7 && game.GetLegalMoves(owner).Count>0)return 2;
             if(owner.Health<=9)return 3;
             foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&!p.HasResistance(AttackDamageType.Radiant))return 1;
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Assistant
         public PlayerState ChaliceTarget(PlayerState owner,IReadOnlyList<PlayerState> targets,GameManager game)
         {
             PlayerState best=null;int score=0;foreach(var p in targets)
-            {if(!game.IsTeammate(owner,p)||p.HasStatus(StatusEffect.Decay))continue;int need=p.MaximumHealth-p.Health;if(need>score){best=p;score=need;}}
+            {if(!game.IsKnownAlly(owner,p)||p.HasStatus(StatusEffect.Decay))continue;int need=p.MaximumHealth-p.Health;if(need>score){best=p;score=need;}}
             return best;
         }
         public Hand SecondAddend(PlayerState owner,Hand acted,Hand first,IReadOnlyList<Hand> candidates,GameManager game)

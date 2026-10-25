@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var none = new Decision { Activate = false };
             if (collegeOfValor == null || game == null) return none;
             if (!CollegeOfValorLogic.CanActivateFor(collegeOfValor)) return none;
-            if (!(collegeOfValor.Character is CollegeOfValorLogic logic)) return none;
+            var logic=CharacterBehaviors.FirstImplementer<CollegeOfValorLogic>(collegeOfValor);if(logic==null)return none;
 
             List<PlayerState> eligible = logic.EligibleTargets(collegeOfValor, game);
             if (eligible.Count == 0) return none;
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             for (int i = 0; i < eligible.Count; i++)
             {
                 PlayerState p = eligible[i];
-                if (ReferenceEquals(p, collegeOfValor) || game.IsTeammate(collegeOfValor, p)) allies.Add(p);
+                if (ReferenceEquals(p, collegeOfValor) || game.IsKnownAlly(collegeOfValor, p)) allies.Add(p);
                 else enemies.Add(p);
             }
 
@@ -85,7 +85,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static bool TryActivate(PlayerState collegeOfValor, GameManager game)
         {
             if (collegeOfValor == null || game == null) return false;
-            if (!(collegeOfValor.Character is CollegeOfValorLogic logic)) return false;
+            var logic=CharacterBehaviors.FirstImplementer<CollegeOfValorLogic>(collegeOfValor);if(logic==null)return false;
 
             Decision d = Decide(collegeOfValor, game);
             if (!d.Activate) return false;

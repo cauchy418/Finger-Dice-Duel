@@ -262,6 +262,9 @@ namespace FingerDiceDuel.Assistant
             _game.DruidPolicyFor = p=>GetChoice(p) as IDruidChoicePolicy;
             _game.AncientPolicyFor = p=>GetChoice(p) as IAncientRoleChoicePolicy;
             _game.NewSubclassPolicyFor = p=>GetChoice(p) as INewSubclassChoicePolicy;
+            _game.ArcanePolicyFor=p=>GetChoice(p) as IArcaneChoicePolicy;
+            _game.SummonProviderFor=p=>{_specterAi.Game=_game;return _specterAi;};
+            _game.AutomaticChoicesFor=p=>GetAi(p)!=null;
 
             // "是否问过该玩家取消攻击" —— 用来区分"没问过（AI）"与
             // "问过但选了不发动"（后者必须放行）。
@@ -734,9 +737,11 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>取某玩家对应的 AI；人类玩家返回 null。</summary>
+        private readonly GreedyChoiceProvider _specterAi=new GreedyChoiceProvider();
         private IMoveSelector GetAi(PlayerState p)
         {
             if (p == null) return null;
+            if(p.IsSummon){_specterAi.Game=_game;return _specterAi;}
             if (_aiByPlayer.TryGetValue(p, out IMoveSelector ai)) return ai;
 
             // 1v1 回退（未登记时仍按 A/B 判定）
@@ -758,6 +763,11 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private IChoiceProvider GetChoice(PlayerState p)
         {
+            var provider=GetRawChoice(p);(provider as IDamageTypeChoiceSink)?.SetGameForChoices(_game);return provider;
+        }
+        private IChoiceProvider GetRawChoice(PlayerState p)
+        {
+            if(p?.IsSummon==true)return _specterAi;
             if (_aiByPlayer.TryGetValue(p, out IMoveSelector ai) && ai is IChoiceProvider fromAi)
                 return fromAi;
 
@@ -928,8 +938,6 @@ namespace FingerDiceDuel.Assistant
             //    因为界面路径一直没调它，`CollegeOfValorActivatedThisTurn` 永远是 true，
             //    发动过一次之后就再也不弹面板。
             //    （无头路径由 `MatchRunner` 每次循环调，所以测试发现不了。）
-            _game.BeginTurn();
-
             // ⚠️ **法师·塑能学派的状态：先结算"上一位的回合结束"**（燃烧 + 状态计数递减）。
             //
             //    为什么放在这里：`BeginTurn` 是**每次换人行动**的唯一入口，
@@ -941,9 +949,10 @@ namespace FingerDiceDuel.Assistant
             //       哨兵保证：同一次行动只结算一次回合结束。
             if (_statusTurnEndFor != null)
             {
-                _game.ResolveStatusTurnEnd(_statusTurnEndFor);
-                FlushSkillLog();
+                var ended = _statusTurnEndFor;
                 _statusTurnEndFor = null;
+                _game.ResolveStatusTurnEnd(ended);
+                FlushSkillLog();
 
                 if (_game.IsGameOver)
                 {
@@ -952,6 +961,10 @@ namespace FingerDiceDuel.Assistant
                     return;
                 }
             }
+
+            // 回合结束技能须读完有效行动标记，并完成玩家抉择，才能清标记并进入下一回合。
+            if(TryStartWizardBoundary(BeginTurn)) return;
+            _game.BeginTurn();
 
             ActivePlayer = _game.CurrentPlayer;
 
@@ -2216,7 +2229,7 @@ namespace FingerDiceDuel.Assistant
             {
                 PlayerState p = all[i];
                 if (p == null || !p.IsAlive) continue;
-                if (!(p.Character is Characters.SpecialLogics.CollegeOfValorLogic)) continue;
+                if (CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.CollegeOfValorLogic>(p)==null) continue;
                 if (p.CollegeOfValorActivatedThisTurn) continue;
                 if (!Characters.SpecialLogics.CollegeOfValorLogic.CanActivateFor(p)) continue;
 
@@ -2256,7 +2269,7 @@ namespace FingerDiceDuel.Assistant
                 {
                     PlayerState p = all[i];
                     if (p == null || !p.IsAlive) continue;
-                    if (!(p.Character is Characters.SpecialLogics.CollegeOfValorLogic)) continue;
+                    if (CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.CollegeOfValorLogic>(p)==null) continue;
                     if (p.CollegeOfValorActivatedThisTurn) continue;
                     if (!Characters.SpecialLogics.CollegeOfValorLogic.CanActivateFor(p)) continue;
                     found = p;
@@ -2266,7 +2279,7 @@ namespace FingerDiceDuel.Assistant
 
             if (found == null) return false;
 
-            var logic = (Characters.SpecialLogics.CollegeOfValorLogic)found.Character;
+            var logic = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.CollegeOfValorLogic>(found);
             List<PlayerState> cands = logic.EligibleTargets(found, _game);
             if (cands.Count == 0) return false;
 
@@ -2322,7 +2335,7 @@ namespace FingerDiceDuel.Assistant
             int applied = 0;
             if (_bardActor != null)
             {
-                var logic = _bardActor.Character as Characters.SpecialLogics.CollegeOfValorLogic;
+                var logic = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.CollegeOfValorLogic>(_bardActor);
                 if (logic != null) applied = logic.Activate(_bardActor, _game, kind, targets);
 
                 _bardActor.CollegeOfValorActivatedThisTurn = true;      // 本回合不再问
@@ -2603,6 +2616,7 @@ namespace FingerDiceDuel.Assistant
 
             // 邪术师·至高妖精的"是否取消这次攻击"：取消者是**场上的第三方**，
             // 不属于上面的行动方/防守方，所以单独收集。
+            CollectDevotionProtection(context);
             CollectTheArchfeyCancelChoices();
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
@@ -2629,6 +2643,13 @@ namespace FingerDiceDuel.Assistant
 
 
             AdvanceCharacterChoice();
+        }
+
+        private void CollectDevotionProtection(PreTurnChoiceContext context)
+        {
+            if(!context.IsAttack||CharacterBehaviors.FirstImplementer<IAttackTransfer>(context.Defender)!=null)return;
+            foreach(var p in _game.Players)foreach(var protect in CharacterBehaviors.Implementers<IProtectionChoiceProvider>(p))
+                protect.CollectRedirectChoice(p,context.Actor,context.Defender,_game,_pendingRequests,context.EffectiveResult);
         }
 
         private void CollectFrom(PlayerState player, PreTurnChoiceContext context)
@@ -4094,6 +4115,13 @@ namespace FingerDiceDuel.Assistant
                     }
                 }
             }
+
+            // 主动以完整盾运算的附魔，必须在同一次攻击发起前作答；此时尚未改变手值。
+            var knight = CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.EldritchKnightLogic>(ActivePlayer);
+            bool preparedKnight=knight?.PrepareOperationShieldBreak(ActivePlayer,acted,_game)==true;
+            if(knight!=null&&GetAnsweredChoiceFor(ActivePlayer,HandEffect.BreakerRangeBreak,0)!=null)
+                preparedKnight|=knight.PrepareOperationShieldBreak(ActivePlayer,ActivePlayer.GetOtherHand(acted),_game);
+            if(preparedKnight&&TryStartWizardBoundary(ExecuteResolvedTurn)) return;
 
             // 入口就把阶段记下来 —— 异常处理里的 `Phase` 可能已被改动，
             // 只看那一刻会得到**陈旧阶段**（我为此白查两轮）。

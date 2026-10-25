@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Core
     public sealed class OathOfDevotionLogic : CharacterTemplate, IPreTurnChoiceProvider,
                                        FingerDiceDuel.Core.IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay,
                                        IAttackRangeProvider,
-                                       FingerDiceDuel.Core.IAttackRedirector,
+                                       FingerDiceDuel.Core.IAttackRedirector, IProtectionChoiceProvider,
                                        FingerDiceDuel.Core.IAiMoveAdvisor,
                                        FingerDiceDuel.Core.ISkillUseCounter
     {
@@ -196,7 +196,7 @@ namespace FingerDiceDuel.Core
 
             int before = picked.Health;
             var attack = ResolveShockDamage(owner, sourceHand, picked, manager);
-            int dealt = before - picked.Health;
+            int dealt = attack?.ActualHealthDamage??System.Math.Max(0,before-picked.Health);
 
             // 写进战报：这样"冲击到底有没有发生、扣了多少"一眼可见。
             // 光看血条分不清"被盾挡了"还是"根本没触发"（玩家实测报告过疑惑）。
@@ -272,7 +272,7 @@ namespace FingerDiceDuel.Core
             }
             chosen = PreTurnChoiceReader.Read(
                 manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
-                manager.GetChoiceProvider(owner), request, owner);
+                manager.GetSkillPolicy(owner) as IChoiceProvider??manager.GetChoiceProvider(owner), request, owner);
 
             if (chosen == null) return null;
 
@@ -286,13 +286,13 @@ namespace FingerDiceDuel.Core
 
         /// <summary>圣武士·破誓者转移确定后，先收集圣武士·奉献之誓是否愿意代挡，不在结算中弹窗。</summary>
         public void CollectRedirectChoice(PlayerState owner, PlayerState attacker, PlayerState target,
-            GameManager manager, IList<ChoiceRequest> requests)
+            GameManager manager, IList<ChoiceRequest> requests,int attackValue=0)
         {
             if (owner == null || !owner.IsAlive || ReferenceEquals(owner, attacker)
                 || ReferenceEquals(owner, target) || !manager.CanReach(owner, target)) return;
             requests.Add(new ChoiceRequest(HandEffect.OathOfDevotionRedirect,
                 $"圣武士·奉献之誓【代挡】：攻击已转移至 {target.Name}，是否由自己承受？",
-                new List<Hand> { owner.LeftHand, owner.RightHand }, true, null, owner));
+                new List<Hand> { owner.LeftHand, owner.RightHand }, true, null, owner,resultValue:attackValue,relatedTarget:target,relatedActor:attacker));
         }
 
         /// <summary>
@@ -323,10 +323,12 @@ namespace FingerDiceDuel.Core
                 new List<Hand>(2) { owner.LeftHand, owner.RightHand },
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 不改
-                decider: owner);
+                decider: owner,relatedTarget:intendedTarget,relatedActor:attacker,resultValue:manager.CurrentRedirectAttack?.RawDamage??0);
 
             // 控制器的答案仅本回合有效，不能读取第三方 sink 里上一回合留下的同意。
-            Hand chosen = manager.AnsweredLookupFor != null
+            Hand chosen = manager.AutomaticChoicesFor?.Invoke(owner)==true
+                ? (manager.GetSkillPolicy(owner) as IChoiceProvider??manager.GetChoiceProvider(owner))?.ChooseHandFor(request,owner)
+                : manager.AnsweredLookupFor != null
                 ? manager.AnsweredLookupFor(owner, HandEffect.OathOfDevotionRedirect, 0)
                 : PreTurnChoiceReader.Read(
                     manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,

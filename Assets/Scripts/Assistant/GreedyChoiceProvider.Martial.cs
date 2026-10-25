@@ -12,7 +12,8 @@ namespace FingerDiceDuel.Assistant
             foreach(var option in options)
             {
                 double score;
-                if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
+                if(key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
+                else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==NewSubclassChoices.LoreGrowth) score=option.Value==1?20:0;
                 else if(key==NewSubclassChoices.LoreDefense)
                 {bool shield=false;foreach(var h in owner.Hands)if(h.IsShield)shield=true;score=option.Value==0?0:shield&&target!=null&&CharacterFactory.MaxAttackHits(target)==1?-10:20;}

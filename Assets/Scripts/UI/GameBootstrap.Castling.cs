@@ -30,8 +30,9 @@ namespace FingerDiceDuel.UI
             PlayerState mate=null;
             foreach(var p in seated)
             {
-                bool self=ReferenceEquals(p,me), ally=!self && _game.IsTeammate(me,p);
-                relations.Add(self?RingRelation.Self:ally?RingRelation.Teammate:RingRelation.Opponent);
+                var relation=IdentityPresentation.Relation(_game,me,p);
+                bool ally=relation==RingRelation.Teammate;
+                relations.Add(relation);
                 if(ally) mate=p;
             }
             int mySeat=seated.IndexOf(me)+1;

@@ -530,6 +530,17 @@ namespace FingerDiceDuel.Core
             SchoolOfIllusionId,"法师·幻术学派",SpecialLogicType.SchoolOfIllusion,defenseBonus:-1,englishName:"School of Illusion",
             description:"持有2时，他人选你的手作加数有50%改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
 
+        public const string SchoolOfTransmutationId = "wizard_school_of_transmutation";
+        public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立10生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。距离∞，近钝击远穿刺。");
+        public const string SchoolOfEnchantmentId = "wizard_school_of_enchantment";
+        public static CharacterDefinition SchoolOfEnchantment {get;} = new CharacterDefinition(SchoolOfEnchantmentId,"法师·惑控学派",SpecialLogicType.SchoolOfEnchantment,attackBonus:0,defenseBonus:-1,englishName:"School of Enchantment",description:"造成或受到实际伤害后，可令受伤者或伤害来源失能或魅惑2回合，后续实际掉血解除本技能的效果。整次攻击结算后选择。距离∞，近钝击远穿刺。");
+        public const string EldritchKnightId = "fighter_eldritch_knight";
+        public static CharacterDefinition EldritchKnight {get;} = new CharacterDefinition(EldritchKnightId,"战士·奥法骑士",SpecialLogicType.EldritchKnight,attackBonus:0,defenseBonus:0,englishName:"Eldritch Knight",description:"盾碎后可选火焰/寒冷/闪电/雷鸣/强酸附魔，主动用盾运算形成的本次攻击立即生效；受非物理伤害后可选记录该类型。新选择覆盖旧附魔，下一次攻击发起时消耗，闪避或盾挡也消耗。距离2，挥砍。");
+        public const string BladesingingId = "wizard_bladesinging";
+        public static CharacterDefinition Bladesinging {get;} = new CharacterDefinition(BladesingingId,"法师·剑咏者",SpecialLogicType.Bladesinging,attackBonus:0,defenseBonus:-1,englishName:"Bladesinging",description:"回合结束双手和等于体力，可进入剑歌并选一种五元素攻击，攻防+1；从下个自身回合起，未发起未取消的攻击、合盾或实际回复则结束剑歌。距离2，挥砍。");
+        public const string TheHexbladeId = "warlock_the_hexblade";
+        public static CharacterDefinition TheHexblade {get;} = new CharacterDefinition(TheHexbladeId,"邪术师·咒剑",SpecialLogicType.TheHexblade,attackBonus:1,defenseBonus:-1,englishName:"The Hexblade",description:"回合开始持7可施加或移动2回合诅咒，对其每段攻击+2；本人击杀诅咒目标召唤10生命咒缚幽灵，继承死者手值与座位，下一轮行动，占位计距但不计胜负人数。距离2，挥砍。");
+
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -543,7 +554,8 @@ namespace FingerDiceDuel.Core
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
             CircleOfTheMoon, CircleOfTheStars,
             CircleOfTheLand, OathOfTheAncients, TheFiend,
-            CollegeOfLore, StormSorcery, SchoolOfIllusion
+            CollegeOfLore, StormSorcery, SchoolOfIllusion,
+            SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

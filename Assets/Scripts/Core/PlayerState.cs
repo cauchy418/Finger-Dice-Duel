@@ -62,7 +62,7 @@ namespace FingerDiceDuel.Core
                 for (int i = 1; i <= MaxStatusValue; i++)
                 {
                     var s = (StatusEffect)i;
-                    if (_statuses.ContainsKey(s)) list.Add(s);
+                    if (HasStatus(s)) list.Add(s);
                 }
                 return list;
             }
@@ -73,11 +73,11 @@ namespace FingerDiceDuel.Core
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
-            => status != StatusEffect.None && _statuses.ContainsKey(status);
+            => status != StatusEffect.None && (_statuses.ContainsKey(status)||_enchantments.ContainsKey(status));
 
         /// <summary>剩余"目标自己的回合数"（没有该状态时为 0）。</summary>
         public int StatusTurnsLeft(StatusEffect status)
-            => _statuses.TryGetValue(status, out int n) ? n : 0;
+            => Math.Max(_statuses.TryGetValue(status,out int n)?n:0,_enchantments.TryGetValue(status,out int e)?e:0);
 
         /// <summary>
         /// 施加（或**刷新**）一个状态。
@@ -120,13 +120,14 @@ namespace FingerDiceDuel.Core
 
         /// <summary>某个状态是谁挂上的（没有记录时返回 null）。</summary>
         public PlayerState StatusSourceOf(StatusEffect status)
-            => _statusSources.TryGetValue(status, out PlayerState p) ? p : null;
+            => _enchantmentSources.TryGetValue(status,out PlayerState e)?e:_statusSources.TryGetValue(status, out PlayerState p) ? p : null;
 
         /// <summary>移除一个状态。</summary>
         public void RemoveStatus(StatusEffect status)
         {
             if (status == StatusEffect.Restrained) ClearRestraintHands();
             if (status == StatusEffect.KnockedDown) _deferOilProneTick = false;
+            _enchantments.Remove(status); _enchantmentSources.Remove(status);
             _statuses.Remove(status);
             _statusSources.Remove(status);
         }
@@ -150,7 +151,9 @@ namespace FingerDiceDuel.Core
                 int left = _statuses[keys[i]] - 1;
                 if (left <= 0)
                 {
-                    RemoveStatus(keys[i]);
+                    _statuses.Remove(keys[i]);_statusSources.Remove(keys[i]);
+                    if(keys[i]==StatusEffect.Restrained)ClearRestraintHands();
+                    if(keys[i]==StatusEffect.KnockedDown)_deferOilProneTick=false;
                     expired.Add(keys[i]);
                     if (keys[i] == StatusEffect.Frost)
                         ApplyStatus(StatusEffect.Wet, StatusDurationTurns);
@@ -161,12 +164,14 @@ namespace FingerDiceDuel.Core
                 }
             }
 
+            TickEnchantments(); TickPolymorph();
             return expired;
         }
 
         /// <summary>清空所有状态（开局复位用）。</summary>
         public void ClearStatuses()
         {
+            EndPolymorph(); ClearEnchantments();
             ClearRestraintHands();
             _deferOilProneTick = false;
             _statuses.Clear();
@@ -343,6 +348,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void SetMaxHealth(int value)
         {
+            if(IsPolymorphed){_untransformedMaximum=SanitizeMaxHealth(value);_untransformedHealth=Math.Min(_untransformedHealth,_untransformedMaximum);return;}
             MaximumHealth = SanitizeMaxHealth(value);
             if (Health > MaximumHealth) Health = MaximumHealth;
         }
@@ -353,16 +359,7 @@ namespace FingerDiceDuel.Core
         // ============ 生命值操作 ============
         public void TakeDamage(int amount)
         {
-            if (amount <= 0) return;
-            // 虚假生命优先扣除；剩余伤害才进入真实生命。
-            if (FalseLife > 0)
-            {
-                int absorbed = Math.Min(FalseLife, amount);
-                FalseLife -= absorbed;
-                amount -= absorbed;
-            }
-            if (amount > 0) Health = Math.Max(0, Health - amount);
-            TookDamageThisTurn = true;
+            TakeDamageResolved(amount);
         }
 
         /// <summary>
@@ -453,6 +450,7 @@ namespace FingerDiceDuel.Core
         /// <summary>复位"本回合"标记（每次行动开始时调用）。</summary>
         public void ResetTurnFlags()
         {
+            BeganAttackThisTurn=false; FormedShieldThisTurn=false;
             TookDamageThisTurn = false;
             HealedThisTurn = false;
             CollegeOfValorActivatedThisTurn = false;
@@ -502,12 +500,13 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void Reset()
         {
+            RestoreDeadSeat(); EndPolymorph(); ClearEnchantments();
             Health = MaximumHealth;
             LeftHand.Reset(1);
             RightHand.Reset(1);
             ClearAllResistances();
             ClearVulnerabilities();
-            ClearImmunities();
+            ClearImmunities(); _permanentImmunities.Clear();
             SetResonance(false);
             ClearFalseLife();
         }

@@ -1,4 +1,4 @@
-// ---------------------------------------------------------------------------
+﻿// ---------------------------------------------------------------------------
 // 无头测试运行器。
 //
 // 只依赖 System.Reflection：扫描 [TestFixture] 标注的类，逐个执行其中
@@ -18,8 +18,17 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        if(args.Length==4&&args[0]=="--dual-shard")
+        {DualVersusDualHarness.RunShard(int.Parse(args[1]),int.Parse(args[2]),args[3]);return 0;}
         bool trace = args.Any(a => a == "--trace");
         bool verbose = args.Any(a => a == "-v" || a == "--verbose");
+        bool skipStatistics = args.Any(a => a == "--skip-statistics");
+        var statistics = new HashSet<string> {
+            "All_characters_round_robin_win_rates", "All_dual_general_matchups_run_without_crashing",
+            "Eight_player_dual_faction_battle_2000_games", "Three_focus_policies_per_role_600_games_two_seed_segments",
+            "Identity_random_character_win_rates_2000_games", "Identity_biased_character_win_rates_2000_games",
+            "Two_versus_two_round_robin_win_rates_and_seat_bias"
+        };
         string filter = args.FirstOrDefault(a => !a.StartsWith("-"));
 
         Assembly assembly = typeof(Program).Assembly;
@@ -47,7 +56,7 @@ internal static class Program
         }
 
         var failures = new List<string>();
-        int passed = 0, failed = 0, skipped = 0;
+        int passed = 0, failed = 0, skipped = 0, statisticsSkipped = 0;
 
         foreach (Type fixture in fixtures)
         {
@@ -69,6 +78,8 @@ internal static class Program
 
             foreach (MethodInfo test in tests)
             {
+                if(skipStatistics && statistics.Contains(test.Name))
+                {statisticsSkipped++;Console.WriteLine($"   SKIP  {test.Name} (statistics)");continue;}
                 string label = $"{fixture.Name}.{test.Name}";
                 object instance = null;
 
@@ -116,6 +127,7 @@ internal static class Program
 
         Console.WriteLine(new string('─', 60));
         Console.WriteLine($"通过 {passed} / 失败 {failed}" + (skipped > 0 ? $" / TearDown 警告 {skipped}" : ""));
+        if(statisticsSkipped>0)Console.WriteLine($"独立统计测试已跳过 {statisticsSkipped} 项。");
 
         if (failures.Count > 0)
         {

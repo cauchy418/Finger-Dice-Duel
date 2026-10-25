@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -41,6 +42,40 @@ namespace FingerDiceDuel.Tests
         }
 
         /// <summary>一个双将（主将 + 副将，同阵营）。</summary>
+        private static string OutcomeHeader(int games,List<Dual> duals)
+        {
+            var ids=new List<string>();foreach(var d in duals)ids.Add(d.Primary.Id+"+"+d.Secondary.Id);
+            return "FDD_DUAL_V1\t"+typeof(GameManager).Assembly.ManifestModule.ModuleVersionId+"\t"+games+"\t"+string.Join("|",ids);
+        }
+        // 独立进程分片，避免并发共享战局或随机源；种子仍由原配对及轮次决定。
+        public static void RunShard(int shard,int shards,string path,int games=12)
+        {
+            if(shards<1||shard<0||shard>=shards)throw new ArgumentException("invalid shard");
+            var duals=AllDuals();using var writer=new StreamWriter(path,false,new UTF8Encoding(false));writer.WriteLine(OutcomeHeader(games,duals));
+            int pair=0,played=0;
+            for(int i=0;i<duals.Count;i++)for(int j=i+1;j<duals.Count;j++,pair++)
+            {
+                if(pair%shards!=shard)continue;
+                for(int g=0;g<games;g++)for(int swap=0;swap<2;swap++)
+                {
+                    var o=Play(duals[i],duals[j],swap==0,i*1009+j*17+g);
+                    writer.WriteLine(string.Join("\t",i,j,g,swap,o.FirstWon.HasValue?(o.FirstWon.Value?1:0):-1,o.HitLimit?1:0,o.ReachedLimit?1:0,o.Turns,Convert.ToBase64String(Encoding.UTF8.GetBytes(o.Error??""))));played++;
+                }
+            }
+            Console.WriteLine("shard "+shard+" completed "+played+" games");
+        }
+        private static StreamReader OpenReplay(int games,List<Dual> duals)
+        {
+            string path=Environment.GetEnvironmentVariable("FDD_DUAL_OUTCOMES");if(string.IsNullOrEmpty(path))return null;
+            var reader=new StreamReader(path,Encoding.UTF8);if(reader.ReadLine()!=OutcomeHeader(games,duals)){reader.Dispose();throw new InvalidDataException("dual replay build/roster mismatch");}return reader;
+        }
+        private static Outcome ReadOutcome(StreamReader reader,int i,int j,int g,int swap)
+        {
+            var line=reader.ReadLine();var p=line?.Split('\t');
+            if(p==null||p.Length!=9||int.Parse(p[0])!=i||int.Parse(p[1])!=j||int.Parse(p[2])!=g||int.Parse(p[3])!=swap)throw new InvalidDataException("dual replay missing or misordered match");
+            string error=Encoding.UTF8.GetString(Convert.FromBase64String(p[8]));
+            return new Outcome{FirstWon=p[4]=="-1"?(bool?)null:p[4]=="1",HitLimit=p[5]=="1",ReachedLimit=p[6]=="1",Turns=int.Parse(p[7]),Error=error.Length==0?null:error};
+        }
         public sealed class Dual
         {
             public CharacterDefinition Primary;
@@ -103,9 +138,17 @@ namespace FingerDiceDuel.Tests
                 PlayerState pA = historicalMechanicsOnly ? HistoricalMechanicsPair("甲",a) : DualGeneralFactory.Create("甲", a.Primary, a.Secondary);
                 PlayerState pB = historicalMechanicsOnly ? HistoricalMechanicsPair("乙",b) : DualGeneralFactory.Create("乙", b.Primary, b.Secondary);
 
-                var choiceA = new GreedyChoiceProvider();
-                var choiceB = new GreedyChoiceProvider();
+                var choiceA = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
+                var choiceB = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
                 var game = new GameManager(pA, pB, choiceA, choiceB);
+                game.StatusRandom=new Random(seed+71);
+                StatusRules.ResetInteractionRandomForTest(seed+73);
+                foreach(var player in new[]{pA,pB})foreach(var part in CharacterBehaviors.Implementers<ICharacterBehavior>(player))
+                {
+                    if(part is FingerDiceDuel.Characters.SpecialLogics.StormSorceryLogic storm)storm.Rng=new Random(seed+79);
+                    if(part is FingerDiceDuel.Characters.SpecialLogics.SchoolOfIllusionLogic illusion)illusion.Rng=new Random(seed+83);
+                    if(part is FingerDiceDuel.Characters.SpecialLogics.WildMagicLogic wild)wild.Rng=new Random(seed+89);
+                }
 
                 // ⚠⚠ **回合上限必须放宽到 300**。
                 //
@@ -230,6 +273,7 @@ namespace FingerDiceDuel.Tests
         public static string RunRoundRobin(int gamesPerPair, out int totalGames)
         {
             List<Dual> duals = AllDuals();
+            using var replay=OpenReplay(gamesPerPair,duals);
 
             var dualTally = new Dictionary<string, Tally>();
             var roleTally = new Dictionary<string, Tally>();
@@ -265,7 +309,7 @@ namespace FingerDiceDuel.Tests
                         for (int swap = 0; swap < 2; swap++)
                         {
                             bool firstIsA = swap == 0;
-                            Outcome o = Play(first, second, firstIsA, seed);
+                            Outcome o = replay==null?Play(first, second, firstIsA, seed):ReadOutcome(replay,i,j,g,swap);
                             games++;
 
                             if (o.Error != null)
@@ -335,6 +379,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
 
+            if(replay!=null&&replay.ReadLine()!=null)throw new InvalidDataException("dual replay has extra matches");
             totalGames = games;
             return Report(duals, dualTally, roleTally, axisTally, gamesPerPair, games, anomalies);
         }
