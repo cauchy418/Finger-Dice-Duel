@@ -311,17 +311,12 @@ namespace FingerDiceDuel.Characters
                        + "用净化解除圣光后再回复。",
                 interactions: new[] { "与生命领域：回复先净化圣光，再按全额治疗。", "双将的追加、反弹、免费暗蚀不改成固定4点，也不附圣光。" });
 
-            // ---- 战争领域（守序中立，2026-10-23）----
-            Add(CharacterDefinition.WarDomainId, "War Domain", Alignment.LawfulNeutral,
-                shortSkill: "发起攻击后攻击+1，受到攻击后防御+1（分别叠加）；自己回合结束未发起攻击则清零。",
-                playGuide: "越战越强，每回合都要出手：出手涨攻，挨打涨防；新加成从下一击开始生效。"
-                         + "被冻结、眩晕或锁手让他空过一回合，加成就清零重来。"
-                         + "距离 1 内钝击、1 外穿刺。",
-                counter: "逼他空过回合（冻结 / 眩晕 / 锁手）即可清空加成；"
-                       + "他靠滚雪球，前期就要压制，别放任对拼。",
-                interactions: new[] { "与多段攻击：一次攻击只叠一层；反弹是独立攻击，另算一次。", "与至高妖精：被取消的攻击不叠战争狂热。" });
+            Add(CharacterDefinition.WarDomainId,"War Domain",Alignment.LawfulNeutral,
+                shortSkill:"回合开始按攻击手数，最多赐予两名不同角色战恩2回合。",
+                playGuide:"可以选自己或队友，少选或不发动。战恩攻防+1，9可放弃回复改为攻击；持战恩时9也提供施恩次数。",
+                counter:"圣光清除并阻止战恩；减少其回合开始时的攻击数字，压低施恩次数。",
+                interactions:new[]{"战恩不叠加，重复施加刷新；本次最多两名不同目标。"});
 
-            // ---- 战斗大师（守序中立，2026-10-23）----
             Add(CharacterDefinition.BattleMasterId, "Battle Master", Alignment.LawfulNeutral,
                 shortSkill: "4=挥砍、6=钝击、8=穿刺；造成伤害后按另一手附加流血/跛脚或震慑/倒伏。",
                 playGuide: "攻击命中后看另一只手：4/8→流血或跛脚、6→震慑或倒伏（各 2 回合，可放弃）。"
@@ -407,7 +402,11 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulGood,
                 shortSkill:"碎盾选五元素，受魔法伤可记录该类型，附魔下次攻击。",playGuide:"主动用完整盾运算先选元素，本次算出攻击立即生效；受非物理伤害可记录。附魔覆盖，攻击发起即消耗。",counter:"用盾挡或闪避消耗附魔；留意其记录的伤害类型。",interactions:new[]{"只被虚假生命吸收不触发记录；免疫或零伤不触发。"});
             Add(CharacterDefinition.BladesingingId,"Bladesinging",Alignment.ChaoticGood,
-                shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
+                shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束；圣光清除并阻止剑歌。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
+            Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
+                shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
+            Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
+                shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含连锁破盾。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,
                 shortSkill:"持7可诅咒；每段+2，亲自击杀召唤咒缚幽灵。",playGuide:"回合开始选诅咒对象或不发动。击杀诅咒者后，幽灵占死者座位、继承手值，由AI从下轮行动。",counter:"避开诅咒伤害；击杀召唤者可使幽灵消失。",interactions:new[]{"幽灵占位计距，不计原玩家胜负人数；状态扣血与幽灵击杀不触发召唤。"});
         }

@@ -12,7 +12,9 @@ namespace FingerDiceDuel.Assistant
             foreach(var target in targets)
             {
                 bool ally=AncientAlly(game,owner,target);double score;
-                if(key==ArcaneChoices.Transmute)
+                if(key==DivineChoices.Blessing||key==DivineChoices.Vow)
+                    score=DivineTargetScore(key,owner,target,game);
+                else if(key==ArcaneChoices.Transmute)
                 {
                     if(target.HasStatus(StatusEffect.HolyLight))continue;
                     if(ally)score=target.Health<=5&&!target.IsPolymorphed?15+(5-target.Health)*3:-100;

@@ -88,6 +88,8 @@ namespace FingerDiceDuel.Core
 
             _registry[SpecialLogicType.LightDomain] = () => new LightDomainLogic();
             _registry[SpecialLogicType.WarDomain] = () => new WarDomainLogic();
+            _registry[SpecialLogicType.OathOfConquest] = () => new OathOfConquestLogic();
+            _registry[SpecialLogicType.OathOfVengeance] = () => new OathOfVengeanceLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();
         }
 

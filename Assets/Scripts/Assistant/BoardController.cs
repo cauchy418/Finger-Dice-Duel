@@ -530,33 +530,8 @@ namespace FingerDiceDuel.Assistant
             _pendingGambleRoll = GamblerLogic.Roll(GambleRng);
             LastGambleRoll = _pendingGambleRoll;
 
-            HandEffectType effect = GamblerLogic.EffectOf(_pendingGambleRoll);
-            bool isAttack = effect == HandEffectType.Attack4
-                            || effect == HandEffectType.Attack6
-                            || effect == HandEffectType.Attack8;
-
-
-
-            if (!isAttack || _game.WillSuppressOperationEffects(ActivePlayer))
-            {
-                _pendingIsAttack = false;
-                // 非攻击或预言压制：不需要选目标，直接结算
-                _selectedTarget = SelectedHand;   // 占位：赌博没有"被加数"
-                ExecuteResolvedTurn();
-                return true;
-            }
-
-            // 是攻击 -> 先让玩家选打谁
-            Phase = BoardPhase.ChoosingTargetPlayer;
-
-            if (!BeginTargetPlayerChoice())
-            {
-                // 没有可打的人 -> 放弃这次赌博（算用掉回合）
-                NoteGambleGaveUp();
-                GiveUpAttack();
-            }
-
-            return true;
+            if(TryOfferWarBlessingNine(_pendingGambleRoll,ContinueGambleAfterRoll))return true;
+            ContinueGambleAfterRoll();return true;
         }
 
         /// <summary>赌博没有合法攻击目标时的收尾（战报要说清是赌博）。</summary>
@@ -1252,6 +1227,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool BeginPreTargetChoicesIfAny()
         {
+            if (TryOfferWarBlessingNine()) return true;
             var provider = ActivePlayer?.Character as ITargetHandChoiceProvider;
             if (provider == null) return false;
             if (SelectedHand == null || _selectedTarget == null) return false;
@@ -1508,6 +1484,9 @@ namespace FingerDiceDuel.Assistant
         {
             if (Phase != BoardPhase.ChoosingStealTarget) return false;
             if (target == null || SelectedHand == null) return false;
+            if(!ActivePlayer.Owns(target)&&target.Value==9&&SelectedHand.Value>=9&&TryOfferWarBlessingNine(9,()=>{
+                Phase=BoardPhase.ChoosingStealTarget;CompleteSteal(target);
+            }))return true;
 
             // 不能偷自己
             if (ActivePlayer != null && ActivePlayer.Owns(target)) return false;
@@ -1960,41 +1939,7 @@ namespace FingerDiceDuel.Assistant
                         ActivePlayer, TargetPlayer ?? Defender,
                         SelectedHand, hand).IsAttack;
 
-                    // 第 ③ 步：运算源已经定了 -> 结果已知 -> 这时才能问得准确。
-                    // 牧师·生命领域运算出 4/6/8 时先问"当攻击还是当回复"。
-                    if (BeginPreTargetChoicesIfAny())
-                        return true;
-
-                    // 第 ③' 步：**纯回复**（运算出 9）—— 运算已结束，
-                    // 直接让人点一只手选治疗目标（点谁回谁），
-                    // 不再要求先确认一次目标玩家（玩家实测反馈多余）。
-                    if (TryEnterHealTargetChoice())
-                        return true;
-
-                    // 只有**运算结果会产生指向某人的效果**时才需要指定目标。
-                    //
-                    // 1 + 1 = 2（无效果）、或合出护盾（作用于自己）都不需要 ——
-                    // 否则每一次运算都会被追问"打谁"，纯属打扰（玩家实测反馈：
-                    // "战士·破阵者 1+1 运算出 2 都要求选择目标，会出现很多无意义询问"）。
-                    if (!NeedsTargetAfterOperation())
-                    {
-                        // 仍然记下目标玩家（多人模式要用这个概念），但不打断玩家
-                        CommitMove(hand);
-                        return true;
-                    }
-
-                    // 需要指定目标 -> 再走一步
-                    // <see cref="BoardPhase.ChoosingTargetPlayer"/>。
-                    // 1v1 也只有一个人可打，但仍然要求点这一次，
-                    // 免得多人模式上线后流程变形、玩家要重新学。
-                    Phase = BoardPhase.ChoosingTargetPlayer;
-                    bool hasTarget = BeginTargetPlayerChoice();
-                    Hint = !hasTarget
-                        ? $"没有可攻击的目标。请点右侧「放弃攻击」。"
-                        : $"已选择 {SideLabel(hand, Defender)}（{hand.Value}）参与运算，" +
-                          $"结果是 {_game.PreviewOperationResult(ActivePlayer,SelectedHand,hand)}。" +
-                          $"请再点一次 {TargetPlayer.Name} 的手牌，确认本次的目标是" +
-                          $"{TargetPlayer.Name}。";
+                    ContinueSelectedOperation();
                     return true;
 
                 case BoardPhase.ChoosingTargetPlayer:
@@ -2828,6 +2773,8 @@ namespace FingerDiceDuel.Assistant
 
             var context = DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
                                                    SelectedHand, _selectedTarget);
+
+            if (_game.WarBlessingNineAttack == true && context.IsAttack) return false;
 
             // ⚠️ 必须挂上"本回合已答"的查询 —— 牧师·生命领域的 4/6/8 靠它读
             // "玩家刚才选了回复还是攻击"（`ChoseToHeal` 的 AnsweredLookup 路径）。

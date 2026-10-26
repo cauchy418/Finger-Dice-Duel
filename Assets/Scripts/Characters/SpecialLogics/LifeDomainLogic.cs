@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                      IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (!context.IsAttack) return;      // 只有 4/6/8 有这一步（9 直接问回复目标）
+            if (!context.IsAttack || context.EffectiveResult==9 && context.Manager?.WarBlessingNineAttack==true) return; // 战恩9已明确放弃回复，不再重复询问。
 
             int heal = HealAmountFor(context.Effect);
             if (heal <= 0) return;
@@ -344,7 +344,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (target == null) return;
               int removed = target.Statuses.Count + target.Vulnerabilities.Count;
-            target.ClearStatuses();
+            target.ClearNegativeStatuses();
             target.Heal(amount);
             if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态");
         }

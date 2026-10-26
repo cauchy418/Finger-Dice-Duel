@@ -1,0 +1,45 @@
+{
+  "mode": "built-in image_gen",
+  "assets": [
+    {
+      "id": "war_blessing",
+      "source": "Art/Production/divine-oaths-v1/selected/Status/war_blessing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/war_blessing.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-2a8cca44-7739-4927-90e1-3fb9e882166b.png",
+      "sha256": "0b4f9cf6860fe2c3ca7e09f6bc469db4d21fefe40da06077192ef873bc908197",
+      "visibleSize": 448
+    },
+    {
+      "id": "bladesong",
+      "source": "Art/Production/divine-oaths-v1/selected/Effects/bladesong.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/bladesong.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-9e604505-2dc4-4b50-9800-8158083dbe3a.png",
+      "sha256": "c54f6d9d863a9b5437a95965c903945dfe79204c49c8c6972281a90d2a61967b",
+      "visibleSize": 448
+    },
+    {
+      "id": "paladin_oath_of_conquest",
+      "source": "Art/Production/divine-oaths-v1/selected/Subclasses/paladin_oath_of_conquest.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_conquest.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-6c1f8598-ed47-4631-a6a9-ccb6fbd3785b.png",
+      "sha256": "76161200411073f7b2b590f0493960cf41d726be60bdf1ab451ec722e4e0bacf",
+      "visibleSize": 480
+    },
+    {
+      "id": "paladin_oath_of_vengeance",
+      "source": "Art/Production/divine-oaths-v1/selected/Subclasses/paladin_oath_of_vengeance.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_vengeance.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-612a4e16-f79f-4a2d-9a72-b59e69e915e1.png",
+      "sha256": "dcede912660280a4ca72ee671594e0f14c917e12e95b3d3f412025aa3a49336c",
+      "visibleSize": 480
+    },
+    {
+      "id": "vow_of_enmity",
+      "source": "Art/Production/divine-oaths-v1/selected/Effects/vow_of_enmity.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Effects/vow_of_enmity.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-6ef9c81c-6560-4104-a66b-858adcf0d680.png",
+      "sha256": "1feccb91392de364b93bf4f12880b984430b0c96b7a3e4df999c1ac4a054bc78",
+      "visibleSize": 448
+    }
+  ]
+}

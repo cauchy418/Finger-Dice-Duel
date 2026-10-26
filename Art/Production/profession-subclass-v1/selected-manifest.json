@@ -419,6 +419,22 @@
       "source": "Art/Production/profession-subclass-v1/selected/Subclasses/warlock_the_hexblade.png",
       "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/warlock_the_hexblade.png",
       "sha256": "1a3e09d51c054e59f46afcbf1606f5b40f7fe81e5adb57f9247988d777ef9eda"
+    },
+    {
+      "id": "paladin_oath_of_conquest",
+      "source": "Art/Production/divine-oaths-v1/selected/Subclasses/paladin_oath_of_conquest.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_conquest.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-6c1f8598-ed47-4631-a6a9-ccb6fbd3785b.png",
+      "sha256": "76161200411073f7b2b590f0493960cf41d726be60bdf1ab451ec722e4e0bacf",
+      "visibleSize": 480
+    },
+    {
+      "id": "paladin_oath_of_vengeance",
+      "source": "Art/Production/divine-oaths-v1/selected/Subclasses/paladin_oath_of_vengeance.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/paladin_oath_of_vengeance.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-612a4e16-f79f-4a2d-9a72-b59e69e915e1.png",
+      "sha256": "dcede912660280a4ca72ee671594e0f14c917e12e95b3d3f412025aa3a49336c",
+      "visibleSize": 480
     }
   ]
 }

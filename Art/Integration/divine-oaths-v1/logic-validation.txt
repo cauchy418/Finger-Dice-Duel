@@ -1,0 +1,40 @@
+── DivineOathTests  (32 项)
+   PASS  Ai_blessed_nine_prefers_emergency_heal_and_attacks_at_full_health
+   PASS  Ai_blesses_known_teammates_and_marks_enemies
+   PASS  Ai_vow_retargets_from_distant_enemy_but_never_to_known_ally
+   PASS  Blessed_nine_attack_in_life_domain_dual_does_not_offer_heal_twice
+   PASS  Blessing_nine_attack_is_a_real_human_choice_and_uses_nine_base_damage
+   PASS  Blessing_nine_can_keep_healing_and_does_not_ask_for_an_attack_target
+   PASS  Blessing_nine_effective_theft_asks_human_and_defers_attack_normally
+   PASS  Blessing_nine_gamble_asks_human_before_selecting_attack_target
+   PASS  Conquest_decay_removes_only_one_owned_stack_and_never_negative
+   PASS  Conquest_defense_grows_once_after_whole_multi_hit_even_when_shield_blocks
+   PASS  Conquest_defensive_fear_compares_defense_not_attack
+   PASS  Conquest_grows_after_attack_and_fear_uses_starting_bonuses
+   PASS  Conquest_has_no_growth_without_five_and_broken_five_still_counts
+   PASS  Conquest_zero_damage_counts_but_cancel_follows_the_common_rule
+   PASS  Holy_light_clears_and_prevents_both_song_and_blessing
+   PASS  Life_heal_cleanses_negative_statuses_but_preserves_blessing
+   PASS  New_oath_states_and_vow_are_present_in_combat_icon_list
+   PASS  New_oaths_have_stats_identities_alignments_and_explicit_profiles
+   PASS  New_roles_advance_through_real_ai_controllers_in_all_battle_sizes
+   PASS  State_guide_separates_three_character_states_and_marker_page_has_no_song_duplicate
+   PASS  Vengeance_bonus_applies_to_each_segment_and_outside_target_is_minus_one
+   PASS  Vengeance_dead_mark_offers_optional_new_living_target
+   PASS  Vengeance_every_broken_shield_counts_and_other_breakers_do_not_trigger
+   PASS  Vengeance_human_can_transfer_before_incoming_attack
+   PASS  Vengeance_initial_target_is_required_and_cannot_be_self
+   PASS  Vengeance_marked_enemy_break_gives_optional_pure_operation_without_turn_advance
+   PASS  Vengeance_prepared_transfer_does_not_apply_when_attack_is_cancelled
+   PASS  War_and_oath_hooks_work_in_either_dual_position
+   PASS  War_blessed_nines_count_as_two_attacks_and_second_target_is_optional
+   PASS  War_blessing_refreshes_without_stacking_and_expires_normally
+   PASS  War_can_decline_all_blessings_without_prompting_a_second_time
+   PASS  War_zero_attack_digits_gives_no_prompt_and_9_without_blessing_does_not_count
+
+────────────────────────────────────────────────────────────
+通过 32 / 失败 0
+
+快速逻辑回归：通过1423／失败0；独立统计测试跳过7项。
+表现层：181个实际引擎脚本编译通过。
+真实引擎UI：81项检查通过。

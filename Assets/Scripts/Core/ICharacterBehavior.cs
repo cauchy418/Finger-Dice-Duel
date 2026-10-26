@@ -114,7 +114,7 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// **自己回合结束**通知（牧师·战争领域：本回合未发起攻击则清空加成）。
+    /// 固定普通攻击伤害（如光明领域的4点伤害）。
     ///
     /// 由 <see cref="GameManager.ResolveStatusTurnEnd"/> 在"该玩家的回合结束"
     /// （燃烧 / 状态递减之后）触发 —— 界面与无头两条路径都经过它，
@@ -126,6 +126,7 @@ namespace FingerDiceDuel.Core
         AttackDamageType NormalAttackType { get; }
     }
 
+    /// <summary>自己回合结束通知：征服之誓层数衰减、剑歌维持等，界面与无头共用。</summary>
     public interface ITurnEndHook
     {
         void OnTurnEnded(PlayerState owner, GameManager manager);

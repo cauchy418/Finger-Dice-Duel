@@ -158,8 +158,8 @@
         LightDomain = 31,
 
         /// <summary>
-        /// 牧师·战争领域：受到攻击（被选为目标即算）或发起攻击后攻防 +1/+1（可叠加）；
-        /// 自己回合结束时若本回合未发起过攻击，加成清零。距离 1 内钝击、外穿刺。
+        /// 牧师·战争领域：回合开始按攻击手数，为至多两名不同角色赋予战恩2回合；
+        /// 战恩攻防+1，9可改攻击。基础−1/−1，距离∞，1内钝击、1外穿刺。
         /// </summary>
         WarDomain = 32,
 
@@ -202,6 +202,8 @@
         SchoolOfEnchantment = 47,
         EldritchKnight = 48,
         Bladesinging = 49,
-        TheHexblade = 50
+        TheHexblade = 50,
+        OathOfConquest = 51,
+        OathOfVengeance = 52
     }
 }

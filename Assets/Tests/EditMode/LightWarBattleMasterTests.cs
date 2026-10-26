@@ -48,8 +48,8 @@ namespace FingerDiceDuel.Tests
         {
             Assert.AreEqual(0, CharacterDefinition.LightDomain.AttackBonus);
             Assert.AreEqual(-1, CharacterDefinition.LightDomain.DefenseBonus);
-            Assert.AreEqual(0, CharacterDefinition.WarDomain.AttackBonus);
-            Assert.AreEqual(0, CharacterDefinition.WarDomain.DefenseBonus);
+            Assert.AreEqual(-1, CharacterDefinition.WarDomain.AttackBonus);
+            Assert.AreEqual(-1, CharacterDefinition.WarDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.AttackBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.DefenseBonus);
             Assert.AreEqual(CharacterProfession.Find("cleric"), CharacterDefinition.LightDomain.Profession);
@@ -228,110 +228,49 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(17,a.Health);Assert.IsFalse(a.HasStatus(StatusEffect.HolyLight));
             var war=CharacterFactory.CreatePlayer("W",CharacterDefinition.WarDomain);
             var attack=new AttackContext(war,war,war.LeftHand,1){IsStatusDamage=true,IgnoreStatBonuses=true};
-            attack.Resolve(null,null);Assert.AreEqual(0,((WarDomainLogic)war.Character).WarStacks);
+            attack.Resolve(null,null);Assert.AreEqual(0,((WarDomainLogic)war.Character).SkillUseCount);
         }
 
         // ============================================================
         // 牧师·战争领域
         // ============================================================
 
-        [Test]
-        public void War_domain_separates_growth_and_applies_it_after_the_whole_attack()
+        [Test] public void War_domain_attacking_no_longer_grows_personal_stats()
         {
             var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out var foe,out _,out _);
-            var skill=(WarDomainLogic)war.Character;
-            var first=new AttackContext(war,foe,war.LeftHand,4,g);first.Resolve(g.ChoiceProviderB,g);
-            Assert.AreEqual(4,first.AppliedDamage,"首次攻击不提前获得新的攻击层");
-            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(0,skill.DefenseStacks);
-            var second=new AttackContext(foe,war,foe.LeftHand,4,g){HitCount=2};second.Resolve(g.ChoiceProviderA,g);
-            Assert.AreEqual(4,second.AppliedDamage,"多段期间不提前获得新防御层");
-            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(1,skill.DefenseStacks,"整次多段只涨一次防御");
-            var next=new AttackContext(foe,war,foe.LeftHand,4,g);next.Resolve(g.ChoiceProviderA,g);
-            Assert.AreEqual(3,next.AppliedDamage,"前一击所得防御从下一击生效");
-            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(2,skill.DefenseStacks);
-            var own=new AttackContext(war,foe,war.LeftHand,4,g);own.Resolve(g.ChoiceProviderB,g);
-            Assert.AreEqual(5,own.AppliedDamage);Assert.AreEqual(2,skill.AttackStacks);
+            var attack=new AttackContext(war,foe,war.LeftHand,4,g);attack.Resolve(g.ChoiceProviderB,g);
+            Assert.AreEqual(3,attack.AppliedDamage);Assert.AreEqual(-1,StatusRules.EffectiveAttackBonus(war));
+            var back=new AttackContext(foe,war,foe.LeftHand,4,g){HitCount=2};back.Resolve(g.ChoiceProviderA,g);
+            Assert.AreEqual(-1,StatusRules.EffectiveDefenseBonus(war));
         }
 
-        [Test]
-        public void War_domain_stacks_from_attacking_and_being_targeted()
+        [Test] public void War_domain_two_attack_hands_offer_two_different_blessing_targets()
         {
-            var game = Game(CharacterDefinition.WarDomain, CharacterDefinition.Blank,
-                            out var war, out var foe, out _, out _);
-            var logic = (WarDomainLogic)war.Character;
-
-            war.LeftHand.SetValue(1);
-            foe.LeftHand.SetValue(3);          // 1 + 3 = 4，发起攻击
-            game.ExecuteTurn(war, war.LeftHand, foe.LeftHand);
-            game.ResolveStatusTurnEnd(war);
-            Assert.AreEqual(1, logic.WarStacks, "发起攻击 +1。");
-            Assert.AreEqual(1, war.DynamicAttackBonus);
-            Assert.AreEqual(0, war.DynamicDefenseBonus);
-
-            war.RightHand.SetValue(5);
-            war.RightHand.SetShieldState(ShieldState.Formed);
-            foe.LeftHand.SetValue(3);          // 3 + 5 = 8，打战争领域
-            game.ExecuteTurn(foe, foe.LeftHand, war.RightHand);
-            game.ResolveStatusTurnEnd(foe);
-            Assert.AreEqual(2, logic.WarStacks, "被选为目标即 +1（盾挡也算）。");
-            Assert.AreEqual(1, war.DynamicAttackBonus);
-            Assert.AreEqual(1, war.DynamicDefenseBonus);
+            var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out var foe,out _,out _);
+            war.LeftHand.SetValue(4);war.RightHand.SetValue(8);
+            var requests=new System.Collections.Generic.List<WizardChoice>();g.DeferWizardChoice=q=>{requests.Add(q);return true;};
+            g.BeginTurn();Assert.AreEqual(1,requests.Count);Assert.True(requests[0].TargetsPlayer);
+            requests[0].Choose(war.LeftHand);Assert.AreEqual(2,requests.Count);
+            foreach(var candidate in requests[1].Candidates)Assert.False(ReferenceEquals(candidate,war.LeftHand));requests[1].Choose(foe.LeftHand);
+            Assert.True(war.HasStatus(StatusEffect.WarBlessing));Assert.True(foe.HasStatus(StatusEffect.WarBlessing));
+            Assert.AreEqual(2,((WarDomainLogic)war.Character).SkillUseCount);
         }
 
-        [Test]
-        public void War_domain_gains_a_stack_when_targeted_even_with_zero_damage()
+        [Test] public void War_domain_being_targeted_does_not_grant_a_blessing()
         {
-            var game = Game(CharacterDefinition.Champion, CharacterDefinition.WarDomain,
-                            out var attacker, out var war, out _, out _);
-            war.LeftHand.SetValue(5);
-            war.LeftHand.SetShieldState(ShieldState.Formed);
-
-            var ctx = new AttackContext(attacker, war, attacker.LeftHand, 4)
-            {
-                AttackType = AttackDamageType.Slashing,
-                IgnoreStatBonuses = true,
-            };
-            ctx.Resolve(new SimpleChoiceProvider(), game);
-            Assert.IsTrue(ctx.WasBlocked);
-            Assert.AreEqual(0, ctx.AppliedDamage);
-            Assert.AreEqual(1, ((WarDomainLogic)war.Character).WarStacks,
-                "零伤害被选为目标也算「受到攻击」。");
+            var g=Game(CharacterDefinition.Champion,CharacterDefinition.WarDomain,out var a,out var war,out _,out _);
+            war.LeftHand.SetValue(5);war.LeftHand.SetShieldState(ShieldState.Formed);
+            var hit=new AttackContext(a,war,a.LeftHand,4,g);hit.Resolve(g.ChoiceProviderB,g);
+            Assert.True(hit.WasBlocked);Assert.False(war.HasStatus(StatusEffect.WarBlessing));
+            Assert.AreEqual(-1,StatusRules.EffectiveDefenseBonus(war));
         }
 
-        [Test]
-        public void War_domain_clears_stacks_only_when_own_turn_ends_without_an_attack()
+        [Test] public void War_blessing_expires_after_two_owner_turns_even_without_attack()
         {
-            var game = Game(CharacterDefinition.WarDomain, CharacterDefinition.Blank,
-                            out var war, out var foe, out _, out _);
-            var logic = (WarDomainLogic)war.Character;
-
-            // 回合 1（战争领域）：发起攻击 -> 回合结束不清
-            game.BeginTurn();                   // OnTurnStarted 重置"本回合是否攻击过"
-            war.LeftHand.SetValue(1);
-            foe.LeftHand.SetValue(3);          // 1 + 3 = 4
-            game.ExecuteTurn(war, war.LeftHand, foe.LeftHand);
-            game.ResolveStatusTurnEnd(war);
-            Assert.AreEqual(1, logic.WarStacks, "攻击过的回合保留层数。");
-
-            // 回合 2（对手）：打战争领域 -> 被选为目标 +1
-            game.BeginTurn();
-            war.RightHand.SetValue(5);
-            war.RightHand.SetShieldState(ShieldState.Formed);
-            foe.LeftHand.SetValue(3);          // 3 + 5 = 8
-            game.ExecuteTurn(foe, foe.LeftHand, war.RightHand);
-            game.ResolveStatusTurnEnd(foe);
-            Assert.AreEqual(2, logic.WarStacks, "挨打也是成长。");
-
-            // 回合 3（战争领域）：回复 9（未发起攻击）-> 回合结束清零
-            game.BeginTurn();                   // 重置"本回合是否攻击过"
-            war.TakeDamage(6);
-            war.LeftHand.SetValue(8);
-            foe.RightHand.SetValue(1);         // 8 + 1 = 9 回复
-            game.ExecuteTurn(war, war.LeftHand, foe.RightHand);
-            game.ResolveStatusTurnEnd(war);
-            Assert.AreEqual(0, logic.WarStacks, "本回合未发起攻击，回合结束清零。");
-            Assert.AreEqual(0, war.DynamicAttackBonus);
-            Assert.AreEqual(0, war.DynamicDefenseBonus);
+            var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out _,out _,out _);
+            war.ApplyStatus(StatusEffect.WarBlessing,2,war);Assert.AreEqual(0,StatusRules.EffectiveAttackBonus(war));
+            g.ResolveStatusTurnEnd(war);Assert.AreEqual(1,war.StatusTurnsLeft(StatusEffect.WarBlessing));
+            g.ResolveStatusTurnEnd(war);Assert.False(war.HasStatus(StatusEffect.WarBlessing));Assert.AreEqual(-1,StatusRules.EffectiveAttackBonus(war));
         }
 
         [Test]
@@ -360,19 +299,12 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(AttackDamageType.Piercing, far.AttackType, "距离 1 外穿刺。");
         }
 
-        [Test]
-        public void War_domain_match_reset_clears_stacks()
+        [Test] public void War_domain_reset_clears_blessing_and_use_counter()
         {
-            var game = Game(CharacterDefinition.WarDomain, CharacterDefinition.Blank,
-                            out var war, out var foe, out _, out _);
-            war.LeftHand.SetValue(1);
-            foe.LeftHand.SetValue(3);
-            game.ExecuteTurn(war, war.LeftHand, foe.LeftHand);
-            Assert.AreEqual(1, ((WarDomainLogic)war.Character).WarStacks);
-
-            game.ResetMatch();
-            Assert.AreEqual(0, ((WarDomainLogic)war.Character).WarStacks, "重开清零。");
-            Assert.AreEqual(0, war.DynamicAttackBonus);
+            var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out _,out _,out _);
+            war.LeftHand.SetValue(4);var requests=new System.Collections.Generic.List<WizardChoice>();g.DeferWizardChoice=q=>{requests.Add(q);return true;};
+            g.BeginTurn();requests[0].Choose(war.LeftHand);Assert.AreEqual(1,((WarDomainLogic)war.Character).SkillUseCount);
+            g.ResetMatch();Assert.False(war.HasStatus(StatusEffect.WarBlessing));Assert.AreEqual(0,((WarDomainLogic)war.Character).SkillUseCount);
         }
 
         // ============================================================
@@ -609,9 +541,9 @@ namespace FingerDiceDuel.Tests
                 foe2.LeftHand.SetValue(3);
                 var warGame = new GameManager(war, foe2, new SimpleChoiceProvider(), new SimpleChoiceProvider());
                 warGame.ExecuteTurn(war, war.LeftHand, foe2.LeftHand);
-                Assert.AreEqual(1,
-                    CharacterBehaviors.FirstImplementer<WarDomainLogic>(war).WarStacks,
-                    "容器发起的攻击让战争领域部件叠层。");
+                Assert.AreEqual(0,
+                    CharacterBehaviors.FirstImplementer<WarDomainLogic>(war).SkillUseCount,
+                    "战争领域已改为回合开始施恩，普通攻击不再叠层。");
 
                 // 光明领域 + 剑士：剑士追加攻击（特殊攻击）不被改写成 4、也不挂圣光
                 var pair = MechanicsPair(

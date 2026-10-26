@@ -27,8 +27,8 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_all_twenty_one_statuses()
         {
-            Assert.AreEqual(21, StatusNames.AllStatuses.Length,
-                "包含圣光、束缚和油腻，共21种。");
+            Assert.AreEqual(22, StatusNames.AllStatuses.Length,
+                "包含圣光、战恩等22种计时状态；剑歌按独立技能维持。");
         }
 
         [Test]

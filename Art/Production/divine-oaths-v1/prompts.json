@@ -1,0 +1,30 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "id": "war_blessing",
+      "prompt": "Production game asset, painterly dark fantasy, matching our existing aged-gold DnD tabletop icon set. a square dark-fantasy RPG CHARACTER STATUS ICON, subject a single silver straight longsword crossing a dark iron shield, warm amber divine war blessing radiating from a small sunburst above the hilt, restrained red cloth ribbon, conveys temporary protection and martial favor. Centered symmetrical clean readable composition, visibly hand-painted realistic metal, rough brush texture, high-detail silver/iron subject against charcoal stone inset. Square thin ornate worn ANTIQUE GOLD frame with elegant diamond corner ornaments, square charcoal inset entirely opaque, only exterior transparent. Whole outer frame fully visible with generous transparent margin all sides, uniform consistent framing, 1:1 square canvas. No text, no labels, no letters, no watermark, no UI mockup, no collage. Distinct silhouette readable at 64px. Use actual transparent alpha outside the frame, no checkerboard painted into art.",
+      "transparent_background": true
+    },
+    {
+      "id": "bladesong",
+      "prompt": "Production game asset, painterly dark fantasy, matching our existing aged-gold DnD tabletop icon set. a square dark-fantasy RPG CHARACTER STATUS ICON, subject ONE elegant silver STRAIGHT double-edged longsword pointing upward, thin luminous azure and violet musical arcane ribbons circling the blade, subtle tiny magical motes, conveys bladesong magical sword dance; absolutely no curved scimitars and no pair of swords. Centered symmetrical clean readable composition, visibly hand-painted realistic metal, rough brush texture, high-detail silver/iron subject against charcoal stone inset. Square thin ornate worn ANTIQUE GOLD frame with elegant diamond corner ornaments, square charcoal inset entirely opaque, only exterior transparent. Whole outer frame fully visible with generous transparent margin all sides, uniform consistent framing, 1:1 square canvas. No text, no labels, no letters, no watermark, no UI mockup, no collage. Distinct silhouette readable at 64px. Use actual transparent alpha outside the frame, no checkerboard painted into art.",
+      "transparent_background": true
+    },
+    {
+      "id": "paladin_oath_of_conquest",
+      "prompt": "Production game asset, painterly dark fantasy, matching our existing aged-gold DnD tabletop icon set. a round dark-fantasy RPG PALADIN SUBCLASS EMBLEM, subject an imposing black iron crown hovering above ONE upright silver straight longsword planted in a cracked iron shield, worn crimson banner folds behind, restrained ruby light, stern dominance and fear; no faces or people. Centered symmetrical clean readable composition, visibly hand-painted realistic metal, rough brush texture, high-detail silver/iron subject against charcoal stone inset. Circular thin ornate worn ANTIQUE GOLD double ring with eight restrained diamond cardinal ornaments, circular inset entirely opaque, only exterior transparent. Whole outer frame fully visible with generous transparent margin all sides, uniform consistent framing, 1:1 square canvas. No text, no labels, no letters, no watermark, no UI mockup, no collage. Distinct silhouette readable at 64px. Use actual transparent alpha outside the frame, no checkerboard painted into art.",
+      "transparent_background": true
+    },
+    {
+      "id": "paladin_oath_of_vengeance",
+      "prompt": "Production game asset, painterly dark fantasy, matching our existing aged-gold DnD tabletop icon set. a round dark-fantasy RPG PALADIN SUBCLASS EMBLEM, subject ONE upright silver straight longsword in front of dark wing-like raven feathers and broken black chains, deep burgundy oath ribbon around hilt, small red ember at the sword guard, solemn relentless sworn vengeance; distinct from a crown or sun shield. Centered symmetrical clean readable composition, visibly hand-painted realistic metal, rough brush texture, high-detail silver/iron subject against charcoal stone inset. Circular thin ornate worn ANTIQUE GOLD double ring with eight restrained diamond cardinal ornaments, circular inset entirely opaque, only exterior transparent. Whole outer frame fully visible with generous transparent margin all sides, uniform consistent framing, 1:1 square canvas. No text, no labels, no letters, no watermark, no UI mockup, no collage. Distinct silhouette readable at 64px. Use actual transparent alpha outside the frame, no checkerboard painted into art.",
+      "transparent_background": true
+    },
+    {
+      "id": "vow_of_enmity",
+      "prompt": "Production game asset, painterly dark fantasy, matching our existing aged-gold DnD tabletop icon set. a square dark-fantasy RPG TARGET MARK STATUS ICON, subject a silver straight sword-tip piercing a crimson arcane targeting ring, small oath-chain loops framing the red rune circle, intense ruby center on black iron, conveys one specific vowed enemy, no letters. Centered symmetrical clean readable composition, visibly hand-painted realistic metal, rough brush texture, high-detail silver/iron subject against charcoal stone inset. Square thin ornate worn ANTIQUE GOLD frame with elegant diamond corner ornaments, square charcoal inset entirely opaque, only exterior transparent. Whole outer frame fully visible with generous transparent margin all sides, uniform consistent framing, 1:1 square canvas. No text, no labels, no letters, no watermark, no UI mockup, no collage. Distinct silhouette readable at 64px. Use actual transparent alpha outside the frame, no checkerboard painted into art.",
+      "transparent_background": true
+    }
+  ]
+}

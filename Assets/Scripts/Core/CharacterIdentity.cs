@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
-    /// <summary>50个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
+    /// <summary>52个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
     public sealed class CharacterIdentity
     {
         public string LegacyId { get; }
@@ -65,6 +65,8 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("enchantment", "wizard_school_of_enchantment", "wizard", "惑控学派", "School of Enchantment"),
             new CharacterIdentity("eldritch_knight", "fighter_eldritch_knight", "fighter", "奥法骑士", "Eldritch Knight"),
             new CharacterIdentity("bladesinging", "wizard_bladesinging", "wizard", "剑咏者", "Bladesinging"),
+            new CharacterIdentity("conquest", "paladin_oath_of_conquest", "paladin", "征服之誓", "Oath of Conquest"),
+            new CharacterIdentity("vengeance", "paladin_oath_of_vengeance", "paladin", "复仇之誓", "Oath of Vengeance"),
             new CharacterIdentity("hexblade", "warlock_the_hexblade", "warlock", "咒剑", "The Hexblade"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();

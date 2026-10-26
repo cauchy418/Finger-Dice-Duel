@@ -246,14 +246,14 @@ namespace FingerDiceDuel.Core
                 new GuideEntry("ki", 0x82D7C9, "气：武僧·散打宗／四象宗的技能资源，上限6点。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
                 new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark"),
                 new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
+                new GuideEntry("vow_of_enmity",0xC34D50,"仇敌誓言：复仇之誓的单一目标标记；本人对其每段伤害+1，对其他角色−1。仇敌每破一盾，可额外纯运算一次。无固定回合数，受攻击或仇敌死亡时可选择转移。",resourceKey:"Effects/vow_of_enmity"),
                 new GuideEntry("hexblades_curse",0xA05FDD,"咒剑诅咒：咒剑持7时可选择或移动一个目标，持续该目标2回合；来源每段攻击+2，亲自击杀后召唤幽灵。",resourceKey:"Effects/hexblades_curse"),
                 new GuideEntry("polymorph",0x58BEAD,"变羊：变化学派的2回合形态；独立10生命、攻防−2/−2、距离1，无原技能。解除恢复原生命，击破的溢伤扣原生命。",resourceKey:"Status/polymorph"),
-                new GuideEntry("bladesong",0x58A5EB,"剑歌：剑咏者双手和等于体力可进入，选择元素攻击、攻防+1；后续自身回合须攻击、合盾或实际回复维持。",resourceKey:"Subclasses/wizard_bladesinging"),
                 new GuideEntry("hexbound_specter",0x58BEAD,"咒缚幽灵：10生命，继承死者手值与座位、占位计距，从下轮开始AI行动；不计胜负人数。暗蚀/毒素永久免疫，五元素永久抗性。",resourceKey:"Units/hexbound_specter") };
             var lines = new List<string>(); foreach(var entry in entries) lines.Add(entry.Text);
             return new GuideSheet("角色标记", "Character Marks", lines, true,
                 new List<GuideGroup> { new GuideGroup("角色专属资源与标记", entries) },
-                "此页均为角色技能的资源、标记或形态，不计入21种负面状态；各自按对应技能规则获得、消耗和显示。");
+                "此页均为角色技能的资源、标记或形态，与状态一览中的负面／角色状态分开显示；各自按对应技能规则获得、消耗和显示。");
         }
 
         public static GuideSheet DamageTypes()
@@ -312,26 +312,18 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static GuideSheet Statuses()
         {
-            var lines = new List<string>(StatusNames.AllStatuses.Length);
-            var entries = new List<GuideEntry>(StatusNames.AllStatuses.Length);
-
-            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
+            var lines=new List<string>();var negative=new List<GuideEntry>();var character=new List<GuideEntry>();
+            foreach(var status in StatusNames.AllStatuses)
             {
-                StatusEffect st = StatusNames.AllStatuses[i];
-
-                // 只用"名称：效果"，不带字符符号（图标由 PNG 负责）
-                lines.Add(StatusNames.Of(st) + "：" + StatusNames.Describe(st));
-
-                entries.Add(new GuideEntry(StatusNames.IconKeyOf(st),
-                                           StatusNames.StatusColorOf(st),
-                                           StatusNames.Of(st) + "：" + StatusNames.Describe(st), st));
+                string text=StatusNames.Of(status)+"："+StatusNames.Describe(status);lines.Add(text);
+                var entry=new GuideEntry(StatusNames.IconKeyOf(status),StatusNames.StatusColorOf(status),text,status);
+                if(status==StatusEffect.HolyLight||status==StatusEffect.WarBlessing)character.Add(entry);else negative.Add(entry);
             }
-
-            return new GuideSheet("状态一览", "Status Effects", lines, twoColumn: false,
-                                  groups: new List<GuideGroup>
-                                  {
-                                      new GuideGroup("负面状态", entries),
-                                  }, note: "共21种负面状态，通常持续目标自己的2个回合；重复施加刷新时间、不叠加强度。覆霜到期附2回合潮湿。油腻运算后触发的倒伏保留两个后续自身回合，跳过或赌博不作油腻判定。");
+            string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣光立即清除并阻止重新进入。";
+            character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
+            return new GuideSheet("状态一览","Status Effects",lines,false,
+                new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
+                "负面状态20种；角色状态为圣光、剑歌、战恩。计时状态通常持续目标自己的2个回合，重复施加刷新、不叠加。圣光同时清除并阻止剑歌与战恩；勇气战歌、奥术屏障等独立资源不受此影响。覆霜到期附潮湿；油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

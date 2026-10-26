@@ -25,6 +25,7 @@ namespace FingerDiceDuel.Core
             if(p?.IsPolymorphed==true)return -2;
             if(p?.IsSummon==true)return 0;
             int bonus = p?.Character?.AttackBonus ?? 0;
+            if (p != null && p.HasStatus(StatusEffect.WarBlessing)) bonus++;
             if (p != null && p.HasStatus(StatusEffect.Panic)) bonus -= PanicAttackPenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
@@ -42,6 +43,7 @@ namespace FingerDiceDuel.Core
             if(p?.IsPolymorphed==true)return -2;
             if(p?.IsSummon==true)return -1;
             int bonus = p?.Character?.DefenseBonus ?? 0;
+            if (p != null && p.HasStatus(StatusEffect.WarBlessing)) bonus++;
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 

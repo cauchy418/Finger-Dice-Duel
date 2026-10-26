@@ -214,6 +214,12 @@ namespace FingerDiceDuel.Core
         /// <summary>被闪避掉的段数（游荡者·风流剑客每段消耗一只"1"）。</summary>
         public int DodgedHits { get; private set; }
 
+        private readonly Dictionary<PlayerState,(int Attack,int Defense)> _startBonuses=new Dictionary<PlayerState,(int,int)>();
+        private void SnapshotBonuses(PlayerState player)
+        {if(player!=null&&!_startBonuses.ContainsKey(player))_startBonuses[player]=(StatusRules.EffectiveAttackBonus(player),StatusRules.EffectiveDefenseBonus(player));}
+        public int AttackBonusAtStart(PlayerState player)=>player!=null&&_startBonuses.TryGetValue(player,out var value)?value.Attack:0;
+        public int DefenseBonusAtStart(PlayerState player)=>player!=null&&_startBonuses.TryGetValue(player,out var value)?value.Defense:0;
+
         public AttackContext(PlayerState attacker, PlayerState defender, Hand sourceHand, int rawDamage, GameManager manager)
             :this(attacker,defender,sourceHand,rawDamage) { Manager=manager; }
 
@@ -239,6 +245,7 @@ namespace FingerDiceDuel.Core
         public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
         {
             Manager = manager;
+            _startBonuses.Clear();SnapshotBonuses(Attacker);SnapshotBonuses(Defender);
             // 0. **最早结算：取消攻击**（邪术师·至高妖精）。
             //
             //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
@@ -256,7 +263,7 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
-            // 0b. 通用目标观察通知；战争领域的属性成长在整次攻击结束后处理。
+            // 0b. 通用目标观察通知；征服之誓的属性成长在整次攻击结束后处理。
             //
             //     玩家口径：被选中即算"受到攻击"（闪避 / 盾挡 / 零伤害都算），
             //     被取消不算（上面已经 return）。转移 / 代挡发生时，
@@ -321,7 +328,7 @@ namespace FingerDiceDuel.Core
             if (!ReferenceEquals(intendedDefender, Defender))
             {
                 defenderChoice = manager.GetChoiceProvider(Defender);
-                // 转移 / 代挡后的**实际承受者**同样"受到攻击"（战争领域）。
+                // 转移 / 代挡后的**实际承受者**同样"受到攻击"（征服之誓等）。
                 NotifyTargeted(Defender, manager);
             }
 
@@ -619,13 +626,14 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 通知通用的"被选为攻击目标"观察者（不用于战争领域的结算后成长）。
+        /// 通知通用的"被选为攻击目标"观察者（不用于征服之誓的结算后成长）。
         /// 经 <see cref="CharacterBehaviors.Implementers{T}"/> 遍历，双将部件同样收到。
         /// </summary>
         private void NotifyTargeted(PlayerState defender, GameManager manager)
         {
             if (IsStatusDamage || defender == null || !defender.IsAlive || manager == null) return;
 
+            SnapshotBonuses(defender);
             foreach (var hook in CharacterBehaviors.Implementers<IAttackTargetedHook>(defender))
                 hook.OnTargetedByAttack(defender, this, manager);
         }
@@ -1111,7 +1119,7 @@ namespace FingerDiceDuel.Core
                 return false;
 
             ConsumedShield = chosen;
-            manager?.BreakShieldAndNotify(Defender, chosen);
+            manager?.BreakShieldAndNotify(Defender, chosen, Attacker);
             return true;
         }
 

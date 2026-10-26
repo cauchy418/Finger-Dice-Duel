@@ -1,0 +1,81 @@
+PASS resource Status/war_blessing
+PASS resource Effects/bladesong
+PASS resource Effects/vow_of_enmity
+PASS resource Subclasses/paladin_oath_of_conquest
+PASS resource Subclasses/paladin_oath_of_vengeance
+PASS 52 roles in selection
+PASS class selection is first
+PASS choose paladin class
+PASS six paladin subclasses visible
+PASS raycast Card50
+PASS conquest selection callback
+PASS new oaths selectable
+PASS codex has 52 roles
+PASS codex entry paladin_oath_of_conquest
+PASS correct detail paladin_oath_of_conquest
+PASS codex body text fits paladin_oath_of_conquest/Body
+PASS codex entry paladin_oath_of_vengeance
+PASS correct detail paladin_oath_of_vengeance
+PASS codex body text fits paladin_oath_of_vengeance/Body
+PASS codex entry cleric_war_domain
+PASS correct detail cleric_war_domain
+PASS codex body text fits cleric_war_domain/Body
+PASS manual separates negative and character states
+PASS manual icon holy_light
+PASS manual icon bladesong
+PASS manual icon war_blessing
+PASS manual text fits GuideTitle
+PASS manual text fits GuideNote
+PASS manual text fits GroupTitle
+PASS manual text fits Entry_resonance
+PASS manual text fits Entry_acid
+PASS manual text fits Entry_poison
+PASS manual text fits Entry_blind
+PASS manual text fits Entry_decay
+PASS manual text fits Entry_burn
+PASS manual text fits Entry_frost
+PASS manual text fits Entry_shock
+PASS manual text fits Entry_panic
+PASS manual text fits Entry_bleed
+PASS manual text fits Entry_wet
+PASS manual text fits Entry_frozen
+PASS manual text fits Entry_stunned
+PASS manual text fits Entry_limp
+PASS manual text fits Entry_knocked_down
+PASS manual text fits Entry_charm
+PASS manual text fits Entry_disabled
+PASS manual text fits Entry_dizzy
+PASS manual text fits Entry_restrained
+PASS manual text fits Entry_greased
+PASS manual text fits GroupTitle
+PASS manual text fits Entry_holy_light
+PASS manual text fits Entry_bladesong
+PASS manual text fits Entry_war_blessing
+PASS blessing chooses players
+PASS self is valid blessing target
+PASS raycast SkillChoice0
+PASS self blessing applied
+PASS second blessing excludes selected player
+PASS raycast DeclineButton
+PASS can stop after one blessing
+PASS compute blessed nine
+PASS nine shows attack and healing options
+PASS raycast WizardOption0
+PASS nine attack still selects target
+PASS confirm blessed nine attack
+PASS war blessing offsets base -1 then nine damage
+PASS blessed nine card states attack or heal
+PASS conquest stacks shown in stats
+PASS conquest fear shown
+PASS song and blessing use dedicated battle icons
+PASS holy light removes both battle icons
+PASS holy light remains visible
+PASS initial vow mandatory human choice
+PASS raycast SkillChoice0
+PASS vow icon displayed on enemy
+PASS marked enemy breaks shield
+PASS reactive operation chooses source on battlefield
+PASS no long hand-option button list
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS extra operation changes only hand value

@@ -450,18 +450,12 @@ namespace FingerDiceDuel.Core
             LightDomainId, "牧师·光明领域", SpecialLogicType.LightDomain,
             attackBonus: 0, defenseBonus: -1,
             englishName: "Light Domain",
-            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面状态与全部抗性（勇气战歌与奥术屏障除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
+            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面／角色状态（含剑歌与战恩）及临时抗性／易伤／免疫（勇气战歌与奥术屏障除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
 
-        /// <summary>
-        /// 牧师·战争领域（2026-10-26）：攻 0 / 防 0，攻击距离无限，守序中立。
-        /// 发起攻击后攻击+1，受到攻击后防御+1（分别叠加）；
-        /// 自己回合结束时若本回合未发起过攻击，加成清零。
-        /// </summary>
+        /// <summary>战争领域：回合开始按攻击手数赋予战恩，基础−1/−1。</summary>
         public static CharacterDefinition WarDomain { get; } = new CharacterDefinition(
-            WarDomainId, "牧师·战争领域", SpecialLogicType.WarDomain,
-            attackBonus: 0, defenseBonus: 0,
-            englishName: "War Domain",
-            description: "发起攻击后攻击+1，受到攻击后防御+1、分别叠加（闪避/盾挡/零伤害也算，取消不算；加成在整次攻击结算后生效）；自己回合结束时若本回合未发起过攻击，立即清空全部加成。距离1内为钝击伤害、1以外为穿刺伤害。攻防0/0，攻击距离∞。");
+            WarDomainId,"牧师·战争领域",SpecialLogicType.WarDomain,attackBonus:-1,defenseBonus:-1,englishName:"War Domain",
+            description:"回合开始每有一只手为攻击数字，可选择一名角色获得战恩2回合；至多两名不同目标，可选自己、少选或不发动。战恩攻防+1，9可放弃回复改为9点基础伤害攻击；不叠加，重复施加刷新。战恩下9也计作攻击数字。距离∞，1内钝击、1外穿刺，攻防−1/−1。");
 
         /// <summary>
         /// 战士·战斗大师（2026-10-23）：攻 0 / 防 0，攻击距离 2，守序中立。
@@ -541,6 +535,11 @@ namespace FingerDiceDuel.Core
         public const string TheHexbladeId = "warlock_the_hexblade";
         public static CharacterDefinition TheHexblade {get;} = new CharacterDefinition(TheHexbladeId,"邪术师·咒剑",SpecialLogicType.TheHexblade,attackBonus:1,defenseBonus:-1,englishName:"The Hexblade",description:"回合开始持7可施加或移动2回合诅咒，对其每段攻击+2；本人击杀诅咒目标召唤10生命咒缚幽灵，继承死者手值与座位，下一轮行动，占位计距但不计胜负人数。距离2，挥砍。");
 
+        public const string OathOfConquestId="paladin_oath_of_conquest";
+        public static CharacterDefinition OathOfConquest {get;}=new CharacterDefinition(OathOfConquestId,"圣武士·征服之誓",SpecialLogicType.OathOfConquest,attackBonus:0,defenseBonus:0,englishName:"Oath of Conquest",description:"攻击开始持5则整次攻击后攻击+1；被攻击开始持5则结算后防御+1。回合结束未发起攻击则技能攻击加成−1，未持5则技能防御加成−1，最低0。按攻击开始时实际数值，攻击加成高于受击者或被防御加成低于自己的角色攻击，结算后令对方恐慌2回合。距离1，钝击，攻防0/0。");
+        public const string OathOfVengeanceId="paladin_oath_of_vengeance";
+        public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+1，对其他角色−1。仇敌每打碎自己一面盾（包括连锁破盾），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
+
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -555,7 +554,8 @@ namespace FingerDiceDuel.Core
             CircleOfTheMoon, CircleOfTheStars,
             CircleOfTheLand, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, SchoolOfIllusion,
-            SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade
+            SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
+            OathOfConquest, OathOfVengeance
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

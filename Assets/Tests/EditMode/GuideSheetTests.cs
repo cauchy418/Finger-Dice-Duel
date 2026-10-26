@@ -114,14 +114,17 @@ namespace FingerDiceDuel.Tests
             // ⚠️ 玩家要求："状态一览里同步用 png 替换掉字符"——
             //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
-            Assert.AreEqual(1, s.Groups.Count);
-            Assert.AreEqual(21, s.Groups[0].Entries.Count, "21种负面状态，含束缚、油腻。");
+            Assert.AreEqual(2, s.Groups.Count);
+            Assert.AreEqual(20, s.Groups[0].Entries.Count, "20种负面状态。");
+            Assert.AreEqual(3, s.Groups[1].Entries.Count, "圣光、剑歌和战恩属于角色状态。");
             var uniqueKeys = new HashSet<string>();
 
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
-                GuideEntry e = s.Groups[0].Entries[i];
+                GuideEntry e = null;
+                foreach(var group in s.Groups)foreach(var entry in group.Entries)if(entry.Status==st)e=entry;
+                Assert.IsTrue(e!=null,"两组中必须能找到真实状态："+st);
                 Assert.AreEqual(st, e.Status, "手册必须保留真实状态，不能用重复的伤害图标键推测。");
                 Assert.IsTrue(uniqueKeys.Add(e.IconKey), "不同状态不能共用手册资源键：" + e.IconKey);
                 Assert.AreEqual(StatusNames.IconKeyOf(st), e.IconKey);
@@ -244,7 +247,7 @@ namespace FingerDiceDuel.Tests
             GuideSheet st2 = GuideSheets.Statuses();
 
             // 状态页现在是"名称：效果"的**纯文字**（图标交给 PNG）
-            for (int i = 0; i < st2.Lines.Count; i++)
+            for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
                 Assert.AreEqual(StatusNames.Of(st) + "：" + StatusNames.Describe(st),

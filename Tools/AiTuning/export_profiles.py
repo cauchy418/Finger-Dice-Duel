@@ -3,7 +3,8 @@ import csv,re
 root=Path(__file__).resolve().parents[2]
 rows=list(csv.DictReader((root/'Tools/AiTuning/results.tsv').open(encoding='utf-8-sig'),delimiter='\t'))
 assert len(rows)==100 and len({(r['mode'],r['id']) for r in rows})==100
-accepted=[r for r in rows if r['accepted']=='True']
+# War Domain was redesigned on 2026-10-27; old tuning evidence no longer applies.
+accepted=[r for r in rows if r['accepted']=='True' and r['id']!='cleric_war_domain']
 code='''using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
@@ -26,7 +27,9 @@ for mode,count in [('1v1',2),('2v2',4)]:
 code+='        }\n    }\n}\n'
 (root/'Assets/Scripts/Assistant/ValidatedAiTuning.cs').write_bytes(b'\xef\xbb\xbf'+code.replace('\n','\r\n').encode())
 games=sum(int(r['games']) for r in rows)
-s=f'''# 50角色 AI 权重对照（2026-10-26）
+s=f'''# 50角色 AI 权重对照（2026-10-26，历史采样）
+
+战争领域2026-10-27重做为战恩，旧采纳项在生产停用；当前52子职，两个新誓言没有本次采样数据。当前策略见[全角色清单](../../Docs/ai-strategy-reference.md)。
 
 共{games:,}场实际 BoardController 对局，逐一覆盖50角色×1v1／2v2。每格10种配置各128场训练，选出训练最高者后，另用320个固定种子对照基线；训练与留出种子独立，同一对照共享阵容、座位、起手与各随机源。先修复运算后手值读取、借用队友数字误罚和队友技能选择；这些修复为两组共有。
 

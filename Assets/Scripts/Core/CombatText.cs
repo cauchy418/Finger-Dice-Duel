@@ -21,6 +21,7 @@
                 case HandEffect.OpenHandTechnique: skill="散打"; action="选择共鸣、倒伏、震慑或保留气点。"; break;
                 case HandEffect.FourElementsTechnique: skill="四象元素"; action="选择本次元素或保留气点。"; break;
                 case HandEffect.TheFiendPact: skill="妖魔契约"; action="耗尽虚假生命令目标失能／恐慌2回合，或保留虚假生命。"; break;
+                case HandEffect.VengeanceRetarget: skill="仇敌誓言"; action="可将标记转移到本次攻击者，或保留原标记。"; break;
                 case HandEffect.CollegeOfLoreDefense: skill="逸闻驳斥"; action="清除对应记录，使本次伤害减半；或保留。"; break;
                 case HandEffect.SchoolOfIllusionDefense: skill="镜像折光"; action="双手差2：可将较小手变为2，使本次伤害减半。"; break;
                 case HandEffect.BattleMasterManeuver: skill="战斗招式"; action="攻击造成伤害后，按另一只手附加流血/跛脚或震慑/倒伏（2 回合）。"; break;

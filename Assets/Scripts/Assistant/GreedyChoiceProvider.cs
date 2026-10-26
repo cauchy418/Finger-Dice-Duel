@@ -556,8 +556,8 @@ namespace FingerDiceDuel.Assistant
             if (move.ActedHand == null || move.TargetHand == null || game?.WillSuppressOperationEffects(actor) == true) return false;
 
             int result = DruidScoredResult(move,actor,game);
-            if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null)return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
-            HandEffectType effect = Hand.GetEffectType(result);
+            if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null&&!(result==9&&actor.HasStatus(StatusEffect.WarBlessing)))return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
+            HandEffectType effect = DivineScoredEffect(actor,result,game);
 
             if (IsAttackEffect(effect)) return true;
 
@@ -697,7 +697,7 @@ namespace FingerDiceDuel.Assistant
             int result = DruidScoredResult(move,actor,game);
 
             int score;
-            switch (CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null?CharacterBehaviors.DisplayedEffectOf(actor,result):Hand.GetEffectType(result))
+            switch (DivineScoredEffect(actor,result,game))
             {
                 case HandEffectType.Attack4: score = 44; break;
                 case HandEffectType.Attack6: score = 66; break;
@@ -741,7 +741,7 @@ namespace FingerDiceDuel.Assistant
             // 合盾 / 回复的权重显著提高（防守优先）。
             if (_identityLordDefenseBonus)
             {
-                HandEffectType effect = Hand.GetEffectType(result);
+                HandEffectType effect = DivineScoredEffect(actor,result,game);
                 if (effect == HandEffectType.Shield)
                     score += 300;
                 else if (effect == HandEffectType.Heal
@@ -816,7 +816,7 @@ namespace FingerDiceDuel.Assistant
 
                 if (!isSelfAddend && owner != null && game.IsTeammate(actor, owner))
                 {
-                    HandEffectType eff = Hand.GetEffectType(result);
+                    HandEffectType eff = DivineScoredEffect(actor,result,game);
                     if (eff == HandEffectType.Attack4
                         || eff == HandEffectType.Attack6
                         || eff == HandEffectType.Attack8)

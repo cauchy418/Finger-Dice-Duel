@@ -445,8 +445,11 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 58).Set(2, 58).Set(3, 58)
                 .Set(7, 50);
 
-            // ---- 牧师·战争领域（攻 0 / 防 0，射程无限，2026-10-26）----
-            // 越打越强：攻击数字是滚雪球的燃料；5 / 9 保证能撑到滚起来。
+            // ---- 战争领域：攻击手为下回合提供战恩次数 ----
+            // 保留攻击数字；9在战恩下也计为攻击数字。
+            Own[CharacterDefinition.OathOfConquestId]=new HandValueProfile().Set(5,100).Set(4,75).Set(6,80).Set(8,85).Set(9,60)
+                .AddCombo(ComboRule.ContainsAll(35,"持5进行攻击成长",5,8));
+            Own[CharacterDefinition.OathOfVengeanceId]=new HandValueProfile().Set(5,82).Set(4,74).Set(6,78).Set(8,85).Set(9,65);
             Own[CharacterDefinition.WarDomainId] = new HandValueProfile()
                 .Set(8, 74).Set(6, 70).Set(4, 64)
                 .Set(5, 62).Set(9, 58)
@@ -654,7 +657,9 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对牧师·战争领域（2026-10-23）----
-            // 他靠持续攻击滚雪球叠层：压低攻击数字，别喂养成长。
+            // 攻击数字决定下回合战恩次数，压低其施恩机会。
+            OpponentAdjust[CharacterDefinition.OathOfConquestId]=new List<ValueAdjust>{new ValueAdjust(5,-22),new ValueAdjust(8,-10)};
+            OpponentAdjust[CharacterDefinition.OathOfVengeanceId]=new List<ValueAdjust>{new ValueAdjust(5,-12),new ValueAdjust(8,-10)};
             OpponentAdjust[CharacterDefinition.WarDomainId] = new List<ValueAdjust>
             {
                 new ValueAdjust(8, -14),

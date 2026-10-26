@@ -1302,6 +1302,7 @@ namespace FingerDiceDuel.Core
             ClearPreparedOperationAddend();
             DruidSecondAddend=null;
             _suppressedOperationActors.Clear();
+            WarBlessingNineAttack=null;ShieldBreaker=null;
             ResetSeats();
             _skillLog.Clear();
             _brokenThisTurn.Clear();
@@ -1573,7 +1574,7 @@ namespace FingerDiceDuel.Core
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
             }
             try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
-            finally{DruidSecondAddend=null;ClearPreparedOperationAddend();}
+            finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;}
         }
 
         /// <summary>
@@ -1893,7 +1894,8 @@ namespace FingerDiceDuel.Core
             ThiefLogic.ApplyVictimShieldSemantics(OwnerOfHand(theirHand), theirHand);
 
             // 结算：只有**生效**时才按偷来的数字触发效果
-            return ResolveSteal(actor, myHand, theirHand, outcome);
+            try{return ResolveSteal(actor, myHand, theirHand, outcome);}
+            finally{WarBlessingNineAttack=null;}
         }
 
         /// <summary>偷窃的结算：判定生效则按偷来的数字走效果分派。</summary>
@@ -1937,7 +1939,7 @@ namespace FingerDiceDuel.Core
             // 偷来的 5 -> **合成一面完整的盾**（玩家明确要求：
             // "无论之前这个 5 是什么状态，游荡者·盗贼都会合成一面盾牌"）。
             // 所以这里**不受**"已碎"影响，直接设成完整盾。
-            HandEffectType effect = ThiefLogic.EffectOfStolen(stolen);
+            HandEffectType effect = ResolveWarBlessingNine(actor,myHand,ThiefLogic.EffectOfStolen(stolen));
 
             result.ResultValue = stolen;
             result.Effect = effect;
@@ -2223,13 +2225,13 @@ namespace FingerDiceDuel.Core
             // ---- 距离修正递减（邪术师·旧日支配者）：记在**目标**身上，用的也是他自己的回合 ----
             TickDistancePenalties(actor);
 
-            // ---- 回合结束通知（牧师·战争领域：本回合未发起攻击则清空加成）----
+            // ---- 回合结束通知（征服之誓逐层衰减、剑歌维持等）----
             // 与燃烧 / 递减同一入口：界面（BoardController 的 _statusTurnEndFor）
             // 与无头（MatchRunner）两条路径都会走到这里，不会漂移。
             bool suppressed = _suppressedOperationActors.Contains(actor);
             if(!endedAsSheep)foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
                 // 回合收尾仍处理旧加成/剑歌的失效，但不发动新的回合末技能。
-                if (!suppressed || hook is WarDomainLogic || hook is BladesingingLogic song && song.Singing)
+                if (!suppressed || hook is OathOfConquestLogic || hook is BladesingingLogic song && song.Singing)
                     hook.OnTurnEnded(actor, this);
             ArcaneTurnEnded(actor);
             _suppressedOperationActors.Remove(actor);
@@ -2341,8 +2343,9 @@ namespace FingerDiceDuel.Core
             if (actedHand.IsLocked || actedHand.IsRestrained)
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
-            return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
-                               gambleResult: roll, extraAction: extraAction);
+            try{return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
+                               gambleResult: roll, extraAction: extraAction);}
+            finally{WarBlessingNineAttack=null;}
         }
 
         /// <summary>已通过校验的实际结算流程。</summary>
@@ -2614,6 +2617,8 @@ namespace FingerDiceDuel.Core
             // 油腻只在一次完整运算后判定；巨龙两次加数仍算一次，赌博不算运算。
             if (gambleResult == 0) ResolveGreaseAfterOperation(actor);
 
+            effect = ResolveWarBlessingNine(actor, actedHand, effect);
+
             // 2d. **法师·塑能学派：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
             //
             //     ⚠️ 必须放在**这里**（结果已经算出来）：
@@ -2708,7 +2713,8 @@ namespace FingerDiceDuel.Core
             //   ① 前置抉择（**选目标手之前**）里玩家选的是"攻击"还是"回复"
             //   ② 若选了回复，再解析"回复给谁"（**选目标手之后**才问）
             PlayerState clericHealTarget = null;
-            if (CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor) != null && isAttackEffect(effect))
+            if (CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor) != null && isAttackEffect(effect)
+                && !(WarBlessingNineAttack==true&&actedHand.Value==9))
             {
                 var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
 
@@ -2809,7 +2815,7 @@ namespace FingerDiceDuel.Core
                             break;
                         }
 
-                        var ctx = new AttackContext(actor, opponent, actedHand, (int)effect);
+                        var ctx = new AttackContext(actor, opponent, actedHand, WarBlessingNineAttack==true&&actedHand.Value==9?9:(int)effect);
                         ctx.StartedFromStealth = startedFromStealth;
                         ctx.InflictsBleed = activelyBrokeShield && CharacterBehaviors.FirstImplementer<BreakerLogic>(actor) != null;
                         ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;
@@ -3286,7 +3292,7 @@ namespace FingerDiceDuel.Core
         /// 破除某玩家一面护盾，并通知其角色钩子（供战士·破阵者连锁破盾等使用）。
         /// 使用 _brokenThisTurn 防止递归。
         /// </summary>
-        public void BreakShieldAndNotify(PlayerState owner, Hand shield)
+        public void BreakShieldAndNotify(PlayerState owner, Hand shield, PlayerState breaker = null)
         {
             if (owner == null || shield == null) return;
             if (_brokenThisTurn.Contains(shield)) return;
@@ -3298,13 +3304,14 @@ namespace FingerDiceDuel.Core
             //    它与"自己主动破盾"（`NotifyOwnShieldBroken`）**不是同一件事** ——
             //    圣武士·奉献之誓要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
             bool previous = ResolvingPassiveShieldBreak;
+            var previousBreaker=ShieldBreaker;ShieldBreaker=breaker??ShieldBreaker??CurrentPlayer;
             ResolvingPassiveShieldBreak = true;
             try
             {
                 NotifyOwnShieldBroken(owner, shield);
                 owner.Character?.OnOtherShieldBroken(owner, shield, this);
             }
-            finally { ResolvingPassiveShieldBreak = previous; }
+            finally { ResolvingPassiveShieldBreak = previous;ShieldBreaker=previousBreaker; }
         }
 
         public void BreakActiveShieldAndNotify(PlayerState owner,Hand shield)
@@ -3363,6 +3370,7 @@ namespace FingerDiceDuel.Core
         public void BeginTurn()
         {
             _suppressedOperationActors.Remove(CurrentPlayer);
+            WarBlessingNineAttack=null;
             RefreshDynamicStats();
             PrepareRestraint(CurrentPlayer);
             SuppressAttackDamage = false;

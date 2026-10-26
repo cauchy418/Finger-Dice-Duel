@@ -39,9 +39,9 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public bool MustGamble { get; set; }
 
-        // ============ 法师·塑能学派的负面状态 ============
+        // ============ 计时状态（负面状态与角色状态） ============
         /// <summary>
-        /// 身上的**负面状态**（法师·塑能学派体系）。
+        /// 身上的**计时状态**（负面状态、圣光与战恩）。
         ///
         /// 以 <see cref="StatusEffect"/> 为键，值 = 剩余"目标自己的回合数"
         /// （玩家确认的持续时间为 **2**）。
@@ -53,7 +53,7 @@ namespace FingerDiceDuel.Core
         private readonly System.Collections.Generic.Dictionary<StatusEffect, int> _statuses
             = new System.Collections.Generic.Dictionary<StatusEffect, int>();
 
-        /// <summary>身上所有负面状态（按枚举顺序，便于界面稳定显示）。</summary>
+        /// <summary>身上所有计时状态（按枚举顺序，便于界面稳定显示）。</summary>
         public System.Collections.Generic.IReadOnlyList<StatusEffect> Statuses
         {
             get
@@ -69,7 +69,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>枚举上限包含束缚、油腻；用于稳定顺序显示状态。</summary>
-        private const int MaxStatusValue = (int)StatusEffect.Greased;
+        private const int MaxStatusValue = (int)StatusEffect.WarBlessing;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -105,6 +105,7 @@ namespace FingerDiceDuel.Core
             {
                 ClearStatuses();
                 ClearTemporaryDamageAffinities();
+                foreach (var song in CharacterBehaviors.Implementers<IBladesong>(this)) song.EndSong();
             }
             else if (HasStatus(StatusEffect.HolyLight))
             {

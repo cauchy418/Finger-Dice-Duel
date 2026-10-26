@@ -5,11 +5,11 @@
 
 ## 项目概况
 
-当前逐角色AI参考见[全角色AI策略与权重](Docs/ai-strategy-reference.md)：按50子职列出原始手值、组合与技能分、开局对手修正及实际1v1／2v2参数；L情境模型与P机会预览分开说明，权重不是固定策略占比。
+当前逐角色AI参考见[全角色AI策略与权重](Docs/ai-strategy-reference.md)：按52子职列出原始手值、组合与技能分、开局对手修正及实际1v1／2v2参数；L情境模型与P机会预览分开说明，权重不是固定策略占比。
 
 技能选择UI按语义统一：选手直接点击战场合法手牌，不创建逐手按钮或全屏遮罩；选角色按主人去重后列出角色按钮；元素、抗性、招式、形态与是否发动保留命名选项。`WizardChoice.TargetsPlayer`覆盖回合边界请求，普通`HandEffect`分类覆盖攻击前／防守请求，均经原控制器回读与放弃出口。
 
-阵营现状：奥法骑士守序善良，破阵者守序邪恶，剑咏者混乱善良，刺客与至高妖精混乱邪恶。本次五项只调整善恶轴，双将仍按守序／中立／混乱选择，16／17／17名与392种无序组合不变。
+阵营现状：奥法骑士守序善良，破阵者守序邪恶，剑咏者混乱善良，刺客与至高妖精混乱邪恶。本次五项只调整善恶轴，双将仍按守序／中立／混乱选择，当前18／17／17名、425种无序组合；新增征服／复仇分别为守序邪恶／守序中立。
 
 **Finger Dice Duel**（手指骰子对决）：2D 回合制对战。每人两只手（初始 1），
 每回合用自己的一只手与**另一名玩家**的一只手相加、取个位（和为 10 → 1），
@@ -17,7 +17,7 @@
 
 支持 **1v1**、**2v2**（环形四座、1&4 一队 / 2&3 一队、攻击距离、先攻掷骰）
 与 **双将对决（娱乐模式，1v1）**、**8 人身份对局**（随机身份，主公固定 1 号位）。
-**50 名角色**，每个都有独立技能。
+**52 名角色**，每个都有独立技能。
 
 | 项 | 值 |
 |---|---|
@@ -32,7 +32,7 @@
 
 ## 职业与子职
 
-当前 50 个子职，12 个职业大类；德鲁伊已接入月亮/星辰/大地结社。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
+当前 52 个子职，12 个职业大类；德鲁伊已接入月亮/星辰/大地结社。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
 
 大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。职业重构阶段的图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
@@ -68,13 +68,13 @@
 
 ## 法师三学派（2026-10-23）
 
-三所学派正式徽记已接入；新增塑能徽记，旧书杖划归法师大类；13类抗性与奥术屏障共有19项导出资源（18张新绘、1张复用），见 [制作记录](Art/Production/wizard-schools-v1/README.md)。当前50子职，守序16／中立17／混乱17，共392种双将；历史迁移记录保留当时人数。
+三所学派正式徽记已接入；新增塑能徽记，旧书杖划归法师大类；13类抗性与奥术屏障共有19项导出资源（18张新绘、1张复用），见 [制作记录](Art/Production/wizard-schools-v1/README.md)。当前52子职，守序18／中立17／混乱17，共425种双将；历史迁移记录保留当时人数。
 
 `WizardChoice` 将回合开始免费攻击及死亡换手排队，在控制器安全边界暂停/恢复，不重复开始回合或结算状态。死灵有可用1自动进入角色目标选择并提供「放弃攻击」；2→1逐段由人类选择，AI自动；死亡时交换0～2对手值，可提前结束。`DeferWizardAttack` 在免费/偷窃攻击前收集防守抉择。回合开始、死亡通知、预言压制等钩子遍历双将部件。
 
 防护算出2先选角色，再选 **物理整组、雷鸣、强酸、火焰、寒冷、闪电** 六项，`ResistanceNames.Choices/CanGrant` 同时限制UI、AI与技能API；心灵/力场/毒素/光耀/暗蚀不可由此赋予。`ResistanceNames.All` 仍保存13类通用图标。`IAbjurationSkill` 存储屏障；选择存储后不再走攻击目标/盾选择，抗性后、扣血前吸收并全部清空。原有场上保护范围保持不变。
 
-`IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。当前50角色有显式手值配置，450组（50角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
+`IWizardChoicePolicy` 供控制器与无头内核共享目标、抗性、屏障、免费暗蚀和死亡交换策略；`GreedyChoiceProvider.Wizards.cs` 实现。此前50角色已有显式手值配置，旧验收450组（50角色×3难度×2/4/8人）控制器推进检查。还修复偷窃攻击的目标/防御与一次收尾、妖精跳过目标、魔术师自加锁手、赌博无合法目标的结束路径。斩杀估算考虑当前攻防、抗性和屏障，仅预览不消耗；仍是启发式估算。详见 [AI检查](Tools/ai-strategy-audit.md) 和 [引擎验收](Art/Integration/wizard-schools/README.md)。
 
 `CombatStatusIcons` 统一负面、抗性、屏障、资源与标记显示；图标栏最多72项，超出可视区域可滚动。秘法手册为伤害类型、状态、九条元素反应、抗性／易伤／免疫、角色标记五页；第四页三组各13类型，第五页集中奥术屏障、气、猎人标记、虚假生命，使用完整资源键，元素反应不增加心灵条目。
 
@@ -147,7 +147,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版当时包含18种，圣光阶段曾为19种，现加束缚／油腻共21种，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，现增强酸／中毒互刷与火焰／油腻共九条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版当时包含18种，圣光阶段曾为19种，加束缚／油腻后曾为21种；当前20种负面与圣光／剑歌／战恩3种角色状态，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，现增强酸／中毒互刷与火焰／油腻共九条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -374,7 +374,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 | `Characters/DualGeneralBehavior.cs` | **能力容器**：实现全部组合接口，按规则合并并转发给子角色 |
 | `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
 | `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
-| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：当前392个双将、76,636对，每对24局，共1,839,264局 |
+| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：历史392个双将、76,636对，每对24局，共1,839,264局 |
 | `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
 | `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
 
@@ -577,7 +577,7 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 破阵者完整盾作运算源的连锁原本就在攻击前；碎另一手换射程以前直接 `ForceBreakShield`，漏掉连锁通知。现经 `BreakActiveShieldAndNotify` 主动破盾入口，先回读连锁答案再创建攻击。玩家接受换射程后追加 `BreakerRangeChainBreak`，与运算源连锁的答案分开，允许各自放弃；AI共用敌盾优先策略，UI有破盾目标按钮。破阵者＋奥法骑士双将也在这次攻击前收集附魔，准备标记按手保存，避免双盾重复询问。8项专项覆盖4／8人远距、两类放弃、盾挡、流血与双将。
 
-### 大规模双将统计复现
+### 大规模双将统计复现（历史50子职）
 
 `Tools/HeadlessTests/run-sharded-statistics.ps1 -Shards 8` 将76,636个配对分给独立进程，共1,839,264局；各局按配对和座位固定随机源，避免线程共享随机状态。合并严格核对构建MVID、392组合清单、每行配对／轮次／座位和总数，不接受缺失、重复、旧构建或额外行。汇总调用原测试台计分；双将AI也开启正式连锁破盾，单将调参不会套到双将。缓存和原始分片仅在忽略的bin内，最终报告入库。`-ReuseShards`仅复用同一构建，`-Only DualVersusDualTests`可只重跑该模式。功能回归可用 `run-tests.ps1 -SkipStatistics`；并行验证用独立 `-OutputDirectory`，不覆盖正在执行的DLL。
 
@@ -593,7 +593,9 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 验证与截图见 [第二章验收](Art/Integration/adventure-chapter-02/README.md)。显式采样命令：`dotnet <HeadlessTests.dll> --tower-probe Art/Integration/adventure-chapter-02/finale-ai-probe.csv`，9子职×200相同种子，困难AI、真实骰点与合法分配；用于发现策略问题，不代替真人难度评估。
 
-## 战争领域分离成长（2026-10-26）
+## 战争领域分离成长（2026-10-26，历史实现）
+
+本段保留旧实现经过；当前战争领域已按下文改为战恩。
 
 基础攻防改0/0。`WarDomainLogic`分别保存`AttackStacks`／`DefenseStacks`，`WarStacks`仅保留两者合计的兼容观测口。发起攻击后只增攻击，受到攻击后只增防御。统一`IAttackFinishedHook`在整次攻击结束后调用，不追溯影响本击；多段一次，独立反弹另算，盾挡／闪避／零伤仍算，取消／状态伤害不算。转移前目标与实际承受者沿用原目标通知口径，各自只计一次。自身回合未发起攻击则回合末清两类层数，重开也清零；双将两种顺序经部件遍历获取相同能力。
 
@@ -616,3 +618,15 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 控制器在选定加数后直接提交受压制运算，跳过幻术改算、巨龙二次加数、攻击目标与技能请求；奥法骑士预收集与赌博的攻击目标确认也遵守压制。AI共用纯预判，只评估保留手值与后续运算潜力，不领取即时攻击／回复／合盾或技能分。战报保留真实算式，注明“预言：仅改变数字，无其它效果”。图鉴、README、RULES、策略清单与第二章七战脚本同步：护卫1+7→8无伤；窗口关闭后玩家4+4→8、护卫8+8→6正常结算。
 
 教学约束不参与按钮显隐。正常可选项全部显示，只有规定选项可点并描金边，其余置灰；接受、放弃、命名技能、元素、抗性与战斗招式遵守同一原则。第一章旧导演的必选接受／拒绝与战斗大师招式也采用该表现，回调保留规则校验。验收与截图见 [完整选项与快照验收](Art/Integration/tutorial-choices-and-divination/README.md)。
+
+## 战恩与两个圣武士誓言（2026-10-27）
+
+当前52子职、12职业，守序18／中立17／混乱17，共425种双将。64枚职业／子职徽记通过资源清单校验。战争领域重做为基础−1/−1、∞射程的回合开始施恩：按两只手的攻击数字数选至多两名不同目标，可选自己、少选或不选。战恩刷新不叠加、攻防+1，9可改为基础9攻击；普通运算、赌博和有效偷窃均在人类结算前选择。
+
+`Core/DivineOaths`集中状态选择、仇敌标记合约与额外纯运算。`BoardController.Divine`复用安全边界，9选择后恢复正常目标／回复流程，`OperationEffect`贯通预览和防守请求。`StatusRules`叠加战恩，`ClearNegativeStatuses`保留战恩；圣光在统一入口清战恩并调用`IBladesong.EndSong`，剑歌进入及延后回答均校验圣光。
+
+征服之誓的层数属于自身部件，双将不覆盖其他动态加成；`AttackContext`记录攻击开始时的实际攻防，恐慌按快照比较，整次攻击后增长。回合末只递减自己的层数，最低0。复仇之誓开局必选，普通受击转移在防守选择前收集，仇敌死亡可重选。`ITargetDamageBonus`逐段计算+1／−1，`ShieldBreaker`保存并恢复实际破盾者；每面盾分别排一次可放弃的纯运算，只点战场手牌，不列手列表，不推进回合与状态。
+
+手册状态一览分20种负面与3种角色状态；剑歌、战恩使用独立方框图标，仇敌誓言放角色标记页。AI明确选择施恩对象、仇敌、转移、9的攻击／回复与纯运算；新誓言及重做战争领域使用L／H12／D43基线，旧战争领域P12／D100实验配置停用，导出脚本同步排除，未声称已完成新版本胜率调参。
+
+验证与真实UI截图见[誓言验收](Art/Integration/divine-oaths-v1/README.md)，原图、完整提示词与清单见[美术制作](Art/Production/divine-oaths-v1/README.md)。历史50角色／392双将统计保留，不冒充52角色／425组合的结果。

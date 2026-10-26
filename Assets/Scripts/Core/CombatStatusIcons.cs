@@ -26,10 +26,14 @@ namespace FingerDiceDuel.Core
             foreach(var spell in CharacterBehaviors.Implementers<IElementEnchantment>(player))
                 if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法附魔 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));
             foreach(var song in CharacterBehaviors.Implementers<IBladesong>(player))
-                if(song.Singing)result.Add(new CombatStatusIcon("Subclasses/wizard_bladesinging","剑歌 · 攻防+1，"+AttackDamageTypes.NameOf(song.SongElement)+"攻击\n后续自身回合须攻击、合盾或实际回复以维持。",""));
+                if(song.Singing)result.Add(new CombatStatusIcon("Effects/bladesong","剑歌 · 攻防+1，"+AttackDamageTypes.NameOf(song.SongElement)+"攻击\n后续自身回合须攻击、合盾或实际回复以维持。",""));
             if(game!=null)foreach(var source in game.Players)
                 if(source.IsAlive)foreach(var curse in CharacterBehaviors.Implementers<IHexbladeCurse>(source))
                     if(ReferenceEquals(curse.CurseTarget,player)&&curse.CurseTurns>0)result.Add(new CombatStatusIcon("Effects/hexblades_curse","咒剑诅咒 · 来源："+source.Name+"\n该来源对你每段攻击伤害+2；本人击杀后召唤咒缚幽灵。",curse.CurseTurns.ToString()));
+            if(game!=null)foreach(var source in game.Players)
+                if(source.IsAlive)foreach(var vow in CharacterBehaviors.Implementers<IVowOfEnmity>(source))
+                    if(ReferenceEquals(vow.VowTarget,player))result.Add(new CombatStatusIcon("Effects/vow_of_enmity",
+                        "仇敌誓言 · 来源："+source.Name+"\n该来源对你伤害+1，对其他角色−1；你每打碎其一面盾，使其可额外纯运算一次。",""));
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
                 "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；妖魔契约可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)

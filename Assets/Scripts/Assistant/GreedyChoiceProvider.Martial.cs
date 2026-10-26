@@ -12,7 +12,8 @@ namespace FingerDiceDuel.Assistant
             foreach(var option in options)
             {
                 double score;
-                if(key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
+                if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
+                else if(key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
                 else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==NewSubclassChoices.LoreGrowth) score=option.Value==1?20:0;
                 else if(key==NewSubclassChoices.LoreDefense)

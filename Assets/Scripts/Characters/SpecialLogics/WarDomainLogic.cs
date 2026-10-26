@@ -1,96 +1,36 @@
-﻿using FingerDiceDuel.Core;
-
+﻿using System.Collections.Generic;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>
-    /// 战争狂热：基础0/0。整次攻击结束，发起者攻击+1；目标防御+1。
-    /// 闪避、盾挡、零伤仍算，取消／持续伤害不算；多段只一次，反弹独立。
-    /// 自身回合结束未发起攻击，清除技能带来的两类加成；重开也清除。
-    /// </summary>
-    public sealed class WarDomainLogic : CharacterTemplate, IDynamicStats,
-        ITurnStartHook, ITurnEndHook, IAttackFinishedHook, ISkillUseCounter
+    /// <summary>回合开始按攻击数字数量，为至多两名不同角色施加战恩。</summary>
+    public sealed class WarDomainLogic:CharacterTemplate,ITurnStartHook,ISkillUseCounter
     {
-        private int _attackStacks, _defenseStacks;
-        private bool _initiatedAttackThisTurn;
-
-        /// <summary>战争狂热两类加成的合计层数。观测口供 UI / 测试。</summary>
-        public int WarStacks => _attackStacks+_defenseStacks;
-        public int AttackStacks=>_attackStacks;
-        public int DefenseStacks=>_defenseStacks;
-
-        /// <summary>技能观测量：用当前层数做"技能发动"的观测口（重开清零）。</summary>
-        public int SkillUseCount => WarStacks;
-
-        public override string DisplayName => "牧师·战争领域";
-        public override int DefaultAttackBonus => 0;
-        public override int DefaultDefenseBonus => 0;
-        public override int BaseAttackRange => InfiniteAttackRange;
-
-        public override AttackDamageType AttackTypeOf(AttackContext context)
+        public int SkillUseCount {get;private set;}
+        public override string DisplayName=>"牧师·战争领域";
+        public override int DefaultAttackBonus=>-1;
+        public override int DefaultDefenseBonus=>-1;
+        public override int BaseAttackRange=>InfiniteAttackRange;
+        public override AttackDamageType AttackTypeOf(AttackContext context)=>ArcaneChoices.NearFar(context);
+        public override void OnMatchReset(PlayerState owner,GameManager game){SkillUseCount=0;}
+        public void OnTurnStarted(PlayerState owner,GameManager game)
         {
-            // 双将部件拿不到容器的 LastAttackDistance，直接问对局（防护学派同做法）；
-            // 无对局时退回基类记录的距离。
-            int distance = context?.Manager != null
-                ? context.Manager.DistanceBetween(context.Attacker, context.Defender)
-                : LastAttackDistance;
-            return distance <= 1 ? AttackDamageType.Bludgeoning : AttackDamageType.Piercing;
+            if(!ReferenceEquals(game?.CurrentPlayer,owner)||!owner.IsAlive)return;
+            int count=0;foreach(var hand in owner.Hands)if(DivineChoices.AttackDigit(owner,hand.Value))count++;
+            if(count>0)Offer(owner,game,count,new List<PlayerState>());
         }
-
-        /// <summary>
-        /// 发起攻击后攻击 +1（不要求命中；多段 / 追加 / 反弹等"由自己发起"的攻击都算）。
-        /// 反弹等已带类型（继承）的攻击不覆盖类型。
-        /// </summary>
-        public override void OnResolveAttack(AttackContext context)
+        private void Offer(PlayerState owner,GameManager game,int remaining,List<PlayerState> selected)
         {
-            if (context == null || context.IsStatusDamage) return;
-            if (context.AttackType == AttackDamageType.None)
-                context.AttackType = AttackTypeOf(context);
-            _initiatedAttackThisTurn = true;
+            if(remaining<=0||!owner.IsAlive||owner.IsPolymorphed)return;
+            var targets=new List<PlayerState>();foreach(var p in game.Players)
+                if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&!selected.Contains(p))targets.Add(p);
+            DivineChoices.ChooseTarget(DivineChoices.Blessing,$"战恩 · 选择角色（剩余{remaining}次），或不发动",owner,game,targets,true,target=>{
+                if(target==null)return;
+                target.ApplyStatus(StatusEffect.WarBlessing,2,owner);selected.Add(target);SkillUseCount++;
+                game.NoteSkill(owner,"战恩",target.Name+" 攻防+1，持续2回合；9可改攻击");
+                Offer(owner,game,remaining-1,selected);
+            });
         }
-
-        public void OnAttackFinished(PlayerState owner,AttackContext attack,bool initiated,GameManager manager)
-        {
-            if(owner==null||!owner.IsAlive||attack==null||attack.IsStatusDamage||attack.WasCancelled)return;
-            if(initiated)_attackStacks++;else _defenseStacks++;
-            RefreshDynamicStats(owner,manager);
-            manager?.NoteSkill(owner,"战争狂热",(initiated?"攻击+1":"防御+1")+$"，累计攻+{_attackStacks}／防+{_defenseStacks}");
-        }
-
-        /// <summary>
-        /// 自己回合开始：重置"本回合是否发起过攻击"。
-        /// ⚠️ <see cref="GameManager.BeginTurn"/> 会给**所有**玩家发回合开始通知，
-        ///    所以必须判"当前行动者是不是自己"。
-        /// </summary>
-        public void OnTurnStarted(PlayerState owner, GameManager manager)
-        {
-            if (owner == null || manager == null) return;
-            if (!ReferenceEquals(manager.CurrentPlayer, owner)) return;
-            _initiatedAttackThisTurn = false;
-        }
-
-        /// <summary>
-        /// 自己回合结束：本回合未发起过攻击 -> 清空全部加成。
-        /// </summary>
-        public void OnTurnEnded(PlayerState owner, GameManager manager)
-        {
-            if (owner == null) return;
-            if (_initiatedAttackThisTurn) return;
-            if (WarStacks == 0) return;
-
-            _attackStacks = _defenseStacks = 0;
-            owner.SetDynamicBonuses(0, 0);
-            manager?.NoteSkill(owner, "战争狂热消退", "本回合未发起攻击，攻防加成清零");
-        }
-
-        /// <summary>动态攻防的统一刷新口（层在事件里实时写入，这里只是幂等同步）。</summary>
-        public void RefreshDynamicStats(PlayerState owner, GameManager manager)
-            => owner?.SetDynamicBonuses(_attackStacks, _defenseStacks);
-
-        public override void OnMatchReset(PlayerState owner, GameManager manager)
-        {
-            _attackStacks = _defenseStacks = 0;
-            _initiatedAttackThisTurn = false;
-            owner?.SetDynamicBonuses(0,0);
-        }
+        public override int ScoreMoveBonus(MoveValueContext context)
+            =>(context.ActedValueAfter==4||context.ActedValueAfter==6||context.ActedValueAfter==8)?15:0;
     }
 }

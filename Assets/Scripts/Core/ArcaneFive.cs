@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Core
     public interface IElementEnchantment
     { AttackDamageType Enchantment {get;} }
     public interface IBladesong
-    { bool Singing {get;} AttackDamageType SongElement {get;} }
+    { bool Singing {get;} AttackDamageType SongElement {get;} void EndSong(); }
     public interface IHexbladeCurse
     {
         PlayerState CurseTarget {get;}

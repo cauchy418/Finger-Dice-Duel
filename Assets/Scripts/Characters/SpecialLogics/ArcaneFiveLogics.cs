@@ -88,6 +88,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int DefaultDefenseBonus=>-1;
         public override int BaseAttackRange=>2;
         public bool Singing {get;private set;}
+        public void EndSong(){Singing=false;SongElement=AttackDamageType.None;}
         public AttackDamageType SongElement {get;private set;}
         public override int AttackBonus=>base.AttackBonus+(Singing?1:0);
         public override int DefenseBonus=>base.DefenseBonus+(Singing?1:0);
@@ -101,9 +102,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 {Singing=false;SongElement=AttackDamageType.None;game.NoteSkill(owner,"剑歌","未完成攻击／合盾／有效回复，剑歌结束");}
                 return;
             }
-            if(owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;
+            if(owner.HasStatus(StatusEffect.HolyLight)||owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;
             ArcaneChoices.Option(ArcaneChoices.Bladesong,"剑歌 · 选择元素进入剑歌，或不发动",owner,null,game,ArcaneChoices.Elements(),value=>{
-                if(value==0||owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;
+                if(value==0||owner.HasStatus(StatusEffect.HolyLight)||owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;
                 Singing=true;SongElement=(AttackDamageType)value;game.NoteSkill(owner,"剑歌","攻防+1，攻击改为"+AttackDamageTypes.NameOf(SongElement));});
         }
         public override void OnResolveAttack(AttackContext ctx){if(Singing&&!ctx.IsStatusDamage&&!ctx.IsReflected)ctx.AttackType=SongElement;}

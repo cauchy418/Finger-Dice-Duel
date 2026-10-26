@@ -276,7 +276,7 @@ namespace FingerDiceDuel.Core
             {
                 if (!ReferenceEquals(candidates[i].Shield, picked)) continue;
                 if (candidates[i].Shield.State != ShieldState.Formed) return;   // 防御性
-                manager.BreakShieldAndNotify(candidates[i].Owner, candidates[i].Shield);
+                manager.BreakShieldAndNotify(candidates[i].Owner, candidates[i].Shield, owner);
                 ChainBreakCount++;
                 manager.NoteSkill(owner, "连锁破盾", $"{candidates[i].Owner.Name} {CombatText.HandName(candidates[i].Owner, candidates[i].Shield)}盾破碎");
                 return;

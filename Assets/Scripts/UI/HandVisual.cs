@@ -117,7 +117,7 @@ namespace FingerDiceDuel.UI
                 case Core.HandEffectType.Attack4:
                 case Core.HandEffectType.Attack6:
                 case Core.HandEffectType.Attack8: return "攻击 " + hand.Value;
-                case Core.HandEffectType.Heal: return "回复 9";
+                case Core.HandEffectType.Heal: return owner!=null&&!owner.IsPolymorphed&&owner.HasStatus(Core.StatusEffect.WarBlessing)?"攻／回 9":"回复 9";
                 default: return "—";
             }
         }

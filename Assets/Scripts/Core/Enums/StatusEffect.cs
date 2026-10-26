@@ -108,11 +108,12 @@
         /// **圣光（牧师·光明领域，2026-10-23）**：目标回合开始受 1 点伤害（不可抵挡）、
         /// 回复量减半（向上取整）；施加时立即清除目标其他全部状态与全部抗性，
         /// 存在期间阻止新的状态与抗性附加（重复施加圣光 = 刷新时长）。
-        /// 勇气战歌增益与奥术屏障是独立系统，不受圣光影响（玩家口径）。
+        /// 剑歌与战恩会被清除；勇气战歌增益与奥术屏障是独立系统，不受圣光影响（玩家口径）。
         /// </summary>
         HolyLight = 19,
         Restrained = 20,
         Greased = 21,
+        WarBlessing = 22,
     }
 
     /// <summary>
@@ -188,6 +189,7 @@
                 case StatusEffect.HolyLight: return "holy_light";
                 case StatusEffect.Restrained: return "restrained";
                 case StatusEffect.Greased: return "greased";
+                case StatusEffect.WarBlessing: return "war_blessing";
                 default: return null;
             }
         }
@@ -237,6 +239,7 @@
                 case StatusEffect.HolyLight: return "圣光";
                 case StatusEffect.Restrained: return "束缚";
                 case StatusEffect.Greased: return "油腻";
+                case StatusEffect.WarBlessing: return "战恩";
                 default: return "无";
             }
         }
@@ -286,6 +289,8 @@
                     return "回合开始失去1生命（不可抵挡），回复减半；清除并阻止其他状态及临时抗性／易伤／免疫";
                 case StatusEffect.Restrained:
                     return "每个自身回合随机一只手不能主动运算，仍可被借作加数；不解开原有锁手";
+                case StatusEffect.WarBlessing:
+                    return "攻防+1；算出9可选择放弃回复，改为9点基础伤害攻击；重复施加刷新2回合，不叠加";
                 case StatusEffect.Greased:
                     return "每次运算完成后50%概率倒伏2回合；火焰命中清除油腻、伤害×1.5，照常附燃烧";
                 default:
@@ -325,7 +330,7 @@
             DamageType.Force, DamageType.Psychic,
         };
 
-        /// <summary>全部21种状态（排除兼容别名，顺序固定）。</summary>
+        /// <summary>全部22种计时状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -335,7 +340,7 @@
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
-            StatusEffect.Restrained, StatusEffect.Greased,
+            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing,
         };
 
         /// <summary>
@@ -396,6 +401,7 @@
                 case StatusEffect.Charm: return 0xE05AA8;       // 魅紫
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
+                case StatusEffect.WarBlessing: return 0xDBB662;
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
                 case StatusEffect.Restrained: return 0x638653;
                 case StatusEffect.Greased: return 0xB8993C;
@@ -437,6 +443,7 @@
                 case StatusEffect.Charm: return "♡";        // ♡ 魅惑
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
+                case StatusEffect.WarBlessing: return "⚔";
                 case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
                 case StatusEffect.Restrained: return "♧";
                 case StatusEffect.Greased: return "◒";
