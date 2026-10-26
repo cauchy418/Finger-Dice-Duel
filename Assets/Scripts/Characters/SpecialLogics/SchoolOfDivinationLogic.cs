@@ -2,7 +2,7 @@
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>法师·预言学派：7 后的窗口内，符合手值条件的行动直接无效。</summary>
+    /// <summary>法师·预言学派：7 后的窗口内，符合手值条件的运算只改数字，不产生其它效果。</summary>
     public sealed class SchoolOfDivinationLogic : CharacterTemplate,
         IActionInvalidator, ITurnStartHook, IAttackTypeProvider
     {
@@ -48,17 +48,17 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             }
         }
 
+        public bool CanInvalidateAction(PlayerState owner, PlayerState actor)
+            => _windowActive && owner != null && owner.IsAlive && actor != null
+                && !ReferenceEquals(actor, owner)
+                && (actor.LeftHand.Value == _snapshotValue || actor.RightHand.Value == _snapshotValue);
+
         public bool TryInvalidateAction(PlayerState owner, PlayerState actor,
                                         Hand actedHand, Hand targetHand,
                                         GameManager manager, out string reason)
         {
             reason = null;
-            if (!_windowActive || owner == null || actor == null || !owner.IsAlive) return false;
-            if (ReferenceEquals(actor, owner)) return false; // 自己的行动不无效
-
-            bool matches = (actor.LeftHand != null && actor.LeftHand.Value == _snapshotValue)
-                        || (actor.RightHand != null && actor.RightHand.Value == _snapshotValue);
-            if (!matches) return false;
+            if (!CanInvalidateAction(owner, actor)) return false;
 
             reason = $"{actor.Name} 的手牌 {_snapshotValue} 与预言快照相同";
             manager?.NoteSkill(owner, "预言", reason);

@@ -427,7 +427,7 @@ namespace FingerDiceDuel.Core
             SchoolOfDivinationId, "法师·预言学派", SpecialLogicType.SchoolOfDivination,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Divination",
-            description: "攻击距离∞，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，该行动直接无效、不触发技能。");
+            description: "攻击距离∞，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，本次运算只改变手值，不攻击、回复、合盾或触发其它技能。");
 
         public static CharacterDefinition SchoolOfNecromancy { get; } = new CharacterDefinition(
             SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,

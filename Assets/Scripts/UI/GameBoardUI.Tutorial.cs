@@ -18,11 +18,14 @@ namespace FingerDiceDuel.UI
             if(visible){_trialEndButton.onClick.AddListener(()=>clicked?.Invoke());TutorialButton(_trialEndButton,true);_trialEndButton.transform.SetAsLastSibling();}
         }
         /// <summary>普通战斗传null恢复可用状态；教程的规则在控制器再次校验。</summary>
-        public void SetTutorialChoices(MageTowerLesson lesson)
+        public void SetTutorialChoices(AdventureLesson lesson)
         {
             var input=lesson?.Board.TutorialInput;
-            TutorialButton(_acceptButton,input==null?(bool?)null:input.AllowsAccept);
-            TutorialButton(_declineButton,input==null?(bool?)null:input.AllowsDecline,lesson?.Board.Phase!=BoardPhase.ChoosingSeatSwapTarget);
+            // 教学只改变可点性，不参与决定原有选项的显隐。第一章也沿用同一原则。
+            bool legacyChoice=input==null&&lesson!=null&&lesson.AllowAcceptChoice!=lesson.AllowDeclineChoice;
+            bool maneuver=lesson?.Board.PendingEffect==HandEffect.BattleMasterManeuver;
+            TutorialButton(_acceptButton,input!=null?input.AllowsAccept:legacyChoice?(bool?)lesson.AllowAcceptChoice:null);
+            TutorialButton(_declineButton,input!=null?input.AllowsDecline:legacyChoice?(bool?)lesson.AllowDeclineChoice:null,lesson?.Board.Phase!=BoardPhase.ChoosingSeatSwapTarget);
             TutorialButton(_seatSwapButton,input==null?(bool?)null:input.AllowsCastling);
             if(input!=null)TutorialButton(_skipButton,input.AllowsSkip);
             else ClearTutorialOutline(_skipButton);
@@ -38,9 +41,9 @@ namespace FingerDiceDuel.UI
                     else if(controller.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType&&i<ResistanceNames.Choices.Length)
                         allowed=input.AllowsResistance(ResistanceNames.Choices[i]);
                 }
-                if(input!=null)TutorialButton(_wizardButtons[i],allowed);else ClearTutorialOutline(_wizardButtons[i]);
+                if(input!=null)TutorialButton(_wizardButtons[i],allowed);else if(!maneuver)ClearTutorialOutline(_wizardButtons[i]);
             }
-            if(input!=null)TutorialButton(_wizardDecline,input.AllowsDecline);else ClearTutorialOutline(_wizardDecline);
+            if(input!=null)TutorialButton(_wizardDecline,input.AllowsDecline);else if(!maneuver)ClearTutorialOutline(_wizardDecline);
             _damageTypePanel?.SetTutorialFilter(input==null?(System.Func<DamageType,bool>)null:input.AllowsDamageType);
         }
         public static void TutorialButton(Button button,bool? allowed,bool highlight=true)

@@ -553,7 +553,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>这一手的结果在 AI 眼里是不是攻击（含游荡者·魔术师借来的攻击）。</summary>
         private static bool IsAttackResult(LegalMove move, PlayerState actor,GameManager game)
         {
-            if (move.ActedHand == null || move.TargetHand == null) return false;
+            if (move.ActedHand == null || move.TargetHand == null || game?.WillSuppressOperationEffects(actor) == true) return false;
 
             int result = DruidScoredResult(move,actor,game);
             if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null)return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
@@ -688,6 +688,12 @@ namespace FingerDiceDuel.Assistant
         private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)        {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
+            if (game != null && game.WillSuppressOperationEffects(actor))
+            {
+                int value = Math.Max(1, StatusRules.ApplyResultModifiers(actor, Hand.ComputeSum(acted, target)));
+                int otherValue = actor.GetOtherHand(move.ActedHand).Value;
+                return HandValueScore(actor, value, otherValue) + DenyScore(actor, game, value, otherValue);
+            }
             int result = DruidScoredResult(move,actor,game);
 
             int score;

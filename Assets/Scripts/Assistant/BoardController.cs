@@ -537,9 +537,10 @@ namespace FingerDiceDuel.Assistant
 
 
 
-            if (!isAttack)
+            if (!isAttack || _game.WillSuppressOperationEffects(ActivePlayer))
             {
-                // 不是攻击 -> 不需要选目标，直接结算
+                _pendingIsAttack = false;
+                // 非攻击或预言压制：不需要选目标，直接结算
                 _selectedTarget = SelectedHand;   // 占位：赌博没有"被加数"
                 ExecuteResolvedTurn();
                 return true;
@@ -1925,6 +1926,15 @@ namespace FingerDiceDuel.Assistant
                     }
 
                     // 第 ② 步：选定"参与运算的那只手"（加法的一个加数）。
+                    if (_game.WillSuppressOperationEffects(ActivePlayer))
+                    {
+                        _selectedTarget = _turnTargetHand = _pendingTargetHand = hand;
+                        _turnActedHand = _pendingActedHand = SelectedHand;
+                        TargetPlayer = OwnerOf(hand) ?? Defender;
+                        _pendingIsAttack = false;
+                        ExecuteResolvedTurn();
+                        return true;
+                    }
                     hand=_game.PrepareOperationAddend(ActivePlayer,SelectedHand,hand);
                     if(TryBeginDragonAddend(hand))return true;
                     _selectedTarget = hand;
@@ -4123,8 +4133,9 @@ namespace FingerDiceDuel.Assistant
 
             // 主动以完整盾运算的附魔，必须在同一次攻击发起前作答；此时尚未改变手值。
             var knight = CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.EldritchKnightLogic>(ActivePlayer);
-            bool preparedKnight=knight?.PrepareOperationShieldBreak(ActivePlayer,acted,_game)==true;
-            if(knight!=null&&GetAnsweredChoiceFor(ActivePlayer,HandEffect.BreakerRangeBreak,0)!=null)
+            bool suppressed = _game.WillSuppressOperationEffects(ActivePlayer);
+            bool preparedKnight=!suppressed && knight?.PrepareOperationShieldBreak(ActivePlayer,acted,_game)==true;
+            if(!suppressed&&knight!=null&&GetAnsweredChoiceFor(ActivePlayer,HandEffect.BreakerRangeBreak,0)!=null)
                 preparedKnight|=knight.PrepareOperationShieldBreak(ActivePlayer,ActivePlayer.GetOtherHand(acted),_game);
             if(preparedKnight&&TryStartWizardBoundary(ExecuteResolvedTurn)) return;
 

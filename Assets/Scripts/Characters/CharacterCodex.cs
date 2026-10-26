@@ -284,9 +284,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.SchoolOfDivinationId, "School of Divination", Alignment.TrueNeutral,
-                shortSkill: "7 后开启一轮窗口：他人行动时手牌等于你另一手快照则整次行动无效。",
+                shortSkill: "7 后开启一轮窗口：他人运算前持有快照数字：只改变手值，无其它效果。",
                 playGuide: "先用 7 铺设窗口，再围绕快照数字安排自己的手牌；7 本身不产生攻击。",
-                counter: "在窗口内避免留下与预言快照相同的手值，或用额外行动/跳过规避。",
+                counter: "持有快照数字时，可用本次运算调整手值；攻击、回复、合盾与其它技能均不会发动。等窗口结束再进攻。",
                 interactions: new[] { "与死灵学派：回合开始的免费暗蚀不是正常行动，不触发预言窗口。" });
 
             Add(CharacterDefinition.SchoolOfNecromancyId, "School of Necromancy", Alignment.NeutralEvil,

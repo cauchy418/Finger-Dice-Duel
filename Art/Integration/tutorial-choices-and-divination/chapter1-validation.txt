@@ -1,0 +1,107 @@
+PASS raycast AdventureConfirm
+PASS chapter1 progress 3/0/ChoosingTargetHand
+PASS chapter1 progress 3/1/ChoosingAttackerHand
+PASS chapter1 progress 3/1/ChoosingLockTarget
+PASS chapter1 progress 3/2/ChoosingAttackerHand
+PASS chapter1 progress 3/2/ChoosingTargetHand
+PASS chapter1 progress 3/3/ChoosingAttackerHand
+PASS chapter1 progress 3/4/ChoosingAttackerHand
+PASS chapter1 progress 3/4/ChoosingTargetHand
+PASS chapter1 progress 3/4/ChoosingLockTarget
+PASS chapter1 progress 3/5/ChoosingAttackerHand
+PASS chapter1 progress 3/6/ChoosingAttackerHand
+PASS chapter1 guided section completes 3
+PASS chapter1 remains on battlefield 3
+PASS raycast AdventureConfirm
+PASS chapter1 progress 7/0/ChoosingTargetHand
+PASS chapter1 progress 7/0/ChoosingTargetPlayer
+PASS chapter1 progress 7/0/ChoosingLockTarget
+PASS chapter1 maneuver visible 0
+PASS chapter1 maneuver restricted 0
+PASS chapter1 maneuver highlight 0
+PASS chapter1 maneuver visible 1
+PASS chapter1 maneuver restricted 1
+PASS chapter1 maneuver highlight 1
+PASS chapter1 no-effect choice remains visible
+PASS chapter1 no-effect restricted
+PASS chapter1 no-effect highlight
+PASS chapter1 one maneuver choice enabled
+PASS raycast WizardOption0
+PASS chapter1 progress 7/1/ChoosingAttackerHand
+PASS chapter1 progress 7/2/ChoosingAttackerHand
+PASS chapter1 progress 7/2/ChoosingTargetHand
+PASS chapter1 progress 7/2/ChoosingTargetPlayer
+PASS chapter1 progress 7/2/ChoosingLockTarget
+PASS chapter1 maneuver visible 0
+PASS chapter1 maneuver restricted 0
+PASS chapter1 maneuver highlight 0
+PASS chapter1 maneuver visible 1
+PASS chapter1 maneuver restricted 1
+PASS chapter1 maneuver highlight 1
+PASS chapter1 no-effect choice remains visible
+PASS chapter1 no-effect restricted
+PASS chapter1 no-effect highlight
+PASS chapter1 one maneuver choice enabled
+PASS raycast WizardOption1
+PASS chapter1 progress 7/3/ChoosingAttackerHand
+PASS chapter1 progress 7/4/ChoosingAttackerHand
+PASS chapter1 progress 7/4/ChoosingTargetHand
+PASS chapter1 progress 7/4/ChoosingTargetPlayer
+PASS chapter1 progress 7/4/ChoosingLockTarget
+PASS chapter1 maneuver visible 0
+PASS chapter1 maneuver restricted 0
+PASS chapter1 maneuver highlight 0
+PASS chapter1 maneuver visible 1
+PASS chapter1 maneuver restricted 1
+PASS chapter1 maneuver highlight 1
+PASS chapter1 no-effect choice remains visible
+PASS chapter1 no-effect restricted
+PASS chapter1 no-effect highlight
+PASS chapter1 one maneuver choice enabled
+PASS raycast WizardOption0
+PASS chapter1 progress 7/5/ChoosingAttackerHand
+PASS chapter1 progress 7/6/ChoosingAttackerHand
+PASS chapter1 progress 7/6/ChoosingTargetHand
+PASS chapter1 progress 7/6/ChoosingTargetPlayer
+PASS chapter1 progress 7/6/ChoosingLockTarget
+PASS chapter1 maneuver visible 0
+PASS chapter1 maneuver restricted 0
+PASS chapter1 maneuver highlight 0
+PASS chapter1 maneuver visible 1
+PASS chapter1 maneuver restricted 1
+PASS chapter1 maneuver highlight 1
+PASS chapter1 no-effect choice remains visible
+PASS chapter1 no-effect restricted
+PASS chapter1 no-effect highlight
+PASS chapter1 one maneuver choice enabled
+PASS raycast WizardOption1
+PASS chapter1 progress 7/7/ChoosingAttackerHand
+PASS chapter1 progress 7/8/ChoosingAttackerHand
+PASS chapter1 progress 7/8/ChoosingTargetHand
+PASS chapter1 progress 7/8/ChoosingTargetPlayer
+PASS chapter1 progress 7/8/ChoosingLockTarget
+PASS chapter1 maneuver visible 0
+PASS chapter1 maneuver restricted 0
+PASS chapter1 maneuver highlight 0
+PASS chapter1 maneuver visible 1
+PASS chapter1 maneuver restricted 1
+PASS chapter1 maneuver highlight 1
+PASS chapter1 no-effect choice remains visible
+PASS chapter1 no-effect restricted
+PASS chapter1 no-effect highlight
+PASS chapter1 one maneuver choice enabled
+PASS raycast WizardDecline
+PASS chapter1 progress 7/9/ChoosingAttackerHand
+PASS chapter1 guided section completes 7
+PASS chapter1 remains on battlefield 7
+PASS raycast AdventureConfirm
+PASS chapter1 progress 8/0/ChoosingTargetHand
+PASS chapter1 progress 8/0/ChoosingTargetPlayer
+PASS chapter1 progress 8/0/ChoosingLockTarget
+PASS chapter1 both yes/no choices visible 8/SwordsmanFollowUp
+PASS chapter1 yes/no restriction 8
+PASS chapter1 yes highlight 8
+PASS chapter1 no highlight 8
+PASS chapter1 progress 8/0/GameOver
+PASS chapter1 guided section completes 8
+PASS chapter1 remains on battlefield 8

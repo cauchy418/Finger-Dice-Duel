@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Assistant
         }
         public static string Hint(int level)=>new[]{"奥法骑士 · 碎盾附魔 / 魔能回响","塑能 · 十种法术 / 元素反应",
             "咒法 · 力场 / 王车易位","防护 · 抗性 / 屏障 / 易伤与免疫","惑控 · 失能 / 魅惑 / 受伤解除",
-            "死灵 · 抵挡 / 免费暗蚀 / 死者易手","预言 · 7的快照 / 无效窗口","幻术 · 镜像错位 / 伤害减半",
+            "死灵 · 抵挡 / 免费暗蚀 / 死者易手","预言 · 7的快照 / 效果压制","幻术 · 镜像错位 / 伤害减半",
             "变化 · 无序匹配 / 变羊 / 溢伤","法师选角 · 经典先攻 / 幻影试炼"}[level-11];
         public static string SampleKey(int level,string key)=>"FingerDiceDuel.Adventure.Chapter2.Level"+level+".Sample."+key+".Completed";
 
@@ -211,12 +211,12 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Divination(List<MageTowerSample> list)
         {
-            var a=new MageTowerSample("window","7的快照与窗口",new[]{3,4,1,4},"算出7时记录另一只手4。在你下回合开始前，手里有4的其它角色整次行动无效。")
+            var a=new MageTowerSample("window","7的快照与窗口",new[]{3,4,1,4},"算出7时记录另一只手4。在你下回合开始前，其它角色运算前持有4时，数字照常改变，但本次运算不产生任何其它效果。")
                 .Turn(0,0,1,1,"己左3＋护卫右4＝7，记录己右4。")
-                .Turn(1,0,0,0,"护卫持有右4；左1＋己左7本应8，但整次无效：左手仍1，你不掉血。")
-                .Turn(0,0,1,0,"你的回合开始，窗口结束。己左7＋护卫左1＝8，护卫20→12。")
-                .Turn(1,1,0,1,"护卫右4＋己右4＝8，这次正常生效，防−1使你20→11。");
-            a.Verify=l=>l.Player.Health==11&&l.Soldier.Health==12;list.Add(a);
+                .Turn(1,0,0,0,"护卫持有右4；左1＋己左7＝8，左手变8，但不攻击，你不掉血；回复、合盾和其它技能也不会发动。")
+                .Turn(0,1,1,1,"你的回合开始，窗口结束。己右4＋护卫右4＝8，正常攻击，护卫20→12。")
+                .Turn(1,0,0,1,"护卫左8＋己右8＝6，这次正常攻击，防−1使你20→13；护卫仍持4，但窗口已关闭。");
+            a.Verify=l=>l.Player.Health==13&&l.Soldier.Health==12&&l.Player.RightHand.Value==8&&l.Soldier.LeftHand.Value==6;list.Add(a);
             var b=new MageTowerSample("borrow","看持有数字，不看借入数字",new[]{3,2,4,1},"记录2，而护卫手上4/1，没有2；借你的2作加数不受影响。")
                 .Turn(0,0,1,0,"己左3＋护卫左4＝7，记录另一只手2。")
                 .Turn(1,0,0,1,"护卫左4＋己右2＝6，正常造成7伤，你20→13。");

@@ -98,9 +98,10 @@ namespace FingerDiceDuel.Core
         bool TryBlockAttack(AttackContext context, GameManager manager, int hitIndex);
     }
 
-    /// <summary>在行动结算前判断是否应整次无效（法师·预言学派）。</summary>
+    /// <summary>在运算前判断是否仅改数字、压制本次所有效果（法师·预言学派）。</summary>
     public interface IActionInvalidator
     {
+        bool CanInvalidateAction(PlayerState owner, PlayerState actor);
         bool TryInvalidateAction(PlayerState owner, PlayerState actor,
                                  Hand actedHand, Hand targetHand,
                                  GameManager manager, out string reason);

@@ -21,6 +21,12 @@ namespace FingerDiceDuel.UI
             bool maneuver=controller.IsHumanChooser && controller.PendingEffect==HandEffect.BattleMasterManeuver;
             var maneuvers=maneuver?controller.BattleMasterManeuverOptions:null;
             if(maneuver&&(maneuvers==null||maneuvers.Length==0)) maneuver=false;
+            bool guidedManeuver=false;
+            if(maneuver&&allowManeuver!=null)
+            {
+                guidedManeuver=!allowManeuver(StatusEffect.None);
+                foreach(var status in maneuvers)if(!allowManeuver(status))guidedManeuver=true;
+            }
             var request=controller.IsHumanChooser?controller.PendingWizardChoice:null;
             var options=controller.PendingSkillOptions;
             bool skill=controller.IsHumanChooser && options.Count>0;
@@ -82,6 +88,7 @@ namespace FingerDiceDuel.UI
                     // 战士·战斗大师：两个招式状态按钮（图标与状态图标栏同源）。
                     var status=maneuvers[index];
                     button.interactable=allowManeuver==null || allowManeuver(status);
+                    if(guidedManeuver)TutorialButton(button,button.interactable);else ClearTutorialOutline(button);
                     _wizardIcons[i].sprite=BattleArt.Get("Status/"+StatusNames.IconKeyOf(status));
                     label.text=StatusNames.Of(status);
                     button.onClick.AddListener(()=> {if(allowManeuver==null || allowManeuver(status)) controller.ChooseBattleMasterManeuver(status);changed();});
@@ -98,6 +105,7 @@ namespace FingerDiceDuel.UI
             if(!resistance && !skill) _wizardDecline.GetComponentInChildren<Text>().text=maneuver?"不附加":request.DeclineLabel;
             _wizardDecline.onClick.RemoveAllListeners();
             _wizardDecline.interactable=!maneuver || allowManeuver==null || allowManeuver(StatusEffect.None);
+            if(maneuver){if(guidedManeuver)TutorialButton(_wizardDecline,_wizardDecline.interactable);else ClearTutorialOutline(_wizardDecline);}
             _wizardDecline.onClick.AddListener(()=> {
                 if(maneuver) {if(allowManeuver==null || allowManeuver(StatusEffect.None)) controller.DeclineBattleMasterManeuver();}
                 else controller.ChooseWizardHand(null);

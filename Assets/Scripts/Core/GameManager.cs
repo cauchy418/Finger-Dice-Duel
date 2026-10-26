@@ -67,7 +67,7 @@ namespace FingerDiceDuel.Core
         public int DamageDealt;
         public bool WasBlocked;
 
-        /// <summary>本次行动被法师·预言学派整次无效。</summary>
+        /// <summary>本次运算受预言压制：数字照常改变，其它效果均不发动。</summary>
         public bool ActionInvalidated;
         public string InvalidatedBy;
 
@@ -1301,6 +1301,7 @@ namespace FingerDiceDuel.Core
             foreach(var p in _players)p.RestoreDeadSeat();
             ClearPreparedOperationAddend();
             DruidSecondAddend=null;
+            _suppressedOperationActors.Clear();
             ResetSeats();
             _skillLog.Clear();
             _brokenThisTurn.Clear();
@@ -1562,9 +1563,10 @@ namespace FingerDiceDuel.Core
             if (!IsLegalMove(actor, actedHand, targetHand, out string reason))
                 throw new InvalidOperationException($"非法运算：{reason}");
 
-            targetHand=PrepareOperationAddend(actor,actedHand,targetHand);
-            MarkSelfAddendIfAny(actor, targetHand);
-            if(DruidForms.IsDragon(actor))
+            bool suppressed = WillSuppressOperationEffects(actor);
+            if (!suppressed) targetHand=PrepareOperationAddend(actor,actedHand,targetHand);
+            if (!suppressed) MarkSelfAddendIfAny(actor, targetHand);
+            if(!suppressed && DruidForms.IsDragon(actor))
             {
                 var candidates=new List<Hand>();foreach(var p in Players)foreach(var h in p.Hands)if(IsLegalMove(actor,actedHand,h,out _))candidates.Add(h);
                 if(DruidSecondAddend==null) DruidSecondAddend=GetDruidPolicy(actor)?.SecondAddend(actor,actedHand,targetHand,candidates,this)??targetHand;
@@ -2224,9 +2226,13 @@ namespace FingerDiceDuel.Core
             // ---- 回合结束通知（牧师·战争领域：本回合未发起攻击则清空加成）----
             // 与燃烧 / 递减同一入口：界面（BoardController 的 _statusTurnEndFor）
             // 与无头（MatchRunner）两条路径都会走到这里，不会漂移。
+            bool suppressed = _suppressedOperationActors.Contains(actor);
             if(!endedAsSheep)foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
-                hook.OnTurnEnded(actor, this);
+                // 回合收尾仍处理旧加成/剑歌的失效，但不发动新的回合末技能。
+                if (!suppressed || hook is WarDomainLogic || hook is BladesingingLogic song && song.Singing)
+                    hook.OnTurnEnded(actor, this);
             ArcaneTurnEnded(actor);
+            _suppressedOperationActors.Remove(actor);
         }
 
         /// <summary>最近一次状态结算的说明（供战报 / 测试；空字符串 = 本次没有）。</summary>
@@ -2379,6 +2385,19 @@ namespace FingerDiceDuel.Core
             }
         }
 
+        private readonly HashSet<PlayerState> _suppressedOperationActors = new HashSet<PlayerState>();
+
+        /// <summary>纯预览：不记录日志、不消耗随机数，UI 与 AI 使用同一快照条件。</summary>
+        public bool WillSuppressOperationEffects(PlayerState actor)
+        {
+            if (actor == null) return false;
+            foreach (var owner in _players)
+                if (owner != null && owner.IsAlive && !ReferenceEquals(owner, actor))
+                    foreach (var invalidator in CharacterBehaviors.Implementers<IActionInvalidator>(owner))
+                        if (invalidator.CanInvalidateAction(owner, actor)) return true;
+            return false;
+        }
+
         private bool TryInvalidateAction(PlayerState actor, Hand actedHand, Hand targetHand,
                                          out string reason)
         {
@@ -2395,16 +2414,30 @@ namespace FingerDiceDuel.Core
         }
 
         private TurnResult ResolveInvalidatedAction(TurnResult result, PlayerState actor,
-                                                    Hand actedHand, Hand targetHand, string reason,
-                                                    bool extraAction)
+                                                    Hand actedHand, int targetValue, Hand targetHand, string reason,
+                                                    int gambleResult, bool extraAction)
         {
             result.ActedHand = actedHand;
             result.TargetHand = targetHand;
-            result.ResultValue = 0;
+            result.ActedHandValueBefore = actedHand.Value;
+            result.TargetHandValue = targetValue;
+            int raw = gambleResult > 0 ? gambleResult : Hand.ComputeSum(actedHand.Value, targetValue);
+            int value = Math.Max(1, StatusRules.ApplyResultModifiers(actor, raw));
+            bool wasShield = actedHand.IsShield;
+            actedHand.SetValue(value); // 5 也是普通数字；不合盾、不触发原盾破碎奖励。
+            // 维持旧盾的锁手约束随盾态消失而到期，不能留下永久锁；不通知其它碎盾技能。
+            if (wasShield)
+                foreach (var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))
+                    warden.OnOwnShieldBroken(actor, actedHand, this);
+            result.ResultValue = result.ActedHandValueAfter = value;
+            if (value != raw) result.FreezeHalvedFrom = raw;
+            result.WasGamble = gambleResult > 0;
+            result.GambleRoll = gambleResult;
             result.Effect = HandEffectType.None;
             result.ActionInvalidated = true;
+            _suppressedOperationActors.Add(actor);
             result.InvalidatedBy = reason;
-            NoteSkill(actor, "预言无效", reason ?? "本回合行动被无效");
+            NoteSkill(actor, "预言压制", $"手值变为 {value}，本次运算无其它效果");
             if (!extraAction)
             {
                 BumpOwnTurnOrdinal(actor);
@@ -2427,8 +2460,8 @@ namespace FingerDiceDuel.Core
             };
 
             if (TryInvalidateAction(actor, actedHand, targetHand, out string invalidReason))
-                return ResolveInvalidatedAction(result, actor, actedHand, targetHand,
-                                                invalidReason, extraAction);
+                return ResolveInvalidatedAction(result, actor, actedHand, targetValue, targetHand,
+                                                invalidReason, gambleResult, extraAction);
 
             _brokenThisTurn.Clear();
 
@@ -3329,6 +3362,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void BeginTurn()
         {
+            _suppressedOperationActors.Remove(CurrentPlayer);
             RefreshDynamicStats();
             PrepareRestraint(CurrentPlayer);
             SuppressAttackDamage = false;

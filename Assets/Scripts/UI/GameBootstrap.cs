@@ -3467,13 +3467,13 @@ namespace FingerDiceDuel.UI
             if (_controller.Phase == BoardPhase.ChoosingTargetPlayer && !giveUp)
                 canDecline = false;
 
-            _board.SetDeclineButtonVisible(canDecline && (_adventure == null || _adventure.AllowDeclineChoice));
+            _board.SetDeclineButtonVisible(canDecline);
             if (canDecline) _board.SetDeclineButtonLabel(giveUp ? "放弃攻击" : DeclineLabel());
 
             string acceptLabel = _controller.IsHumanChooser ? _controller.PendingAcceptLabel : null;
             // 没有合法目标时不给"发动"（只让玩家放弃），避免打出一个无效的攻击
             bool canAccept = canDecline && !giveUp && !string.IsNullOrEmpty(acceptLabel);
-            _board.SetAcceptButtonVisible(canAccept && (_adventure == null || _adventure.AllowAcceptChoice));
+            _board.SetAcceptButtonVisible(canAccept);
             if (canAccept) _board.SetAcceptButtonLabel(acceptLabel);
 
             // ⚠️ **法师·塑能学派：轮到"选伤害类型"时弹 10 选 1 面板，而不是普通的发动/不发动。**
@@ -3527,7 +3527,7 @@ namespace FingerDiceDuel.UI
 
             _board.SetWizardChoices(_controller,RefreshView, _adventure == null ? (Func<StatusEffect, bool>)null : _adventure.AllowManeuver);
 
-            _board.SetTutorialChoices(_adventure as MageTowerLesson);
+            _board.SetTutorialChoices(_adventure);
 
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
