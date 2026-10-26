@@ -1,0 +1,99 @@
+PASS first tutorial actual progression ChoosingTargetHand
+PASS first tutorial actual progression ChoosingTargetPlayer
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingTargetHand
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingTargetHand
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingAttackerHand
+PASS first tutorial actual progression ChoosingTargetHand
+PASS first tutorial actual progression ChoosingTargetPlayer
+PASS first tutorial actual progression GameOver
+PASS actual first tutorial victory
+PASS chapter one retains battlefield 1
+PASS chapter one end button 1
+PASS chapter one no extra action 1
+PASS raycast HistoryButton
+PASS battle log can open before summary 1
+PASS raycast TrialEnd
+PASS chapter one result on click 1
+PASS chapter one retains battlefield 2
+PASS chapter one end button 2
+PASS chapter one no extra action 2
+PASS raycast HistoryButton
+PASS battle log can open before summary 2
+PASS raycast TrialEnd
+PASS chapter one result on click 2
+PASS chapter one retains battlefield 3
+PASS chapter one end button 3
+PASS chapter one no extra action 3
+PASS raycast HistoryButton
+PASS battle log can open before summary 3
+PASS raycast TrialEnd
+PASS chapter one result on click 3
+PASS chapter one retains battlefield 4
+PASS chapter one end button 4
+PASS chapter one no extra action 4
+PASS raycast HistoryButton
+PASS battle log can open before summary 4
+PASS raycast TrialEnd
+PASS chapter one result on click 4
+PASS chapter one retains battlefield 5
+PASS chapter one end button 5
+PASS chapter one no extra action 5
+PASS raycast HistoryButton
+PASS battle log can open before summary 5
+PASS raycast TrialEnd
+PASS chapter one result on click 5
+PASS chapter one retains battlefield 6
+PASS chapter one end button 6
+PASS chapter one no extra action 6
+PASS raycast HistoryButton
+PASS battle log can open before summary 6
+PASS raycast TrialEnd
+PASS chapter one result on click 6
+PASS chapter one retains battlefield 7
+PASS chapter one end button 7
+PASS chapter one no extra action 7
+PASS raycast HistoryButton
+PASS battle log can open before summary 7
+PASS raycast TrialEnd
+PASS chapter one result on click 7
+PASS chapter one retains battlefield 8
+PASS chapter one end button 8
+PASS chapter one no extra action 8
+PASS raycast HistoryButton
+PASS battle log can open before summary 8
+PASS raycast TrialEnd
+PASS chapter one result on click 8
+PASS chapter one retains battlefield 9
+PASS chapter one end button 9
+PASS chapter one no extra action 9
+PASS raycast HistoryButton
+PASS battle log can open before summary 9
+PASS raycast TrialEnd
+PASS chapter one result on click 9
+PASS chapter one retains battlefield 10
+PASS chapter one end button 10
+PASS chapter one no extra action 10
+PASS raycast HistoryButton
+PASS battle log can open before summary 10
+PASS raycast TrialEnd
+PASS chapter one result on click 10
+PASS chapter one ten-trials wording
+PASS NPC guard legacy callers resolve
+PASS NPC phantom legacy callers resolve
+PASS finale free choice remains unrestricted
+PASS finale transmutation opens real target choice
+PASS finale target request
+PASS finale target icon present 0
+PASS finale target remains selectable 0
+PASS finale target icon present 1
+PASS finale target remains selectable 1
+PASS actual phantom icon in skill target button
+PASS phantom candidate actually displayed
+PASS finale can decline optional skill
+PASS normal game has no forced tutorial inputs
+PASS normal game hides end button

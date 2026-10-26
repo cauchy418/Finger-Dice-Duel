@@ -35,3 +35,5 @@
 战争领域调整后，完整快速回归为**1380通过、0失败**；界面脚本173个编译通过。新增`flow-validation.txt`的28项实机检查，覆盖旧存档解锁、未完成样本续玩、误选技能后的失败重试、终战胜负存档隔离、旧胜利保留、骑士三段过场，以及战争领域0/0和两类成长。与先前734项合计762项界面检查。
 
 `validate-tower.csx`与`validate-tower-flow.csx`保存本次引擎Play模式验收脚本，可经已有Codely的execute_csharp_script执行。脚本会临时设定验收用PlayerPrefs并在finally恢复；结束回到标题。`war-independent-growth.png`显示一次出手、一次受击后攻+1／防+1、双方各16生命。
+
+后续教学交互与留场结算已更新，当前验收脚本与截图见 [教学修正验收](../adventure-tutorial-guidance/README.md)。本目录原始脚本保留首版历史行为，不作为当前强制选择流程的验收入口。

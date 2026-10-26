@@ -53,7 +53,7 @@ namespace FingerDiceDuel.UI
                 OnAdventureIntroConfirmed,ReturnToAdventure,null,lesson.UsesClassicSetup?"学习先攻":"开始试验");
         }
 
-        private void ShowTowerResult(MageTowerLesson lesson)
+        private void SaveTowerResult(MageTowerLesson lesson)
         {
             if(lesson.SamplePassed)
                 PlayerPrefs.SetInt(MageTowerChapter.SampleKey(lesson.LevelNumber,lesson.Sample.Key),1);
@@ -64,6 +64,10 @@ namespace FingerDiceDuel.UI
                 if(lesson.LevelNumber==20)PlayerPrefs.SetInt(MageTowerChapter.CompletionKey,1);
             }
             PlayerPrefs.Save();
+        }
+
+        private void ShowTowerResult(MageTowerLesson lesson)
+        {
             Action next=null;string nextLabel=null;
             if(lesson.IsComplete)
             {

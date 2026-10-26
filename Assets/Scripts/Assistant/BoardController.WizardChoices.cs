@@ -15,6 +15,7 @@ namespace FingerDiceDuel.Assistant
         public IReadOnlyList<SkillChoiceOption> PendingSkillOptions => PendingWizardChoice?.Options ?? PendingRequest?.Options ?? Array.Empty<SkillChoiceOption>();
         public bool ChooseSkillOption(int value)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsOption(value))return false;
             if(Phase==BoardPhase.ChoosingWizardChoice && PendingWizardChoice!=null)
             {
                 if(!PendingWizardChoice.ChooseOption(value)) return false;
@@ -62,6 +63,7 @@ namespace FingerDiceDuel.Assistant
         }
         public bool ChooseWizardHand(Hand hand)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsHand(hand))return false;
             if(Phase!=BoardPhase.ChoosingWizardChoice || PendingWizardChoice==null) return false;
             var choice=PendingWizardChoice;
             if(!choice.Choose(hand)) return false;
@@ -76,6 +78,7 @@ namespace FingerDiceDuel.Assistant
         }
         public bool ChooseResistanceType(AttackDamageType type)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsResistance(type))return false;
             if(PendingEffect!=HandEffect.SchoolOfAbjurationResistanceType) return false;
             bool valid=false;foreach(var t in ResistanceNames.Choices) if(t==type) valid=true;
             var abj=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(ActivePlayer);

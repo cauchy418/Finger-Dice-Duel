@@ -24,7 +24,7 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1380项快速回归通过（7项大型统计独立运行）、173个UI运行时脚本编译通过；第二章及战争领域762项实机检查通过，见 [最新验收](Art/Integration/adventure-chapter-02/README.md)。历史验收保存在 `Art/Integration/` |
+| 测试 | 1381项快速回归通过（7项大型统计独立运行）、177个运行时脚本编译通过；教学输入及结算1562项实机检查通过，见 [最新验收](Art/Integration/adventure-tutorial-guidance/README.md)。历史验收保存在 `Art/Integration/` |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 当前统计规模：1v1 **98,000** 局、2v2 **156,800** 局、双将 **1,839,264** 局、集火实验 **180,000** 局；
@@ -598,3 +598,13 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 基础攻防改0/0。`WarDomainLogic`分别保存`AttackStacks`／`DefenseStacks`，`WarStacks`仅保留两者合计的兼容观测口。发起攻击后只增攻击，受到攻击后只增防御。统一`IAttackFinishedHook`在整次攻击结束后调用，不追溯影响本击；多段一次，独立反弹另算，盾挡／闪避／零伤仍算，取消／状态伤害不算。转移前目标与实际承受者沿用原目标通知口径，各自只计一次。自身回合未发起攻击则回合末清两类层数，重开也清零；双将两种顺序经部件遍历获取相同能力。
 
 图鉴、角色表、RULES、README与策略说明同步。AI手值和模式权重保留，伤害估算读取真实独立攻防层；既有大规模胜率标为调整前统计，未冒充新版本胜率。
+
+## 教学选择与结果观察（2026-10-26）
+
+第二章前九课注入`ITutorialInput`。`MageTowerLesson.Choices`为当前技能请求提供手牌／角色、命名选项、元素、抗性、接受／放弃及换位约束；UI用相同规则禁用、描边指定按钮，`BoardController`各输入出口再次校验。只约束人类选择，NPC内部点击不被误拦；终战不注入规则。死者易手等多阶段请求须同步维护映射，全部37试验回归会检查错误输入不改变回合。
+
+次战所有样本都有命中后的护卫观察回合。冻结走无合法操作的正常跳过；燃烧／中毒／感电／腐朽等按真实起止回合结算，不通过结算界面遮住最后结果。
+
+`GameBootstrap.AdventureResult`统一两章留场：完成时先写进度、显示`TrialEnd`、暂停AI及手牌输入；点击后调用原结果卡。结算按钮不受战报遮罩拦截，退出／重开清理。四人指引位于中央安全横条，`LayoutRingActionTray`的LateUpdate也遵守该布局，避免下一帧覆盖阶段提示。
+
+技能目标图标读取`PlayerState.BattleEmblemKey`；`BattleArt.Get`兼容NPC的旧Subclasses路径，护卫、幻影与原骑士都能解析。变形／召唤物继续显示自身战斗图案。最新截图、脚本和日志见 [验收](Art/Integration/adventure-tutorial-guidance/README.md)。

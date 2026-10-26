@@ -40,6 +40,7 @@ namespace FingerDiceDuel.UI
         private readonly AdventureGuideHistory _history = new AdventureGuideHistory();
         private Button _previousGuide, _nextGuide, _currentGuide;
         private Text _guidePage;
+        private bool _compact;
 
         /// <summary>模态层是否可见（开场 / 胜利 —— 挡住桌面输入）。</summary>
         public bool IsModalVisible => _modalRoot != null && _modalRoot.gameObject.activeSelf;
@@ -131,12 +132,40 @@ namespace FingerDiceDuel.UI
             _guideRoot.gameObject.SetActive(true);
         }
 
+        public void SetCompact(bool compact)
+        {
+            if(_compact==compact)return;_compact=compact;
+            _guideRoot.anchoredPosition=compact?Vector2.zero:new Vector2(-750,50);
+            _guideRoot.sizeDelta=compact?new Vector2(1180,112):new Vector2(320,470);
+            PlaceGuide(_guideAvatar.rectTransform,compact?new Vector2(-550,10):new Vector2(-108,156),Vector2.one*(compact?56:72));
+            PlaceGuide(_guideName.rectTransform,compact?new Vector2(-425,30):new Vector2(40,174),compact?new Vector2(170,24):new Vector2(160,50));
+            _guideName.fontSize=compact?16:18;
+            PlaceGuide(_guideText.rectTransform,compact?new Vector2(115,0):new Vector2(0,-7),compact?new Vector2(870,96):new Vector2(278,250));
+            PlaceGuide(_guidePage.rectTransform,compact?new Vector2(-425,5):new Vector2(0,-150),compact?new Vector2(170,18):new Vector2(278,24));
+            _guidePage.fontSize=compact?13:16;
+            var buttons=new[]{_previousGuide,_nextGuide,_currentGuide};
+            for(int i=0;i<buttons.Length;i++)
+            {
+                PlaceGuide((RectTransform)buttons[i].transform,compact?new Vector2(-520+i*95,-31):new Vector2(-99+i*99,-197),compact?new Vector2(85,28):new Vector2(92,34));
+                var text=buttons[i].GetComponentInChildren<Text>();text.rectTransform.sizeDelta=compact?new Vector2(82,26):new Vector2(88,30);text.fontSize=compact?14:16;
+            }
+            RefreshGuidePage();
+        }
+        private static void PlaceGuide(RectTransform rect,Vector2 position,Vector2 size)
+        {rect.anchoredPosition=position;rect.sizeDelta=size;}
+
         private void RefreshGuidePage()
         {
             var page = _history.Current;
             if (page == null) return;
             _guideName.text = page.Title;
-            FrontEndArt.SetNarrationText(_guideText, page.Text, 278f, 19, reflow: true);
+            if(_compact)
+            {
+                // 横条使用原生连续换行，避免画布缩放后手工断行与自动换行叠出孤行。
+                _guideText.fontSize=18;
+                _guideText.text=(page.Text??"").Replace("\r","").Replace("\n"," ");
+            }
+            else FrontEndArt.SetNarrationText(_guideText,page.Text,278f,19,reflow:true);
             _previousGuide.interactable = _history.CanPrevious;
             _nextGuide.interactable = _history.CanNext;
             _currentGuide.interactable = _history.CanNext;
@@ -280,6 +309,7 @@ namespace FingerDiceDuel.UI
             _nextGuide = MakeGuideButton("GuideNext", "下一页", new Vector2(0, -197), () => { _history.Next(); RefreshGuidePage(); });
             _currentGuide = MakeGuideButton("GuideCurrent", "回到当前", new Vector2(99, -197), () => { _history.Latest(); RefreshGuidePage(); });
             _guidePage = MakeText(_guideRoot, "GuidePage", new Vector2(0, -150), new Vector2(278, 24), 16, TextAnchor.MiddleCenter, BattleArt.Ink);
+            _guideText.horizontalOverflow=HorizontalWrapMode.Wrap;
             _guideText.rectTransform.sizeDelta = new Vector2(278, 250);
             _guideText.rectTransform.anchoredPosition = new Vector2(0, -7);
             go.SetActive(false);

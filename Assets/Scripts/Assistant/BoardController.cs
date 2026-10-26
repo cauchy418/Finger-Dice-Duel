@@ -456,7 +456,7 @@ namespace FingerDiceDuel.Assistant
         /// 玩家的选盾点击被静默丢弃。合成一个可测的方法，就不会再出现这种分裂。
         /// </summary>
         public bool CanAct(Hand hand)
-            => IsHumanChooser && CanClick(hand);
+            => IsHumanChooser && CanClick(hand) && (TutorialInput==null||TutorialInput.AllowsHand(hand));
 
         /// <summary>
         /// 由 UI 注入：当"该做决定的人"是 AI 时，用它来代做抉择。
@@ -598,6 +598,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool SkipTurn()
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsSkip)return false;
             if (!CanSkipTurn) return false;
 
             // 邪术师·至高妖精：先选目标，不立刻结束回合
@@ -1744,6 +1745,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>玩家点击了一张手牌。返回 true 表示这次点击被接受。</summary>
         public bool ClickHand(Hand hand)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsHand(hand))return false;
             // 诊断：记录每一次点击（含阶段与结果）——
             // "点了没反应"这类问题光看状态字段定位不到是哪一步拒的。
             _advanceTrace.Add($"CLICK h={hand?.Value.ToString() ?? "N"}" +
@@ -3260,6 +3262,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool DeclinePendingChoice()
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsDecline)return false;
             if (Phase == BoardPhase.ChoosingWizardChoice) return ChooseWizardHand(null);
             if (Phase == BoardPhase.ChoosingSeatSwapTarget) return CancelCastling();
             if (!IsInChoicePhase) return false;
@@ -3317,6 +3320,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool ChooseDamageType(DamageType type)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsDamageType(type))return false;
             if (type == DamageType.None) return false;
             if (PendingEffect != HandEffect.SchoolOfEvocationDamageType) return false;
 
@@ -3366,6 +3370,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool AcceptPendingChoice()
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsAccept)return false;
             if(PendingRequest?.Options.Count>0) return false;
             if(PendingEffect==HandEffect.SchoolOfAbjurationResistanceType) return false;
             // 战斗招式必须走专属面板（2 选 1 + 不发动），不接受"发动"按钮直接跳过。

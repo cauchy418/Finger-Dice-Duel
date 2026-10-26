@@ -154,8 +154,8 @@ namespace FingerDiceDuel.Assistant
         // ============================================================
 
         /// <summary>教程白名单：这张手当前允许被【玩家】点击吗？</summary>
-        public bool AllowAcceptChoice => !TryRequiredChoice(out var hand) || hand != null;
-        public bool AllowDeclineChoice => !TryRequiredChoice(out var hand) || hand == null;
+        public virtual bool AllowAcceptChoice => !TryRequiredChoice(out var hand) || hand != null;
+        public virtual bool AllowDeclineChoice => !TryRequiredChoice(out var hand) || hand == null;
 
         public bool AllowManeuver(StatusEffect status)
             => IsFreeStage || CurrentBeat?.Maneuver == null || CurrentBeat.Maneuver.Value == status;
@@ -190,7 +190,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>当前引导该点的手（供界面高亮/箭头；无引导或自由拍为 null）。</summary>
-        public Hand SuggestedHand
+        public virtual Hand SuggestedHand
         {
             get
             {

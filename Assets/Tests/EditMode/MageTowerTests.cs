@@ -107,11 +107,45 @@ namespace FingerDiceDuel.Tests
             for(int guard=0;guard<160;guard++)
             {
                 l.Tick();if(l.IsFinished)break;
+                AuditGuidedChoice(l);
                 bool ok=l.Board.IsHumanChooser?ResolveHuman(l):l.Board.Phase==BoardPhase.ChoosingAttackerHand?l.Board.MakeAutomaticMove():l.Board.ResolvePendingAiChoice();
                 Assert.IsTrue(ok,"无法推进 "+l.LevelNumber+"/"+l.Sample.Key+" turn="+l.Game.TurnCount+" phase="+l.Board.Phase+" effect="+l.Board.PendingEffect+" hint="+l.Board.Hint);
             }
             l.Tick();
             Assert.IsTrue(l.IsComplete,"目标失败 "+l.LevelNumber+"/"+l.Sample.Key+" turn="+l.Game.TurnCount+" hp="+l.Player.Health+"/"+l.Soldier.Health+" hands="+l.Player.LeftHand.Value+"/"+l.Player.RightHand.Value+" log="+string.Join(" | ",l.Board.Log));
+        }
+        private static void AuditGuidedChoice(MageTowerLesson l)
+        {
+            var b=l.Board;var rule=b.TutorialInput;if(rule==null||!b.IsHumanChooser)return;
+            int turn=l.Game.TurnCount;
+            if(b.PendingSkillOptions.Count>0)
+            {
+                int allowed=0;
+                foreach(var option in b.PendingSkillOptions)
+                    if(rule.AllowsOption(option.Value))allowed++;
+                    else Assert.IsFalse(b.ChooseSkillOption(option.Value),"非教学选项不得绕过禁用按钮");
+                Assert.AreEqual(1,allowed,"每次命名技能必须有唯一指定答案");
+            }
+            else if(b.PendingEffect==HandEffect.SchoolOfEvocationDamageType)
+            {
+                int allowed=0;foreach(var type in StatusNames.AllTypes)
+                    if(rule.AllowsDamageType(type))allowed++;else Assert.IsFalse(b.ChooseDamageType(type));
+                Assert.AreEqual(1,allowed);
+            }
+            else if(b.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType)
+            {
+                int allowed=0;foreach(var type in ResistanceNames.Choices)
+                    if(rule.AllowsResistance(type))allowed++;else Assert.IsFalse(b.ChooseResistanceType(type));
+                Assert.AreEqual(1,allowed);
+            }
+            else if(b.PendingWizardChoice!=null||b.PendingRequest.HasValue)
+            {
+                if(!rule.AllowsDecline)Assert.IsFalse(b.DeclinePendingChoice(),"必须发动时不能放弃");
+                if(!rule.AllowsAccept)Assert.IsFalse(b.AcceptPendingChoice(),"必须继续攻击时不能再次放弃攻击");
+                foreach(var p in l.Game.Players)foreach(var hand in p.Hands)
+                    if(!rule.AllowsHand(hand))Assert.IsFalse(b.ClickHand(hand),"非指定目标或手牌不得接受");
+            }
+            Assert.AreEqual(turn,l.Game.TurnCount,"误选不推进回合");
         }
         [Test] public void All_guided_samples_finish_through_real_board_choices()
         {for(int level=11;level<20;level++)for(int sample=0;sample<MageTowerChapter.Samples(level).Count;sample++)Drive(MageTowerLesson.Create(level,sample));}
@@ -129,6 +163,20 @@ namespace FingerDiceDuel.Tests
                     Assert.AreEqual("FingerDiceDuel.Adventure.Level"+level+".Completed",a.CompletionKey);
                     Assert.AreEqual("Adventure/guide_arcane_codex",a.GuideAvatarKey);
                 }
+            }
+        }
+        [Test] public void Every_evocation_sample_includes_a_guard_observation_turn()
+        {
+            for(int i=0;i<13;i++)
+            {
+                var lesson=MageTowerLesson.Create(12,i);Assert.AreEqual(4,lesson.Sample.Turns.Count);
+                Assert.AreEqual(1,lesson.Sample.Turns[3].Actor);Drive(lesson);
+                Assert.IsTrue(ReferenceEquals(lesson.Board.ActivePlayer,lesson.Player));
+                if(i==0)Assert.AreEqual(11,lesson.Soldier.Health);
+                if(i==2)Assert.AreEqual(13,lesson.Soldier.Health);
+                if(i==5)Assert.AreEqual(12,lesson.Soldier.Health);
+                if(i==7)Assert.AreEqual(14,lesson.Soldier.Health);
+                if(i==10)Assert.AreEqual(1,lesson.Soldier.StatusTurnsLeft(StatusEffect.Frozen));
             }
         }
         [Test] public void Finale_only_accepts_wizards_and_permanent_affinities_survive_hits()

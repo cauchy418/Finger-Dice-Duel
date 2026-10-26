@@ -8,6 +8,7 @@ namespace FingerDiceDuel.Assistant
     public sealed class MageTowerSample
     {
         public string Key, Title, Introduction, Conclusion;
+        public DamageType CastingType;
         public int[] Hands;
         public int FirstSeat;
         public int GuardAttack, GuardDefense;
@@ -30,7 +31,7 @@ namespace FingerDiceDuel.Assistant
         {Actor=actor;Source=source;Target=target;Addend=addend;Narration=narration;}
     }
 
-    public sealed class MageTowerLesson : AdventureLesson
+    public sealed partial class MageTowerLesson : AdventureLesson
     {
         public readonly MageTowerSample Sample;
         public readonly PlayerState[] Seats;
@@ -62,7 +63,7 @@ namespace FingerDiceDuel.Assistant
             && _board.Phase!=BoardPhase.ChoosingDefenseShield && !_board.CollegeOfValorChoicePending;
         public override string Narration => _level==20
             ? "自由试炼：留意幻影的永久修正与汲能回路。强酸会降防；腐朽、失能、预言和变化仍可正常生效。"
-            : CurrentBeat?.Narration??"完成当前技能选择后查看试验结果。";
+            : ChoiceInstruction+(CurrentBeat?.Narration??"完成当前技能选择后查看试验结果。");
 
         private MageTowerLesson(int level,int index,int count,MageTowerSample sample,PlayerState[] seats,GameManager game,BoardController board)
             : base(game,board)
@@ -84,16 +85,12 @@ namespace FingerDiceDuel.Assistant
             while(CurrentBeat?.Complete?.Invoke(this)==true)base.Tick();
             if(_level!=20 && FinishedActions && (Sample.Verify?.Invoke(this)??true))_passed=true;
         }
-        public override bool AllowClick(Hand hand)
-        {
-            if(_level==20)return true;
-            // 技能选择沿用真实目标/手牌界面；只约束普通运算的源与加数。
-            if(_board.PendingWizardChoice!=null || _board.PendingRequest.HasValue)return true;
-            if(_board.Phase==BoardPhase.ChoosingTargetPlayer)return _game.OwnerOfHand(hand)!=_player;
-            return base.AllowClick(hand);
-        }
+        public override bool AllowClick(Hand hand)=>AllowsHand(hand);
+        public override bool AllowAcceptChoice=>AllowsAccept;
+        public override bool AllowDeclineChoice=>AllowsDecline;
         public override void Bind(BoardController board)
         {
+            board.TutorialInput=_level<20?this:null;
             foreach(var p in Seats)if(!ReferenceEquals(p,_player))
                 board.BindPlayer(p,_level==20?(IMoveSelector)new GreedyChoiceProvider {UseLearnedFocus=true}:new TowerMoves(this),
                     _game.GetChoiceProvider(p) as IPlayerChoiceSink??new SimpleChoiceProvider());

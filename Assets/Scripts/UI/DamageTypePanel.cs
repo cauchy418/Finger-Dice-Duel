@@ -133,6 +133,11 @@ namespace FingerDiceDuel.UI
             return btn;
         }
 
+        public void SetTutorialFilter(Func<DamageType,bool> allows)
+        {
+            for(int i=0;i<_buttons.Length;i++)GameBoardUI.TutorialButton(_buttons[i],allows==null?(bool?)null:allows(AllTypes[i]));
+        }
+
         /// <summary>显示面板。</summary>
         public void Show()
         {

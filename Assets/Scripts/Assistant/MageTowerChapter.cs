@@ -76,10 +76,10 @@ namespace FingerDiceDuel.Assistant
         {
             var types=new[]{DamageType.Fire,DamageType.Cold,DamageType.Lightning,DamageType.Thunder,DamageType.Acid,
                 DamageType.Poison,DamageType.Radiant,DamageType.Necrotic,DamageType.Psychic,DamageType.Force};
-            var explains=new[]{"燃烧：目标回合结束失去3生命。","寒冷先附凝霜；其运算结果减半取整，至少为1，不直接冻结。",
+            var explains=new[]{"燃烧：目标回合结束失去3生命。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
                 "感电：目标回合开始，自身及相邻角色各受1点闪电。","残响：限制攻击距离，不限制借用加数。",
                 "强酸命中后防−2，首次命中不提前享受这次降防。","中毒：目标回合开始失去2生命。",
-                "光耀附致盲，不能选择对手5作加数；与圣光不同。","腐朽：无法回复生命。",
+                "光耀附目盲，只能借用距离1的角色手牌；与圣光不同。","腐朽：无法回复生命。",
                 "心灵随机附恐慌或震慑。恐慌降攻且不能攻击来源；震慑不能发起攻击。","力场无附加负面状态；下一课展示其穿盾能力。"};
             for(int i=0;i<types.Length;i++)
             {
@@ -88,14 +88,23 @@ namespace FingerDiceDuel.Assistant
                     .Turn(0,0,1,0,"己左1＋护卫左3＝4。选择【放弃本次攻击】，再选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。此步只存类型，不伤人。")
                     .Turn(1,0,0,0,"护卫左3＋己左4＝7，无效果；下一击使用刚选择的类型。")
                     .Turn(0,0,1,1,"己左4＋护卫右2＝6。选择继续攻击，确认护卫。"+explains[i]);
+                s.CastingType=type;
                 if(type==DamageType.Fire)s.Turn(1,0,0,0,"护卫左7＋己左6＝3。回合结束燃烧3，护卫14→11。");
-                if(type==DamageType.Cold)s.Turn(1,1,0,0,"护卫右2＋己左6＝8→凝霜减半4；实际攻击造成5伤，你20→15。");
+                if(type==DamageType.Cold)s.Turn(1,1,0,0,"护卫右2＋己左6＝8→覆霜减半4；实际攻击造成5伤，你20→15。");
                 if(type==DamageType.Necrotic)s.Turn(1,0,0,1,"护卫左7＋己右2＝9，本应回复；腐朽使实际回复0，仍为14生命。");
+                if(type!=DamageType.Fire&&type!=DamageType.Cold&&type!=DamageType.Necrotic)
+                    s.Turn(1,0,0,0,"护卫再行动一次：左7＋己左6＝3，无攻击／回复／合盾。"+
+                        (type==DamageType.Radiant?"目盲只允许借距离1的角色手牌；本样本双方相邻，仍可借左6。":
+                         type==DamageType.Lightning?"回合开始已感电：护卫和相邻的你各失去1生命。":
+                         type==DamageType.Poison?"回合开始中毒失去2生命，护卫14→12。":
+                         type==DamageType.Thunder?"残响仍限制攻击距离为1，状态剩余回合递减。":
+                         type==DamageType.Acid?"强酸使防御−2；查看名字旁的状态与防御值。":
+                         type==DamageType.Psychic?"恐慌会降攻且不能攻击来源，震慑会禁止攻击；均可进行这次无效果运算。":"力场没有附加负面状态；与前面的元素对照。"));
                 s.Verify=l=>HasTypeInLog(l,type);list.Add(s);
             }
-            Reaction(list,"freeze",DamageType.Cold,StatusEffect.Frost,"寒冷＋凝霜","清除凝霜／潮湿，附冻结2回合。冻结使双手无法行动；点击跳过回合继续，不会判为败北。",
+            Reaction(list,"freeze",DamageType.Cold,StatusEffect.Frost,"寒冷＋覆霜","清除覆霜／潮湿，附冻结2回合。冻结使双手无法行动；点击跳过回合继续，不会判为败北。",
                 l=>l.Soldier.HasStatus(StatusEffect.Frozen));
-            Reaction(list,"steam",DamageType.Fire,StatusEffect.Wet,"火焰＋潮湿","本击6×1.5＝9；清除潮湿与凝霜，不附燃烧。",
+            Reaction(list,"steam",DamageType.Fire,StatusEffect.Wet,"火焰＋潮湿","本击6×1.5＝9；清除潮湿与覆霜，不附燃烧。",
                 l=>l.Soldier.Health==11&&!l.Soldier.HasStatus(StatusEffect.Burn));
             Reaction(list,"conduct",DamageType.Lightning,StatusEffect.Wet,"闪电＋潮湿","本击6×1.5＝9；保留潮湿并附感电。感电在护卫回合开始立即跳电。",
                 l=>l.Soldier.HasStatus(StatusEffect.Shock));
@@ -109,8 +118,13 @@ namespace FingerDiceDuel.Assistant
         {
             var s=new MageTowerSample(key,title,new[]{1,2,3,2},"训练配置：护卫预置"+StatusNames.Of(initial)+"2回合。"+text)
                 .Turn(0,0,1,0,"己左1＋护卫左3＝4，放弃攻击，选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。")
-                .Rest(1,"本试验护卫休整一次，保留预置状态；不会在凝霜或潮湿下强行演算错误的7。")
+                .Rest(1,"本试验护卫休整一次，保留预置状态；不会在覆霜或潮湿下强行演算错误的7。")
                 .Turn(0,0,1,1,"己左4＋护卫右2＝6，继续攻击护卫。"+text);
+            s.CastingType=type;
+            s.Turn(1,key=="freeze"?0:1,0,0,
+                key=="freeze"?"护卫冻结，两只手都不能行动，本回合按普通规则跳过；查看冻结剩余1回合。":
+                key=="conduct"?"护卫回合开始感电：自身与相邻角色各受1点闪电。右2＋己左6＝8，潮湿−1变7，无效果；原潮湿随后自然到期。":
+                "护卫右2＋己左6＝8，正常攻击；潮湿已清除，也没有燃烧，所以回合结束不受燃烧伤害。");
             s.Prepare=g=>g.PlayerB.ApplyStatus(initial,2);
             s.Introduction="训练配置：护卫预置"+StatusNames.Of(initial)+"2回合，准备期休整后剩1回合。"+text;
             s.Verify=verify;list.Add(s);

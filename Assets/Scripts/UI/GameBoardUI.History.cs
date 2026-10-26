@@ -37,6 +37,7 @@ namespace FingerDiceDuel.UI
                 _battleLog.SetAsLastSibling();
                 _exitButton.transform.SetAsLastSibling();
                 _historyButton.transform.SetAsLastSibling();
+                if(_trialEndButton!=null&&_trialEndButton.gameObject.activeSelf)_trialEndButton.transform.SetAsLastSibling();
                 Canvas.ForceUpdateCanvases();
                 _battleLogScroll.verticalNormalizedPosition = 0;
             }

@@ -21,6 +21,7 @@ namespace FingerDiceDuel.Assistant
 
         public bool BeginCastling()
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsCastling)return false;
             if (!CanCastle) return false;
             SelectedHand=null; _selectedTarget=null; _chosenDefenseShield=null; _shieldChoices.Clear();
             _pendingChoiceCandidates.Clear();
@@ -46,6 +47,7 @@ namespace FingerDiceDuel.Assistant
 
         public bool CompleteCastling(PlayerState target)
         {
+            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsHand(target?.LeftHand))return false;
             if (Phase!=BoardPhase.ChoosingSeatSwapTarget || !CanCastleWith(target)) return false;
             var actor=ActivePlayer;
             int from=_game.SeatOf(actor), to=_game.SeatOf(target);

@@ -140,8 +140,8 @@ namespace FingerDiceDuel.UI
             if (icon == null) icon = ArtImage((RectTransform)button.transform, "SkillIcon", "Subclasses/fighter_champion", new Vector2(-88, 0), new Vector2(48, 48));
             icon.gameObject.SetActive(true);
             icon.rectTransform.anchoredPosition = new Vector2(-width / 2 + 37, 0);
-            string id = owner?.Definition?.Id ?? "fighter_champion";
-            icon.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
+            icon.sprite = BattleArt.Get(owner?.BattleEmblemKey ?? "Subclasses/fighter_champion");
+            icon.enabled=icon.sprite!=null;
             icon.preserveAspect = true;
             var label = button.GetComponentInChildren<Text>();
             label.font = UiFont.Bold;

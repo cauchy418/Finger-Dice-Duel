@@ -670,7 +670,7 @@ namespace FingerDiceDuel.UI
             _screenStoryChapter = new ScreenGroup();
             _screenStoryChapter.Add(MakeSubTitle(_selectRoot, "StoryChaptersTitle", "剧情冒险").gameObject);
             _screenStoryChapter.Add(MakeSubModeButton(_selectRoot, "StoryChapter01", new Vector2(0f, 60f),
-                "第一章：边境哨站", "初战至终战 · 老兵的指尖骰术指导",
+                "第一章：边境哨站", "十场试炼 · 老兵的指尖骰术指导",
                 () => OpenStoryChapter(1)).gameObject);
             var tower = MakeSubModeButton(_selectRoot, "StoryChapter02", new Vector2(0f, -96f),
                 "第二章：法师高塔", "奥法骑士 / 法师九学派与试炼", () => OpenStoryChapter(2));
@@ -3023,6 +3023,10 @@ namespace FingerDiceDuel.UI
         {
             _board.HideGameOver();
             _board.HideAdventureGuide();
+            _board.ShowTrialEndButton(false);
+            _board.SetTutorialChoices(null);
+            _board.ConfigureAdventureGuide(false);
+            _adventureEndReady=false;
             _board.SetBattleBackground();
             _board.ShowAdventureObstacles(false);
             _diceRoll?.SetLesson(null, null);
@@ -3211,7 +3215,7 @@ namespace FingerDiceDuel.UI
 
         private void OnHandClicked(PlayerState owner, Hand hand)
         {
-            if (_controller == null || _board.AdventureModalVisible) return;
+            if (_controller == null || _board.AdventureModalVisible || _adventure?.IsFinished==true) return;
 
             // 关键：用 IsHumanChooser 而不是 IsHumanTurn。
             // 进入"选盾"阶段时依然是攻击方的回合，但该做决定的是**防守方**；
@@ -3244,7 +3248,7 @@ namespace FingerDiceDuel.UI
         private bool AdventureAllowsClick(Hand hand)
         {
             if (_adventure == null) return true;
-            if (!_adventure.Started || _board.AdventureModalVisible) return false;
+            if (!_adventure.Started || _adventure.IsFinished || _board.AdventureModalVisible) return false;
             if (!_controller.IsHumanChooser) return true;
             return _adventure.AllowClick(hand);
         }
@@ -3261,7 +3265,7 @@ namespace FingerDiceDuel.UI
         {
             if (_controller == null) return;
             if (_controller.Phase == BoardPhase.GameOver) return;
-            if (_board.AdventureModalVisible || (_adventure != null && !_adventure.Started)) { _aiDelayTimer = 0f; return; }
+            if (_board.AdventureModalVisible || (_adventure != null && (!_adventure.Started || _adventure.IsFinished))) { _aiDelayTimer = 0f; return; }
             if (IsPausing) return;              // 回合间停顿：暂停 AI 推进
 
             // ⚠️⚠️ **吟游诗人·勇气学院的抉择没答完之前，AI 一律不许行动。**
@@ -3523,35 +3527,21 @@ namespace FingerDiceDuel.UI
 
             _board.SetWizardChoices(_controller,RefreshView, _adventure == null ? (Func<StatusEffect, bool>)null : _adventure.AllowManeuver);
 
+            _board.SetTutorialChoices(_adventure as MageTowerLesson);
+
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
             {
-                if (_adventure.Started && !_adventure.IsFinished)
+                _board.ConfigureAdventureGuide(_isTwoOnTwo);
+                if(_adventure.Started&&_adventure.IsFinished&&!_adventureVictoryShown)
+                    _board.ShowAdventureNarration(_adventure.GuideName+" · 观察结果","本次试炼的最后一回合已结束。可查看战场与战斗记录，点击右侧【试炼结束】查看总结。",_adventure.GuideAvatarKey);
+                else if (_adventure.Started && !_adventure.IsFinished)
                     _board.ShowAdventureNarration($"{_adventure.GuideName} · {_adventure.StepNumber}/{_adventure.StepCount}", _adventure.Narration,
                                                   _adventure.GuideAvatarKey);
                 else
                     _board.HideAdventureNarration();
 
-                if (_adventure.IsFinished && !_adventureVictoryShown)
-                {
-                    _adventureVictoryShown = true;
-                    if(_adventure is MageTowerLesson tower){ShowTowerResult(tower);return;}
-                    if (_adventure.IsComplete)
-                    {
-                        PlayerPrefs.SetInt(_adventure.CompletionKey, 1);
-                        if (_adventure.LevelNumber == 10) PlayerPrefs.SetInt(AdventureChapter.CompletionKey, 1);
-                        PlayerPrefs.Save();
-                    }
-                    string heading = _adventure.IsComplete ? _adventure.ResultHeading
-                        : _game.Winner == null ? "训练平局" : "训练失利";
-                    int next = _adventure.LevelNumber + 1;
-                    _board.ShowAdventureVictory(heading + " · " + _adventure.DisplayTitle,
-                        _adventure.IsComplete ? _adventure.SummaryText : _adventure.FailureText, _adventure.GuideAvatarKey,
-                        OnAdventureReplay, ReturnToAdventure,
-                        _adventure.IsComplete && next==11 ? (System.Action)(()=>ShowTowerTransition()) : _adventure.IsComplete && next <= AdventureChapter.BattleCount ? (System.Action)(() => StartAdventureLevel(next)) : null,
-                        next==11 ? "前往法师高塔" : next <= AdventureChapter.BattleCount ? "继续" + AdventureBattleName(next) : null,
-                        _adventure.UsesClassicSetup ? "重新投骰" : "重打本关");
-                }
+                if(_adventure.IsFinished&&!_adventureVictoryShown){PrepareAdventureResult();_board.SetHint("试炼已结束 · "+DescribeLastTurn(),"");}
             }
 
             if (_controller.Phase == BoardPhase.GameOver && _adventure == null)
