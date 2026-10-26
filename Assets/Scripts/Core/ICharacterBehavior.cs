@@ -130,13 +130,11 @@ namespace FingerDiceDuel.Core
         void OnTurnEnded(PlayerState owner, GameManager manager);
     }
 
-    /// <summary>
-    /// **被选为攻击目标**的通知（牧师·战争领域：挨打也是成长）。
-    ///
-    /// 玩家口径：**被选中即算"受到攻击"** —— 被闪避 / 被盾挡 / 伤害为 0 都触发；
-    /// 只有攻击被邪术师·至高妖精**取消**不算（那时攻击没有发生过）。
-    /// 被转移 / 代挡后，**实际承受者**同样收到一次通知。
-    /// </summary>
+    /// <summary>整次攻击结算后通知；闪避、盾挡与零伤害也算，取消和持续伤害不算。</summary>
+    public interface IAttackFinishedHook
+    { void OnAttackFinished(PlayerState owner, AttackContext attack, bool initiated, GameManager game); }
+
+    /// <summary>攻击前的通用目标观察口；结算后成长使用IAttackFinishedHook。</summary>
     public interface IAttackTargetedHook
     {
         void OnTargetedByAttack(PlayerState owner, AttackContext context, GameManager manager);

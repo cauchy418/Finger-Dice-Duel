@@ -256,7 +256,7 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
-            // 0b. **被选为攻击目标的通知**（牧师·战争领域）。
+            // 0b. 通用目标观察通知；战争领域的属性成长在整次攻击结束后处理。
             //
             //     玩家口径：被选中即算"受到攻击"（闪避 / 盾挡 / 零伤害都算），
             //     被取消不算（上面已经 return）。转移 / 代挡发生时，
@@ -605,10 +605,21 @@ namespace FingerDiceDuel.Core
             if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
                 foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
             NotifyCompletedHealthDamage(manager);
+            // 分别通知发起者、原目标与转移后的实际承受者；新加成不追溯改变本击。
+            if(!IsStatusDamage)
+            {
+                foreach(var hook in CharacterBehaviors.Implementers<IAttackFinishedHook>(Attacker))
+                    hook.OnAttackFinished(Attacker,this,true,manager);
+                foreach(var hook in CharacterBehaviors.Implementers<IAttackFinishedHook>(intendedDefender))
+                    hook.OnAttackFinished(intendedDefender,this,false,manager);
+                if(!ReferenceEquals(intendedDefender,Defender))
+                    foreach(var hook in CharacterBehaviors.Implementers<IAttackFinishedHook>(Defender))
+                        hook.OnAttackFinished(Defender,this,false,manager);
+            }
         }
 
         /// <summary>
-        /// 通知"被选为攻击目标"（牧师·战争领域的战争狂热）。
+        /// 通知通用的"被选为攻击目标"观察者（不用于战争领域的结算后成长）。
         /// 经 <see cref="CharacterBehaviors.Implementers{T}"/> 遍历，双将部件同样收到。
         /// </summary>
         private void NotifyTargeted(PlayerState defender, GameManager manager)

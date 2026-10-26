@@ -1,0 +1,28 @@
+PASS locked tower does not launch a match
+PASS old level10 save unlocks tower
+PASS resume first unfinished sample
+PASS raycast AdventureConfirm
+PASS wrong-choice fixture starts normal attack
+PASS decline shield enchantment
+PASS training NPC observation after wrong choice
+PASS wrong element fails observation rather than softlocks
+PASS failed sample grants no completion
+PASS raycast AdventureConfirm
+PASS retry resets current sample
+PASS finale loss grants no completion
+PASS finale win stores level and chapter
+PASS later loss preserves old victory
+PASS knight victory offers tower transition
+PASS raycast AdventureSkipTutorial
+PASS transition dialogue 0
+PASS raycast AdventureConfirm
+PASS transition dialogue 1
+PASS raycast AdventureConfirm
+PASS transition dialogue 2
+PASS raycast AdventureConfirm
+PASS transition enters tower directory
+PASS war base 0/0
+PASS war player initiates attack through board
+PASS war attack four then attack-only growth
+PASS war received attack four then defense-only growth
+PASS war latest definition and UI text

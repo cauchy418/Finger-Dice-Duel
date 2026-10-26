@@ -445,7 +445,7 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 58).Set(2, 58).Set(3, 58)
                 .Set(7, 50);
 
-            // ---- 牧师·战争领域（攻 0 / 防 -1，射程无限，2026-10-23）----
+            // ---- 牧师·战争领域（攻 0 / 防 0，射程无限，2026-10-26）----
             // 越打越强：攻击数字是滚雪球的燃料；5 / 9 保证能撑到滚起来。
             Own[CharacterDefinition.WarDomainId] = new HandValueProfile()
                 .Set(8, 74).Set(6, 70).Set(4, 64)

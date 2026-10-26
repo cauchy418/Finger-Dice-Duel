@@ -49,7 +49,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(0, CharacterDefinition.LightDomain.AttackBonus);
             Assert.AreEqual(-1, CharacterDefinition.LightDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.WarDomain.AttackBonus);
-            Assert.AreEqual(-1, CharacterDefinition.WarDomain.DefenseBonus);
+            Assert.AreEqual(0, CharacterDefinition.WarDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.AttackBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.DefenseBonus);
             Assert.AreEqual(CharacterProfession.Find("cleric"), CharacterDefinition.LightDomain.Profession);
@@ -236,6 +236,24 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
+        public void War_domain_separates_growth_and_applies_it_after_the_whole_attack()
+        {
+            var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out var foe,out _,out _);
+            var skill=(WarDomainLogic)war.Character;
+            var first=new AttackContext(war,foe,war.LeftHand,4,g);first.Resolve(g.ChoiceProviderB,g);
+            Assert.AreEqual(4,first.AppliedDamage,"首次攻击不提前获得新的攻击层");
+            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(0,skill.DefenseStacks);
+            var second=new AttackContext(foe,war,foe.LeftHand,4,g){HitCount=2};second.Resolve(g.ChoiceProviderA,g);
+            Assert.AreEqual(4,second.AppliedDamage,"多段期间不提前获得新防御层");
+            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(1,skill.DefenseStacks,"整次多段只涨一次防御");
+            var next=new AttackContext(foe,war,foe.LeftHand,4,g);next.Resolve(g.ChoiceProviderA,g);
+            Assert.AreEqual(3,next.AppliedDamage,"前一击所得防御从下一击生效");
+            Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(2,skill.DefenseStacks);
+            var own=new AttackContext(war,foe,war.LeftHand,4,g);own.Resolve(g.ChoiceProviderB,g);
+            Assert.AreEqual(5,own.AppliedDamage);Assert.AreEqual(2,skill.AttackStacks);
+        }
+
+        [Test]
         public void War_domain_stacks_from_attacking_and_being_targeted()
         {
             var game = Game(CharacterDefinition.WarDomain, CharacterDefinition.Blank,
@@ -248,7 +266,7 @@ namespace FingerDiceDuel.Tests
             game.ResolveStatusTurnEnd(war);
             Assert.AreEqual(1, logic.WarStacks, "发起攻击 +1。");
             Assert.AreEqual(1, war.DynamicAttackBonus);
-            Assert.AreEqual(1, war.DynamicDefenseBonus);
+            Assert.AreEqual(0, war.DynamicDefenseBonus);
 
             war.RightHand.SetValue(5);
             war.RightHand.SetShieldState(ShieldState.Formed);
@@ -256,7 +274,8 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(foe, foe.LeftHand, war.RightHand);
             game.ResolveStatusTurnEnd(foe);
             Assert.AreEqual(2, logic.WarStacks, "被选为目标即 +1（盾挡也算）。");
-            Assert.AreEqual(2, war.DynamicAttackBonus);
+            Assert.AreEqual(1, war.DynamicAttackBonus);
+            Assert.AreEqual(1, war.DynamicDefenseBonus);
         }
 
         [Test]

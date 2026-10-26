@@ -313,8 +313,8 @@ namespace FingerDiceDuel.Characters
 
             // ---- 战争领域（守序中立，2026-10-23）----
             Add(CharacterDefinition.WarDomainId, "War Domain", Alignment.LawfulNeutral,
-                shortSkill: "受到或发起攻击后攻防 +1（可叠加）；自己回合结束未发起攻击则清零。",
-                playGuide: "越战越强，每回合都要出手：被集火挨打同样 +1/+1，别怕挨刀。"
+                shortSkill: "发起攻击后攻击+1，受到攻击后防御+1（分别叠加）；自己回合结束未发起攻击则清零。",
+                playGuide: "越战越强，每回合都要出手：出手涨攻，挨打涨防；新加成从下一击开始生效。"
                          + "被冻结、眩晕或锁手让他空过一回合，加成就清零重来。"
                          + "距离 1 内钝击、1 外穿刺。",
                 counter: "逼他空过回合（冻结 / 眩晕 / 锁手）即可清空加成；"
