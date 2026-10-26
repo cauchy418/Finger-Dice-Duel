@@ -1,0 +1,38 @@
+{
+  "generator": "image_gen",
+  "date": "2026-10-26",
+  "assets": [
+    {
+      "id": "mage_tower_chapter_02",
+      "kind": "background",
+      "prompt": "Use case: stylized-concept. Asset type: a production background plate for the existing dark-fantasy tabletop combat game Finger Dice Duel, chapter 2 Mage Tower. Primary request: paint the interior training chamber of an ancient mage's tower, landscape 16:9, high resolution. Composition: same usable layout as an overhead-oblique stone arena: the central 70 percent and all central upper/lower character-card areas are empty, low-contrast nearly black slate floor; only subtle broad arcane circles and extremely faint engraved geometry on the floor. At outer edges: towering shadowed bookshelves, old-gold brass astrolabes, basalt columns, scattered closed folios, a few dim amber candles; at the far upper edge a narrow blue moonlit tower window, suggesting vertical height. The environment frames the playable arena without strong bright objects behind UI. Style: rich hand-painted dark fantasy game art, painterly aged stone, black iron, antique gold ornament, convincing atmospheric depth, restrained indigo/cyan magic and amber candlelight. Crisp details at the perimeter, deliberately quiet charcoal interior. This is a clean environment painting, not a UI mockup. No characters, no human hands, no weapons in the middle, no text, no lettering, no numbers, no cards, no buttons, no HUD, no watermark.",
+      "source": "background_mage_tower.png",
+      "selected": "Backgrounds/mage_tower_chapter_02.png",
+      "generated_file": "exec-11f3258e-aed7-408a-994d-7f9bb6a869fc.png"
+    },
+    {
+      "id": "npc_arcane_guard",
+      "kind": "emblem",
+      "prompt": "Use case: stylized-concept. Asset type: one NPC emblem sprite for a hand-painted dark fantasy tabletop RPG UI. Paint a single centered circular antique-gold medallion with black iron and deep charcoal interior, old-gold thin double ring with eight pointed diamond accents, matching the established Finger Dice Duel circular profession emblems. Subject: an arcane tower guardian, an empty sealed visor of dark articulated armor with a small azure crystalline core, behind a broad hexagon-engraved black iron tower shield; faint cold blue rune-light and a short vertical straight spear motif. No human face, no hands, no horned helmet, not a paladin holy sun, not a player character portrait. Bold readable silhouette at 64px, textured oil-painted metal, weathered gold highlights, restrained deep sapphire magic, detailed but uncluttered. Exactly one medallion, all ornaments entirely inside the canvas with even transparent margin, truly transparent outside the round badge. No text, letters, numbers, caption, UI panel, checkerboard or watermark.",
+      "source": "npc_arcane_guard.png",
+      "selected": "Adventure/npc_arcane_guard.png",
+      "generated_file": "exec-020bacd1-c8e0-4d56-9b8b-3f1c896a28c8.png"
+    },
+    {
+      "id": "npc_mage_phantom",
+      "kind": "emblem",
+      "prompt": "Use case: stylized-concept. Asset type: one boss NPC emblem sprite for a hand-painted dark fantasy tabletop RPG UI. Paint a single centered circular antique-gold medallion on transparent outside, black iron and charcoal inner field, thin aged-gold double ring with eight pointed diamond accents in the established Finger Dice Duel emblem style. Subject: the Mage Phantom of an ancient tower, an ethereal indigo-violet hood with an empty shadowed face and two tiny cold luminous eyes, partially dissolving into translucent arcane vapor; behind it an incomplete arc of broken gold geometric spell rings and a small levitating amethyst focus. Clearly a projected magical echo, not a skeleton, not a lich crown, not a human portrait. Strong silhouette readable at 64px, oil-painted depth and expressive brush texture, restrained purple/cyan glow, dark and solemn. No hands, no fingers, no weapons crossing out of the ring, no text or numbers. Exactly one emblem, fully visible circular frame, even transparent margin. Genuine alpha transparency outside medallion, no checkerboard, no caption, no watermark.",
+      "source": "npc_mage_phantom.png",
+      "selected": "Adventure/npc_mage_phantom.png",
+      "generated_file": "exec-462400f7-2e4c-42d7-b13a-a8ded2255888.png"
+    },
+    {
+      "id": "guide_arcane_codex",
+      "kind": "emblem",
+      "prompt": "Use case: stylized-concept. Asset type: one chapter guide emblem sprite for a hand-painted dark fantasy tabletop RPG UI. Paint one centered circular antique-gold medallion, charcoal and black iron inner field, thin worn-gold double ring with eight diamond points, cohesive with Finger Dice Duel profession emblems. Subject: a sentient arcane codex hovering open, thick old parchment pages and black leather covers with small gold corner clasps, a single floating golden-blue quill and a small cool blue rune-light above the central spine. Pages have subtle abstract ink diagrams and illegible fine marks only, no readable text and no letters. Feels like an ancient patient teacher and magical book, not a wizard's staff or a combat spell icon. Painterly oil-painted materials, warm parchment contrasts with blue-black shadows, antique gold restrained ornaments. Strong clear silhouette at 64px. No hands, faces or people. Exactly one badge, whole circular rim inside canvas with even transparent margin, genuinely transparent outside badge. No typography, caption, UI mockup, checkerboard or watermark.",
+      "source": "guide_arcane_codex.png",
+      "selected": "Adventure/guide_arcane_codex.png",
+      "generated_file": "exec-3ea6014e-dc81-4bbb-b02b-f8cf3c7e354e.png"
+    }
+  ]
+}

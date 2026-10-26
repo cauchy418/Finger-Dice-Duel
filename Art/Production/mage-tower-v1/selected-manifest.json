@@ -1,0 +1,49 @@
+{
+  "status": "prepared_not_imported",
+  "assets": [
+    {
+      "id": "mage_tower_chapter_02",
+      "file": "Backgrounds/mage_tower_chapter_02.png",
+      "resource_key": "Backgrounds/mage_tower_chapter_02",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "542b93d04e6baf7436bbc44deaf26067fc3fb21a18340c6e7d4fb224cabc2f28"
+    },
+    {
+      "id": "npc_arcane_guard",
+      "file": "Adventure/npc_arcane_guard.png",
+      "resource_key": "Adventure/npc_arcane_guard",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "114309b454b6ba39d3346e3432d6a2003824bdd02d5997cd1d700f625592e2f7"
+    },
+    {
+      "id": "npc_mage_phantom",
+      "file": "Adventure/npc_mage_phantom.png",
+      "resource_key": "Adventure/npc_mage_phantom",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "b642ebfc8d2e870b4e945117ec6c21c1b15a2fb9af1b840105e90a178a53d785"
+    },
+    {
+      "id": "guide_arcane_codex",
+      "file": "Adventure/guide_arcane_codex.png",
+      "resource_key": "Adventure/guide_arcane_codex",
+      "size": [
+        512,
+        512
+      ],
+      "mode": "RGBA",
+      "sha256": "2c118f1ee46c40e922f1020111da37397eac1d2ded34da80a8829dbce6ed5199"
+    }
+  ]
+}
