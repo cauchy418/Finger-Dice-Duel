@@ -101,8 +101,8 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示冒险关卡的胜利要点卡（模态）。</summary>
         public void ShowAdventureVictory(string title, string victoryText, string avatarKey,
-                                         System.Action onReplay, System.Action onReturn, System.Action onNext = null, string nextLabel = "继续次战", string replayLabel = "重打本关")
-            => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn, onNext, nextLabel, replayLabel);
+                                         System.Action onReplay, System.Action onReturn, System.Action onNext = null, string nextLabel = "继续次战", string replayLabel = "重打本关", string guideName = "老兵")
+            => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn, onNext, nextLabel, replayLabel, guideName);
 
         /// <summary>更新冒险关卡的引导旁白（空文案隐藏）。</summary>
         public void ShowAdventureNarration(string guideName, string narration, string avatarKey)

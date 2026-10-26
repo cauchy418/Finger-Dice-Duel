@@ -22,6 +22,7 @@ namespace FingerDiceDuel.Core
     {
         private readonly HashSet<AttackDamageType> _vulnerabilities = new HashSet<AttackDamageType>();
         private readonly HashSet<AttackDamageType> _permanentImmunities=new HashSet<AttackDamageType>();
+        public bool HasPermanentImmunity(AttackDamageType type)=>_permanentImmunities.Contains(type);
         public void AddPermanentImmunity(AttackDamageType type)=>_permanentImmunities.Add(type);
         private readonly HashSet<AttackDamageType> _immunities = new HashSet<AttackDamageType>();
         public IReadOnlyCollection<AttackDamageType> Vulnerabilities => _vulnerabilities;

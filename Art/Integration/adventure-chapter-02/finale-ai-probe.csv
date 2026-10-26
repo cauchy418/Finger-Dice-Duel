@@ -1,0 +1,10 @@
+role,games,player_wins,boss_wins,draws,safety_aborts
+wizard_school_of_conjuration,200,92,108,0,0
+wizard_school_of_evocation,200,0,200,0,0
+wizard_school_of_divination,200,6,194,0,0
+wizard_school_of_necromancy,200,152,48,0,0
+wizard_school_of_abjuration,200,0,200,0,0
+wizard_school_of_illusion,200,63,137,0,0
+wizard_school_of_transmutation,200,46,154,0,0
+wizard_school_of_enchantment,200,197,3,0,0
+wizard_bladesinging,200,52,148,0,0

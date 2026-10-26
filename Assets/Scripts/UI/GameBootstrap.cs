@@ -654,7 +654,7 @@ namespace FingerDiceDuel.UI
             _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
 
             Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
-                                           "剧情冒险", "第一章：边境哨站 · 十场训练",
+                                           "剧情冒险", "边境哨站 / 法师高塔 · 两章试炼",
                                            () => ShowScreen(GameScreen.StoryChapterSelect));
             Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
                                             "挑战关卡", "即将开放",
@@ -671,11 +671,16 @@ namespace FingerDiceDuel.UI
             _screenStoryChapter.Add(MakeSubTitle(_selectRoot, "StoryChaptersTitle", "剧情冒险").gameObject);
             _screenStoryChapter.Add(MakeSubModeButton(_selectRoot, "StoryChapter01", new Vector2(0f, 60f),
                 "第一章：边境哨站", "初战至终战 · 老兵的指尖骰术指导",
-                () => ShowScreen(GameScreen.StoryBattleSelect)).gameObject);
+                () => OpenStoryChapter(1)).gameObject);
+            var tower = MakeSubModeButton(_selectRoot, "StoryChapter02", new Vector2(0f, -96f),
+                "第二章：法师高塔", "奥法骑士 / 法师九学派与试炼", () => OpenStoryChapter(2));
+            _towerChapterStatus=tower.transform.Find("Sub").GetComponent<Text>();
+            _screenStoryChapter.Add(tower.gameObject);
             _screenStoryChapter.Add(MakeBackButton(_selectRoot, GameScreen.Adventure).gameObject);
 
             _screenStoryBattles = new ScreenGroup();
             var heading = MakeSubTitle(_selectRoot, "StoryChapterTitle", "第一章：边境哨站");
+            _storyHeading=heading;
             heading.rectTransform.anchoredPosition = new Vector2(0, 400);
             _screenStoryBattles.Add(heading.gameObject);
             var scroll = FrontEndArt.Scroll(_selectRoot, "StoryBattleScroll", new Vector2(0, -10),
@@ -686,8 +691,9 @@ namespace FingerDiceDuel.UI
             {
                 int number = i + 1;
                 Button battle = MakeSubModeButton(content, names[i], new Vector2(0, -76 - i * 148),
-                    "边境哨站·" + AdventureBattleName(number), AdventureChapter.Hint(number), () => StartAdventureLevel(number));
+                    "边境哨站·" + AdventureBattleName(number), AdventureChapter.Hint(number), () => StartAdventureLevel(number+(_storyChapter-1)*10));
                 battle.GetComponent<RectTransform>().anchorMin = battle.GetComponent<RectTransform>().anchorMax = new Vector2(0.5f, 1);
+                _storyBattleButtons[i]=battle;
                 _storyStatuses[i] = battle.transform.Find("Sub").GetComponent<Text>();
             }
             _storyFirstStatus = _storyStatuses[0]; _storySecondStatus = _storyStatuses[1];
@@ -700,10 +706,15 @@ namespace FingerDiceDuel.UI
 
         private void RefreshStoryProgress()
         {
-            for (int i = 0; i < _storyStatuses.Length; i++)
-                if (_storyStatuses[i] != null)
-                    _storyStatuses[i].text = AdventureChapter.Hint(i + 1) + "  ·  " +
-                        (PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level" + (i + 1) + ".Completed", 0) != 0 ? "已通关" : i == 0 ? "推荐先学" : "待练习");
+            _storyHeading.text=_storyChapter==2?"第二章：法师高塔":"第一章：边境哨站";
+            if(_towerChapterStatus!=null)_towerChapterStatus.text=TowerUnlocked?"十场试炼 · 秘法典籍指引":"完成第一章终战后开放";
+            for(int i=0;i<10;i++)
+            {
+                int level=i+1+(_storyChapter-1)*10;
+                string hint=_storyChapter==2?MageTowerChapter.Hint(level):AdventureChapter.Hint(level);
+                _storyBattleButtons[i].transform.Find("Label").GetComponent<Text>().text=(_storyChapter==2?"法师高塔·":"边境哨站·")+AdventureChapter.BattleName(i+1);
+                _storyStatuses[i].text=hint+" · "+(PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level"+level+".Completed",0)!=0?"已通关":i==0?"推荐先学":"待练习");
+            }
         }
 
         // ============================================================
@@ -719,9 +730,11 @@ namespace FingerDiceDuel.UI
 
         private void StartAdventureLevel(int levelNumber, bool launchFinale = false)
         {
+            if(levelNumber>=11&&levelNumber<=20){StartMageTowerLevel(levelNumber,launchFinale);return;}
+            _storyChapter=1;
             if (levelNumber < 1 || levelNumber > AdventureChapter.BattleCount) throw new ArgumentOutOfRangeException(nameof(levelNumber));
             CleanupMatch();
-            if (levelNumber == 10 && !launchFinale) { ShowScreen(GameScreen.AdventureFinaleSelect); return; }
+            if (levelNumber == 10 && !launchFinale) { ConfigureFinaleScreen(); ShowScreen(GameScreen.AdventureFinaleSelect); return; }
             _pendingDefA = levelNumber == 10 ? AdventureChapter.FinaleRoster[Mathf.Clamp(_finaleIndex, 0, AdventureChapter.FinaleRoster.Count - 1)] : AdventureChapter.PlayerDefinition(levelNumber);
             _pendingDefB = levelNumber == 10 ? AdventureChapter.Knight : CharacterDefinition.Blank;
 
@@ -764,8 +777,8 @@ namespace FingerDiceDuel.UI
             // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回章内战斗列表。
             _board.HideAdventureNarration();
             _board.ShowAdventureIntro(_adventure.DisplayTitle,
-                _adventure.OpeningText, AdventureLevel1.GuideAvatarKey,
-                AdventureLevel1.GuideName, OnAdventureIntroConfirmed, ReturnToAdventure,
+                _adventure.OpeningText, _adventure.GuideAvatarKey,
+                _adventure.GuideName, OnAdventureIntroConfirmed, ReturnToAdventure,
                 _adventure.AllowsTutorialSkip && PlayerPrefs.GetInt(_adventure.CompletionKey, 0) != 0 ? (System.Action)OnAdventureSkipTutorial : null,
                 _adventure.UsesClassicSetup ? "学习先攻" : "跟随指引");
         }
@@ -778,7 +791,7 @@ namespace FingerDiceDuel.UI
             {
                 _board.SetVisible(false);
                 _diceRoll.Begin(_game);
-                _diceRoll.SetLesson("边境哨站·" + AdventureBattleName(_adventure.LevelNumber) + " · 经典先攻", ReturnToAdventure);
+                _diceRoll.SetLesson(_adventure.DisplayTitle + " · 经典先攻", ReturnToAdventure, _adventure.GuideName, _adventure.GuideAvatarKey);
                 ShowScreen(GameScreen.DiceRoll);
                 return;
             }
@@ -796,6 +809,7 @@ namespace FingerDiceDuel.UI
         /// <summary>胜利要点卡上的「重打本关」。</summary>
         private void OnAdventureReplay()
         {
+            if(_adventure is MageTowerLesson tower){StartMageTowerLevel(tower.LevelNumber,true,tower.SampleIndex);return;}
             StartAdventureLevel(_adventure?.LevelNumber ?? 1, true);
         }
 
@@ -2471,7 +2485,7 @@ namespace FingerDiceDuel.UI
             _screenStoryChapter?.SetVisible(screen == GameScreen.StoryChapterSelect);
             _screenStoryBattles?.SetVisible(screen == GameScreen.StoryBattleSelect);
             _screenAdventureFinale?.SetVisible(screen == GameScreen.AdventureFinaleSelect);
-            if (screen == GameScreen.StoryBattleSelect) RefreshStoryProgress();
+            if (screen == GameScreen.StoryBattleSelect || screen == GameScreen.StoryChapterSelect) RefreshStoryProgress();
             _screenCompetition?.SetVisible(screen == GameScreen.Competition);
             _screenCasual?.SetVisible(screen == GameScreen.Casual);
             _screenDualGeneral?.SetVisible(screen == GameScreen.DualGeneral);
@@ -3513,14 +3527,15 @@ namespace FingerDiceDuel.UI
             if (_adventure != null)
             {
                 if (_adventure.Started && !_adventure.IsFinished)
-                    _board.ShowAdventureNarration($"{AdventureLevel1.GuideName} · {_adventure.StepNumber}/{_adventure.StepCount}", _adventure.Narration,
-                                                  AdventureLevel1.GuideAvatarKey);
+                    _board.ShowAdventureNarration($"{_adventure.GuideName} · {_adventure.StepNumber}/{_adventure.StepCount}", _adventure.Narration,
+                                                  _adventure.GuideAvatarKey);
                 else
                     _board.HideAdventureNarration();
 
                 if (_adventure.IsFinished && !_adventureVictoryShown)
                 {
                     _adventureVictoryShown = true;
+                    if(_adventure is MageTowerLesson tower){ShowTowerResult(tower);return;}
                     if (_adventure.IsComplete)
                     {
                         PlayerPrefs.SetInt(_adventure.CompletionKey, 1);
@@ -3531,10 +3546,10 @@ namespace FingerDiceDuel.UI
                         : _game.Winner == null ? "训练平局" : "训练失利";
                     int next = _adventure.LevelNumber + 1;
                     _board.ShowAdventureVictory(heading + " · " + _adventure.DisplayTitle,
-                        _adventure.IsComplete ? _adventure.SummaryText : _adventure.FailureText, AdventureLevel1.GuideAvatarKey,
+                        _adventure.IsComplete ? _adventure.SummaryText : _adventure.FailureText, _adventure.GuideAvatarKey,
                         OnAdventureReplay, ReturnToAdventure,
-                        _adventure.IsComplete && next <= AdventureChapter.BattleCount ? (System.Action)(() => StartAdventureLevel(next)) : null,
-                        next <= AdventureChapter.BattleCount ? "继续" + AdventureBattleName(next) : null,
+                        _adventure.IsComplete && next==11 ? (System.Action)(()=>ShowTowerTransition()) : _adventure.IsComplete && next <= AdventureChapter.BattleCount ? (System.Action)(() => StartAdventureLevel(next)) : null,
+                        next==11 ? "前往法师高塔" : next <= AdventureChapter.BattleCount ? "继续" + AdventureBattleName(next) : null,
                         _adventure.UsesClassicSetup ? "重新投骰" : "重打本关");
                 }
             }

@@ -678,7 +678,7 @@ namespace FingerDiceDuel.Core
             StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
                 : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
                 : InteractionStatus;
-            if (status == StatusEffect.None)
+            if (status == StatusEffect.None && InteractionDamageType == DamageType.None)
                 status = applier?.StatusToApplyOnHit(this) ?? StatusEffect.None;
 
             // 伤害类型联动：清除目标状态也只在命中后执行。

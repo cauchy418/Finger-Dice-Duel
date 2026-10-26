@@ -272,9 +272,7 @@ namespace FingerDiceDuel.UI
                 + "    " + HandVisual.ShieldSummary(player);
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
             string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
-            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(player.IsPolymorphed||player.IsSummon?player.BattleEmblemKey:id == FingerDiceDuel.Assistant.AdventureChapter.KnightId
-                ? FingerDiceDuel.Assistant.AdventureChapter.KnightEmblem
-                : id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : "Subclasses/" + id);
+            (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : player.BattleEmblemKey);
             BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));
         }
 

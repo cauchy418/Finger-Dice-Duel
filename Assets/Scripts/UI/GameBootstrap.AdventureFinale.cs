@@ -27,7 +27,7 @@ namespace FingerDiceDuel.UI
             _finaleDetail.rectTransform.sizeDelta = new Vector2(1140, 84);
             ((RectTransform)_finaleDetail.transform.parent).sizeDelta = new Vector2(1200, 104);
             _screenAdventureFinale.Add(_finaleDetail.transform.parent.gameObject);
-            _finaleRoster.SelectionChanged += index => { _finaleIndex = index; RefreshDetail(_finaleDetail, AdventureChapter.FinaleRoster[index]); };
+            _finaleRoster.SelectionChanged += index => { _finaleIndex = index; RefreshDetail(_finaleDetail, SelectedFinaleRoster[index]); };
             RefreshDetail(_finaleDetail, AdventureChapter.FinaleRoster[0]);
             var foe = FrontEndArt.Image(_selectRoot, "FinaleKnight", "UI/panel_content", new Vector2(650, 10), new Vector2(390, 650));
             var emblem = FrontEndArt.Rect(foe.rectTransform, "Emblem", new Vector2(0, 160), new Vector2(270, 270)).gameObject.AddComponent<Image>();
@@ -36,7 +36,7 @@ namespace FingerDiceDuel.UI
             FrontEndArt.Text(foe.rectTransform, "Stats", "生命20\n攻击+1  防御+1\n距离1\n\n经典先攻 · 正常AI\n胜利即第一章通关", new Vector2(0, -155), new Vector2(345, 240), 25);
             _screenAdventureFinale.Add(foe.gameObject);
             var start = FrontEndArt.Button(_selectRoot, "FinaleStart", "开始挑战", new Vector2(180, -445), new Vector2(310, 64));
-            start.onClick.AddListener(() => StartAdventureLevel(10, true)); _screenAdventureFinale.Add(start.gameObject);
+            start.onClick.AddListener(() => StartAdventureLevel(_storyChapter==2?20:10, true)); _screenAdventureFinale.Add(start.gameObject);
             var back = FrontEndArt.Button(_selectRoot, "FinaleBack", "返回章节", new Vector2(-220, -445), new Vector2(270, 64));
             back.onClick.AddListener(() => ShowScreen(GameScreen.StoryBattleSelect)); _screenAdventureFinale.Add(back.gameObject);
         }

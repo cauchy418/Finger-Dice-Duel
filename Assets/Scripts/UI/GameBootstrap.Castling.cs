@@ -42,6 +42,7 @@ namespace FingerDiceDuel.UI
                 _twoOnTwoSeated=seated; _twoOnTwoMeIndex=mySeat-1; _twoOnTwoMySeat=mySeat;
             }
             _board.BindPlayersRing(me,seated,mySeat,relations);
+            if(_adventure!=null){_board.SetTitle(_adventure.DisplayTitle);_board.SetBattleBackground(_adventure.BattleBackgroundKey);return;}
             if (_isTwoOnTwo && !_isEightPlayer)
                 _board.SetTitle($"2 v 2　我（{me.Definition?.DisplayName ?? me.Name}）　队友（{mate?.Definition?.DisplayName ?? mate?.Name}）");
         }

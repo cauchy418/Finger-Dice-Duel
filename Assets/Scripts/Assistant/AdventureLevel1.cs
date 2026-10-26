@@ -31,8 +31,8 @@ namespace FingerDiceDuel.Assistant
     public sealed class AdventureLevel1 : AdventureLesson
     {
         public const string Title = "第一章：边境哨站·初战";
-        public const string GuideAvatarKey = "Adventure/guide_soldier";
-        public const string GuideName = "老兵";
+        public new const string GuideAvatarKey = "Adventure/guide_soldier";
+        public new const string GuideName = "老兵";
 
         /// <summary>老兵（白板）的生命上限：剧情口径"身负旧伤"。</summary>
         public const int SoldierMaxHealth = 12;

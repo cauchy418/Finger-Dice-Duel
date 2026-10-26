@@ -38,14 +38,16 @@ namespace FingerDiceDuel.Core
                     player.StatusTurnsLeft(status).ToString(),status));
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
-                    ResistanceNames.Name(type)+(player.IsSummon?"：永久抗性，该类型伤害减半，向上取整。":"：该类型伤害减半，向上取整。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
+                    ResistanceNames.Name(type)+(player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整。":"：该类型伤害减半，向上取整。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
+            if(player.Character is INpcCircuitProgress phantom)
+                result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3"));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
             foreach (var type in ResistanceNames.All)
             {
                 if (player.HasVulnerability(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
                     DamageAffinityNames.Name(DamageAffinity.Vulnerability, type) + "：该类型伤害×1.5，向上取整。一次攻击落地后，全部临时伤害修正清除。", ""));
                 if (player.HasImmunity(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Immunity, type),
-                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.IsSummon?"：永久免疫，不受该类型伤害及其附加状态。":"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
+                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.HasPermanentImmunity(type)?"：本场永久免疫，不受该类型伤害及其附加状态。":"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
             }
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
                 "奥术屏障 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));

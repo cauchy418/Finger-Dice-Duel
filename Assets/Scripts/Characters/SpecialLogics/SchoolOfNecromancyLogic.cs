@@ -29,6 +29,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
             if(context==null || !context.IsAttack || !CharacterBehaviors.ActorHas(context.Defender,this)) return;
+            var preview=new AttackContext(context.Actor,context.Defender,context.ActedHand,context.EffectiveResult,context.Manager);
+            var incoming=(context.Actor?.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.None;
+            var mage=CharacterBehaviors.FirstImplementer<IMageState>(context.Actor);
+            if(incoming==AttackDamageType.Force || mage?.PendingDamageType==DamageType.Force)return;
             var hands=Hands(context.Defender,2);
             int count=Math.Min(hands.Count,CharacterFactory.MaxAttackHits(context.Actor)
                 +(((context.Actor?.Character as IExtraAttackProvider)?.WillExtraAttack(context)==true)?1:0));

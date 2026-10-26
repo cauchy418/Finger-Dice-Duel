@@ -18,6 +18,8 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        if(args.Length==2&&args[0]=="--tower-probe")
+        {MageTowerTests.RunFinaleProbe(args[1]);return 0;}
         if(args.Length==4&&args[0]=="--dual-shard")
         {DualVersusDualHarness.RunShard(int.Parse(args[1]),int.Parse(args[2]),args[3]);return 0;}
         bool trace = args.Any(a => a == "--trace");

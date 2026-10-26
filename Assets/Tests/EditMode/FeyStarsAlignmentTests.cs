@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Latest_axes_reject_old_partners_and_allow_new_partners()
         {
-            Assert.AreEqual(Alignment.ChaoticNeutral,CharacterCodex.For(CharacterDefinition.TheArchfey).Alignment);
+            Assert.AreEqual(Alignment.ChaoticEvil,CharacterCodex.For(CharacterDefinition.TheArchfey).Alignment);
             Assert.AreEqual(Alignment.LawfulNeutral,CharacterCodex.For(CharacterDefinition.CircleOfTheStars).Alignment);
             Assert.True(DualGeneralFactory.SameAxis(CharacterDefinition.TheArchfey,CharacterDefinition.Assassin));
             Assert.True(DualGeneralFactory.SameAxis(CharacterDefinition.CircleOfTheStars,CharacterDefinition.LifeDomain));

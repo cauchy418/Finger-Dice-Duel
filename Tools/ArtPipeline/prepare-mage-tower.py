@@ -31,7 +31,7 @@ def main():
             selected.append(dict(id=item['id'], file=item['selected'],
                 resource_key=item['selected'][:-4], size=list(image.size), mode=image.mode,
                 sha256=hashlib.sha256(target.read_bytes()).hexdigest()))
-    (ART / 'selected-manifest.json').write_text(json.dumps(dict(status='prepared_not_imported', assets=selected), ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
+    (ART / 'selected-manifest.json').write_text(json.dumps(dict(status='runtime_integrated' if all((ROOT / 'Assets/Resources/Art/Battle/v1' / i['file']).is_file() for i in selected) else 'prepared_not_imported', assets=selected), ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
     print('Prepared', len(selected), 'mage tower assets')
 
 if __name__ == '__main__':

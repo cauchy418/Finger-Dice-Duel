@@ -73,6 +73,8 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>有玩家死亡后通知（法师·死灵学派的换牌）。对局结束时不调用。</summary>
+    public interface INpcCircuitProgress { int CircuitProgress {get;} }
+
     public interface IPlayerDeathListener
     {
         void OnPlayerDied(PlayerState dead, GameManager manager);

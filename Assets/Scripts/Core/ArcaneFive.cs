@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         public int PolymorphTurns {get;private set;}
         public bool BeganAttackThisTurn {get;internal set;}
         public bool FormedShieldThisTurn {get;internal set;}
-        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
+        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
         public ICharacterBehavior PersistentCharacter=>_untransformedCharacter??Character;
         public bool TryPolymorph(int turns=2)
         {

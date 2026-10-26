@@ -86,13 +86,13 @@ namespace FingerDiceDuel.UI
 
         /// <summary>显示胜利要点卡。</summary>
         public void ShowVictory(string title, string victoryText, string avatarKey,
-                                Action onReplay, Action onReturn, Action onNext = null, string nextLabel = "继续次战", string replayLabel = "重打本关")
+                                Action onReplay, Action onReturn, Action onNext = null, string nextLabel = "继续次战", string replayLabel = "重打本关", string guideName = "老兵")
         {
             if (_modalRoot == null) return;
 
             _modalTitle.text = title;
             FrontEndArt.SetNarrationText(_modalBody, victoryText, 630f, 20);
-            _modalGuideName.text = AdventureLevel1.GuideName;
+            _modalGuideName.text = guideName;
             _skipTutorialButton.GetComponentInChildren<Text>().text = nextLabel;
             _skipTutorialButton.gameObject.SetActive(onNext != null);
             _skipTutorialAction = onNext;
@@ -212,6 +212,8 @@ namespace FingerDiceDuel.UI
             _modalBody = MakeText(panel, "Body", new Vector2(70f, 0f),
                                   new Vector2(630f, 270f), 20,
                                   TextAnchor.UpperLeft, Color.white);
+
+            _modalBody.horizontalOverflow=HorizontalWrapMode.Wrap;
 
             // 按钮（右下两枚）
             _confirmButton = MakeButton(panel, "Confirm", "跟随指引",

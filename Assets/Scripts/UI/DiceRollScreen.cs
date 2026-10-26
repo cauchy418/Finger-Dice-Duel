@@ -174,8 +174,10 @@ namespace FingerDiceDuel.UI
             _root.gameObject.SetActive(false);
         }
 
-        public void SetLesson(string title, Action onReturn)
+        public void SetLesson(string title, Action onReturn, string guideName="老兵", string guideAvatar="Adventure/guide_soldier")
         {
+            _lessonNarrator.Find("VeteranName").GetComponent<Text>().text=guideName+" · 先攻指引";
+            BattleArt.Apply(_lessonNarrator.Find("VeteranPortrait").GetComponent<Image>(),guideAvatar);
             bool enabled = !string.IsNullOrEmpty(title);
             if (_titleText != null) { _titleText.text = enabled ? title : "掷骰决定初始手值"; _titleText.fontSize = enabled ? 32 : 44; }
             if (_lessonHint != null) { _lessonHint.text = enabled ? AdventureLevel5.InitiativeHint : ""; _lessonHint.gameObject.SetActive(enabled); }
@@ -205,7 +207,7 @@ namespace FingerDiceDuel.UI
             else if (_controller.IsNamingOpponent)
                 words = "「大失败，由对手代选。」\n" + _controller.Assignee.Name + "投出1，由" + _controller.Decider.Name + "指定其两手。\n这只改变分配权，先攻仍看骰点。\n本场" + _controller.FirstToAct.Name + "先行动。";
             else
-                words = "「骰点已定：你" + _controller.RollA + "，教官" + _controller.RollB + "。」\n本场" + _controller.FirstToAct.Name + "先行动。\n现在由" + (_controller.Decider?.Name ?? "双方") + "分配手值。\n小点先选，大点后选；后选可参考已公开的手值。";
+                words = "「骰点已定：你" + _controller.RollA + "，对手" + _controller.RollB + "。」\n本场" + _controller.FirstToAct.Name + "先行动。\n现在由" + (_controller.Decider?.Name ?? "双方") + "分配手值。\n小点先选，大点后选；后选可参考已公开的手值。";
             FrontEndArt.SetNarrationText(_lessonNarration, words, 236f, 19, reflow: true);
         }
 

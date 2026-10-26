@@ -256,6 +256,9 @@ namespace FingerDiceDuel.Core
                 _elementResistances.Add(type);
         }
 
+        public bool HasPermanentResistance(AttackDamageType type)=>_permanentResistances.Contains(type)
+            ||(type==AttackDamageType.Slashing||type==AttackDamageType.Piercing)&&_permanentResistances.Contains(AttackDamageType.Bludgeoning);
+
         public void AddPermanentResistance(AttackDamageType type)
         {
             if (type != AttackDamageType.None) _permanentResistances.Add(type);

@@ -22,12 +22,14 @@ namespace FingerDiceDuel.Assistant
             _soldier = game.PlayerB;
         }
 
+        public virtual string GuideName => AdventureLevel1.GuideName;
+        public virtual string GuideAvatarKey => AdventureLevel1.GuideAvatarKey;
         public virtual string BattleBackgroundKey => "Backgrounds/border_outpost_chapter_01";
         public virtual bool UsesClassicSetup => false;
         public virtual bool AllowsTutorialSkip => true;
         public virtual string ResultHeading => "胜利";
         public virtual string FailureText => "本次训练未获胜。可重试或返回章节。";
-        public bool IsFinished => IsComplete || _game.IsGameOver;
+        public virtual bool IsFinished => IsComplete || _game.IsGameOver;
         public abstract int LevelNumber { get; }
         public abstract string DisplayTitle { get; }
         public abstract string OpeningText { get; }
@@ -140,7 +142,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 推进导演：当前拍的完成条件满足则切下一拍。幂等，可每帧调用。
         /// </summary>
-        public void Tick()
+        public virtual void Tick()
         {
             var beat = CurrentBeat;
             if (beat?.Complete == null || !beat.Complete(this)) return;
@@ -164,7 +166,7 @@ namespace FingerDiceDuel.Assistant
             return CurrentBeat != null && !IsFreeStage && CurrentBeat.Choices.TryGetValue(_board.PendingEffect, out hand);
         }
 
-        public bool AllowClick(Hand hand)
+        public virtual bool AllowClick(Hand hand)
         {
             var beat = CurrentBeat;
             if (beat == null || beat.FreeClicks) return true;
