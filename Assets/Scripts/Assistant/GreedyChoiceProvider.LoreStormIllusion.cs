@@ -3,8 +3,44 @@ using System.Collections.Generic;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
-    public sealed partial class GreedyChoiceProvider : INewSubclassChoicePolicy
+    public sealed partial class GreedyChoiceProvider : INewSubclassChoicePolicy,IIllusionChoicePolicy
     {
+        public bool RedirectIllusion(IllusionTouch touch,GameManager game)
+        {
+            int original=IllusionOperationValue(touch,touch.Selected,game);
+            int alternate=IllusionOperationValue(touch,touch.Alternate,game);
+            return game.IsKnownAlly(touch.Owner,touch.Actor)?alternate>original:alternate<original;
+        }
+        private static int IllusionOperationValue(IllusionTouch touch,Hand addend,GameManager game)
+        {
+            var actor=touch.Actor;
+            int value=StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(touch.SourceValue,addend.Value));
+            var profile=HandValueProfiles.For(actor.Definition);int score=profile.WeightOf(value);
+            int other=actor.GetOtherHand(touch.Source).Value;
+            foreach(var combo in profile.Combos)if(combo.Matches(value,other))score+=Math.Min(80,combo.Bonus);
+            if(touch.Effectless)return score;
+            var effect=CharacterBehaviors.DisplayedEffectOf(actor,value);
+            if(effect==HandEffectType.Heal)
+            {
+                if(!actor.HasStatus(StatusEffect.Decay))score+=Math.Min(9,actor.MaximumHealth-actor.Health)*12;
+                if(!actor.HasStatus(StatusEffect.WarBlessing))return score;
+            }
+            if(effect==HandEffectType.Shield)score+=touch.Source.IsShield?5:45;
+            if(DivineChoices.IsAttack(effect)||value==9&&actor.HasStatus(StatusEffect.WarBlessing))
+            {
+                int best=0;
+                foreach(var target in game.Players)
+                {
+                    if(!target.IsAlive||game.IsKnownAlly(actor,target)||!game.CanReach(actor,target)||!StatusRules.CanAttackTarget(actor,target,game))continue;
+                    int damage=actor.HasStatus(StatusEffect.Disabled)?0:Math.Max(0,value+StatusRules.EffectiveAttackBonus(actor)-StatusRules.EffectiveDefenseBonus(target)+ArcaneChoices.BonusAgainst(actor,target));
+                    int gain=damage*12+(damage>=target.Health?200:0);
+                    if(target.LeftHand.IsShield||target.RightHand.IsShield)gain/=2;
+                    best=Math.Max(best,gain);
+                }
+                score+=best;
+            }
+            return score;
+        }
         private Hand _stormPlannedSource;
         private static int StormPreparation(PlayerState owner,Hand source,Hand target,GameManager game)
         {

@@ -898,5 +898,7 @@
       "appearances": 943296,
       "rate_percent": 41.5
     }
-  }
+  },
+  "snapshot_note": "胜率采样早于2026-10-27幻术学派镜像错位改为主动选择；不是新技能规则的重采样。",
+  "rule_snapshot_commit": "1c56463b33ded7302a33f7bfc0db803fc6500413"
 }

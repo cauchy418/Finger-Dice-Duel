@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -38,7 +38,6 @@ namespace FingerDiceDuel.Tests
                 {
                     int value=unchecked(seed+i*97);
                     if(part is StormSorceryLogic storm)storm.Rng=new System.Random(unchecked(value+79));
-                    if(part is SchoolOfIllusionLogic illusion)illusion.Rng=new System.Random(unchecked(value+83));
                     if(part is WildMagicLogic wild)wild.Rng=new System.Random(unchecked(value+89));
                 }
         }

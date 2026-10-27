@@ -522,7 +522,7 @@ namespace FingerDiceDuel.Core
             description:"开局选择永久闪电或雷鸣抗性；攻击30%闪电、30%雷鸣，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
         public static CharacterDefinition SchoolOfIllusion { get; } = new CharacterDefinition(
             SchoolOfIllusionId,"法师·幻术学派",SpecialLogicType.SchoolOfIllusion,defenseBonus:-1,englishName:"School of Illusion",
-            description:"持有2时，他人选你的手作加数有50%改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
+            description:"持有2时，他人选你的任意手作加数，你可查看其运算手与原加数，再选择是否改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
 
         public const string SchoolOfTransmutationId = "wizard_school_of_transmutation";
         public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立10生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。距离∞，近钝击远穿刺。");

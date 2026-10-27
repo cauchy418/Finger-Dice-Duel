@@ -1,0 +1,23 @@
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS addend owner controls the response
+PASS intent contains both original hands and replacement
+PASS operation waits for the response
+PASS both named choices visible and clickable
+PASS raycast WizardOption0
+PASS changed attack asks for actual victim
+PASS raycast PaintedHandCard
+PASS replacement sum drives attack
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast WizardOption1
+PASS decline keeps the original addend
+PASS dragon form entered
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast WizardOption0
+PASS dragon chooses its second addend
+PASS raycast PaintedHandCard
+PASS second choice uses intermediate source value
+PASS raycast WizardOption1
+PASS two distinct answers resolve exactly one operation

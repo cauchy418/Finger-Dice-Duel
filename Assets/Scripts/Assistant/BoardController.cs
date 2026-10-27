@@ -262,6 +262,7 @@ namespace FingerDiceDuel.Assistant
             _game.DruidPolicyFor = p=>GetChoice(p) as IDruidChoicePolicy;
             _game.AncientPolicyFor = p=>GetChoice(p) as IAncientRoleChoicePolicy;
             _game.NewSubclassPolicyFor = p=>GetChoice(p) as INewSubclassChoicePolicy;
+            _game.IllusionPolicyFor = p=>GetChoice(p) as IIllusionChoicePolicy;
             _game.ArcanePolicyFor=p=>GetChoice(p) as IArcaneChoicePolicy;
             _game.SummonProviderFor=p=>{_specterAi.Game=_game;return _specterAi;};
             _game.AutomaticChoicesFor=p=>GetAi(p)!=null;
@@ -1914,33 +1915,10 @@ namespace FingerDiceDuel.Assistant
                         ExecuteResolvedTurn();
                         return true;
                     }
-                    hand=_game.PrepareOperationAddend(ActivePlayer,SelectedHand,hand);
-                    if(TryBeginDragonAddend(hand))return true;
-                    _selectedTarget = hand;
-                    TargetPlayer = OwnerOf(hand) ?? Defender;
-
-                    // 立刻记下这次运算的两只手 —— 后面的"角色抉择"阶段
-                    // （游荡者·风流剑客强化、牧师·生命领域攻击/回复/治疗目标）都要用到它们，
-                    // 而这些抉择发生在 ConfirmTargetPlayer（CommitMove）**之前**。
-                    //
-                    // ⚠️ 曾经只在这里设 `_selectedTarget`，`_pendingActedHand` /
-                    // `_pendingTargetHand` / `_pendingIsAttack` 都要等 CommitMove
-                    // 才赋值 —— 于是抉择阶段读到的全是 null/false（测试抓到）。
-                    _pendingActedHand = SelectedHand;
-                    _pendingTargetHand = hand;
-
-                    // 记下"本回合真正要运算的两只手"（副本，供结算兜底）。
-                    // 只在回合结束时清 —— 中间的重建不会动它。
-                    _turnActedHand = SelectedHand;
-                    _turnTargetHand = hand;
-
-                    // 用与"创建抉择"完全同一个判定，避免两处各写一份（会漂移）
-                    _pendingIsAttack = DruidChoiceContext(
-                        ActivePlayer, TargetPlayer ?? Defender,
-                        SelectedHand, hand).IsAttack;
-
-                    ContinueSelectedOperation();
-                    return true;
+                    Hand actual=null;
+                    if(_game.RequestOperationAddend(ActivePlayer,SelectedHand,hand,h=>actual=h))
+                    {TryStartWizardBoundary(()=>CompleteChosenAddend(actual));return true;}
+                    CompleteChosenAddend(actual);return true;
 
                 case BoardPhase.ChoosingTargetPlayer:
                     // 第 ③ 步：点目标玩家的手牌确认"打他"。
@@ -1983,6 +1961,17 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 无效果（1/2/3/7）与护盾（5，作用于自己）都不需要，避免无意义询问。
         /// </summary>
+        private void CompleteChosenAddend(Hand hand)
+        {
+            if(hand==null||SelectedHand==null)return;
+            if(TryBeginDragonAddend(hand))return;
+            _selectedTarget=hand;TargetPlayer=OwnerOf(hand)??Defender;
+            _pendingActedHand=_turnActedHand=SelectedHand;
+            _pendingTargetHand=_turnTargetHand=hand;
+            _pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,hand).IsAttack;
+            ContinueSelectedOperation();
+        }
+
         private bool NeedsTargetAfterOperation()
         {
             if (SelectedHand == null || _selectedTarget == null) return false;
@@ -2412,8 +2401,8 @@ namespace FingerDiceDuel.Assistant
         /// <summary>取消目标选择，回到第一步。</summary>
         public void CancelSelection()
         {
-            _game.DruidSecondAddend=null;
             if (Phase != BoardPhase.ChoosingTargetHand) return;
+            _game.ClearPreparedOperationAddend();_game.DruidSecondAddend=null;
 
             SelectedHand = null;
             Phase = BoardPhase.ChoosingAttackerHand;

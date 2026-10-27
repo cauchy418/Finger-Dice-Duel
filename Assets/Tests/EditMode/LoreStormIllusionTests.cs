@@ -86,21 +86,133 @@ namespace FingerDiceDuel.Tests
             var storm=new StormSorceryLogic();var lore=new CollegeOfLoreLogic();var a=new PlayerState("历史容器",new DualGeneralBehavior(storm,lore));var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);var g=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
             a.LeftHand.SetValue(1);b.LeftHand.SetValue(7);Assert.True(g.ApplyStormFreeOperation(a,a.LeftHand,b.LeftHand));Assert.AreEqual(8,a.LeftHand.Value);Assert.AreEqual(20,b.Health);Assert.AreEqual(0,lore.RecordCount);Assert.AreEqual(0,g.TurnCount);
         }
-        [Test] public void Illusion_fifty_percent_boundaries_and_cached_choice_are_deterministic()
+        private sealed class MirrorPolicy:AbstractChoiceProvider,IIllusionChoicePolicy
         {
-            Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);var mage=(SchoolOfIllusionLogic)g.PlayerB.Character;g.PlayerB.LeftHand.SetValue(2);g.PlayerB.RightHand.SetValue(7);mage.ForcedRoll=49;
-            var first=g.PrepareOperationAddend(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(g.PlayerB.RightHand,first);mage.ForcedRoll=99;Assert.AreEqual(first,g.PrepareOperationAddend(g.PlayerA,g.PlayerA.LeftHand,first));
-            g.ClearPreparedOperationAddend();Assert.AreEqual(g.PlayerB.LeftHand,g.PrepareOperationAddend(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand));
+            public bool Use;public int Asked;
+            public bool RedirectIllusion(IllusionTouch touch,GameManager game){Asked++;return Use;}
         }
-        [Test] public void Illusion_respects_alternate_hand_legality_and_preview_never_rolls()
+        [Test] public void Illusion_choice_is_cached_and_repeated_reads_do_not_ask_again()
         {
-            Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);var mage=(SchoolOfIllusionLogic)g.PlayerB.Character;mage.ForcedRoll=0;g.PlayerB.LeftHand.SetValue(2);g.PlayerB.RightHand.SetValue(7);g.PlayerB.RightHand.SetTargetRestricted(true);
-            g.GetLegalMoves(g.PlayerA);Assert.AreEqual(g.PlayerB.LeftHand,g.PrepareOperationAddend(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand));
+            var policy=new MirrorPolicy{Use=true};var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.Blank);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.SchoolOfIllusion);var g=new GameManager(a,b,new SimpleChoiceProvider(),policy);
+            b.LeftHand.SetValue(2);b.RightHand.SetValue(7);
+            var first=g.PrepareOperationAddend(a,a.LeftHand,b.LeftHand);Assert.AreEqual(b.RightHand,first);Assert.AreEqual(1,policy.Asked);
+            policy.Use=false;Assert.AreEqual(first,g.PrepareOperationAddend(a,a.LeftHand,first));Assert.AreEqual(1,policy.Asked);
+            g.ClearPreparedOperationAddend();Assert.AreEqual(b.LeftHand,g.PrepareOperationAddend(a,a.LeftHand,b.LeftHand));Assert.AreEqual(2,policy.Asked);
         }
-        [Test] public void Illusion_controller_uses_redirected_sum_for_target_prompt_and_actual_attack()
+        [Test] public void Illusion_human_can_keep_or_replace_either_selected_hand_before_operation()
         {
-            var board=Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);var mage=(SchoolOfIllusionLogic)g.PlayerB.Character;mage.ForcedRoll=0;g.PlayerB.LeftHand.SetValue(2);g.PlayerB.RightHand.SetValue(7);board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
-            Assert.AreEqual(BoardPhase.ChoosingTargetPlayer,board.Phase);board.ClickHand(g.PlayerB.LeftHand);Assert.AreEqual(8,g.PlayerA.LeftHand.Value);Assert.AreEqual(11,g.PlayerB.Health);Assert.AreEqual(1,g.TurnCount);
+            foreach(bool right in new[]{false,true})foreach(bool use in new[]{false,true})
+            {
+                var board=Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);
+                var a=g.PlayerA;var b=g.PlayerB;b.LeftHand.SetValue(2);b.RightHand.SetValue(7);
+                var selected=right?b.RightHand:b.LeftHand;board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(selected);
+                Assert.AreEqual(b,board.Chooser);Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.AreEqual(2,board.PendingSkillOptions.Count);
+                Assert.True(board.Hint.Contains(CombatText.HandName(a,a.LeftHand)+"1"));Assert.True(board.Hint.Contains(CombatText.HandName(b,selected)+selected.Value));
+                Assert.AreEqual(1,a.LeftHand.Value);Assert.AreEqual(0,g.TurnCount);
+                Assert.True(board.ChooseSkillOption(use?1:0));
+                bool attack=right!=use;
+                if(attack){Assert.AreEqual(BoardPhase.ChoosingTargetPlayer,board.Phase);Assert.True(board.ClickHand(b.LeftHand));}
+                Assert.AreEqual(attack?8:3,a.LeftHand.Value);Assert.AreEqual(attack?11:20,b.Health);Assert.AreEqual(1,g.TurnCount);
+                Assert.AreEqual(2,b.LeftHand.Value);Assert.AreEqual(7,b.RightHand.Value);
+            }
+        }
+        [Test] public void Illusion_respects_alternate_hand_legality_and_previews_never_prompt()
+        {
+            var board=Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);
+            g.PlayerB.LeftHand.SetValue(2);g.PlayerB.RightHand.SetValue(7);g.PlayerB.RightHand.SetTargetRestricted(true);
+            g.GetLegalMoves(g.PlayerA);g.PreviewOperationResult(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);
+            Assert.True(board.PendingWizardChoice==null);board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
+            Assert.True(board.PendingWizardChoice==null);Assert.AreEqual(3,g.PlayerA.LeftHand.Value);Assert.AreEqual(1,g.TurnCount);
+        }
+        [Test] public void Illusion_without_two_and_sheep_do_not_offer_redirect()
+        {
+            foreach(bool sheep in new[]{false,true})
+            {
+                var board=Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);
+                g.PlayerB.LeftHand.SetValue(sheep?2:3);g.PlayerB.RightHand.SetValue(7);
+                if(sheep)g.PlayerB.TryPolymorph();board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
+                Assert.True(board.PendingWizardChoice==null);
+            }
+        }
+        [Test] public void Illusion_does_not_redirect_own_self_addition_and_reset_invalidates_queued_answer()
+        {
+            var a=DualGeneralFactory.Create("A",CharacterDefinition.Magician,CharacterDefinition.SchoolOfIllusion);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);var g=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+            a.LeftHand.SetValue(2);a.RightHand.SetValue(7);WizardChoice pending=null;g.DeferWizardChoice=q=>{pending=q;return true;};
+            Hand actual=null;Assert.False(g.RequestOperationAddend(a,a.LeftHand,a.RightHand,h=>actual=h));Assert.AreEqual(a.RightHand,actual);Assert.True(pending==null);
+            Assert.True(g.RequestOperationAddend(b,b.LeftHand,a.RightHand,h=>actual=h));g.ResetMatch();actual=null;
+            pending.ChooseOption(1);Assert.True(actual==null,"重开后的过期选择不能执行旧运算");
+        }
+        [Test] public void Illusion_ai_prefers_weaker_enemy_result_and_stronger_allied_result()
+        {
+            var ps=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),
+                CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("D",CharacterDefinition.SchoolOfIllusion)};
+            var g=GameManager.Create2v2(ps,new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});
+            ps[3].LeftHand.SetValue(2);ps[3].RightHand.SetValue(7);var ai=new GreedyChoiceProvider();
+            Assert.True(ai.RedirectIllusion(new IllusionTouch(ps[3],ps[0],ps[0].LeftHand,ps[3].LeftHand,ps[3].RightHand,1,false),g));
+            Assert.False(ai.RedirectIllusion(new IllusionTouch(ps[3],ps[1],ps[1].LeftHand,ps[3].LeftHand,ps[3].RightHand,1,false),g));
+            Assert.True(ai.RedirectIllusion(new IllusionTouch(ps[3],ps[1],ps[1].LeftHand,ps[3].LeftHand,ps[3].RightHand,6,false),g));
+        }
+        [Test] public void Illusion_second_addend_has_separate_decision_and_uses_intermediate_source_value()
+        {
+            var board=Board(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,out var g);var a=g.PlayerA;var b=g.PlayerB;
+            b.LeftHand.SetValue(2);b.RightHand.SetValue(7);var qs=new List<WizardChoice>();g.DeferWizardChoice=q=>{qs.Add(q);return true;};
+            Hand first=null,second=null;g.RequestOperationAddend(a,a.LeftHand,b.RightHand,h=>first=h);qs[0].ChooseOption(0);
+            g.RequestOperationAddend(a,a.LeftHand,b.RightHand,h=>second=h,step:1,sourceValue:8);Assert.AreEqual(2,qs.Count);
+            Assert.True(qs[1].Prompt.Contains("左手8"));qs[1].ChooseOption(1);
+            Assert.AreEqual(b.RightHand,first);Assert.AreEqual(b.LeftHand,second);Assert.AreEqual(1,a.LeftHand.Value);
+            Assert.AreEqual(first,g.PrepareOperationAddend(a,a.LeftHand,first));Assert.AreEqual(second,g.PrepareOperationAddend(a,a.LeftHand,second,step:1));
+        }
+        [Test] public void Illusion_storm_extra_operation_asks_owner_without_extra_effects_or_turn()
+        {
+            var board=Board(CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,out var g);var a=g.PlayerA;var b=g.PlayerB;
+            board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Thunder);board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);
+            b.LeftHand.SetValue(2);b.RightHand.SetValue(7);Assert.True(board.ChooseWizardHand(a.LeftHand));Assert.True(board.ChooseWizardHand(b.RightHand));
+            Assert.AreEqual(b,board.Chooser);Assert.True(board.Hint.Contains("镜像错位"));Assert.AreEqual(2,a.LeftHand.Value);
+            Assert.True(board.ChooseSkillOption(1));Assert.AreEqual(4,a.LeftHand.Value);Assert.AreEqual(20,b.Health);Assert.AreEqual(1,g.TurnCount);
+        }
+        private sealed class FixedTouch:IMoveSelector
+        {
+            public LegalMove Move;public string Describe=>"固定触碰";
+            public LegalMove ChooseMove(GameManager game,PlayerState actor)=>Move;
+        }
+        [Test] public void Illusion_ai_actor_waits_for_the_human_addend_owner()
+        {
+            var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();
+            var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.SchoolOfIllusion,ca,cb);
+            g.PlayerB.LeftHand.SetValue(2);g.PlayerB.RightHand.SetValue(7);
+            var ai=new FixedTouch{Move=new LegalMove(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand)};
+            var board=new BoardController(g,ca,cb,ai,null);board.BeginTurn();Assert.True(board.MakeAutomaticMove());
+            Assert.AreEqual(g.PlayerB,board.Chooser);Assert.True(board.IsHumanChooser);Assert.False(board.ResolvePendingAiChoice());
+            Assert.AreEqual(1,g.PlayerA.LeftHand.Value);Assert.True(board.ChooseSkillOption(0));
+            Assert.AreEqual(3,g.PlayerA.LeftHand.Value);Assert.AreEqual(1,g.TurnCount);
+        }
+        [Test] public void Illusion_targets_the_correct_human_owner_in_four_and_eight_player_matches()
+        {
+            foreach(int size in new[]{4,8})
+            {
+                var players=new PlayerState[size];var sinks=new SimpleChoiceProvider[size];
+                for(int i=0;i<size;i++){players[i]=CharacterFactory.CreatePlayer("P"+i,i==size-1?CharacterDefinition.SchoolOfIllusion:CharacterDefinition.Blank);sinks[i]=new SimpleChoiceProvider();}
+                var g=size==4?GameManager.Create2v2(players,sinks):GameManager.CreateEight(players,sinks,new[]{0,1,0,1,0,1,0,1});
+                var board=new BoardController(g,sinks[0],sinks[1]);for(int i=0;i<size;i++)board.BindPlayer(players[i],null,sinks[i]);
+                var owner=players[size-1];owner.LeftHand.SetValue(2);owner.RightHand.SetValue(7);
+                board.BeginTurn();board.ClickHand(players[0].LeftHand);board.ClickHand(owner.RightHand);
+                Assert.AreEqual(owner,board.Chooser);Assert.True(board.Hint.Contains("P0"));Assert.True(board.ChooseSkillOption(1));
+                Assert.AreEqual(3,players[0].LeftHand.Value);Assert.AreEqual(1,g.TurnCount);
+            }
+        }
+        [Test] public void Illusion_dragon_asks_each_addend_once_and_applies_only_the_final_result()
+        {
+            var board=Board(CharacterDefinition.CircleOfTheStars,CharacterDefinition.SchoolOfIllusion,out var g);
+            var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(4);a.RightHand.SetValue(6);b.LeftHand.SetValue(2);b.RightHand.SetValue(7);
+            Assert.True(((CircleOfTheStarsLogic)a.Character).TryEnter(CircleOfTheStarsLogic.StarryForm.Dragon,a,g));
+            board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.RightHand);Assert.AreEqual(b,board.Chooser);
+            Assert.True(board.ChooseSkillOption(1));Assert.AreEqual(a,board.Chooser);Assert.True(board.Hint.Contains("第二个加数"));
+            Assert.True(board.ChooseWizardHand(b.RightHand));Assert.AreEqual(b,board.Chooser);Assert.True(board.Hint.Contains("左手6"));
+            Assert.AreEqual(4,a.LeftHand.Value);Assert.True(board.ChooseSkillOption(0));
+            Assert.AreEqual(3,a.LeftHand.Value);Assert.AreEqual(7,board.LastTurn.SecondAddendValue);Assert.AreEqual(20,b.Health);Assert.AreEqual(1,g.TurnCount);
+            Assert.True(board.PendingWizardChoice==null);
         }
         [Test] public void Illusion_defense_asks_owner_and_changes_only_smaller_hand_when_accepted()
         {

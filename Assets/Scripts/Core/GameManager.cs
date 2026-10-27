@@ -1572,6 +1572,7 @@ namespace FingerDiceDuel.Core
                 var candidates=new List<Hand>();foreach(var p in Players)foreach(var h in p.Hands)if(IsLegalMove(actor,actedHand,h,out _))candidates.Add(h);
                 if(DruidSecondAddend==null) DruidSecondAddend=GetDruidPolicy(actor)?.SecondAddend(actor,actedHand,targetHand,candidates,this)??targetHand;
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
+                DruidSecondAddend=PrepareOperationAddend(actor,actedHand,DruidSecondAddend,step:1,sourceValue:Hand.ComputeSum(actedHand.Value,targetHand.Value));
             }
             try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
             finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;}

@@ -372,9 +372,9 @@ namespace FingerDiceDuel.Characters
                 counter:"额外运算不能直接打伤害或回血；根据其永久抗性调整元素。",
                 interactions:new[]{"额外运算不触发数字效果、碎盾或运算后技能，不额外推进回合与状态。"});
             Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticNeutral,
-                shortSkill:"持2可随机改换加数手；双手差2可变小手为2减伤。",
-                playGuide:"持2自动50%错位，按实际加数结算；受击时双手差2，可选择小手变2减半。",
-                counter:"选加数前比较两只手；压制其2或拆开差2，降低减伤机会。",
+                shortSkill:"持2可选择改用另一只合法手作加数；差2可变小手为2减伤。",
+                playGuide:"持2时，先看对方的运算手和原加数，再选是否改用另一只合法手；受击差2可将小手变2减半。",
+                counter:"借其手前比较两种运算结果；对方可主动改算。拆开其持2或差2条件，削弱防守。",
                 interactions:new[]{"替换手也须是合法加数；隐藏或被封锁的另一手不会被强行借用。"});
 
             Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.TrueNeutral,

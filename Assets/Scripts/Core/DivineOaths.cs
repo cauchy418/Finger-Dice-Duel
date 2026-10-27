@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
                 if(source==null||!owner.IsAlive||owner.IsPolymorphed)return;
                 var targets=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(ReferenceEquals(move.ActedHand,source))targets.Add(move.TargetHand);
                 NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"誓言反击 · 点击加数（只改变手值）",owner,game,targets,true,target=>{
-                    if(target!=null)game.ApplyEffectlessOperation(owner,source,target,"誓言反击");
+                    if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.ApplyEffectlessOperation(owner,source,h,"誓言反击"),effectless:true);
                 });
             });
         }
@@ -45,10 +45,11 @@ namespace FingerDiceDuel.Core
         public bool ApplyEffectlessOperation(PlayerState actor,Hand source,Hand target,string skill)
         {
             if(!actor.IsAlive||actor.IsPolymorphed||!StatusRules.CanAct(actor)||!IsLegalMove(actor,source,target,out _))return false;
+            target=PrepareOperationAddend(actor,source,target,effectless:true);
             int before=source.Value,add=target.Value;bool shield=source.IsShield;
             int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));source.SetValue(value);
             if(shield)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
-            NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）");return true;
+            NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）");ClearPreparedOperationAddend();return true;
         }
         public bool? WarBlessingNineAttack { get; set; }
         public PlayerState ShieldBreaker { get; private set; }

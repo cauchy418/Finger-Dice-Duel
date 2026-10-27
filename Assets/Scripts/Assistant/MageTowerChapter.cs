@@ -226,13 +226,13 @@ namespace FingerDiceDuel.Assistant
         {
             for(int variant=0;variant<2;variant++)
             {
-                int v=variant;var s=new MageTowerSample("redirect_"+v,v==0?"镜像错位 · 改算":"镜像错位 · 未改算",new[]{2,4,2,5},"有2时，对方借你的手运算有50%改用你另一只手。本样本固定真实随机种子；回看文字不重掷。")
-                    .Turn(1,0,0,1,v==0?"护卫左2借己右4，镜像改为借左2：2＋2＝4，造成5伤。若询问幻术防守，选不发动。":"护卫左2借己右4，本次未触发：2＋4＝6，造成7伤。若询问幻术防守，选不发动。");
-                s.FirstSeat=1;s.Prepare=g=>((FingerDiceDuel.Characters.SpecialLogics.SchoolOfIllusionLogic)g.PlayerA.Character).Rng=new Random(v==0?1:0);
+                int v=variant;var s=new MageTowerSample("redirect_"+v,v==0?"镜像错位 · 改算":"镜像错位 · 保留加数",new[]{2,4,2,5},"持有2时，看到对方准备用哪只手触碰你的哪只手，再选发动改用另一只合法手，或不发动保留原加数。")
+                    .Turn(1,0,0,1,v==0?"护卫左2准备触碰己右4。点【发动·改用左手2】：2＋2＝4，造成5伤。若询问镜像折光，选不发动。":"护卫左2准备触碰己右4。点【不发动·保留右手4】：2＋4＝6，造成7伤。若询问镜像折光，选不发动。");
+                s.FirstSeat=1;
                 s.Verify=l=>l.Player.Health==(v==0?15:13);list.Add(s);
             }
-            var b=new MageTowerSample("defense","镜像防守",new[]{3,5,3,1},"3/5差为2，没有2故不触发错位。被攻击时可把较小3改2，伤害减半。")
-                .Turn(1,0,0,1,"护卫左3＋己右5＝8，原伤9。点【镜像防守】；自动较小3→2，9减半向上取整5，你20→15。不必再选手。");
+            var b=new MageTowerSample("defense","镜像折光",new[]{3,5,3,1},"3/5差为2，没有2故不触发错位。被攻击时可把较小3改2，伤害减半。")
+                .Turn(1,0,0,1,"护卫左3＋己右5＝8，原伤9。点【小手变2 · 减半】；自动较小3→2，9减半向上取整5，你20→15。不必再选手。");
             b.FirstSeat=1;b.Verify=l=>l.Player.Health==15&&l.Player.LeftHand.Value==2;list.Add(b);
         }
         private static void Transmutation(List<MageTowerSample> list)

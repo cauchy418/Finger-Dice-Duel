@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Assistant
                 if(!Guided||_board.PendingSkillOptions.Count==0)return null;
                 if(_level==11)return SampleIndex==0?(int)AttackDamageType.Fire:1;
                 if(_level==15)return _game.TurnCount<=1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
-                if(_level==18)return SampleIndex==2?1:0;
+                if(_level==18)return _board.PendingWizardChoice?.Prompt.Contains("镜像错位")==true?(SampleIndex==0?1:0):SampleIndex==2?1:0;
                 return null;
             }
         }

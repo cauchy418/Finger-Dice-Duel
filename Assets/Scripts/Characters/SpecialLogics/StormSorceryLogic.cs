@@ -37,7 +37,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var sources=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(!sources.Contains(move.ActedHand))sources.Add(move.ActedHand);
             NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,"风暴余势 · 选择运算手，或不发动",owner,game,sources,true,source=>{
                 if(source==null)return;var targets=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(ReferenceEquals(move.ActedHand,source))targets.Add(move.TargetHand);
-                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"风暴余势 · 选择加数（只改变手值）",owner,game,targets,true,target=>{if(target!=null)game.ApplyStormFreeOperation(owner,source,target);});});
+                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"风暴余势 · 选择加数（只改变手值）",owner,game,targets,true,target=>{if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.ApplyStormFreeOperation(owner,source,h),effectless:true);});});
         }
     }
 }

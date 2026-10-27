@@ -59,8 +59,10 @@ section=f"""## 胜率测试
 主公与忠臣共同获胜，胜率不相加。上述结果用于后续平衡判断，本轮没有修改技能数值或凭循环赛自动调权重。[独立权重留出实验](Tools/AiTuning/README.md)仍保留历史结果，当前沿用其中23项1v1配置。
 
 """
+if data.get('snapshot_note'):
+    section=section.replace('的当前规则采样','的规则快照采样（主动镜像错位改动前）')
 s=s[:s.index('## 胜率测试')]+section+s[s.index('## 开发与文档'):]
-s=re.sub(r'最新 \*\*1,380项逻辑回归[^\n]*','最新 **1428项功能回归、7项大规模统计全部通过，0失败**；Unity/NUnit条件编译及181脚本表现层编译通过。全部七份模式报告和52子职胜率已同步；新誓言与状态另有[81项实机检查](Art/Integration/divine-oaths-v1/README.md)，历史验收保存在 Art/Integration/。',s)
+s=re.sub(r'最新 \*\*1,380项逻辑回归[^\n]*','最新 **1436项功能回归通过，0失败**；7项大规模统计对应主动镜像错位改动前快照；Unity/NUnit条件编译及181脚本表现层编译通过。全部七份模式报告和52子职胜率已同步；新誓言与状态另有[81项实机检查](Art/Integration/divine-oaths-v1/README.md)，历史验收保存在 Art/Integration/。',s)
 save('README.md',s)
 new_rows='\n'.join('| '+name+' | '+' | '.join(f"{roles[name][mode]['rate_percent']:.1f}%" for mode in ['1v1','2v2','dual'])+' |' for name in ['牧师·战争领域','圣武士·征服之誓','圣武士·复仇之誓'])
 note=f"""# 当前规则胜率采样（{data['date']}）
@@ -128,5 +130,6 @@ python Tools/Statistics/update-readme.py
 
 results.json记录采样基线提交（最终提交包含本轮测试台修复）、Assets/Scripts与Assets/Tests的C#C#源码指纹、双将构建MVID和七份报告的SHA256。原始双将分片位于忽略的bin缓存，公开报告与汇总入库；重新构建后MVID会变化，不允许拿旧分片冒充新构建。
 """
+if data.get('snapshot_note'):note=note.replace('# 当前规则胜率采样','# 规则快照胜率采样')+'\n> '+data['snapshot_note']+'\n'
 save('Tools/Statistics/README.md',note)
 print('PASS README and sampling note synchronized from verified data')

@@ -6,7 +6,7 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通.NET可执行文件跑测试。当前1428项功能回归及7项独立统计；52子职的1v1为106,080局、
+一个普通.NET可执行文件跑测试。当前1436项功能回归；7项独立统计的现存报告为主动镜像错位改动前快照；52子职的1v1为106,080局、
 2v2为169,728局、425双将为2,162,400局、集火187,200局，八人阵营2,000局、身份两种选角各2,000局，共2,631,408局。采样统一走实际BoardController，细节见[本轮报告](../Statistics/README.md)；
 专项可按测试类过滤，不必每次重跑全部统计。
 
@@ -39,7 +39,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-EditorRoot <path>` | 手动指定编辑器 `Editor/Data` 目录 |
 | `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时只编译成库、不执行，并自动引入 `nunit.framework.dll`） |
 | `-Only <filter>` | 编译后只运行类名包含该文本的测试，例如`-Only AdventureLevel1Tests`；全量回归时不传此项 |
-| `-SkipStatistics` | 跳过7项大规模统计，只执行1428项功能回归 |
+| `-SkipStatistics` | 跳过7项大规模统计，只执行1436项功能回归 |
 | `-OutputDirectory <path>` | 使用独立构建目录，不覆盖正在运行的DLL或旧分片的构建标识 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
 

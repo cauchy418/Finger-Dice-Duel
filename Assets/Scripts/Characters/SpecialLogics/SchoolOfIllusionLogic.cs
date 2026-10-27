@@ -5,15 +5,15 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 {
     public sealed class SchoolOfIllusionLogic : CharacterTemplate,IOperationAddendIllusion,IWholeAttackDefense,IAttackTypeProvider
     {
-        private bool? _defend;public int ForcedRoll {get;set;}=-1;public Random Rng {get;set;}=new Random();
+        private bool? _defend;
         public override string DisplayName=>"法师·幻术学派";
         public override int DefaultDefenseBonus=>-1;
         public override int BaseAttackRange=>InfiniteAttackRange;
         public override int ScoreMoveBonus(MoveValueContext context)
             =>(context.ActedValueAfter==2||context.OtherHandValue==2?24:0)+(Math.Abs(context.ActedValueAfter-context.OtherHandValue)==2?30:0);
         public override void OnMatchReset(PlayerState owner,GameManager manager)=>_defend=null;
-        public bool ShouldRedirect(PlayerState owner,GameManager game)
-            => (owner.LeftHand.Value==2||owner.RightHand.Value==2)&&(ForcedRoll>=0?ForcedRoll%100:(Rng??(Rng=new Random())).Next(100))<50;
+        public bool CanRedirect(PlayerState owner)
+            => owner!=null&&!owner.IsPolymorphed&&(owner.LeftHand.Value==2||owner.RightHand.Value==2);
         private static Hand Smaller(PlayerState owner)
             => Math.Abs(owner.LeftHand.Value-owner.RightHand.Value)==2?(owner.LeftHand.Value<owner.RightHand.Value?owner.LeftHand:owner.RightHand):null;
         public bool CanReduceAttack(PlayerState owner,int attackValue)=>owner!=null&&Smaller(owner)!=null;

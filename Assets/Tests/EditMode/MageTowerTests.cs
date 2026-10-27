@@ -24,7 +24,6 @@ namespace FingerDiceDuel.Tests
                     var ca=new GreedyChoiceProvider{UseLearnedFocus=true};var cb=new GreedyChoiceProvider{UseLearnedFocus=true};
                     ca.ApplyDifficulty(AiDifficulty.Hard);cb.ApplyDifficulty(AiDifficulty.Hard);
                     var g=new GameManager(a,b,ca,cb);ca.Game=g;cb.Game=g;
-                    if(a.Character is FingerDiceDuel.Characters.SpecialLogics.SchoolOfIllusionLogic illusion)illusion.Rng=new Random(seed+9100);
                     StatusRules.ResetInteractionRandomForTest(seed+4100);
                     var start=new MatchStartController(g,new Random(seed+7300));start.Roll();
                     var advisor=new DiceSplitAdvisor();
@@ -58,6 +57,7 @@ namespace FingerDiceDuel.Tests
                 {
                     int value=0;
                     if(l.LevelNumber==11)value=l.SampleIndex==0?(int)AttackDamageType.Fire:1;
+                    if(l.LevelNumber==18)value=q.Prompt.Contains("镜像错位")?(l.SampleIndex==0?1:0):l.SampleIndex==2?1:0;
                     if(l.LevelNumber==15)value=g.TurnCount<=1?(int)StatusEffect.Disabled:g.TurnCount==4?(int)StatusEffect.Charm:0;
                     return b.ChooseSkillOption(value);
                 }
