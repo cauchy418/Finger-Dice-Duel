@@ -24,6 +24,16 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class IdentityBalanceTests
     {
+        private sealed class ZeroRandom:Random
+        {public override int Next(int maxValue)=>0;public override double NextDouble()=>0;}
+        [Test] public void Biased_character_pick_preserves_the_shuffled_identity_seat()
+        {
+            var roles=new[]{IdentityRole.Lord,IdentityRole.Loyalist,IdentityRole.Rebel,IdentityRole.Traitor,IdentityRole.Rebel,IdentityRole.Loyalist,IdentityRole.Rebel,IdentityRole.Rebel};
+            var picked=PickCharactersForRoles(new ZeroRandom(),roles);
+            // 零随机把选角座位洗成1,2,3,4,5,6,7,0；每次抽取剩余池首项。
+            Assert.AreEqual(CharacterDefinition.BuiltIn[0],picked[1]);Assert.AreEqual(CharacterDefinition.BuiltIn[7],picked[0]);
+            Assert.AreEqual(8,new HashSet<CharacterDefinition>(picked).Count);
+        }
         private const int Games = 2000;
 
         private sealed class ShieldAi : Assistant.IAiChoiceResolver
@@ -103,11 +113,13 @@ namespace FingerDiceDuel.Tests
 
                 GameManager game = GameManager.CreateIdentityEight(seated, providers, roles);
                 game.RoundLimit = GameManager.IdentityRoundLimit;
+                TestSetup.SeedSampling(game,unchecked(20261018+g*7919));
                 for (int i = 0; i < 8; i++) ApplyOpeningHands(seated[i], rng);
 
-                var controller = new BoardController(game, sinks[0], sinks[1]);
+                var controller = new BoardController(game, sinks[0], sinks[1]){GambleRng=new Random(unchecked(20261018+g*7919+101))};
                 for (int i = 0; i < 8; i++)
                     controller.BindPlayer(seated[i], selectors[i], sinks[i]);
+                TestSetup.SeedControllerSampling(controller,selectors,unchecked(20261018+g*7919));
                 controller.AiResolver = new ShieldAi();
                 controller.SetFirstPlayer(seated[0]);
                 controller.BeginTurn();
@@ -300,7 +312,7 @@ namespace FingerDiceDuel.Tests
             foreach (CharacterDefinition d in CharacterDefinition.BuiltIn)
                 if (CharacterFactory.IsRegistered(d.Logic)) pool.Add(d);
 
-            var picked = new List<CharacterDefinition>(8);
+            var picked = new List<CharacterDefinition>(new CharacterDefinition[8]);
             var seatOrder = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
             for (int i = 7; i > 0; i--)
             {
@@ -322,7 +334,7 @@ namespace FingerDiceDuel.Tests
                     if (roll <= 0) { chosen = i; break; }
                 }
 
-                picked.Add(pool[chosen]);
+                picked[seat]=pool[chosen];
                 pool.RemoveAt(chosen);
             }
 

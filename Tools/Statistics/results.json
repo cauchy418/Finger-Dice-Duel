@@ -1,0 +1,902 @@
+{
+  "date": "2026-10-27",
+  "source_base_commit": "9b20ad5dccae15729a9d6de5ccbd6149b31e2592",
+  "source_sha256": "be15450772b1b5de19bae1d91448944a78fe491305ea3249cd865bb2ad45e361",
+  "source_scope": "Assets/Scripts/**/*.cs + Assets/Tests/**/*.cs; sorted paths and raw bytes",
+  "dual_build_mvid": "d5f4744a-a731-4163-be42-62bcd848f59d",
+  "characters": 52,
+  "duals": 425,
+  "total_games": 2631408,
+  "reports": {
+    "1v1-report.txt": {
+      "games": 106080,
+      "sha256": "5ff03668b051ca8d177adbb9b9e62ad0c00e48b2c256dad62732d4826762a811"
+    },
+    "2v2-report.txt": {
+      "games": 169728,
+      "sha256": "61f696dda7af72b4833f1993dbab43c5fc928398acd229562e5fd8bfb3ab91fd"
+    },
+    "dual-report.txt": {
+      "games": 2162400,
+      "sha256": "7dd2e76bafc447f0c639099809a0b05a13e1d751987eafead556d873229bd41d"
+    },
+    "8p-report.txt": {
+      "games": 2000,
+      "sha256": "c3d19c5b3440b2e52ac2d476cf2655e3bbb8ed4a61acd39d59c91c42432b049b"
+    },
+    "identity-report-random.txt": {
+      "games": 2000,
+      "sha256": "7a9f2cc16db20b08bc9e4ad294d7344aa8190ee43b6eb4746bc1f8c7f1a13b4a"
+    },
+    "identity-report.txt": {
+      "games": 2000,
+      "sha256": "f95fdf4b0f13573014b601bb2d8a21727035a61685203a2a92043c32d5fa9dd6"
+    },
+    "focus-report.txt": {
+      "games": 187200,
+      "sha256": "ae7cda3410f9e4afb50deef082e8d277d2eaad614054e84457a23578c1744be5"
+    }
+  },
+  "roles": {
+    "fighter_champion": {
+      "name": "战士·勇士",
+      "1v1": {
+        "rate_percent": 40.7,
+        "report_row": "战士·勇士     1659   2403     18   40.7%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 45.2,
+        "report_row": "战士·勇士        5900    13056      45.2%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 43.2,
+        "report_row": "战士·勇士    69994 92822162816     43.2%      1.8%"
+      }
+    },
+    "fighter_breaker": {
+      "name": "战士·破阵者",
+      "1v1": {
+        "rate_percent": 55.6,
+        "report_row": "战士·破阵者    2269   1649    162   55.6%     4.0%"
+      },
+      "2v2": {
+        "rate_percent": 55.9,
+        "report_row": "战士·破阵者       7299    13056      55.9%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 60.6,
+        "report_row": "战士·破阵者  103125 69867172992     60.6%      5.5%"
+      }
+    },
+    "wizard_school_of_conjuration": {
+      "name": "法师·咒法学派",
+      "1v1": {
+        "rate_percent": 53.4,
+        "report_row": "法师·咒法学派   2177   1874     29   53.4%     0.7%"
+      },
+      "2v2": {
+        "rate_percent": 61.8,
+        "report_row": "法师·咒法学派      8066    13056      61.8%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 64.0,
+        "report_row": "法师·咒法学派 109990 63002172992     64.0%      4.0%"
+      }
+    },
+    "barbarian_path_of_the_warden": {
+      "name": "野蛮人·守望者道途",
+      "1v1": {
+        "rate_percent": 45.1,
+        "report_row": "野蛮人·守望者道途  1839   2114    127   45.1%     3.1%"
+      },
+      "2v2": {
+        "rate_percent": 68.3,
+        "report_row": "野蛮人·守望者道途    8923    13056      68.3%     0.7%"
+      },
+      "dual": {
+        "rate_percent": 48.1,
+        "report_row": "野蛮人·守望者道途 77133 85683162816     48.1%      6.3%"
+      }
+    },
+    "cleric_life_domain": {
+      "name": "牧师·生命领域",
+      "1v1": {
+        "rate_percent": 24.1,
+        "report_row": "牧师·生命领域    985   2974    121   24.1%     3.0%"
+      },
+      "2v2": {
+        "rate_percent": 32.9,
+        "report_row": "牧师·生命领域      4294    13056      32.9%     1.7%"
+      },
+      "dual": {
+        "rate_percent": 44.0,
+        "report_row": "牧师·生命领域  74379 98613172992     44.0%     12.0%"
+      }
+    },
+    "rogue_swashbuckler": {
+      "name": "游荡者·风流剑客",
+      "1v1": {
+        "rate_percent": 53.5,
+        "report_row": "游荡者·风流剑客  2181   1766    133   53.5%     3.3%"
+      },
+      "2v2": {
+        "rate_percent": 52.7,
+        "report_row": "游荡者·风流剑客     6883    13056      52.7%     0.7%"
+      },
+      "dual": {
+        "rate_percent": 51.8,
+        "report_row": "游荡者·风流剑客 82218 80598162816     51.8%      7.5%"
+      }
+    },
+    "barbarian_path_of_the_beast": {
+      "name": "野蛮人·野兽道途",
+      "1v1": {
+        "rate_percent": 44.5,
+        "report_row": "野蛮人·野兽道途  1817   2253     10   44.5%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 29.5,
+        "report_row": "野蛮人·野兽道途     3853    13056      29.5%     0.0%"
+      },
+      "dual": {
+        "rate_percent": 51.6,
+        "report_row": "野蛮人·野兽道途 83499 79317162816     51.6%      6.9%"
+      }
+    },
+    "fighter_swordsman": {
+      "name": "战士·剑士",
+      "1v1": {
+        "rate_percent": 69.5,
+        "report_row": "战士·剑士     2836   1221     23   69.5%     0.6%"
+      },
+      "2v2": {
+        "rate_percent": 54.1,
+        "report_row": "战士·剑士        7058    13056      54.1%     0.0%"
+      },
+      "dual": {
+        "rate_percent": 72.2,
+        "report_row": "战士·剑士   124188 48804172992     72.2%      2.0%"
+      }
+    },
+    "monk_way_of_the_ninja": {
+      "name": "武僧·忍宗",
+      "1v1": {
+        "rate_percent": 62.1,
+        "report_row": "武僧·忍宗     2533   1518     29   62.1%     0.7%"
+      },
+      "2v2": {
+        "rate_percent": 59.9,
+        "report_row": "武僧·忍宗        7824    13056      59.9%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 60.1,
+        "report_row": "武僧·忍宗    97451 65365162816     60.1%      1.9%"
+      }
+    },
+    "rogue_assassin": {
+      "name": "游荡者·刺客",
+      "1v1": {
+        "rate_percent": 37.7,
+        "report_row": "游荡者·刺客    1539   2523     18   37.7%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 58.4,
+        "report_row": "游荡者·刺客       7622    13056      58.4%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 45.4,
+        "report_row": "游荡者·刺客   73435 89381162816     45.4%      2.3%"
+      }
+    },
+    "paladin_oath_of_devotion": {
+      "name": "圣武士·奉献之誓",
+      "1v1": {
+        "rate_percent": 85.1,
+        "report_row": "圣武士·奉献之誓  3474    589     17   85.1%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 63.0,
+        "report_row": "圣武士·奉献之誓     8228    13056      63.0%     0.0%"
+      },
+      "dual": {
+        "rate_percent": 82.0,
+        "report_row": "圣武士·奉献之誓141048 31944172992     82.0%      5.8%"
+      }
+    },
+    "warlock_the_archfey": {
+      "name": "邪术师·至高妖精",
+      "1v1": {
+        "rate_percent": 36.8,
+        "report_row": "邪术师·至高妖精  1500   2558     22   36.8%     0.5%"
+      },
+      "2v2": {
+        "rate_percent": 54.4,
+        "report_row": "邪术师·至高妖精     7105    13056      54.4%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 34.0,
+        "report_row": "邪术师·至高妖精 54752108064162816     34.0%      2.9%"
+      }
+    },
+    "fighter_arcane_archer": {
+      "name": "战士·魔射手",
+      "1v1": {
+        "rate_percent": 41.1,
+        "report_row": "战士·魔射手    1676   2387     17   41.1%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 49.4,
+        "report_row": "战士·魔射手       6456    13056      49.4%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 48.1,
+        "report_row": "战士·魔射手   82862 90130172992     48.1%      2.0%"
+      }
+    },
+    "rogue_gambler": {
+      "name": "游荡者·赌徒",
+      "1v1": {
+        "rate_percent": 20.2,
+        "report_row": "游荡者·赌徒     824   3255      1   20.2%     0.0%"
+      },
+      "2v2": {
+        "rate_percent": 27.1,
+        "report_row": "游荡者·赌徒       3540    13056      27.1%     0.0%"
+      },
+      "dual": {
+        "rate_percent": 30.7,
+        "report_row": "游荡者·赌徒   49644113172162816     30.7%      3.1%"
+      }
+    },
+    "paladin_oath_of_the_crown": {
+      "name": "圣武士·王冠之誓",
+      "1v1": {
+        "rate_percent": 37.6,
+        "report_row": "圣武士·王冠之誓  1535   2536      9   37.6%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 38.5,
+        "report_row": "圣武士·王冠之誓     5033    13056      38.5%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 41.2,
+        "report_row": "圣武士·王冠之誓 70955102037172992     41.2%      2.0%"
+      }
+    },
+    "monk_way_of_the_tai_chi": {
+      "name": "武僧·太极宗",
+      "1v1": {
+        "rate_percent": 48.7,
+        "report_row": "武僧·太极宗    1988   2057     35   48.7%     0.9%"
+      },
+      "2v2": {
+        "rate_percent": 48.1,
+        "report_row": "武僧·太极宗       6274    13056      48.1%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 49.1,
+        "report_row": "武僧·太极宗   78991 83825162816     49.1%      2.4%"
+      }
+    },
+    "barbarian_path_of_the_giant": {
+      "name": "野蛮人·巨人道途",
+      "1v1": {
+        "rate_percent": 70.0,
+        "report_row": "野蛮人·巨人道途  2856   1217      7   70.0%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 60.8,
+        "report_row": "野蛮人·巨人道途     7937    13056      60.8%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 60.6,
+        "report_row": "野蛮人·巨人道途 97901 64915162816     60.6%      7.3%"
+      }
+    },
+    "rogue_thief": {
+      "name": "游荡者·盗贼",
+      "1v1": {
+        "rate_percent": 41.5,
+        "report_row": "游荡者·盗贼    1694   2333     53   41.5%     1.3%"
+      },
+      "2v2": {
+        "rate_percent": 35.7,
+        "report_row": "游荡者·盗贼       4657    13056      35.7%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 48.8,
+        "report_row": "游荡者·盗贼   78578 84238162816     48.8%      4.0%"
+      }
+    },
+    "ranger_gloom_stalker": {
+      "name": "游侠·幽域追踪者",
+      "1v1": {
+        "rate_percent": 31.2,
+        "report_row": "游侠·幽域追踪者  1275   2562    243   31.2%     6.0%"
+      },
+      "2v2": {
+        "rate_percent": 34.0,
+        "report_row": "游侠·幽域追踪者     4435    13056      34.0%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 37.1,
+        "report_row": "游侠·幽域追踪者 59112103704162816     37.1%      6.9%"
+      }
+    },
+    "rogue_magician": {
+      "name": "游荡者·魔术师",
+      "1v1": {
+        "rate_percent": 50.7,
+        "report_row": "游荡者·魔术师   2068   1993     19   50.7%     0.5%"
+      },
+      "2v2": {
+        "rate_percent": 43.3,
+        "report_row": "游荡者·魔术师      5656    13056      43.3%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 47.0,
+        "report_row": "游荡者·魔术师  76039 86777162816     47.0%      2.7%"
+      }
+    },
+    "wizard_school_of_evocation": {
+      "name": "法师·塑能学派",
+      "1v1": {
+        "rate_percent": 35.6,
+        "report_row": "法师·塑能学派   1452   2611     17   35.6%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 22.4,
+        "report_row": "法师·塑能学派      2919    13056      22.4%     0.6%"
+      },
+      "dual": {
+        "rate_percent": 40.3,
+        "report_row": "法师·塑能学派  65379 97437162816     40.3%      2.2%"
+      }
+    },
+    "sorcerer_wild_magic": {
+      "name": "术士·狂野魔法",
+      "1v1": {
+        "rate_percent": 63.8,
+        "report_row": "术士·狂野魔法   2604   1448     28   63.8%     0.7%"
+      },
+      "2v2": {
+        "rate_percent": 64.1,
+        "report_row": "术士·狂野魔法      8371    13056      64.1%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 54.6,
+        "report_row": "术士·狂野魔法  88249 74567162816     54.6%      1.9%"
+      }
+    },
+    "warlock_the_great_old_one": {
+      "name": "邪术师·旧日支配者",
+      "1v1": {
+        "rate_percent": 78.2,
+        "report_row": "邪术师·旧日支配者  3190    596    294   78.2%     7.2%"
+      },
+      "2v2": {
+        "rate_percent": 51.8,
+        "report_row": "邪术师·旧日支配者    6760    13056      51.8%     2.2%"
+      },
+      "dual": {
+        "rate_percent": 48.0,
+        "report_row": "邪术师·旧日支配者 77657 85159162816     48.0%      3.2%"
+      }
+    },
+    "bard_college_of_valor": {
+      "name": "吟游诗人·勇气学院",
+      "1v1": {
+        "rate_percent": 26.3,
+        "report_row": "吟游诗人·勇气学院  1075   2949     56   26.3%     1.4%"
+      },
+      "2v2": {
+        "rate_percent": 43.5,
+        "report_row": "吟游诗人·勇气学院    5681    13056      43.5%     0.6%"
+      },
+      "dual": {
+        "rate_percent": 43.4,
+        "report_row": "吟游诗人·勇气学院 74307 98685172992     43.4%      4.4%"
+      }
+    },
+    "paladin_oathbreaker": {
+      "name": "圣武士·破誓者",
+      "1v1": {
+        "rate_percent": 66.2,
+        "report_row": "圣武士·破誓者   2702   1361     17   66.2%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 63.4,
+        "report_row": "圣武士·破誓者      8282    13056      63.4%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 63.9,
+        "report_row": "圣武士·破誓者 109892 63100172992     63.9%      1.9%"
+      }
+    },
+    "barbarian_path_of_the_berserker": {
+      "name": "野蛮人·狂战士道途",
+      "1v1": {
+        "rate_percent": 71.5,
+        "report_row": "野蛮人·狂战士道途  2917   1163      0   71.5%     0.0%"
+      },
+      "2v2": {
+        "rate_percent": 69.6,
+        "report_row": "野蛮人·狂战士道途    9083    13056      69.6%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 45.8,
+        "report_row": "野蛮人·狂战士道途 74347 88469162816     45.8%      2.0%"
+      }
+    },
+    "fighter_tactician": {
+      "name": "战士·战术家",
+      "1v1": {
+        "rate_percent": 46.2,
+        "report_row": "战士·战术家    1886   2169     25   46.2%     0.6%"
+      },
+      "2v2": {
+        "rate_percent": 68.9,
+        "report_row": "战士·战术家       8998    13056      68.9%     0.0%"
+      },
+      "dual": {
+        "rate_percent": 40.1,
+        "report_row": "战士·战术家   64602 98214162816     40.1%      3.5%"
+      }
+    },
+    "wizard_school_of_divination": {
+      "name": "法师·预言学派",
+      "1v1": {
+        "rate_percent": 13.1,
+        "report_row": "法师·预言学派    536   3521     23   13.1%     0.6%"
+      },
+      "2v2": {
+        "rate_percent": 27.9,
+        "report_row": "法师·预言学派      3649    13056      27.9%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 29.3,
+        "report_row": "法师·预言学派  47450115366162816     29.3%      2.5%"
+      }
+    },
+    "wizard_school_of_necromancy": {
+      "name": "法师·死灵学派",
+      "1v1": {
+        "rate_percent": 66.3,
+        "report_row": "法师·死灵学派   2707   1356     17   66.3%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 49.3,
+        "report_row": "法师·死灵学派      6438    13056      49.3%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 60.0,
+        "report_row": "法师·死灵学派  96943 65873162816     60.0%      3.8%"
+      }
+    },
+    "wizard_school_of_abjuration": {
+      "name": "法师·防护学派",
+      "1v1": {
+        "rate_percent": 16.7,
+        "report_row": "法师·防护学派    682   3369     29   16.7%     0.7%"
+      },
+      "2v2": {
+        "rate_percent": 32.6,
+        "report_row": "法师·防护学派      4262    13056      32.6%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 28.2,
+        "report_row": "法师·防护学派  47984125008172992     28.2%     11.3%"
+      }
+    },
+    "cleric_light_domain": {
+      "name": "牧师·光明领域",
+      "1v1": {
+        "rate_percent": 27.6,
+        "report_row": "牧师·光明领域   1127   2942     11   27.6%     0.3%"
+      },
+      "2v2": {
+        "rate_percent": 34.6,
+        "report_row": "牧师·光明领域      4513    13056      34.6%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 26.7,
+        "report_row": "牧师·光明领域  43232119584162816     26.7%      1.9%"
+      }
+    },
+    "cleric_war_domain": {
+      "name": "牧师·战争领域",
+      "1v1": {
+        "rate_percent": 41.5,
+        "report_row": "牧师·战争领域   1693   2371     16   41.5%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 46.2,
+        "report_row": "牧师·战争领域      6034    13056      46.2%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 51.8,
+        "report_row": "牧师·战争领域  89173 83819172992     51.8%      2.5%"
+      }
+    },
+    "fighter_battle_master": {
+      "name": "战士·战斗大师",
+      "1v1": {
+        "rate_percent": 62.4,
+        "report_row": "战士·战斗大师   2547   1429    104   62.4%     2.5%"
+      },
+      "2v2": {
+        "rate_percent": 42.5,
+        "report_row": "战士·战斗大师      5545    13056      42.5%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 58.3,
+        "report_row": "战士·战斗大师  99872 73120172992     58.3%      4.5%"
+      }
+    },
+    "sorcerer_draconic_bloodline": {
+      "name": "术士·龙族血脉",
+      "1v1": {
+        "rate_percent": 94.0,
+        "report_row": "术士·龙族血脉   3837    241      2   94.0%     0.0%"
+      },
+      "2v2": {
+        "rate_percent": 79.2,
+        "report_row": "术士·龙族血脉     10337    13056      79.2%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 36.0,
+        "report_row": "术士·龙族血脉  57839104977162816     36.0%      4.5%"
+      }
+    },
+    "ranger_hunter": {
+      "name": "游侠·猎人",
+      "1v1": {
+        "rate_percent": 19.3,
+        "report_row": "游侠·猎人      786   3249     45   19.3%     1.1%"
+      },
+      "2v2": {
+        "rate_percent": 36.4,
+        "report_row": "游侠·猎人        4747    13056      36.4%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 35.7,
+        "report_row": "游侠·猎人    57717105099162816     35.7%      3.0%"
+      }
+    },
+    "monk_way_of_the_open_hand": {
+      "name": "武僧·散打宗",
+      "1v1": {
+        "rate_percent": 45.1,
+        "report_row": "武僧·散打宗    1842   2201     37   45.1%     0.9%"
+      },
+      "2v2": {
+        "rate_percent": 51.7,
+        "report_row": "武僧·散打宗       6751    13056      51.7%     0.4%"
+      },
+      "dual": {
+        "rate_percent": 54.6,
+        "report_row": "武僧·散打宗   88237 74579162816     54.6%      3.5%"
+      }
+    },
+    "monk_way_of_the_four_elements": {
+      "name": "武僧·四象宗",
+      "1v1": {
+        "rate_percent": 67.0,
+        "report_row": "武僧·四象宗    2733   1345      2   67.0%     0.0%"
+      },
+      "2v2": {
+        "rate_percent": 62.6,
+        "report_row": "武僧·四象宗       8175    13056      62.6%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 59.4,
+        "report_row": "武僧·四象宗   96272 66544162816     59.4%      1.7%"
+      }
+    },
+    "druid_circle_of_the_moon": {
+      "name": "德鲁伊·月亮结社",
+      "1v1": {
+        "rate_percent": 53.7,
+        "report_row": "德鲁伊·月亮结社  2192   1865     23   53.7%     0.6%"
+      },
+      "2v2": {
+        "rate_percent": 48.6,
+        "report_row": "德鲁伊·月亮结社     6345    13056      48.6%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 48.4,
+        "report_row": "德鲁伊·月亮结社 77952 84864162816     48.4%      4.0%"
+      }
+    },
+    "druid_circle_of_the_stars": {
+      "name": "德鲁伊·星辰结社",
+      "1v1": {
+        "rate_percent": 44.9,
+        "report_row": "德鲁伊·星辰结社  1833   2233     14   44.9%     0.3%"
+      },
+      "2v2": {
+        "rate_percent": 41.3,
+        "report_row": "德鲁伊·星辰结社     5390    13056      41.3%     0.8%"
+      },
+      "dual": {
+        "rate_percent": 49.3,
+        "report_row": "德鲁伊·星辰结社 84531 88461172992     49.3%      3.7%"
+      }
+    },
+    "druid_circle_of_the_land": {
+      "name": "德鲁伊·大地结社",
+      "1v1": {
+        "rate_percent": 93.0,
+        "report_row": "德鲁伊·大地结社  3794    276     10   93.0%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 73.2,
+        "report_row": "德鲁伊·大地结社     9557    13056      73.2%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 88.5,
+        "report_row": "德鲁伊·大地结社143218 19598162816     88.5%      2.6%"
+      }
+    },
+    "paladin_oath_of_the_ancients": {
+      "name": "圣武士·古贤之誓",
+      "1v1": {
+        "rate_percent": 49.9,
+        "report_row": "圣武士·古贤之誓  2035   2027     18   49.9%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 51.8,
+        "report_row": "圣武士·古贤之誓     6763    13056      51.8%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 47.2,
+        "report_row": "圣武士·古贤之誓 76262 86554162816     47.2%      5.9%"
+      }
+    },
+    "warlock_the_fiend": {
+      "name": "邪术师·妖魔",
+      "1v1": {
+        "rate_percent": 48.8,
+        "report_row": "邪术师·妖魔    1993   2067     20   48.8%     0.5%"
+      },
+      "2v2": {
+        "rate_percent": 49.2,
+        "report_row": "邪术师·妖魔       6422    13056      49.2%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 51.4,
+        "report_row": "邪术师·妖魔   87948 85044172992     51.4%      4.1%"
+      }
+    },
+    "bard_college_of_lore": {
+      "name": "吟游诗人·逸闻学院",
+      "1v1": {
+        "rate_percent": 39.1,
+        "report_row": "吟游诗人·逸闻学院  1594   2476     10   39.1%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 44.3,
+        "report_row": "吟游诗人·逸闻学院    5784    13056      44.3%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 45.5,
+        "report_row": "吟游诗人·逸闻学院 78244 94748172992     45.5%      2.9%"
+      }
+    },
+    "sorcerer_storm_sorcery": {
+      "name": "术士·风暴术法",
+      "1v1": {
+        "rate_percent": 26.5,
+        "report_row": "术士·风暴术法   1081   2883    116   26.5%     2.8%"
+      },
+      "2v2": {
+        "rate_percent": 41.2,
+        "report_row": "术士·风暴术法      5382    13056      41.2%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 38.7,
+        "report_row": "术士·风暴术法  61830100986162816     38.7%      6.4%"
+      }
+    },
+    "wizard_school_of_illusion": {
+      "name": "法师·幻术学派",
+      "1v1": {
+        "rate_percent": 51.2,
+        "report_row": "法师·幻术学派   2090   1984      6   51.2%     0.1%"
+      },
+      "2v2": {
+        "rate_percent": 54.4,
+        "report_row": "法师·幻术学派      7097    13056      54.4%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 44.7,
+        "report_row": "法师·幻术学派  72338 90478162816     44.7%      2.2%"
+      }
+    },
+    "wizard_school_of_transmutation": {
+      "name": "法师·变化学派",
+      "1v1": {
+        "rate_percent": 38.1,
+        "report_row": "法师·变化学派   1556   2509     15   38.1%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 45.7,
+        "report_row": "法师·变化学派      5968    13056      45.7%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 39.9,
+        "report_row": "法师·变化学派  64281 98535162816     39.9%      4.1%"
+      }
+    },
+    "wizard_school_of_enchantment": {
+      "name": "法师·惑控学派",
+      "1v1": {
+        "rate_percent": 75.9,
+        "report_row": "法师·惑控学派   3095    925     60   75.9%     1.5%"
+      },
+      "2v2": {
+        "rate_percent": 74.1,
+        "report_row": "法师·惑控学派      9680    13056      74.1%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 69.9,
+        "report_row": "法师·惑控学派 112827 49989162816     69.9%      5.7%"
+      }
+    },
+    "fighter_eldritch_knight": {
+      "name": "战士·奥法骑士",
+      "1v1": {
+        "rate_percent": 65.8,
+        "report_row": "战士·奥法骑士   2684   1380     16   65.8%     0.4%"
+      },
+      "2v2": {
+        "rate_percent": 50.8,
+        "report_row": "战士·奥法骑士      6628    13056      50.8%     0.2%"
+      },
+      "dual": {
+        "rate_percent": 57.7,
+        "report_row": "战士·奥法骑士  99158 73834172992     57.7%      2.6%"
+      }
+    },
+    "wizard_bladesinging": {
+      "name": "法师·剑咏者",
+      "1v1": {
+        "rate_percent": 46.2,
+        "report_row": "法师·剑咏者    1886   2186      8   46.2%     0.2%"
+      },
+      "2v2": {
+        "rate_percent": 45.9,
+        "report_row": "法师·剑咏者       5995    13056      45.9%     0.1%"
+      },
+      "dual": {
+        "rate_percent": 43.0,
+        "report_row": "法师·剑咏者   69264 93552162816     43.0%      3.1%"
+      }
+    },
+    "warlock_the_hexblade": {
+      "name": "邪术师·咒剑",
+      "1v1": {
+        "rate_percent": 29.7,
+        "report_row": "邪术师·咒剑    1211   2847     22   29.7%     0.5%"
+      },
+      "2v2": {
+        "rate_percent": 44.4,
+        "report_row": "邪术师·咒剑       5802    13056      44.4%     0.5%"
+      },
+      "dual": {
+        "rate_percent": 46.3,
+        "report_row": "邪术师·咒剑   75045 87771162816     46.3%      1.9%"
+      }
+    },
+    "paladin_oath_of_conquest": {
+      "name": "圣武士·征服之誓",
+      "1v1": {
+        "rate_percent": 79.2,
+        "report_row": "圣武士·征服之誓  3231    736    113   79.2%     2.8%"
+      },
+      "2v2": {
+        "rate_percent": 60.8,
+        "report_row": "圣武士·征服之誓     7939    13056      60.8%     0.7%"
+      },
+      "dual": {
+        "rate_percent": 73.3,
+        "report_row": "圣武士·征服之誓125041 47951172992     73.3%      6.4%"
+      }
+    },
+    "paladin_oath_of_vengeance": {
+      "name": "圣武士·复仇之誓",
+      "1v1": {
+        "rate_percent": 39.7,
+        "report_row": "圣武士·复仇之誓  1620   2439     21   39.7%     0.5%"
+      },
+      "2v2": {
+        "rate_percent": 45.9,
+        "report_row": "圣武士·复仇之誓     5998    13056      45.9%     0.3%"
+      },
+      "dual": {
+        "rate_percent": 54.1,
+        "report_row": "圣武士·复仇之誓 92769 80223172992     54.1%      3.5%"
+      }
+    }
+  },
+  "factions": {
+    "守序": {
+      "wins": 988,
+      "appearances": 2000,
+      "rate_percent": 49.4
+    },
+    "中立": {
+      "wins": 541,
+      "appearances": 2000,
+      "rate_percent": 27.1
+    },
+    "混乱": {
+      "wins": 459,
+      "appearances": 2000,
+      "rate_percent": 22.9
+    }
+  },
+  "identity": {
+    "random": {
+      "主公": {
+        "wins": 820,
+        "appearances": 2000,
+        "rate_percent": 41.0
+      },
+      "忠臣": {
+        "wins": 1640,
+        "appearances": 4000,
+        "rate_percent": 41.0
+      },
+      "反贼": {
+        "wins": 3532,
+        "appearances": 8000,
+        "rate_percent": 44.1
+      },
+      "内奸": {
+        "wins": 274,
+        "appearances": 2000,
+        "rate_percent": 13.7
+      }
+    },
+    "biased": {
+      "主公": {
+        "wins": 852,
+        "appearances": 2000,
+        "rate_percent": 42.6
+      },
+      "忠臣": {
+        "wins": 1704,
+        "appearances": 4000,
+        "rate_percent": 42.6
+      },
+      "反贼": {
+        "wins": 3436,
+        "appearances": 8000,
+        "rate_percent": 43.0
+      },
+      "内奸": {
+        "wins": 255,
+        "appearances": 2000,
+        "rate_percent": 12.8
+      }
+    }
+  },
+  "dual_axis": {
+    "守序": {
+      "wins": 570983,
+      "appearances": 998784,
+      "rate_percent": 57.7
+    },
+    "中立": {
+      "wins": 470415,
+      "appearances": 943296,
+      "rate_percent": 50.3
+    },
+    "混乱": {
+      "wins": 387683,
+      "appearances": 943296,
+      "rate_percent": 41.5
+    }
+  }
+}

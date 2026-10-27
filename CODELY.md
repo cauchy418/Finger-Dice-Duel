@@ -24,10 +24,10 @@
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1381项快速回归通过（7项大型统计独立运行）、177个运行时脚本编译通过；教学输入及结算1562项实机检查通过，见 [最新验收](Art/Integration/adventure-tutorial-guidance/README.md)。历史验收保存在 `Art/Integration/` |
+| 测试 | 1428项功能回归、7项大规模统计通过，181个运行时脚本及Unity/NUnit条件编译通过；采样修正、源码指纹和七份当前报告见[本轮验收](Tools/Statistics/README.md)。历史界面验收保存在 Art/Integration/ |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
-> 当前统计规模：1v1 **98,000** 局、2v2 **156,800** 局、双将 **1,839,264** 局、集火实验 **180,000** 局；
+> 当前52子职统计：1v1 **106,080** 局、2v2 **169,728** 局、425双将 **2,162,400** 局、集火 **187,200** 局；八人阵营 **2,000** 局；
 > 8 人身份局另有随机/偏好各 **2,000** 局。
 
 ## 职业与子职
@@ -374,7 +374,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 | `Characters/DualGeneralBehavior.cs` | **能力容器**：实现全部组合接口，按规则合并并转发给子角色 |
 | `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
 | `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
-| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：历史392个双将、76,636对，每对24局，共1,839,264局 |
+| `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：当前425个双将、90,100对，每对24局，共2,162,400局 |
 | `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
 | `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
 
@@ -581,7 +581,7 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 `Tools/HeadlessTests/run-sharded-statistics.ps1 -Shards 8` 将76,636个配对分给独立进程，共1,839,264局；各局按配对和座位固定随机源，避免线程共享随机状态。合并严格核对构建MVID、392组合清单、每行配对／轮次／座位和总数，不接受缺失、重复、旧构建或额外行。汇总调用原测试台计分；双将AI也开启正式连锁破盾，单将调参不会套到双将。缓存和原始分片仅在忽略的bin内，最终报告入库。`-ReuseShards`仅复用同一构建，`-Only DualVersusDualTests`可只重跑该模式。功能回归可用 `run-tests.ps1 -SkipStatistics`；并行验证用独立 `-OutputDirectory`，不覆盖正在执行的DLL。
 
-最终验证：1380项全量通过、0失败；开启连锁的正式双将AI另跑1,839,264局及3项专项，异常0；最新功能回归1373项、统计7项独立运行。Unity/NUnit与170脚本UI编译通过，142项实机检查及62枚徽记校验通过。七份模式报告、150项角色胜率与50角色手值／应对清单均已同步。
+最终验证：1380项全量通过、0失败；开启连锁的正式双将AI另跑1,839,264局及3项专项，异常0；该阶段功能回归1373项、统计7项独立运行。Unity/NUnit与170脚本UI编译通过，142项实机检查及62枚徽记校验通过。七份模式报告、150项角色胜率与50角色手值／应对清单均已同步。
 
 ## 第二章：法师高塔（2026-10-26）
 
@@ -629,4 +629,14 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 手册状态一览分20种负面与3种角色状态；剑歌、战恩使用独立方框图标，仇敌誓言放角色标记页。AI明确选择施恩对象、仇敌、转移、9的攻击／回复与纯运算；新誓言及重做战争领域使用L／H12／D43基线，旧战争领域P12／D100实验配置停用，导出脚本同步排除，未声称已完成新版本胜率调参。
 
-验证与真实UI截图见[誓言验收](Art/Integration/divine-oaths-v1/README.md)，原图、完整提示词与清单见[美术制作](Art/Production/divine-oaths-v1/README.md)。历史50角色／392双将统计保留，不冒充52角色／425组合的结果。
+验证与真实UI截图见[誓言验收](Art/Integration/divine-oaths-v1/README.md)，原图、完整提示词与清单见[美术制作](Art/Production/divine-oaths-v1/README.md)。该次功能验收尚未重采样；最新52角色／425组合胜率已于下节重测，七份当前报告已替换。
+
+## 当前规则胜率重采样（2026-10-27）
+
+52子职、425种双将，七项共2,631,408局、异常与模拟器强停0。1v1为106,080局，2v2为169,728局，双将2,162,400局，集火187,200局；八人阵营及身份随机／偏好各2,000局。上述历史实现日志保留时不再作为当前强度结论；README、RULES及七份报告已同步，机器汇总见[results.json](Tools/Statistics/results.json)。
+
+统计台已修正：1v1实际交换物理座位，逐结果保留先手标记；双将FirstWon表示第一组角色获胜，汇总不可再按座位反转；身份偏好按洗牌后的座位索引存回。八人“作为2人阵营”按实际局数作分母。旧手写对局循环改用Tests.TestSetup.RunSampling与实机BoardController，覆盖技能选择、赌博、偷窃、目标、击杀奖励及额外运算。
+
+Tests.TestSetup.SeedSampling按局固定状态及三个随机角色的随机源；SeedControllerSampling固定赌博、普通AI魅惑走子及幽灵AI随机源。GreedyChoiceProvider.SetRandomSeedForTest只注入原随机源，不改正常游戏的策略或默认随机行为。八进程分片合并从头部动态算预期行数，并验证构建MVID、名单、配对／轮次／座位和唯一性。数据记录采样基线提交、源码指纹及报告SHA256，不将重新构建的DLL与旧分片混用。
+
+新改三角色的技能AI已完成，维持L／H12／D43与既有集火配置；旧独立留出中的23项1v1配置继续使用。本轮不是重新调权重实验，不把胜率表写成最优策略证明。现有五项统计回归新增通过，功能回归1428项；七项统计独立通过。完整复现、分母和限制见[采样说明](Tools/Statistics/README.md)。

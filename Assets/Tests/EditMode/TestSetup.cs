@@ -1,4 +1,6 @@
 using FingerDiceDuel.Core;
+using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Characters.SpecialLogics;
 
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
@@ -19,6 +21,58 @@ namespace FingerDiceDuel.Tests
     /// </summary>
     internal static class TestSetup
     {
+        // 独立测试结果载体，避免依赖运行时程序集的 internal setter。
+        internal sealed class SamplingResult
+        {
+            public PlayerState Winner;
+            public bool WinnerIsPlayerA,WinnerIsPlayerB,ReachedTurnLimit,HitTurnLimit;
+            public int Turns;
+        }
+        // 批量采样使用实机控制器，避免绕过赌博、偷窃、援护及技能抉择。
+        public static void SeedSampling(GameManager game,int seed)
+        {
+            game.StatusRandom=new System.Random(unchecked(seed+71));
+            StatusRules.ResetInteractionRandomForTest(unchecked(seed+73));
+            for(int i=0;i<game.Players.Count;i++)
+                foreach(var part in CharacterBehaviors.Implementers<ICharacterBehavior>(game.Players[i]))
+                {
+                    int value=unchecked(seed+i*97);
+                    if(part is StormSorceryLogic storm)storm.Rng=new System.Random(unchecked(value+79));
+                    if(part is SchoolOfIllusionLogic illusion)illusion.Rng=new System.Random(unchecked(value+83));
+                    if(part is WildMagicLogic wild)wild.Rng=new System.Random(unchecked(value+89));
+                }
+        }
+        public static void SeedControllerSampling(BoardController board,System.Collections.Generic.IReadOnlyList<IMoveSelector> selectors,int seed)
+        {
+            board.GambleRng=new System.Random(unchecked(seed+101));
+            for(int i=0;i<selectors.Count;i++)if(selectors[i] is GreedyChoiceProvider ai)ai.SetRandomSeedForTest(unchecked(seed+i*97+103));
+            // 幽灵由控制器内置AI行动，同样可能受到魅惑。
+            var field=typeof(BoardController).GetField("_specterAi",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            if(field?.GetValue(board) is GreedyChoiceProvider specter)specter.SetRandomSeedForTest(unchecked(seed+109));
+            else throw new System.InvalidOperationException("采样缺少幽灵AI随机源");
+        }
+        public static SamplingResult RunSampling(GameManager game,System.Collections.Generic.IReadOnlyList<IMoveSelector> selectors,int seed)
+        {
+            SeedSampling(game,seed);
+            var sinks=new SimpleChoiceProvider[selectors.Count];
+            for(int i=0;i<sinks.Length;i++)sinks[i]=(SimpleChoiceProvider)game.GetChoiceProvider(game.Players[i]);
+            var board=new BoardController(game,sinks[0],sinks[1],selectors[0],selectors[1]){GambleRng=new System.Random(unchecked(seed+101))};
+            for(int i=0;i<selectors.Count;i++)board.BindPlayer(game.Players[i],selectors[i],sinks[i]);
+            SeedControllerSampling(board,selectors,seed);
+            board.SetFirstPlayer(game.CurrentPlayer);board.BeginTurn();int guard=0;
+            while(!game.IsGameOver&&guard++<20000)
+            {
+                board.AutoResolveAiCollegeOfValorChoice();
+                bool progress=board.Phase==BoardPhase.ChoosingAttackerHand||board.Phase==BoardPhase.ChoosingGamble
+                    ?board.MakeAutomaticMove():board.ResolvePendingAiChoice();
+                if(!progress&&!game.IsGameOver&&!(board.CanSkipTurn&&board.SkipTurn()))
+                    throw new System.InvalidOperationException("采样控制器卡住："+board.DebugPhaseInfo());
+            }
+            if(!game.IsGameOver)throw new System.InvalidOperationException("采样控制器安全步数上限");
+            return new SamplingResult{Winner=game.Winner,WinnerIsPlayerA=ReferenceEquals(game.Winner,game.PlayerA),
+                WinnerIsPlayerB=ReferenceEquals(game.Winner,game.PlayerB),Turns=game.TurnCount,
+                ReachedTurnLimit=game.RoundCount>=game.RoundLimit,HitTurnLimit=false};
+        }
         /// <summary>把一只手摆成 1..9 的指定数值（护盾状态清为 None）。</summary>
         public static void SetHand(Hand hand, int targetValue)
         {

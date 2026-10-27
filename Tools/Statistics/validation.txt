@@ -1,0 +1,11 @@
+2026-10-27 current-rule sampling
+PASS 1428 functional regressions, 0 failures; 7 statistics executed separately
+PASS 7 statistical workloads; total 2,631,408 games; no anomalies or forced simulator stops
+PASS 8 dual shards, 2,162,400 unique records, roster/MVID/range/order/count checks
+PASS 52 x 3 README rate cells match the seven verified reports
+PASS source fingerprint be15450772b1b5de19bae1d91448944a78fe491305ea3249cd865bb2ad45e361
+PASS repeated full 2,000-game faction sample SHA256 c3d19c5b3440b2e52ac2d476cf2655e3bbb8ed4a61acd39d59c91c42432b049b
+PASS 181-script UI compilation; NUnit conditional compilation
+PASS Python export scripts parse; documentation diff whitespace checks
+Runtime strategy defaults unchanged; fixed seed injection for reproducible charm/noise.
+No new weight training or automatic gameplay balancing claimed.

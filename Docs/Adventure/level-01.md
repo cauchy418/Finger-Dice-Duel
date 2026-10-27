@@ -67,4 +67,4 @@
 
 剧情冒险先显示章节列表，点击“第一章：边境哨站”后再选“边境哨站·初战／次战”，本章共用专属哨站庭院背景；初战胜利可继续次战、重打或返回章节。旧通关键`FingerDiceDuel.Adventure.Level1.Completed`保持不变。次战单独保存，不因初战通关而允许跳过。旧验收截图保留当时名称，章节改名与双教学验收见[最新记录](../../Art/Integration/adventure-chapter-01/README.md)。
 
-后续同日已接入三战至五战，章内列表改为滚动选择，公共指引增加上一页/下一页/回到当前；最新全量1215项与引擎138项验收见[五战记录](../../Art/Integration/adventure-later-training/README.md)，上述首轮验收保留历史口径。
+后续同日已接入三战至五战，章内列表改为滚动选择，公共指引增加上一页/下一页/回到当前；当时全量1215项与引擎138项验收见[五战记录](../../Art/Integration/adventure-later-training/README.md)，上述首轮验收保留历史口径。

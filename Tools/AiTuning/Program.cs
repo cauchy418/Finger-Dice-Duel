@@ -19,7 +19,7 @@ internal static class AiTuning
         int subject=sample%count;
         for(int i=0;i<count;i++)
         {
-            int index=i==subject?role:(role+1+(sample*11+i*17)%49)%50;
+            int index=i==subject?role:(role+1+(sample*11+i*17)%(Roles.Length-1))%Roles.Length;
             ps[i]=CharacterFactory.CreatePlayer("P"+i,Roles[index]);sinks[i]=new SimpleChoiceProvider();
             ais[i]=new GreedyChoiceProvider{UseLearnedFocus=true,UseChainBreak=true};
             if(i==subject){ais[i].HandValueWeight=config.Own;ais[i].DenyRatioPercent=config.Deny;ais[i].UseProjectedCounterplay=config.Projected;}

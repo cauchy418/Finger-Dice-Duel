@@ -18,6 +18,13 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class DualVersusDualTests
     {
+        [Test] public void Duel_report_does_not_remap_a_role_winner_by_seat_again()
+        {
+            var all=DualVersusDualHarness.AllDuals();var first=all[0];var second=all[1];
+            Assert.AreEqual(first,DualVersusDualHarness.WinnerOf(new DualVersusDualHarness.Outcome{FirstWon=true},first,second));
+            Assert.AreEqual(second,DualVersusDualHarness.WinnerOf(new DualVersusDualHarness.Outcome{FirstWon=false},first,second));
+            Assert.True(DualVersusDualHarness.WinnerOf(new DualVersusDualHarness.Outcome{FirstWon=null},first,second)==null);
+        }
         [Test] public void Repeated_dual_games_use_the_same_per_match_random_sources()
         {
             var duals=DualVersusDualHarness.AllDuals();

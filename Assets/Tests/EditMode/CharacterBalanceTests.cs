@@ -23,6 +23,48 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class CharacterBalanceTests
     {
+        [Test] public void Sampling_exchanges_physical_seats_and_attributes_winner_to_definition()
+        {
+            foreach(bool aFirst in new[]{true,false})for(int seed=0;seed<4;seed++)
+            {
+                var result=RunOne(CharacterDefinition.Champion,CharacterDefinition.OathOfDevotion,aFirst,seed,out string error);
+                Assert.True(error==null,error);Assert.True(result!=null);
+                if(result.Winner==null)continue;
+                var expected=result.WinnerIsPlayerA?(aFirst?CharacterDefinition.Champion:CharacterDefinition.OathOfDevotion)
+                    :(aFirst?CharacterDefinition.OathOfDevotion:CharacterDefinition.Champion);
+                Assert.AreEqual(expected.Id,result.Winner.Definition.Id,"胜者按物理座位映射一次");
+            }
+        }
+        [Test] public void Sampling_is_reproducible_for_random_skills_and_multiplayer_choices()
+        {
+            for(int seed=0;seed<4;seed++)
+            {
+                var a=RunOne(CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,false,seed,out string ea);
+                var b=RunOne(CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,false,seed,out string eb);
+                Assert.True(ea==null&&eb==null,ea??eb);Assert.AreEqual(a.WinnerIsPlayerA,b.WinnerIsPlayerA);Assert.AreEqual(a.Turns,b.Turns);
+                var x=TwoVersusTwoHarness.Play(CharacterDefinition.WarDomain,CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,CharacterDefinition.OathOfVengeance,seed,50,out int ax);
+                var y=TwoVersusTwoHarness.Play(CharacterDefinition.WarDomain,CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,CharacterDefinition.OathOfVengeance,seed,50,out int ay);
+                Assert.True(x.Error==null&&y.Error==null,x.Error??y.Error);Assert.AreEqual(x.Seat14Won,y.Seat14Won);Assert.AreEqual(ax,ay);
+            }
+        }
+        [Test] public void Charmed_sampling_uses_the_seeded_ai_random_source()
+        {
+            for(int seed=0;seed<8;seed++)
+            {
+                TestSetup.SamplingResult[] results=new TestSetup.SamplingResult[2];
+                for(int run=0;run<2;run++)
+                {
+                    var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.Champion);
+                    var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.OathOfVengeance);
+                    var game=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+                    a.LeftHand.SetValue(4);a.RightHand.SetValue(8);b.LeftHand.SetValue(3);b.RightHand.SetValue(1);
+                    a.ApplyStatus(StatusEffect.Charm,6);b.ApplyStatus(StatusEffect.Charm,6);
+                    results[run]=TestSetup.RunSampling(game,new[]{new GreedyChoiceProvider(),new GreedyChoiceProvider()},seed);
+                }
+                Assert.AreEqual(results[0].WinnerIsPlayerA,results[1].WinnerIsPlayerA);Assert.AreEqual(results[0].Turns,results[1].Turns);
+                Assert.AreEqual(results[0].Winner?.Health,results[1].Winner?.Health);
+            }
+        }
         /// <summary>每对角色打多少局（双方各占一半先手）。</summary>
         private const int GamesPerPair = 80;
 
@@ -63,24 +105,24 @@ namespace FingerDiceDuel.Tests
                     CharacterDefinition defA = roster[i];
                     CharacterDefinition defB = roster[j];
 
-                    var results = new List<MatchResult>();
+                    var results = new List<(TestSetup.SamplingResult result,bool aFirst)>();
                     for (int g = 0; g < GamesPerPair; g++)
                     {
                         // 偶数局 A 先手、奇数局 B 先手（消掉先手偏差）
                         bool aFirst = (g % 2) == 0;
 
-                        MatchResult r = RunOne(defA, defB, aFirst, g,
+                        TestSetup.SamplingResult r = RunOne(defA, defB, aFirst, g,
                                                out string anomaly);
                         if (anomaly != null) anomalies.Add(anomaly);
-                        if (r != null) results.Add(r);
+                        if (r != null) results.Add((r,aFirst));
                     }
 
                     // 统计（注意"先手方"与 defA/defB 的对应）
                     int pairWins = 0, pairTotal = 0;
                     for (int k = 0; k < results.Count; k++)
                     {
-                        MatchResult r = results[k];
-                        bool aFirst = (k % 2) == 0;
+                        TestSetup.SamplingResult r = results[k].result;
+                        bool aFirst = results[k].aFirst;
 
                         totalGames++;
                         totalTurns += r.Turns;
@@ -239,18 +281,18 @@ namespace FingerDiceDuel.Tests
         /// 跑一局。任何异常都被捕获成"异常描述"返回，而不是让整个测试挂掉 ——
         /// 这样一次就能看到**所有**角色的所有问题。
         /// </summary>
-        private static MatchResult RunOne(CharacterDefinition defA, CharacterDefinition defB,
+        internal static TestSetup.SamplingResult RunOne(CharacterDefinition defA, CharacterDefinition defB,
                                           bool aFirst, int seed, out string anomaly)
         {
             anomaly = null;
 
             try
             {
-                PlayerState pA = CharacterFactory.CreatePlayer(defA.DisplayName, defA);
-                PlayerState pB = CharacterFactory.CreatePlayer(defB.DisplayName, defB);
+                PlayerState pA = CharacterFactory.CreatePlayer((aFirst?defA:defB).DisplayName,aFirst?defA:defB);
+                PlayerState pB = CharacterFactory.CreatePlayer((aFirst?defB:defA).DisplayName,aFirst?defB:defA);
 
-                var game = new GameManager(pA, pB, new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true },
-                                           new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true });
+                var game=new GameManager(pA,pB,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+                var ais=new[]{new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true},new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true}};
 
                 // 1v1 经典：先掷 1d20 决定初始手值（见 PrepareClassicStart）
                 PrepareClassicStart(game, seed);
@@ -259,9 +301,7 @@ namespace FingerDiceDuel.Tests
                 // 1v1 一轮 = 2 个回合，所以 50 轮 = 100 个回合。
                 game.RoundLimit = GameManager.DefaultRoundLimit;
 
-                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 200 };
-                MatchResult r = runner.Run(game, new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true },
-                                           new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true });
+                TestSetup.SamplingResult r=TestSetup.RunSampling(game,ais,seed);
 
                 if (r.HitTurnLimit)
                 {

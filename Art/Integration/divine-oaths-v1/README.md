@@ -29,4 +29,4 @@
 - [剑歌与战恩的独立战斗图标](song-and-blessing.png)
 - [复仇的额外运算直接点手](vengeance-free-operation.png)
 
-[制作记录与完整提示词](../../Production/divine-oaths-v1/README.md)。新版本52子职／425组合的胜率尚未重新采样，README保留旧50子职数据并注明版本范围；新角色标为未采样。
+[制作记录与完整提示词](../../Production/divine-oaths-v1/README.md)。该次功能验收时尚未重采样；现已完成[52子职／425组合的当前胜率采样](../../../Tools/Statistics/README.md)，README与七份报告已替换，历史旧统计不再作为当前结论。

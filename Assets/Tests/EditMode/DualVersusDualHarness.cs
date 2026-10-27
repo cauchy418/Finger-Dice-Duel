@@ -64,6 +64,8 @@ namespace FingerDiceDuel.Tests
             }
             Console.WriteLine("shard "+shard+" completed "+played+" games");
         }
+        internal static Dual WinnerOf(Outcome outcome,Dual first,Dual second)
+            =>outcome.FirstWon.HasValue?(outcome.FirstWon.Value?first:second):null;
         private static StreamReader OpenReplay(int games,List<Dual> duals)
         {
             string path=Environment.GetEnvironmentVariable("FDD_DUAL_OUTCOMES");if(string.IsNullOrEmpty(path))return null;
@@ -140,15 +142,7 @@ namespace FingerDiceDuel.Tests
 
                 var choiceA = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
                 var choiceB = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
-                var game = new GameManager(pA, pB, choiceA, choiceB);
-                game.StatusRandom=new Random(seed+71);
-                StatusRules.ResetInteractionRandomForTest(seed+73);
-                foreach(var player in new[]{pA,pB})foreach(var part in CharacterBehaviors.Implementers<ICharacterBehavior>(player))
-                {
-                    if(part is FingerDiceDuel.Characters.SpecialLogics.StormSorceryLogic storm)storm.Rng=new Random(seed+79);
-                    if(part is FingerDiceDuel.Characters.SpecialLogics.SchoolOfIllusionLogic illusion)illusion.Rng=new Random(seed+83);
-                    if(part is FingerDiceDuel.Characters.SpecialLogics.WildMagicLogic wild)wild.Rng=new Random(seed+89);
-                }
+                var game=new GameManager(pA,pB,new SimpleChoiceProvider(),new SimpleChoiceProvider());
 
                 // ⚠⚠ **回合上限必须放宽到 300**。
                 //
@@ -164,8 +158,7 @@ namespace FingerDiceDuel.Tests
                 // ⚠️ 上限已改成按**轮**算（1 轮 = 双方各行动一次 = 2 个回合），
                 //    所以模拟器的行动次数上限必须大于“轮数 x 每轮行动数” ——
                 //    否则会出现“模拟器被迫中断”（改成轮口径后实测踩到 40+ 条）。
-                var runner = new MatchRunner { RecordHistory = false, MaxTurns = 700 };
-                MatchResult r = runner.Run(game, choiceA, choiceB);
+                TestSetup.SamplingResult r=TestSetup.RunSampling(game,new[]{choiceA,choiceB},seed);
 
                 result.HitLimit = r.HitTurnLimit;
                 result.ReachedLimit = r.ReachedTurnLimit;
@@ -352,10 +345,6 @@ namespace FingerDiceDuel.Tests
                                 }
                             }
 
-                            // a 就是先手方（firstIsA 已按需要交换过）
-                            Dual a = firstIsA ? first : second;
-                            Dual b = firstIsA ? second : first;
-
                             if (o.FirstWon == null)
                             {
                                 dualTally[first.Name].Draws++;
@@ -370,7 +359,7 @@ namespace FingerDiceDuel.Tests
                                 continue;
                             }
 
-                            Dual winner = o.FirstWon.Value ? a : b;
+                            Dual winner = WinnerOf(o,first,second);
                             dualTally[winner.Name].Wins++;
                             AddRoleWin(roleTally, winner);
                             if (crossAxis) axisTally[winner.Axis].Wins++;

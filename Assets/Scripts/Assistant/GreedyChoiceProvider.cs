@@ -607,7 +607,9 @@ namespace FingerDiceDuel.Assistant
         }
 
         private bool _noisy;
-        private readonly System.Random _rng = new System.Random();
+        private System.Random _rng = new System.Random();
+        /// <summary>回放／测试注入随机源；同时控制魅惑随机走子与难度噪声，不改变默认策略。</summary>
+        public void SetRandomSeedForTest(int seed) => _rng=new System.Random(seed);
 
         /// <summary>
         /// 按难度档位配置这个 AI。

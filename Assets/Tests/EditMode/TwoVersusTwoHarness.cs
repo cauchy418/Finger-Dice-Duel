@@ -124,7 +124,8 @@ namespace FingerDiceDuel.Tests
 
             try
             {
-                GameManager game = GameManager.Create2v2(seated, providers);
+                var sinks=new SimpleChoiceProvider[4];for(int i=0;i<4;i++)sinks[i]=new SimpleChoiceProvider();
+                GameManager game = GameManager.Create2v2(seated, sinks);
                 game.RoundLimit = turnLimit;
 
                 // 与实机 BoardController 对齐：AI 的 GreedyChoiceProvider 需要拿到对局，
@@ -138,75 +139,15 @@ namespace FingerDiceDuel.Tests
                 // ⚠️ 改成轮次口径后实测：只留 +16 的余量会在循环赛里踩到
                 //    AccessViolation（对局已经打满轮次、动作还在推进）。
                 //    所以这里留出充足余量。
-                int actionCap = turnLimit * 4 + 200;
+
 
                 // 经典开局：每人掷 1d20 决定初始手值
                 for (int i = 0; i < seated.Count; i++)
                     ApplyClassicHands(seated[i], seed * 17 + i * 5 + 3);
 
-                while (!game.IsGameOver && actions < actionCap)
-                {
-                    PlayerState actor = game.CurrentPlayer;
-                    if (actor == null) break;                     // 全部阵亡
-
-                    // ⚠️⚠️ **每个行动开始都要调 `BeginTurn()`。**
-                    //
-                    //    它是重置"只属于本回合"标记的**唯一**入口：
-                    //      · `SuppressAttackDamage`（法师·塑能学派放弃攻击 = 这一击不造成伤害）
-                    //      · `SchoolOfEvocationLogic.WantsToAbandonThisTurn`
-                    //
-                    //    这个测试台原来**一次都没调** —— 后果是：
-                    //    法师·塑能学派第一次放弃之后抑制开关**永久为真**，
-                    //    之后每回合都在白扔，一局能"放弃" 47 次、自己 0 伤害。
-                    //    多人局里就表现为**谁都打不死谁、一直打到轮数上限**。
-                    //
-                    //    （1v1 的 `MatchRunner` 是调了的，所以 1v1 没这个现象。）
-                    game.BeginTurn();
-                    // 死灵免费暗蚀可能在回合开始就结束比赛，不能再向选择器要一步。
-                    if(game.IsGameOver) break;
-                    actor=game.CurrentPlayer;
-
-                    IChoiceProvider choice = game.GetChoiceProvider(actor);
-                    if (choice is not IMoveSelector selector)
-                        return Fail($"座位 {game.SeatOf(actor)} 没有可用的出招选择器");
-
-                    LegalMove move = selector.ChooseMove(game, actor);
-                    if (move.Actor == null)
-                    {
-                        // 无合法步。**若规则允许跳过，就跳过** ——
-                        // 这正是玩家确认的规则：
-                        //   · 两只手都被锁 -> 出现跳过按钮，回合被跳过；
-                        //   · 两只手都是完整盾 -> 也可以跳过。
-                        // 没有这一步时，这种局面会被当成异常（实测 589 局中有 23 处）。
-                        if (game.CanSkipTurnFor(actor))
-                        {
-                            game.SkipTurnAlreadyValidated();
-                            actions++;
-                            continue;
-                        }
-
-                        // 不能跳过却又无手可用：把**现场**带出来。
-                        var detail = new System.Text.StringBuilder();
-                        detail.Append($"座位 {game.SeatOf(actor)} 无合法步且不能跳过");
-                        detail.Append($"（第 {actions + 1} 次行动）");
-                        detail.Append($" 左L={actor.LeftHand.IsLocked}左盾={actor.LeftHand.IsShield}");
-                        detail.Append($" 右L={actor.RightHand.IsLocked}右盾={actor.RightHand.IsShield}");
-                        detail.Append(" 活着=");
-                        for (int q = 0; q < seated.Count; q++)
-                            if (seated[q].IsAlive) detail.Append($"P{game.SeatOf(seated[q])} ");
-                        return Fail(detail.ToString());
-                    }
-
-                    // ⚠️ 让"AI 想打谁"真正落到结算上（与 BoardController 第 ③ 步一致）。
-                    //    不传的话结算会回退到"被加数手主"—— 游荡者·魔术师自加会打自己，
-                    //    而集火/目标优先级算出来的目标也会被丢掉。
-                    if (choice is GreedyChoiceProvider greedyChoice)
-                        game.DamageTargetPlayer = greedyChoice.IntendedVictim;
-
-                    game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
-                    game.DamageTargetPlayer = null;
-                    actions++;
-                }
+                var selectors=new IMoveSelector[4];for(int i=0;i<4;i++)
+                    selectors[i]=providers[i] as IMoveSelector??throw new System.InvalidOperationException("采样座位缺少AI");
+                var sampled=TestSetup.RunSampling(game,selectors,seed);actions=sampled.Turns;
 
                 // 胜负按**队伍**判定（不能用 WinnerIsPlayerA/B）
                 PlayerState w = game.Winner;

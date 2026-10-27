@@ -97,7 +97,6 @@ namespace FingerDiceDuel.Tests
             var roleWins = new Dictionary<string, int>();
             var factionGames = new int[3];
             var factionWins = new int[3];
-            var factionWeakGames = new int[3];
             var factionWeakWins = new int[3];
             var weakGames = new int[3];
             var weakOrder = new List<int>(Games);
@@ -138,7 +137,7 @@ namespace FingerDiceDuel.Tests
                         "P" + (i + 1), pair[0], pair[1]);
                     var ai = new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true };
                     seated.Add(p);
-                    providers.Add(ai);
+                    providers.Add(new SimpleChoiceProvider());
                     selectors.Add(ai);
 
                     for (int j = 0; j < 2; j++)
@@ -147,7 +146,6 @@ namespace FingerDiceDuel.Tests
                         roleGames[pair[j].DisplayName] = n + 1;
                     }
                     factionGames[teams[i]]++;
-                    if (teams[i] == weakFaction) factionWeakGames[teams[i]]++;
                 }
 
                 GameManager game = GameManager.CreateEight(seated, providers, teams);
@@ -157,7 +155,7 @@ namespace FingerDiceDuel.Tests
 
                 try
                 {
-                    RunEight(game, selectors);
+                    TestSetup.RunSampling(game,selectors,unchecked(20260213+g*7919));
                 }
                 catch (Exception ex)
                 {
@@ -201,8 +199,8 @@ namespace FingerDiceDuel.Tests
             for (int f = 0; f < 3; f++)
                 sb.AppendLine($"{FactionNames[f],-6}{factionWins[f],6} / {Games,-6}" +
                               $"{factionWins[f] * 100.0 / Games,10:F1}%" +
-                              $"{factionWeakWins[f],8} / {factionWeakGames[f],-5}" +
-                              $"{factionWeakWins[f] * 100.0 / Math.Max(1, factionWeakGames[f]),7:F1}%");
+                              $"{factionWeakWins[f],8} / {weakGames[f],-5}" +
+                              $"{factionWeakWins[f] * 100.0 / Math.Max(1, weakGames[f]),7:F1}%");
 
             sb.AppendLine();
             sb.AppendLine("角色        胜 / 场次    胜率");
