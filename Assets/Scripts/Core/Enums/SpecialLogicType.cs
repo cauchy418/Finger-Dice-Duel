@@ -204,6 +204,8 @@
         Bladesinging = 49,
         TheHexblade = 50,
         OathOfConquest = 51,
-        OathOfVengeance = 52
+        OathOfVengeance = 52,
+        TrickeryDomain = 53,
+        TempestDomain = 54
     }
 }

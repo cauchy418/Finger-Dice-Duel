@@ -1,0 +1,30 @@
+{
+  "mode": "built-in image_gen",
+  "date": "2026-10-28",
+  "assets": [
+    {
+      "id": "cleric_trickery_domain",
+      "source": "Art/Production/cleric-domains-v1/selected/Subclasses/cleric_trickery_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_trickery_domain.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-af794ebc-1d43-4061-b116-6b54a66a1935.png",
+      "sha256": "1ab07bc00d18ba8e30255637a6e59cf93a9a965b606fe0b07718b39d96b8cbc7",
+      "visibleSize": 480
+    },
+    {
+      "id": "cleric_tempest_domain",
+      "source": "Art/Production/cleric-domains-v1/selected/Subclasses/cleric_tempest_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_tempest_domain.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-bc390a4d-e00e-4ae8-9ac6-adc5cf5940dd.png",
+      "sha256": "5ad8b2ec9a73c283024f921f76bea7e9dc79097a25f6bf0cab2ffddfd4c04dd1",
+      "visibleSize": 480
+    },
+    {
+      "id": "tinnitus",
+      "source": "Art/Production/cleric-domains-v1/selected/Status/tinnitus.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/tinnitus.png",
+      "generatedSource": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-b8ddfd40-78bc-4fca-9f67-2f72fdcd053e.png",
+      "sha256": "7b87fdeb9d34c086ceb017f81d4a06857f0c5f3249251e3e73fe844ffc3740dc",
+      "visibleSize": 448
+    }
+  ]
+}

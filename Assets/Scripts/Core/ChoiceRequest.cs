@@ -567,8 +567,8 @@ namespace FingerDiceDuel.Core
                 int a = ActedHandValueBefore ?? (ActedHand?.Value ?? 0);
                 int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
                 int value=Hand.ComputeSum(a,b);
-                return Manager!=null && DruidForms.IsDragon(Actor) && Manager.DruidSecondAddend!=null
-                    ?Hand.ComputeSum(value,Manager.DruidSecondAddend.Value):value;
+                if(Manager!=null&&DruidForms.IsDragon(Actor)&&Manager.DruidSecondAddend!=null)value=Hand.ComputeSum(value,Manager.DruidSecondAddend.Value);
+                return Manager?.TrickeryPreview(Actor,ActedHand,TargetHand,value)??value;
             }
         }
 

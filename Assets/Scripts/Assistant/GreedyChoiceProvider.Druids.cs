@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Assistant
         public PlayerState ChaliceTarget(PlayerState owner,IReadOnlyList<PlayerState> targets,GameManager game)
         {
             PlayerState best=null;int score=0;foreach(var p in targets)
-            {if(!game.IsKnownAlly(owner,p)||p.HasStatus(StatusEffect.Decay))continue;int need=p.MaximumHealth-p.Health;if(need>score){best=p;score=need;}}
+            {if(!game.IsKnownAlly(owner,p)||!StatusRules.CanHeal(p))continue;int need=p.MaximumHealth-p.Health;if(need>score){best=p;score=need;}}
             return best;
         }
         public Hand SecondAddend(PlayerState owner,Hand acted,Hand first,IReadOnlyList<Hand> candidates,GameManager game)

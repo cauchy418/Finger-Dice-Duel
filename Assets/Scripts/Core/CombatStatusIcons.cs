@@ -51,7 +51,9 @@ namespace FingerDiceDuel.Core
                 if (player.HasVulnerability(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
                     DamageAffinityNames.Name(DamageAffinity.Vulnerability, type) + "：该类型伤害×1.5，向上取整。一次攻击落地后，全部临时伤害修正清除。", ""));
                 if (player.HasImmunity(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Immunity, type),
-                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.HasPermanentImmunity(type)?"：本场永久免疫，不受该类型伤害及其附加状态。":"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
+                    DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.HasPermanentImmunity(type)?"：本场永久免疫，不受该类型伤害及其附加状态。"
+                    :type==AttackDamageType.Thunder&&player.HasStatus(StatusEffect.Tinnitus)?"：耳鸣期间免疫，随耳鸣到期或净化解除，不因一次攻击消耗。"
+                    :"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
             }
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
                 "奥术屏障 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));

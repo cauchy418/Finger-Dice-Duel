@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Assistant
             }
             if(value==0)
             {
-                int heal=owner.HasStatus(StatusEffect.Decay)?0:Math.Min(9,owner.MaximumHealth-owner.Health);
+                int heal=!StatusRules.CanHeal(owner)?0:Math.Min(9,owner.MaximumHealth-owner.Health);
                 if(owner.HasStatus(StatusEffect.HolyLight))heal=(heal+1)/2;
                 return heal*8+(heal>0&&owner.Health<=8?40:0);
             }

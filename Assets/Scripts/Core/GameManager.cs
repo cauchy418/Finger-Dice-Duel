@@ -43,6 +43,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public class TurnResult
     {
+        public int TrickeryCalculated {get;set;}
         public PlayerState Actor;
 
         /// <summary>本次攻击**实际挨打的人**（8 人局可能与被加数手主不同）。</summary>
@@ -1214,7 +1215,7 @@ namespace FingerDiceDuel.Core
         {
             int result=Hand.ComputeSum(acted.Value,first.Value);
             if(DruidForms.IsDragon(owner)&&DruidSecondAddend!=null)result=Hand.ComputeSum(result,DruidSecondAddend.Value);
-            return result;
+            return TrickeryPreview(owner,acted,first,result);
         }
 
         public System.Func<PlayerState,ISkillChoicePolicy> SkillPolicyFor { get; set; }
@@ -1574,6 +1575,7 @@ namespace FingerDiceDuel.Core
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
                 DruidSecondAddend=PrepareOperationAddend(actor,actedHand,DruidSecondAddend,step:1,sourceValue:Hand.ComputeSum(actedHand.Value,targetHand.Value));
             }
+            if(!suppressed)RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});
             try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
             finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;}
         }
@@ -1945,6 +1947,8 @@ namespace FingerDiceDuel.Core
             result.ResultValue = stolen;
             result.Effect = effect;
 
+            if(actor.HasStatus(StatusEffect.Tinnitus)&&effect==HandEffectType.Shield)
+            {effect=HandEffectType.None;result.Effect=effect;myHand.SetShieldState(ShieldState.Broken);NoteSkill(actor,"耳鸣","本次不能合盾");}
             if (effect == HandEffectType.Shield)
             {
                 myHand.SetShieldState(ShieldState.Formed);
@@ -2120,10 +2124,10 @@ namespace FingerDiceDuel.Core
                 {
                     if(!actor.HasStatus(status))continue;
                     int raw=status==StatusEffect.Poison
-                        ?StatusRules.ApplyDamageAffinities(actor,StatusRules.PoisonDamagePerTurn,AttackDamageType.Poison,false)
+                        ?StatusRules.ApplyDamageAffinities(actor,StatusRules.ApplyTinnitusDamage(actor,StatusRules.PoisonDamagePerTurn),AttackDamageType.Poison,false)
                         :status==StatusEffect.HolyLight
-                            ?StatusRules.ApplyDamageAffinities(actor,StatusRules.HolyLightDamagePerTurn,AttackDamageType.Radiant,false)
-                            :StatusRules.BleedDamagePerTurn;
+                            ?StatusRules.ApplyDamageAffinities(actor,StatusRules.ApplyTinnitusDamage(actor,StatusRules.HolyLightDamagePerTurn),AttackDamageType.Radiant,false)
+                            :StatusRules.ApplyTinnitusDamage(actor,StatusRules.BleedDamagePerTurn);
                     int absorbed=Math.Min(raw,remainingFalseLife);remainingFalseLife-=absorbed;
                     int actual=Math.Min(remainingActual,raw-absorbed);remainingActual-=actual;
                     int original=Math.Min(remainingOriginal,actual);remainingOriginal-=original;
@@ -2558,6 +2562,9 @@ namespace FingerDiceDuel.Core
                 }
             }
 
+            int calculated=StatusRules.ApplyResultModifiers(actor,actedHand.Value);
+            bool trickery=gambleResult==0&&ApplyTrickery(actor,actedHand,targetHand,Math.Max(1,calculated),out _);
+            if(trickery){effect=Hand.GetEffectType(actedHand.Value);actedHand.SetShieldState(effect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);result.TrickeryCalculated=calculated;}
             // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
             //
             //     必须在这里做：手值已经变成结果值（盾就是 5），
@@ -2593,7 +2600,7 @@ namespace FingerDiceDuel.Core
             //       · 放太早会被 RewriteEffect 用旧值覆盖；
             //       · 放太晚（效果分派后）就已经先按 9 回过血了。
             //     归一化后的 9 是"回复"，减半成 4 就是"攻击" —— 效果类型要跟着重算。
-            if (actor != null
+            if (!trickery && actor != null
                 && (actor.HasStatus(StatusEffect.Frost)
                     || actor.HasStatus(StatusEffect.Wet)
                     || actor.HasStatus(StatusEffect.Dizzy)))
@@ -2618,6 +2625,8 @@ namespace FingerDiceDuel.Core
             // 油腻只在一次完整运算后判定；巨龙两次加数仍算一次，赌博不算运算。
             if (gambleResult == 0) ResolveGreaseAfterOperation(actor);
 
+            if(actor.HasStatus(StatusEffect.Tinnitus)&&effect==HandEffectType.Shield)
+            {actedHand.SetShieldState(ShieldState.Broken);effect=HandEffectType.None;NoteSkill(actor,"耳鸣","本次不能合盾");}
             effect = ResolveWarBlessingNine(actor, actedHand, effect);
 
             // 2d. **法师·塑能学派：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
@@ -2823,6 +2832,7 @@ namespace FingerDiceDuel.Core
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.SecondAddendValueBefore=result.SecondAddendValue;
+                        if(trickery)ctx.AttackValueOverride=result.ResultValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);
 
@@ -2842,6 +2852,7 @@ namespace FingerDiceDuel.Core
                         if (actor.Character is CharacterTemplate template)
                             template.LastAttackDistance = DistanceBetween(actor, opponent);
 
+                        void ResolveAttack(){
                         ctx.Resolve(oppChoice, this);
                         result.Defender = ctx.Defender;
                         result.AttackType = ctx.AttackType;
@@ -2855,6 +2866,9 @@ namespace FingerDiceDuel.Core
                         result.BlockedHits = ctx.BlockedHits;
                         result.DodgedHits = ctx.DodgedHits;
                         result.DamageDealt = ctx.AppliedDamage;
+                        }
+                        if(DeferOrdinaryClericAttack(ctx,()=>{ResolveAttack();FinishTurn();}))return result;
+                        ResolveAttack();
                         break;
                     }
 
@@ -2905,6 +2919,9 @@ namespace FingerDiceDuel.Core
                     }
             }
 
+            FinishTurn();
+            void FinishTurn()
+            {
             // 3c. "运算后"钩子（野蛮人·野兽道途的双手和为 7 等）。
             //     放在效果分派之后、"胜负判定"之前，这样钩子造成的回血/成长能立刻算进判定。
             //     只允许读取玩家**在运算前**已经做好的选择，结算中不能再向 UI 索取输入。
@@ -2964,6 +2981,7 @@ namespace FingerDiceDuel.Core
                 result.ChosenDamageType = unspent;
             }
 
+            }
             return result;
         }
 

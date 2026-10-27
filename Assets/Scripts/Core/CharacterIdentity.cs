@@ -66,6 +66,8 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("eldritch_knight", "fighter_eldritch_knight", "fighter", "奥法骑士", "Eldritch Knight"),
             new CharacterIdentity("bladesinging", "wizard_bladesinging", "wizard", "剑咏者", "Bladesinging"),
             new CharacterIdentity("conquest", "paladin_oath_of_conquest", "paladin", "征服之誓", "Oath of Conquest"),
+            new CharacterIdentity("trickery", "cleric_trickery_domain", "cleric", "诡术领域", "Trickery Domain"),
+            new CharacterIdentity("tempest", "cleric_tempest_domain", "cleric", "风暴领域", "Tempest Domain"),
             new CharacterIdentity("vengeance", "paladin_oath_of_vengeance", "paladin", "复仇之誓", "Oath of Vengeance"),
             new CharacterIdentity("hexblade", "warlock_the_hexblade", "warlock", "咒剑", "The Hexblade"),
         };

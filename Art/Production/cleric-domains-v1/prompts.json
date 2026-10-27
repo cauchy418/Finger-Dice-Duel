@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-28",
+  "mode": "built-in image_gen",
+  "transparent_background": true,
+  "prompts": [
+    [
+      "cleric_trickery_domain",
+      "Create one production-ready dark fantasy RPG subclass emblem, a single centered circular medallion for a cleric of the Trickery Domain. Painterly realistic metal and fabric, matching a tabletop relic UI with black iron and heavily aged antique gold. The consistent frame is a thin double antique-gold circular ring with eight small spearhead/diamond cardinal ornaments, polished worn edges, subtle engraved scratches, no big scenery. Inside: one elegant sly fox-like theatrical mask, half tarnished silver half dusky gold, with dark emerald eyes, a violet hood draped behind it and two small crossed ceremonial keys below, interweaving purple-green wisps suggesting deceit and exchanging positions. Readable bold silhouette at 64px, dignified sacred trickster rather than cartoon clown. Dark charcoal inner disc, tasteful restrained violet and emerald illumination. Emblem fills the canvas with safe margin, front view, symmetric overall composition, high-quality painted brush texture. No human body, hands, text, numbers, letters, watermark, logo or modern symbols. Outside the circular ornament is genuinely transparent alpha; square canvas. Exactly one standalone emblem."
+    ],
+    [
+      "cleric_tempest_domain",
+      "Create one production-ready dark fantasy RPG subclass emblem, a single centered circular medallion for a cleric of the Tempest Domain. Painterly realistic metal and fabric, matching a tabletop relic UI with black iron and heavily aged antique gold. The consistent frame is a thin double antique-gold circular ring with eight small spearhead/diamond cardinal ornaments, polished worn edges, subtle engraved scratches, no big scenery. Inside: a single upright old silver storm scepter with a short angular hammer head, crowned by an engraved small radiant sacred disk, weathered blue cloth behind it. A powerful jagged blue-white lightning bolt crosses behind the scepter while a clean circular silver pressure wave and dark rolling cloud represent thunder. Small stylized turbulent sea below. A priestly storm relic, not a warrior banner and not a sorcerer's hand. Clear readable silhouette at 64px, restrained storm blue and pale silver light, no busy tiny clutter. Dark charcoal inner disc, high-quality painted brush texture, front view, symmetric overall composition. Emblem fills square canvas with safe margin. No human body, hands, text, numbers, letters, watermark, logo or modern symbols. Outside the circular ornament is genuinely transparent alpha. Exactly one standalone emblem."
+    ],
+    [
+      "tinnitus",
+      "Create one standalone production-ready negative-status icon for TINNITUS in a dark fantasy RPG. Square black iron tablet with a thin aged antique-gold double border, four pointed diamond corner ornaments, worn gilded scratches; dark charcoal stone inner background. Painterly realistic subject: a clearly recognizable single human ear, rendered like a pale carved silver-and-ivory relief seen three-quarter from the side. Around the ear are two broken concentric lavender-and-amber acoustic rings and sharp small pale ringing vibration strokes, showing unbearable magical ringing and sonic disorientation. A subtle cracked bell shape behind the ear can hint at the ringing but must remain secondary. Strong central silhouette recognizable at 32 and 64px, high contrast, restrained violet/white/antique-gold glow, detailed painterly brush and metal texture matching premium dark fantasy tabletop UI. No face, head portrait, gore, blood, modern device, headphones, letters, numbers, labels, watermark, logo or text. Keep the outer square ornament complete and a little transparent safe margin around it. Genuinely transparent alpha outside the framed tablet. Exactly one icon on a square canvas."
+    ]
+  ]
+}

@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Core
         public IReadOnlyCollection<AttackDamageType> Vulnerabilities => _vulnerabilities;
         public IReadOnlyCollection<AttackDamageType> Immunities => _immunities;
         public bool HasVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
-        public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type)||_permanentImmunities.Contains(type);
+        public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus));
         public void AddVulnerability(AttackDamageType type)
         {
             if (!HasStatus(StatusEffect.HolyLight) && System.Array.IndexOf(ResistanceNames.All, type) >= 0)

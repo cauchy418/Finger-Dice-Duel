@@ -116,15 +116,7 @@ namespace FingerDiceDuel.Core
             request.ChooseOption(ChooseIllusion(touch)?1:0);return false;
         }
         public void ClearPreparedOperationAddend()
-        {_illusionEpoch++;_illusionPrepared[0]=null;_illusionPrepared[1]=null;}
-        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)
-        {
-            if(!actor.IsAlive||!StatusRules.CanAct(actor)||!IsLegalMove(actor,source,target,out _))return false;
-            target=PrepareOperationAddend(actor,source,target,effectless:true);
-            int old=source.Value,add=target.Value,value=StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(old,add));
-            source.SetValue(value);
-            NoteSkill(actor,"风暴余势",$"{CombatText.HandName(actor,source)}{old}+{add}→{value}（无效果）");
-            ClearPreparedOperationAddend();return true;
-        }
+        {_illusionEpoch++;_illusionPrepared[0]=null;_illusionPrepared[1]=null;ClearPreparedTrickery();}
+        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)=>ApplyEffectlessOperation(actor,source,target,"风暴余势");
     }
 }

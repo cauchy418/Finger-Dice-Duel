@@ -540,6 +540,9 @@ namespace FingerDiceDuel.Core
         public const string OathOfVengeanceId="paladin_oath_of_vengeance";
         public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+1，对其他角色−1。仇敌每打碎自己一面盾（包括连锁破盾），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
 
+        public const string TrickeryDomainId="cleric_trickery_domain", TempestDomainId="cleric_tempest_domain";
+        public static CharacterDefinition TrickeryDomain {get;}=new CharacterDefinition(TrickeryDomainId,"牧师·诡术领域",SpecialLogicType.TrickeryDomain,defenseBonus:-1,englishName:"Trickery Domain",description:"他人借你的手运算，若原运算手、原加数或结果为2，可交换你的原加数与对方结果；对方按换入数字打出，你仅改手值。交换后可令运算者魅惑2回合。距离∞，近钝击远穿刺。");
+        public static CharacterDefinition TempestDomain {get;}=new CharacterDefinition(TempestDomainId,"牧师·风暴领域",SpecialLogicType.TempestDomain,defenseBonus:-1,englishName:"Tempest Domain",description:"回合开始可做一次只改手值的运算。受攻击前持4，可用一只4对来袭者发起闪电或雷鸣反击，再用同手纯运算；每次来袭限一次，反击不递归，击杀来袭者终止原攻击。距离∞，近钝击远穿刺。");
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -555,7 +558,7 @@ namespace FingerDiceDuel.Core
             CircleOfTheLand, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
-            OathOfConquest, OathOfVengeance
+            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

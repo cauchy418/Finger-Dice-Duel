@@ -323,7 +323,7 @@ namespace FingerDiceDuel.Core
             character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "负面状态20种；角色状态为圣光、剑歌、战恩。计时状态通常持续目标自己的2个回合，重复施加刷新、不叠加。圣光同时清除并阻止剑歌与战恩；勇气战歌、奥术屏障等独立资源不受此影响。覆霜到期附潮湿；油腻触发的倒伏保留两个后续自身回合。");
+                "21种负面状态；圣光、剑歌、战恩为角色状态。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>
@@ -358,6 +358,8 @@ namespace FingerDiceDuel.Core
                 "闪电＋潮湿：伤害 ×1.5，保留潮湿，照常附加感电",
                 "强酸＋中毒：附加强酸，中毒刷新至2回合",
                 "毒素＋强酸：附加中毒，强酸刷新至2回合",
+                "闪电＋残响：残响刷新2回合，附加耳鸣2回合，照常附感电",
+                "雷鸣＋感电：感电刷新2回合，附加耳鸣2回合，照常处理雷鸣原有效果",
                 "火焰＋油腻：清除油腻，伤害×1.5，照常附加燃烧",
             };
         }
@@ -366,7 +368,7 @@ namespace FingerDiceDuel.Core
         {
             var lines = InteractionLines();
             var types = new[] { DamageType.Thunder, DamageType.Cold, DamageType.Cold,
-                DamageType.Cold, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Fire };
+                DamageType.Cold, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Lightning, DamageType.Thunder, DamageType.Fire };
             var entries = new List<GuideEntry>();
             for (int i = 0; i < lines.Count; i++)
                 entries.Add(new GuideEntry(IconKeyOf(types[i]), ColorOf(types[i]), lines[i]));
@@ -376,6 +378,6 @@ namespace FingerDiceDuel.Core
         public static GuideSheet ElementReactions()
             => new GuideSheet("元素反应", "Elemental Reactions", InteractionLines(), twoColumn: false,
                 groups: new List<GuideGroup> { InteractionGroup() },
-                note: "只在命中后触发；护盾／太极抵挡仍算命中，闪避／取消不算。增伤按常规伤害 ×1.5 向上取整。酸毒反应不增伤，刷新已有状态；免疫该魔法伤害时不附加、不刷新、不清除状态。");
+                note: "盾挡／太极算命中；闪避／取消不算。增伤向上取整。\n免疫对应魔法伤害时，阻止附加、刷新与清除状态。\n酸毒、雷电互刷不额外增伤；新附耳鸣从后续伤害生效。");
     }
 }

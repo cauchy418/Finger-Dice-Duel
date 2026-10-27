@@ -129,6 +129,7 @@ namespace FingerDiceDuel.Core
         public bool WasTypeImmune { get; private set; }
         private bool _acidPoisonReaction;
         private bool _greaseReaction;
+        private bool _sonicCrossReaction;
 
         /// <summary>本次攻击需要清除的状态（伤害类型联动）。</summary>
         public DamageType InteractionDamageType { get; set; } = DamageType.None;
@@ -242,8 +243,11 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 执行结算流程：调用攻击方钩子 -> 处理护盾 -> 应用伤害。
         /// </summary>
-        public void Resolve(IChoiceProvider defenderChoice, GameManager manager)
+        private bool _resolutionPrepared,_preparedDamageDisabled;private PlayerState _intendedDefender;private IChoiceProvider _preparedDefenderChoice;
+        public bool TempestReactionPrepared {get;set;} public bool IsTempestCounter {get;set;} public int? AttackValueOverride {get;set;}
+        public void PrepareResolution(IChoiceProvider defenderChoice, GameManager manager)
         {
+            if(_resolutionPrepared)return;_resolutionPrepared=true;
             Manager = manager;
             _startBonuses.Clear();SnapshotBonuses(Attacker);SnapshotBonuses(Defender);
             // 0. **最早结算：取消攻击**（邪术师·至高妖精）。
@@ -332,11 +336,20 @@ namespace FingerDiceDuel.Core
                 NotifyTargeted(Defender, manager);
             }
 
+            _preparedDamageDisabled=damageDisabled;_intendedDefender=intendedDefender;_preparedDefenderChoice=defenderChoice;
+        }
+        public void Resolve(IChoiceProvider defenderChoice,GameManager manager)
+        {
+            PrepareResolution(defenderChoice,manager);if(WasCancelled)return;
+            if(!TempestReactionPrepared)manager?.OfferTempestReaction(this,()=>{});
+            if(!Attacker.IsAlive||!Defender.IsAlive){WasCancelled=true;CancelledBy=!Attacker.IsAlive?"风暴狂怒（来袭者已阵亡）":"目标已阵亡";HitCount=0;return;}
+            defenderChoice=_preparedDefenderChoice;bool damageDisabled=_preparedDamageDisabled;var intendedDefender=_intendedDefender;
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
             if(!IgnoreIncomingModifiers && !IsStatusDamage)
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(Defender))
                     defense.ReduceWholeAttack(this,manager);
             WasTypeImmune = Defender != null && Defender.HasImmunity(AttackType);
+            _sonicCrossReaction = !WasTypeImmune&&StatusRules.HasSonicCrossReaction(Defender,AttackType);
             _greaseReaction = Defender != null && !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Greased);
             _acidPoisonReaction = Defender != null && !WasTypeImmune &&
                 (AttackType == AttackDamageType.Acid && Defender.HasStatus(StatusEffect.Poison)
@@ -692,7 +705,7 @@ namespace FingerDiceDuel.Core
         {
             if (Attacker == null) return;
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
-            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction) return;
+            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
 
             StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
                 : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
@@ -731,6 +744,7 @@ namespace FingerDiceDuel.Core
                     manager?.NoteSkill(Attacker, "元素反应", $"{victim.Name}：{StatusNames.Of(refreshed)}刷新至2回合");
             }
 
+            if(_sonicCrossReaction)StatusRules.ApplySonicCrossReaction(victim,AttackType,Attacker,manager);
             victim.ApplyStatus(status, StatusDuration, Attacker);
             manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {StatusDuration} 回合");
         }
@@ -915,6 +929,7 @@ namespace FingerDiceDuel.Core
             get
             {
                 if (IsSpecialAttack) return 0;
+                if(AttackValueOverride.HasValue)return AttackValueOverride.Value;
 
                 // 快照是 int（默认 0 表示"没设"）。两者都有值时才算真数字 ——
                 // 0 不是合法手值，所以可以安全地用它当"未设置"的哨兵。

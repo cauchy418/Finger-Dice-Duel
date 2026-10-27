@@ -22,10 +22,10 @@ namespace FingerDiceDuel.Assistant
             var effect=CharacterBehaviors.DisplayedEffectOf(actor,value);
             if(effect==HandEffectType.Heal)
             {
-                if(!actor.HasStatus(StatusEffect.Decay))score+=Math.Min(9,actor.MaximumHealth-actor.Health)*12;
+                if(StatusRules.CanHeal(actor))score+=Math.Min(9,actor.MaximumHealth-actor.Health)*12;
                 if(!actor.HasStatus(StatusEffect.WarBlessing))return score;
             }
-            if(effect==HandEffectType.Shield)score+=touch.Source.IsShield?5:45;
+            if(effect==HandEffectType.Shield&&!actor.HasStatus(StatusEffect.Tinnitus))score+=touch.Source.IsShield?5:45;
             if(DivineChoices.IsAttack(effect)||value==9&&actor.HasStatus(StatusEffect.WarBlessing))
             {
                 int best=0;

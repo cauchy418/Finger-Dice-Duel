@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Assistant
                 bool ally=AncientAlly(game,owner,target);double score;
                 if(key==AncientRoleChoices.AncientHeal)
                 {
-                    int need=target.HasStatus(StatusEffect.Decay)?0:target.MaximumHealth-target.Health;
+                    int need=!StatusRules.CanHeal(target)?0:target.MaximumHealth-target.Health;
                     // 回复为强制效果；无受伤队友时优先满血敌人，避免替敌人有效治疗。
                     score=ally?100+Math.Min(2,need)*30-target.Health:50-Math.Min(2,need)*30;
                 }

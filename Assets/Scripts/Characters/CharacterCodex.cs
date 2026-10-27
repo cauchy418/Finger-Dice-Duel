@@ -405,6 +405,16 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束；圣光清除并阻止剑歌。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
             Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
                 shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
+            Add(CharacterDefinition.TrickeryDomainId,"Trickery Domain",Alignment.ChaoticNeutral,
+                "诡诈换位：借手逢2，可换数字并魅惑。",
+                "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
+                "避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
+                new[]{"幻术先改加数，再判诡诈换位；换入的数字不重复受运算倍率影响。"});
+            Add(CharacterDefinition.TempestDomainId,"Tempest Domain",Alignment.ChaoticNeutral,
+                "风暴狂怒：持4可先反击，再纯运算。",
+                "开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
+                "避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
+                new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});
             Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
                 shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含连锁破盾。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,

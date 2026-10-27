@@ -1,4 +1,4 @@
-const fs = require('node:fs/promises');
+﻿const fs = require('node:fs/promises');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { sharp, root } = require('./deps.cjs');
@@ -36,6 +36,7 @@ async function importNewRoleIcons() {
   await require('./import-ancient-role-art.cjs').importAncientRoleArt();
   await require('./import-lore-storm-illusion.cjs').importLoreStormIllusion();
   await require('./import-divine-oaths.cjs').importDivineOaths();
+  await require('./import-cleric-domains.cjs').importClericDomains();
 }
 module.exports = { importNewRoleIcons };
 if (require.main === module) importNewRoleIcons().catch(error => { console.error(error); process.exitCode = 1; });

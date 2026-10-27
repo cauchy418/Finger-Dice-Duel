@@ -31,10 +31,21 @@ namespace FingerDiceDuel.Assistant
             if(request?.Owner==null || GetAi(request.Owner)!=null) return false;
             _wizardChoices.Enqueue(request); return true;
         }
+        private void QueueWizardFirst(Action action)
+        {var pending=_wizardAttacks.ToArray();_wizardAttacks.Clear();_wizardAttacks.Enqueue(action);foreach(var next in pending)_wizardAttacks.Enqueue(next);}
+        private bool QueueClericAttack(AttackContext attack,Action resolve)
+        {
+            _wizardAttacks.Enqueue(()=>{
+                attack.PrepareResolution(_game.GetChoiceProvider(attack.Defender),_game);
+                _game.OfferTempestReaction(attack,()=>QueueWizardFirst(()=>{resolve();PumpWizardBoundary();}));
+                PumpWizardBoundary();
+            });return true;
+        }
         private bool QueueWizardAttack(AttackContext attack, Action resolve)
         {
             // 独立攻击要先收集防守方选择，不能从同步结算钩子直接询问人类。
-            _wizardAttacks.Enqueue(()=>PrepareWizardAttack(attack,resolve)); return true;
+            if(attack.IsTempestCounter)QueueWizardFirst(()=>PrepareWizardAttack(attack,resolve));
+            else _wizardAttacks.Enqueue(()=>PrepareWizardAttack(attack,resolve)); return true;
         }
         private bool TryStartWizardBoundary(Action resume)
         {
@@ -47,7 +58,8 @@ namespace FingerDiceDuel.Assistant
             if(_game.IsGameOver)
             {
                 _wizardChoices.Clear();_wizardAttacks.Clear();PendingWizardChoice=null;
-                _wizardBoundaryResume=null;Phase=BoardPhase.GameOver;Hint=WinMessage();return;
+                var final=_wizardBoundaryResume;_wizardBoundaryResume=null;if(final!=null){final();return;}
+                Phase=BoardPhase.GameOver;Hint=WinMessage();return;
             }
             while(_wizardChoices.Count>0)
             {
@@ -160,7 +172,10 @@ namespace FingerDiceDuel.Assistant
                 attack.AttackerProvider=_game.GetChoiceProvider(attack.Attacker);
                 attack.AnsweredLookupFor=_game.AnsweredLookupFor;
                 attack.AskedCancelLookup=_game.AskedCancelLookup;
-                resolve();
+                if(!attack.TempestReactionPrepared&&!attack.IsTempestCounter){
+                    attack.PrepareResolution(_game.GetChoiceProvider(attack.Defender),_game);
+                    _game.OfferTempestReaction(attack,()=>QueueWizardFirst(()=>{resolve();PumpWizardBoundary();}));
+                }else resolve();
             };
             AdvanceCharacterChoice();
         }

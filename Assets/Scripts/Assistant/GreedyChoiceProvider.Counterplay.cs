@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Assistant
                                 break;
                             case HandEffectType.Shield:value+=IsLowHealth(foe)?45:15;break;
                             case HandEffectType.Heal:
-                                if(!foe.HasStatus(StatusEffect.Decay)&&foe.Health<foe.MaximumHealth)value+=IsLowHealth(foe)?50:15;
+                                if(StatusRules.CanHeal(foe)&&foe.Health<foe.MaximumHealth)value+=IsLowHealth(foe)?50:15;
                                 break;
                         }
                         int remaining=foe.GetOtherHand(hand).Value;

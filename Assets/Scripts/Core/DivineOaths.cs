@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
                 if(source==null||!owner.IsAlive||owner.IsPolymorphed)return;
                 var targets=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(ReferenceEquals(move.ActedHand,source))targets.Add(move.TargetHand);
                 NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"誓言反击 · 点击加数（只改变手值）",owner,game,targets,true,target=>{
-                    if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.ApplyEffectlessOperation(owner,source,h,"誓言反击"),effectless:true);
+                    if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.RequestTrickeryOperation(owner,source,h,()=>game.ApplyEffectlessOperation(owner,source,h,"誓言反击"),true),effectless:true);
                 });
             });
         }
@@ -46,8 +46,10 @@ namespace FingerDiceDuel.Core
         {
             if(!actor.IsAlive||actor.IsPolymorphed||!StatusRules.CanAct(actor)||!IsLegalMove(actor,source,target,out _))return false;
             target=PrepareOperationAddend(actor,source,target,effectless:true);
+            RequestTrickeryOperation(actor,source,target,()=>{},true);
             int before=source.Value,add=target.Value;bool shield=source.IsShield;
-            int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));source.SetValue(value);
+            int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));
+            ApplyTrickery(actor,source,target,value,out value);source.SetValue(value);
             if(shield)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
             NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）");ClearPreparedOperationAddend();return true;
         }
@@ -56,6 +58,7 @@ namespace FingerDiceDuel.Core
         public HandEffectType OperationEffect(PlayerState actor,int value)
         {
             var effect=CharacterBehaviors.DisplayedEffectOf(actor,value);
+            if(actor?.HasStatus(StatusEffect.Tinnitus)==true&&effect==HandEffectType.Shield)return HandEffectType.None;
             return value==9&&effect==HandEffectType.Heal&&actor!=null&&actor.HasStatus(StatusEffect.WarBlessing)
                 &&!actor.IsPolymorphed&&WarBlessingNineAttack==true?HandEffectType.Attack8:effect;
         }

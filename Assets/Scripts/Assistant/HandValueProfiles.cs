@@ -449,6 +449,10 @@ namespace FingerDiceDuel.Assistant
             // 保留攻击数字；9在战恩下也计为攻击数字。
             Own[CharacterDefinition.OathOfConquestId]=new HandValueProfile().Set(5,100).Set(4,75).Set(6,80).Set(8,85).Set(9,60)
                 .AddCombo(ComboRule.ContainsAll(35,"持5进行攻击成长",5,8));
+            Own[CharacterDefinition.TrickeryDomainId]=new HandValueProfile().Set(2,92).Set(4,72).Set(6,76).Set(8,83).Set(5,66).Set(9,65);
+            Own[CharacterDefinition.TempestDomainId]=new HandValueProfile().Set(4,96).Set(6,75).Set(8,82).Set(5,70).Set(9,65);
+            OpponentAdjust[CharacterDefinition.TrickeryDomainId]=new List<ValueAdjust>{new ValueAdjust(2,-16)};
+            OpponentAdjust[CharacterDefinition.TempestDomainId]=new List<ValueAdjust>{new ValueAdjust(5,10),new ValueAdjust(4,-8)};
             Own[CharacterDefinition.OathOfVengeanceId]=new HandValueProfile().Set(5,82).Set(4,74).Set(6,78).Set(8,85).Set(9,65);
             Own[CharacterDefinition.WarDomainId] = new HandValueProfile()
                 .Set(8, 74).Set(6, 70).Set(4, 64)

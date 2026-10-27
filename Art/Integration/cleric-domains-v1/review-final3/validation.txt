@@ -1,0 +1,38 @@
+PASS painted resource Subclasses/cleric_trickery_domain
+PASS painted resource Subclasses/cleric_tempest_domain
+PASS painted resource Status/tinnitus
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS human addend owner chooses swap
+PASS raycast WizardOption0
+PASS charm asked separately before operation
+PASS raycast WizardOption1
+PASS raycast PaintedHandCard
+PASS swap numeric effect resolved once
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS reaction pauses incoming damage
+PASS raycast PaintedHandCard
+PASS lightning and thunder visible
+PASS raycast WizardOption0
+PASS counter resolves before mandatory same-hand addition
+PASS raycast PaintedHandCard
+PASS incoming attack resumes once after pure operation
+PASS ear marker present in battle state
+PASS manual includes tinnitus
+PASS both sonic reactions in manual
+PASS trickery detail is present
+PASS tempest detail is present
+PASS cleric profession in CharacterSelect
+PASS selectable cleric_trickery_domain in CharacterSelect
+PASS selectable cleric_tempest_domain in CharacterSelect
+PASS cleric profession in TwoOnTwoCharacter
+PASS selectable cleric_trickery_domain in TwoOnTwoCharacter
+PASS selectable cleric_tempest_domain in TwoOnTwoCharacter
+PASS cleric profession in FactionSelect
+PASS selectable cleric_trickery_domain in FactionSelect
+PASS selectable cleric_tempest_domain in FactionSelect
+PASS cleric profession in IdentitySelect
+PASS selectable cleric_trickery_domain in IdentitySelect
+PASS selectable cleric_tempest_domain in IdentitySelect

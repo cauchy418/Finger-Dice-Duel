@@ -418,7 +418,7 @@ namespace FingerDiceDuel.UI
             if (!string.IsNullOrEmpty(c.GuideNote))
             {
                 var note = TopText(_guideContent, "GuideNote", c.GuideNote, 0, y, 1560, 100, 23);
-                float noteHeight = Mathf.Max(40, note.preferredHeight);
+                float noteHeight = Mathf.Max(40, ReadableHeight(note));
                 note.rectTransform.sizeDelta = new Vector2(1560, noteHeight);
                 y += noteHeight + 28;
             }
@@ -444,7 +444,7 @@ namespace FingerDiceDuel.UI
                             icon.preserveAspect = true;
                             icon.raycastTarget = false;
                             var text = TopText(_guideContent, "Entry_" + key, entry.Text, x + 134, y + 6, 640, 112, 23);
-                            float h = Mathf.Max(112, text.preferredHeight);
+                            float h = Mathf.Max(112, ReadableHeight(text));
                             text.rectTransform.sizeDelta = new Vector2(640, h);
                             rowHeight = Mathf.Max(rowHeight, h + 28);
                         }
@@ -456,7 +456,7 @@ namespace FingerDiceDuel.UI
             else if (c.Interactions != null)
             {
                 var text = TopText(_guideContent, "GuideText", string.Join("\n\n", c.Interactions), 0, y, 1560, 600, 24);
-                y += text.preferredHeight + 40;
+                y += ReadableHeight(text) + 40;
                 text.rectTransform.sizeDelta = new Vector2(1560, y);
             }
             _guideContent.sizeDelta = new Vector2(1636, Mathf.Max(730, y));
@@ -464,11 +464,15 @@ namespace FingerDiceDuel.UI
             _guideContent.anchoredPosition = Vector2.zero;
         }
 
+        // CJK glyph ascent can exceed the layout generator's preferred height.
+        // Keep the last painted line inside its row and the scroll content.
+        private static float ReadableHeight(Text text)
+            =>Mathf.Max(text.preferredHeight+8,(text.text.Split('\n').Length)*text.fontSize*1.5f+8);
         private static Text TopText(Transform parent, string name, string value, float x, float y, float w, float h, int size, bool title = false)
         {
             var text = FrontEndArt.Text(parent, name, value, new Vector2(x, -y), new Vector2(w, h), size, TextAnchor.UpperLeft, title);
             text.rectTransform.anchorMin = text.rectTransform.anchorMax = text.rectTransform.pivot = new Vector2(0, 1);
-            if(!title) {text.text=FrontEndArt.WrapReadableText(text,value,w);text.horizontalOverflow=HorizontalWrapMode.Overflow;}
+            if(!title) {text.text=FrontEndArt.WrapReadableText(text,value,w);text.horizontalOverflow=HorizontalWrapMode.Overflow;text.verticalOverflow=VerticalWrapMode.Overflow;}
             return text;
         }
         private static string Signed(int value) => value > 0 ? "+" + value : value.ToString();

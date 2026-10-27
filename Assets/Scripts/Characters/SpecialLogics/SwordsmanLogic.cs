@@ -202,6 +202,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             };
             // 追加攻击发生在主攻击之前，玩家还没来得及做闪避选择，
             // 所以它的闪避**自动结算**（有几只"1"就闪几段），不弹提示。
+            void ResolveFollowUp(){
             manager.ResolvingExtraAttack = true;
             try
             {
@@ -217,6 +218,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             int fixedDamage = (int)effect;
             manager.PendingExtraAttack = new ExtraAttackInfo(
                 owner.Name, fixedDamage, ctx.AppliedDamage, ctx.WasBlocked);
+            }
+            if(manager.HasTempestDomain()&&manager.DeferWizardAttack?.Invoke(ctx,ResolveFollowUp)==true)return;
+            ResolveFollowUp();
         }
 
         private static Hand ReadChoice(PlayerState owner, GameManager manager,

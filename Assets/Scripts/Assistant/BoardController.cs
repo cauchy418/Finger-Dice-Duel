@@ -263,6 +263,8 @@ namespace FingerDiceDuel.Assistant
             _game.AncientPolicyFor = p=>GetChoice(p) as IAncientRoleChoicePolicy;
             _game.NewSubclassPolicyFor = p=>GetChoice(p) as INewSubclassChoicePolicy;
             _game.IllusionPolicyFor = p=>GetChoice(p) as IIllusionChoicePolicy;
+            _game.ClericPolicyFor=p=>GetChoice(p) as IClericDomainPolicy;
+            _game.DeferClericAttack=QueueClericAttack;
             _game.ArcanePolicyFor=p=>GetChoice(p) as IArcaneChoicePolicy;
             _game.SummonProviderFor=p=>{_specterAi.Game=_game;return _specterAi;};
             _game.AutomaticChoicesFor=p=>GetAi(p)!=null;
@@ -1968,7 +1970,9 @@ namespace FingerDiceDuel.Assistant
             _selectedTarget=hand;TargetPlayer=OwnerOf(hand)??Defender;
             _pendingActedHand=_turnActedHand=SelectedHand;
             _pendingTargetHand=_turnTargetHand=hand;
-            _pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,hand).IsAttack;
+            Action proceed=()=>{_pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,hand).IsAttack;};
+            if(_game.RequestTrickeryOperation(ActivePlayer,SelectedHand,hand,proceed))
+            {TryStartWizardBoundary(ContinueSelectedOperation);return;}
             ContinueSelectedOperation();
         }
 
@@ -4128,7 +4132,7 @@ namespace FingerDiceDuel.Assistant
             }
             bool wasExtra = _extraActionActive;
 
-            TurnResult result;
+            TurnResult result=null;
             try
             {
                 // ⚠️ **赌博走另一条入口，而且绝不能在这里再掷一次**。
@@ -4153,7 +4157,7 @@ namespace FingerDiceDuel.Assistant
                 //    `ExecuteResolvedTurn` 的收尾 —— 早于界面的 `RefreshView`。
                 //    所以刷新时再去读标记，伤害早就被清干净了
                 //    （玩家实测："第一次受伤也没跳出提示"）。
-                SnapshotCollegeOfValorEligibility();
+                if(!_game.PendingClericResolution)SnapshotCollegeOfValorEligibility();
             }
             catch (InvalidOperationException ex)
             {
@@ -4188,13 +4192,21 @@ namespace FingerDiceDuel.Assistant
             }
             finally
             {
+                if(!_game.PendingClericResolution){
                 // 必须复位，否则会污染后续所有回合
                 _game.SuppressAttackDamage = false;
                 _game.RangeOverride = -1;
                 _game.DamageTargetPlayer = null;
                 _giveUpAttack = false;
+                }
             }
 
+            if(_game.PendingClericResolution){TryStartWizardBoundary(CompleteResolvedUI);return;}
+            CompleteResolvedUI();
+            void CompleteResolvedUI()
+            {
+            SnapshotCollegeOfValorEligibility();
+            _game.SuppressAttackDamage=false;_game.RangeOverride=-1;_game.DamageTargetPlayer=null;_giveUpAttack=false;
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
 
@@ -4260,6 +4272,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             BeginTurn();
+            }
         }
 
         // 注：此前这里有一个 RequiresLockChoice()，用 `is PathOfTheWardenLogic` 硬编码判断

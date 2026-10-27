@@ -1,0 +1,11 @@
+2026-10-28 Cleric domains / Tinnitus acceptance
+Built-in image_gen: 3 generated assets; original sources and full prompts retained.
+Art import: 3 assets verified; canonical profession/subclass manifest 66 entries.
+Headless functional regression: 1462 passed, 0 failed; 7 long statistics suites deliberately skipped.
+Dedicated ClericDomainsTests: 26 passed.
+FDD_UNITY_TESTS conditional NUnit compilation: passed (compile check, not an engine NUnit run).
+Unity/UI compilation: 184 scripts passed.
+Actual Play-mode Codely UI: 38 checks passed; see review-final3/validation.txt and screenshots.
+54 roles x 3 difficulties x 2/4/8 player board progression included in WizardAiPolicyTests.
+460 legal duals / 920 orders / 5520 primitive-operation probes included in alignment regression.
+Historical win-rate reports remain the earlier 52-role snapshot; no new win-rate claims.

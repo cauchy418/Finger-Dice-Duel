@@ -114,6 +114,7 @@
         Restrained = 20,
         Greased = 21,
         WarBlessing = 22,
+        Tinnitus = 23,
     }
 
     /// <summary>
@@ -190,6 +191,7 @@
                 case StatusEffect.Restrained: return "restrained";
                 case StatusEffect.Greased: return "greased";
                 case StatusEffect.WarBlessing: return "war_blessing";
+                case StatusEffect.Tinnitus: return "tinnitus";
                 default: return null;
             }
         }
@@ -240,6 +242,7 @@
                 case StatusEffect.Restrained: return "束缚";
                 case StatusEffect.Greased: return "油腻";
                 case StatusEffect.WarBlessing: return "战恩";
+                case StatusEffect.Tinnitus: return "耳鸣";
                 default: return "无";
             }
         }
@@ -287,6 +290,8 @@
                     return "本次运算结果无效，不触发任何技能";
                 case StatusEffect.HolyLight:
                     return "回合开始失去1生命（不可抵挡），回复减半；清除并阻止其他状态及临时抗性／易伤／免疫";
+                case StatusEffect.Tinnitus:
+                    return "受到攻击与持续状态伤害×1.5，不能合盾或回复；免疫雷鸣伤害，持续2个自身回合";
                 case StatusEffect.Restrained:
                     return "每个自身回合随机一只手不能主动运算，仍可被借作加数；不解开原有锁手";
                 case StatusEffect.WarBlessing:
@@ -340,7 +345,7 @@
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
-            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing,
+            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus,
         };
 
         /// <summary>
@@ -402,6 +407,7 @@
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 case StatusEffect.WarBlessing: return 0xDBB662;
+                case StatusEffect.Tinnitus: return 0xB99DCD;
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
                 case StatusEffect.Restrained: return 0x638653;
                 case StatusEffect.Greased: return 0xB8993C;
@@ -444,6 +450,7 @@
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
                 case StatusEffect.WarBlessing: return "⚔";
+                case StatusEffect.Tinnitus: return "≋";
                 case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
                 case StatusEffect.Restrained: return "♧";
                 case StatusEffect.Greased: return "◒";

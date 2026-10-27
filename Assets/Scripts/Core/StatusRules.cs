@@ -192,7 +192,7 @@ namespace FingerDiceDuel.Core
         /// **腐朽**：不能回复生命值。
         /// </summary>
         public static bool CanHeal(PlayerState p)
-            => p == null || !p.HasStatus(StatusEffect.Decay);
+            => p == null || !p.HasStatus(StatusEffect.Decay)&&!p.HasStatus(StatusEffect.Tinnitus);
 
         /// <summary>
         /// 该玩家**两回合掉血类**状态在"回合开始"要结算的伤害。
@@ -211,17 +211,17 @@ namespace FingerDiceDuel.Core
             if (p.HasStatus(StatusEffect.Poison))
             {
                 unstoppable = true;
-                total += ApplyDamageAffinities(p, PoisonDamagePerTurn, AttackDamageType.Poison, false);
+                total += ApplyDamageAffinities(p, ApplyTinnitusDamage(p,PoisonDamagePerTurn), AttackDamageType.Poison, false);
             }
             if (p.HasStatus(StatusEffect.Bleed))
             {
                 unstoppable = true;
-                total += BleedDamagePerTurn;
+                total += ApplyTinnitusDamage(p,BleedDamagePerTurn);
             }
             if (p.HasStatus(StatusEffect.HolyLight))
             {
                 unstoppable = true;
-                total += ApplyDamageAffinities(p, HolyLightDamagePerTurn, AttackDamageType.Radiant, false);
+                total += ApplyDamageAffinities(p, ApplyTinnitusDamage(p,HolyLightDamagePerTurn), AttackDamageType.Radiant, false);
             }
             return total;
         }
@@ -336,10 +336,23 @@ namespace FingerDiceDuel.Core
         public static int ApplyIncomingDamage(PlayerState defender, int damage)
         {
             if (defender == null || damage <= 0) return damage;
-            if (!defender.HasStatus(StatusEffect.KnockedDown)) return damage;
-            return (damage * 3 + 1) / 2;
+            if(defender.HasStatus(StatusEffect.KnockedDown))damage=(damage*3+1)/2;
+            return ApplyTinnitusDamage(defender,damage);
         }
 
+        public static int ApplyTinnitusDamage(PlayerState player,int damage)
+            =>damage>0&&player?.HasStatus(StatusEffect.Tinnitus)==true?(damage*3+1)/2:damage;
+        public static bool HasSonicCrossReaction(PlayerState target,AttackDamageType type)
+            =>target!=null&&(type==AttackDamageType.Lightning&&target.HasStatus(StatusEffect.Resonance)
+                ||type==AttackDamageType.Thunder&&target.HasStatus(StatusEffect.Shock));
+        public static void ApplySonicCrossReaction(PlayerState target,AttackDamageType type,PlayerState source,GameManager game)
+        {
+            if(!HasSonicCrossReaction(target,type)||target.HasImmunity(type))return;
+            var old=type==AttackDamageType.Lightning?StatusEffect.Resonance:StatusEffect.Shock;
+            var previous=target.StatusSourceOf(old);
+            target.ApplyStatus(old,2,previous??source);target.ApplyStatus(StatusEffect.Tinnitus,2,source);
+            if(target.HasStatus(StatusEffect.Tinnitus))game?.NoteSkill(source,"元素反应",$"{target.Name}：{StatusNames.Of(old)}刷新2回合，耳鸣2回合");
+        }
         /// <summary>抗性：向上取整减半；物理抗性覆盖三种物理伤害。</summary>
         public static int ApplyResistance(PlayerState defender, int damage, AttackDamageType type)
         {

@@ -69,7 +69,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>枚举上限包含束缚、油腻；用于稳定顺序显示状态。</summary>
-        private const int MaxStatusValue = (int)StatusEffect.WarBlessing;
+        private const int MaxStatusValue = (int)StatusEffect.Tinnitus;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -379,7 +379,7 @@ namespace FingerDiceDuel.Core
         public void Heal(int amount)
         {
             if (amount <= 0) return;
-            if (HasStatus(StatusEffect.Decay)) return;      // 腐朽：禁止回血
+            if (!StatusRules.CanHeal(this)) return;      // 腐朽／耳鸣：禁止回血
 
             // **圣光**：回复量减半（向上取整 —— 与抗性减半同一取整口径）。
             // 放在最底层的原因与腐朽一致：回血入口不止一处，逐个判断必漏。
