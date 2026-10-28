@@ -236,7 +236,7 @@ namespace FingerDiceDuel.Core
                                                GameManager manager) { }
 
         /// <summary>
-        /// 默认没有"碎盾换射程"这类副作用。战士·破阵者重写它。
+        /// 默认没有"无畏冲锋"这类副作用。战士·破阵者重写它。
         /// </summary>
         public virtual void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager) { }
 

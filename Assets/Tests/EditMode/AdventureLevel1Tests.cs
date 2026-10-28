@@ -327,7 +327,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual("Adventure/guide_soldier", AdventureLevel1.GuideAvatarKey);
             Assert.AreEqual("老兵", AdventureLevel1.GuideName);
             Assert.IsTrue(AdventureLevel1.IntroText.Contains("边境哨站"));
-            Assert.IsTrue(AdventureLevel1.VictoryText.Contains("十点重击"));
+            Assert.IsTrue(AdventureLevel1.VictoryText.Contains("精通重击"));
             Assert.IsTrue(AdventureLevel1.VictoryText.Contains("满十归一"));
         }
     }

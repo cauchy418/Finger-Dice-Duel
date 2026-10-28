@@ -166,7 +166,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             context.FinalDamage += StealthBonusDamage;
             context.InflictsBleed = true;
-            context.Manager?.NoteSkill(context.Attacker, "潜行突袭", $"本次伤害＋{StealthBonusDamage}");
+            context.Manager?.NoteSkill(context.Attacker, "死亡突袭", $"本次伤害＋{StealthBonusDamage}");
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 _stealthEntered = true;
                 _skipUsedThisStealth = false;
                 StealthEnterCount++;
-                manager?.NoteSkill(owner, "潜行", "双手为 7，进入潜行");
+                manager?.NoteSkill(owner, "暗杀", "双手为 7，进入潜行");
             }
         }
 

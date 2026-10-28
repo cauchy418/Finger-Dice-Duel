@@ -46,6 +46,7 @@ namespace FingerDiceDuel.Characters
 
         /// <summary>**详细**技能描述。</summary>
         public string DetailSkill { get; }
+        public bool UsesNormalizedSkills { get; }
 
         /// <summary>操作指导（怎么用这个角色）。</summary>
         public string PlayGuide { get; }
@@ -65,7 +66,8 @@ namespace FingerDiceDuel.Characters
             EnglishName = CharacterIdentity.Find(id)?.SubclassNameEn ?? englishName;
             Alignment = alignment;
             ShortSkill = shortSkill;
-            DetailSkill = detailSkill;
+            UsesNormalizedSkills = CharacterSkillText.TryGet(id, out var normalized);
+            DetailSkill = UsesNormalizedSkills ? normalized : detailSkill;
             PlayGuide = playGuide;
             Counter = counter;
             Interactions = interactions ?? new List<string>();

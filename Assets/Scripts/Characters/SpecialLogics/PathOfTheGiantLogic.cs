@@ -155,7 +155,7 @@
             //     每段只有 1 点基础伤害（测试当场抓到）。
             context.FinalDamage = _otherHandValueOfThisOperation * HitCount;
             context.HitCount = HitCount;
-            context.Manager?.NoteSkill(context.Attacker, "巨力连击", $"两段攻击，每段基础伤害 {_otherHandValueOfThisOperation}");
+            context.Manager?.NoteSkill(context.Attacker, "巨人之力", $"两段攻击，每段基础伤害 {_otherHandValueOfThisOperation}");
         }
 
         /// <summary>

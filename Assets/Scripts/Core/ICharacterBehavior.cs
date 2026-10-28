@@ -86,7 +86,7 @@ namespace FingerDiceDuel.Core
         void OnIncomingElementAttack(AttackContext context, GameManager manager);
     }
 
-    /// <summary>在伤害计算完成后吸收伤害（法师·防护学派的奥术屏障）。</summary>
+    /// <summary>在伤害计算完成后吸收伤害（法师·防护学派的奥术守御）。</summary>
     public interface IIncomingDamageBarrier
     {
         int AbsorbDamage(PlayerState target, int damage, AttackContext context, GameManager manager);
@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Core
         AttackDamageType NormalAttackType { get; }
     }
 
-    /// <summary>自己回合结束通知：征服之誓层数衰减、剑歌维持等，界面与无头共用。</summary>
+    /// <summary>自己回合结束通知：征服之誓层数衰减、守御之歌等，界面与无头共用。</summary>
     public interface ITurnEndHook
     {
         void OnTurnEnded(PlayerState owner, GameManager manager);
@@ -214,7 +214,7 @@ namespace FingerDiceDuel.Core
     {
         void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager);
     }
-    /// <summary>一次攻击造成伤害后通知；致死目标也通知，供妖魔汲取等自身收益。</summary>
+    /// <summary>一次攻击造成伤害后通知；致死目标也通知，供直坠噩梦等自身收益。</summary>
     public interface IOnDamageDealt
     {
         void OnDamageDealt(AttackContext context, GameManager manager);
@@ -796,7 +796,7 @@ namespace FingerDiceDuel.Core
     ///
     /// 背景：斩杀线 = 本次攻击的最大伤害 = 基础值 + 攻方攻击加成 − 受方防御加成。
     /// 但有几个角色的实际伤害**不等于**这个式子：
-    ///   · **游荡者·风流剑客**：手上有 2 时可以乘风突刺（基础值 ×1.5）
+    ///   · **游荡者·风流剑客**：手上有 2 时可以潇洒气质（基础值 ×1.5）
     ///   · **战士·剑士**：双手相同时追加一次 4/6/8 伤害
     ///   · **游荡者·刺客**：潜行中 +7
     ///   · **野蛮人·巨人道途**：打出 5 时是**两段**，每段伤害 = 另一只手的点数
@@ -812,7 +812,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 参数给的是**原始值**（结果值 / 攻方攻击加成 / 受方防御加成），
         ///    让角色能按自己的机制重算 —— 因为有些机制作用在
-        ///    **叠加攻防之前**。例如游荡者·风流剑客的乘风突刺是"基础值 ×1.5"，
+        ///    **叠加攻防之前**。例如游荡者·风流剑客的潇洒气质是"基础值 ×1.5"，
         ///    真实顺序是 `(4 * 1.5) + 攻 - 防`，而不是 `(4 + 攻 - 防) * 1.5`。
         ///
         ///    通用情形下直接返回
@@ -854,6 +854,16 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>供状态栏查询该技能是否标记了指定角色。</summary>
+    public interface IPerHitAttackType
+    {
+        void PrepareAttackHit(AttackContext attack, int hitIndex);
+    }
+
+    public interface IHunterVolleyPolicy
+    {
+        PlayerState HunterVolleyTarget(PlayerState owner, IReadOnlyList<PlayerState> candidates, GameManager game);
+    }
+
     public interface IHunterMarkSource
     {
         bool IsMarked(PlayerState target);

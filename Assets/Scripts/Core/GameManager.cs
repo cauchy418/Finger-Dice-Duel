@@ -43,6 +43,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public class TurnResult
     {
+        public IReadOnlyList<AttackDamageType> SegmentTypes { get; set; }
         public int TrickeryCalculated {get;set;}
         public PlayerState Actor;
 
@@ -1914,7 +1915,7 @@ namespace FingerDiceDuel.Core
                 StealTaken = outcome.Stolen,
                 StealEffective = outcome.Effective,
             };
-            NoteSkill(actor, "偷窃", $"{CombatText.HandName(actor, myHand)} {outcome.Original}↔{outcome.Stolen}，" + (outcome.Effective ? "触发偷得数字效果" : "仅交换，不触发效果"));
+            NoteSkill(actor, "快手", $"{CombatText.HandName(actor, myHand)} {outcome.Original}↔{outcome.Stolen}，" + (outcome.Effective ? "触发偷得数字效果" : "仅交换，不触发效果"));
 
             // ⚠️ 无论生效与否，交换**已经发生**（在 ThiefLogic.Steal 里），
             //    所以这里只负责"要不要触发效果"。
@@ -2046,7 +2047,7 @@ namespace FingerDiceDuel.Core
                 result.DamageDealt = ctx.AppliedDamage;
                 result.HitCount = ctx.HitCount;
                 result.Defender=ctx.Defender;
-                result.AttackType=ctx.AttackType;
+                result.AttackType=ctx.AttackType;result.SegmentTypes=new List<AttackDamageType>(ctx.SegmentTypes);
                 result.WasBlocked=ctx.WasBlocked;
                 result.WasDodged=ctx.WasDodged;
             }
@@ -2230,7 +2231,7 @@ namespace FingerDiceDuel.Core
             // ---- 距离修正递减（邪术师·旧日支配者）：记在**目标**身上，用的也是他自己的回合 ----
             TickDistancePenalties(actor);
 
-            // ---- 回合结束通知（征服之誓逐层衰减、剑歌维持等）----
+            // ---- 回合结束通知（征服之誓逐层衰减、守御之歌等）----
             // 与燃烧 / 递减同一入口：界面（BoardController 的 _statusTurnEndFor）
             // 与无头（MatchRunner）两条路径都会走到这里，不会漂移。
             bool suppressed = _suppressedOperationActors.Contains(actor);
@@ -2708,7 +2709,7 @@ namespace FingerDiceDuel.Core
                 if(abj!=null && ReferenceEquals(stored,actedHand))
                 {
                     abj.StoreBarrier((int)effect); SuppressAttackDamage=true;
-                    NoteSkill(actor,"奥术屏障",$"存储{(int)effect}，累计{abj.BarrierPoints}");
+                    NoteSkill(actor,"奥术守御",$"存储{(int)effect}，累计{abj.BarrierPoints}");
                 }
             }
             int healthBefore = actor.Health;
@@ -2856,6 +2857,7 @@ namespace FingerDiceDuel.Core
                         ctx.Resolve(oppChoice, this);
                         result.Defender = ctx.Defender;
                         result.AttackType = ctx.AttackType;
+                        result.SegmentTypes = new List<AttackDamageType>(ctx.SegmentTypes);
                         result.WasBlocked = ctx.WasBlocked;
                         result.WasDodged = ctx.WasDodged;
                         result.DodgeReason = ctx.DodgeReason;
@@ -3512,7 +3514,7 @@ namespace FingerDiceDuel.Core
         /// **本次攻击的距离覆盖**（-1 = 用角色自己的基础距离）。
         ///
         /// 由上层（BoardController）在收完"换射程"的抉择后设定 ——
-        /// 目前两个来源：战士·破阵者碎盾换射程、游荡者·风流剑客乘风突刺。
+        /// 目前两个来源：战士·破阵者碎盾换射程、游荡者·风流剑客潇洒气质。
         /// 调用方必须在结算后复位。
         /// </summary>
         public int RangeOverride { get; set; } = -1;

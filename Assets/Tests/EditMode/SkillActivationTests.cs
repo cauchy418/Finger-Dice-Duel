@@ -251,7 +251,7 @@ namespace FingerDiceDuel.Tests
                         // 玩家指示："游荡者·风流剑客只需检查是否**倾向于合 1** 即可"
                         //
                         // 理由：闪避能不能用出来取决于对手打不打我，
-                        // 而 1 是闪避的**前提**（也是乘风突刺的前提）——
+                        // 而 1 是闪避的**前提**（也是潇洒气质的前提）——
                         // 所以"有没有去凑 1"才是 AI 该被衡量的东西。
                         if (pA.LeftHand.Value == 1 || pA.RightHand.Value == 1)
                             hit = true;
@@ -331,7 +331,7 @@ namespace FingerDiceDuel.Tests
             switch (hero.Id)
             {
                 case CharacterDefinition.ChampionId:
-                    // 勇士已新增十点重击，必须按实际发动计数衡量。
+                    // 勇士已新增精通重击，必须按实际发动计数衡量。
                     hit = pA.Character is ISkillUseCounter champion && champion.SkillUseCount > 0;
                     break;
 

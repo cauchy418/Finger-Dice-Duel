@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Tests
    g.PlayerA.LeftHand.SetValue(1);g.PlayerB.LeftHand.SetValue(3);g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,g.PlayerA.LeftHand.Value);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);}
   [Test] public void Trickery_human_swap_and_charm_are_separate_before_target_selection()
   {var board=Board(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain,out var g);g.PlayerA.LeftHand.SetValue(2);g.PlayerB.LeftHand.SetValue(4);g.PlayerB.RightHand.SetValue(3);
-   board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("诡诈换位"));Assert.AreEqual(2,g.PlayerA.LeftHand.Value);
+   board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("诡术祝福"));Assert.AreEqual(2,g.PlayerA.LeftHand.Value);
    Assert.True(board.ChooseSkillOption(1));Assert.True(board.Hint.Contains("魅惑"));Assert.AreEqual(0,g.TurnCount);
    Assert.True(board.ChooseSkillOption(0));Assert.False(g.PlayerA.HasStatus(StatusEffect.Charm));
    Assert.AreEqual(4,g.PreviewOperationResult(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand));
@@ -56,14 +56,14 @@ namespace FingerDiceDuel.Tests
   [Test] public void Trickery_frost_applies_once_to_original_result_not_swapped_digit()
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain);g.ClericPolicyFor=p=>new Policy{Charm=false};
    g.PlayerA.LeftHand.SetValue(2);g.PlayerA.ApplyStatus(StatusEffect.Frost,2);g.PlayerB.LeftHand.SetValue(4);
-   var r=g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,r.ResultValue);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);Assert.True(BattleTurnText.Describe(r).Contains("诡诈换位"));}
+   var r=g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,r.ResultValue);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);Assert.True(BattleTurnText.Describe(r).Contains("诡术祝福"));}
   [Test] public void Trickery_pure_operation_does_not_heal_or_attack_or_advance()
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain);g.ClericPolicyFor=p=>new Policy();g.PlayerA.LeftHand.SetValue(2);g.PlayerB.LeftHand.SetValue(9);g.PlayerA.TakeDamage(10);
    Assert.True(g.ApplyEffectlessOperation(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand,"测试"));Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(10,g.PlayerA.Health);Assert.AreEqual(0,g.TurnCount);}
   [Test] public void Tempest_human_counter_precedes_damage_then_same_hand_must_operate()
   {var board=Board(CharacterDefinition.Blank,CharacterDefinition.TempestDomain,out var g);var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(1);a.RightHand.SetValue(3);b.LeftHand.SetValue(4);b.RightHand.SetValue(3);
    board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.RightHand);if(board.Phase==BoardPhase.ChoosingTargetPlayer)board.ClickHand(b.LeftHand);
-   Assert.True(board.Hint.Contains("风暴狂怒"),board.Phase+" "+board.Hint);Assert.AreEqual(20,b.Health);Assert.AreEqual(0,g.TurnCount);
+   Assert.True(board.Hint.Contains("风暴之怒"),board.Phase+" "+board.Hint);Assert.AreEqual(20,b.Health);Assert.AreEqual(0,g.TurnCount);
    Assert.True(board.ClickHand(b.LeftHand),"pick4 "+board.Phase+board.Hint);Assert.True(board.ChooseSkillOption((int)AttackDamageType.Lightning),"picktype "+board.Phase+board.Hint);
    Assert.AreEqual(16,a.Health);Assert.AreEqual(20,b.Health);Assert.AreEqual(4,b.LeftHand.Value);Assert.False(board.PendingWizardChoice.AllowDecline);
    Assert.True(board.ClickHand(a.RightHand),"addend "+board.Phase+board.Hint);Assert.AreEqual(7,b.LeftHand.Value);Assert.AreEqual(15,b.Health);Assert.AreEqual(1,g.TurnCount);}
@@ -76,7 +76,7 @@ namespace FingerDiceDuel.Tests
    var h=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TempestDomain);h.ClericPolicyFor=p=>new Policy{Counter=false};h.PlayerB.LeftHand.SetValue(4);Hit(h,AttackDamageType.Bludgeoning);Assert.AreEqual(20,h.PlayerA.Health);}
   [Test] public void Tempest_turn_start_operation_is_optional_and_only_changes_digits()
   {var board=Board(CharacterDefinition.TempestDomain,CharacterDefinition.Blank,out var g);g.PlayerA.LeftHand.SetValue(1);g.PlayerB.LeftHand.SetValue(8);g.PlayerA.TakeDamage(5);board.BeginTurn();
-   Assert.True(board.Hint.Contains("风暴启程"));board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(15,g.PlayerA.Health);Assert.AreEqual(0,g.TurnCount);}
+   Assert.True(board.Hint.Contains("风暴之心"));board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(15,g.PlayerA.Health);Assert.AreEqual(0,g.TurnCount);}
   [Test] public void Tinnitus_amplifies_attack_and_periodic_damage_and_prevents_heal_shield()
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.Blank);var b=g.PlayerB;b.ApplyStatus(StatusEffect.Tinnitus,2);Assert.AreEqual(6,Hit(g,AttackDamageType.Fire).AppliedDamage);
    b.Heal(9);Assert.AreEqual(14,b.Health);b.LeftHand.SetValue(2);g.PlayerA.LeftHand.SetValue(3);var r=g.ExecuteTurn(b,b.LeftHand,g.PlayerA.LeftHand);Assert.False(b.LeftHand.IsShield);Assert.AreEqual(HandEffectType.None,r.Effect);
@@ -135,7 +135,7 @@ namespace FingerDiceDuel.Tests
     if(board.Phase==BoardPhase.ChoosingTargetPlayer)board.ClickHand(b.LeftHand);
     else if(board.PendingEffect==HandEffect.SwordsmanFollowUp)board.AcceptPendingChoice();else break;
    }
-   Assert.True(board.Hint.Contains("风暴狂怒"),board.Phase+board.Hint);Assert.AreEqual(20,b.Health);
+   Assert.True(board.Hint.Contains("风暴之怒"),board.Phase+board.Hint);Assert.AreEqual(20,b.Health);
    board.ClickHand(b.LeftHand);board.ChooseSkillOption((int)AttackDamageType.Lightning);Assert.AreEqual(20,b.Health);
    board.ClickHand(a.RightHand);Assert.AreEqual(1,g.TurnCount);Assert.True(board.LastTurn!=null);Assert.True(board.LastTurn.ExtraAttack.HasValue);
    Assert.True(b.Health<16);Assert.False(g.PendingClericResolution);}

@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Core
         /// <summary>圣武士·破誓者持有5时，把整次攻击转移给持完整盾牌的非攻击者。</summary>
         OathbreakerTransfer = 100,
         SchoolOfConjurationCastling = 101,
-        /// <summary>法师·防护学派：是否放弃攻击存储奥术屏障。</summary>
+        /// <summary>法师·防护学派：是否放弃攻击存储奥术守御。</summary>
         SchoolOfAbjurationBarrier = 102,
         SchoolOfAbjurationResistanceTarget = 103,
         SchoolOfAbjurationResistanceType = 104,
@@ -361,7 +361,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 该由谁回答这个抉择。null 表示"由行动方回答"。
         ///
-        /// 大部分抉择是行动方自己的事（锁手、乘风突刺），但有些属于防守方
+        /// 大部分抉择是行动方自己的事（锁手、潇洒气质），但有些属于防守方
         /// （游荡者·风流剑客的闪避）—— 所以不能一律用行动方。由角色在收集时显式指定。
         /// </summary>
         public PlayerState Decider { get; }
@@ -369,7 +369,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// "发动"按钮的文案。非空时 UI 会在"不发动"左侧显示一个发动按钮。
         ///
-        /// 有些抉择只有唯一一个候选（例如战士·剑士的追加攻击、游荡者·风流剑客的乘风突刺），
+        /// 有些抉择只有唯一一个候选（例如战士·剑士的追加攻击、游荡者·风流剑客的潇洒气质），
         /// 这时让玩家去点手牌是很别扭的 —— 给一个明确的按钮更直观。
         /// </summary>
         public string AcceptLabel { get; }

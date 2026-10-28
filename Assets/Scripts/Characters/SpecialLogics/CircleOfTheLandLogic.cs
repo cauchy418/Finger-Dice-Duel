@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             _restricted = hand;
             hand.SetTargetRestricted(this,true);
             var target=manager.OwnerOfHand(hand);
-            manager.NoteSkill(_owner, "大地封锁", $"{target.Name}{(ReferenceEquals(target.LeftHand,hand)?"左手":"右手")}禁作加数，至下次回合开始");
+            manager.NoteSkill(_owner, "大地行者", $"{target.Name}{(ReferenceEquals(target.LeftHand,hand)?"左手":"右手")}禁作加数，至下次回合开始");
             return true;
         }
 
@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (!owner.IsAlive || manager==null) return;
             var hands=new System.Collections.Generic.List<Hand>();
             foreach(var p in manager.Players)if(p.IsAlive)foreach(var h in p.Hands)hands.Add(h);
-            AncientRoleChoices.Offer(AncientRoleChoices.LandSeal,"大地封锁 · 选择禁作加数的一只手",owner,manager,hands,false,false,hand=>RestrictHand(hand,manager));
+            AncientRoleChoices.Offer(AncientRoleChoices.LandSeal,"大地行者 · 选择禁作加数的一只手",owner,manager,hands,false,false,hand=>RestrictHand(hand,manager));
         }
 
         public override void OnOperationResolved(PlayerState owner, Hand actedHand,
@@ -56,10 +56,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                   IPreTurnChoiceSink choiceSink)
         {
             if (owner == null || actedHand == null || actedHand.Value != 3) return;
-            AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"大地束缚 · 选择角色或不发动",owner,manager,
+            AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"自然恢复 · 选择角色或不发动",owner,manager,
                 AncientRoleChoices.OtherPlayers(owner,manager,false),true,true,hand=>{
                     var target=manager.OwnerOfHand(hand);target.ApplyStatus(StatusEffect.Restrained,2,owner);
-                    manager.NoteSkill(owner,"大地束缚",$"{target.Name} 束缚2回合");});
+                    manager.NoteSkill(owner,"自然恢复",$"{target.Name} 束缚2回合");});
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context)

@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Storm_extra_operation_is_optional_and_changes_only_hand_without_healing()
         {
             var board=Board(CharacterDefinition.StormSorcery,CharacterDefinition.Blank,out var g);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Thunder);g.PlayerA.SetHealthExact(12);
-            board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("风暴余势"));Assert.AreEqual(g.PlayerA,board.Chooser);Assert.AreEqual(1,g.TurnCount);
+            board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("暴风魔法"));Assert.AreEqual(g.PlayerA,board.Chooser);Assert.AreEqual(1,g.TurnCount);
             board.ChooseWizardHand(g.PlayerA.LeftHand);g.PlayerB.LeftHand.SetValue(7);board.ChooseWizardHand(g.PlayerB.LeftHand);Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(12,g.PlayerA.Health);Assert.AreEqual(20,g.PlayerB.Health);Assert.AreEqual(1,g.TurnCount);Assert.True(board.PendingWizardChoice==null);
         }
         [Test] public void Storm_extra_operation_can_be_declined_at_each_step()
@@ -169,7 +169,7 @@ namespace FingerDiceDuel.Tests
             var board=Board(CharacterDefinition.StormSorcery,CharacterDefinition.SchoolOfIllusion,out var g);var a=g.PlayerA;var b=g.PlayerB;
             board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Thunder);board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);
             b.LeftHand.SetValue(2);b.RightHand.SetValue(7);Assert.True(board.ChooseWizardHand(a.LeftHand));Assert.True(board.ChooseWizardHand(b.RightHand));
-            Assert.AreEqual(b,board.Chooser);Assert.True(board.Hint.Contains("镜像错位"));Assert.AreEqual(2,a.LeftHand.Value);
+            Assert.AreEqual(b,board.Chooser);Assert.True(board.Hint.Contains("幻术默发"));Assert.AreEqual(2,a.LeftHand.Value);
             Assert.True(board.ChooseSkillOption(1));Assert.AreEqual(4,a.LeftHand.Value);Assert.AreEqual(20,b.Health);Assert.AreEqual(1,g.TurnCount);
         }
         private sealed class FixedTouch:IMoveSelector

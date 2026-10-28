@@ -236,7 +236,7 @@ namespace FingerDiceDuel.Core
             totalReflect = 0;
 
             ReleaseAmbush();
-            context.Manager?.NoteSkill(owner, "伏击免伤", $"抵消本段 {segmentDamage} 伤害，解除伏击");
+            context.Manager?.NoteSkill(owner, "阴影闪避", $"抵消本段 {segmentDamage} 伤害，解除伏击");
             return true;
         }
 

@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Core
                 allowDecline: true,
                 declineResult: null,                        // 放弃 = 不连锁
                 decider: context.Actor,
-                acceptLabel: "发动连锁破盾"));
+                acceptLabel: "破阵强袭"));
         }
 
         public void CollectShieldBreakChoices(PlayerState owner, Hand breakingShield, GameManager game, IList<ChoiceRequest> requests)
@@ -126,11 +126,11 @@ namespace FingerDiceDuel.Core
             if (candidates.Count == 0) return;
             requests.Add(new ChoiceRequest(HandEffect.BreakerChainBreak,
                 "自己的盾将挡下攻击并破碎：可连带打碎场上一面完整盾，或放弃。",
-                ToHands(candidates), allowDecline: true, declineResult: null, decider: owner, acceptLabel: "发动连锁破盾"));
+                ToHands(candidates), allowDecline: true, declineResult: null, decider: owner, acceptLabel: "破阵强袭"));
         }
 
         /// <summary>
-        /// 新增技能结算：若玩家选择了"碎盾换射程"，就把另一只手上的完整盾牌打碎。
+        /// 新增技能结算：若玩家选择了"无畏冲锋"，就把另一只手上的完整盾牌打碎。
         ///
         /// 由 <see cref="GameManager"/> 在**攻击距离检查之前**调用
         /// （见 <see cref="IRangeBreakEffect"/>）——否则来不及生效。
@@ -158,10 +158,10 @@ namespace FingerDiceDuel.Core
             try { manager.BreakActiveShieldAndNotify(actor,other); }
             finally { _resolvingRangeBreak=false; }
             RangeBreakCount++;
-            manager.NoteSkill(actor, "碎盾换射程", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞");
+            manager.NoteSkill(actor, "无畏冲锋", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞");
         }
 
-        /// <summary>构造"碎盾换射程"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
+        /// <summary>构造"无畏冲锋"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
         private static ChoiceRequest BuildRangeBreakRequest(PlayerState actor, Hand shield)
             => new ChoiceRequest(
                 HandEffect.BreakerRangeBreak,
@@ -171,7 +171,7 @@ namespace FingerDiceDuel.Core
                 allowDecline: true,
                 declineResult: null,             // 放弃 = 保留盾
                 decider: actor,
-                acceptLabel: "碎盾换射程");
+                acceptLabel: "无畏冲锋");
 
         /// <summary>
         /// 新增技能：**碎盾换无限距离**。
@@ -192,7 +192,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// "碎盾换射程"可用的那面盾；没有则返回 null。
+        /// "无畏冲锋"可用的那面盾；没有则返回 null。
         ///
         /// 收集与结算共用同一判定，避免一处认得、另一处认不得（踩过的坑）。
         /// </summary>
@@ -278,7 +278,7 @@ namespace FingerDiceDuel.Core
                 if (candidates[i].Shield.State != ShieldState.Formed) return;   // 防御性
                 manager.BreakShieldAndNotify(candidates[i].Owner, candidates[i].Shield, owner);
                 ChainBreakCount++;
-                manager.NoteSkill(owner, "连锁破盾", $"{candidates[i].Owner.Name} {CombatText.HandName(candidates[i].Owner, candidates[i].Shield)}盾破碎");
+                manager.NoteSkill(owner, "破阵强袭", $"{candidates[i].Owner.Name} {CombatText.HandName(candidates[i].Owner, candidates[i].Shield)}盾破碎");
                 return;
             }
             // 选了一个不在候选里 / 已经碎掉的盾 -> 视为放弃
@@ -305,7 +305,7 @@ namespace FingerDiceDuel.Core
             if(candidates.Count==0)return;
             requests.Add(new ChoiceRequest(HandEffect.BreakerRangeChainBreak,
                 "碎盾换射程：先连带打碎一面完整盾，再结算本次攻击；也可不连锁。",
-                ToHands(candidates),allowDecline:true,declineResult:null,decider:owner,acceptLabel:"发动连锁破盾"));
+                ToHands(candidates),allowDecline:true,declineResult:null,decider:owner,acceptLabel:"破阵强袭"));
         }
 
         /// <summary>收集场上所有 `Formed` 的盾（排除 <paramref name="exclude"/> 那一面）。</summary>
@@ -352,7 +352,7 @@ namespace FingerDiceDuel.Core
             if (otherHand != null && otherHand.State == ShieldState.Broken)
             {
                 otherHand.SetShieldState(ShieldState.Formed);
-                manager?.NoteSkill(owner, "修复盾牌", $"{CombatText.HandName(owner, otherHand)}碎盾修复");
+                manager?.NoteSkill(owner, "盾阵重整", $"{CombatText.HandName(owner, otherHand)}碎盾修复");
             }
         }
 

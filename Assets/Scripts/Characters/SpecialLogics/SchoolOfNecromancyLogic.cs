@@ -37,7 +37,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             int count=Math.Min(hands.Count,CharacterFactory.MaxAttackHits(context.Actor)
                 +(((context.Actor?.Character as IExtraAttackProvider)?.WillExtraAttack(context)==true)?1:0));
             for(int i=0;i<count;i++) requests.Add(new ChoiceRequest(HandEffect.SchoolOfNecromancyBlock,
-                $"【死灵抵挡】选择一只2变为1，抵挡第{i+1}段攻击；力场不可挡。",hands,
+                $"【不死适应】选择一只2变为1，抵挡第{i+1}段攻击；力场不可挡。",hands,
                 allowDecline:true,decider:context.Defender,variant:i));
         }
         public bool TryBlockAttack(AttackContext context, GameManager manager, int hitIndex)
@@ -51,7 +51,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             else hand=hands[0];
             if(hand==null || !hands.Contains(hand)) return false;
             hand.SetValue(1);
-            manager?.NoteSkill(context.Defender,"死灵抵挡",$"{CombatText.HandName(context.Defender,hand)}2→1，抵挡第{hitIndex+1}段");
+            manager?.NoteSkill(context.Defender,"不死适应",$"{CombatText.HandName(context.Defender,hand)}2→1，抵挡第{hitIndex+1}段");
             return true;
         }
         public StatusEffect StatusToApplyOnHit(AttackContext context)
@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     if(p.IsAlive && !ReferenceEquals(p,owner) && StatusRules.CanAttackTarget(owner,p,manager)
                         && !((p.Character as IAttackTargetRule)?.IsImmuneToAttack(p)??false)) targets.Add(p.LeftHand);
                 if(targets.Count==0) return;
-                var request=new WizardChoice(owner,"【死灵暗蚀】选择攻击目标；免费攻击不消耗正常行动。",targets,true,picked=>
+                var request=new WizardChoice(owner,"【惧怖收割】选择攻击目标；免费攻击不消耗正常行动。",targets,true,picked=>
                 {
                     if(picked==null) return;
                     PlayerState target=null;
@@ -81,7 +81,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                         AttackType=AttackDamageType.Necrotic, IgnoreStatBonuses=true, IsNecromancyFreeAttack=true };
                     Action resolve=()=> {
                         attack.Resolve(manager.GetChoiceProvider(target),manager);
-                        manager.NoteSkill(owner,"死灵暗蚀",$"对{target.Name}发起1点暗蚀"); manager.RefreshGameOver(); };
+                        manager.NoteSkill(owner,"惧怖收割",$"对{target.Name}发起1点暗蚀"); manager.RefreshGameOver(); };
                     if(manager.DeferWizardAttack?.Invoke(attack,resolve)!=true) resolve();
                 },targetsPlayer:true,declineLabel:"放弃攻击");
                 if(manager.DeferWizardChoice?.Invoke(request)==true) return;
@@ -109,15 +109,15 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var own=new List<Hand>(); var other=new List<Hand>();
             foreach(var h in _owner.Hands) if(!ownUsed.Contains(h)) own.Add(h);
             foreach(var h in dead.Hands) if(!deadUsed.Contains(h)) other.Add(h);
-            var sourceChoice=new WizardChoice(_owner,$"【死者易手】与{dead.Name}交换0～2只手值：选自己的手，或结束。",own,true,source=>
+            var sourceChoice=new WizardChoice(_owner,$"【不死奴仆】与{dead.Name}交换0～2只手值：选自己的手，或结束。",own,true,source=>
             {
                 if(source==null) return;
-                var destination=new WizardChoice(_owner,"【死者易手】选择死者的一只手与所选手交换数字。",other,true,target=>
+                var destination=new WizardChoice(_owner,"【不死奴仆】选择死者的一只手与所选手交换数字。",other,true,target=>
                 {
                     if(target==null || !_owner.IsAlive || manager.IsGameOver) return;
                     int a=source.Value,b=target.Value; source.SetValue(b);target.SetValue(a);
                     ownUsed.Add(source);deadUsed.Add(target);
-                    manager.NoteSkill(_owner,"死者易手",$"与{dead.Name}交换{CombatText.HandName(_owner,source)} {a}↔{b}");
+                    manager.NoteSkill(_owner,"不死奴仆",$"与{dead.Name}交换{CombatText.HandName(_owner,source)} {a}↔{b}");
                     QueueExchange(dead,manager,ownUsed,deadUsed);
                 });
                 if(manager.DeferWizardChoice?.Invoke(destination)==true) return;

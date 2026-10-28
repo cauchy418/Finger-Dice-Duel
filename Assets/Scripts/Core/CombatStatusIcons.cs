@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Core
             if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立10生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
             if(player.IsSummon)result.Add(new CombatStatusIcon("Units/hexbound_specter","咒缚幽灵 · 来源："+player.SummonOwner?.Name+"\n占位计距，AI行动；召唤者死亡或替换时消失，不计胜负存活人数。",""));
             foreach(var spell in CharacterBehaviors.Implementers<IElementEnchantment>(player))
-                if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法附魔 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));
+                if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法武器 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));
             foreach(var song in CharacterBehaviors.Implementers<IBladesong>(player))
                 if(song.Singing)result.Add(new CombatStatusIcon("Effects/bladesong","剑歌 · 攻防+1，"+AttackDamageTypes.NameOf(song.SongElement)+"攻击\n后续自身回合须攻击、合盾或实际回复以维持。",""));
             if(game!=null)foreach(var source in game.Players)
@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
                     if(ReferenceEquals(vow.VowTarget,player))result.Add(new CombatStatusIcon("Effects/vow_of_enmity",
                         "仇敌誓言 · 来源："+source.Name+"\n该来源对你伤害+1，对其他角色−1；你每打碎其一面盾，使其可额外纯运算一次。",""));
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
-                "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；妖魔契约可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
+                "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；黑暗强运可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
                 result.Add(new CombatStatusIcon("Status/"+StatusNames.IconKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),
@@ -56,7 +56,7 @@ namespace FingerDiceDuel.Core
                     :"：不受该类型伤害；魔法伤害对应的附加状态与元素反应也被阻止。一次攻击落地后消耗。"), ""));
             }
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
-                "奥术屏障 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));
+                "奥术守御 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));
             foreach(var resource in CharacterBehaviors.Implementers<IKiResource>(player))
                 result.Add(new CombatStatusIcon("Effects/ki","气 · "+resource.Ki+" / 6\n武僧技能资源；数字为当前气点，不是剩余回合。",resource.Ki.ToString()));
             if(game!=null)

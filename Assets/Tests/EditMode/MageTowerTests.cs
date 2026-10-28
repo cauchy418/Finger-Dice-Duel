@@ -57,14 +57,14 @@ namespace FingerDiceDuel.Tests
                 {
                     int value=0;
                     if(l.LevelNumber==11)value=l.SampleIndex==0?(int)AttackDamageType.Fire:1;
-                    if(l.LevelNumber==18)value=q.Prompt.Contains("镜像错位")?(l.SampleIndex==0?1:0):l.SampleIndex==2?1:0;
+                    if(l.LevelNumber==18)value=q.Prompt.Contains("幻术默发")?(l.SampleIndex==0?1:0):l.SampleIndex==2?1:0;
                     if(l.LevelNumber==15)value=g.TurnCount<=1?(int)StatusEffect.Disabled:g.TurnCount==4?(int)StatusEffect.Charm:0;
                     return b.ChooseSkillOption(value);
                 }
                 if(l.LevelNumber==16)
                 {
                     Hand hand=null;
-                    if(q.Prompt.Contains("免费攻击")||q.Prompt.Contains("死灵暗蚀"))hand=g.TurnCount==0||g.TurnCount==1?l.Soldier.LeftHand:null;
+                    if(q.Prompt.Contains("免费攻击")||q.Prompt.Contains("惧怖收割"))hand=g.TurnCount==0||g.TurnCount==1?l.Soldier.LeftHand:null;
                     if(q.Prompt.Contains("选自己的手"))hand=l.Player.RightHand.Value==3?l.Player.RightHand:null;
                     if(q.Prompt.Contains("选择死者"))hand=l.Soldier.RightHand;
                     return b.ChooseWizardHand(hand);

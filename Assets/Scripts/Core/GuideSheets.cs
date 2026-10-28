@@ -242,7 +242,7 @@ namespace FingerDiceDuel.Core
         public static GuideSheet CharacterMarks()
         {
             var entries = new List<GuideEntry> {
-                new GuideEntry("arcane_barrier", 0x58BFFF, "奥术屏障：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
+                new GuideEntry("arcane_barrier", 0x58BFFF, "奥术守御：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
                 new GuideEntry("ki", 0x82D7C9, "气：武僧·散打宗／四象宗的技能资源，上限6点。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
                 new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark"),
                 new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
@@ -323,7 +323,7 @@ namespace FingerDiceDuel.Core
             character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "21种负面状态；圣光、剑歌、战恩为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
+                "21种负面状态；圣光、剑歌、战争祝福为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

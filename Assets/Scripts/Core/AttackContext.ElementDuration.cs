@@ -6,8 +6,9 @@ namespace FingerDiceDuel.Core
     { None=0,Shield=1,Necromancy=2,Mitigation=4,WholeAttackReduction=8,Transfer=16,Barrier=32,FalseLife=64,Polymorph=128,TypeImmunity=256,Counter=512 }
     public sealed class ElementHit
     {
+        public AttackDamageType AttackType {get;}
         public int Index {get;} public AttackGuard Guard {get;} public bool Resisted {get;} public bool Immune {get;} public int Damage {get;} public int HealthDamage {get;}
-        public ElementHit(int index,AttackGuard guard,bool resisted,bool immune,int damage=0,int healthDamage=0){Index=index;Guard=guard;Resisted=resisted;Immune=immune;Damage=damage;HealthDamage=healthDamage;}
+        public ElementHit(int index,AttackGuard guard,bool resisted,bool immune,int damage=0,int healthDamage=0,AttackDamageType attackType=AttackDamageType.None){AttackType=attackType;Index=index;Guard=guard;Resisted=resisted;Immune=immune;Damage=damage;HealthDamage=healthDamage;}
         public int StatusDuration(StatusEffect status,int original,bool elemental=true)
             => Immune&&elemental?0:StatusNames.IsNegativeStatus(status)?Duration(original,false):original;
         public int Duration(int original,bool elemental=true)=>Immune&&elemental?0:Math.Max(0,original-(Guard!=AttackGuard.None?1:0)-(Resisted?1:0));
@@ -21,7 +22,7 @@ namespace FingerDiceDuel.Core
             |(WasRedirected?AttackGuard.Transfer:AttackGuard.None)
             |(TempestCountered?AttackGuard.Counter:AttackGuard.None);
         private void RecordElementHit(int index,AttackGuard guard,int damage=0,int healthDamage=0)
-            =>_elementHits.Add(new ElementHit(index,guard|WholeGuard|(WasTypeImmune?AttackGuard.TypeImmunity:AttackGuard.None),Defender.HasResistance(AttackType),WasTypeImmune&&AttackDamageTypes.IsMagic(AttackType),damage,healthDamage));
+            =>_elementHits.Add(new ElementHit(index,guard|WholeGuard|(WasTypeImmune?AttackGuard.TypeImmunity:AttackGuard.None),Defender.HasResistance(AttackType),WasTypeImmune&&AttackDamageTypes.IsMagic(AttackType),damage,healthDamage,AttackType));
         private bool _attachedStatusReady;
         private readonly List<Action> _queuedAttachedStatuses=new List<Action>();
         public void ApplyAttachedStatus(PlayerState target,StatusEffect status,int turns,PlayerState source,GameManager game,string skill,bool enchantment=false,bool requireDamage=false,bool requireHealthDamage=false)

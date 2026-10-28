@@ -98,9 +98,9 @@ namespace FingerDiceDuel.Assistant
             abj.SelectedResistance=type;ApplyPreTurnChoiceAndContinue(null);return true;
         }
 
-        // ---------- 战士·战斗大师：战斗招式（与防护抗性同一模式：答案存角色侧） ----------
+        // ---------- 战士·战斗大师：卓越战技（与法术抗性同一模式：答案存角色侧） ----------
 
-        /// <summary>当前待答的战斗招式可选项（无则空数组；供 UI 渲染按钮）。</summary>
+        /// <summary>当前待答的卓越战技可选项（无则空数组；供 UI 渲染按钮）。</summary>
         public StatusEffect[] BattleMasterManeuverOptions
         {
             get
@@ -112,7 +112,7 @@ namespace FingerDiceDuel.Assistant
             }
         }
 
-        /// <summary>玩家在战斗招式面板选定一种状态后由 UI 调用。</summary>
+        /// <summary>玩家在卓越战技面板选定一种状态后由 UI 调用。</summary>
         public bool ChooseBattleMasterManeuver(StatusEffect status)
         {
             if(PendingEffect!=HandEffect.BattleMasterManeuver) return false;
@@ -127,7 +127,7 @@ namespace FingerDiceDuel.Assistant
             return true;
         }
 
-        /// <summary>玩家在战斗招式面板点「不发动」（与"没问过"区分，结算不再走 AI 默认）。</summary>
+        /// <summary>玩家在卓越战技面板点「不发动」（与"没问过"区分，结算不再走 AI 默认）。</summary>
         public bool DeclineBattleMasterManeuver()
         {
             if(PendingEffect!=HandEffect.BattleMasterManeuver) return false;

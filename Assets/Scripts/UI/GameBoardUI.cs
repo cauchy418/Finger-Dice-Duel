@@ -1247,7 +1247,7 @@ namespace FingerDiceDuel.UI
             if (rect == null) return;
 
             _gambleButton = CreateButton(_canvasRoot, "GambleButton",
-                                         Vector2.zero, new Vector2(160f, 56f), "开赌");
+                                         Vector2.zero, new Vector2(160f, 56f), "命运赌博");
             _gambleButton.GetComponent<Image>().color = new Color(0.62f, 0.42f, 0.16f);
             _gambleButton.onClick.AddListener(() => { GambleClicked?.Invoke(); });
 
@@ -1306,7 +1306,7 @@ namespace FingerDiceDuel.UI
             if (rect == null) return;
 
             _stealButton = CreateButton(_canvasRoot, "StealButton",
-                                        Vector2.zero, new Vector2(160f, 56f), "偷窃");
+                                        Vector2.zero, new Vector2(160f, 56f), "快手");
             // 深紫色 —— 与开赌（棕）、跳过（灰）区分开
             _stealButton.GetComponent<Image>().color = new Color(0.42f, 0.20f, 0.52f);
             _stealButton.onClick.AddListener(() => { StealClicked?.Invoke(); });
@@ -1395,7 +1395,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"不发动"按钮。
         ///
-        /// 角色的抉择可能允许放弃（游荡者·风流剑客的闪避、乘风突刺、野蛮人·守望者道途的锁手），
+        /// 角色的抉择可能允许放弃（游荡者·风流剑客的闪避、潇洒气质、野蛮人·守望者道途的锁手），
         /// 这时必须给玩家一个明确的"放弃"出口，否则他会以为必须选一张手牌。
         /// </summary>
         public void SetDeclineButtonVisible(bool visible)
@@ -1417,7 +1417,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"发动"按钮。
         ///
-        /// 只有一个候选的抉择（战士·剑士追加攻击、游荡者·风流剑客乘风突刺）用按钮比"点手牌"直观得多，
+        /// 只有一个候选的抉择（战士·剑士追加攻击、游荡者·风流剑客潇洒气质）用按钮比"点手牌"直观得多，
         /// 所以这类抉择会在"不发动"左侧显示一个发动按钮。
         /// </summary>
         public void SetAcceptButtonVisible(bool visible)

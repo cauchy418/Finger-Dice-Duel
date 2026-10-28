@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Assistant
         public static string BattleName(int number)
             => new[] { "初战", "次战", "三战", "四战", "五战", "六战", "七战", "八战", "九战", "终战" }[number - 1];
         public static string Hint(int number)
-            => new[] { "攻击 / 合盾 / 回复", "勇士 · 十点重击", "破阵者 · 连锁 / 修复 / 流血",
+            => new[] { "攻击 / 合盾 / 回复", "勇士 · 精通重击", "破阵者 · 连锁 / 修复 / 流血",
                 "座位距离 / 碎盾换射程", "经典先攻 / 自由实战", "魔射手 · 穿盾 / 增伤 / 连击",
                 "战斗大师 · 四种招式状态", "剑士 · 追加与主攻击", "战术家 · 体力差与攻防", "自由选角 / 经典骑士试炼" }[number - 1];
         public static CharacterDefinition PlayerDefinition(int number)

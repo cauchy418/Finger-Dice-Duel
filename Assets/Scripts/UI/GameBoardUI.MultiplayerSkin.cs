@@ -135,7 +135,7 @@ namespace FingerDiceDuel.UI
             if (Visible(_acceptButton))
             {
                 if (_skillEffect == HandEffect.SwashbucklerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
-                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "乘风突刺 · 2→3";
+                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "潇洒气质 · 2→3";
             }
             if (Visible(_skipButton))
                 _skipButton.GetComponentInChildren<Text>().text = _skillActor?.Character is IAttackTargetRule rule && rule.IsImmuneToAttack(_skillActor)

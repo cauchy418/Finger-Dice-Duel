@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Assistant
                 if(!Guided||_board.PendingSkillOptions.Count==0)return null;
                 if(_level==11)return SampleIndex==0?(int)AttackDamageType.Fire:1;
                 if(_level==15)return _game.TurnCount<=1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
-                if(_level==18)return _board.PendingWizardChoice?.Prompt.Contains("镜像错位")==true?(SampleIndex==0?1:0):SampleIndex==2?1:0;
+                if(_level==18)return _board.PendingWizardChoice?.Prompt.Contains("幻术默发")==true?(SampleIndex==0?1:0):SampleIndex==2?1:0;
                 return null;
             }
         }
@@ -105,7 +105,7 @@ namespace FingerDiceDuel.Assistant
                 if(RequiredHand(out var h,out bool target))return h==null?"本步选择【"+(_board.PendingWizardChoice?.DeclineLabel??"不发动")+"】。"
                     :"本步选择【"+_game.OwnerOfHand(h).Name+(target?"":"·"+CombatText.HandName(_game.OwnerOfHand(h),h)+h.Value)+"】。";
                 if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return _game.TurnCount==0?"本步点击【放弃本次攻击】，随后指定类型。":"本步点击【继续攻击】，使用已存储的元素。";
-                if(_board.PendingEffect==HandEffect.SchoolOfAbjurationBarrier)return "本步点击【存储奥术屏障】。";
+                if(_board.PendingEffect==HandEffect.SchoolOfAbjurationBarrier)return "本步点击【存储奥术守御】。";
                 return "";
             }
         }

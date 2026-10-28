@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Assistant
         ChoosingDefenseShield = 2,
 
         /// <summary>
-        /// 回答角色提出的"运算前抉择"（野蛮人·守望者道途锁手、牧师·生命领域回血目标、游荡者·风流剑客闪避 / 乘风突刺……）。
+        /// 回答角色提出的"运算前抉择"（野蛮人·守望者道途锁手、牧师·生命领域回血目标、游荡者·风流剑客闪避 / 潇洒气质……）。
         /// 由角色通过 <see cref="IPreTurnChoiceProvider"/> 自己声明，
         /// 控制器不认识任何具体角色类型。
         /// </summary>
@@ -1335,7 +1335,7 @@ namespace FingerDiceDuel.Assistant
         ///
         /// 目前两个来源（都是"本次攻击距离无限"）：
         ///   · 战士·破阵者碎盾换射程（<see cref="HandEffect.BreakerRangeBreak"/>）
-        ///   · 游荡者·风流剑客乘风突刺（<see cref="HandEffect.SwashbucklerDuelistThrust"/>）
+        ///   · 游荡者·风流剑客潇洒气质（<see cref="HandEffect.SwashbucklerDuelistThrust"/>）
         ///
         /// 判定必须**同时看 sink 与控制器记录**：
         /// 人类玩家的答案在 sink 里，AI 的答案在 <c>_answeredThisTurn</c> 里 ——
@@ -3308,7 +3308,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// "发动"按钮的文案（空 = 不显示）。
         ///
-        /// 有些抉择只有一个候选（战士·剑士的追加攻击、游荡者·风流剑客的乘风突刺），
+        /// 有些抉择只有一个候选（战士·剑士的追加攻击、游荡者·风流剑客的潇洒气质），
         /// 让玩家去点手牌很别扭，所以给一个明确的发动按钮。
         /// </summary>
         public string PendingAcceptLabel
@@ -3326,7 +3326,7 @@ namespace FingerDiceDuel.Assistant
             if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsAccept)return false;
             if(PendingRequest?.Options.Count>0) return false;
             if(PendingEffect==HandEffect.SchoolOfAbjurationResistanceType) return false;
-            // 战斗招式必须走专属面板（2 选 1 + 不发动），不接受"发动"按钮直接跳过。
+            // 卓越战技必须走专属面板（2 选 1 + 不发动），不接受"发动"按钮直接跳过。
             if(PendingEffect==HandEffect.BattleMasterManeuver) return false;
             if (!IsInChoicePhase) return false;
             if (_pendingRequestIndex >= _pendingRequests.Count) return false;

@@ -40,10 +40,10 @@ namespace FingerDiceDuel.Characters
         static CharacterCodex()
         {
             Add(CharacterDefinition.ChampionId, "Champion", Alignment.NeutralGood,
-                shortSkill: "十点重击：运算后双手和10，发起攻击的基础伤害×1.5。",
+                shortSkill: "精通重击：运算后双手和10，发起攻击的基础伤害×1.5。",
                 playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
                 counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
-                interactions: new[] { "与忍宗双将：十点重击先乘基础伤害，再分段计算攻防。" });
+                interactions: new[] { "与忍宗双将：精通重击先乘基础伤害，再分段计算攻防。" });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulEvil,
                 shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
@@ -56,10 +56,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.SchoolOfConjurationId, "School of Conjuration", Alignment.LawfulNeutral,
-                shortSkill: "空间刃穿盾、正防与闪避；王车易位：同手值换座并跳过。",
+                shortSkill: "次级咒术穿盾、正防与闪避；王车易位：同手值换座并跳过。",
                 playGuide: "优先合8/6/4。王车易位：点击技能后选双手值相同的存活角色（4/6同6/4），换座并跳过；不限距离，取消不耗回合，冻结不能用。",
-                counter: "盾、闪避、太极与伏击挡不住空间刃，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
-                interactions: new[] { "与太极宗：空间刃不减半、不反弹，也不消耗太极手。", "与幽域追踪者：空间刃穿透伏击，但不解除暗置。" });
+                counter: "盾、闪避、太极与伏击挡不住次级咒术，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
+                interactions: new[] { "与太极宗：次级咒术不减半、不反弹，也不消耗太极手。", "与幽域追踪者：次级咒术穿透伏击，但不解除暗置。" });
 
             Add(CharacterDefinition.PathOfTheWardenId, "Path of the Warden", Alignment.ChaoticGood,
                 shortSkill: "合出盾时可控制对手一只手，盾碎时解锁。",
@@ -82,7 +82,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。"
-                         + "乘风突刺同时把距离变成∞ —— 够不到远处对手时这是解法。",
+                         + "潇洒气质同时把距离变成∞ —— 够不到远处对手时这是解法。",
                 counter: "别给他 1 与 2 —— 那是他闪避与强化的原料。"
                        + "面对咒法学派时他的 1 完全无效（攻击不可闪避）。",
                 interactions: new[] { "与太极宗：反弹可以被闪避；多段攻击每段分别消耗一只1。" });
@@ -122,7 +122,7 @@ namespace FingerDiceDuel.Characters
                          + "⚠️ 开局直接摆出的双 7 不算潜行，必须经运算达成。",
                 counter: "别给他 7（那是潜行的种子）。"
                        + "他潜行期间无法被选中，所以趁他没进潜行时压血线。",
-                interactions: new[] { "与咒法学派：潜行不能被选为攻击目标；空间刃不能绕过目标选择。" });
+                interactions: new[] { "与咒法学派：潜行不能被选为攻击目标；次级咒术不能绕过目标选择。" });
 
             Add(CharacterDefinition.OathOfDevotionId, "Oath of Devotion", Alignment.LawfulGood,
                 shortSkill: "4/5/6 都合盾，且合盾 / 碎盾时额外打出 2 点冲击。",
@@ -133,7 +133,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
-                shortSkill: "妖精戏法：手上留着与对手攻击数字相同的牌即可取消该攻击。",
+                shortSkill: "妖精仪态：手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
                          + "比对方少 8 以上才值得。",
@@ -159,7 +159,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.OathOfTheCrownId, "Oath of the Crown", Alignment.LawfulGood,
-                shortSkill: "王冠威仪：自己的盾破碎后，攻击距离与攻击加成永久一起 +1。",
+                shortSkill: "神圣誓忠：自己的盾破碎后，攻击距离与攻击加成永久一起 +1。",
                 playGuide: "碎盾是成长，不是损失 —— 碎一次距离变 2、加成变 2。"
                          + "所以主动去打会被破盾的仗，越打越强。",
                 counter: "别给他 5（合成 5 就是给他一面可碎的盾），"
@@ -173,7 +173,7 @@ namespace FingerDiceDuel.Characters
                          + "自己的 0 被他人当加数触碰后会立刻变成 1。",
                 counter: "别给他 5。一个太极只夹住一段，其余照常吃 ——"
                        + "多段攻击打他反而赚；咒法学派打他则完全失效。",
-                interactions: new[] { "与咒法学派：空间刃不触发太极，不消耗5。", "与风流剑客：反弹可以被闪避。" });
+                interactions: new[] { "与咒法学派：次级咒术不触发太极，不消耗5。", "与风流剑客：反弹可以被闪避。" });
 
             Add(CharacterDefinition.PathOfTheGiantId, "Path of the Giant", Alignment.ChaoticEvil,
                 shortSkill: "4/6/8 完全无效果、5 不合盾；5 是两段攻击、9 是两段回复。",
@@ -196,14 +196,14 @@ namespace FingerDiceDuel.Characters
 
             // ---- 幽域追踪者（混乱善良）----
             Add(CharacterDefinition.GloomStalkerId, "Gloom Stalker", Alignment.ChaoticGood,
-                shortSkill: "幽域伏击：运算后两手同为 1/2/3 时，可暗置那只手进入伏击。",
+                shortSkill: "恐惧伏击：运算后两手同为 1/2/3 时，可暗置那只手进入伏击。",
                 playGuide: "点【伏击】把参与运算的那只手暗置：它不能再运算、"
                          + "对手也点不到，但数值可见。"
                          + "伏击期间另一只手照常行动，攻击 +1、距离 3；"
                          + "挨打时恢复那只手并挡下伤害。",
                 counter: "数值可见，能预判他的伏击回合；"
                        + "伏击只有一次，逼他提早用掉即可。",
-                interactions: new[] { "与咒法学派：空间刃穿透伏击，且不解除暗置。", "双将有太极与伏击时：先太极，再伏击。" });
+                interactions: new[] { "与咒法学派：次级咒术穿透伏击，且不解除暗置。", "双将有太极与伏击时：先太极，再伏击。" });
 
             // ---- 魔术师（混乱中立）----
             Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticNeutral,
@@ -244,7 +244,7 @@ namespace FingerDiceDuel.Characters
 
             // ---- 旧日支配者（中立邪恶）----
             Add(CharacterDefinition.TheGreatOldOneId, "The Great Old One", Alignment.NeutralEvil,
-                shortSkill: "异界疏离：命中的攻击令你与目标之间的距离 +2，持续他两个回合；"
+                shortSkill: "思维之盾：命中的攻击令你与目标之间的距离 +2，持续他两个回合；"
                           + "射程∞。",
                 playGuide: "射程∞，站位不用管。打中就把他推开两格，"
                          + "他射程不够时这两个回合根本打不到你。"
@@ -256,7 +256,7 @@ namespace FingerDiceDuel.Characters
 
             // ---- 勇气学院（守序善良）----
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
-                shortSkill: "勇气战歌：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
+                shortSkill: "战斗激励：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
                           + "加/减攻防 ±(4-人数)。",
                 playGuide: "每次行动结算完，若本回合受过伤或回过血就会问你要不要发动。"
                          + "先选增幅/削弱 攻击/防御，再选人数（1 人 ±3、2 人 ±2、3 人 ±1），"
@@ -312,10 +312,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与生命领域：回复先净化圣光，再按全额治疗。", "双将的追加、反弹、免费暗蚀不改成固定4点，也不附圣光。" });
 
             Add(CharacterDefinition.WarDomainId,"War Domain",Alignment.LawfulNeutral,
-                shortSkill:"回合开始按攻击手数，最多赐予两名不同角色战恩2回合。",
-                playGuide:"可以选自己或队友，少选或不发动。战恩攻防+1，9可放弃回复改为攻击；持战恩时9也提供施恩次数。",
-                counter:"圣光清除并阻止战恩；减少其回合开始时的攻击数字，压低施恩次数。",
-                interactions:new[]{"战恩不叠加，重复施加刷新；本次最多两名不同目标。"});
+                shortSkill:"回合开始按攻击手数，最多赐予两名不同角色战争祝福2回合。",
+                playGuide:"可以选自己或队友，少选或不发动。战争祝福攻防+1，9可放弃回复改为攻击；持战争祝福时9也提供施恩次数。",
+                counter:"圣光清除并阻止战争祝福；减少其回合开始时的攻击数字，压低施恩次数。",
+                interactions:new[]{"战争祝福不叠加，重复施加刷新；本次最多两名不同目标。"});
 
             Add(CharacterDefinition.BattleMasterId, "Battle Master", Alignment.LawfulNeutral,
                 shortSkill: "4=挥砍、6=钝击、8=穿刺；造成伤害后按另一手附加流血/跛脚或震慑/倒伏。",
@@ -365,7 +365,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"记录1～9；集齐可成长，消耗对应记录可减伤。",
                 playGuide:"打出新数自动记录；集齐后选成长或保留。受击时选择清除对应记录减半，或保留。",
                 counter:"留意其已有记录；换数字攻击，逼其消耗成长进度。",
-                interactions:new[]{"风暴余势只改手值，不触发记录。"});
+                interactions:new[]{"暴风魔法只改手值，不触发记录。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
                 shortSkill:"选永久雷抗；攻击30%闪电、30%雷鸣，行动后可无效果运算。",
                 playGuide:"开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
@@ -406,12 +406,12 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
                 shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
             Add(CharacterDefinition.TrickeryDomainId,"Trickery Domain",Alignment.ChaoticNeutral,
-                "诡诈换位：借手逢2，可换数字并魅惑。",
+                "诡术祝福：借手逢2，可换数字并魅惑。",
                 "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
                 "避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
-                new[]{"幻术先改加数，再判诡诈换位；换入的数字不重复受运算倍率影响。"});
+                new[]{"幻术先改加数，再判诡术祝福；换入的数字不重复受运算倍率影响。"});
             Add(CharacterDefinition.TempestDomainId,"Tempest Domain",Alignment.ChaoticNeutral,
-                "风暴狂怒：持4可先反击，再纯运算。",
+                "风暴之怒：持4可先反击，再纯运算。",
                 "开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
                 "避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
                 new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});

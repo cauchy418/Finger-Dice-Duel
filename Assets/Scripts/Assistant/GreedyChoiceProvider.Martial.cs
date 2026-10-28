@@ -97,6 +97,19 @@ namespace FingerDiceDuel.Assistant
             return score;
         }
 
+        public override PlayerState HunterVolleyTarget(PlayerState owner, IReadOnlyList<PlayerState> candidates, GameManager game)
+        {
+            PlayerState best = null; double bestScore = double.MinValue;
+            foreach (var target in candidates)
+            {
+                if (!target.IsAlive || game.IsKnownAlly(owner, target)) continue;
+                double score = (target.MaximumHealth - target.Health) * 3 - target.Health;
+                if (target.HasStatus(StatusEffect.Panic)) score += 3;
+                if (score > bestScore) { bestScore = score; best = target; }
+            }
+            return best;
+        }
+
         public override PlayerState HunterMarkTarget(PlayerState owner,IReadOnlyList<PlayerState> candidates,GameManager game)
         {
             PlayerState best=null;int bestScore=int.MinValue;

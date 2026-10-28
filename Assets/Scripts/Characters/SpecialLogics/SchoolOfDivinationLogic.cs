@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             Hand other = ReferenceEquals(actedHand, owner.LeftHand) ? owner.RightHand : owner.LeftHand;
             _snapshotValue = other?.Value ?? 0;
             _windowActive = true;
-            manager?.NoteSkill(owner, "预言", $"7 窗口开启：另一只手 {_snapshotValue}");
+            manager?.NoteSkill(owner, "预兆", $"7 窗口开启：另一只手 {_snapshotValue}");
         }
 
         public void OnTurnStarted(PlayerState owner, GameManager manager)
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (_windowActive && ReferenceEquals(owner, _owner))
             {
                 _windowActive = false;
-                manager?.NoteSkill(owner, "预言", "7 窗口结束");
+                manager?.NoteSkill(owner, "预兆", "7 窗口结束");
             }
         }
 
@@ -60,8 +60,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             reason = null;
             if (!CanInvalidateAction(owner, actor)) return false;
 
-            reason = $"{actor.Name} 的手牌 {_snapshotValue} 与预言快照相同";
-            manager?.NoteSkill(owner, "预言", reason);
+            reason = $"{actor.Name} 的手牌 {_snapshotValue} 与预兆相同";
+            manager?.NoteSkill(owner, "预兆", reason);
             return true;
         }
 

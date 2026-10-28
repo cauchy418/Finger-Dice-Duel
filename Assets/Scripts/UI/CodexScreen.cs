@@ -36,6 +36,7 @@ namespace FingerDiceDuel.UI
 
         /// <summary>详细技能描述。</summary>
         public string DetailSkill;
+        public bool UsesNormalizedSkills;
 
         /// <summary>操作指导。</summary>
         public string PlayGuide;
@@ -395,8 +396,8 @@ namespace FingerDiceDuel.UI
             _emblem.sprite = BattleArt.Get("Subclasses/" + c.Id);
             RefreshDruidGallery(c.Id);
             var sb = new StringBuilder();
-            Section(sb, "技能", c.ShortSkill);
-            Section(sb, "技能详解", c.DetailSkill);
+            if (c.UsesNormalizedSkills) Section(sb, "职业与技能", c.DetailSkill);
+            else { Section(sb, "技能", c.ShortSkill); Section(sb, "技能详解", c.DetailSkill); }
             Section(sb, "操作指导", c.PlayGuide);
             Section(sb, "如何针对", c.Counter);
             if (c.Interactions != null && c.Interactions.Count > 0) Section(sb, "与其他角色的特殊交互", string.Join("\n", c.Interactions));

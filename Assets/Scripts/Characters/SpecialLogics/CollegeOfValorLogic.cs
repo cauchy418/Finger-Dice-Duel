@@ -106,7 +106,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 applied++;
                 string effectName = attackOffset != 0 ? "攻击" : "防御";
                 int delta = attackOffset != 0 ? attackOffset : defenseOffset;
-                manager.NoteSkill(collegeOfValor, "勇气战歌", $"{t.Name} {effectName}{delta:+0;-0;0}，持续至下次发动或自身阵亡");
+                manager.NoteSkill(collegeOfValor, "战斗激励", $"{t.Name} {effectName}{delta:+0;-0;0}，持续至下次发动或自身阵亡");
             }
 
             return applied;

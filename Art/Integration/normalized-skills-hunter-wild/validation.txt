@@ -1,0 +1,32 @@
+PASS codex role exists fighter_arcane_archer
+PASS actual codex uses Chinese canonical skill and bare passive label fighter_arcane_archer
+PASS codex scroll content includes complete copy fighter_arcane_archer
+PASS codex role exists fighter_battle_master
+PASS actual codex uses Chinese canonical skill and bare passive label fighter_battle_master
+PASS codex scroll content includes complete copy fighter_battle_master
+PASS codex role exists fighter_eldritch_knight
+PASS actual codex uses Chinese canonical skill and bare passive label fighter_eldritch_knight
+PASS codex scroll content includes complete copy fighter_eldritch_knight
+PASS codex role exists ranger_hunter
+PASS actual codex uses Chinese canonical skill and bare passive label ranger_hunter
+PASS codex scroll content includes complete copy ranger_hunter
+PASS codex role exists cleric_life_domain
+PASS actual codex uses Chinese canonical skill and bare passive label cleric_life_domain
+PASS codex scroll content includes complete copy cleric_life_domain
+PASS codex role exists paladin_oath_of_the_ancients
+PASS actual codex uses Chinese canonical skill and bare passive label paladin_oath_of_the_ancients
+PASS codex scroll content includes complete copy paladin_oath_of_the_ancients
+PASS codex role exists wizard_school_of_abjuration
+PASS actual codex uses Chinese canonical skill and bare passive label wizard_school_of_abjuration
+PASS codex scroll content includes complete copy wizard_school_of_abjuration
+PASS codex role exists sorcerer_wild_magic
+PASS actual codex uses Chinese canonical skill and bare passive label sorcerer_wild_magic
+PASS codex scroll content includes complete copy sorcerer_wild_magic
+PASS all four monk entries keep original format
+PASS real 2v2 pauses for optional hunter extra target
+PASS target button shows player name without hand suffix
+PASS hunter decline button is visible and enabled
+PASS raycast SkillChoice0
+PASS clicking actual hunter target button resolves one extra attack without an extra turn
+PASS deterministic fire then lightning sample found
+PASS independent mixed types produce both actual battle status icons

@@ -255,10 +255,10 @@ namespace FingerDiceDuel.UI
             switch (_step)
             {
                 case Step.Kind:
-                    _title.text = "【勇气战歌】选择效果";
+                    _title.text = "【战斗激励】选择效果";
                     break;
                 case Step.Count:
-                    _title.text = "【勇气战歌】选择人数与强度";
+                    _title.text = "【战斗激励】选择人数与强度";
                     break;
                 default:
                     _title.text = $"选择 {_wantCount} 个目标（已选 {_selected.Count}）"

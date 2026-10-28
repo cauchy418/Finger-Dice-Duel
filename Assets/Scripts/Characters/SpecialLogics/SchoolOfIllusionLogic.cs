@@ -21,7 +21,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(!context.IsAttack||!CharacterBehaviors.ActorHas(context.Defender,this))return;_defend=null;
             if(Smaller(context.Defender)==null||!NewSubclassChoices.NormalDamageCanBeReduced(context))return;
-            requests.Add(new ChoiceRequest(HandEffect.SchoolOfIllusionDefense,"镜像折光",null,decider:context.Defender,
+            requests.Add(new ChoiceRequest(HandEffect.SchoolOfIllusionDefense,"幻影实体",null,decider:context.Defender,
                 options:NewSubclassChoices.YesNo("小手变2 · 减半","Subclasses/wizard_school_of_illusion"),
                 applyOption:v=>_defend=v==1,optionKey:NewSubclassChoices.IllusionDefense));
         }
@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var smaller=Smaller(context.Defender);if(smaller==null||context.IgnoreIncomingModifiers||context.IsStatusDamage)return;
             bool use=_defend==true;if(game?.AnsweredLookupFor==null)use=SkillChoicePolicy.Choose(NewSubclassChoices.IllusionDefense,NewSubclassChoices.YesNo("减伤","Subclasses/wizard_school_of_illusion"),context.Defender,context.Attacker,game)==1;
             _defend=null;if(!use)return;int before=smaller.Value;smaller.SetValue(2);context.HalveWholeAttackDamage();
-            game?.NoteSkill(context.Defender,"镜像折光",$"{CombatText.HandName(context.Defender,smaller)}{before}→2，本次伤害减半");
+            game?.NoteSkill(context.Defender,"幻影实体",$"{CombatText.HandName(context.Defender,smaller)}{before}→2，本次伤害减半");
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>(context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
     }

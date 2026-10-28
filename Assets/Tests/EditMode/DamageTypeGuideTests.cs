@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Tests
         public void Status_list_contains_all_twenty_one_statuses()
         {
             Assert.AreEqual(23, StatusNames.AllStatuses.Length,
-                "包含圣光、战恩等23种计时状态；剑歌按独立技能维持。");
+                "包含圣光、战争祝福等23种计时状态；剑歌按独立技能维持。");
         }
 
         [Test]

@@ -55,7 +55,7 @@ namespace FingerDiceDuel.UI
         private static List<string> ReadableTokens(string value)
         {
             var tokens=new List<string>();string opening="";
-            foreach(System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(value,@"束缚|油腻|倒伏|圣光|燃烧|残响|强酸|中毒|目盲|腐朽|覆霜|感电|恐慌|流血|潮湿|冻结|震慑|跛脚|魅惑|失能|眩晕|基础伤害|攻击|运算|左手|右手|队友|对手|教官|老兵|目标|确认|点数|[+−-]?\d+(?:[/.～→+−×]\d+)*(?:回合|生命|点|层|%)?|[A-Za-z]+|."))
+            foreach(System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(value,@"被动技能|主动技能|战争祝福|职业|子职|束缚|油腻|倒伏|圣光|燃烧|残响|强酸|中毒|目盲|腐朽|覆霜|感电|恐慌|流血|潮湿|冻结|震慑|跛脚|魅惑|失能|眩晕|基础伤害|攻击|运算|左手|右手|队友|对手|教官|老兵|目标|确认|点数|[+−-]?\d+(?:[/.～→+−×]\d+)*(?:回合|生命|点|层|%)?|[A-Za-z]+|."))
             {
                 string token=match.Value;
                 if("（《【「『(".Contains(token)){opening+=token;continue;}

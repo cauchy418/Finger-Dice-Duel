@@ -14,9 +14,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             var targets=new List<PlayerState>();foreach(var p in game.Players)
                 if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&ArcaneChoices.MatchingHands(owner,p))targets.Add(p);
-            ArcaneChoices.Target(ArcaneChoices.Transmute,"变化术 · 选择双手数字相同的角色变羊2回合",owner,game,targets,target=>{
+            ArcaneChoices.Target(ArcaneChoices.Transmute,"变形术 · 选择双手数字相同的角色变羊2回合",owner,game,targets,target=>{
                 if(!ArcaneChoices.MatchingHands(owner,target)||!target.TryPolymorph())return;
-                game.NoteSkill(owner,"变化术",$"{target.Name} 变羊2回合（10/10，−2/−2，距离1）");});
+                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（10/10，−2/−2，距离1）");});
         }
         public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==context.OtherHandValue?8:0;
     }
@@ -35,8 +35,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var options=new List<SkillChoiceOption>();foreach(var status in new[]{StatusEffect.Disabled,StatusEffect.Charm})
                 options.Add(new SkillChoiceOption((int)status,StatusNames.Of(status),"Status/"+StatusNames.IconKeyOf(status),"基础2回合，格挡／对应抗性各−1；之后实际掉血解除。"));
             options.Add(new SkillChoiceOption(0,"不发动","Subclasses/wizard_school_of_enchantment"));
-            ArcaneChoices.Option(ArcaneChoices.Enchantment,"惑控心智 · 对"+target.Name+"施加失能或魅惑",owner,target,game,options,value=>{
-                if(value==0||!target.IsAlive)return;attack.ApplyAttachedStatus(target,(StatusEffect)value,2,owner,game,"惑控心智",enchantment:true,requireHealthDamage:true);});
+            ArcaneChoices.Option(ArcaneChoices.Enchantment,"催眠凝视 · 对"+target.Name+"施加失能或魅惑",owner,target,game,options,value=>{
+                if(value==0||!target.IsAlive)return;attack.ApplyAttachedStatus(target,(StatusEffect)value,2,owner,game,"催眠凝视",enchantment:true,requireHealthDamage:true);});
         }
     }
 
@@ -62,20 +62,20 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
         public override void OnOtherShieldBroken(PlayerState owner,Hand hand,GameManager game)=>Broken(owner,game);
         private void Broken(PlayerState owner,GameManager game)
-            =>ArcaneChoices.Option(ArcaneChoices.KnightElement,"奥法附魔 · 选择下一次攻击的元素",owner,null,game,ArcaneChoices.Elements("保留当前附魔"),value=>Set((AttackDamageType)value,owner,game));
+            =>ArcaneChoices.Option(ArcaneChoices.KnightElement,"奥法武器 · 选择下一次攻击的元素",owner,null,game,ArcaneChoices.Elements("保留当前附魔"),value=>Set((AttackDamageType)value,owner,game));
         private void Set(AttackDamageType type,PlayerState owner,GameManager game)
-        {if(type==AttackDamageType.None)return;Enchantment=type;game.NoteSkill(owner,"奥法附魔","下次攻击改为"+AttackDamageTypes.NameOf(type));}
+        {if(type==AttackDamageType.None)return;Enchantment=type;game.NoteSkill(owner,"奥法武器","下次攻击改为"+AttackDamageTypes.NameOf(type));}
         public void OnAttackDamageTaken(PlayerState owner,AttackContext ctx,GameManager game)
         {
             if(ctx.ActualHealthDamage<=0||!AttackDamageTypes.IsMagic(ctx.AttackType))return;
             var options=NewSubclassChoices.YesNo("记忆 · "+AttackDamageTypes.NameOf(ctx.AttackType),"Damage/"+AttackDamageTypes.IconKeyOf(ctx.AttackType),"保留当前附魔");
-            ArcaneChoices.Option(ArcaneChoices.KnightCopy,"魔能回响 · 是否记录此次伤害类型",owner,ctx.Attacker,game,options,v=>{if(v==1)Set(ctx.AttackType,owner,game);});
+            ArcaneChoices.Option(ArcaneChoices.KnightCopy,"法术回响 · 是否记录此次伤害类型",owner,ctx.Attacker,game,options,v=>{if(v==1)Set(ctx.AttackType,owner,game);});
         }
         public override void OnResolveAttack(AttackContext ctx)
         {
             if(ctx.IsStatusDamage||ctx.IsReflected||Enchantment==AttackDamageType.None)return;
             ctx.AttackType=Enchantment;Enchantment=AttackDamageType.None;
-            ctx.Manager?.NoteSkill(ctx.Attacker,"奥法附魔",AttackDamageTypes.NameOf(ctx.AttackType)+"攻击，消耗附魔");
+            ctx.Manager?.NoteSkill(ctx.Attacker,"奥法武器",AttackDamageTypes.NameOf(ctx.AttackType)+"攻击，消耗附魔");
         }
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>Enchantment!=AttackDamageType.None?Enchantment:AttackDamageType.Slashing;
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>ArcaneChoices.ElementStatus(ctx.AttackType);

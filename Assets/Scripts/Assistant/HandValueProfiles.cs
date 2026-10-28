@@ -67,7 +67,7 @@ namespace FingerDiceDuel.Assistant
 
         private static void BuildOwn()
         {
-            // ---- 战士·勇士（攻+1 / 防0，十点重击）：基础权重；斩杀线由 ChampionLogic 按运算后和10估算 ----
+            // ---- 战士·勇士（攻+1 / 防0，精通重击）：基础权重；斩杀线由 ChampionLogic 按运算后和10估算 ----
             Own[CharacterDefinition.ChampionId] = new HandValueProfile();
             // 王冠之誓沿用既有基线，显式登记避免新增角色无意走回退。
             Own[CharacterDefinition.OathOfTheCrownId] = new HandValueProfile();
@@ -445,8 +445,8 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 58).Set(2, 58).Set(3, 58)
                 .Set(7, 50);
 
-            // ---- 战争领域：攻击手为下回合提供战恩次数 ----
-            // 保留攻击数字；9在战恩下也计为攻击数字。
+            // ---- 战争领域：攻击手为下回合提供战争祝福次数 ----
+            // 保留攻击数字；9在战争祝福下也计为攻击数字。
             Own[CharacterDefinition.OathOfConquestId]=new HandValueProfile().Set(5,100).Set(4,75).Set(6,80).Set(8,85).Set(9,60)
                 .AddCombo(ComboRule.ContainsAll(35,"持5进行攻击成长",5,8));
             Own[CharacterDefinition.TrickeryDomainId]=new HandValueProfile().Set(2,92).Set(4,72).Set(6,76).Set(8,83).Set(5,66).Set(9,65);
@@ -661,7 +661,7 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对牧师·战争领域（2026-10-23）----
-            // 攻击数字决定下回合战恩次数，压低其施恩机会。
+            // 攻击数字决定下回合战争祝福次数，压低其施恩机会。
             OpponentAdjust[CharacterDefinition.OathOfConquestId]=new List<ValueAdjust>{new ValueAdjust(5,-22),new ValueAdjust(8,-10)};
             OpponentAdjust[CharacterDefinition.OathOfVengeanceId]=new List<ValueAdjust>{new ValueAdjust(5,-12),new ValueAdjust(8,-10)};
             OpponentAdjust[CharacterDefinition.WarDomainId] = new List<ValueAdjust>

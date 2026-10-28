@@ -39,7 +39,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null || context.AttackValue != AttackValue) return;
             context.HitCount = 1;
             context.FinalDamage = AttackValue;
-            context.Manager?.NoteSkill(context.Attacker, "狂战", "9 转为攻击");
+            context.Manager?.NoteSkill(context.Attacker, "狂怒", "9 转为攻击");
         }
 
         public void OnHitLanded(AttackContext context, GameManager manager)

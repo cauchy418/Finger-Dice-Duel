@@ -108,7 +108,7 @@
         /// **圣光（牧师·光明领域，2026-10-23）**：目标回合开始受 1 点伤害（不可抵挡）、
         /// 回复量减半（向上取整）；施加时立即清除目标其他全部状态与全部抗性，
         /// 存在期间阻止新的状态与抗性附加（重复施加圣光 = 刷新时长）。
-        /// 剑歌与战恩会被清除；勇气战歌增益与奥术屏障是独立系统，不受圣光影响（玩家口径）。
+        /// 剑歌与战争祝福会被清除；战斗激励增益与奥术守御是独立系统，不受圣光影响（玩家口径）。
         /// </summary>
         HolyLight = 19,
         Restrained = 20,
@@ -241,7 +241,7 @@
                 case StatusEffect.HolyLight: return "圣光";
                 case StatusEffect.Restrained: return "束缚";
                 case StatusEffect.Greased: return "油腻";
-                case StatusEffect.WarBlessing: return "战恩";
+                case StatusEffect.WarBlessing: return "战争祝福";
                 case StatusEffect.Tinnitus: return "耳鸣";
                 default: return "无";
             }

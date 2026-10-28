@@ -49,7 +49,7 @@
                                               GameManager manager)
         {
             _shieldBreaks++;
-            manager?.NoteSkill(owner, "王冠威仪", $"永久攻击／距离＋1（现 {BaseAttackRange}）");
+            manager?.NoteSkill(owner, "神圣誓忠", $"永久攻击／距离＋1（现 {BaseAttackRange}）");
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     public sealed class WildMagicLogic : CharacterTemplate,
                                         IAttackRangeProvider,
                                         IStatusApplyingAttack,
-                                        IDodgeBlocker
+                                        IDodgeBlocker, IPerHitAttackType
     {
         public override string DisplayName => "术士·狂野魔法";
 
@@ -99,28 +99,21 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// </summary>
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context == null) return;
+            if (context == null || context.IsReflected || context.IsStatusDamage) return;
+            context.PerHitTypeProvider = this;
+            PrepareAttackHit(context, 0);
+            context.PreparedPerHitType = context.AttackType;
+        }
 
-            DamageType element = ElementOfRoll(Roll());
+        public void PrepareAttackHit(AttackContext context, int hitIndex)
+        {
+            var element = ElementOfRoll(Roll());
             context.ElementOverride = element;
-
-            // 力场不可被闪避 —— `IDodgeBlocker` 是**无参属性**，
-            // 而闪避判定发生在 `OnResolveAttack` **之后**（AttackContext:284），
-            // 所以这里记下的标记一定来得及被读到。
             _forceThisAttack = element == DamageType.Force;
-
-            if (element == DamageType.None) return;
-
-            // 改写成元素 -> 伤害类型就是该元素（飘字颜色 / 图标一致）
-            context.AttackType = AttackDamageTypes.FromDamageType(element);
-            context.Manager?.NoteSkill(context.Attacker, "元素掷骰", $"本次攻击改为{AttackDamageTypes.NameOf(context.AttackType)}");
-
-            // 力场：与法师·咒法学派 / 法师·塑能学派同源 —— 穿盾、无视正向防御、不可闪避
-            if (element == DamageType.Force)
-            {
-                context.IgnoreShield = true;
-                context.IgnorePositiveDefense = true;
-            }
+            context.AttackType = element == DamageType.None
+                ? ((context.Manager?.DistanceBetween(context.Attacker, context.Defender) ?? LastAttackDistance) <= 1 ? AttackDamageType.Bludgeoning : AttackDamageType.Piercing)
+                : AttackDamageTypes.FromDamageType(element);
+            context.Manager?.NoteSkill(context.Attacker, "狂野魔法浪涌", $"第{hitIndex + 1}段 {AttackDamageTypes.NameOf(context.AttackType)}");
         }
 
         /// <summary>

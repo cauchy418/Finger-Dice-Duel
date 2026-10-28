@@ -86,7 +86,7 @@ namespace FingerDiceDuel.Core
             bool use=redirect&&touch.Owner.IsAlive&&!touch.Owner.IsPolymorphed
                 &&IsLegalMove(touch.Actor,touch.Source,touch.Alternate,out _);
             var actual=use?touch.Alternate:touch.Selected;
-            NoteSkill(touch.Owner,"镜像错位",$"{touch.Actor.Name}的{CombatText.HandName(touch.Actor,touch.Source)}{touch.SourceValue}"
+            NoteSkill(touch.Owner,"幻术默发",$"{touch.Actor.Name}的{CombatText.HandName(touch.Actor,touch.Source)}{touch.SourceValue}"
                 +(use?$"改用{CombatText.HandName(touch.Owner,actual)}{actual.Value}作加数":"保留原加数"));
             return actual;
         }
@@ -104,7 +104,7 @@ namespace FingerDiceDuel.Core
             var touch=CreateIllusionTouch(actor,source,selected,step,effectless,sourceValue);
             if(touch==null){CacheIllusion(actor,source,selected,selected,step);completed(selected);return false;}
             int epoch=_illusionEpoch,turn=TurnCount;
-            var prompt=$"【镜像错位】{touch.Actor.Name}：{CombatText.HandName(touch.Actor,source)}{touch.SourceValue} → 你的{CombatText.HandName(touch.Owner,selected)}{selected.Value}。\n"
+            var prompt=$"【幻术默发】{touch.Actor.Name}：{CombatText.HandName(touch.Actor,source)}{touch.SourceValue} → 你的{CombatText.HandName(touch.Owner,selected)}{selected.Value}。\n"
                 +$"改用你的{CombatText.HandName(touch.Owner,touch.Alternate)}{touch.Alternate.Value}作加数？";
             var request=new WizardChoice(touch.Owner,prompt,NewSubclassChoices.YesNo(
                 "发动 · 改用"+CombatText.HandName(touch.Owner,touch.Alternate)+touch.Alternate.Value,
@@ -117,6 +117,6 @@ namespace FingerDiceDuel.Core
         }
         public void ClearPreparedOperationAddend()
         {_illusionEpoch++;_illusionPrepared[0]=null;_illusionPrepared[1]=null;ClearPreparedTrickery();}
-        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)=>ApplyEffectlessOperation(actor,source,target,"风暴余势");
+        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)=>ApplyEffectlessOperation(actor,source,target,"暴风魔法");
     }
 }

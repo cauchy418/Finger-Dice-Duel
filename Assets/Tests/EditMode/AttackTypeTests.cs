@@ -192,7 +192,7 @@ namespace FingerDiceDuel.Tests
 
             var empowered = new AttackContext(self, foe, self.LeftHand, 4)
             {
-                DamageMultiplier = 1.5f,      // 乘风突刺就是这么标记的
+                DamageMultiplier = 1.5f,      // 潇洒气质就是这么标记的
             };
             Assert.AreEqual(AttackDamageType.Piercing, tmpl.AttackTypeOf(empowered),
                 "游荡者·风流剑客 用 2 强化 = 穿刺");

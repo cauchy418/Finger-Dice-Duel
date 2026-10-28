@@ -53,19 +53,19 @@ namespace FingerDiceDuel.Core
                     // ⚠️ 不能只设 HitCount = 2：那会把 4 平分成 2 + 2（武僧·忍宗的做法）。
                     context.FinalDamage *= FourHitCount;
                     context.HitCount = FourHitCount;
-                    manager?.NoteSkill(context.Attacker, "魔射连击", "两段攻击，各以 4 为基础伤害");
+                    manager?.NoteSkill(context.Attacker, "奥术射击·魔能齐射", "两段攻击，各以 4 为基础伤害");
                     break;
 
                 case 6:
                     context.FinalDamage += SixBonusDamage;
-                    manager?.NoteSkill(context.Attacker, "魔射增伤", "基础伤害＋2");
+                    manager?.NoteSkill(context.Attacker, "奥术射击·强力射击", "基础伤害＋2");
                     break;
 
                 case 8:
                     // 无视盾牌 —— 与法师·咒法学派同一条通路。
                     // 闪避不受影响（规则只说"无视盾牌"）。
                     context.IgnoreShield = true;
-                    manager?.NoteSkill(context.Attacker, "魔射穿盾", "本次攻击无视护盾");
+                    manager?.NoteSkill(context.Attacker, "奥术射击·穿透箭", "本次攻击无视护盾");
                     break;
             }
         }

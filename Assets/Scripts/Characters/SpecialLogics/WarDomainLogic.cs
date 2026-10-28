@@ -2,7 +2,7 @@
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>回合开始按攻击数字数量，为至多两名不同角色施加战恩。</summary>
+    /// <summary>回合开始按攻击数字数量，为至多两名不同角色施加战争祝福。</summary>
     public sealed class WarDomainLogic:CharacterTemplate,ITurnStartHook,ISkillUseCounter
     {
         public int SkillUseCount {get;private set;}
@@ -23,10 +23,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(remaining<=0||!owner.IsAlive||owner.IsPolymorphed)return;
             var targets=new List<PlayerState>();foreach(var p in game.Players)
                 if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&!selected.Contains(p))targets.Add(p);
-            DivineChoices.ChooseTarget(DivineChoices.Blessing,$"战恩 · 选择角色（剩余{remaining}次），或不发动",owner,game,targets,true,target=>{
+            DivineChoices.ChooseTarget(DivineChoices.Blessing,$"战争祭司 · 选择角色（剩余{remaining}次），或不发动",owner,game,targets,true,target=>{
                 if(target==null)return;
                 target.ApplyStatus(StatusEffect.WarBlessing,2,owner);selected.Add(target);SkillUseCount++;
-                game.NoteSkill(owner,"战恩",target.Name+" 攻防+1，持续2回合；9可改攻击");
+                game.NoteSkill(owner,"战争祭司",target.Name+" 攻防+1，持续2回合；9可改攻击");
                 Offer(owner,game,remaining-1,selected);
             });
         }

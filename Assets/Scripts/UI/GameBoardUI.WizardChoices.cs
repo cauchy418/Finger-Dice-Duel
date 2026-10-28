@@ -31,7 +31,7 @@ namespace FingerDiceDuel.UI
             var options=controller.PendingSkillOptions;
             bool skill=controller.IsHumanChooser && options.Count>0;
             // 回合边界的选手／选人请求也走战场交互：手牌直接点，角色由技能栏列出。
-            // 不能让全屏遮罩挡住风暴额外运算、死者易手、大地封锁等候选手。
+            // 不能让全屏遮罩挡住风暴额外运算、不死奴仆、大地行者等候选手。
             if(request!=null && !skill)
             {
                 if(_wizardModal!=null) _wizardModal.gameObject.SetActive(false);
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.UI
             if(!visible) {if(_wizardModal!=null) _wizardModal.gameObject.SetActive(false);return;}
             if(_wizardModal==null) BuildWizardModal();
             _wizardModal.gameObject.SetActive(true);_wizardModal.SetAsLastSibling();
-            _wizardTitle.text=resistance?"防护抗性 · 选择类型":maneuver?"战斗招式 · 选择状态":skill?controller.Hint:request.Prompt;
+            _wizardTitle.text=resistance?"法术抗性 · 选择类型":maneuver?"卓越战技 · 选择状态":skill?controller.Hint:request.Prompt;
             int count=resistance?ResistanceNames.Choices.Length:maneuver?maneuvers.Length:skill?options.Count:request.Candidates.Count;
             bool painted=resistance||maneuver||skill;
             int columns=(resistance||skill&&count>4)?3:Mathf.Min(2,count);

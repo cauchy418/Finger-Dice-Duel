@@ -82,7 +82,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Broken, l.Soldier.RightHand.State);
             Assert.IsFalse(l.Soldier.HasStatus(StatusEffect.Bleed));
             Assert.AreEqual(3, l.StepNumber);
-            Assert.IsTrue(string.Join("", l.Board.Log).Contains("连锁破盾"));
+            Assert.IsTrue(string.Join("", l.Board.Log).Contains("破阵强袭"));
             Human(l, l.Player.RightHand, l.Soldier.LeftHand);
             Assert.IsTrue(l.Player.LeftHand.IsShield && l.Player.RightHand.IsShield);
         }

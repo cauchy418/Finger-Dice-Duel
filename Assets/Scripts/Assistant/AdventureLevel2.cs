@@ -2,7 +2,7 @@
 
 namespace FingerDiceDuel.Assistant
 {
-    /// <summary>次战：普通攻击对照、十点重击、半自由练习。逐步演算见 Docs/Adventure/level-02.md。</summary>
+    /// <summary>次战：普通攻击对照、精通重击、半自由练习。逐步演算见 Docs/Adventure/level-02.md。</summary>
     public sealed class AdventureLevel2 : AdventureLesson
     {
         public const string Title = "第一章：边境哨站·次战";
@@ -10,14 +10,14 @@ namespace FingerDiceDuel.Assistant
         public const string IntroText =
             "初战过后，老兵请来哨站教官。\n" +
             "「勇士不只会凑攻击数字，还要让两只手相互配合。」\n" +
-            "本课学习十点重击：运算后，自身双手和为10时，攻击自动发动重击。\n" +
+            "本课学习精通重击：运算后，自身双手和为10时，攻击自动发动重击。\n" +
             "基础伤害先×1.5，再计算攻防。";
         public const string VictoryText =
             "本课要点\n" +
-            "十点重击：发起攻击时，运算后的自身双手和为10。\n" +
+            "精通重击：发起攻击时，运算后的自身双手和为10。\n" +
             "先将基础伤害×1.5，再加攻击、减防御。\n" +
             "本课普通6：6＋1＝7伤；重击4：4×1.5＋1＝7伤。\n" +
-            "技能自动发动，战报与提示显示「十点重击」。\n" +
+            "技能自动发动，战报与提示显示「精通重击」。\n" +
             "双手和10但未攻击，不触发；重击仍遵守护盾与闪避规则。";
 
         private AdventureLevel2(GameManager game, BoardController board) : base(game, board)
@@ -61,14 +61,14 @@ namespace FingerDiceDuel.Assistant
             _beats.Add(new Beat
             {
                 Narration = "教官左手5＋你的左手6＝11，取个位变成1，无效果。\n" +
-                            "留意教官右手8：下一步用它配出十点重击。",
+                            "留意教官右手8：下一步用它配出精通重击。",
                 Complete = l => l.Soldier.LeftHand.Value == 1,
             });
             _beats.Add(new Beat
             {
                 Narration = "点你的左手6，再点教官右手8：14取个位，得到4。\n" +
                             "你的双手变成4/6，和为10！\n" +
-                            "点教官确认攻击，自动发动十点重击：4×1.5＋攻击1＝7伤。\n" +
+                            "点教官确认攻击，自动发动精通重击：4×1.5＋攻击1＝7伤。\n" +
                             "判定看自己的两只手，不是运算的两个加数。",
                 ActedHand = _player.LeftHand,
                 AddendHand = _soldier.RightHand,

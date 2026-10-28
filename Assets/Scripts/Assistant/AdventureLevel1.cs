@@ -50,7 +50,7 @@ namespace FingerDiceDuel.Assistant
             "5：合盾，抵挡一段攻击后破碎。\n" +
             "9：回复9点生命，不超过上限。\n" +
             "1/2/3/7：无基础效果；满十归一，10变1。\n\n" +
-            "下一课：勇士「十点重击」。\n" +
+            "下一课：勇士「精通重击」。\n" +
             "运算后双手和10，发起攻击的基础伤害×1.5。";
 
         private AdventureLevel1(GameManager game, BoardController board) : base(game, board)

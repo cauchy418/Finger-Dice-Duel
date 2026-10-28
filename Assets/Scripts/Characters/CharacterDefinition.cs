@@ -134,7 +134,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition SchoolOfConjuration { get; } = new CharacterDefinition(
             SchoolOfConjurationId, "法师·咒法学派", SpecialLogicType.SchoolOfConjuration,
             attackBonus: -1,
-            description: "空间刃无视护盾、正防御与闪避。王车易位：可跳过回合，与双手值相同（不分左右）的角色换位；距离立即更新，下轮按新座位行动。攻击 -1。");
+            description: "次级咒术无视护盾、正防御与闪避。王车易位：可跳过回合，与双手值相同（不分左右）的角色换位；距离立即更新，下轮按新座位行动。攻击 -1。");
 
         public static CharacterDefinition PathOfTheWarden { get; } = new CharacterDefinition(
             PathOfTheWardenId, "野蛮人·守望者道途", SpecialLogicType.PathOfTheWarden,
@@ -232,7 +232,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Champion { get; } = new CharacterDefinition(
             ChampionId, "战士·勇士", SpecialLogicType.Champion,
             attackBonus: 1, defenseBonus: 0,
-            description: "十点重击：运算后双手和为10时，发起攻击的基础伤害×1.5，再计算攻防。攻+1 / 防0，距离1。");
+            description: "精通重击：运算后双手和为10时，发起攻击的基础伤害×1.5，再计算攻防。攻+1 / 防0，距离1。");
 
         /// <summary>
         /// 游荡者·赌徒：攻 0 / 防 0，攻击距离 1。
@@ -439,7 +439,7 @@ namespace FingerDiceDuel.Core
             SchoolOfAbjurationId, "法师·防护学派", SpecialLogicType.SchoolOfAbjuration,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Abjuration",
-            description: "攻击距离∞，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术屏障，在护盾/抗性后、扣血前吸收，使用即清空。");
+            description: "攻击距离∞，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术守御，在护盾/抗性后、扣血前吸收，使用即清空。");
 
         /// <summary>
         /// 牧师·光明领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，中立善良。
@@ -450,12 +450,12 @@ namespace FingerDiceDuel.Core
             LightDomainId, "牧师·光明领域", SpecialLogicType.LightDomain,
             attackBonus: 0, defenseBonus: -1,
             englishName: "Light Domain",
-            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面／角色状态（含剑歌与战恩）及临时抗性／易伤／免疫（勇气战歌与奥术屏障除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
+            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面／角色状态（含剑歌与战争祝福）及临时抗性／易伤／免疫（战斗激励与奥术守御除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
 
-        /// <summary>战争领域：回合开始按攻击手数赋予战恩，基础−1/−1。</summary>
+        /// <summary>战争领域：回合开始按攻击手数赋予战争祝福，基础−1/−1。</summary>
         public static CharacterDefinition WarDomain { get; } = new CharacterDefinition(
             WarDomainId,"牧师·战争领域",SpecialLogicType.WarDomain,attackBonus:-1,defenseBonus:-1,englishName:"War Domain",
-            description:"回合开始每有一只手为攻击数字，可选择一名角色获得战恩2回合；至多两名不同目标，可选自己、少选或不发动。战恩攻防+1，9可放弃回复改为9点基础伤害攻击；不叠加，重复施加刷新。战恩下9也计作攻击数字。距离∞，1内钝击、1外穿刺，攻防−1/−1。");
+            description:"回合开始每有一只手为攻击数字，可选择一名角色获得战争祝福2回合；至多两名不同目标，可选自己、少选或不发动。战争祝福攻防+1，9可放弃回复改为9点基础伤害攻击；不叠加，重复施加刷新。战争祝福下9也计作攻击数字。距离∞，1内钝击、1外穿刺，攻防−1/−1。");
 
         /// <summary>
         /// 战士·战斗大师（2026-10-23）：攻 0 / 防 0，攻击距离 2，守序中立。

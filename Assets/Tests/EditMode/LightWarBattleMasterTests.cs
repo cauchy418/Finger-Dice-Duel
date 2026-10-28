@@ -15,7 +15,7 @@ namespace FingerDiceDuel.Tests
     /// 玩家确认的口径：
     ///   · 光明领域攻击**最终恒为 4 点光耀伤害**（无视攻防与倒伏×1.5 等增减益；
     ///     护盾 / 闪避 / 转移 / 太极等防御机制照常）；命中附带 2 回合圣光。
-    ///   · 圣光：施加时清除目标其他负面状态与全部抗性（勇气战歌 / 奥术屏障除外），
+    ///   · 圣光：施加时清除目标其他负面状态与全部抗性（战斗激励 / 奥术守御除外），
     ///     存在期间阻止新状态与新抗性附加；目标回合开始受 1 点（不可抵挡）、
     ///     回复减半（向上取整）。
     ///   · 战争领域：被选为攻击目标（闪避 / 盾挡 / 零伤害也算）或发起攻击后
@@ -146,8 +146,8 @@ namespace FingerDiceDuel.Tests
             Assert.IsFalse(foe.HasStatus(StatusEffect.Poison), "圣光清除其他负面状态。");
             Assert.IsFalse(foe.HasStatus(StatusEffect.Burn));
             Assert.IsFalse(foe.HasResistance(AttackDamageType.Fire), "圣光清除全部抗性。");
-            Assert.AreEqual(9, ((IAbjurationSkill)foe.Character).BarrierPoints, "奥术屏障不受圣光影响。");
-            Assert.AreEqual(3, foe.CollegeOfValorAttackOffset, "勇气战歌不受圣光影响。");
+            Assert.AreEqual(9, ((IAbjurationSkill)foe.Character).BarrierPoints, "奥术守御不受圣光影响。");
+            Assert.AreEqual(3, foe.CollegeOfValorAttackOffset, "战斗激励不受圣光影响。");
 
             foe.ApplyStatus(StatusEffect.Blind, 2);
             foe.AddResistance(AttackDamageType.Cold);

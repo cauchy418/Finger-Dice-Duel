@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Assistant
                 int sum = Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
                 head = $"{t.Actor.Name} {CombatText.HandName(t.Actor, t.ActedHand)}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {sum}";
                 if(t.SecondAddendValue>0){int final=Hand.ComputeSum(sum,t.SecondAddendValue);head+=$"；{sum} + {t.SecondAddendValue} = {final}";sum=final;}
-                if(t.TrickeryCalculated>0)head+=$"【诡诈换位】→{t.ResultValue}";
+                if(t.TrickeryCalculated>0)head+=$"【诡术祝福】→{t.ResultValue}";
                 else if (sum != t.ResultValue)
                     head += t.FreezeHalvedFrom > 0 ? $"【冰冻】→{t.ResultValue}" : $" → {t.ResultValue}";
             }
@@ -69,6 +69,13 @@ namespace FingerDiceDuel.Assistant
                     else if (t.WasBlocked) outcome = "被护盾挡下";
                     else outcome = $"造成 {t.DamageDealt} 点伤害";
                     string type = t.AttackType == AttackDamageType.None ? "" : $"（{AttackDamageTypes.NameOf(t.AttackType)}）";
+                    if (t.SegmentTypes != null && t.SegmentTypes.Count > 1)
+                    {
+                        bool mixed = false; var names = new List<string>();
+                        foreach (var element in t.SegmentTypes)
+                        { names.Add(AttackDamageTypes.NameOf(element)); if (element != t.SegmentTypes[0]) mixed = true; }
+                        if (mixed) type = "（逐段：" + string.Join("／", names) + "）";
+                    }
                     return head + $" → 攻击 {target}，{outcome}{type}";
                 case HandEffectType.Shield: return head + " → 形成护盾";
                 default: return head + (t.EnteredAmbush ? " → 进入伏击" : " → 无效果");

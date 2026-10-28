@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Tests
         public void Swashbuckler_lethal_threshold_rises_when_holding_a_two()
         {
             // 玩家要求："游荡者·风流剑客在有 2 的情况下斩杀线会对应提升"
-            // 乘风突刺：基础值 ×1.5，**之后再**加攻防
+            // 潇洒气质：基础值 ×1.5，**之后再**加攻防
             // 游荡者·风流剑客 攻0 防0；打战士·勇士 防0
             var swashbuckler = CharacterFactory.CreatePlayer("游", CharacterDefinition.Swashbuckler);
             var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);

@@ -73,7 +73,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(4, level.Player.LeftHand.Value);
             Assert.AreEqual(6, level.Player.RightHand.Value);
             Assert.AreEqual(1, Uses(level));
-            Assert.IsTrue(string.Join("", board.Log).Contains("十点重击"), "真实控制器战报记录技能");
+            Assert.IsTrue(string.Join("", board.Log).Contains("精通重击"), "真实控制器战报记录技能");
             Instructor(level);
             Assert.AreEqual(2, level.Soldier.RightHand.Value);
             Assert.AreEqual(5, level.StepNumber);

@@ -126,7 +126,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                      IList<ChoiceRequest> requests)
         {
             if (context == null || requests == null) return;
-            if (!context.IsAttack || context.EffectiveResult==9 && context.Manager?.WarBlessingNineAttack==true) return; // 战恩9已明确放弃回复，不再重复询问。
+            if (!context.IsAttack || context.EffectiveResult==9 && context.Manager?.WarBlessingNineAttack==true) return; // 战争祝福9已明确放弃回复，不再重复询问。
 
             int heal = HealAmountFor(context.Effect);
             if (heal <= 0) return;

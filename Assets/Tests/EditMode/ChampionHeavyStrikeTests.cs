@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(4,a.LeftHand.Value);
             Assert.AreEqual(7,result.DamageDealt,"4×1.5+1=7; multiplying after attack bonus would incorrectly give 8.");
             Assert.AreEqual(1,((ISkillUseCounter)a.Character).SkillUseCount);
-            Assert.IsTrue(string.Join("",game.TakeSkillLog()).Contains("十点重击"));
+            Assert.IsTrue(string.Join("",game.TakeSkillLog()).Contains("精通重击"));
         }
 
         [Test]

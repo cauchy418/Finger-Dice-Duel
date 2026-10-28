@@ -23,8 +23,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(!owner.IsAlive||RecordCount!=9)return;
             var options=NewSubclassChoices.YesNo("清空记录 · 成长","Subclasses/bard_college_of_lore","保留九数记录");
-            var request=new WizardChoice(owner,"逸闻升华 · 清空九数记录，攻／防／距离各+1",options,value=>{
-                if(value!=1||RecordCount!=9)return;_records.Clear();LoreLevel++;game.NoteSkill(owner,"逸闻升华",$"攻／防／距离各+1（累计{LoreLevel}）");});
+            var request=new WizardChoice(owner,"无与伦比技艺 · 清空九数记录，攻／防／距离各+1",options,value=>{
+                if(value!=1||RecordCount!=9)return;_records.Clear();LoreLevel++;game.NoteSkill(owner,"无与伦比技艺",$"攻／防／距离各+1（累计{LoreLevel}）");});
             if(game.DeferWizardChoice?.Invoke(request)==true)return;
             request.ChooseOption(SkillChoicePolicy.Choose(NewSubclassChoices.LoreGrowth,options,owner,null,game));
         }
@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(!context.IsAttack||!CharacterBehaviors.ActorHas(context.Defender,this))return;
             _defend=null;_preparedValue=context.EffectiveResult;if(!HasRecord(_preparedValue)||!NewSubclassChoices.NormalDamageCanBeReduced(context))return;
             var options=NewSubclassChoices.YesNo("清记录"+_preparedValue+" · 减半","Subclasses/bard_college_of_lore","保留对应记录");
-            requests.Add(new ChoiceRequest(HandEffect.CollegeOfLoreDefense,"逸闻驳斥",null,decider:context.Defender,options:options,
+            requests.Add(new ChoiceRequest(HandEffect.CollegeOfLoreDefense,"切割语",null,decider:context.Defender,options:options,
                 applyOption:v=>_defend=v==1,optionKey:NewSubclassChoices.LoreDefense));
         }
         public void ReduceWholeAttack(AttackContext context,GameManager game)
@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             bool use=_defend==true&&_preparedValue==value;
             if(game?.AnsweredLookupFor==null)use=SkillChoicePolicy.Choose(NewSubclassChoices.LoreDefense,NewSubclassChoices.YesNo("减伤","Subclasses/bard_college_of_lore"),context.Defender,context.Attacker,game)==1;
             _defend=null;if(!use)return;_records.Remove(value);context.HalveWholeAttackDamage();
-            game?.NoteSkill(context.Defender,"逸闻驳斥",$"清除记录{value}，本次伤害减半");
+            game?.NoteSkill(context.Defender,"切割语",$"清除记录{value}，本次伤害减半");
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>AttackDamageType.Bludgeoning;
     }

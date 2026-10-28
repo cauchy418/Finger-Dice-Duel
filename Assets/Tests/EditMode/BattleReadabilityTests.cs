@@ -107,7 +107,7 @@ namespace FingerDiceDuel.Tests
                 else break;
             }
             Assert.NotNull(board.LastTurn);
-            Assert.IsFalse(string.Join("\n", board.Log).Contains("【乘风突刺】"));
+            Assert.IsFalse(string.Join("\n", board.Log).Contains("【潇洒气质】"));
             Assert.AreEqual(2, actor.RightHand.Value);
         }
 
@@ -121,7 +121,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(game.StealAttackAwaitingTarget);
             game.ResolvePendingStealAttack(actor, other);
             string log = string.Join("\n", game.TakeSkillLog());
-            Assert.IsTrue(log.Contains("【偷窃】"));
+            Assert.IsTrue(log.Contains("【快手】"));
             Assert.IsFalse(log.Contains("感电"));
             Assert.IsTrue(other.Health < other.MaximumHealth);
         }

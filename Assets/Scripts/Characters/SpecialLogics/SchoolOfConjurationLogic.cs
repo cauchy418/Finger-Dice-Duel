@@ -56,7 +56,7 @@
             // 核心能力：无视护盾（护盾不消耗、不破碎、不挡伤）
             context.IgnoreShield = true;
             context.IgnorePositiveDefense = true;
-            context.Manager?.NoteSkill(context.Attacker, "空间刃", "无视护盾、正防御与闪避");
+            context.Manager?.NoteSkill(context.Attacker, "次级咒术", "无视护盾、正防御与闪避");
 
             // 说明：不在此处修改 FinalDamage，
             // 保持"法师·咒法学派只改变结算路径，不改变伤害数值"的语义纯净性。

@@ -1849,6 +1849,7 @@ namespace FingerDiceDuel.UI
                     Range = probe != null ? GameManager.BaseRangeOf(probe) : 1,
                     ShortSkill = e.ShortSkill,
                     DetailSkill = e.DetailSkill,
+                    UsesNormalizedSkills = e.UsesNormalizedSkills,
                     PlayGuide = e.PlayGuide,
                     Counter = e.Counter,
                     LawAxis = Alignments.LawAxisOf(e.Alignment),

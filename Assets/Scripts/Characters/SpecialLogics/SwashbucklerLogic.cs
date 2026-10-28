@@ -9,7 +9,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     /// 技能（两者都是"把某只手改大 1 点"的代价型能力）：
     ///   1. **闪避**：被攻击时，若有一只手为 1，可把它变成 2 来完全闪避这次攻击。
     ///      两只手都是 1 时可以自己选用哪只手；也可以放弃闪避（照常吃伤害）。
-    ///   2. **乘风突刺**：自己发起攻击时，若**另一只手**为 2，可把它变成 3，
+    ///   2. **潇洒气质**：自己发起攻击时，若**另一只手**为 2，可把它变成 3，
     ///      让这次攻击的**基础数值 ×1.5**（4→6、6→9、8→12），之后再算攻防加成。
     ///
     /// ⚠️ **两个技能都可以反复发动，没有"次数"概念。**
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public const float PowerMultiplier = 1.5f;
 
         /// <summary>
-        /// **游荡者·风流剑客的斩杀线**：手上有 **2** 时，乘风突刺让基础值 ×1.5，
+        /// **游荡者·风流剑客的斩杀线**：手上有 **2** 时，潇洒气质让基础值 ×1.5，
         /// 所以斩杀线要相应提高（玩家要求）。
         ///
         /// ⚠️ 顺序必须与实际结算一致：**先 ×1.5，再加攻防** ——
@@ -57,7 +57,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             int baseValue = resultValue;
 
-            // 有 2 才能强化（2 是乘风突刺的原料，见 GetDuelistThrustCandidate）
+            // 有 2 才能强化（2 是潇洒气质的原料，见 GetDuelistThrustCandidate）
             if (HasDuelistThrustFuel(context))
             {
                 baseValue = (int)System.Math.Round(
@@ -84,6 +84,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static bool IsDodgeable(PreTurnChoiceContext context)
         {
             if (context == null || !context.IsAttack) return false;
+            if (CharacterBehaviors.FirstImplementer<IPerHitAttackType>(context.Actor) != null) return true;
 
             var blocker = context.Actor?.Character as IDodgeBlocker;
             return blocker == null || !blocker.PreventsDodge;
@@ -98,7 +99,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>
         /// 由 <see cref="Assistant.BoardController"/> 对**双方**各调用一次，
         /// 所以这里必须自己判断"我是行动方还是防守方"：
-        /// 作为防守方时问闪避，作为行动方时问乘风突刺。
+        /// 作为防守方时问闪避，作为行动方时问潇洒气质。
         /// </summary>
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
@@ -112,7 +113,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 return;                          // 同一次运算不会既闪避又强化
             }
 
-            // ② 我是行动方 -> 问乘风突刺
+            // ② 我是行动方 -> 问潇洒气质
             if (CharacterBehaviors.ActorHas(context.Actor, this))
             {
                 AddDuelistThrustRequest(context, requests);
@@ -156,7 +157,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     allowDecline: true,
                     declineResult: null,             // 放弃 = 不闪避，正常吃伤害
                     decider: defender,               // 闪避是**防守方**自己的决定
-                    acceptLabel: candidates.Count == 1 ? $"闪避（变 {DodgeToValue}）" : null,
+                    acceptLabel: candidates.Count == 1 ? $"潇洒无畏（变 {DodgeToValue}）" : null,
                     variant: i));
             }
         }
@@ -195,7 +196,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         /// <summary>
-        /// 找出可用于乘风突刺的那只手（**另一只手**，不是运算源）。
+        /// 找出可用于潇洒气质的那只手（**另一只手**，不是运算源）。
         ///
         /// 规则：用一只手发起攻击后，若**另一只手**为 2，可以把它变成 3 强化这次攻击。
         /// 运算源就是攻击手（值 4/6/8），本来就不可能是 2。
@@ -262,7 +263,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             context.Dodged = true;
             context.ConsumedHand = chosen;
-            context.Manager?.NoteSkill(self, "闪避", $"{CombatText.HandName(self, chosen)} 1→2，闪避第 {hitIndex + 1} 段");
+            context.Manager?.NoteSkill(self, "潇洒无畏", $"{CombatText.HandName(self, chosen)} 1→2，闪避第 {hitIndex + 1} 段");
         }
 
         /// <summary>
@@ -321,7 +322,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         // ============================================================
-        // 结算：乘风突刺
+        // 结算：潇洒气质
         // ============================================================
 
         public override void OnResolveAttack(AttackContext context)
@@ -343,7 +344,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             // 先乘倍率、再算攻防加成（由 AttackContext.ApplyBonuses 保证顺序）
             context.DamageMultiplier = PowerMultiplier;
             context.InflictsBleed = true;
-            context.Manager?.NoteSkill(context.Attacker, "乘风突刺", $"{CombatText.HandName(context.Attacker, chosen)} 2→3，基础伤害×1.5、距离∞");
+            context.Manager?.NoteSkill(context.Attacker, "潇洒气质", $"{CombatText.HandName(context.Attacker, chosen)} 2→3，基础伤害×1.5、距离∞");
         }
 
         /// <summary>
@@ -379,7 +380,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         /// <summary>
-        /// 找出可用于乘风突刺的手。
+        /// 找出可用于潇洒气质的手。
         ///
         /// 规则：**用一只手发起攻击后，若另一只手为 2**，可以把它变成 3 来强化这次攻击。
         /// 所以候选只看"另一只手"，**不是**运算源 ——
@@ -394,7 +395,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// <summary>
         /// 游荡者·风流剑客：普通是**挥砍**；用 2 强化的攻击是**穿刺**（玩家指定）。
         ///
-        /// ⚠️ 判据用 `context.DamageMultiplier` —— 乘风突刺就是把它设成 1.5。
+        /// ⚠️ 判据用 `context.DamageMultiplier` —— 潇洒气质就是把它设成 1.5。
         /// </summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
         {

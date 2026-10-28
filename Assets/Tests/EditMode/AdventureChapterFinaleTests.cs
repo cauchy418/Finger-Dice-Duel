@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Tests
             Npc(l); Assert.IsTrue(l.Soldier.RightHand.IsShield);
             Human(l); Assert.IsTrue(l.IsComplete); Assert.AreEqual(0, l.Soldier.Health); Assert.AreEqual(ShieldState.Broken, l.Soldier.RightHand.State);
             string log = string.Join(" | ", l.Board.Log);
-            Assert.IsTrue(log.Contains("魔射穿盾") && log.Contains("魔射增伤") && log.Contains("魔射连击"), log);
+            Assert.IsTrue(log.Contains("奥术射击·穿透箭") && log.Contains("奥术射击·强力射击") && log.Contains("奥术射击·魔能齐射"), log);
         }
         [Test]
         public void Seventh_bleed_limp_and_stunned_apply_real_penalties()

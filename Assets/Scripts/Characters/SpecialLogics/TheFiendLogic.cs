@@ -2,7 +2,7 @@
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>邪术师·妖魔：治疗溢出转虚假生命，攻击可消耗虚假生命施加失能/恐慌。</summary>
+    /// <summary>邪术师·妖魔：黑暗赐福将治疗溢出转虚假生命，攻击可消耗虚假生命施加失能/恐慌。</summary>
     public sealed class TheFiendLogic : CharacterTemplate,
         IAttackTypeProvider, IHealingOverflow, IOnDamageDealt, IPreTurnChoiceProvider
     {
@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(!CharacterBehaviors.ActorHas(context.Actor,this))return;
             _pactChoice=null;
             if(!context.IsAttack || context.Actor.FalseLife<=0)return;
-            requests.Add(new ChoiceRequest(HandEffect.TheFiendPact,"妖魔契约 · 选择控制或保留虚假生命",null,decider:context.Actor,
+            requests.Add(new ChoiceRequest(HandEffect.TheFiendPact,"黑暗强运 · 选择控制或保留虚假生命",null,decider:context.Actor,
                 options:AncientRoleChoices.PactOptions(),applyOption:value=>_pactChoice=value,optionKey:AncientRoleChoices.FiendPact));
         }
 
@@ -34,8 +34,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(choice!=(int)StatusEffect.Disabled && choice!=(int)StatusEffect.Panic)return;
             var status=(StatusEffect)choice;
             context.Attacker.ClearFalseLife();
-            context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"妖魔契约");
-            context.Manager?.NoteSkill(context.Attacker, "妖魔契约", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
+            context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"黑暗强运");
+            context.Manager?.NoteSkill(context.Attacker, "黑暗强运", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
         }
 
         public void OnHitLanded(AttackContext context, GameManager manager)
@@ -45,7 +45,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 && context.Defender.Health * 2 <= context.Defender.MaximumHealth)
             {
                 context.Attacker.Heal(3);
-                manager?.NoteSkill(context.Attacker, "妖魔汲取", "回复 3 点");
+                manager?.NoteSkill(context.Attacker, "直坠噩梦", "回复 3 点");
             }
         }
         public void OnDamageDealt(AttackContext context,GameManager manager) => OnHitLanded(context,manager);

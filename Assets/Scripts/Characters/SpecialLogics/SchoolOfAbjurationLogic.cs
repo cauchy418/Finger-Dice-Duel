@@ -31,16 +31,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     if(p.IsAlive) { targets.Add(p.LeftHand); targets.Add(p.RightHand); }
                 if(targets.Count==0) targets.Add(context.Actor.LeftHand);
                 requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationResistanceTarget,
-                    "【防护抗性】选择一名存活角色，再选择物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性。",targets,
+                    "【法术抗性】选择一名存活角色，再选择物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性。",targets,
                     allowDecline:false,decider:context.Actor));
                 requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationResistanceType,
-                    "【防护抗性】选择抗性类型；物理整组包含挥砍、钝击和穿刺。",
+                    "【法术抗性】选择抗性类型；物理整组包含挥砍、钝击和穿刺。",
                     new List<Hand>{context.ActedHand},allowDecline:false,decider:context.Actor));
             }
             else if(context.IsAttack)
                 requests.Add(new ChoiceRequest(HandEffect.SchoolOfAbjurationBarrier,
-                    "【奥术屏障】放弃这次攻击，将攻击数字存为屏障？",
-                    new List<Hand>{context.ActedHand},allowDecline:true,decider:context.Actor,acceptLabel:"存储奥术屏障"));
+                    "【奥术守御】放弃这次攻击，将攻击数字存为屏障？",
+                    new List<Hand>{context.ActedHand},allowDecline:true,decider:context.Actor,acceptLabel:"存储奥术守御"));
         }
 
         public override void OnOperationResolved(PlayerState owner, Hand actedHand,
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             }
             GrantResistance(target,SelectedResistance);
             string label=AttackDamageTypes.IsMagic(SelectedResistance)?ResistanceNames.Name(SelectedResistance):"物理抗性";
-            manager?.NoteSkill(owner,"防护抗性",$"赋予{target.Name}{label}");
+            manager?.NoteSkill(owner,"法术抗性",$"赋予{target.Name}{label}");
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => (context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1

@@ -9,10 +9,15 @@ namespace FingerDiceDuel.Assistant
     ///
     /// 这样 UI 层和 AI 层都可以只实现需要的抉择，避免每个实现都被迫写空方法。
     /// </summary>
-    public abstract class AbstractChoiceProvider : IChoiceProvider, ISkillChoicePolicy
+    public abstract class AbstractChoiceProvider : IChoiceProvider, ISkillChoicePolicy, IHunterVolleyPolicy
     {
         public virtual int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
             => options[0].Value;
+        public virtual PlayerState HunterVolleyTarget(PlayerState owner, IReadOnlyList<PlayerState> candidates, GameManager game)
+        {
+            foreach (var target in candidates) if (target.IsAlive && !game.IsKnownAlly(owner, target)) return target;
+            return null;
+        }
         public virtual PlayerState HunterMarkTarget(PlayerState owner,IReadOnlyList<PlayerState> candidates,GameManager game)
             => candidates.Count>0?candidates[0]:null;
 
@@ -27,7 +32,7 @@ namespace FingerDiceDuel.Assistant
             => default;
 
         /// <summary>
-        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 乘风突刺 ……）。
+        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 潇洒气质 ……）。
         /// 默认"放弃发动"，子类只重写自己关心的 <see cref="HandEffect"/>。
         /// </summary>
         public virtual Hand ChooseHandFor(ChoiceRequest request, PlayerState decider)

@@ -68,11 +68,11 @@ namespace FingerDiceDuel.Core
                     ||!IsLegalMove(actor,source,hand,out _)||before!=2&&hand.Value!=2&&_trickResult!=2){next(index+1);return;}
                 var t=new TrickeryTouch{Owner=owner,Actor=actor,Source=source,Addend=hand,SourceValue=before,AddendValue=hand.Value,Result=_trickResult,Effectless=effectless};
                 var step=new TrickeryStep{Touch=t};_trickSteps.Add(step);
-                var request=new WizardChoice(owner,$"【诡诈换位】{actor.Name}用{CombatText.HandName(actor,source)}{before}借你的{CombatText.HandName(owner,hand)}{t.AddendValue}，结果{t.Result}。交换加数和结果？",
+                var request=new WizardChoice(owner,$"【诡术祝福】{actor.Name}用{CombatText.HandName(actor,source)}{before}借你的{CombatText.HandName(owner,hand)}{t.AddendValue}，结果{t.Result}。交换加数和结果？",
                     NewSubclassChoices.YesNo("交换数字","Subclasses/cleric_trickery_domain"),v=>{
                         if(epoch!=_trickEpoch||_trickTurn!=TurnCount)return;step.Swap=v==1;
                         if(!step.Swap){next(index+1);return;}_trickResult=t.AddendValue;
-                        var charm=new WizardChoice(owner,"诡诈换位 · 是否令"+actor.Name+"魅惑2回合？",NewSubclassChoices.YesNo("魅惑2回合","Status/charm"),c=>{
+                        var charm=new WizardChoice(owner,"诡术祝福 · 是否令"+actor.Name+"魅惑2回合？",NewSubclassChoices.YesNo("魅惑2回合","Status/charm"),c=>{
                             if(epoch!=_trickEpoch||_trickTurn!=TurnCount)return;step.Charm=c==1;next(index+1);});
                         if(DeferWizardChoice?.Invoke(charm)==true){deferred=true;return;}
                         charm.ChooseOption(ClericPolicy(owner)?.CharmTrickery(t,this)==true?1:0);
@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Core
                 bool shield=t.Addend.IsShield;t.Addend.SetValue(final);final=t.AddendValue;source.SetValue(final);changed=true;
                 if(shield)foreach(var w in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(t.Owner))w.OnOwnShieldBroken(t.Owner,t.Addend,this);
                 if(step.Charm)actor.ApplyStatus(StatusEffect.Charm,2,t.Owner);
-                NoteSkill(t.Owner,"诡诈换位",$"{actor.Name}打出{final}；{CombatText.HandName(t.Owner,t.Addend)}→{t.Addend.Value}"+(step.Charm?"，魅惑2回合":""));
+                NoteSkill(t.Owner,"诡术祝福",$"{actor.Name}打出{final}；{CombatText.HandName(t.Owner,t.Addend)}→{t.Addend.Value}"+(step.Charm?"，魅惑2回合":""));
             }return changed;
         }
         public Func<AttackContext,Action,bool> DeferClericAttack {get;set;}
@@ -119,18 +119,18 @@ namespace FingerDiceDuel.Core
                 if(source==null){completed();return;}
                 var options=new List<SkillChoiceOption>();foreach(var type in new[]{AttackDamageType.Lightning,AttackDamageType.Thunder})
                     options.Add(new SkillChoiceOption((int)type,AttackDamageTypes.NameOf(type),"Damage/"+AttackDamageTypes.IconKeyOf(type)));
-                var types=new WizardChoice(owner,"风暴狂怒 · 选择反击类型",options,v=>{
+                var types=new WizardChoice(owner,"风暴之怒 · 选择反击类型",options,v=>{
                     if(!owner.IsAlive||!enemy.IsAlive){completed();return;}
                     var counter=new AttackContext(owner,enemy,source,4){IsTempestCounter=true,AttackType=(AttackDamageType)v,AttackValueOverride=4,AttackerProvider=GetChoiceProvider(owner)};
                     Action finish=()=>{
-                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴狂怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害");
-                        ClericChoices.FreeOperation(owner,this,source,false,"风暴狂怒",completed);
+                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴之怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害");
+                        ClericChoices.FreeOperation(owner,this,source,false,"风暴之怒",completed);
                     };
                     if(DeferWizardAttack?.Invoke(counter,finish)!=true)finish();
                 });
                 if(DeferWizardChoice?.Invoke(types)!=true)types.ChooseOption((int)(ClericPolicy(owner)?.TempestType(owner,enemy,this)??AttackDamageType.Lightning));
             };
-            var request=new WizardChoice(owner,"风暴狂怒 · 点击一只4反击"+enemy.Name+"，或不发动",hands,true,selected,false,"不发动");
+            var request=new WizardChoice(owner,"风暴之怒 · 点击一只4反击"+enemy.Name+"，或不发动",hands,true,selected,false,"不发动");
             if(DeferWizardChoice?.Invoke(request)!=true)request.Choose(ClericPolicy(owner)?.TempestHand(owner,enemy,hands,this));
         }
     }

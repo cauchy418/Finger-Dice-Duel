@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Core
     ///     则**本回合必须赌博**，且点他人的手会**弹提示并拒绝**
     ///   · 跳过回合**不算**"正常运算"（不触发强制）
     ///   · 赌博**可以放弃**（与所有角色一样，攻击都不能放弃；
-    ///     但"开赌"是可选动作 —— 不点就是放弃攻击）
+    ///     但"命运赌博"是可选动作 —— 不点就是放弃攻击）
     /// </summary>
     public sealed class GamblerLogic : CharacterTemplate
     {

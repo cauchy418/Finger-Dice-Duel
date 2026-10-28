@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     ///
     /// 技能（玩家口径，2026-10-23）：
     ///   1. **伤害分型**：4 = 挥砍、6 = 钝击、8 = 穿刺。
-    ///   2. **战斗招式**：攻击**实际造成伤害**（&gt; 0 —— 被盾挡、被闪避、
+    ///   2. **卓越战技**：攻击**实际造成伤害**（&gt; 0 —— 被盾挡、被闪避、
     ///      被取消、被减至 0 都不算）后，看**另一只手**的点数：
     ///        · 4 / 8 → 给目标附加 **流血** 或 **跛脚**（2 回合）；
     ///        · 6     → 给目标附加 **眩晕** 或 **倒伏**（2 回合）。
@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     ///
     /// 抉择走"运算前收集 + 结算回读"（项目铁律：ExecuteTurn 一次跑完）：
     ///   <see cref="CollectPreTurnChoices"/> 在预测到"攻击 + 另一手 4/6/8"
-    ///   时提出【BattleMasterManeuver】请求；UI（战斗招式面板）与 AI 在运算前作答
+    ///   时提出【BattleMasterManeuver】请求；UI（卓越战技面板）与 AI 在运算前作答
     ///   （答案写入 <see cref="SelectManeuver"/> / <see cref="DeclineManeuver"/>），
     ///   <see cref="OnDamageLanded"/> 在真的造成伤害时按当前分支校验并落地。
     /// </summary>
@@ -82,7 +82,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             requests.Add(new ChoiceRequest(
                 HandEffect.BattleMasterManeuver,
-                "【战斗招式】本次攻击造成伤害后，给目标附加哪种状态（2 回合）？",
+                "【卓越战技】本次攻击造成伤害后，给目标附加哪种状态（2 回合）？",
                 new List<Hand>(1) { context.ActedHand },
                 allowDecline: true,
                 declineResult: null,
@@ -169,7 +169,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             StatusEffect chosen = ResolveManeuver(attacker, target, options, manager);
             if (chosen == StatusEffect.None || !IsValidOption(options, chosen)) return;
 
-            context.ApplyAttachedStatus(target,chosen,PlayerState.StatusDurationTurns,attacker,manager,"战斗招式",requireDamage:true);
+            context.ApplyAttachedStatus(target,chosen,PlayerState.StatusDurationTurns,attacker,manager,"卓越战技",requireDamage:true);
             _maneuverCount++;
 
         }

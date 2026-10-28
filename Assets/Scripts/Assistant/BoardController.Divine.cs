@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Assistant
                 ||!ActivePlayer.HasStatus(StatusEffect.WarBlessing)||ActivePlayer.IsPolymorphed
                 ||value!=9||CharacterBehaviors.DisplayedEffectOf(ActivePlayer,value)!=HandEffectType.Heal)return false;
             var actor=ActivePlayer;
-            var request=new WizardChoice(actor,"战恩 · 9选择照常回复，或放弃回复改为攻击",DivineChoices.NineOptions(),v=>_game.WarBlessingNineAttack=v==1);
+            var request=new WizardChoice(actor,"战争祝福 · 9选择照常回复，或放弃回复改为攻击",DivineChoices.NineOptions(),v=>_game.WarBlessingNineAttack=v==1);
             if(!QueueWizardChoice(request))
             {request.ChooseOption(SkillChoicePolicy.Choose(DivineChoices.Nine,request.Options,actor,DefaultAttackTarget(),_game));return false;}
             TryStartWizardBoundary(resume);return true;

@@ -31,11 +31,11 @@ namespace FingerDiceDuel.Core
         {
             if(!owner.IsAlive||owner.IsPolymorphed||!StatusRules.CanAct(owner))return;
             var sources=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(!sources.Contains(move.ActedHand))sources.Add(move.ActedHand);
-            NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,"誓言反击 · 选择运算手，或放弃额外运算",owner,game,sources,true,source=>{
+            NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,"复仇之魂 · 选择运算手，或放弃额外运算",owner,game,sources,true,source=>{
                 if(source==null||!owner.IsAlive||owner.IsPolymorphed)return;
                 var targets=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(ReferenceEquals(move.ActedHand,source))targets.Add(move.TargetHand);
-                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"誓言反击 · 点击加数（只改变手值）",owner,game,targets,true,target=>{
-                    if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.RequestTrickeryOperation(owner,source,h,()=>game.ApplyEffectlessOperation(owner,source,h,"誓言反击"),true),effectless:true);
+                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"复仇之魂 · 点击加数（只改变手值）",owner,game,targets,true,target=>{
+                    if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.RequestTrickeryOperation(owner,source,h,()=>game.ApplyEffectlessOperation(owner,source,h,"复仇之魂"),true),effectless:true);
                 });
             });
         }
@@ -68,12 +68,12 @@ namespace FingerDiceDuel.Core
             bool attack=WarBlessingNineAttack??SkillChoicePolicy.Choose(DivineChoices.Nine,DivineChoices.NineOptions(),actor,DamageTargetPlayer??GetOpponent(actor),this)==1;
             WarBlessingNineAttack=attack;
             if(!attack)return effect;
-            NoteSkill(actor,"战恩","9放弃回复，改为攻击");return HandEffectType.Attack8;
+            NoteSkill(actor,"战争祝福","9放弃回复，改为攻击");return HandEffectType.Attack8;
         }
     }
     public partial class PlayerState
     {
-        /// <summary>治疗仅净化不利状态，保留战恩；圣光与重开仍清除全部。</summary>
+        /// <summary>治疗仅净化不利状态，保留战争祝福；圣光与重开仍清除全部。</summary>
         public void ClearNegativeStatuses()
         {
             int turns=StatusTurnsLeft(StatusEffect.WarBlessing);var source=StatusSourceOf(StatusEffect.WarBlessing);

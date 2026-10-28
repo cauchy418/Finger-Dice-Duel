@@ -27,13 +27,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             bool panic=initiated?attack.AttackBonusAtStart(owner)>attack.AttackBonusAtStart(target)
                 :attack.DefenseBonusAtStart(owner)>attack.DefenseBonusAtStart(target);
             if(five){if(initiated)AttackStacks++;else DefenseStacks++;SkillUseCount++;
-                game?.NoteSkill(owner,"征服之势",initiated?"攻击+1":"防御+1");}
-            if(panic&&target?.IsAlive==true)attack.ApplyAttachedStatus(target,StatusEffect.Panic,2,owner,game,"征服威慑");
+                game?.NoteSkill(owner,"征服威压",initiated?"攻击+1":"防御+1");}
+            if(panic&&target?.IsAlive==true)attack.ApplyAttachedStatus(target,StatusEffect.Panic,2,owner,game,"恐惧光环");
         }
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {
-            if(!owner.BeganAttackThisTurn&&AttackStacks>0){AttackStacks--;game?.NoteSkill(owner,"征服之势","未发起攻击，攻击加成-1");}
-            if(!HasFive(owner)&&DefenseStacks>0){DefenseStacks--;game?.NoteSkill(owner,"征服之势","未持有5，防御加成-1");}
+            if(!owner.BeganAttackThisTurn&&AttackStacks>0){AttackStacks--;game?.NoteSkill(owner,"征服威压","未发起攻击，攻击加成-1");}
+            if(!HasFive(owner)&&DefenseStacks>0){DefenseStacks--;game?.NoteSkill(owner,"征服威压","未持有5，防御加成-1");}
         }
         public override int ScoreMoveBonus(MoveValueContext context)
             =>context.OtherHandValue==5||context.ActedValueAfter==5?30:0;
@@ -81,7 +81,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnOtherShieldBroken(PlayerState owner,Hand shield,GameManager game)
         {
             if(owner.IsAlive&&VowTarget!=null&&ReferenceEquals(game.ShieldBreaker,VowTarget))
-            {game.NoteSkill(owner,"誓言反击","仇敌破盾，可进行一次只改手值的额外运算");DivineChoices.OfferFreeOperation(owner,game);}
+            {game.NoteSkill(owner,"复仇之魂","仇敌破盾，可进行一次只改手值的额外运算");DivineChoices.OfferFreeOperation(owner,game);}
         }
     }
 }

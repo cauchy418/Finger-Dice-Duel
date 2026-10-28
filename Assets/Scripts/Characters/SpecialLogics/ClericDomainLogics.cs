@@ -16,6 +16,6 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override AttackDamageType AttackTypeOf(AttackContext c)=>ArcaneChoices.NearFar(c);
         public StatusEffect StatusToApplyOnHit(AttackContext c)=>StatusNames.StatusOf(AttackDamageTypes.ToDamageType(c.AttackType));
         public void OnTurnStarted(PlayerState owner,GameManager game)
-        {if(ReferenceEquals(game.CurrentPlayer,owner))ClericChoices.FreeOperation(owner,game,null,true,"风暴启程");}
+        {if(ReferenceEquals(game.CurrentPlayer,owner))ClericChoices.FreeOperation(owner,game,null,true,"风暴之心");}
     }
 }

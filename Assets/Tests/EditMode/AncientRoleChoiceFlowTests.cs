@@ -26,10 +26,10 @@ namespace FingerDiceDuel.Tests
         {
             var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;var b=g.PlayerB;
             b.LeftHand.SetValue(2);board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);
-            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.True(board.Hint.Contains("大地束缚"));
+            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.True(board.Hint.Contains("自然恢复"));
             Assert.False(b.HasStatus(StatusEffect.Restrained));Assert.True(board.PendingWizardChoice.TargetsPlayer);
             Assert.True(board.ChooseWizardHand(b.LeftHand));Assert.True(b.HasStatus(StatusEffect.Restrained));
-            Assert.True(board.Hint.Contains("大地封锁"));Assert.False(board.PendingWizardChoice.AllowDecline);
+            Assert.True(board.Hint.Contains("大地行者"));Assert.False(board.PendingWizardChoice.AllowDecline);
             Assert.False(board.ChooseWizardHand(null));Assert.True(board.ChooseWizardHand(a.RightHand));
             Assert.True(a.RightHand.IsTargetRestricted);Assert.True(a.RightHand.CanBeOperated);
             Assert.AreEqual(1,g.TurnCount);Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);
@@ -40,14 +40,14 @@ namespace FingerDiceDuel.Tests
             var board=Board(CharacterDefinition.CircleOfTheLand,out var g);g.PlayerB.LeftHand.SetValue(2);
             board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
             Assert.True(board.ChooseWizardHand(null));Assert.False(g.PlayerB.HasStatus(StatusEffect.Restrained));
-            Assert.True(board.Hint.Contains("大地封锁"));board.ChooseWizardHand(g.PlayerB.RightHand);
+            Assert.True(board.Hint.Contains("大地行者"));board.ChooseWizardHand(g.PlayerB.RightHand);
             Assert.True(g.PlayerB.RightHand.IsTargetRestricted);
         }
         [Test] public void Land_end_hook_runs_after_current_player_has_already_changed()
         {
             var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;
             board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
-            Assert.AreEqual(g.PlayerB,g.CurrentPlayer);Assert.True(board.Hint.Contains("大地封锁"));
+            Assert.AreEqual(g.PlayerB,g.CurrentPlayer);Assert.True(board.Hint.Contains("大地行者"));
             board.ChooseWizardHand(a.LeftHand);g.ForceActivePlayerForTest(a);g.BeginTurn();Assert.False(a.LeftHand.IsTargetRestricted);
         }
         [Test] public void Multiple_land_seals_have_independent_sources_and_death_clears_own_source()
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.Tests
             var board=Board(CharacterDefinition.OathOfTheAncients,out var g);var a=g.PlayerA;var b=g.PlayerB;
             a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);
             board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);board.ClickHand(b.LeftHand);
-            Assert.True(board.Hint.Contains("古贤束缚"));Assert.False(b.HasStatus(StatusEffect.Restrained));
+            Assert.True(board.Hint.Contains("自然之怒"));Assert.False(b.HasStatus(StatusEffect.Restrained));
             Assert.True(board.ChooseWizardHand(null));Assert.False(b.HasStatus(StatusEffect.Restrained));
         }
         [Test] public void Ancient_high_health_healing_is_a_target_choice_not_an_automatic_enemy_heal()

@@ -20,10 +20,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         private static void RestrainInRange(PlayerState owner, GameManager manager)
         {
             if (owner == null || manager == null) return;
-            AncientRoleChoices.Offer(AncientRoleChoices.AncientRestrain,"古贤束缚 · 选择射程内角色或不发动",owner,manager,
+            AncientRoleChoices.Offer(AncientRoleChoices.AncientRestrain,"自然之怒 · 选择射程内角色或不发动",owner,manager,
                 AncientRoleChoices.OtherPlayers(owner,manager,true),true,true,hand=>{
                     var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                    target.ApplyStatus(StatusEffect.Restrained,2,owner);manager.NoteSkill(owner,"古贤束缚",$"{target.Name} 束缚2回合");});
+                    target.ApplyStatus(StatusEffect.Restrained,2,owner);manager.NoteSkill(owner,"自然之怒",$"{target.Name} 束缚2回合");});
         }
 
         public void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager)
@@ -31,15 +31,15 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (owner == null || !owner.IsAlive || damage <= 0 || manager == null) return;
             if (owner.Health >= 10)
             {
-                AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"古贤庇护 · 选择射程内另一名角色回复2",owner,manager,
+                AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"不灭哨卫 · 选择射程内另一名角色回复2",owner,manager,
                     AncientRoleChoices.OtherPlayers(owner,manager,true),false,true,hand=>{
                         var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"古贤庇护",$"{target.Name} 回复{target.Health-before}");});
+                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{target.Health-before}");});
             }
             else
             {
                 owner.Heal(2);
-                manager.NoteSkill(owner, "古贤自愈", "回复 2 点");
+                manager.NoteSkill(owner, "不灭哨卫", "回复 2 点");
             }
         }
 
