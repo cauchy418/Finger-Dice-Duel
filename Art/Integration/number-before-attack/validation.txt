@@ -1,0 +1,9 @@
+PASS raycast PaintedHandCard
+PASS raycast PaintedHandCard
+PASS target selection follows arithmetic
+PASS new digit visible before target
+PASS new right-hand gesture visible before attack
+PASS no premature damage or duplicate rule mutation
+PASS raycast PaintedHandCard
+PASS one operation and one attack resolve
+PASS projection cleared after commit

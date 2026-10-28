@@ -1632,7 +1632,9 @@ namespace FingerDiceDuel.UI
 
         private static string Signed(int v) => v > 0 ? "+" + v : v.ToString();
 
-        private static void RefreshSide(HandCard[] cards, PlayerState owner, Hand selectedHand,
+        public System.Func<Hand,int?> HandValuePreview {get;set;}
+
+        private void RefreshSide(HandCard[] cards, PlayerState owner, Hand selectedHand,
                                         IReadOnlyList<Hand> highlightAsChoices,
                                         IReadOnlyList<Hand> extraHighlights)
         {
@@ -1658,14 +1660,16 @@ namespace FingerDiceDuel.UI
                 else if (card.IsClickable) outline = HandVisual.OutlineState.Available;
                 else if (isChoice) outline = HandVisual.OutlineState.Highlighted;
 
-                card.ValueText.text = hand.Value.ToString();
-                card.StatusText.text = HandVisual.StatusText(hand, card.Owner);
+                int? preview=HandValuePreview?.Invoke(hand);
+                Hand visual=preview.HasValue?new Hand(preview.Value):hand;
+                card.ValueText.text = visual.Value.ToString();
+                card.StatusText.text = HandVisual.StatusText(visual, card.Owner);
                 if (card.Gesture != null)
                 {
-                    RefreshPaintedHand(card, hand, outline);
+                    RefreshPaintedHand(card, visual, outline);
                     continue;
                 }
-                card.Background.color = HandVisual.CardColor(hand, card.Owner);
+                card.Background.color = HandVisual.CardColor(visual, card.Owner);
                 card.Outline.color = HandVisual.OutlineColor(outline);
                 card.Outline.enabled = outline != HandVisual.OutlineState.Hidden;
             }

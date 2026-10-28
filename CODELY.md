@@ -658,3 +658,7 @@ IOperationAddendIllusion改为持2的资格查询，不再有随机数。GameMan
 耳鸣集中接入状态枚举、显示上限、回复入口、普通／赌博／有效偷窃合盾、入伤倍率与毒／血持续伤害；雷鸣免疫是状态能力，不写临时免疫集合。新增两条雷电反应与旧反应并存；秘法手册11反应，21负面＋3角色状态。生命净化先移除负面再治疗，圣光清除并阻止耳鸣。
 
 AI专属决策见`GreedyChoiceProvider.ClericDomains.cs`：换位比较双方数字即时价值与自身准备收益，对已知队友不魅惑／不反击；反击避开双免疫，按抗性、易伤及现有状态选雷电。新角色使用L／H12／D43默认值，未重新训练；旧52角色胜率保持改版前快照。制作源图与完整提示词见[美术记录](Art/Production/cleric-domains-v1/README.md)，实机验收见[UI记录](Art/Integration/cleric-domains-v1/README.md)。
+
+## 数字先显示、后选择攻击目标（2026-10-29）
+
+控制器在ContinueSelectedOperation进入任何目标／技能选择前记录只读显示投影，GameManager.OperationDisplay基于原始手值、状态修正与已答复换位生成数字；不调用RewriteEffect、随机源或技能。GameBoardUI的HandValuePreview统一供1v1与RefreshRing读取，数字与手型同步，绘制替身保持真实手牌的左右方向；点击和判定仍绑定原手牌。实际提交前清除投影，回合开始／重选也清除，防止二次相加或残留。新增7项顺序／快照／放弃／状态／巨龙／换位回归测试。

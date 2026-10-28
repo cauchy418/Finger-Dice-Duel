@@ -121,7 +121,7 @@ namespace FingerDiceDuel.UI
 
         private static void RefreshPaintedHand(HandCard card, Hand hand, HandVisual.OutlineState outline)
         {
-            bool left = ReferenceEquals(hand, card.Owner.LeftHand);
+            bool left = ReferenceEquals(card.Hand, card.Owner.LeftHand);
             string gesture = hand.IsShield && hand.Value == 5 ? "5_shield" : hand.Value.ToString();
             card.Gesture.sprite = BattleArt.Get("Hands/hand_" + (left ? "left_" : "right_") + gesture);
             card.Gesture.color = !card.Owner.IsAlive ? new Color(0.45f, 0.45f, 0.45f) : hand.IsConcealed ? new Color(0.65f, 0.80f, 0.80f) : Color.white;

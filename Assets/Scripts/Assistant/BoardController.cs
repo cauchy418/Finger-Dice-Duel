@@ -897,6 +897,7 @@ namespace FingerDiceDuel.Assistant
 
         public void BeginTurn()
         {
+            _operationDisplay.Clear();
             if(TryStartWizardBoundary(BeginTurn)) return;
             FlushSkillLog();
             if (_game.IsGameOver)
@@ -990,6 +991,7 @@ namespace FingerDiceDuel.Assistant
 
         private void SetupFirstStep()
         {
+            _operationDisplay.Clear();
             _shieldBreakChoiceCollected = _afterShieldBreakChoice = false;
             _preTargetRangeAnswered.Clear();
             SelectedHand = null;
@@ -2406,6 +2408,7 @@ namespace FingerDiceDuel.Assistant
         public void CancelSelection()
         {
             if (Phase != BoardPhase.ChoosingTargetHand) return;
+            _operationDisplay.Clear();
             _game.ClearPreparedOperationAddend();_game.DruidSecondAddend=null;
 
             SelectedHand = null;
@@ -4132,6 +4135,7 @@ namespace FingerDiceDuel.Assistant
             }
             bool wasExtra = _extraActionActive;
 
+            _operationDisplay.Clear();
             TurnResult result=null;
             try
             {
