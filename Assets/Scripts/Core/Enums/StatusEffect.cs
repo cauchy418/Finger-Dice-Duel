@@ -335,6 +335,10 @@
             DamageType.Force, DamageType.Psychic,
         };
 
+        /// <summary>与手册的负面效果分类一致；角色状态不参与格挡／抗性减时长。</summary>
+        public static bool IsNegativeStatus(StatusEffect status)
+            => status != StatusEffect.None && status != StatusEffect.HolyLight && status != StatusEffect.WarBlessing;
+
         /// <summary>全部22种计时状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {

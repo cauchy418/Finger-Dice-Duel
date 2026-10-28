@@ -28,8 +28,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 :attack.DefenseBonusAtStart(owner)>attack.DefenseBonusAtStart(target);
             if(five){if(initiated)AttackStacks++;else DefenseStacks++;SkillUseCount++;
                 game?.NoteSkill(owner,"征服之势",initiated?"攻击+1":"防御+1");}
-            if(panic&&target?.IsAlive==true){target.ApplyStatus(StatusEffect.Panic,2,owner);
-                if(target.HasStatus(StatusEffect.Panic))game?.NoteSkill(owner,"征服威慑",target.Name+" 恐慌2回合");}
+            if(panic&&target?.IsAlive==true)attack.ApplyAttachedStatus(target,StatusEffect.Panic,2,owner,game,"征服威慑");
         }
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {

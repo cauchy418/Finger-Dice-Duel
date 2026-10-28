@@ -125,7 +125,7 @@ namespace FingerDiceDuel.Tests
         {
             var g = Game(); var p = g.PlayerB; p.ApplyStatus(StatusEffect.Poison, 1);
             p.LeftHand.SetValue(5); p.LeftHand.SetShieldState(ShieldState.Formed); Hit(g, AttackDamageType.Acid);
-            Assert.AreEqual(2, p.StatusTurnsLeft(StatusEffect.Poison)); Assert.AreEqual(2, p.StatusTurnsLeft(StatusEffect.Acid));
+            Assert.AreEqual(1, p.StatusTurnsLeft(StatusEffect.Poison)); Assert.AreEqual(1, p.StatusTurnsLeft(StatusEffect.Acid));
             p.RemoveStatus(StatusEffect.Acid); p.ApplyStatus(StatusEffect.Poison, 1); p.AddImmunity(AttackDamageType.Acid);
             Hit(g, AttackDamageType.Acid); Assert.AreEqual(1, p.StatusTurnsLeft(StatusEffect.Poison)); Assert.IsFalse(p.HasStatus(StatusEffect.Acid));
         }

@@ -140,5 +140,10 @@ namespace FingerDiceDuel.Tests
    board.ClickHand(a.RightHand);Assert.AreEqual(1,g.TurnCount);Assert.True(board.LastTurn!=null);Assert.True(board.LastTurn.ExtraAttack.HasValue);
    Assert.True(b.Health<16);Assert.False(g.PendingClericResolution);}
 
+  [Test] public void Tempest_counter_counts_as_guard_for_negative_duration_only()
+  {for(int flags=0;flags<4;flags++){var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TempestDomain);g.ClericPolicyFor=p=>new Policy{Counter=(flags&1)!=0};g.PlayerB.LeftHand.SetValue(4);if((flags&2)!=0)g.PlayerB.AddResistance(AttackDamageType.Fire);
+   var c=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4){AttackType=AttackDamageType.Fire,AttackerStatusOverride=StatusEffect.Burn,IgnoreStatBonuses=true};c.Resolve(g.GetChoiceProvider(g.PlayerB),g);
+   Assert.AreEqual((flags&1)!=0,c.TempestCountered);Assert.AreEqual(2-((flags&1)!=0?1:0)-((flags&2)!=0?1:0),g.PlayerB.StatusTurnsLeft(StatusEffect.Burn));}}
+
  }
 }

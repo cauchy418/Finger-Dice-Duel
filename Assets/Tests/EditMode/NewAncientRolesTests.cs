@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
@@ -75,7 +75,7 @@ namespace FingerDiceDuel.Tests
             fiend.GainFalseLife(5);
             var logic = (TheFiendLogic)fiend.Character;
             var ctx = new AttackContext(fiend, foe, fiend.LeftHand, 4);
-            logic.OnResolveAttack(ctx);
+            ctx.Resolve(game.GetChoiceProvider(foe),game);
             Assert.AreEqual(0, fiend.FalseLife);
             Assert.IsTrue(foe.HasStatus(StatusEffect.Disabled));
         }

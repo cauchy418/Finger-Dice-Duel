@@ -34,8 +34,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(choice!=(int)StatusEffect.Disabled && choice!=(int)StatusEffect.Panic)return;
             var status=(StatusEffect)choice;
             context.Attacker.ClearFalseLife();
-            context.Defender.ApplyStatus(status, 2, context.Attacker);
-            context.Manager?.NoteSkill(context.Attacker, "妖魔契约", $"耗尽虚假生命，{context.Defender.Name} {StatusNames.Of(status)}2回合");
+            context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"妖魔契约");
+            context.Manager?.NoteSkill(context.Attacker, "妖魔契约", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
         }
 
         public void OnHitLanded(AttackContext context, GameManager manager)

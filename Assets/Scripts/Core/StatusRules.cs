@@ -345,13 +345,13 @@ namespace FingerDiceDuel.Core
         public static bool HasSonicCrossReaction(PlayerState target,AttackDamageType type)
             =>target!=null&&(type==AttackDamageType.Lightning&&target.HasStatus(StatusEffect.Resonance)
                 ||type==AttackDamageType.Thunder&&target.HasStatus(StatusEffect.Shock));
-        public static void ApplySonicCrossReaction(PlayerState target,AttackDamageType type,PlayerState source,GameManager game)
+        public static void ApplySonicCrossReaction(PlayerState target,AttackDamageType type,PlayerState source,GameManager game,int turns=2,bool checkedImmunity=false)
         {
-            if(!HasSonicCrossReaction(target,type)||target.HasImmunity(type))return;
+            if(turns<=0||!HasSonicCrossReaction(target,type)||!checkedImmunity&&target.HasImmunity(type))return;
             var old=type==AttackDamageType.Lightning?StatusEffect.Resonance:StatusEffect.Shock;
             var previous=target.StatusSourceOf(old);
-            target.ApplyStatus(old,2,previous??source);target.ApplyStatus(StatusEffect.Tinnitus,2,source);
-            if(target.HasStatus(StatusEffect.Tinnitus))game?.NoteSkill(source,"元素反应",$"{target.Name}：{StatusNames.Of(old)}刷新2回合，耳鸣2回合");
+            target.ApplyStatus(old,turns,previous??source);target.ApplyStatus(StatusEffect.Tinnitus,turns,source);
+            if(target.HasStatus(StatusEffect.Tinnitus))game?.NoteSkill(source,"元素反应",$"{target.Name}：{StatusNames.Of(old)}刷新{turns}回合，耳鸣{turns}回合");
         }
         /// <summary>抗性：向上取整减半；物理抗性覆盖三种物理伤害。</summary>
         public static int ApplyResistance(PlayerState defender, int damage, AttackDamageType type)
@@ -371,13 +371,13 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>仅在命中提交时刷新已有的酸/毒状态；不在伤害预览阶段写入状态。</summary>
-        public static StatusEffect RefreshAcidPoisonInteraction(PlayerState target, DamageType type)
+        public static StatusEffect RefreshAcidPoisonInteraction(PlayerState target, DamageType type,int turns=PlayerState.StatusDurationTurns)
         {
-            if (target == null) return StatusEffect.None;
+            if (target == null||turns<=0) return StatusEffect.None;
             StatusEffect refresh = type == DamageType.Acid ? StatusEffect.Poison
                 : type == DamageType.Poison ? StatusEffect.Acid : StatusEffect.None;
             if (refresh == StatusEffect.None || !target.HasStatus(refresh)) return StatusEffect.None;
-            target.ApplyStatus(refresh, PlayerState.StatusDurationTurns, target.StatusSourceOf(refresh));
+            target.ApplyStatus(refresh, turns, target.StatusSourceOf(refresh));
             return refresh;
         }
 

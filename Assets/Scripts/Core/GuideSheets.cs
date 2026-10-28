@@ -226,7 +226,7 @@ namespace FingerDiceDuel.Core
                 var entries = new List<GuideEntry>();
                 foreach (var type in ResistanceNames.All)
                 {
-                    string effect = affinity == DamageAffinity.Resistance ? "伤害减半，向上取整"
+                    string effect = affinity == DamageAffinity.Resistance ? "伤害减半，向上取整；攻击附加的负面效果时长−1"
                         : affinity == DamageAffinity.Vulnerability ? "伤害×1.5，向上取整"
                         : AttackDamageTypes.IsMagic(type) ? "伤害为0，阻止本击附加状态与元素反应" : "伤害为0，不额外免疫物理技能状态";
                     string text = DamageAffinityNames.Name(affinity, type) + "：" + effect;
@@ -268,7 +268,7 @@ namespace FingerDiceDuel.Core
                                   {
                                       MagicGroup(),
                                       PhysicalGroup(),
-                                  }, note: "状态在命中后附加；护盾／太极抵挡仍算命中，闪避／取消不算。元素反应见第 3 页。");
+                                  }, note: "攻击附加的负面状态按每段命中顺序附加／刷新。格挡、对应抗性各使时长−1，最低0；角色状态不减时长。闪避／取消不附加。元素反应见第3页。");
         }
 
         /// <summary>「魔法伤害」这一组：10 种，沿用现有配色。</summary>
@@ -317,13 +317,13 @@ namespace FingerDiceDuel.Core
             {
                 string text=StatusNames.Of(status)+"："+StatusNames.Describe(status);lines.Add(text);
                 var entry=new GuideEntry(StatusNames.IconKeyOf(status),StatusNames.StatusColorOf(status),text,status);
-                if(status==StatusEffect.HolyLight||status==StatusEffect.WarBlessing)character.Add(entry);else negative.Add(entry);
+                if(StatusNames.IsNegativeStatus(status))negative.Add(entry);else character.Add(entry);
             }
             string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣光立即清除并阻止重新进入。";
             character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "21种负面状态；圣光、剑歌、战恩为角色状态。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
+                "21种负面状态；圣光、剑歌、战恩为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>
@@ -378,6 +378,6 @@ namespace FingerDiceDuel.Core
         public static GuideSheet ElementReactions()
             => new GuideSheet("元素反应", "Elemental Reactions", InteractionLines(), twoColumn: false,
                 groups: new List<GuideGroup> { InteractionGroup() },
-                note: "盾挡／太极算命中；闪避／取消不算。增伤向上取整。\n免疫对应魔法伤害时，阻止附加、刷新与清除状态。\n酸毒、雷电互刷不额外增伤；新附耳鸣从后续伤害生效。");
+                note: "格挡仍算命中，攻击附加的负面效果时长−1；对应抗性再−1，最低0。\n闪避／取消不附状态；多段按顺序附加／刷新。增伤向上取整。\n免疫对应魔法伤害时，阻止附加、刷新与清除状态。\n酸毒、雷电互刷不额外增伤；新附耳鸣从后续伤害生效。");
     }
 }

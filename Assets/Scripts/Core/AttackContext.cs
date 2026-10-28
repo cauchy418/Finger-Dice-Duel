@@ -433,6 +433,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasBlocked = true;
                     BlockedHits++;
+                    RecordElementHit(i,AttackGuard.Necromancy);
                     continue;
                 }
 
@@ -441,6 +442,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasBlocked = true;
                     BlockedHits++;
+                    RecordElementHit(i,AttackGuard.Shield);
                     continue;
                 }
 
@@ -455,6 +457,7 @@ namespace FingerDiceDuel.Core
                 if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
                 for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
                 int dealt = perHit;
+                var guard=AttackGuard.None;
                 int reductionThisSegment = 0;
 
                 while (taichiRemaining > 0)
@@ -467,6 +470,7 @@ namespace FingerDiceDuel.Core
                         break;
                     }
 
+                    guard|=AttackGuard.Mitigation;
                     taichiUsed = true;
                     taichiStagesUsed++;
                     taichiRemaining--;
@@ -496,6 +500,7 @@ namespace FingerDiceDuel.Core
                         {
                             int before = dealt;
                             dealt = barrier.AbsorbDamage(Defender, dealt, this, manager);
+                            if(dealt<before)guard|=AttackGuard.Barrier;
                             if (dealt != before)
                                 manager.NoteSkill(protector, "奥术屏障", $"吸收 {before - dealt}，剩余 {dealt}");
                         }
@@ -514,6 +519,7 @@ namespace FingerDiceDuel.Core
                     }
                 }
 
+                bool wasPolymorphed=Defender.IsPolymorphed;
                 int healthBefore = Defender.Health;
                 int falseLifeBefore = Defender.FalseLife;
                 int actualDamage=Defender.TakeDamageResolved(dealt);
@@ -521,6 +527,9 @@ namespace FingerDiceDuel.Core
                 int absorbedFalseLife=falseLifeBefore-Defender.FalseLife;
                 if(absorbedFalseLife>0)manager?.NoteSkill(Defender,"虚假生命",$"吸收{absorbedFalseLife}，剩余{Defender.FalseLife}");
 
+                if(absorbedFalseLife>0)guard|=AttackGuard.FalseLife;
+                if(wasPolymorphed&&dealt>0)guard|=AttackGuard.Polymorph;
+                RecordElementHit(i,guard,dealt,actualDamage);
                 AppliedDamage += dealt;
                 LandedHits++;
 
@@ -601,17 +610,11 @@ namespace FingerDiceDuel.Core
                 ReflectedAttackType = reflectCtx.AttackType;
             }
 
-            // 4. **法师·塑能学派：命中即挂状态**。
-            //
-            //    玩家确认的命中口径：
-            //      · 被盾**抵挡**（BlockedHits）、被太极**减免**（WasMitigated）
-            //        -> **仍算命中**，照样挂状态；
-            //      · 被**闪避**导致一段都没落地、或被**取消**（HitCount == 0）
-            //        -> **不算命中**（不挂，且那次的"放弃"作废）。
-            //
-            //    ⚠️ 挂状态的是**攻击方**的角色（法师·塑能学派），挂到**被实际承受伤害的人**身上
-            //       （圣武士·奉献之誓可以把目标改成自己 —— 那就挂给代挡者，符合"谁挨打谁中招"）。
+            // Each landed/guarded segment applies its own duration, in hit order.
+            // Negative statuses: guard -1 and corresponding resistance -1; role states keep their duration.
+            // Deferred attachment preserves the existing whole-attack damage/affinity snapshot.
             ApplyAttackerStatus(manager);
+            FinishAttachedStatusPhase();
             ApplySkillBleed(manager);
 
             // 5. **命中后的通用钩子**（邪术师·旧日支配者的距离修正走这里）。
@@ -674,8 +677,7 @@ namespace FingerDiceDuel.Core
             if (!InflictsBleed || WasCancelled || HitCount == 0) return;
             if (LandedHits == 0 && BlockedHits == 0) return;
             if (Defender == null || !Defender.IsAlive) return;
-            Defender.ApplyStatus(StatusEffect.Bleed, PlayerState.StatusDurationTurns, Attacker);
-            manager?.NoteSkill(Attacker, "流血", $"{Defender.Name}：{PlayerState.StatusDurationTurns} 回合");
+            ApplyAttachedStatus(Defender,StatusEffect.Bleed,PlayerState.StatusDurationTurns,Attacker,manager,"流血");
         }
 
         /// <summary>把命中通知攻击方角色，用于邪术师·旧日支配者距离修正等通用命中效果。</summary>
@@ -703,7 +705,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void ApplyAttackerStatus(GameManager manager)
         {
-            if (Attacker == null) return;
+            if (Attacker == null || WasCancelled) return;
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
             if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
 
@@ -718,7 +720,7 @@ namespace FingerDiceDuel.Core
                 && (LandedHits > 0 || BlockedHits > 0))
             {
                 StatusRules.ClearInteractionStatuses(Defender, InteractionDamageType);
-                if (_greaseReaction) manager?.NoteSkill(Attacker, "元素反应", $"{Defender.Name}：清除油腻，伤害×1.5，附加燃烧");
+                if (_greaseReaction) manager?.NoteSkill(Attacker, "元素反应", $"{Defender.Name}：清除油腻，伤害×1.5");
             }
 
             // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
@@ -737,16 +739,20 @@ namespace FingerDiceDuel.Core
             PlayerState victim = Defender;
             if (victim == null || !victim.IsAlive) return;
 
-            if (_acidPoisonReaction)
+            foreach(var hit in _elementHits)
             {
-                var refreshed = StatusRules.RefreshAcidPoisonInteraction(victim, InteractionDamageType);
-                if (refreshed != StatusEffect.None)
-                    manager?.NoteSkill(Attacker, "元素反应", $"{victim.Name}：{StatusNames.Of(refreshed)}刷新至2回合");
+                int turns=hit.StatusDuration(status,StatusDuration);int reactionTurns=hit.Duration(PlayerState.StatusDurationTurns);
+                if(_acidPoisonReaction&&reactionTurns>0)
+                {
+                    var refreshed=StatusRules.RefreshAcidPoisonInteraction(victim,InteractionDamageType,reactionTurns);
+                    if(refreshed!=StatusEffect.None)manager?.NoteSkill(Attacker,"元素反应",$"{victim.Name}：{StatusNames.Of(refreshed)}刷新至{reactionTurns}回合");
+                }
+                if(_sonicCrossReaction&&reactionTurns>0)StatusRules.ApplySonicCrossReaction(victim,AttackType,Attacker,manager,reactionTurns,true);
+                string penalty=(hit.Guard!=AttackGuard.None?"格挡−1":"")+(hit.Resisted?(hit.Guard!=AttackGuard.None?"，抗性−1":"抗性−1"):"");
+                if(turns<=0){manager?.NoteSkill(Attacker,"附加抵挡",$"第{hit.Index+1}段：{penalty}，附加0回合，不施加或刷新状态");continue;}
+                victim.ApplyStatus(status,turns,Attacker);
+                manager?.NoteSkill(Attacker,"施加状态",$"第{hit.Index+1}段 {victim.Name}：{StatusNames.Of(status)} {turns}回合"+(penalty.Length>0?"（"+penalty+"）":""));
             }
-
-            if(_sonicCrossReaction)StatusRules.ApplySonicCrossReaction(victim,AttackType,Attacker,manager);
-            victim.ApplyStatus(status, StatusDuration, Attacker);
-            manager?.NoteSkill(Attacker, "施加状态", $"{victim.Name}：{StatusNames.Of(status)} {StatusDuration} 回合");
         }
 
         /// <summary>

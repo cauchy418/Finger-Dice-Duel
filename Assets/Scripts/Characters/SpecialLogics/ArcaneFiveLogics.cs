@@ -27,17 +27,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int DefaultDefenseBonus=>-1;
         public override int BaseAttackRange=>InfiniteAttackRange;
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>ArcaneChoices.NearFar(ctx);
-        public void OnCompletedDamage(AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(attack.ActualDamageSource,attack.Defender,game);}
-        public void OnAttackDamageTaken(PlayerState owner,AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(owner,attack.ActualDamageSource,game);}
-        private static void Offer(PlayerState owner,PlayerState target,GameManager game)
+        public void OnCompletedDamage(AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(attack.ActualDamageSource,attack.Defender,game,attack);}
+        public void OnAttackDamageTaken(PlayerState owner,AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(owner,attack.ActualDamageSource,game,attack);}
+        private static void Offer(PlayerState owner,PlayerState target,GameManager game,AttackContext attack)
         {
             if(owner==null||target==null||!owner.IsAlive||!target.IsAlive||target.HasStatus(StatusEffect.HolyLight))return;
             var options=new List<SkillChoiceOption>();foreach(var status in new[]{StatusEffect.Disabled,StatusEffect.Charm})
-                options.Add(new SkillChoiceOption((int)status,StatusNames.Of(status),"Status/"+StatusNames.IconKeyOf(status),"持续2回合；之后实际掉血解除。"));
+                options.Add(new SkillChoiceOption((int)status,StatusNames.Of(status),"Status/"+StatusNames.IconKeyOf(status),"基础2回合，格挡／对应抗性各−1；之后实际掉血解除。"));
             options.Add(new SkillChoiceOption(0,"不发动","Subclasses/wizard_school_of_enchantment"));
             ArcaneChoices.Option(ArcaneChoices.Enchantment,"惑控心智 · 对"+target.Name+"施加失能或魅惑",owner,target,game,options,value=>{
-                if(value==0||!target.IsAlive)return;target.ApplyEnchantment((StatusEffect)value,owner);
-                game.NoteSkill(owner,"惑控心智",$"{target.Name} {StatusNames.Of((StatusEffect)value)}2回合，受伤解除");});
+                if(value==0||!target.IsAlive)return;attack.ApplyAttachedStatus(target,(StatusEffect)value,2,owner,game,"惑控心智",enchantment:true,requireHealthDamage:true);});
         }
     }
 

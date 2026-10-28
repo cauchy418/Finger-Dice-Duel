@@ -58,13 +58,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             _technique=null;
             if(choice==-1 && Ki>=4)
             {
-                Ki-=4;context.Defender.SetResonance(true);
-                context.Manager?.NoteSkill(context.Attacker,"共鸣之气",$"{context.Defender.Name} 被共鸣");
+                Ki-=4;context.ApplyUntimedOnHit(()=>{context.Defender.SetResonance(true);context.Manager?.NoteSkill(context.Attacker,"共鸣之气",$"{context.Defender.Name} 被共鸣");});
             }
             else if(Ki>=2 && (choice==(int)StatusEffect.KnockedDown || choice==(int)StatusEffect.Stunned))
             {
-                Ki-=2;var status=(StatusEffect)choice;context.Defender.ApplyStatus(status,2,context.Attacker);
-                context.Manager?.NoteSkill(context.Attacker,"散打",$"{context.Defender.Name} {StatusNames.Of(status)} 2 回合");
+                Ki-=2;var status=(StatusEffect)choice;context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"散打");
+
             }
         }
 

@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Core
                     player.StatusTurnsLeft(status).ToString(),status));
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
-                    ResistanceNames.Name(type)+(player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整。":"：该类型伤害减半，向上取整。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
+                    ResistanceNames.Name(type)+(player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
             if(player.Character is INpcCircuitProgress phantom)
                 result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3"));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);

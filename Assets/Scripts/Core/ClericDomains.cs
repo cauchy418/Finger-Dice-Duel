@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
                     if(!owner.IsAlive||!enemy.IsAlive){completed();return;}
                     var counter=new AttackContext(owner,enemy,source,4){IsTempestCounter=true,AttackType=(AttackDamageType)v,AttackValueOverride=4,AttackerProvider=GetChoiceProvider(owner)};
                     Action finish=()=>{
-                        counter.Resolve(GetChoiceProvider(enemy),this);NoteSkill(owner,"风暴狂怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害");
+                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴狂怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害");
                         ClericChoices.FreeOperation(owner,this,source,false,"风暴狂怒",completed);
                     };
                     if(DeferWizardAttack?.Invoke(counter,finish)!=true)finish();

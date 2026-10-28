@@ -108,7 +108,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(logic.Ki >= 4);
 
             var ctx = new AttackContext(monk, target, monk.LeftHand, 4);
-            logic.OnResolveAttack(ctx);
+            ctx.Resolve(game.GetChoiceProvider(target),game);
             Assert.IsTrue(target.HasResonance);
             Assert.IsTrue(logic.Ki < 4);
         }

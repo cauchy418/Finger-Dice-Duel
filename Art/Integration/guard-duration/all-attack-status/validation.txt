@@ -1,0 +1,7 @@
+PASS shielded elemental burn and skill bleed both apply one turn
+PASS actual burn marker displays one turn
+PASS actual battle UI includes skill bleed marker
+PASS shield and corresponding resistance prevent burn and skill bleed
+PASS segments independently record one then two turns
+PASS later unguarded hit refreshes both burn and skill bleed to two turns
+PASS skill log identifies each segment

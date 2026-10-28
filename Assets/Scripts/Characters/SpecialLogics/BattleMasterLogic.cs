@@ -169,10 +169,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             StatusEffect chosen = ResolveManeuver(attacker, target, options, manager);
             if (chosen == StatusEffect.None || !IsValidOption(options, chosen)) return;
 
-            target.ApplyStatus(chosen, PlayerState.StatusDurationTurns, attacker);
+            context.ApplyAttachedStatus(target,chosen,PlayerState.StatusDurationTurns,attacker,manager,"战斗招式",requireDamage:true);
             _maneuverCount++;
-            manager?.NoteSkill(attacker, "战斗招式",
-                $"{target.Name}：{StatusNames.Of(chosen)} {PlayerState.StatusDurationTurns} 回合");
+
         }
 
         private StatusEffect ResolveManeuver(PlayerState attacker, PlayerState target,
