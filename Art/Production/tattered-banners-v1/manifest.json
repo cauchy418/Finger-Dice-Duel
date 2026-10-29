@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-30",
+  "method": "builtin image_gen",
+  "resource_key": "Backgrounds/tattered_banners_chapter_03",
+  "runtime_connected": false,
+  "processing": "Pillow RGB, LANCZOS ImageOps.fit to 1920x1080; source preserved",
+  "prompt": "prompt.txt",
+  "files": [
+    {
+      "path": "Art/Production/tattered-banners-v1/sources/tattered_banners_native.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "sha256": "cbda4bba11a273b25415767fd890dac6c4e550af9a6cdc329d669d0899f4e1bb"
+    },
+    {
+      "path": "Art/Production/tattered-banners-v1/selected/Backgrounds/tattered_banners_chapter_03.png",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "a1b8b1e845b45db9aef591923ad767ff81023c239dec6075f75097c809584a84"
+    },
+    {
+      "path": "Assets/Resources/Art/Battle/v1/Backgrounds/tattered_banners_chapter_03.png",
+      "dimensions": [
+        1920,
+        1080
+      ],
+      "mode": "RGB",
+      "sha256": "a1b8b1e845b45db9aef591923ad767ff81023c239dec6075f75097c809584a84"
+    }
+  ]
+}
