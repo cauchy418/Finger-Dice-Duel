@@ -175,7 +175,7 @@
         /// <summary>游侠·猎人：7 标记与印记攻击。</summary>
         RangerHunter = 35,
 
-        /// <summary>武僧·散打宗：气、共鸣、倒伏/震慑与混元体。</summary>
+        /// <summary>武僧·散打宗：气、暗劲、倒伏/震慑与混元体。</summary>
         WayOfTheOpenHand = 36,
 
         /// <summary>武僧·四象宗：气、元素攻击与元素抗性。</summary>
@@ -206,6 +206,7 @@
         OathOfConquest = 51,
         OathOfVengeance = 52,
         TrickeryDomain = 53,
-        TempestDomain = 54
+        TempestDomain = 54,
+        WayOfTheDrunkenMaster = 55
     }
 }

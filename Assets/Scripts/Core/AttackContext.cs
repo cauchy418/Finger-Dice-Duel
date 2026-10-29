@@ -21,6 +21,7 @@ namespace FingerDiceDuel.Core
         public Hand SourceHand { get; }
         public PlayerState TargetAtStart { get; }
         public bool IsHunterVolley { get; set; }
+        public bool NinjaShadowSplit {get;set;}
 
         /// <summary>原始伤害（来自 HandEffectType 的数值，4/6/8）。</summary>
         public int RawDamage { get; }
@@ -51,7 +52,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 攻击方的抉择接收者，由 <see cref="GameManager"/> 在结算前注入。
-        /// 角色的攻击钩子（如游荡者·风流剑客的潇洒气质）用它回读玩家在运算前的选择。
+        /// 角色的攻击钩子（如游荡者·风流剑客的潇洒无畏）用它回读玩家在运算前的选择。
         /// </summary>
         public IPreTurnChoiceSink AttackerChoiceSink { get; set; }
 
@@ -160,7 +161,7 @@ namespace FingerDiceDuel.Core
         public int StatusDuration { get; set; } = PlayerState.StatusDurationTurns;
         public bool IsStatusDamage { get; set; }
 
-        /// <summary>攻击结算后追加的不可抵挡真实伤害（散打宗共鸣引爆）。</summary>
+        /// <summary>攻击结算后追加的不可抵挡真实伤害（散打宗暗劲引爆）。</summary>
         public int ExtraTrueDamage { get; set; }
 
         private int _wholeAttackHalvings;
@@ -286,7 +287,7 @@ namespace FingerDiceDuel.Core
             // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
             //
             //     ⚠️ 必须在 `OnResolveAttack` **之后**取：
-            //        游荡者·风流剑客的"潇洒气质"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
+            //        游荡者·风流剑客的"潇洒无畏"就是在那个钩子里把 `DamageMultiplier` 设成 1.5，
             //        而"普通挥砍 / 强化穿刺"正是按这个区分（见 SwashbucklerLogic）。
             //
             //     ⚠️⚠️ **已经带了类型就不再重新推导** ——
@@ -403,11 +404,14 @@ namespace FingerDiceDuel.Core
 
             IPreTurnChoiceSink sink = defenderChoice as IPreTurnChoiceSink;
 
+            bool detonateHidden=ReferenceEquals(Defender.HiddenForceSource,Attacker)&&Defender.HasResonance&&!IsStatusDamage;
+            int hiddenExpected=0;
             int nonForceChoice = 0;
             for (int i = 0; i < hits; i++)
             {
                 if (!Attacker.IsAlive || !Defender.IsAlive) break;
-                int currentBase = perHitBase;
+                var drunkenAttack=!IsStatusDamage&&!IsReflected&&!IgnoreIncomingModifiers?MonkRules.DrunkenOf(Attacker):null;
+                int currentBase = drunkenAttack==null?perHitBase:ApplyBonuses(drunkenAttack.RollOutgoing())/(NinjaShadowSplit?2:1);
                 if (_independentHitTypes)
                 {
                     if (i > 0)
@@ -416,7 +420,7 @@ namespace FingerDiceDuel.Core
                         if (Defender.Character is IIncomingElementReaction incoming)
                             incoming.OnIncomingElementAttack(this, manager);
                     }
-                    currentBase = ConfigureHitInteraction(perHitBase);
+                    currentBase = ConfigureHitInteraction(currentBase);
                 }
                 _segmentTypes.Add(AttackType);
                 int defenseChoice = _independentHitTypes && AttackType != AttackDamageType.Force ? nonForceChoice++ : i;
@@ -430,6 +434,13 @@ namespace FingerDiceDuel.Core
                     DodgedHits++;
                     continue;
                 }
+
+                perHit=damageDisabled?0:IgnoreStatBonuses?currentBase:ApplyStatBonuses(currentBase);
+                if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
+                for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
+                if(detonateHidden)hiddenExpected+=System.Math.Max(0,perHit);
+                var drunkenDefense=!IsStatusDamage&&!IgnoreIncomingModifiers?MonkRules.DrunkenOf(Defender):null;
+                if(perHit>0&&drunkenDefense!=null)perHit=drunkenDefense.RollIncoming();
 
                 // 2a-bis. 法师·死灵学派：2→1 完全挡下一段（力场除外）。
                 if (CharacterBehaviors.FirstImplementer<IAttackBlocker>(Defender) is IAttackBlocker blocker
@@ -459,9 +470,7 @@ namespace FingerDiceDuel.Core
                 //     不是"每段只询问一次"。
                 //     玩家确认："两个太极对一段攻击是能都弹的：
                 //     第一次弹一半，第二次弹剩余伤害的一半。"
-                perHit=damageDisabled?0:IgnoreStatBonuses?currentBase:ApplyStatBonuses(currentBase);
-                if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
-                for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
+
                 int dealt = perHit;
                 var guard=AttackGuard.None;
                 int reductionThisSegment = 0;
@@ -546,7 +555,10 @@ namespace FingerDiceDuel.Core
                         postDamage.OnDamageTaken(Defender, Defender.LastDamageToOriginalForm, this, manager);
             }
 
-            // 散打宗：共鸣引爆的额外真实伤害，不经过护盾/抗性/防御。
+            if(detonateHidden && ElementHits.Count>0 && !WasCancelled)
+            {Defender.SetResonance(false);ExtraTrueDamage+=hiddenExpected/2;manager?.NoteSkill(Attacker,"渗透劲","暗劲引爆，真实伤害"+(hiddenExpected/2));}
+
+            // 散打宗：暗劲引爆的额外真实伤害，不经过护盾/抗性/防御。
             if (!damageDisabled && ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
             {
                 int healthBeforeTrue=Defender.Health;
@@ -683,7 +695,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void ApplyAttackerStatus(GameManager manager, ElementHit onlyHit = null)
         {
-            if (Attacker == null || WasCancelled) return;
+            if (Attacker == null || WasCancelled || IsStatusDamage) return;
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
             if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
 
@@ -995,7 +1007,7 @@ namespace FingerDiceDuel.Core
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;
-                        manager.NoteSkill(p, "妖精仪态·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
+                        manager.NoteSkill(p, "妖精步伐·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
                         return true;
                     }
 
@@ -1007,7 +1019,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasCancelled = true;
                     CancelledBy = p.Name;
-                    manager.NoteSkill(p, "妖精仪态·取消攻击", $"取消 {Attacker.Name} 的攻击");
+                    manager.NoteSkill(p, "妖精步伐·取消攻击", $"取消 {Attacker.Name} 的攻击");
                     return true;
                 }
             }

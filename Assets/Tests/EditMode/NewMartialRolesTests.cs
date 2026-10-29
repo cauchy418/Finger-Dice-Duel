@@ -19,6 +19,8 @@ namespace FingerDiceDuel.Tests
             return new GameManager(pA, pB, new SimpleChoiceProvider(), new SimpleChoiceProvider());
         }
 
+        private sealed class HiddenForcePolicy:AbstractChoiceProvider
+        {public override int ChooseSkillOption(string key,System.Collections.Generic.IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)=>key==MartialSkillChoices.OpenHand?-1:0;}
         [Test] public void Ki_icons_follow_current_resource_including_zero()
         {
             foreach(var def in new[]{CharacterDefinition.WayOfTheOpenHand,CharacterDefinition.WayOfTheFourElements})
@@ -28,6 +30,7 @@ namespace FingerDiceDuel.Tests
                 var icon=CombatStatusIcons.For(a,game).Find(i=>i.ResourceKey=="Effects/ki");
                 Assert.AreEqual("2",icon.Counter);
                 b.LeftHand.SetValue(3);game.ExecuteTurn(a,a.LeftHand,b.LeftHand);
+                a.TrySpendMonkKi(a.MonkKi);
                 Assert.AreEqual("0",CombatStatusIcons.For(a,game).Find(i=>i.ResourceKey=="Effects/ki").Counter);
             }
         }
@@ -95,7 +98,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Open_hand_spends_four_ki_to_apply_resonance()
+        public void Open_hand_spends_three_ki_to_apply_hidden_force()
         {
             GameManager game = Game(CharacterDefinition.WayOfTheOpenHand,
                                     CharacterDefinition.Champion,
@@ -103,10 +106,9 @@ namespace FingerDiceDuel.Tests
             var logic = (WayOfTheOpenHandLogic)monk.Character;
             monk.LeftHand.SetValue(4);
             monk.RightHand.SetValue(4);
-            logic.OnOperationResolved(monk, monk.LeftHand, 4, 4, HandEffectType.None, game, null);
-            logic.OnOperationResolved(monk, monk.LeftHand, 4, 4, HandEffectType.None, game, null);
-            Assert.IsTrue(logic.Ki >= 4);
-
+            MonkRules.AfterAction(monk);
+            Assert.AreEqual(3,logic.Ki);
+            game.SkillPolicyFor=p=>new HiddenForcePolicy();
             var ctx = new AttackContext(monk, target, monk.LeftHand, 4);
             ctx.Resolve(game.GetChoiceProvider(target),game);
             Assert.IsTrue(target.HasResonance);
@@ -124,7 +126,7 @@ namespace FingerDiceDuel.Tests
             var ctx = new AttackContext(monk, attacker, monk.LeftHand, 4);
             logic.OnResolveAttack(ctx);
             Assert.AreEqual(AttackDamageType.Lightning, ctx.AttackType);
-            Assert.AreEqual(0, logic.Ki);
+            Assert.AreEqual(1, logic.Ki);
 
             GameManager game2 = Game(CharacterDefinition.WayOfTheFourElements,
                                      CharacterDefinition.Champion,

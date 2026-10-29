@@ -119,7 +119,7 @@ namespace FingerDiceDuel.Tests
         /// **必须写进图鉴的机制**（玩家纠正："不要把这种重要的机制从图鉴里删掉"）。
         ///
         /// 起因：我精简图鉴时，把战士·破阵者的"碎盾换无限距离"从技能里删掉了，
-        /// 而游荡者·风流剑客的"潇洒气质使本次攻击距离无限"**从来就没写过**。
+        /// 而游荡者·风流剑客的"潇洒无畏使本次攻击距离无限"**从来就没写过**。
         /// 玩家指出：攻击距离什么时候变成无限，是玩家做决策必须知道的事。
         ///
         /// \u26a0\ufe0f 所以**篇幅上限不能成为删掉机制的理由**。
@@ -132,7 +132,7 @@ namespace FingerDiceDuel.Tests
             {
                 // 战士·破阵者：碎盾换射程 -> 本次攻击距离无限
                 { CharacterDefinition.BreakerId, new[] { "∞" } },
-                // 游荡者·风流剑客：潇洒气质 -> 本次攻击距离无限
+                // 游荡者·风流剑客：潇洒无畏 -> 本次攻击距离无限
                 { CharacterDefinition.SwashbucklerId, new[] { "∞" } },
                 // 游荡者·盗贼：偷窃是无限距离
                 { CharacterDefinition.ThiefId, new[] { "∞" } },
@@ -263,14 +263,14 @@ namespace FingerDiceDuel.Tests
                 { CharacterDefinition.PathOfTheGiantId, Alignment.ChaoticEvil },
                 { CharacterDefinition.ThiefId, Alignment.NeutralEvil },
                 { CharacterDefinition.GloomStalkerId, Alignment.ChaoticGood },
-                { CharacterDefinition.MagicianId, Alignment.ChaoticNeutral },
+                { CharacterDefinition.MagicianId, Alignment.ChaoticGood },
                 { CharacterDefinition.SchoolOfEvocationId, Alignment.TrueNeutral },
                 { CharacterDefinition.WildMagicId, Alignment.ChaoticNeutral },
                 { CharacterDefinition.TheGreatOldOneId, Alignment.NeutralEvil },
                 { CharacterDefinition.CollegeOfValorId, Alignment.LawfulGood },
                 { CharacterDefinition.OathbreakerId, Alignment.LawfulEvil },
                 { CharacterDefinition.PathOfTheBerserkerId, Alignment.NeutralEvil },
-                { CharacterDefinition.TacticianId, Alignment.ChaoticGood },
+                { CharacterDefinition.TacticianId, Alignment.TrueNeutral },
             };
 
             var wrong = new List<string>();

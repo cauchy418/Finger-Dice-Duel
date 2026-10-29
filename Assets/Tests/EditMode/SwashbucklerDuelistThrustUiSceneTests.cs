@@ -46,7 +46,7 @@ namespace FingerDiceDuel.Tests
             //
             // ⚠️ 顺序（与玩家确认的交互一致）：
             //   ① 点自己的手  ② 点对手的手（运算源）-> 结果确定
-            //   ③ 这时才会问角色抉择（游荡者·风流剑客的潇洒气质）
+            //   ③ 这时才会问角色抉择（游荡者·风流剑客的潇洒无畏）
             // 所以这里**不需要**在两步之间调 ConfirmTargetPlayer ——
             // 确认目标玩家是"攻击结算前"的一步，而角色抉择在它之前。
             Assert.True(board.ClickHand(swashbuckler.LeftHand), "点击左手应被接受");
@@ -75,7 +75,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, board.PendingRequests.Count,
                 $"应恰好有一个抉择。现场：{scene}");
             Assert.AreEqual(HandEffect.SwashbucklerDuelistThrust, board.PendingRequests[0].Effect,
-                $"抉择应是潇洒气质。现场：{scene}");
+                $"抉择应是潇洒无畏。现场：{scene}");
             Assert.AreEqual(2, board.PendingRequests[0].Candidates.Count == 0
                                ? 2 : board.PendingRequests[0].Candidates[0].Value,
                 "候选应是那只 2。");

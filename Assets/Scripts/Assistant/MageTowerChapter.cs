@@ -34,8 +34,8 @@ namespace FingerDiceDuel.Assistant
             }
         }
         public static string Hint(int level)=>new[]{"奥法骑士 · 碎盾附魔 / 法术回响","塑能 · 十种法术 / 元素反应",
-            "咒法 · 力场 / 王车易位","防护 · 抗性 / 屏障 / 易伤与免疫","惑控 · 失能 / 魅惑 / 受伤解除",
-            "死灵 · 抵挡 / 免费暗蚀 / 不死奴仆","预言 · 7的快照 / 效果压制","幻术 · 幻术默发 / 伤害减半",
+            "咒法 · 力场 / 王车易位","防护 · 持续抗性 / 屏障 / 易伤与免疫","惑控 · 失能 / 魅惑 / 受伤解除",
+            "死灵 · 抵挡 / 免费暗蚀 / 不死奴仆","预言 · 预兆记录 / 预知未来","幻术 · 幻术默发 / 伤害减半",
             "变化 · 无序匹配 / 变羊 / 溢伤","法师选角 · 经典先攻 / 幻影试炼"}[level-11];
         public static string SampleKey(int level,string key)=>"FingerDiceDuel.Adventure.Chapter2.Level"+level+".Sample."+key+".Completed";
 
@@ -102,6 +102,13 @@ namespace FingerDiceDuel.Assistant
                          type==DamageType.Psychic?"恐慌会降攻且不能攻击来源，震慑会禁止攻击；均可进行这次无效果运算。":"力场没有附加负面状态；与前面的元素对照。"));
                 s.Verify=l=>HasTypeInLog(l,type);list.Add(s);
             }
+            var reserve=new MageTowerSample("reserve_ward","待用类型与持续抗性",new[]{1,2,3,2},"塑能距离∞。存储的法术类型在消耗前赋予对应抗性；受击不会消耗待用类型。")
+                .Turn(0,0,1,0,"己左1＋护卫左3＝4，放弃攻击并选择火焰；获得待用火焰类型和火焰抗性。")
+                .Turn(1,1,0,0,"护卫右2＋己左4＝6火焰：原伤7减半为4，并附1回合燃烧。")
+                .Turn(0,0,1,0,"己左4＋护卫左3＝7，无攻击；回合结束燃烧3经火焰抗性减为2。待用类型和抗性仍在。")
+                .Turn(1,1,0,1,"护卫右6＋己右2＝8火焰：原伤9减半为5。第二次受击后抗性仍在；之后发起待用类型的攻击才消耗它。");
+            reserve.CastingType=DamageType.Fire;reserve.GuardType=AttackDamageType.Fire;
+            reserve.Verify=l=>l.Player.Health==9&&l.Player.HasResistance(AttackDamageType.Fire)&&((FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic)l.Player.Character).HasPendingType;list.Add(reserve);
             Reaction(list,"freeze",DamageType.Cold,StatusEffect.Frost,"寒冷＋覆霜","清除覆霜／潮湿，附冻结2回合。冻结使双手无法行动；点击跳过回合继续，不会判为败北。",
                 l=>l.Soldier.HasStatus(StatusEffect.Frozen));
             Reaction(list,"steam",DamageType.Fire,StatusEffect.Wet,"火焰＋潮湿","本击6×1.5＝9；清除潮湿与覆霜，不附燃烧。",
@@ -152,20 +159,26 @@ namespace FingerDiceDuel.Assistant
             {
                 var s=new MageTowerSample(fire?"fire_resist":"physical_resist",fire?"抗性仍附状态":"物理整组抗性",new[]{1,3,1,3},"算出2后先选自己，再选"+(fire?"火焰":"物理整组")+"；防−1，6原伤7减半向上取整为4。")
                     .Turn(0,0,1,0,"己左1＋护卫左1＝2。目标选自己；类型选"+(fire?"火焰":"物理整组")+"。物理包含挥砍、钝击、穿刺。")
-                    .Turn(1,1,0,1,"护卫右3＋己右3＝6，你20→16；本次落地后全部临时修正清除。"+(fire?"抗性不阻止燃烧。":"其它两种物理抗性也一起消耗。"));
-                s.GuardType=fire?AttackDamageType.Fire:AttackDamageType.Slashing;
-                s.Verify=l=>l.Player.Health==16&&!l.Player.HasResistance(fire?AttackDamageType.Fire:AttackDamageType.Slashing);list.Add(s);
+                    .Turn(1,1,0,1,"护卫右3＋己右3＝6，你20→16；法术抗性仍保留，直到你死亡或再次施法。"+(fire?"抗性令燃烧从2回合减为1回合。":"三种物理抗性均保留。"));
+                s.GuardType=fire?AttackDamageType.Fire:AttackDamageType.Slashing;s.ResistanceType=fire?AttackDamageType.Fire:AttackDamageType.Bludgeoning;
+                s.Verify=l=>l.Player.Health==16&&l.Player.HasResistance(fire?AttackDamageType.Fire:AttackDamageType.Slashing);list.Add(s);
             }
+            var sustained=new MageTowerSample("sustained","抗性持续与重新赋予",new[]{1,1,1,3},"法术抗性不因受击消耗；再次发动会先撤销上次赋予，再设定本次目标与类型。")
+                .Turn(0,0,1,0,"己左1＋护卫左1＝2，选择自己与物理整组。")
+                .Turn(1,1,0,0,"护卫右3＋己左2＝5，形成护盾；你的物理抗性仍保留。")
+                .Turn(0,1,1,0,"己右1＋护卫左1＝2，再次施法：目标改为护卫，类型改为火焰。你的物理抗性立即撤销，护卫获得持续火焰抗性。");
+            sustained.ResistanceTargetSeat=0;
+            sustained.Verify=l=>!l.Player.HasResistance(AttackDamageType.Slashing)&&l.Soldier.HasResistance(AttackDamageType.Fire);list.Add(sustained);
             var b=new MageTowerSample("barrier","存储奥术守御",new[]{3,2,1,2},"放弃4/6/8攻击可存对应屏障；抗性之后吸收，使用后整份清空。")
                 .Turn(0,0,1,0,"己左3＋护卫左1＝4，点【存储奥术守御】。本击不攻击，标记显示4。")
                 .Turn(1,1,0,0,"护卫右2＋己左4＝6。待承伤7−屏障4＝3，你20→17，屏障归0。");
             b.Verify=l=>l.Player.Health==17&&Barrier(l)==0;list.Add(b);
-            var c=new MageTowerSample("combined","先抗性，后屏障",new[]{1,3,1,2},"分别取得物理抗性与4点屏障，观察零实伤仍消耗临时修正。")
+            var c=new MageTowerSample("combined","先抗性，后屏障",new[]{1,3,1,2},"分别取得物理抗性与4点屏障，观察屏障消耗、法术抗性仍保留。")
                 .Turn(0,0,1,0,"己左1＋护卫左1＝2，给自己物理整组抗性。")
                 .Turn(1,0,0,0,"护卫左1＋己左2＝3，无效果。")
                 .Turn(0,0,1,1,"己左2＋护卫右2＝4，存4点屏障。")
-                .Turn(1,1,0,0,"护卫右2＋己左4＝6，原伤7→抗性4→屏障0。生命仍20，两种保护均消耗。");
-            c.Verify=l=>l.Player.Health==20&&Barrier(l)==0&&!l.Player.HasResistance(AttackDamageType.Slashing);list.Add(c);
+                .Turn(1,1,0,0,"护卫右2＋己左4＝6，原伤7→抗性4→屏障0。生命仍20，屏障清空、物理抗性保留。");
+            c.Verify=l=>l.Player.Health==20&&Barrier(l)==0&&l.Player.HasResistance(AttackDamageType.Slashing);list.Add(c);
             var d=new MageTowerSample("surplus","屏障余量不保留",new[]{5,2,1,2},"开场5只是数字，不是盾。屏障超过来伤时，也会整份消耗。")
                 .Turn(0,0,1,0,"己左5＋护卫左1＝6，存6点屏障。")
                 .Turn(1,1,0,1,"护卫右2＋己右2＝4，原伤5全部吸收；6点屏障归0，不剩1。");
@@ -211,16 +224,20 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Divination(List<MageTowerSample> list)
         {
-            var a=new MageTowerSample("window","7的快照与窗口",new[]{3,4,1,4},"算出7时记录另一只手4。在你下回合开始前，其它角色运算前持有4时，数字照常改变，但本次运算不产生任何其它效果。")
-                .Turn(0,0,1,1,"己左3＋护卫右4＝7，记录己右4。")
-                .Turn(1,0,0,0,"护卫持有右4；左1＋己左7＝8，左手变8，但不攻击，你不掉血；回复、合盾和其它技能也不会发动。")
-                .Turn(0,1,1,1,"你的回合开始，窗口结束。己右4＋护卫右4＝8，正常攻击，护卫20→12。")
-                .Turn(1,0,0,1,"护卫左8＋己右8＝6，这次正常攻击，防−1使你20→13；护卫仍持4，但窗口已关闭。");
-            a.Verify=l=>l.Player.Health==13&&l.Soldier.Health==12&&l.Player.RightHand.Value==8&&l.Soldier.LeftHand.Value==6;list.Add(a);
-            var b=new MageTowerSample("borrow","看持有数字，不看借入数字",new[]{3,2,4,1},"记录2，而护卫手上4/1，没有2；借你的2作加数不受影响。")
-                .Turn(0,0,1,0,"己左3＋护卫左4＝7，记录另一只手2。")
-                .Turn(1,0,0,1,"护卫左4＋己右2＝6，正常造成7伤，你20→13。");
-            b.Verify=l=>l.Player.Health==13&&!l.Board.LastTurn.ActionInvalidated;list.Add(b);
+            foreach(int recorded in new[]{4,5})
+            {
+                int value=recorded;
+                var a=new MageTowerSample(value==4?"portent_attack":"portent_shield",value==4?"预兆与改写攻击":"预知未来：改写为盾",new[]{3,value,1,4},"打出7自动记录另一只手；每个数字各保留一份，没有回合时限。持有7时可消耗记录改写结果。")
+                    .Turn(0,0,1,1,"己左3＋护卫右4＝7，预兆记录另一手"+value+"。名字旁可查看已存数字。")
+                    .Turn(1,0,0,0,"护卫左1＋己左7＝8。数字先显示8，再选择【替换为"+value+"】，消耗该记录。"+(value==4?"护卫改为打出4，造成5伤，你20→15。":"护卫改为打出5，形成盾牌，不再攻击。"));
+                a.Verify=l=>l.Soldier.LeftHand.Value==value&&l.Player.Health==(value==4?15:20)&&CharacterBehaviors.FirstImplementer<IPortentBook>(l.Player).Portents.Count==0&&(value!=5||l.Soldier.LeftHand.IsShield);
+                list.Add(a);
+            }
+            var b=new MageTowerSample("portent_heal","保留记录与改写自身",new[]{3,9,1,4},"持有7时可改写任何角色的运算结果，包括自己；也可不发动而保留预兆。替换发生在数字效果结算前。")
+                .Turn(0,0,1,1,"己左3＋护卫右4＝7，记录另一手9。")
+                .Turn(1,0,0,0,"护卫左1＋己左7＝8，选择【不发动】保留9；护卫正常攻击，你20→11。")
+                .Turn(0,1,1,0,"己右9＋护卫左8＝7；你仍持有左7。选择【替换为9】，右手改9并回复6，体力11→20。预兆9被消耗，不触发原结果7的记录。");
+            b.Verify=l=>l.Player.Health==20&&l.Player.RightHand.Value==9&&CharacterBehaviors.FirstImplementer<IPortentBook>(l.Player).Portents.Count==0;list.Add(b);
         }
         private static void Illusion(List<MageTowerSample> list)
         {

@@ -1,0 +1,10 @@
+{
+  "method": "built-in image_gen; authorized program crop/resize only",
+  "native": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-b24c2c55-ec27-4c4a-bfa4-89239e76fffe.png",
+  "runtime": "Assets\\Resources\\Art\\Battle\\v1\\Effects\\portent.png",
+  "dimensions": [
+    512,
+    512
+  ],
+  "sha256": "e7d74e74bbe2542103a625b6d3f6c01666f07a5db05954d0f4a33f902f179df9"
+}

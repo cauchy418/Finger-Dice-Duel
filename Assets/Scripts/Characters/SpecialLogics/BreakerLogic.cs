@@ -6,7 +6,7 @@ namespace FingerDiceDuel.Core
     /// <summary>
     /// 战士·破阵者（Breaker）特殊逻辑：
     ///
-    /// 【技能一 · 连锁破盾】
+    /// 【技能一 · 破阵强袭】
     ///   当战士·破阵者自身的一面盾牌破碎时（无论是被攻击破碎，还是运算前主动破碎已有盾牌），
     ///   战士·破阵者可以选择场上任意一面【完整（Formed）】的盾牌，使其立即破碎。
     ///
@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Core
     ///   若其【另一只手】为破碎（Broken）状态的盾牌，则将其修复为 Formed。
     ///
     /// 依赖：
-    ///   - `IPreTurnChoiceProvider`：运算前声明"要不要发动连锁破盾、打碎哪面盾"。
+    ///   - `IPreTurnChoiceProvider`：运算前声明"要不要发动破阵强袭、打碎哪面盾"。
     ///   - `GameManager.BreakShieldAndNotify(...)`：统一破盾入口，保证连锁链正确触发。
     /// </summary>
     public class BreakerLogic : CharacterTemplate, IPreTurnChoiceProvider, ISkillUseCounter, IShieldBreakChoiceProvider,
@@ -39,7 +39,7 @@ namespace FingerDiceDuel.Core
         /// 让 AI **主动去合盾**（玩家指出："武僧·太极宗和战士·破阵者一起做，因为两人都是 5 高价值"）。
         ///
         /// 依据：战士·破阵者的两个技能**都要求先有盾** ——
-        ///   · 连锁破盾：自己的盾碎时，连带打碎场上一面完好的盾
+        ///   · 破阵强袭：自己的盾碎时，连带打碎场上一面完好的盾
         ///   · 碎盾换射程：另一只手是完整盾牌时，可碎它换无限距离
         /// 而盾只能由"运算出 5"产生。没有盾，两个技能都无从发动。
         ///
@@ -57,7 +57,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 本局**连锁破盾**发动过几次（"自己的盾碎了，连带打碎场上一面完好的盾"）。
+        /// 本局**破阵强袭**发动过几次（"自己的盾碎了，连带打碎场上一面完好的盾"）。
         ///
         /// ⚠️ 为什么需要它：这个技能发动后**场上没有任何可观测的痕迹**
         ///    （破盾本身也会被之后的操作覆盖），于是"AI 从不发动它"
@@ -84,7 +84,7 @@ namespace FingerDiceDuel.Core
         public int ShieldFormCount { get; private set; }
 
         /// <summary>
-        /// 运算前收集"要不要发动连锁破盾、打碎哪面盾"。
+        /// 运算前收集"要不要发动破阵强袭、打碎哪面盾"。
         ///
         /// 只在**自己的盾这次会碎**时才提问（见类注释里的两条判定）。
         /// 场上没有其他完好盾时**静默跳过**，不弹选择。
@@ -135,7 +135,7 @@ namespace FingerDiceDuel.Core
         /// 由 <see cref="GameManager"/> 在**攻击距离检查之前**调用
         /// （见 <see cref="IRangeBreakEffect"/>）——否则来不及生效。
         ///
-        /// 与连锁破盾同一原则：**只回读已记录的答案**，不在结算里向玩家索取输入。
+        /// 与破阵强袭同一原则：**只回读已记录的答案**，不在结算里向玩家索取输入。
         /// </summary>
         public override void ApplyRangeBreak(PlayerState actor, Hand actedHand, GameManager manager)
         {

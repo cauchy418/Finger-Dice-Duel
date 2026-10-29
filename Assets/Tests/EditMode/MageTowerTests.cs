@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Tests
                 var q=b.PendingWizardChoice;
                 if(q.Options.Count>0)
                 {
-                    int value=0;
+                    int value=l.RequiredOption??0;
                     if(l.LevelNumber==11)value=l.SampleIndex==0?(int)AttackDamageType.Fire:1;
                     if(l.LevelNumber==18)value=q.Prompt.Contains("幻术默发")?(l.SampleIndex==0?1:0):l.SampleIndex==2?1:0;
                     if(l.LevelNumber==15)value=g.TurnCount<=1?(int)StatusEffect.Disabled:g.TurnCount==4?(int)StatusEffect.Charm:0;
@@ -76,14 +76,13 @@ namespace FingerDiceDuel.Tests
             {
                 if(b.PendingSkillOptions.Count>0)return b.ChooseSkillOption(l.LevelNumber==18&&l.SampleIndex==2?1:0);
                 if(b.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType)
-                    return b.ChooseResistanceType(l.SampleIndex==1?AttackDamageType.Fire:AttackDamageType.Bludgeoning);
+                    return b.ChooseResistanceType(l.Sample.Key=="sustained"&&g.TurnCount==2?AttackDamageType.Fire:l.Sample.ResistanceType);
                 if(b.PendingEffect==HandEffect.SchoolOfEvocationDamageType)
                 {
-                    var types=new[]{DamageType.Fire,DamageType.Cold,DamageType.Lightning,DamageType.Thunder,DamageType.Acid,DamageType.Poison,DamageType.Radiant,DamageType.Necrotic,DamageType.Psychic,DamageType.Force,DamageType.Cold,DamageType.Fire,DamageType.Lightning};
-                    return b.ChooseDamageType(types[l.SampleIndex]);
+                    return b.ChooseDamageType(l.Sample.CastingType);
                 }
                 if(b.PendingEffect==HandEffect.SchoolOfNecromancyBlock)return b.ClickHand(l.Player.LeftHand);
-                if(b.PendingEffect==HandEffect.SchoolOfAbjurationResistanceTarget)return b.ClickHand(l.Player.LeftHand);
+                if(b.PendingEffect==HandEffect.SchoolOfAbjurationResistanceTarget)return b.ClickHand(l.Seats[l.Sample.Key=="sustained"&&g.TurnCount==2?1:l.Sample.ResistanceTargetSeat].LeftHand);
                 bool accept=b.PendingEffect==HandEffect.SchoolOfAbjurationBarrier
                     ||b.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack&&g.TurnCount==0;
                 return accept?b.AcceptPendingChoice():b.DeclinePendingChoice();
@@ -167,7 +166,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Every_evocation_sample_includes_a_guard_observation_turn()
         {
-            for(int i=0;i<13;i++)
+            for(int i=0;i<MageTowerChapter.Samples(12).Count;i++)
             {
                 var lesson=MageTowerLesson.Create(12,i);Assert.AreEqual(4,lesson.Sample.Turns.Count);
                 Assert.AreEqual(1,lesson.Sample.Turns[3].Actor);Drive(lesson);
@@ -176,7 +175,7 @@ namespace FingerDiceDuel.Tests
                 if(i==2)Assert.AreEqual(13,lesson.Soldier.Health);
                 if(i==5)Assert.AreEqual(12,lesson.Soldier.Health);
                 if(i==7)Assert.AreEqual(14,lesson.Soldier.Health);
-                if(i==10)Assert.AreEqual(1,lesson.Soldier.StatusTurnsLeft(StatusEffect.Frozen));
+                if(lesson.Sample.Key=="freeze")Assert.AreEqual(1,lesson.Soldier.StatusTurnsLeft(StatusEffect.Frozen));
             }
         }
         [Test] public void Finale_only_accepts_wizards_and_permanent_affinities_survive_hits()

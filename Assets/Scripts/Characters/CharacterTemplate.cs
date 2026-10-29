@@ -128,7 +128,7 @@ namespace FingerDiceDuel.Core
                                                 IPreTurnChoiceSink choiceSink)
         { }
 
-        /// <summary>自身护盾被击碎时触发（战士·破阵者连锁破盾等在此实现）。</summary>
+        /// <summary>自身护盾被击碎时触发（战士·破阵者破阵强袭等在此实现）。</summary>
         public virtual void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager) { }
 
         /// <summary>承受攻击时触发。默认不闪避；游荡者·风流剑客等角色重写本方法。</summary>

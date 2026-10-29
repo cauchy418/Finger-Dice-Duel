@@ -451,7 +451,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public GameManager Game { get; set; }
 
-        /// <summary>是否发动战士·破阵者连锁破盾。默认放弃（避免自作自受地破自己的盾）。</summary>
+        /// <summary>是否发动战士·破阵者破阵强袭。默认放弃（避免自作自受地破自己的盾）。</summary>
         public bool UseChainBreak { get; set; }
 
         /// <summary>
@@ -758,7 +758,7 @@ namespace FingerDiceDuel.Assistant
 
             if (actor.Character is IAiMoveAdvisor advisor)
             {
-                score += AvoidFriendlyShock(actor,move,result,game)+ArcaneMoveBonus(actor,move,result,game);
+                score += AvoidFriendlyShock(actor,move,result,game)+ArcaneMoveBonus(actor,move,result,game)+RevisedRoleMoveBonus(actor,move,result,game);
                 score += advisor.ScoreMoveBonus(new MoveValueContext(
                     move.ActedHand, result, move.TargetHand, other.Value));
             }
@@ -1577,7 +1577,7 @@ namespace FingerDiceDuel.Assistant
         /// "下一手潜力"在总分里的千分比权重。
         ///
         /// ⚠️ 取 120（最高约 +10 分）—— 我第一版取 300（+26）就把
-        ///    游荡者·风流剑客的"潇洒气质"压过去了（测试当场抓到：
+        ///    游荡者·风流剑客的"潇洒无畏"压过去了（测试当场抓到：
         ///    它宁可留着 2 也不肯变 3 强化）。
         ///    所以它必须**明显小于**一次效果档位（44~88），
         ///    只在"这一手打什么已经定了"之后做微调。
@@ -1605,7 +1605,7 @@ namespace FingerDiceDuel.Assistant
         /// 通用角色抉择的贪心策略（按角色特性逐条处理）：
         ///
         ///   · 锁手（野蛮人·守望者道途）：锁对手更大的那只手，限制其最强的一招。
-        ///   · 潇洒气质（游荡者·风流剑客）：一律发动 —— 白赚 50% 伤害，代价只是把一只 2 变成 3。
+        ///   · 潇洒无畏（游荡者·风流剑客）：一律发动 —— 白赚 50% 伤害，代价只是把一只 2 变成 3。
         ///   · 闪避（游荡者·风流剑客）：一律用掉一只 1。被攻击时一只 1 本身毫无战斗力，
         ///     换掉一次完整攻击是纯赚（比"被盾挡下"还彻底）。
         ///   · 回血目标（牧师·生命领域）：**永远回给自己**，绝不回给对手。

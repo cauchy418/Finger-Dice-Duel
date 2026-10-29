@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Core
         public static List<SkillChoiceOption> PactOptions() => new List<SkillChoiceOption> {
             new SkillChoiceOption((int)StatusEffect.Disabled,"耗尽 · 失能","Status/disabled","移除全部虚假生命，令本次攻击目标失能2回合。"),
             new SkillChoiceOption((int)StatusEffect.Panic,"耗尽 · 恐慌","Status/panic","移除全部虚假生命，令本次攻击目标恐慌2回合。"),
-            new SkillChoiceOption(0,"保留虚假生命","Effects/false_life","本次不发动黑暗强运。") };
+            new SkillChoiceOption(0,"保留虚假生命","Effects/false_life","本次不发动直坠噩梦。") };
 
         public static void Offer(string key, string prompt, PlayerState owner, GameManager game,
             List<Hand> candidates, bool optional, bool players, Action<Hand> apply)

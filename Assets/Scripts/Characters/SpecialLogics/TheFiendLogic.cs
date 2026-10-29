@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(!CharacterBehaviors.ActorHas(context.Actor,this))return;
             _pactChoice=null;
             if(!context.IsAttack || context.Actor.FalseLife<=0)return;
-            requests.Add(new ChoiceRequest(HandEffect.TheFiendPact,"黑暗强运 · 选择控制或保留虚假生命",null,decider:context.Actor,
+            requests.Add(new ChoiceRequest(HandEffect.TheFiendPact,"直坠噩梦 · 选择控制或保留虚假生命",null,decider:context.Actor,
                 options:AncientRoleChoices.PactOptions(),applyOption:value=>_pactChoice=value,optionKey:AncientRoleChoices.FiendPact));
         }
 
@@ -34,8 +34,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(choice!=(int)StatusEffect.Disabled && choice!=(int)StatusEffect.Panic)return;
             var status=(StatusEffect)choice;
             context.Attacker.ClearFalseLife();
-            context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"黑暗强运");
-            context.Manager?.NoteSkill(context.Attacker, "黑暗强运", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
+            context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"直坠噩梦");
+            context.Manager?.NoteSkill(context.Attacker, "直坠噩梦", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
         }
 
         public void OnHitLanded(AttackContext context, GameManager manager)
@@ -45,7 +45,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 && context.Defender.Health * 2 <= context.Defender.MaximumHealth)
             {
                 context.Attacker.Heal(3);
-                manager?.NoteSkill(context.Attacker, "直坠噩梦", "回复 3 点");
+                manager?.NoteSkill(context.Attacker, "黑暗强运", "回复 3 点");
             }
         }
         public void OnDamageDealt(AttackContext context,GameManager manager) => OnHitLanded(context,manager);

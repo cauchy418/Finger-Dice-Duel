@@ -19,8 +19,6 @@ lines = [
 ]
 count = 0
 for _, role_id, profession, name, english in roles:
-    if profession == 'monk':
-        continue
     match = re.search(r'^### [^\n]+·' + re.escape(name) + ' ' + re.escape(english) + r'\n(.*?)(?=\n##|\Z)', source, re.M | re.S)
     if match is None:
         raise SystemExit('Missing skill description: ' + role_id)

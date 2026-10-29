@@ -150,7 +150,7 @@ namespace FingerDiceDuel.Core
             return true;
         }
 
-        /// <summary>被外部（连锁破盾等）直接破除护盾。</summary>
+        /// <summary>被外部（破阵强袭等）直接破除护盾。</summary>
         public bool ForceBreakShield()
         {
             if (State != ShieldState.Formed) return false;

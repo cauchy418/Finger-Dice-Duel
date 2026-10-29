@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Tests
    g.PlayerA.LeftHand.SetValue(1);g.PlayerB.LeftHand.SetValue(3);g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,g.PlayerA.LeftHand.Value);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);}
   [Test] public void Trickery_human_swap_and_charm_are_separate_before_target_selection()
   {var board=Board(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain,out var g);g.PlayerA.LeftHand.SetValue(2);g.PlayerB.LeftHand.SetValue(4);g.PlayerB.RightHand.SetValue(3);
-   board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("诡术祝福"));Assert.AreEqual(2,g.PlayerA.LeftHand.Value);
+   board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("诡诈换位"));Assert.AreEqual(2,g.PlayerA.LeftHand.Value);
    Assert.True(board.ChooseSkillOption(1));Assert.True(board.Hint.Contains("魅惑"));Assert.AreEqual(0,g.TurnCount);
    Assert.True(board.ChooseSkillOption(0));Assert.False(g.PlayerA.HasStatus(StatusEffect.Charm));
    Assert.AreEqual(4,g.PreviewOperationResult(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand));
@@ -56,7 +56,7 @@ namespace FingerDiceDuel.Tests
   [Test] public void Trickery_frost_applies_once_to_original_result_not_swapped_digit()
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain);g.ClericPolicyFor=p=>new Policy{Charm=false};
    g.PlayerA.LeftHand.SetValue(2);g.PlayerA.ApplyStatus(StatusEffect.Frost,2);g.PlayerB.LeftHand.SetValue(4);
-   var r=g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,r.ResultValue);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);Assert.True(BattleTurnText.Describe(r).Contains("诡术祝福"));}
+   var r=g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);Assert.AreEqual(4,r.ResultValue);Assert.AreEqual(3,g.PlayerB.LeftHand.Value);Assert.True(BattleTurnText.Describe(r).Contains("诡诈换位"));}
   [Test] public void Trickery_pure_operation_does_not_heal_or_attack_or_advance()
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain);g.ClericPolicyFor=p=>new Policy();g.PlayerA.LeftHand.SetValue(2);g.PlayerB.LeftHand.SetValue(9);g.PlayerA.TakeDamage(10);
    Assert.True(g.ApplyEffectlessOperation(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand,"测试"));Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(10,g.PlayerA.Health);Assert.AreEqual(0,g.TurnCount);}

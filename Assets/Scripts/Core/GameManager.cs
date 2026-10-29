@@ -194,7 +194,7 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// 流程控制器：负责回合驱动、结算触发、胜负判定、连锁破盾防递归、整场复位。
+    /// 流程控制器：负责回合驱动、结算触发、胜负判定、破阵强袭防递归、整场复位。
     ///
     /// 回合契约（详见 RULES.md 第 5 节）：
     ///   行动方选自己的 1 只手 + 对方的 1 只手；
@@ -395,7 +395,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public int RoundCount { get; private set; }
 
-        /// <summary>本回合已破碎护盾集合，防止连锁破盾递归死循环。</summary>
+        /// <summary>本回合已破碎护盾集合，防止破阵强袭递归死循环。</summary>
         private readonly HashSet<Hand> _brokenThisTurn = new HashSet<Hand>();
 
         /// <summary>
@@ -1216,7 +1216,7 @@ namespace FingerDiceDuel.Core
         {
             int result=Hand.ComputeSum(acted.Value,first.Value);
             if(DruidForms.IsDragon(owner)&&DruidSecondAddend!=null)result=Hand.ComputeSum(result,DruidSecondAddend.Value);
-            return TrickeryPreview(owner,acted,first,result);
+            return PortentPreview(owner,acted,first,TrickeryPreview(owner,acted,first,result));
         }
 
         public System.Func<PlayerState,ISkillChoicePolicy> SkillPolicyFor { get; set; }
@@ -1576,7 +1576,7 @@ namespace FingerDiceDuel.Core
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
                 DruidSecondAddend=PrepareOperationAddend(actor,actedHand,DruidSecondAddend,step:1,sourceValue:Hand.ComputeSum(actedHand.Value,targetHand.Value));
             }
-            if(!suppressed)RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});
+            if(!suppressed){RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});RequestPortentOperation(actor,actedHand,targetHand,()=>{});}
             try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
             finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;}
         }
@@ -1987,6 +1987,7 @@ namespace FingerDiceDuel.Core
 
             actor.Character?.OnOperationResolved(actor, myHand, outcome.Original, stolen,
                                                  effect, this, null);
+            MonkRules.AfterAction(actor);
 
             CheckGameOver();
 
@@ -2566,6 +2567,8 @@ namespace FingerDiceDuel.Core
             int calculated=StatusRules.ApplyResultModifiers(actor,actedHand.Value);
             bool trickery=gambleResult==0&&ApplyTrickery(actor,actedHand,targetHand,Math.Max(1,calculated),out _);
             if(trickery){effect=Hand.GetEffectType(actedHand.Value);actedHand.SetShieldState(effect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);result.TrickeryCalculated=calculated;}
+            if(HasPreparedPortent(actor,actedHand,targetHand))
+            {actedHand.SetValue(PortentPreview(actor,actedHand,targetHand,actedHand.Value));effect=Hand.GetEffectType(actedHand.Value);actedHand.SetShieldState(effect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);trickery=true;}
             // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
             //
             //     必须在这里做：手值已经变成结果值（盾就是 5），
@@ -2833,7 +2836,7 @@ namespace FingerDiceDuel.Core
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.SecondAddendValueBefore=result.SecondAddendValue;
-                        if(trickery)ctx.AttackValueOverride=result.ResultValue;
+                        if(trickery||MonkRules.DrunkenOf(actor)!=null)ctx.AttackValueOverride=result.ResultValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);
 
@@ -2930,6 +2933,7 @@ namespace FingerDiceDuel.Core
             actor.Character?.OnOperationResolved(
                 actor, actedHand, result.ActedHandValueBefore, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
+            MonkRules.AfterAction(actor);
 
             // 3d. 收下角色在结算中登记的"追加攻击"（战士·剑士），供战报单独显示一行。
             result.ExtraAttack = PendingExtraAttack;
@@ -3310,7 +3314,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 破除某玩家一面护盾，并通知其角色钩子（供战士·破阵者连锁破盾等使用）。
+        /// 破除某玩家一面护盾，并通知其角色钩子（供战士·破阵者破阵强袭等使用）。
         /// 使用 _brokenThisTurn 防止递归。
         /// </summary>
         public void BreakShieldAndNotify(PlayerState owner, Hand shield, PlayerState breaker = null)
@@ -3321,7 +3325,7 @@ namespace FingerDiceDuel.Core
             _brokenThisTurn.Add(shield);
             shield.ForceBreakShield();
 
-            // ⚠️ 这条路径是"**被动被打碎**"（被攻击消耗、或被连锁破盾打碎）。
+            // ⚠️ 这条路径是"**被动被打碎**"（被攻击消耗、或被破阵强袭打碎）。
             //    它与"自己主动破盾"（`NotifyOwnShieldBroken`）**不是同一件事** ——
             //    圣武士·奉献之誓要区分它们：两种都触发冲击，但语义不同、以后可能分叉。
             bool previous = ResolvingPassiveShieldBreak;
@@ -3341,7 +3345,7 @@ namespace FingerDiceDuel.Core
             shield.ForceBreakShield();NotifyOwnShieldBroken(owner,shield);
         }
 
-        /// <summary>被攻击/连锁破盾的通知上下文，供同时实现主动与被动钩子的角色去重。</summary>
+        /// <summary>被攻击/破阵强袭的通知上下文，供同时实现主动与被动钩子的角色去重。</summary>
         public bool ResolvingPassiveShieldBreak { get; private set; }
 
         /// <summary>
@@ -3514,7 +3518,7 @@ namespace FingerDiceDuel.Core
         /// **本次攻击的距离覆盖**（-1 = 用角色自己的基础距离）。
         ///
         /// 由上层（BoardController）在收完"换射程"的抉择后设定 ——
-        /// 目前两个来源：战士·破阵者碎盾换射程、游荡者·风流剑客潇洒气质。
+        /// 目前两个来源：战士·破阵者碎盾换射程、游荡者·风流剑客潇洒无畏。
         /// 调用方必须在结算后复位。
         /// </summary>
         public int RangeOverride { get; set; } = -1;

@@ -107,7 +107,7 @@ namespace FingerDiceDuel.Tests
                 else break;
             }
             Assert.NotNull(board.LastTurn);
-            Assert.IsFalse(string.Join("\n", board.Log).Contains("【潇洒气质】"));
+            Assert.IsFalse(string.Join("\n", board.Log).Contains("【潇洒无畏】"));
             Assert.AreEqual(2, actor.RightHand.Value);
         }
 

@@ -35,19 +35,19 @@ namespace FingerDiceDuel.Tests
             "PathOfTheGiant|ChaoticEvil",
             "Thief|NeutralEvil",
             "GloomStalker|ChaoticGood",
-            "Magician|ChaoticNeutral",
+            "Magician|ChaoticGood",
             "SchoolOfEvocation|TrueNeutral",
             "WildMagic|ChaoticNeutral",
             "TheGreatOldOne|NeutralEvil",
             "CollegeOfValor|LawfulGood",
             "Oathbreaker|LawfulEvil",
             "PathOfTheBerserker|NeutralEvil",
-            "Tactician|ChaoticGood",
+            "Tactician|TrueNeutral",
             "SchoolOfDivination|TrueNeutral",
             "SchoolOfNecromancy|NeutralEvil",
             "SchoolOfAbjuration|LawfulGood",
             "LightDomain|NeutralGood",
-            "WarDomain|LawfulNeutral",
+            "WarDomain|LawfulEvil",
             "BattleMaster|LawfulNeutral",
             "DraconicBloodline|ChaoticNeutral",
             "RangerHunter|NeutralGood",
@@ -55,12 +55,12 @@ namespace FingerDiceDuel.Tests
             "WayOfTheFourElements|TrueNeutral",
             "CircleOfTheMoon|ChaoticGood",
             "CircleOfTheStars|LawfulNeutral",
-            "CircleOfTheLand|TrueNeutral",
+            "CircleOfTheLand|NeutralGood",
             "OathOfTheAncients|NeutralGood",
             "TheFiend|LawfulEvil",
             "CollegeOfLore|LawfulNeutral",
             "StormSorcery|ChaoticNeutral",
-            "SchoolOfIllusion|ChaoticNeutral",
+            "SchoolOfIllusion|ChaoticEvil",
             "SchoolOfTransmutation|ChaoticNeutral",
             "SchoolOfEnchantment|NeutralEvil",
             "EldritchKnight|LawfulGood",
@@ -111,9 +111,9 @@ namespace FingerDiceDuel.Tests
         {
             // 当前54子职：守序18、中立17、混乱19，共460对。
             Assert.AreEqual(18,CharacterCodex.Filter("守序",null).Count);
-            Assert.AreEqual(17,CharacterCodex.Filter("中立",null).Count);
+            Assert.AreEqual(18,CharacterCodex.Filter("中立",null).Count);
             Assert.AreEqual(19,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(460,all.Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(477,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(920,built);
+            Assert.AreEqual(954,built);
         }
 
         [Test]
@@ -311,7 +311,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(5520,operations);
+            Assert.AreEqual(5724,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

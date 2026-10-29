@@ -30,6 +30,7 @@ namespace FingerDiceDuel.Core
         SchoolOfIllusionDefense = 111,
         BreakerRangeChainBreak = 112,
         VengeanceRetarget = 113,
+        NinjaTechnique = 114, TaichiKiBoost = 115, FourElementsDefense = 116,
         None = 0,
 
         /// <summary>防守方有双盾时，选择用哪一面抵挡本次攻击。</summary>
@@ -361,7 +362,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 该由谁回答这个抉择。null 表示"由行动方回答"。
         ///
-        /// 大部分抉择是行动方自己的事（锁手、潇洒气质），但有些属于防守方
+        /// 大部分抉择是行动方自己的事（锁手、潇洒无畏），但有些属于防守方
         /// （游荡者·风流剑客的闪避）—— 所以不能一律用行动方。由角色在收集时显式指定。
         /// </summary>
         public PlayerState Decider { get; }
@@ -369,7 +370,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// "发动"按钮的文案。非空时 UI 会在"不发动"左侧显示一个发动按钮。
         ///
-        /// 有些抉择只有唯一一个候选（例如战士·剑士的追加攻击、游荡者·风流剑客的潇洒气质），
+        /// 有些抉择只有唯一一个候选（例如战士·剑士的追加攻击、游荡者·风流剑客的潇洒无畏），
         /// 这时让玩家去点手牌是很别扭的 —— 给一个明确的按钮更直观。
         /// </summary>
         public string AcceptLabel { get; }
@@ -568,7 +569,7 @@ namespace FingerDiceDuel.Core
                 int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
                 int value=Hand.ComputeSum(a,b);
                 if(Manager!=null&&DruidForms.IsDragon(Actor)&&Manager.DruidSecondAddend!=null)value=Hand.ComputeSum(value,Manager.DruidSecondAddend.Value);
-                return Manager?.TrickeryPreview(Actor,ActedHand,TargetHand,value)??value;
+                return Manager?.PortentPreview(Actor,ActedHand,TargetHand,Manager.TrickeryPreview(Actor,ActedHand,TargetHand,value))??value;
             }
         }
 

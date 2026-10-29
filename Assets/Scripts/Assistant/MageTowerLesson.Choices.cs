@@ -6,6 +6,7 @@ namespace FingerDiceDuel.Assistant
     public sealed partial class MageTowerLesson : ITutorialInput
     {
         private bool Guided => _level<20;
+        private AttackDamageType RequiredResistance => Sample.Key=="sustained"&&_game.TurnCount==2?AttackDamageType.Fire:Sample.ResistanceType;
         public int? RequiredOption
         {
             get
@@ -13,6 +14,7 @@ namespace FingerDiceDuel.Assistant
                 if(!Guided||_board.PendingSkillOptions.Count==0)return null;
                 if(_level==11)return SampleIndex==0?(int)AttackDamageType.Fire:1;
                 if(_level==15)return _game.TurnCount<=1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
+                if(_level==17)return SampleIndex==0?4:SampleIndex==1?5:_game.TurnCount==1?-1:9;
                 if(_level==18)return _board.PendingWizardChoice?.Prompt.Contains("幻术默发")==true?(SampleIndex==0?1:0):SampleIndex==2?1:0;
                 return null;
             }
@@ -34,7 +36,7 @@ namespace FingerDiceDuel.Assistant
                 if(_level==19){hand=SampleIndex==0&&_game.TurnCount==1?_soldier.LeftHand:null;return true;}
             }
             if(_board.PendingEffect==HandEffect.SchoolOfAbjurationResistanceTarget)
-            {hand=_player.LeftHand;playerTarget=true;return true;}
+            {hand=Seats[Sample.Key=="sustained"&&_game.TurnCount==2?1:Sample.ResistanceTargetSeat].LeftHand;playerTarget=true;return true;}
             if(_board.PendingEffect==HandEffect.SchoolOfNecromancyBlock)
             {hand=_player.LeftHand;return true;}
             if(_board.Phase==BoardPhase.ChoosingSeatSwapTarget)
@@ -56,7 +58,7 @@ namespace FingerDiceDuel.Assistant
         }
         public bool AllowsOption(int value)=>!RequiredOption.HasValue||RequiredOption.Value==value;
         public bool AllowsDamageType(DamageType type)=>!Guided||Sample.CastingType==DamageType.None||type==Sample.CastingType;
-        public bool AllowsResistance(AttackDamageType type)=>!Guided||type==(SampleIndex==1?AttackDamageType.Fire:AttackDamageType.Bludgeoning);
+        public bool AllowsResistance(AttackDamageType type)=>!Guided||type==RequiredResistance;
         public bool AllowsAccept
         {
             get
@@ -101,7 +103,7 @@ namespace FingerDiceDuel.Assistant
                 if(_board.PendingEffect==HandEffect.SchoolOfEvocationDamageType)
                     return "本步选择【"+StatusNames.Of(Sample.CastingType)+"】，其余类型暂不可选。";
                 if(_board.PendingEffect==HandEffect.SchoolOfAbjurationResistanceType)
-                    return "本步选择【"+(SampleIndex==1?"火焰抗性":"物理整组")+"】。";
+                    return "本步选择【"+(AttackDamageTypes.IsMagic(RequiredResistance)?ResistanceNames.Name(RequiredResistance):"物理整组")+"】。";
                 if(RequiredHand(out var h,out bool target))return h==null?"本步选择【"+(_board.PendingWizardChoice?.DeclineLabel??"不发动")+"】。"
                     :"本步选择【"+_game.OwnerOfHand(h).Name+(target?"":"·"+CombatText.HandName(_game.OwnerOfHand(h),h)+h.Value)+"】。";
                 if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return _game.TurnCount==0?"本步点击【放弃本次攻击】，随后指定类型。":"本步点击【继续攻击】，使用已存储的元素。";

@@ -1,0 +1,15 @@
+# 生成提示词
+
+以下为内置imagegen调用的提示词；三次调用均使用transparent_background=true。
+
+## 醉拳宗徽记
+
+Use case: stylized-concept. Generate ONE finished production UI subclass emblem for a dark fantasy tabletop RPG, Way of the Drunken Master. Square 1024x1024 PNG with genuine transparent exterior. A richly painted antique double gold circular medal frame, four cardinal diamond tips and four smaller studs, closely matching a worn old-gold metal frame on a charcoal disk. Centerpiece is a weathered amber-brown double-lobed wine gourd with bronze binding and flowing deep burgundy martial cloth, leaning diagonally across a short dark wooden monk staff; expressive swirling amber spirit vapor suggests an unpredictable drunken martial movement. No person, no hands, no fingers, no face, no text, no lettering, no numbers. Tactile painterly dark-fantasy inventory art, subtle impasto, realistic worn gold highlights, strong large silhouette readable at 64 pixels, central object fills about 65 percent, frame fills 92 percent of canvas with small transparent margin. Keep all decorations inside bounds. Warm amber/burgundy against black iron, restrained magical glow, detailed but coherent.
+
+## 醉拳状态
+
+Use case: stylized-concept. Generate ONE production square RPG character-status icon, Drunken Fist stance, 1024x1024 with true transparent exterior. Match painterly dark fantasy inventory icons: ornate aged gold SQUARE border with sharp corner ornaments and tiny teal stones, almost black textured iron inset. Centerpiece: a small tipped reddish-brown wine gourd above a shallow bronze drinking cup, swirling luminous amber liquor and burgundy vapor tracing a loose circular path around them to evoke evasive drunken kung fu. The gourd/cup large and immediately readable at 48 pixels. Distinct from a class emblem: square frame, no person or hands, no weapons, no letters or numbers, no UI labels. Warm amber and burgundy palette, worn metallic brushwork and rich hand-painted subject, restrained glow. Frame occupies 92 percent with clean transparent margin, decorations fully inside canvas.
+
+## 暗劲标记
+
+Use case: stylized-concept. Generate ONE production square dark fantasy RPG marker icon called Hidden Internal Force, 1024x1024 PNG with genuine transparent exterior. Ornate worn OLD GOLD SQUARE border with elegant sharp corner flourishes and a small teal gemstone, charcoal black inset, painterly material and hand-painted brush texture matching high-detail fantasy status icons. Main symbol: a single large bronze-black closed martial fist made of stone, front face mostly solid and clearly a four-knuckle CLOSED fist with no extended fingers, a deep dark crimson pressure core glowing inside its center, thin teal and muted gold energy veins spiraling beneath the surface and branching into several hairline cracks. This is stored internal impact energy waiting to burst, NOT a wound, not blood, not a skull, no extra fingers, no open hand, no text or letters. Strong coherent icon silhouette legible at 48 px. Very dark teal/crimson inner energy, antique gold rim highlights. Frame fills 92 percent with transparent margin and no cropped ornament.

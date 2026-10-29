@@ -91,6 +91,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.OathOfConquest] = () => new OathOfConquestLogic();
             _registry[SpecialLogicType.TrickeryDomain] = () => new TrickeryDomainLogic();
             _registry[SpecialLogicType.TempestDomain] = () => new TempestDomainLogic();
+            _registry[SpecialLogicType.WayOfTheDrunkenMaster] = () => new WayOfTheDrunkenMasterLogic();
             _registry[SpecialLogicType.OathOfVengeance] = () => new OathOfVengeanceLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();
         }

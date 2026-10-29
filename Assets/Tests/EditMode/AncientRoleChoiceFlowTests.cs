@@ -26,7 +26,7 @@ namespace FingerDiceDuel.Tests
         {
             var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;var b=g.PlayerB;
             b.LeftHand.SetValue(2);board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);
-            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.True(board.Hint.Contains("自然恢复"));
+            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.True(board.Hint.Contains("大地束缚"));
             Assert.False(b.HasStatus(StatusEffect.Restrained));Assert.True(board.PendingWizardChoice.TargetsPlayer);
             Assert.True(board.ChooseWizardHand(b.LeftHand));Assert.True(b.HasStatus(StatusEffect.Restrained));
             Assert.True(board.Hint.Contains("大地行者"));Assert.False(board.PendingWizardChoice.AllowDecline);
@@ -175,8 +175,8 @@ namespace FingerDiceDuel.Tests
         {
             Board(CharacterDefinition.TheFiend,out var g);g.PlayerA.GainFalseLife(7);
             var icons=CombatStatusIcons.For(g.PlayerA);Assert.AreEqual(1,icons.Count);Assert.AreEqual("7",icons[0].Counter);
-            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(8,GuideSheets.CharacterMarks().Lines.Count);
-            Assert.True(GuideSheets.CharacterMarks().Lines[3].Contains("绿色"));g.ResetMatch();Assert.AreEqual(0,CombatStatusIcons.For(g.PlayerA).Count);
+            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(10,GuideSheets.CharacterMarks().Lines.Count);
+            Assert.True(string.Join("",GuideSheets.CharacterMarks().Lines).Contains("绿色"));g.ResetMatch();Assert.AreEqual(0,CombatStatusIcons.For(g.PlayerA).Count);
         }
     }
 }

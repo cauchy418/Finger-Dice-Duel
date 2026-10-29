@@ -21,9 +21,11 @@
     /// 反弹 `floor(N/2)`）—— 理由：太极是防守方自己的技能，
     /// 不该因为取整而让它比"四舍五入"更亏；而且这样**总伤害守恒**（受 + 反弹 = N）。
     /// </summary>
-    public sealed class WayOfTheTaiChiLogic : CharacterTemplate, IHandEffectRewriter, ISelectiveHandEffectRewriter,
+    public sealed class WayOfTheTaiChiLogic : FingerDiceDuel.Characters.SpecialLogics.MonkLogic, IHandEffectRewriter, ISelectiveHandEffectRewriter,
                                      IDamageMitigator, IPreTurnChoiceProvider
     {
+        private PlayerState _incomingAttacker;
+        private readonly Dictionary<int,int> _boosts=new Dictionary<int,int>();
         public bool HandlesResult(int value) => value == TaichiValue;
 
         public override string DisplayName => "武僧·太极宗";
@@ -83,7 +85,7 @@
             if (shieldHand.Value != TaichiValue) return;
 
             shieldHand.SetShieldState(ShieldState.Taichi);
-            manager?.NoteSkill(owner, "太极", "合成太极手");
+            manager?.NoteSkill(owner, "阴阳流转", "合成太极手");
         }
 
         // ============================================================
@@ -188,10 +190,14 @@
             int reflect = segmentDamage / 2;      // 这一轮反弹（下取整）
             int taken = segmentDamage - reflect;  // 这一轮受方仍要承受
 
-            totalReduced = reflect;
-            totalReflect = reflect;
+            int boost=0;
+            if(!_boosts.TryGetValue(stagesUsed,out boost) && Ki>0 && context.Manager!=null)
+                boost=SkillChoicePolicy.Choose(MonkRules.Taichi,BoostOptions(),owner,context.Attacker,context.Manager);
+            if(boost!=0 && !Spend(1))boost=0;
+            totalReduced = boost==1?segmentDamage:reflect;
+            totalReflect = boost==2?segmentDamage:reflect;
             stages = stagesUsed + 1;
-            context.Manager?.NoteSkill(owner, "太极", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {reflect}、反弹 {reflect}");
+            context.Manager?.NoteSkill(owner, boost==0?"太极八卦":"借力打力", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {totalReduced}、反弹 {totalReflect}");
 
             // taken 不用回传：外层用"perHit - 累计减免"自己算。
             _ = taken;
@@ -222,15 +228,16 @@
             GameManager manager = context?.Manager;
             if (manager == null) return true;      // 拿不到上下文 -> 默认发动
 
+            if(manager.AnsweredLookupFor!=null)return ReferenceEquals(manager.AnsweredLookupFor(owner,HandEffect.WayOfTheTaiChiTaichi,variant),taichi);
             var request = new ChoiceRequest(
                 HandEffect.WayOfTheTaiChiTaichi,
-                $"武僧·太极宗被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
+                $"武僧·太极宗被攻击：要发动太极八卦吗？（把这张 {TaichiValue} 变成 0，" +
                 $"只受一半伤害并把剩余的反弹给攻击方）",
                 new List<Hand>(1) { taichi },
                 allowDecline: true,
                 declineResult: null,               // 放弃 = 不发动，正常吃满伤害
                 decider: owner,
-                acceptLabel: "发动太极");
+                acceptLabel: "太极八卦",variant:variant);
 
             Hand chosen = PreTurnChoiceReader.Read(
                 manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
@@ -251,6 +258,7 @@
             if (context == null || requests == null) return;
             if (!CharacterBehaviors.ActorHas(context.Defender, this)) return;
             if (!context.IsAttack) return;
+            _boosts.Clear();_incomingAttacker=context.Actor;
 
             // ⚠️ **每个太极各发一个请求**（用 variant 区分）。
             //
@@ -265,17 +273,28 @@
             {
                 requests.Add(new ChoiceRequest(
                     HandEffect.WayOfTheTaiChiTaichi,
-                    $"武僧·太极宗被攻击：要发动太极吗？（把这张 {TaichiValue} 变成 0，" +
+                    $"武僧·太极宗被攻击：要发动太极八卦吗？（把这张 {TaichiValue} 变成 0，" +
                     $"只受一半伤害并把剩余的反弹给攻击方）",
                     new List<Hand>(1) { mine[i] },
                     allowDecline: true,
                     declineResult: null,
                     decider: context.Defender,
-                    acceptLabel: "发动太极",
+                    acceptLabel: "太极八卦",
                     variant: i));
             }
         }
 
+        private static List<SkillChoiceOption> BoostOptions()=>new List<SkillChoiceOption>{
+            new SkillChoiceOption(0,"太极八卦 · 不耗气","Effects/ki"),
+            new SkillChoiceOption(1,"借力打力 · 1气免伤、反弹一半","Effects/ki"),
+            new SkillChoiceOption(2,"借力打力 · 1气受半伤、反弹全部","Effects/ki")};
+        public override void CollectFollowUpChoices(ChoiceRequest answered,Hand answer,IList<ChoiceRequest> requests)
+        {
+            if(answered.Effect!=HandEffect.WayOfTheTaiChiTaichi||answer==null||Ki<1)return;
+            int variant=answered.Variant;
+            requests.Add(new ChoiceRequest(HandEffect.TaichiKiBoost,"【借力打力】本段太极是否消耗1气强化？",new Hand[0],decider:MonkOwner,variant:variant,
+                options:BoostOptions(),optionKey:MonkRules.Taichi,applyOption:v=>_boosts[variant]=v,relatedTarget:_incomingAttacker));
+        }
         /// <summary>武僧·太极宗当前处于太极形态的**全部**手（最多两只）。</summary>
         public static List<Hand> TaichiHandsOf(PlayerState player)
         {
@@ -371,7 +390,8 @@
             hand.SetValue(1);
         }
 
-        public override void OnMatchReset(PlayerState owner, GameManager manager) { }
+        public override void OnMatchReset(PlayerState owner, GameManager manager)
+        {base.OnMatchReset(owner,manager);_boosts.Clear();}
 
         /// <summary>
         /// 武僧·太极宗：**钝击伤害**（玩家指定）。

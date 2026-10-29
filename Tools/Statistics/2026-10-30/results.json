@@ -1,0 +1,2752 @@
+{
+  "date": "2026-10-30",
+  "roster_count": 55,
+  "law_axis_counts": [
+    18,
+    18,
+    19
+  ],
+  "legal_duals": 477,
+  "source_sha256": "7995c4ed3b7b09abee482b0906c8965bb2029885ce46defc2c5727e18887248d",
+  "seeded_drunk_rng": true,
+  "totals": {
+    "1v1": {
+      "games": 29700,
+      "draws": 302,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "bb8e0fdd5c803868bbb7a9ede707ec12169c8cbccf7d7a7bb769f585b71151fc"
+    },
+    "2v2": {
+      "games": 23760,
+      "draws": 92,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "f4d73d9e9a188f0b40313ce6ca493a4ea3f3608c9ce0e9b44a477831345a9623"
+    },
+    "dual": {
+      "games": 3816,
+      "draws": 79,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "24bba262ea6ef2fec7baff6760b285d00195bcc96792e27552d6b69439891e8b"
+    },
+    "eight": {
+      "games": 600,
+      "draws": 2,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "6d5e2575c3ebf41997cc1088a92c0d0b41634522e2372645ad7f5d251332ac79"
+    },
+    "identity": {
+      "games": 600,
+      "draws": 8,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "0ed80978c0c9bb7b044b672504d66e31a16799a73b3e96870ec794d9feb21fd7"
+    }
+  },
+  "roles": [
+    {
+      "id": "fighter_champion",
+      "name": "战士·勇士",
+      "english": "Champion",
+      "profession": "fighter",
+      "alignment": "NeutralGood",
+      "attack": "1",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,50,55,50,60,50,50",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
+      "counter": "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 455,
+          "draws": 1,
+          "win_percent": 42.13
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 776,
+          "draws": 2,
+          "win_percent": 44.907
+        },
+        "dual": {
+          "games": 272,
+          "wins": 88,
+          "draws": 2,
+          "win_percent": 32.353
+        },
+        "eight": {
+          "games": 95,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 30.526
+        },
+        "identity": {
+          "games": 76,
+          "wins": 28,
+          "draws": 1,
+          "win_percent": 36.842
+        }
+      }
+    },
+    {
+      "id": "fighter_breaker",
+      "name": "战士·破阵者",
+      "english": "Breaker",
+      "profession": "fighter",
+      "alignment": "LawfulEvil",
+      "attack": "1",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,50,95,50,55,60,58",
+      "deny": "0,-18,-18,-18,-18,-35,-12,0,-12,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "核心是主动合盾。攻击时若另一只手是完整盾，可碎它换本次攻击距离∞ ——够不到远处对手时这是解法；自己的盾本来就要碎时，发动破阵强袭打碎对手的盾。",
+      "counter": "别让他合成 5（那是他合盾的唯一来源）。给他的数字里 1/2/3/4/5 都要压低，4/6/8 次之。",
+      "combos": "有 5 就能合盾+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 579,
+          "draws": 37,
+          "win_percent": 53.611
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1076,
+          "draws": 10,
+          "win_percent": 62.269
+        },
+        "dual": {
+          "games": 272,
+          "wins": 164,
+          "draws": 9,
+          "win_percent": 60.294
+        },
+        "eight": {
+          "games": 95,
+          "wins": 31,
+          "draws": 1,
+          "win_percent": 32.632
+        },
+        "identity": {
+          "games": 79,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 34.177
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "name": "法师·咒法学派",
+      "english": "School of Conjuration",
+      "profession": "wizard",
+      "alignment": "LawfulNeutral",
+      "attack": "-1",
+      "defense": "0",
+      "range": "2147483647",
+      "weights": "0,60,60,60,64,55,68,60,72,58",
+      "deny": "0,-55,0,0,0,-50,0,0,-12,-12",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "优先合8/6/4。王车易位：点击技能后选双手值相同的存活角色（4/6同6/4），换座并跳过；不限距离，取消不耗回合，冻结不能用。",
+      "counter": "盾、闪避、太极与伏击挡不住次级咒术，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
+      "combos": "有高攻击数字就能直接打穿对手+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 577,
+          "draws": 1,
+          "win_percent": 53.426
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 942,
+          "draws": 3,
+          "win_percent": 54.514
+        },
+        "dual": {
+          "games": 272,
+          "wins": 171,
+          "draws": 4,
+          "win_percent": 62.868
+        },
+        "eight": {
+          "games": 82,
+          "wins": 33,
+          "draws": 1,
+          "win_percent": 40.244
+        },
+        "identity": {
+          "games": 101,
+          "wins": 44,
+          "draws": 2,
+          "win_percent": 43.564
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_warden",
+      "name": "野蛮人·守望者道途",
+      "english": "Path of the Warden",
+      "profession": "barbarian",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "1",
+      "range": "1",
+      "weights": "0,60,60,60,50,95,50,60,60,58",
+      "deny": "0,-18,-18,-18,-18,-35,-12,0,-12,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "合盾不只是防御，更是控制：锁住对手更值钱的那只手。锁手在盾碎时解除，所以算好盾能撑多久。",
+      "counter": "别让他合成 5。另外注意：他的锁手在场上只剩两人时才有额外限制，人多时更凶。",
+      "combos": "有 5 即可合盾并锁对手一只手+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 474,
+          "draws": 37,
+          "win_percent": 43.889
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 898,
+          "draws": 9,
+          "win_percent": 51.968
+        },
+        "dual": {
+          "games": 288,
+          "wins": 131,
+          "draws": 18,
+          "win_percent": 45.486
+        },
+        "eight": {
+          "games": 86,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 31.395
+        },
+        "identity": {
+          "games": 88,
+          "wins": 27,
+          "draws": 1,
+          "win_percent": 30.682
+        }
+      }
+    },
+    {
+      "id": "cleric_life_domain",
+      "name": "牧师·生命领域",
+      "english": "Life Domain",
+      "profession": "cleric",
+      "alignment": "LawfulGood",
+      "attack": "-1",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,74,55,74,50,76,60",
+      "deny": "0,0,0,0,0,-12,0,0,0,-30",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "4/6/8 是二选一，所以它们比别的角色更灵活。危险时才回血，否则全部进攻 —— 只顾回血会打成僵局。2v2 里优先给一队血量最低的人回复。",
+      "counter": "尽量阻止他合双 9（双 9 = 9 + 9 = 回 18 血）。9 的原料（4+5、3+6、2+7、1+8）都值得压一点。",
+      "combos": "有 4/6/8 可自由选择攻或回复+80；有 9 就能回复 9 血+50",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 284,
+          "draws": 33,
+          "win_percent": 26.296
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 682,
+          "draws": 38,
+          "win_percent": 39.468
+        },
+        "dual": {
+          "games": 272,
+          "wins": 91,
+          "draws": 6,
+          "win_percent": 33.456
+        },
+        "eight": {
+          "games": 88,
+          "wins": 36,
+          "draws": 0,
+          "win_percent": 40.909
+        },
+        "identity": {
+          "games": 88,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 30.682
+        }
+      }
+    },
+    {
+      "id": "rogue_swashbuckler",
+      "name": "游荡者·风流剑客",
+      "english": "Swashbuckler",
+      "profession": "rogue",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "-2",
+      "range": "1",
+      "weights": "0,85,70,45,50,55,50,60,50,50",
+      "deny": "0,-45,-40,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。被攻击时用掉 1 换掉整次攻击永远划算。潇洒无畏同时把距离变成∞ —— 够不到远处对手时这是解法。",
+      "counter": "别给他 1 与 2 —— 那是他闪避与强化的原料。面对咒法学派时他的 1 完全无效（攻击不可闪避）。",
+      "combos": "同时有 1 和 2：能闪避 + 能强化+90",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 582,
+          "draws": 53,
+          "win_percent": 53.889
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 747,
+          "draws": 6,
+          "win_percent": 43.229
+        },
+        "dual": {
+          "games": 288,
+          "wins": 151,
+          "draws": 25,
+          "win_percent": 52.431
+        },
+        "eight": {
+          "games": 78,
+          "wins": 16,
+          "draws": 0,
+          "win_percent": 20.513
+        },
+        "identity": {
+          "games": 91,
+          "wins": 32,
+          "draws": 1,
+          "win_percent": 35.165
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_beast",
+      "name": "野蛮人·野兽道途",
+      "english": "Path of the Beast",
+      "profession": "barbarian",
+      "alignment": "ChaoticEvil",
+      "attack": "-2",
+      "defense": "-2",
+      "range": "1",
+      "weights": "0,75,72,72,68,45,45,15,48,48",
+      "deny": "0,0,0,0,0,0,0,-50,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "目标是凑 7（不是手上有 7）。⚠️ 7 对你是死牌：7 + 任何数都回不到 7。所以要留 1/2/3/4 当凑 7 的伙伴。",
+      "counter": "别让他两手凑成 7（有 1 别给 6、有 2 别给 5、有 3 别给 4）。他每次进化回半血且攻防 +1，拖久了很难消耗。",
+      "combos": "双手之和为 7：回半血 + 攻防永久 +1+220",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 456,
+          "draws": 0,
+          "win_percent": 42.222
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 424,
+          "draws": 1,
+          "win_percent": 24.537
+        },
+        "dual": {
+          "games": 288,
+          "wins": 161,
+          "draws": 5,
+          "win_percent": 55.903
+        },
+        "eight": {
+          "games": 94,
+          "wins": 36,
+          "draws": 0,
+          "win_percent": 38.298
+        },
+        "identity": {
+          "games": 93,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 29.032
+        }
+      }
+    },
+    {
+      "id": "fighter_swordsman",
+      "name": "战士·剑士",
+      "english": "Swordsman",
+      "profession": "fighter",
+      "alignment": "LawfulNeutral",
+      "attack": "2",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,52,50,50,68,45,68,60,72,50",
+      "deny": "0,0,0,0,-35,0,-35,0,-35,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "要的是双手相同且为 4/6/8，一手做不出来 ——先用一手把一只手做成 4/6/8，下一手凑齐另一只。追加攻击不吃攻防，所以它是一笔稳定的额外伤害。",
+      "counter": "别给他 4/6/8（那是他双持的原料）。他血量健康时不必太怕，但被他连续双持会很快崩。",
+      "combos": "双 4/双 6/双 8：追加一次攻击+130",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 736,
+          "draws": 3,
+          "win_percent": 68.148
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1133,
+          "draws": 3,
+          "win_percent": 65.567
+        },
+        "dual": {
+          "games": 272,
+          "wins": 186,
+          "draws": 0,
+          "win_percent": 68.382
+        },
+        "eight": {
+          "games": 96,
+          "wins": 31,
+          "draws": 0,
+          "win_percent": 32.292
+        },
+        "identity": {
+          "games": 89,
+          "wins": 33,
+          "draws": 1,
+          "win_percent": 37.079
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_ninja",
+      "name": "武僧·忍宗",
+      "english": "Way of the Ninja",
+      "profession": "monk",
+      "alignment": "TrueNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,52,52,52,66,72,72,48,78,72",
+      "deny": "0,0,0,0,-10,-22,-20,0,-30,0",
+      "1v1": "P/8/67",
+      "2v2": "L/12/43",
+      "guide": "攻击前选影分身或不发动。对方持盾、自己攻防差占优时考虑两段；行动后同手值回1气。",
+      "counter": "压低其气与攻击数字；气不足或不发动时仍是普通一段攻击。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 484,
+          "draws": 5,
+          "win_percent": 44.815
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 995,
+          "draws": 3,
+          "win_percent": 57.581
+        },
+        "dual": {
+          "games": 272,
+          "wins": 133,
+          "draws": 4,
+          "win_percent": 48.897
+        },
+        "eight": {
+          "games": 73,
+          "wins": 16,
+          "draws": 0,
+          "win_percent": 21.918
+        },
+        "identity": {
+          "games": 91,
+          "wins": 21,
+          "draws": 1,
+          "win_percent": 23.077
+        }
+      }
+    },
+    {
+      "id": "rogue_assassin",
+      "name": "游荡者·刺客",
+      "english": "Assassin",
+      "profession": "rogue",
+      "alignment": "ChaoticEvil",
+      "attack": "2",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,60,60,60,50,58,50,90,62,50",
+      "deny": "0,0,0,0,0,0,0,-45,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "要的是双 7，一手做不出来 ——先保留一只 7，再用另一只去凑 7。⚠️ 开局直接摆出的双 7 不算潜行，必须经运算达成。",
+      "counter": "别给他 7（那是潜行的种子）。他潜行期间无法被选中，所以趁他没进潜行时压血线。",
+      "combos": "双 7：一运算即可进入潜行+200",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 393,
+          "draws": 7,
+          "win_percent": 36.389
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 877,
+          "draws": 6,
+          "win_percent": 50.752
+        },
+        "dual": {
+          "games": 288,
+          "wins": 177,
+          "draws": 2,
+          "win_percent": 61.458
+        },
+        "eight": {
+          "games": 82,
+          "wins": 20,
+          "draws": 1,
+          "win_percent": 24.39
+        },
+        "identity": {
+          "games": 89,
+          "wins": 27,
+          "draws": 1,
+          "win_percent": 30.337
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_devotion",
+      "name": "圣武士·奉献之誓",
+      "english": "Oath of Devotion",
+      "profession": "paladin",
+      "alignment": "LawfulGood",
+      "attack": "0",
+      "defense": "1",
+      "range": "1",
+      "weights": "0,52,50,50,80,80,80,45,45,45",
+      "deny": "0,0,0,0,-20,-20,-20,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "选自己的手与加数后，4/5/6 直接合盾，只提示选择冲击目标。用完整盾再合盾，会分别触发碎盾和合盾两次冲击。",
+      "counter": "别让他合成 5，4/6 也要压 —— 他每合一次盾就白赚一次冲击。",
+      "combos": "手上有一个 4/5/6 就能合盾+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 912,
+          "draws": 4,
+          "win_percent": 84.444
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1020,
+          "draws": 4,
+          "win_percent": 59.028
+        },
+        "dual": {
+          "games": 272,
+          "wins": 241,
+          "draws": 5,
+          "win_percent": 88.603
+        },
+        "eight": {
+          "games": 83,
+          "wins": 34,
+          "draws": 2,
+          "win_percent": 40.964
+        },
+        "identity": {
+          "games": 90,
+          "wins": 50,
+          "draws": 3,
+          "win_percent": 55.556
+        }
+      }
+    },
+    {
+      "id": "warlock_the_archfey",
+      "name": "邪术师·至高妖精",
+      "english": "The Archfey",
+      "profession": "warlock",
+      "alignment": "ChaoticEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,66,66,64,58,52,58,64,58,58",
+      "deny": "0,-8,-8,0,0,0,0,-8,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "核心是\"手上留着什么\"：能取消就取消。跳过回合能把一人血量改成与自己一致 —— 比对方少 8 以上才值得。",
+      "counter": "别给他 1/2/7（能凑出最多的攻击数字）；或改用盾 / 回复推进局面。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 382,
+          "draws": 6,
+          "win_percent": 35.37
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 830,
+          "draws": 1,
+          "win_percent": 48.032
+        },
+        "dual": {
+          "games": 288,
+          "wins": 83,
+          "draws": 8,
+          "win_percent": 28.819
+        },
+        "eight": {
+          "games": 86,
+          "wins": 33,
+          "draws": 0,
+          "win_percent": 38.372
+        },
+        "identity": {
+          "games": 103,
+          "wins": 36,
+          "draws": 4,
+          "win_percent": 34.951
+        }
+      }
+    },
+    {
+      "id": "fighter_arcane_archer",
+      "name": "战士·魔射手",
+      "english": "Arcane Archer",
+      "profession": "fighter",
+      "alignment": "LawfulNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "3",
+      "weights": "0,60,60,60,56,52,58,60,62,50",
+      "deny": "0,0,0,0,0,-20,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "距离 3 让你能打到环上更远的人，先手优势明显。8 是穿透盾牌的答案，4/6 是稳定输出 —— 三者都好用。",
+      "counter": "与咒法学派同构但要弱很多：只有 8 能穿盾，6 会被完全挡下、4 能挡一半。所以你的 5 只小幅贬值。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 439,
+          "draws": 1,
+          "win_percent": 40.648
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 848,
+          "draws": 3,
+          "win_percent": 49.074
+        },
+        "dual": {
+          "games": 272,
+          "wins": 111,
+          "draws": 1,
+          "win_percent": 40.809
+        },
+        "eight": {
+          "games": 89,
+          "wins": 33,
+          "draws": 1,
+          "win_percent": 37.079
+        },
+        "identity": {
+          "games": 75,
+          "wins": 36,
+          "draws": 0,
+          "win_percent": 48.0
+        }
+      }
+    },
+    {
+      "id": "rogue_gambler",
+      "name": "游荡者·赌徒",
+      "english": "Gambler",
+      "profession": "rogue",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,54,58,54,60,56,50",
+      "deny": "0,0,0,0,0,0,0,0,-8,-8",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "算不出高价值就赌（4/6/8 才算）。赌博不需要点他人的手，打谁等结果出来再选；正常运算过一回合后强制赌博。",
+      "counter": "基本不需要针对（与你的手值无关）；他赌博后的下一回合别让他凑出高价值。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 244,
+          "draws": 0,
+          "win_percent": 22.593
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 523,
+          "draws": 5,
+          "win_percent": 30.266
+        },
+        "dual": {
+          "games": 288,
+          "wins": 80,
+          "draws": 9,
+          "win_percent": 27.778
+        },
+        "eight": {
+          "games": 78,
+          "wins": 17,
+          "draws": 0,
+          "win_percent": 21.795
+        },
+        "identity": {
+          "games": 84,
+          "wins": 23,
+          "draws": 1,
+          "win_percent": 27.381
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_the_crown",
+      "name": "圣武士·王冠之誓",
+      "english": "Oath of the Crown",
+      "profession": "paladin",
+      "alignment": "LawfulGood",
+      "attack": "1",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,60,60,60,50,55,50,60,50,50",
+      "deny": "0,-18,-18,-18,-18,-35,-12,0,-12,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "碎盾是成长，不是损失 —— 碎一次距离变 2、加成变 2。所以主动去打会被破盾的仗，越打越强。",
+      "counter": "别给他 5（合成 5 就是给他一面可碎的盾），1/2/3/4 这些凑 5 的原料也要压。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 384,
+          "draws": 1,
+          "win_percent": 35.556
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 702,
+          "draws": 8,
+          "win_percent": 40.625
+        },
+        "dual": {
+          "games": 272,
+          "wins": 100,
+          "draws": 4,
+          "win_percent": 36.765
+        },
+        "eight": {
+          "games": 97,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 27.835
+        },
+        "identity": {
+          "games": 97,
+          "wins": 35,
+          "draws": 1,
+          "win_percent": 36.082
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_tai_chi",
+      "name": "武僧·太极宗",
+      "english": "Way of the Tai Chi",
+      "profession": "monk",
+      "alignment": "NeutralGood",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,50,60,50,60,52,52",
+      "deny": "0,10,0,0,0,-55,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "先决定是否用太极5，再选保留气、1气免伤或1气全反。每只太极只化解一段。",
+      "counter": "多段攻击可消耗太极与气；力场穿过化解，取消仍能阻止其出手。",
+      "combos": "有 5 就能摆出太极+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 600,
+          "draws": 2,
+          "win_percent": 55.556
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 777,
+          "draws": 5,
+          "win_percent": 44.965
+        },
+        "dual": {
+          "games": 272,
+          "wins": 151,
+          "draws": 3,
+          "win_percent": 55.515
+        },
+        "eight": {
+          "games": 94,
+          "wins": 37,
+          "draws": 0,
+          "win_percent": 39.362
+        },
+        "identity": {
+          "games": 88,
+          "wins": 32,
+          "draws": 0,
+          "win_percent": 36.364
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_giant",
+      "name": "野蛮人·巨人道途",
+      "english": "Path of the Giant",
+      "profession": "barbarian",
+      "alignment": "ChaoticEvil",
+      "attack": "2",
+      "defense": "2",
+      "range": "1",
+      "weights": "0,56,58,60,8,92,8,70,8,90",
+      "deny": "0,0,0,0,8,-35,8,0,8,-35",
+      "1v1": "P/12/67",
+      "2v2": "L/12/43",
+      "guide": "只有 5 与 9 是高价值。打 5 时每段伤害 = 另一只手的点数，所以配一个大数（7/8/9）收益最大；打 9 时同样按另一只手回复。生命上限 25。",
+      "counter": "别给他 5 与 9；4/6/8 对他完全无效果，所以那三个数字给他也无所谓（算安全牌）。",
+      "combos": "有 5 或 9 就能打出高价值+80；5/9 的威力取决于另一只手：配大数更强+50",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 706,
+          "draws": 0,
+          "win_percent": 65.37
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1033,
+          "draws": 2,
+          "win_percent": 59.78
+        },
+        "dual": {
+          "games": 288,
+          "wins": 201,
+          "draws": 1,
+          "win_percent": 69.792
+        },
+        "eight": {
+          "games": 88,
+          "wins": 37,
+          "draws": 0,
+          "win_percent": 42.045
+        },
+        "identity": {
+          "games": 82,
+          "wins": 40,
+          "draws": 1,
+          "win_percent": 48.78
+        }
+      }
+    },
+    {
+      "id": "rogue_thief",
+      "name": "游荡者·盗贼",
+      "english": "Thief",
+      "profession": "rogue",
+      "alignment": "NeutralEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,36,38,40,62,66,76,40,92,86",
+      "deny": "0,0,0,0,-15,-10,-15,0,-25,-25",
+      "1v1": "P/12/67",
+      "2v2": "L/12/43",
+      "guide": "点自己的手 → 点【偷窃】→ 点别人的手。判定看\"原先 ≥ 偷来的\"，所以握着大数字才偷得到好东西；∞距离、可以偷队友，但上一次行动偷过就不能再偷。",
+      "counter": "别给他 8 / 9，4 / 6 次之。递出完整 5 其实不亏（被偷会变成碎盾）。",
+      "combos": "凑到 8/9 就是最好的出手+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 443,
+          "draws": 11,
+          "win_percent": 41.019
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 718,
+          "draws": 11,
+          "win_percent": 41.551
+        },
+        "dual": {
+          "games": 272,
+          "wins": 101,
+          "draws": 4,
+          "win_percent": 37.132
+        },
+        "eight": {
+          "games": 97,
+          "wins": 30,
+          "draws": 0,
+          "win_percent": 30.928
+        },
+        "identity": {
+          "games": 96,
+          "wins": 24,
+          "draws": 1,
+          "win_percent": 25.0
+        }
+      }
+    },
+    {
+      "id": "ranger_gloom_stalker",
+      "name": "游侠·幽域追踪者",
+      "english": "Gloom Stalker",
+      "profession": "ranger",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,80,78,76,60,58,60,45,62,58",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "点【伏击】把参与运算的那只手暗置：它不能再运算、对手也点不到，但数值可见。伏击期间另一只手照常行动，攻击 +1、距离 3；挨打时恢复那只手并挡下伤害。",
+      "counter": "数值可见，能预判他的伏击回合；伏击只有一次，逼他提早用掉即可。",
+      "combos": "双 1/双 2/双 3：一运算即可进入伏击+150；手上都是小数，离伏击更近+40",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 305,
+          "draws": 54,
+          "win_percent": 28.241
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 552,
+          "draws": 10,
+          "win_percent": 31.944
+        },
+        "dual": {
+          "games": 288,
+          "wins": 93,
+          "draws": 10,
+          "win_percent": 32.292
+        },
+        "eight": {
+          "games": 84,
+          "wins": 27,
+          "draws": 1,
+          "win_percent": 32.143
+        },
+        "identity": {
+          "games": 105,
+          "wins": 43,
+          "draws": 0,
+          "win_percent": 40.952
+        }
+      }
+    },
+    {
+      "id": "rogue_magician",
+      "name": "游荡者·魔术师",
+      "english": "Magician",
+      "profession": "rogue",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2",
+      "weights": "0,50,56,50,62,58,66,46,72,58",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "点自己的一只手当加数，再点自己的另一只手当被加数：两只手任选方向，变的是先点的那只。重复点同一只手不生效。攻击牌是 2/4/6/8，伤害就是牌面数字，吃攻防加成 ——所以 8 打得最疼、2 只打 2 点。",
+      "counter": "别让他凑出 2/4/6/8 —— 那四张对他都是攻击。他攻 0 / 防 −1，身材偏软，直接压血线有效。",
+      "combos": "有 2 就能自己凑出攻击+60；自己的两只手都能当原料，组合面更宽+50",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 539,
+          "draws": 6,
+          "win_percent": 49.907
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 783,
+          "draws": 3,
+          "win_percent": 45.312
+        },
+        "dual": {
+          "games": 288,
+          "wins": 126,
+          "draws": 9,
+          "win_percent": 43.75
+        },
+        "eight": {
+          "games": 81,
+          "wins": 22,
+          "draws": 1,
+          "win_percent": 27.16
+        },
+        "identity": {
+          "games": 86,
+          "wins": 38,
+          "draws": 0,
+          "win_percent": 44.186
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "name": "法师·塑能学派",
+      "english": "School of Evocation",
+      "profession": "wizard",
+      "alignment": "TrueNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,54,54,54,76,74,80,48,86,76",
+      "deny": "0,0,0,0,-12,0,-14,0,-18,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "算出 4/6/8 时问是否放弃攻击。选放弃就挑一种伤害类型，这次白扔，下次打中谁就给谁挂状态（持续 2 回合）。被盾挡或太极减免也算命中；被闪避或取消则作废，得重放弃。连续放弃只留最后选的。",
+      "counter": "他必须先白扔一回合才能挂状态 —— 趁那一回合压血。腐朽（暗蚀）期间不要指望回血，中毒（毒素）2 点不可抵挡，燃烧（火焰）3 点可以用盾扛。他攻 0 / 防 −1，身材很软，抢在他铺垫完之前解决掉。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 386,
+          "draws": 9,
+          "win_percent": 35.741
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 651,
+          "draws": 11,
+          "win_percent": 37.674
+        },
+        "dual": {
+          "games": 272,
+          "wins": 98,
+          "draws": 13,
+          "win_percent": 36.029
+        },
+        "eight": {
+          "games": 84,
+          "wins": 19,
+          "draws": 0,
+          "win_percent": 22.619
+        },
+        "identity": {
+          "games": 71,
+          "wins": 26,
+          "draws": 1,
+          "win_percent": 36.62
+        }
+      }
+    },
+    {
+      "id": "sorcerer_wild_magic",
+      "name": "术士·狂野魔法",
+      "english": "Wild Magic",
+      "profession": "sorcerer",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,58,58,58,68,76,74,54,82,62",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/43",
+      "2v2": "L/12/43",
+      "guide": "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。普攻距离 1 内是钝击、1 外是穿刺；多段攻击每段各掷一次。",
+      "counter": "攻 0 防 −1 但射程∞，躲不掉只能硬扛。闪避或取消能让那一段连属性一起作废；格挡使攻击附加的负面时长−1。",
+      "combos": "有 8/6 可远程打元素+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 677,
+          "draws": 5,
+          "win_percent": 62.685
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 901,
+          "draws": 5,
+          "win_percent": 52.141
+        },
+        "dual": {
+          "games": 288,
+          "wins": 146,
+          "draws": 14,
+          "win_percent": 50.694
+        },
+        "eight": {
+          "games": 80,
+          "wins": 32,
+          "draws": 0,
+          "win_percent": 40.0
+        },
+        "identity": {
+          "games": 96,
+          "wins": 39,
+          "draws": 1,
+          "win_percent": 40.625
+        }
+      }
+    },
+    {
+      "id": "warlock_the_great_old_one",
+      "name": "邪术师·旧日支配者",
+      "english": "The Great Old One",
+      "profession": "warlock",
+      "alignment": "NeutralEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,70,78,74,60,82,50",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "射程∞，站位不用管。打中就把他推开两格，他射程不够时这两个回合根本打不到你。类型按距离：1 内挥砍、1 外穿刺。",
+      "counter": "攻 0 防 −1，很软，抢血就行。闪避与取消能让这一击连带距离一起作废。被推开后先合盾或回复，别硬打。",
+      "combos": "有 4/6/8 就该打出去：命中即把对手推开两个回合+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 847,
+          "draws": 62,
+          "win_percent": 78.426
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 924,
+          "draws": 59,
+          "win_percent": 53.472
+        },
+        "dual": {
+          "games": 272,
+          "wins": 152,
+          "draws": 5,
+          "win_percent": 55.882
+        },
+        "eight": {
+          "games": 93,
+          "wins": 32,
+          "draws": 1,
+          "win_percent": 34.409
+        },
+        "identity": {
+          "games": 86,
+          "wins": 33,
+          "draws": 2,
+          "win_percent": 38.372
+        }
+      }
+    },
+    {
+      "id": "bard_college_of_valor",
+      "name": "吟游诗人·勇气学院",
+      "english": "College of Valor",
+      "profession": "bard",
+      "alignment": "LawfulGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "3",
+      "weights": "0,58,58,58,62,74,66,50,72,76",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "每次行动结算完，若本回合受过伤或回过血就会问你要不要发动。先选增幅/削弱 攻击/防御，再选人数（1 人 ±3、2 人 ±2、3 人 ±1），最后点角色。可以选自己，同一人点两只手只算一次。",
+      "counter": "持续到你下次发动或你死，所以要盯住他给谁加了什么。他攻 0 防 −1、射程 3，抢血就能逼他先给自己加防御。",
+      "combos": "有 9 就能回血并触发增益+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 322,
+          "draws": 16,
+          "win_percent": 29.815
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 785,
+          "draws": 11,
+          "win_percent": 45.428
+        },
+        "dual": {
+          "games": 272,
+          "wins": 96,
+          "draws": 22,
+          "win_percent": 35.294
+        },
+        "eight": {
+          "games": 88,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 32.955
+        },
+        "identity": {
+          "games": 90,
+          "wins": 32,
+          "draws": 0,
+          "win_percent": 35.556
+        }
+      }
+    },
+    {
+      "id": "paladin_oathbreaker",
+      "name": "圣武士·破誓者",
+      "english": "Oathbreaker",
+      "profession": "paladin",
+      "alignment": "LawfulEvil",
+      "attack": "2",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,62,88,70,60,78,50",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "5 既能进攻，也保留转移资格。被攻击时点持盾角色的转移按钮，或选不发动。",
+      "counter": "先破掉场上的完整盾；他没有5或场上没有合适持盾者时无法转移。",
+      "combos": "有 5 就能转成攻击+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 705,
+          "draws": 1,
+          "win_percent": 65.278
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1005,
+          "draws": 3,
+          "win_percent": 58.16
+        },
+        "dual": {
+          "games": 272,
+          "wins": 144,
+          "draws": 3,
+          "win_percent": 52.941
+        },
+        "eight": {
+          "games": 81,
+          "wins": 25,
+          "draws": 0,
+          "win_percent": 30.864
+        },
+        "identity": {
+          "games": 77,
+          "wins": 26,
+          "draws": 3,
+          "win_percent": 33.766
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_berserker",
+      "name": "野蛮人·狂战士道途",
+      "english": "Path of the Berserker",
+      "profession": "barbarian",
+      "alignment": "NeutralEvil",
+      "attack": "-1",
+      "defense": "-2",
+      "range": "1",
+      "weights": "0,52,52,52,64,54,70,48,76,90",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "血量越低越强，但别把自己送进斩杀线；9 现在是主要输出。",
+      "counter": "爆发要一次打死，别让他反复用伤害回血。",
+      "combos": "有 9 就能转成攻击+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 792,
+          "draws": 1,
+          "win_percent": 73.333
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1242,
+          "draws": 3,
+          "win_percent": 71.875
+        },
+        "dual": {
+          "games": 272,
+          "wins": 115,
+          "draws": 5,
+          "win_percent": 42.279
+        },
+        "eight": {
+          "games": 91,
+          "wins": 33,
+          "draws": 0,
+          "win_percent": 36.264
+        },
+        "identity": {
+          "games": 84,
+          "wins": 34,
+          "draws": 3,
+          "win_percent": 40.476
+        }
+      }
+    },
+    {
+      "id": "fighter_tactician",
+      "name": "战士·战术家",
+      "english": "Tactician",
+      "profession": "fighter",
+      "alignment": "TrueNeutral",
+      "attack": "1",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,52,52,52,58,54,64,48,70,56",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "场上血量差越大越强，适合在残局或有人被集火时发力。",
+      "counter": "尽量把双方血量拉平，削弱他的动态加成。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 490,
+          "draws": 10,
+          "win_percent": 45.37
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1307,
+          "draws": 0,
+          "win_percent": 75.637
+        },
+        "dual": {
+          "games": 272,
+          "wins": 90,
+          "draws": 1,
+          "win_percent": 33.088
+        },
+        "eight": {
+          "games": 90,
+          "wins": 47,
+          "draws": 1,
+          "win_percent": 52.222
+        },
+        "identity": {
+          "games": 95,
+          "wins": 46,
+          "draws": 1,
+          "win_percent": 48.421
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "name": "法师·预言学派",
+      "english": "School of Divination",
+      "profession": "wizard",
+      "alignment": "TrueNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,48,50,48,68,76,74,96,78,78",
+      "deny": "0,0,0,0,0,-8,0,-28,0,-8",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "打出7积累不同数字。持有7时，运算完成后选择替换值或不发动；新数字决定攻击、回复或合盾。",
+      "counter": "留意其持有的7与已存预兆，逼其消耗记录；没有7时无法改写。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 309,
+          "draws": 19,
+          "win_percent": 28.611
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 529,
+          "draws": 9,
+          "win_percent": 30.613
+        },
+        "dual": {
+          "games": 272,
+          "wins": 73,
+          "draws": 8,
+          "win_percent": 26.838
+        },
+        "eight": {
+          "games": 76,
+          "wins": 24,
+          "draws": 0,
+          "win_percent": 31.579
+        },
+        "identity": {
+          "games": 82,
+          "wins": 30,
+          "draws": 1,
+          "win_percent": 36.585
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "name": "法师·死灵学派",
+      "english": "School of Necromancy",
+      "profession": "wizard",
+      "alignment": "NeutralEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,90,96,60,64,70,70,60,76,62",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "保留2防守。回合开始有可用1自动选攻击目标，也可放弃，不用选手。有人死亡后，依次选自己的手和死者的手交换数字，可提前结束。",
+      "counter": "力场攻击无视 2 抵挡；用多段攻击消耗多个 2。",
+      "combos": "1暗蚀、2抵挡+65",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 719,
+          "draws": 5,
+          "win_percent": 66.574
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 868,
+          "draws": 4,
+          "win_percent": 50.231
+        },
+        "dual": {
+          "games": 272,
+          "wins": 167,
+          "draws": 1,
+          "win_percent": 61.397
+        },
+        "eight": {
+          "games": 96,
+          "wins": 43,
+          "draws": 0,
+          "win_percent": 44.792
+        },
+        "identity": {
+          "games": 91,
+          "wins": 35,
+          "draws": 1,
+          "win_percent": 38.462
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "name": "法师·防护学派",
+      "english": "School of Abjuration",
+      "profession": "wizard",
+      "alignment": "LawfulGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,50,82,50,74,72,78,46,82,74",
+      "deny": "0,0,-22,0,-8,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "算出2先选角色，再选物理整组、雷鸣、强酸、火焰、寒冷或闪电。攻击时可改存屏障；抗性持续至施法者死亡或再次施法，屏障吸收后清空。",
+      "counter": "换用其未防护的类型，或逼其重新施法撤销旧抗性。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 274,
+          "draws": 26,
+          "win_percent": 25.37
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 582,
+          "draws": 3,
+          "win_percent": 33.681
+        },
+        "dual": {
+          "games": 272,
+          "wins": 79,
+          "draws": 8,
+          "win_percent": 29.044
+        },
+        "eight": {
+          "games": 91,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 31.868
+        },
+        "identity": {
+          "games": 83,
+          "wins": 40,
+          "draws": 2,
+          "win_percent": 48.193
+        }
+      }
+    },
+    {
+      "id": "cleric_light_domain",
+      "name": "牧师·光明领域",
+      "english": "Light Domain",
+      "profession": "cleric",
+      "alignment": "NeutralGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,58,58,58,76,66,76,50,76,60",
+      "deny": "0,0,0,0,0,0,0,0,0,-10",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "4/6/8均造成4点光耀。命中施加圣光，清除其他状态与抗性；持续两回合，回复减半，回合开始失去1生命。盾挡仍附圣光，闪避和取消不附加。",
+      "counter": "闪避或取消可避免圣光；护盾只挡伤害，仍会中圣光。用净化解除圣光后再回复。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 311,
+          "draws": 1,
+          "win_percent": 28.796
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 575,
+          "draws": 8,
+          "win_percent": 33.275
+        },
+        "dual": {
+          "games": 272,
+          "wins": 68,
+          "draws": 2,
+          "win_percent": 25.0
+        },
+        "eight": {
+          "games": 90,
+          "wins": 23,
+          "draws": 0,
+          "win_percent": 25.556
+        },
+        "identity": {
+          "games": 95,
+          "wins": 30,
+          "draws": 1,
+          "win_percent": 31.579
+        }
+      }
+    },
+    {
+      "id": "cleric_war_domain",
+      "name": "牧师·战争领域",
+      "english": "War Domain",
+      "profession": "cleric",
+      "alignment": "LawfulEvil",
+      "attack": "-1",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,58,58,58,64,62,70,48,74,58",
+      "deny": "0,0,0,0,-10,0,-12,0,-14,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "可以选自己或队友，少选或不发动。战争祝福攻防+1，9可放弃回复改为攻击；持战争祝福时9也提供施恩次数。",
+      "counter": "圣光清除并阻止战争祝福；减少其回合开始时的攻击数字，压低施恩次数。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 433,
+          "draws": 6,
+          "win_percent": 40.093
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 819,
+          "draws": 4,
+          "win_percent": 47.396
+        },
+        "dual": {
+          "games": 272,
+          "wins": 156,
+          "draws": 2,
+          "win_percent": 57.353
+        },
+        "eight": {
+          "games": 94,
+          "wins": 34,
+          "draws": 0,
+          "win_percent": 36.17
+        },
+        "identity": {
+          "games": 71,
+          "wins": 31,
+          "draws": 0,
+          "win_percent": 43.662
+        }
+      }
+    },
+    {
+      "id": "fighter_battle_master",
+      "name": "战士·战斗大师",
+      "english": "Battle Master",
+      "profession": "fighter",
+      "alignment": "LawfulNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "2",
+      "weights": "0,54,54,54,68,56,78,48,74,56",
+      "deny": "0,0,0,0,-12,0,-16,0,-12,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "攻击命中后看另一只手：4/8→流血或跛脚、6→震慑或倒伏（各 2 回合，可放弃）。先把手凑成「攻击数字 + 4/6/8」再出手；6 的震慑/倒伏最强。",
+      "counter": "别让他的另一只手停在 4/6/8；闪避与护盾挡住攻击就完全不给附加机会。",
+      "combos": "攻一手 + 另一手为 4/6/8：招式附加+45；攻一手 + 另一手为 4/6/8：招式附加+45；攻一手 + 另一手为 4/6/8：招式附加+45；双 4/6/8：攻出去后另一手仍是 4/6/8+45",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 669,
+          "draws": 14,
+          "win_percent": 61.944
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 776,
+          "draws": 9,
+          "win_percent": 44.907
+        },
+        "dual": {
+          "games": 272,
+          "wins": 98,
+          "draws": 10,
+          "win_percent": 36.029
+        },
+        "eight": {
+          "games": 86,
+          "wins": 30,
+          "draws": 1,
+          "win_percent": 34.884
+        },
+        "identity": {
+          "games": 92,
+          "wins": 46,
+          "draws": 2,
+          "win_percent": 50.0
+        }
+      }
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "name": "术士·龙族血脉",
+      "english": "Draconic Bloodline",
+      "profession": "sorcerer",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,54,54,54,64,64,72,50,80,62",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "根据对手常见元素/队伍构成选择；选定后攻击和抗性都锁定该元素。",
+      "counter": "用非该元素攻击；或用高防御/护盾处理其元素攻击。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 1006,
+          "draws": 0,
+          "win_percent": 93.148
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1335,
+          "draws": 1,
+          "win_percent": 77.257
+        },
+        "dual": {
+          "games": 288,
+          "wins": 74,
+          "draws": 5,
+          "win_percent": 25.694
+        },
+        "eight": {
+          "games": 91,
+          "wins": 44,
+          "draws": 0,
+          "win_percent": 48.352
+        },
+        "identity": {
+          "games": 93,
+          "wins": 43,
+          "draws": 0,
+          "win_percent": 46.237
+        }
+      }
+    },
+    {
+      "id": "ranger_hunter",
+      "name": "游侠·猎人",
+      "english": "Hunter",
+      "profession": "ranger",
+      "alignment": "NeutralGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "3",
+      "weights": "0,52,52,52,62,60,70,90,78,56",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "合出7后选择距离3内的一名其他角色，也可不标记；优先标记受伤或高防御的敌人。",
+      "counter": "被标记后尽快离开其射程或逼他先消耗标记。",
+      "combos": "有7可挂猎人标记+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 167,
+          "draws": 14,
+          "win_percent": 15.463
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 566,
+          "draws": 8,
+          "win_percent": 32.755
+        },
+        "dual": {
+          "games": 272,
+          "wins": 116,
+          "draws": 9,
+          "win_percent": 42.647
+        },
+        "eight": {
+          "games": 84,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 34.524
+        },
+        "identity": {
+          "games": 87,
+          "wins": 25,
+          "draws": 2,
+          "win_percent": 28.736
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_open_hand",
+      "name": "武僧·散打宗",
+      "english": "Way of the Open Hand",
+      "profession": "monk",
+      "alignment": "TrueNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,52,52,52,72,70,76,48,82,74",
+      "deny": "0,0,0,0,-10,0,-12,0,-16,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "1气控制或3气暗劲二选一；暗劲只由自己后续命中引爆。混元体不消耗正常行动。",
+      "counter": "逼其花气；被暗劲标记后，闪避或取消施加者攻击可避免引爆。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 705,
+          "draws": 19,
+          "win_percent": 65.278
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1045,
+          "draws": 7,
+          "win_percent": 60.475
+        },
+        "dual": {
+          "games": 272,
+          "wins": 184,
+          "draws": 3,
+          "win_percent": 67.647
+        },
+        "eight": {
+          "games": 84,
+          "wins": 28,
+          "draws": 0,
+          "win_percent": 33.333
+        },
+        "identity": {
+          "games": 91,
+          "wins": 30,
+          "draws": 1,
+          "win_percent": 32.967
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_four_elements",
+      "name": "武僧·四象宗",
+      "english": "Way of the Four Elements",
+      "profession": "monk",
+      "alignment": "TrueNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,52,52,52,72,70,76,48,82,74",
+      "deny": "0,0,0,0,-10,0,-12,0,-16,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "攻击前选元素或保留气；受五元素攻击可选抗性。行动后双手相同回1气。",
+      "counter": "以物理或其它魔法绕开四象法门；气不足时无法改元素或获抗性。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 902,
+          "draws": 0,
+          "win_percent": 83.519
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1161,
+          "draws": 7,
+          "win_percent": 67.188
+        },
+        "dual": {
+          "games": 272,
+          "wins": 198,
+          "draws": 1,
+          "win_percent": 72.794
+        },
+        "eight": {
+          "games": 97,
+          "wins": 32,
+          "draws": 0,
+          "win_percent": 32.99
+        },
+        "identity": {
+          "games": 88,
+          "wins": 35,
+          "draws": 1,
+          "win_percent": 39.773
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_moon",
+      "name": "德鲁伊·月亮结社",
+      "english": "Circle of the Moon",
+      "profession": "druid",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,56,58,54,64,64,70,50,76,60",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "回合开始凑10再选形态；熊守、狼攻、鹰远程、蛇上毒。",
+      "counter": "不让他保持10；熊形态避免浪费攻击打盾；鹰形态留意其6无法攻击。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 540,
+          "draws": 7,
+          "win_percent": 50.0
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 736,
+          "draws": 7,
+          "win_percent": 42.593
+        },
+        "dual": {
+          "games": 288,
+          "wins": 162,
+          "draws": 2,
+          "win_percent": 56.25
+        },
+        "eight": {
+          "games": 84,
+          "wins": 22,
+          "draws": 0,
+          "win_percent": 26.19
+        },
+        "identity": {
+          "games": 81,
+          "wins": 33,
+          "draws": 2,
+          "win_percent": 40.741
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_stars",
+      "name": "德鲁伊·星辰结社",
+      "english": "Circle of the Stars",
+      "profession": "druid",
+      "alignment": "LawfulNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "3",
+      "weights": "0,56,58,54,62,64,68,50,74,70",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "根据队形选射手/圣杯/巨龙；巨龙需要两次选被加数。",
+      "counter": "射手防御偏低；圣杯优先保护伤员；巨龙只在第二次加手后结算一次效果。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 475,
+          "draws": 3,
+          "win_percent": 43.981
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 687,
+          "draws": 4,
+          "win_percent": 39.757
+        },
+        "dual": {
+          "games": 272,
+          "wins": 130,
+          "draws": 6,
+          "win_percent": 47.794
+        },
+        "eight": {
+          "games": 86,
+          "wins": 31,
+          "draws": 0,
+          "win_percent": 36.047
+        },
+        "identity": {
+          "games": 87,
+          "wins": 35,
+          "draws": 0,
+          "win_percent": 40.23
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_land",
+      "name": "德鲁伊·大地结社",
+      "english": "Circle of the Land",
+      "profession": "druid",
+      "alignment": "NeutralGood",
+      "attack": "0",
+      "defense": "1",
+      "range": "1",
+      "weights": "0,60,60,86,62,64,68,60,74,58",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "3后先选束缚对象或不发动；回合结束再选一只手封锁，可选自己。封锁不影响该手主动运算。",
+      "counter": "封锁只禁加数，可用该手主动运算；束缚则随机限制运算手。",
+      "combos": "3可束缚+60",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 991,
+          "draws": 1,
+          "win_percent": 91.759
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1218,
+          "draws": 2,
+          "win_percent": 70.486
+        },
+        "dual": {
+          "games": 272,
+          "wins": 243,
+          "draws": 0,
+          "win_percent": 89.338
+        },
+        "eight": {
+          "games": 89,
+          "wins": 37,
+          "draws": 0,
+          "win_percent": 41.573
+        },
+        "identity": {
+          "games": 77,
+          "wins": 39,
+          "draws": 1,
+          "win_percent": 50.649
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_the_ancients",
+      "name": "圣武士·古贤之誓",
+      "english": "Oath of the Ancients",
+      "profession": "paladin",
+      "alignment": "NeutralGood",
+      "attack": "-1",
+      "defense": "1",
+      "range": "1",
+      "weights": "0,54,54,56,60,76,66,48,70,58",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "主动或被动盾碎后选角色或不发动；受伤后≥10选射程内他人回复2，低于10自动自愈2。",
+      "counter": "利用射程隔开治疗对象；碎盾会给他控制机会。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 501,
+          "draws": 5,
+          "win_percent": 46.389
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 861,
+          "draws": 1,
+          "win_percent": 49.826
+        },
+        "dual": {
+          "games": 272,
+          "wins": 151,
+          "draws": 4,
+          "win_percent": 55.515
+        },
+        "eight": {
+          "games": 83,
+          "wins": 26,
+          "draws": 1,
+          "win_percent": 31.325
+        },
+        "identity": {
+          "games": 85,
+          "wins": 27,
+          "draws": 2,
+          "win_percent": 31.765
+        }
+      }
+    },
+    {
+      "id": "warlock_the_fiend",
+      "name": "邪术师·妖魔",
+      "english": "The Fiend",
+      "profession": "warlock",
+      "alignment": "LawfulEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,54,54,54,62,60,68,48,74,78",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "攻击时选失能、恐慌或保留；虚假生命先吸伤。造成伤害后目标半血以下（含击杀）回复3。",
+      "counter": "少量伤害先消耗其防护；用腐朽阻止回复与溢出转化。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 502,
+          "draws": 12,
+          "win_percent": 46.481
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 879,
+          "draws": 4,
+          "win_percent": 50.868
+        },
+        "dual": {
+          "games": 272,
+          "wins": 133,
+          "draws": 7,
+          "win_percent": 48.897
+        },
+        "eight": {
+          "games": 90,
+          "wins": 33,
+          "draws": 0,
+          "win_percent": 36.667
+        },
+        "identity": {
+          "games": 75,
+          "wins": 32,
+          "draws": 1,
+          "win_percent": 42.667
+        }
+      }
+    },
+    {
+      "id": "bard_college_of_lore",
+      "name": "吟游诗人·逸闻学院",
+      "english": "College of Lore",
+      "profession": "bard",
+      "alignment": "LawfulNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "1",
+      "weights": "0,60,60,60,64,66,68,60,72,70",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "打出新数自动记录；集齐后选成长或保留。受击时选择清除对应记录减半，或保留。",
+      "counter": "留意其已有记录；换数字攻击，逼其消耗成长进度。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 421,
+          "draws": 3,
+          "win_percent": 38.981
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 766,
+          "draws": 5,
+          "win_percent": 44.329
+        },
+        "dual": {
+          "games": 272,
+          "wins": 121,
+          "draws": 0,
+          "win_percent": 44.485
+        },
+        "eight": {
+          "games": 94,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 30.851
+        },
+        "identity": {
+          "games": 82,
+          "wins": 27,
+          "draws": 0,
+          "win_percent": 32.927
+        }
+      }
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "name": "术士·风暴术法",
+      "english": "Storm Sorcery",
+      "profession": "sorcerer",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,64,65,70,60,76,70",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
+      "counter": "额外运算不能直接打伤害或回血；根据其永久抗性调整元素。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 266,
+          "draws": 24,
+          "win_percent": 24.63
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 734,
+          "draws": 2,
+          "win_percent": 42.477
+        },
+        "dual": {
+          "games": 288,
+          "wins": 126,
+          "draws": 12,
+          "win_percent": 43.75
+        },
+        "eight": {
+          "games": 80,
+          "wins": 26,
+          "draws": 1,
+          "win_percent": 32.5
+        },
+        "identity": {
+          "games": 88,
+          "wins": 26,
+          "draws": 3,
+          "win_percent": 29.545
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "name": "法师·幻术学派",
+      "english": "School of Illusion",
+      "profession": "wizard",
+      "alignment": "ChaoticEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,90,60,75,65,68,60,70,65",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "持2时，先看对方的运算手和原加数，再选是否改用另一只合法手；受击差2可将小手变2减半。",
+      "counter": "借其手前比较两种运算结果；对方可主动改算。拆开其持2或差2条件，削弱防守。",
+      "combos": "差2且持2的幻术防守+70",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 827,
+          "draws": 4,
+          "win_percent": 76.574
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1101,
+          "draws": 10,
+          "win_percent": 63.715
+        },
+        "dual": {
+          "games": 288,
+          "wins": 165,
+          "draws": 6,
+          "win_percent": 57.292
+        },
+        "eight": {
+          "games": 74,
+          "wins": 30,
+          "draws": 1,
+          "win_percent": 40.541
+        },
+        "identity": {
+          "games": 79,
+          "wins": 40,
+          "draws": 2,
+          "win_percent": 50.633
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "name": "法师·变化学派",
+      "english": "School of Transmutation",
+      "profession": "wizard",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,65,67,68,60,72,72",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "回合结束选无序匹配双手的角色或不发动，可选自己；变羊两回合，形态血池被击破也解除。",
+      "counter": "改变自己的手值避开匹配；打破羊形态时溢伤仍会扣原体力。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 409,
+          "draws": 1,
+          "win_percent": 37.87
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 751,
+          "draws": 3,
+          "win_percent": 43.461
+        },
+        "dual": {
+          "games": 288,
+          "wins": 125,
+          "draws": 4,
+          "win_percent": 43.403
+        },
+        "eight": {
+          "games": 92,
+          "wins": 24,
+          "draws": 0,
+          "win_percent": 26.087
+        },
+        "identity": {
+          "games": 91,
+          "wins": 34,
+          "draws": 1,
+          "win_percent": 37.363
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "name": "法师·惑控学派",
+      "english": "School of Enchantment",
+      "profession": "wizard",
+      "alignment": "NeutralEvil",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,74,66,78,60,84,70",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "整次攻击结算后选失能、魅惑或不发动；造成伤害选受伤者，受到伤害选来源。",
+      "counter": "后续实际掉血能解除惑控；虚假生命吸收不算实际掉血。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 765,
+          "draws": 20,
+          "win_percent": 70.833
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1319,
+          "draws": 4,
+          "win_percent": 76.331
+        },
+        "dual": {
+          "games": 272,
+          "wins": 211,
+          "draws": 3,
+          "win_percent": 77.574
+        },
+        "eight": {
+          "games": 87,
+          "wins": 36,
+          "draws": 0,
+          "win_percent": 41.379
+        },
+        "identity": {
+          "games": 97,
+          "wins": 58,
+          "draws": 1,
+          "win_percent": 59.794
+        }
+      }
+    },
+    {
+      "id": "fighter_eldritch_knight",
+      "name": "战士·奥法骑士",
+      "english": "Eldritch Knight",
+      "profession": "fighter",
+      "alignment": "LawfulGood",
+      "attack": "0",
+      "defense": "0",
+      "range": "2",
+      "weights": "0,60,60,60,68,82,73,60,78,65",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/100",
+      "2v2": "L/12/43",
+      "guide": "主动用完整盾运算先选元素，本次算出攻击立即生效；受非物理伤害可记录。附魔覆盖，攻击发起即消耗。",
+      "counter": "用盾挡或闪避消耗附魔；留意其记录的伤害类型。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 682,
+          "draws": 4,
+          "win_percent": 63.148
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 872,
+          "draws": 2,
+          "win_percent": 50.463
+        },
+        "dual": {
+          "games": 272,
+          "wins": 139,
+          "draws": 7,
+          "win_percent": 51.103
+        },
+        "eight": {
+          "games": 70,
+          "wins": 28,
+          "draws": 0,
+          "win_percent": 40.0
+        },
+        "identity": {
+          "games": 83,
+          "wins": 35,
+          "draws": 2,
+          "win_percent": 42.169
+        }
+      }
+    },
+    {
+      "id": "wizard_bladesinging",
+      "name": "法师·剑咏者",
+      "english": "Bladesinging",
+      "profession": "wizard",
+      "alignment": "ChaoticGood",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2",
+      "weights": "0,60,60,60,70,70,75,60,78,73",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "P/12/67",
+      "2v2": "L/12/43",
+      "guide": "回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",
+      "counter": "破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束；圣光清除并阻止剑歌。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 485,
+          "draws": 2,
+          "win_percent": 44.907
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 761,
+          "draws": 4,
+          "win_percent": 44.039
+        },
+        "dual": {
+          "games": 288,
+          "wins": 114,
+          "draws": 3,
+          "win_percent": 39.583
+        },
+        "eight": {
+          "games": 91,
+          "wins": 30,
+          "draws": 0,
+          "win_percent": 32.967
+        },
+        "identity": {
+          "games": 76,
+          "wins": 34,
+          "draws": 1,
+          "win_percent": 44.737
+        }
+      }
+    },
+    {
+      "id": "warlock_the_hexblade",
+      "name": "邪术师·咒剑",
+      "english": "The Hexblade",
+      "profession": "warlock",
+      "alignment": "NeutralEvil",
+      "attack": "1",
+      "defense": "-1",
+      "range": "2",
+      "weights": "0,60,60,60,67,68,72,100,78,70",
+      "deny": "0,0,0,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "回合开始选诅咒对象或不发动。击杀诅咒者后，幽灵占死者座位、继承手值，由AI从下轮行动。",
+      "counter": "避开诅咒伤害；击杀召唤者可使幽灵消失。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 283,
+          "draws": 3,
+          "win_percent": 26.204
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 805,
+          "draws": 7,
+          "win_percent": 46.586
+        },
+        "dual": {
+          "games": 272,
+          "wins": 137,
+          "draws": 4,
+          "win_percent": 50.368
+        },
+        "eight": {
+          "games": 97,
+          "wins": 31,
+          "draws": 1,
+          "win_percent": 31.959
+        },
+        "identity": {
+          "games": 75,
+          "wins": 28,
+          "draws": 1,
+          "win_percent": 37.333
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_conquest",
+      "name": "圣武士·征服之誓",
+      "english": "Oath of Conquest",
+      "profession": "paladin",
+      "alignment": "LawfulEvil",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,75,100,80,60,85,60",
+      "deny": "0,0,0,0,0,-22,0,0,-10,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",
+      "counter": "逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",
+      "combos": "持5进行攻击成长+35",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 836,
+          "draws": 22,
+          "win_percent": 77.407
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 1083,
+          "draws": 19,
+          "win_percent": 62.674
+        },
+        "dual": {
+          "games": 272,
+          "wins": 193,
+          "draws": 7,
+          "win_percent": 70.956
+        },
+        "eight": {
+          "games": 95,
+          "wins": 55,
+          "draws": 0,
+          "win_percent": 57.895
+        },
+        "identity": {
+          "games": 100,
+          "wins": 48,
+          "draws": 2,
+          "win_percent": 48.0
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_vengeance",
+      "name": "圣武士·复仇之誓",
+      "english": "Oath of Vengeance",
+      "profession": "paladin",
+      "alignment": "LawfulNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,60,60,60,74,82,78,60,85,65",
+      "deny": "0,0,0,0,0,-12,0,0,-10,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",
+      "counter": "留意标记归属；仇敌破盾会给予其调整手值的机会。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 416,
+          "draws": 8,
+          "win_percent": 38.519
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 843,
+          "draws": 4,
+          "win_percent": 48.785
+        },
+        "dual": {
+          "games": 272,
+          "wins": 145,
+          "draws": 7,
+          "win_percent": 53.309
+        },
+        "eight": {
+          "games": 95,
+          "wins": 24,
+          "draws": 0,
+          "win_percent": 25.263
+        },
+        "identity": {
+          "games": 97,
+          "wins": 31,
+          "draws": 3,
+          "win_percent": 31.959
+        }
+      }
+    },
+    {
+      "id": "cleric_trickery_domain",
+      "name": "牧师·诡术领域",
+      "english": "Trickery Domain",
+      "profession": "cleric",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,92,60,72,66,76,60,83,65",
+      "deny": "0,0,-16,0,0,0,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
+      "counter": "避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 449,
+          "draws": 8,
+          "win_percent": 41.574
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 848,
+          "draws": 1,
+          "win_percent": 49.074
+        },
+        "dual": {
+          "games": 288,
+          "wins": 130,
+          "draws": 2,
+          "win_percent": 45.139
+        },
+        "eight": {
+          "games": 75,
+          "wins": 21,
+          "draws": 1,
+          "win_percent": 28.0
+        },
+        "identity": {
+          "games": 81,
+          "wins": 40,
+          "draws": 1,
+          "win_percent": 49.383
+        }
+      }
+    },
+    {
+      "id": "cleric_tempest_domain",
+      "name": "牧师·风暴领域",
+      "english": "Tempest Domain",
+      "profession": "cleric",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "-1",
+      "range": "2147483647",
+      "weights": "0,60,60,60,96,70,75,60,82,65",
+      "deny": "0,0,0,0,-8,10,0,0,0,0",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
+      "counter": "避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 354,
+          "draws": 4,
+          "win_percent": 32.778
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 896,
+          "draws": 2,
+          "win_percent": 51.852
+        },
+        "dual": {
+          "games": 288,
+          "wins": 116,
+          "draws": 1,
+          "win_percent": 40.278
+        },
+        "eight": {
+          "games": 87,
+          "wins": 28,
+          "draws": 0,
+          "win_percent": 32.184
+        },
+        "identity": {
+          "games": 82,
+          "wins": 34,
+          "draws": 0,
+          "win_percent": 41.463
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_drunken_master",
+      "name": "武僧·醉拳宗",
+      "english": "Way of the Drunken Master",
+      "profession": "monk",
+      "alignment": "ChaoticNeutral",
+      "attack": "0",
+      "defense": "0",
+      "range": "1",
+      "weights": "0,40,45,45,65,70,68,60,75,100",
+      "deny": "0,0,0,0,0,0,0,0,0,-24",
+      "1v1": "L/12/43",
+      "2v2": "L/12/43",
+      "guide": "9先正常回复，再选择入醉。每个自身回合消耗1气维持；行动后双手相同回1气。持续伤害不掷骰。",
+      "counter": "消耗其气，等醉拳解除；持续伤害与固定伤害保持原规则。",
+      "combos": "",
+      "modes": {
+        "1v1": {
+          "games": 1080,
+          "wins": 508,
+          "draws": 3,
+          "win_percent": 47.037
+        },
+        "2v2": {
+          "games": 1728,
+          "wins": 769,
+          "draws": 2,
+          "win_percent": 44.502
+        },
+        "dual": {
+          "games": 288,
+          "wins": 139,
+          "draws": 0,
+          "win_percent": 48.264
+        },
+        "eight": {
+          "games": 89,
+          "wins": 29,
+          "draws": 0,
+          "win_percent": 32.584
+        },
+        "identity": {
+          "games": 101,
+          "wins": 41,
+          "draws": 0,
+          "win_percent": 40.594
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "固定AI策略采样，不代表真人胜率或最优权重。",
+    "2v2为固定队伍偏移配桌；双将为477组合固定偏移抽样，并非所有组合两两循环。",
+    "八人两表各600局，角色出场不均衡，不宜比较小差异。",
+    "本轮未重做集火None/Self/Mate或自身/针对权重的独立留出寻优。"
+  ]
+}

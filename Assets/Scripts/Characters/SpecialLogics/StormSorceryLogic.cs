@@ -15,9 +15,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(_chosen||_queued||!owner.IsAlive)return;_queued=true;
             var options=NewSubclassChoices.StormResistances();
-            var request=new WizardChoice(owner,"风暴之心 · 选择本局永久抗性",options,value=>{
+            var request=new WizardChoice(owner,"风暴之护 · 选择本局永久抗性",options,value=>{
                 var type=(AttackDamageType)value;if(type!=AttackDamageType.Lightning&&type!=AttackDamageType.Thunder)return;
-                if(_chosen)return;Resistance=type;owner.AddPermanentResistance(type);_chosen=true;_queued=false;game.NoteSkill(owner,"风暴之心",AttackDamageTypes.NameOf(type)+"永久抗性");});
+                if(_chosen)return;Resistance=type;owner.AddPermanentResistance(type);_chosen=true;_queued=false;game.NoteSkill(owner,"风暴之护",AttackDamageTypes.NameOf(type)+"永久抗性");});
             if(game.DeferWizardChoice?.Invoke(request)==true)return;
             request.ChooseOption(SkillChoicePolicy.Choose(NewSubclassChoices.StormResistance,options,owner,null,game));
         }
@@ -35,9 +35,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             bool acted=_operated;_operated=false;if(!acted||!owner.IsAlive||!StatusRules.CanAct(owner))return;
             var sources=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(!sources.Contains(move.ActedHand))sources.Add(move.ActedHand);
-            NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,"暴风魔法 · 选择运算手，或不发动",owner,game,sources,true,source=>{
+            NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,"风暴导向 · 选择运算手，或不发动",owner,game,sources,true,source=>{
                 if(source==null)return;var targets=new List<Hand>();foreach(var move in game.GetLegalMoves(owner))if(ReferenceEquals(move.ActedHand,source))targets.Add(move.TargetHand);
-                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"暴风魔法 · 选择加数（只改变手值）",owner,game,targets,true,target=>{if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.RequestTrickeryOperation(owner,source,h,()=>game.ApplyStormFreeOperation(owner,source,h),true),effectless:true);});});
+                NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,"风暴导向 · 选择加数（只改变手值）",owner,game,targets,true,target=>{if(target!=null)game.RequestOperationAddend(owner,source,target,h=>game.RequestTrickeryOperation(owner,source,h,()=>game.ApplyStormFreeOperation(owner,source,h),true),effectless:true);});});
         }
     }
 }

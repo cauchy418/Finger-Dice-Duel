@@ -26,13 +26,13 @@ namespace FingerDiceDuel.Assistant
                                                   AttackContext context)
             => shieldA;
 
-        /// <summary>战士·破阵者连锁破盾。默认放弃发动。</summary>
+        /// <summary>战士·破阵者破阵强袭。默认放弃发动。</summary>
         public virtual ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker,
                                                                    IReadOnlyList<ChainBreakTarget> candidates)
             => default;
 
         /// <summary>
-        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 潇洒气质 ……）。
+        /// 通用角色抉择（锁手 / 回血目标 / 闪避 / 潇洒无畏 ……）。
         /// 默认"放弃发动"，子类只重写自己关心的 <see cref="HandEffect"/>。
         /// </summary>
         public virtual Hand ChooseHandFor(ChoiceRequest request, PlayerState decider)

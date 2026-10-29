@@ -39,6 +39,11 @@ namespace FingerDiceDuel.Characters
 
         static CharacterCodex()
         {
+            Add(CharacterDefinition.WayOfTheDrunkenMasterId,"Way of the Drunken Master",Alignment.ChaoticNeutral,
+                shortSkill:"9后可入醉；全数字攻击，基础1d10，受击1d5。",
+                playGuide:"9先正常回复，再选择入醉。每个自身回合消耗1气维持；行动后双手相同回1气。持续伤害不掷骰。",
+                counter:"消耗其气，等醉拳解除；持续伤害与固定伤害保持原规则。",
+                interactions:new[]{"与其它武僧双将共用2/6气；圣光清除并阻止醉拳。"});
             Add(CharacterDefinition.ChampionId, "Champion", Alignment.NeutralGood,
                 shortSkill: "精通重击：运算后双手和10，发起攻击的基础伤害×1.5。",
                 playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
@@ -46,11 +51,11 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与忍宗双将：精通重击先乘基础伤害，再分段计算攻防。" });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulEvil,
-                shortSkill: "盾碎可连锁破盾；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
+                shortSkill: "盾碎可破阵强袭；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
                 playGuide: "核心是主动合盾。"
                          + "攻击时若另一只手是完整盾，可碎它换本次攻击距离∞ ——"
                          + "够不到远处对手时这是解法；"
-                         + "自己的盾本来就要碎时，顺手连锁打碎对手的盾最赚。",
+                         + "自己的盾本来就要碎时，发动破阵强袭打碎对手的盾。",
                 counter: "别让他合成 5（那是他合盾的唯一来源）。"
                        + "给他的数字里 1/2/3/4/5 都要压低，4/6/8 次之。",
                 interactions: new string[0]);
@@ -82,7 +87,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
                 playGuide: "1 是最值钱的手牌（能闪避，还能变成 2 再强化）。"
                          + "被攻击时用掉 1 换掉整次攻击永远划算。"
-                         + "潇洒气质同时把距离变成∞ —— 够不到远处对手时这是解法。",
+                         + "潇洒无畏同时把距离变成∞ —— 够不到远处对手时这是解法。",
                 counter: "别给他 1 与 2 —— 那是他闪避与强化的原料。"
                        + "面对咒法学派时他的 1 完全无效（攻击不可闪避）。",
                 interactions: new[] { "与太极宗：反弹可以被闪避；多段攻击每段分别消耗一只1。" });
@@ -107,12 +112,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与至高妖精：追加攻击没有攻击数字，不能被取消。" });
 
             Add(CharacterDefinition.WayOfTheNinjaId, "Way of the Ninja", Alignment.TrueNeutral,
-                shortSkill: "攻击拆成两段、伤害减半，每段各自计算攻防。",
-                playGuide: "拆两段后每段各自加一次攻防，"
-                         + "4 与 8 享受的增益是一样的，"
-                         + "所以 4 不是死牌，只是 8 本身更值钱（排序 8 > 6 > 4）。",
-                counter: "别给他高值（ 8 最该挡，6 次之）。"
-                       + "一面盾只能挡下他其中一段，所以自己合盾的价值下降。",
+                shortSkill: "影分身：消耗1气把攻击拆为两段。",
+                playGuide: "攻击前选影分身或不发动。对方持盾、自己攻防差占优时考虑两段；行动后同手值回1气。",
+                counter: "压低其气与攻击数字；气不足或不发动时仍是普通一段攻击。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.AssassinId, "Assassin", Alignment.ChaoticEvil,
@@ -133,7 +135,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
-                shortSkill: "妖精仪态：手上留着与对手攻击数字相同的牌即可取消该攻击。",
+                shortSkill: "妖精步伐：手上留着与对手攻击数字相同的牌即可取消该攻击。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
                          + "比对方少 8 以上才值得。",
@@ -167,12 +169,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.WayOfTheTaiChiId, "Way of the Tai Chi", Alignment.NeutralGood,
-                shortSkill: "5 不合盾而进入太极：被攻击时减半并反弹。",
-                playGuide: "5 是高价值（太极攻守兼备，而且开局那个 5 就已经是太极）。"
-                         + "被攻击时可以选择发动：把 5 变 0、受一半、反弹一半。"
-                         + "自己的 0 被他人当加数触碰后会立刻变成 1。",
-                counter: "别给他 5。一个太极只夹住一段，其余照常吃 ——"
-                       + "多段攻击打他反而赚；咒法学派打他则完全失效。",
+                shortSkill: "太极5可化解并反弹；可耗1气免伤或全反。",
+                playGuide: "先决定是否用太极5，再选保留气、1气免伤或1气全反。每只太极只化解一段。",
+                counter: "多段攻击可消耗太极与气；力场穿过化解，取消仍能阻止其出手。",
                 interactions: new[] { "与咒法学派：次级咒术不触发太极，不消耗5。", "与风流剑客：反弹可以被闪避。" });
 
             Add(CharacterDefinition.PathOfTheGiantId, "Path of the Giant", Alignment.ChaoticEvil,
@@ -206,7 +205,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与咒法学派：次级咒术穿透伏击，且不解除暗置。", "双将有太极与伏击时：先太极，再伏击。" });
 
             // ---- 魔术师（混乱中立）----
-            Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticGood,
                 shortSkill: "可以拿自己的手当被加数；"
                           + "运算出 2/4/6/8 都是攻击（伤害 = 牌面数字）。",
                 playGuide: "点自己的一只手当加数，再点自己的另一只手当被加数："
@@ -239,7 +238,7 @@ namespace FingerDiceDuel.Characters
                 playGuide: "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。"
                          + "普攻距离 1 内是钝击、1 外是穿刺；多段攻击每段各掷一次。",
                 counter: "攻 0 防 −1 但射程∞，躲不掉只能硬扛。"
-                       + "闪避或取消能让那一段连属性一起作废；盾与太极挡不住状态。",
+                       + "闪避或取消能让那一段连属性一起作废；格挡使攻击附加的负面时长−1。",
                 interactions: new string[0]);
 
             // ---- 旧日支配者（中立邪恶）----
@@ -277,17 +276,17 @@ namespace FingerDiceDuel.Characters
                 counter: "爆发要一次打死，别让他反复用伤害回血。",
                 interactions: new string[0]);
 
-            Add(CharacterDefinition.TacticianId, "Tactician", Alignment.ChaoticGood,
+            Add(CharacterDefinition.TacticianId, "Tactician", Alignment.TrueNeutral,
                 shortSkill: "战局推演：按场上最高与最低体力差 ÷3 获得额外攻防；挥砍伤害。",
                 playGuide: "场上血量差越大越强，适合在残局或有人被集火时发力。",
                 counter: "尽量把双方血量拉平，削弱他的动态加成。",
                 interactions: new string[0]);
 
-            Add(CharacterDefinition.SchoolOfDivinationId, "School of Divination", Alignment.TrueNeutral,
-                shortSkill: "7 后开启一轮窗口：他人运算前持有快照数字：只改变手值，无其它效果。",
-                playGuide: "先用 7 铺设窗口，再围绕快照数字安排自己的手牌；7 本身不产生攻击。",
-                counter: "持有快照数字时，可用本次运算调整手值；攻击、回复、合盾与其它技能均不会发动。等窗口结束再进攻。",
-                interactions: new[] { "与死灵学派：回合开始的免费暗蚀不是正常行动，不触发预言窗口。" });
+            Add(CharacterDefinition.SchoolOfDivinationId,"School of Divination",Alignment.TrueNeutral,
+                shortSkill:"7记录另一手；持有7可消耗预兆替换角色运算结果。",
+                playGuide:"打出7积累不同数字。持有7时，运算完成后选择替换值或不发动；新数字决定攻击、回复或合盾。",
+                counter:"留意其持有的7与已存预兆，逼其消耗记录；没有7时无法改写。",
+                interactions:new[]{"替换发生在数字变化后、效果结算前；纯运算不发动预知未来，也不记录。"});
 
             Add(CharacterDefinition.SchoolOfNecromancyId, "School of Necromancy", Alignment.NeutralEvil,
                 shortSkill: "2→1 挡一段；回合初有1免费暗蚀附腐朽；有人死亡可交换0～2只手值。",
@@ -297,8 +296,8 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.SchoolOfAbjurationId, "School of Abjuration", Alignment.LawfulGood,
                 shortSkill: "2 赋物理整组或五种元素抗性；攻击数字可存屏障，吸收后清空。",
-                playGuide: "算出2先选角色，再选物理整组、雷鸣、强酸、火焰、寒冷或闪电。攻击时可改存屏障；抗性在实际受伤后清除，屏障吸收后清空。",
-                counter: "用多段攻击/不同伤害类型先消耗抗性与屏障。",
+                playGuide: "算出2先选角色，再选物理整组、雷鸣、强酸、火焰、寒冷或闪电。攻击时可改存屏障；抗性持续至施法者死亡或再次施法，屏障吸收后清空。",
+                counter: "换用其未防护的类型，或逼其重新施法撤销旧抗性。",
                 interactions: new string[0]);
 
             // ---- 光明领域（中立善良，2026-10-23）----
@@ -311,7 +310,7 @@ namespace FingerDiceDuel.Characters
                        + "用净化解除圣光后再回复。",
                 interactions: new[] { "与生命领域：回复先净化圣光，再按全额治疗。", "双将的追加、反弹、免费暗蚀不改成固定4点，也不附圣光。" });
 
-            Add(CharacterDefinition.WarDomainId,"War Domain",Alignment.LawfulNeutral,
+            Add(CharacterDefinition.WarDomainId,"War Domain",Alignment.LawfulEvil,
                 shortSkill:"回合开始按攻击手数，最多赐予两名不同角色战争祝福2回合。",
                 playGuide:"可以选自己或队友，少选或不发动。战争祝福攻防+1，9可放弃回复改为攻击；持战争祝福时9也提供施恩次数。",
                 counter:"圣光清除并阻止战争祝福；减少其回合开始时的攻击数字，压低施恩次数。",
@@ -326,10 +325,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
 
             Add(CharacterDefinition.DraconicBloodlineId, "Draconic Bloodline", Alignment.ChaoticNeutral,
-                shortSkill: "首次回合选寒冷/火焰/闪电/毒素/强酸；攻击改该元素，永久抗性，状态3回合。",
+                shortSkill: "首次回合选寒冷/火焰/闪电/毒素/强酸；攻击改该元素，永久抗性，对应负面效果基础时长+1。",
                 playGuide: "根据对手常见元素/队伍构成选择；选定后攻击和抗性都锁定该元素。",
                 counter: "用非该元素攻击；或用高防御/护盾处理其元素攻击。",
-                interactions: new[] { "与防护学派：两种抗性可叠加保存。" });
+                interactions: new[] { "与防护学派：不同来源抗性可共存，同型不重复减半。" });
 
             Add(CharacterDefinition.RangerHunterId, "Hunter", Alignment.NeutralGood,
                 shortSkill: "7 在射程内标记；攻击标记目标无视正防御并加已损体力/5，消耗标记。",
@@ -338,15 +337,15 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与多目标：同一次攻击可同时结算原目标与一个标记目标。" });
 
             Add(CharacterDefinition.WayOfTheOpenHandId, "Way of the Open Hand", Alignment.TrueNeutral,
-                shortSkill: "气点：4气共鸣、2气倒伏/震慑；攻击共鸣目标引爆半伤真实伤害；混元体。",
-                playGuide: "攻击前选择招式或保留气点；2气倒伏/震慑、4气共鸣，按局面留气。",
-                counter: "逼他消耗气点；共鸣期间避免被他再次攻击。",
-                interactions: new[] { "与倒伏：共鸣引爆为额外真实伤害，仍吃本次攻击的其他结算。" });
+                shortSkill: "1气倒伏／震慑；3气暗劲；回合初混元体。",
+                playGuide: "1气控制或3气暗劲二选一；暗劲只由自己后续命中引爆。混元体不消耗正常行动。",
+                counter: "逼其花气；被暗劲标记后，闪避或取消施加者攻击可避免引爆。",
+                interactions: new[] { "暗劲不叠加；盾挡算命中，闪避／取消不引爆。" });
 
             Add(CharacterDefinition.WayOfTheFourElementsId, "Way of the Four Elements", Alignment.TrueNeutral,
-                shortSkill: "气点：2气改元素攻击；受到元素攻击时有气则耗1气获得该元素抗性。",
-                playGuide: "攻击前从五种元素中选择或保留气点；利用潮湿/覆霜等联动，留气防守。",
-                counter: "用物理或非元素攻击绕开抗性；连续元素攻击耗尽其气。",
+                shortSkill: "1气改元素；受五元素攻击可选耗1气抗性。",
+                playGuide: "攻击前选元素或保留气；受五元素攻击可选抗性。行动后双手相同回1气。",
+                counter: "以物理或其它魔法绕开四象法门；气不足时无法改元素或获抗性。",
                 interactions: new[] { "与龙族血脉：元素抗性可叠加保存。" });
 
             Add(CharacterDefinition.CircleOfTheMoonId, "Circle of the Moon", Alignment.ChaoticGood,
@@ -365,19 +364,19 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"记录1～9；集齐可成长，消耗对应记录可减伤。",
                 playGuide:"打出新数自动记录；集齐后选成长或保留。受击时选择清除对应记录减半，或保留。",
                 counter:"留意其已有记录；换数字攻击，逼其消耗成长进度。",
-                interactions:new[]{"暴风魔法只改手值，不触发记录。"});
+                interactions:new[]{"风暴导向只改手值，不触发记录。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
                 shortSkill:"选永久雷抗；攻击30%闪电、30%雷鸣，行动后可无效果运算。",
                 playGuide:"开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
                 counter:"额外运算不能直接打伤害或回血；根据其永久抗性调整元素。",
                 interactions:new[]{"额外运算不触发数字效果、碎盾或运算后技能，不额外推进回合与状态。"});
-            Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticNeutral,
+            Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticEvil,
                 shortSkill:"持2可选择改用另一只合法手作加数；差2可变小手为2减伤。",
                 playGuide:"持2时，先看对方的运算手和原加数，再选是否改用另一只合法手；受击差2可将小手变2减半。",
                 counter:"借其手前比较两种运算结果；对方可主动改算。拆开其持2或差2条件，削弱防守。",
                 interactions:new[]{"替换手也须是合法加数；隐藏或被封锁的另一手不会被强行借用。"});
 
-            Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.TrueNeutral,
+            Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.NeutralGood,
                 shortSkill: "结束封一手禁作加数至下回合；3可束缚2回合。",
                 playGuide: "3后先选束缚对象或不发动；回合结束再选一只手封锁，可选自己。封锁不影响该手主动运算。",
                 counter: "封锁只禁加数，可用该手主动运算；束缚则随机限制运算手。",
@@ -406,17 +405,17 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
                 shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
             Add(CharacterDefinition.TrickeryDomainId,"Trickery Domain",Alignment.ChaoticNeutral,
-                "诡术祝福：借手逢2，可换数字并魅惑。",
+                "诡诈换位：借手逢2，可换数字并魅惑。",
                 "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
                 "避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
-                new[]{"幻术先改加数，再判诡术祝福；换入的数字不重复受运算倍率影响。"});
+                new[]{"幻术先改加数，再判诡诈换位；换入的数字不重复受运算倍率影响。"});
             Add(CharacterDefinition.TempestDomainId,"Tempest Domain",Alignment.ChaoticNeutral,
                 "风暴之怒：持4可先反击，再纯运算。",
                 "开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
                 "避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
                 new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});
             Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
-                shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含连锁破盾。"});
+                shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含破阵强袭。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,
                 shortSkill:"持7可诅咒；每段+2，亲自击杀召唤咒缚幽灵。",playGuide:"回合开始选诅咒对象或不发动。击杀诅咒者后，幽灵占死者座位、继承手值，由AI从下轮行动。",counter:"避开诅咒伤害；击杀召唤者可使幽灵消失。",interactions:new[]{"幽灵占位计距，不计原玩家胜负人数；状态扣血与幽灵击杀不触发召唤。"});
         }

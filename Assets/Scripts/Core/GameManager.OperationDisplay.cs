@@ -15,6 +15,7 @@ namespace FingerDiceDuel.Core
             if(SameTrick(actor,source,addend)&&_trickReady)
                 foreach(var step in _trickSteps)if(step.Swap&&step.Touch.Owner.IsAlive&&!step.Touch.Owner.IsPolymorphed)
                 {shown.Add(new KeyValuePair<Hand,int>(step.Touch.Addend,value));value=step.Touch.AddendValue;}
+            value=PortentPreview(actor,source,addend,value);
             shown.Add(new KeyValuePair<Hand,int>(source,value));return shown;
         }
     }

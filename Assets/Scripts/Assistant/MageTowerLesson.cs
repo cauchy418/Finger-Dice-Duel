@@ -9,6 +9,8 @@ namespace FingerDiceDuel.Assistant
     {
         public string Key, Title, Introduction, Conclusion;
         public DamageType CastingType;
+        public AttackDamageType ResistanceType=AttackDamageType.Bludgeoning;
+        public int ResistanceTargetSeat;
         public int[] Hands;
         public int FirstSeat;
         public int GuardAttack, GuardDefense;

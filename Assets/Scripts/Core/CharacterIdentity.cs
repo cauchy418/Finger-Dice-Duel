@@ -69,6 +69,7 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("trickery", "cleric_trickery_domain", "cleric", "诡术领域", "Trickery Domain"),
             new CharacterIdentity("tempest", "cleric_tempest_domain", "cleric", "风暴领域", "Tempest Domain"),
             new CharacterIdentity("vengeance", "paladin_oath_of_vengeance", "paladin", "复仇之誓", "Oath of Vengeance"),
+            new CharacterIdentity("drunken", "monk_way_of_the_drunken_master", "monk", "醉拳宗", "Way of the Drunken Master"),
             new CharacterIdentity("hexblade", "warlock_the_hexblade", "warlock", "咒剑", "The Hexblade"),
         };
         private static readonly Dictionary<string, CharacterIdentity> Index = BuildIndex();

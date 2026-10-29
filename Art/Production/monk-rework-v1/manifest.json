@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-29",
+  "method": "Built-in imagegen; Pillow only resizes and pads transparent borders, as authorized.",
+  "assets": [
+    {
+      "name": "醉拳宗徽记",
+      "runtime_key": "Subclasses/monk_way_of_the_drunken_master",
+      "generator": "built-in imagegen",
+      "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-230aba41-20fc-4a44-a5bb-65bd8873dbb4.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "runtime_size": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "description": "旧金圆形徽记、酒葫芦、短棍、暗红武僧布带与琥珀气旋；无人物和文字",
+      "sha256": "ad95b6f26339ee7f2645d02a077cc6892cbb498e2095c110021cc25f805c74f5"
+    },
+    {
+      "name": "醉拳状态",
+      "runtime_key": "Effects/drunken_fist",
+      "generator": "built-in imagegen",
+      "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-c8153143-e0de-4fa5-8083-047f2dbe8d75.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "runtime_size": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "description": "旧金方框、倾倒的酒葫芦与铜杯、琥珀酒液和暗红气旋；无人物和文字",
+      "sha256": "9d84393a52c4ab39df9cc3949af80dc047b7075b35e086ffc37cb3b53a776157"
+    },
+    {
+      "name": "暗劲",
+      "runtime_key": "Effects/hidden_force",
+      "generator": "built-in imagegen",
+      "source": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-1ce329ee-873c-477a-ab98-b9a9ee929048.png",
+      "native_size": [
+        1254,
+        1254
+      ],
+      "runtime_size": [
+        512,
+        512
+      ],
+      "transparent": true,
+      "description": "旧金方框、五指握合的石质拳头、暗红压力核心与青色气脉；无文字",
+      "sha256": "e21bd3e66f61d09f7a14f3adc360d641420385e8d21149006df354c1ec10d1cb"
+    }
+  ]
+}

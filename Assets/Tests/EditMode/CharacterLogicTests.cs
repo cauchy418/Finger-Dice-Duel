@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace FingerDiceDuel.Tests
 {
     /// <summary>
-    /// 三个角色的技能行为：法师·咒法学派无视护盾、野蛮人·守望者道途锁手、战士·破阵者连锁破盾与盾牌修复，
+    /// 三个角色的技能行为：法师·咒法学派无视护盾、野蛮人·守望者道途锁手、战士·破阵者破阵强袭与盾牌修复，
     /// 以及伤害公式（攻击 +1 / 防御 +1）。
     /// 对应 RULES.md 第 6 节与第 8 节。
     ///
@@ -273,7 +273,7 @@ namespace FingerDiceDuel.Tests
         }
 
         // ============================================================
-        // 战士·破阵者 · 连锁破盾
+        // 战士·破阵者 · 破阵强袭
         // ============================================================
 
         [Test]
@@ -303,9 +303,9 @@ namespace FingerDiceDuel.Tests
             TestSetup.RequireHand(blank.LeftHand, 5, "B 左手");
 
             // 回合 4（A）：战士·破阵者用自己那面盾发起运算（5+5=10 -> 1）
-            //   -> 运算前先破自己的盾 -> 触发连锁破盾 -> 击碎 B 的盾
+            //   -> 运算前先破自己的盾 -> 触发破阵强袭 -> 击碎 B 的盾
             //
-            // 注意：连锁破盾的答案现在是**运算前收集**的（与野蛮人·守望者道途锁手同一模式），
+            // 注意：破阵强袭的答案现在是**运算前收集**的（与野蛮人·守望者道途锁手同一模式），
             // 所以要在 ExecuteTurn 之前写进 sink。
             _choiceA.SetChoice(HandEffect.BreakerChainBreak, blank.LeftHand);
             TurnResult r = game.ExecuteTurn(breaker, breaker.LeftHand, blank.LeftHand);
@@ -314,7 +314,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, r.ResultValue, "5 + 5 = 10 -> 1");
             Assert.AreEqual(ShieldState.None, breaker.LeftHand.State,
                 "5+5=10 -> 1：结果不是 5，作为运算源碎掉的盾不保留标记。");
-            Assert.AreEqual(ShieldState.Broken, blank.LeftHand.State, "连锁破盾应击碎选中的目标盾。");
+            Assert.AreEqual(ShieldState.Broken, blank.LeftHand.State, "破阵强袭应击碎选中的目标盾。");
         }
 
         [Test]
@@ -335,7 +335,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(ShieldState.Formed, blank.LeftHand.State);
 
             _choiceA.DeclineChainBreak();
-            // 连锁破盾的答案在运算前收集：DeclineChainBreak 已登记"放弃"
+            // 破阵强袭的答案在运算前收集：DeclineChainBreak 已登记"放弃"
             _choiceA.SetChoice(HandEffect.BreakerChainBreak, null);
             game.ExecuteTurn(breaker, breaker.LeftHand, blank.LeftHand);
 
@@ -355,15 +355,15 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(breaker.LeftHand, 4);
             game.ExecuteTurn(breaker, breaker.LeftHand, blank.RightHand);        // B.L: 4+1 = 5 盾
 
-            // A 也合一面盾，作为连锁破盾的目标
+            // A 也合一面盾，作为破阵强袭的目标
             game.ExecuteTurn(blank, blank.RightHand, breaker.RightHand);         // 让回合
             TestSetup.SetHand(blank.RightHand, 4);
             game.ExecuteTurn(blank, blank.RightHand, breaker.RightHand);         // A.R: 4+1 = 5 盾
             Assert.AreEqual(ShieldState.Formed, blank.RightHand.State);
 
-            // A 攻击打碎 B 的盾 -> 触发 B 的连锁破盾 -> 反手击碎 A 的盾
+            // A 攻击打碎 B 的盾 -> 触发 B 的破阵强袭 -> 反手击碎 A 的盾
             //
-            // 战士·破阵者 B 是**防守方**，但连锁破盾由他自己决定 ——
+            // 战士·破阵者 B 是**防守方**，但破阵强袭由他自己决定 ——
             // 抉择在运算前收集（收集阶段会问双方），答案写进 B 的 sink。
             _choiceB.SetChoice(HandEffect.BreakerChainBreak, blank.RightHand);
             TestSetup.SetHand(blank.LeftHand, 3);                                // 3+5 = 8
@@ -372,7 +372,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(r.WasBlocked, "B 的盾应挡住这次攻击。");
             Assert.AreEqual(ShieldState.Broken, breaker.LeftHand.State);
             Assert.AreEqual(ShieldState.Broken, blank.RightHand.State,
-                "连锁破盾击碎的是 A 的右手盾；A 是白板不会修复它，碎盾保持（手值仍是 5）。");
+                "破阵强袭击碎的是 A 的右手盾；A 是白板不会修复它，碎盾保持（手值仍是 5）。");
         }
 
         [Test]

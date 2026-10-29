@@ -6,10 +6,21 @@ namespace FingerDiceDuel.Assistant
     {
         public PlayerState ResistanceTarget(PlayerState owner, GameManager game)
         {
-            var best=owner;
-            foreach(var p in game.Players)
-                if(p.IsAlive && (ReferenceEquals(p,owner)||game.IsKnownAlly(owner,p))
-                    && (best==null || p.Health<best.Health)) best=p;
+            PlayerState best=owner;int bestScore=int.MinValue;
+            foreach(var target in game.Players)
+            {
+                if(!target.IsAlive||!ReferenceEquals(target,owner)&&!game.IsKnownAlly(owner,target))continue;
+                int score=(target.MaximumHealth-target.Health)*2;
+                foreach(var enemy in game.OpponentsOf(owner))
+                {
+                    if(!enemy.IsAlive||!StatusRules.CanAct(enemy)||!game.CanReach(enemy,target))continue;
+                    var hit=new AttackContext(enemy,target,enemy.LeftHand,6,game);
+                    var type=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(hit)??AttackDamageType.Slashing;
+                    if(!AttackDamageTypes.IsMagic(type)||ResistanceNames.CanGrant(type))
+                        score+=12+System.Math.Max(0,StatusRules.EffectiveAttackBonus(enemy))*2+(target.Health<=8?8:0);
+                }
+                if(score>bestScore){best=target;bestScore=score;}
+            }
             return best;
         }
         public AttackDamageType ResistanceType(PlayerState owner, PlayerState target, GameManager game)
@@ -23,7 +34,7 @@ namespace FingerDiceDuel.Assistant
                 if(type==AttackDamageType.None) type=AttackDamageType.Slashing;
                 if(!AttackDamageTypes.IsMagic(type)) type=AttackDamageType.Bludgeoning;
                 int weight=10+System.Math.Max(0,StatusRules.EffectiveAttackBonus(enemy))*2;
-                if(target.HasResistance(type)) weight=0;
+                if(target.HasPermanentResistance(type)) weight=0;
                 weights.TryGetValue(type,out int old);weights[type]=old+weight;
             }
             var best=AttackDamageType.Bludgeoning;int score=-1;

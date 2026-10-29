@@ -11,15 +11,20 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int ScoreMoveBonus(MoveValueContext context) => context.ActedValueAfter==2?32:0;
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
+        private PlayerState _owner,_resistanceTarget;
         public int BarrierPoints { get; private set; }
         private AttackDamageType _selectedResistance=AttackDamageType.Bludgeoning;
         public AttackDamageType SelectedResistance
         { get => _selectedResistance; set { if(ResistanceNames.CanGrant(value)) _selectedResistance=value; } }
         public void StoreBarrier(int points) { if (points>0) BarrierPoints+=points; }
         public void GrantResistance(PlayerState target, AttackDamageType type)
-        { if(ResistanceNames.CanGrant(type)) target?.AddResistance(type); }
+        {
+            if(!ResistanceNames.CanGrant(type))return;
+            _resistanceTarget?.RemoveSustainedResistance(this);_resistanceTarget=target;
+            target?.GrantSustainedResistance(this,type,()=>_owner==null||_owner.IsAlive);
+        }
         public override void OnMatchReset(PlayerState owner, GameManager manager)
-        { BarrierPoints=0; SelectedResistance=AttackDamageType.Bludgeoning; }
+        {_resistanceTarget?.RemoveSustainedResistance(this);_resistanceTarget=null;_owner=owner;BarrierPoints=0; SelectedResistance=AttackDamageType.Bludgeoning; }
 
         public override void CollectPreTargetChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
         {
@@ -59,7 +64,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             }
             GrantResistance(target,SelectedResistance);
             string label=AttackDamageTypes.IsMagic(SelectedResistance)?ResistanceNames.Name(SelectedResistance):"物理抗性";
-            manager?.NoteSkill(owner,"法术抗性",$"赋予{target.Name}{label}");
+            manager?.NoteSkill(owner,"法术抗性",$"赋予{target.Name}{label}，持续至施法者死亡或再次施法");
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => (context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1

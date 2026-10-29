@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Core
             request.ChooseOption(ChooseIllusion(touch)?1:0);return false;
         }
         public void ClearPreparedOperationAddend()
-        {_illusionEpoch++;_illusionPrepared[0]=null;_illusionPrepared[1]=null;ClearPreparedTrickery();}
-        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)=>ApplyEffectlessOperation(actor,source,target,"暴风魔法");
+        {_illusionEpoch++;_illusionPrepared[0]=null;_illusionPrepared[1]=null;ClearPreparedTrickery();ClearPreparedPortent();}
+        public bool ApplyStormFreeOperation(PlayerState actor,Hand source,Hand target)=>ApplyEffectlessOperation(actor,source,target,"风暴导向");
     }
 }

@@ -312,12 +312,12 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void WayOfTheNinja_has_plus_one_and_minus_one()
+        public void WayOfTheNinja_has_zero_attack_and_defense()
         {
             PlayerState n = CharacterFactory.CreatePlayer("N", CharacterDefinition.WayOfTheNinja);
 
-            Assert.AreEqual(1, n.Character.AttackBonus);
-            Assert.AreEqual(-1, n.Character.DefenseBonus);
+            Assert.AreEqual(0, n.Character.AttackBonus);
+            Assert.AreEqual(0, n.Character.DefenseBonus);
         }
 
         [Test]
@@ -333,7 +333,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(2, ctx.HitCount, "应是两段攻击。");
             Assert.AreEqual(2, ctx.LandedHits, "两段都应命中。");
-            Assert.AreEqual(6, ctx.AppliedDamage, "两段各 3 点。");
+            Assert.AreEqual(4, ctx.AppliedDamage, "两段各2点。");
         }
 
         [Test]
@@ -352,7 +352,7 @@ namespace FingerDiceDuel.Tests
 
             Assert.AreEqual(1, ctx.BlockedHits, "一面盾只挡一段。");
             Assert.AreEqual(1, ctx.LandedHits, "另一段应命中。");
-            Assert.AreEqual(3, ctx.AppliedDamage, "命中那段 = 2 + 攻1 = 3。");
+            Assert.AreEqual(2, ctx.AppliedDamage, "命中一段2点。");
             Assert.AreEqual(ShieldState.Broken, def.RightHand.State, "盾应被消耗。");
         }
 
@@ -811,7 +811,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, ctx.DodgedHits, "只闪掉一段。");
             Assert.AreEqual(1, ctx.LandedHits, "另一段命中。");
             // 每段 = 4/2 + 武僧·忍宗攻1 - 游荡者·风流剑客防(-2) = 2 + 1 + 2 = 5
-            Assert.AreEqual(5, ctx.AppliedDamage, "命中那段 = 2 + 攻1 + 游荡者·风流剑客易伤2 = 5。");
+            Assert.AreEqual(4, ctx.AppliedDamage, "命中一段2，目标防−2。");
         }
 
         [Test]

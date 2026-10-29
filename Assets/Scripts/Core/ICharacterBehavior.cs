@@ -37,14 +37,14 @@ namespace FingerDiceDuel.Core
                                  int targetValue, HandEffectType effect, GameManager manager,
                                  IPreTurnChoiceSink choiceSink);
 
-        /// <summary>自身护盾被击碎时触发（用于战士·破阵者连锁破盾等）。</summary>
+        /// <summary>自身护盾被击碎时触发（用于战士·破阵者破阵强袭等）。</summary>
         void OnOwnShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager);
 
         /// <summary>
         /// 自身护盾**被别人打碎**时触发（区别于"自己主动破盾"）。
         ///
         /// 由 <see cref="GameManager.BreakShieldAndNotify"/> 调用 ——
-        /// 即"被攻击消耗掉"或"被连锁破盾打碎"。
+        /// 即"被攻击消耗掉"或"被破阵强袭打碎"。
         /// 圣武士·奉献之誓用它区分两种碎盾（两种都触发冲击，但语义不同）。
         /// </summary>
         void OnOtherShieldBroken(PlayerState owner, Hand brokenHand, GameManager manager);
@@ -214,7 +214,7 @@ namespace FingerDiceDuel.Core
     {
         void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager);
     }
-    /// <summary>一次攻击造成伤害后通知；致死目标也通知，供直坠噩梦等自身收益。</summary>
+    /// <summary>一次攻击造成伤害后通知；致死目标也通知，供黑暗强运等自身收益。</summary>
     public interface IOnDamageDealt
     {
         void OnDamageDealt(AttackContext context, GameManager manager);
@@ -481,6 +481,10 @@ namespace FingerDiceDuel.Core
         public static IHandEffectRewriter EffectRewriterFor(IReadOnlyList<ICharacterBehavior> parts, int result)
         {
             if(parts==null) return null;
+            // Drunken stance explicitly makes every digit an attack, regardless of primary order.
+            foreach(var part in parts)
+                if(part is IDrunkenStance stance && stance.Drunken && part is IHandEffectRewriter drunk)
+                    return drunk;
             foreach(var part in parts)
                 if(part is IHandEffectRewriter rewriter
                     && (!(part is ISelectiveHandEffectRewriter selective) || selective.HandlesResult(result)))
@@ -764,7 +768,7 @@ namespace FingerDiceDuel.Core
     /// 角色实现"**我有没有发动过招牌技能**"（供 AI 与测试观测）。
     ///
     /// 为什么需要：有些技能发动后在场上**不留痕迹**（潜行会被后续运算解除、
-    /// 锁手会随盾碎解锁、连锁破盾会被别的操作覆盖），于是
+    /// 锁手会随盾碎解锁、破阵强袭会被别的操作覆盖），于是
     /// "AI 从不使用这个技能"这类问题**根本测不出来** —— 我在这上面卡过。
     ///
     /// 实现者返回"本局发动过几次"（累计值，重开一局清零）。
@@ -796,7 +800,7 @@ namespace FingerDiceDuel.Core
     ///
     /// 背景：斩杀线 = 本次攻击的最大伤害 = 基础值 + 攻方攻击加成 − 受方防御加成。
     /// 但有几个角色的实际伤害**不等于**这个式子：
-    ///   · **游荡者·风流剑客**：手上有 2 时可以潇洒气质（基础值 ×1.5）
+    ///   · **游荡者·风流剑客**：手上有 2 时可以潇洒无畏（基础值 ×1.5）
     ///   · **战士·剑士**：双手相同时追加一次 4/6/8 伤害
     ///   · **游荡者·刺客**：潜行中 +7
     ///   · **野蛮人·巨人道途**：打出 5 时是**两段**，每段伤害 = 另一只手的点数
@@ -812,7 +816,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ 参数给的是**原始值**（结果值 / 攻方攻击加成 / 受方防御加成），
         ///    让角色能按自己的机制重算 —— 因为有些机制作用在
-        ///    **叠加攻防之前**。例如游荡者·风流剑客的潇洒气质是"基础值 ×1.5"，
+        ///    **叠加攻防之前**。例如游荡者·风流剑客的潇洒无畏是"基础值 ×1.5"，
         ///    真实顺序是 `(4 * 1.5) + 攻 - 防`，而不是 `(4 + 攻 - 防) * 1.5`。
         ///
         ///    通用情形下直接返回

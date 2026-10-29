@@ -236,14 +236,16 @@ namespace FingerDiceDuel.Core
                 groups.Add(new GuideGroup(DamageAffinityNames.Name(affinity), entries));
             }
             return new GuideSheet("抗性、易伤与免疫", "Resistance, Vulnerability & Immunity", lines, true, groups,
-                "十三种伤害各有抗性、易伤、免疫图标。同类型免疫优先；否则先算易伤×1.5，再算抗性减半，逐步向上取整。一次攻击落地后，全部临时修正一起消耗；盾挡／闪避不消耗，多段整次生效。免疫不清除既有状态。防护学派仍只能赋予原有六项抗性，不新增赋予易伤或免疫的技能。");
+                "十三种伤害各有抗性、易伤、免疫图标。同类型免疫优先；否则先算易伤×1.5，再算抗性减半，逐步向上取整。一次攻击落地后，全部临时修正一起消耗；盾挡／闪避不消耗，多段整次生效。免疫不清除既有状态。防护学派仅能赋予物理整组及五元素抗性，持续到施法者死亡或再次赋予；塑能学派待用类型自带对应抗性，消耗／覆盖类型时结束。两者不随一次受击消耗，圣光清除并阻止。");
         }
 
         public static GuideSheet CharacterMarks()
         {
             var entries = new List<GuideEntry> {
                 new GuideEntry("arcane_barrier", 0x58BFFF, "奥术守御：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
-                new GuideEntry("ki", 0x82D7C9, "气：武僧·散打宗／四象宗的技能资源，上限6点。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
+                new GuideEntry("hidden_force",0x82D7C9,"暗劲：渗透劲命中后施加，不叠加；仅施加者后续首次命中引爆，造成该击攻防结算后、盾与抗性前应有伤害的一半真实伤害，向下取整。盾挡算命中，闪避／取消不引爆。",resourceKey:"Effects/hidden_force"),
+                new GuideEntry("portent",0x82A5FF,"预兆：打出7记录另一手数字，0～9各存一份。持有7时可在角色运算完成后、数字效果结算前消耗记录替换结果；可不发动。",resourceKey:"Effects/portent"),
+                new GuideEntry("ki", 0x82D7C9, "气：全体武僧共用的技能资源，初始2、上限6。正常行动后双手相同获得1气；双将同一次行动至多获得1气。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
                 new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark"),
                 new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
                 new GuideEntry("vow_of_enmity",0xC34D50,"仇敌誓言：复仇之誓的单一目标标记；本人对其每段伤害+1，对其他角色−1。仇敌每破一盾，可额外纯运算一次。无固定回合数，受攻击或仇敌死亡时可选择转移。",resourceKey:"Effects/vow_of_enmity"),
@@ -321,9 +323,11 @@ namespace FingerDiceDuel.Core
             }
             string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣光立即清除并阻止重新进入。";
             character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
+            string drunk="醉拳：所有数字改为攻击，5不合盾、9不回复；每段基础1d10，受到非零攻击每段改为1d5后再计算防护。每个自身回合开始消耗1气，气不足解除；持续／不可增减伤害不变，圣光清除并阻止。";
+            character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "21种负面状态；圣光、剑歌、战争祝福为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
+                "21种负面状态；圣光、剑歌、战争祝福、醉拳为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

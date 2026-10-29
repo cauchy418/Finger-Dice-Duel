@@ -105,7 +105,9 @@ namespace FingerDiceDuel.Core
             {
                 ClearStatuses();
                 ClearTemporaryDamageAffinities();
+                ClearSustainedResistances();
                 foreach (var song in CharacterBehaviors.Implementers<IBladesong>(this)) song.EndSong();
+                foreach(var stance in CharacterBehaviors.Implementers<IDrunkenStance>(this))stance.EndDrunken();
             }
             else if (HasStatus(StatusEffect.HolyLight))
             {
@@ -223,9 +225,9 @@ namespace FingerDiceDuel.Core
 
         public bool HasPhysicalResistance => _physicalResistance;
 
-        /// <summary>武僧·散打宗的共鸣之气标记。</summary>
+        /// <summary>武僧·散打宗的暗劲标记。</summary>
         public bool HasResonance { get; private set; }
-        public void SetResonance(bool value) => HasResonance = value;
+        public void SetResonance(bool value) { HasResonance = value; if(!value)HiddenForceSource=null; }
 
         /// <summary>邪术师·妖魔的虚假生命，先于真实生命扣除。</summary>
         public int FalseLife { get; private set; }
@@ -237,6 +239,7 @@ namespace FingerDiceDuel.Core
         public void ClearFalseLife() => FalseLife = 0;
         public bool HasResistance(AttackDamageType type)
         {
+            if(HasSustainedResistance(type))return true;
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
                 || type == AttackDamageType.Slashing)
@@ -275,6 +278,7 @@ namespace FingerDiceDuel.Core
         public void ClearAllResistances()
         {
             ClearResistances();
+            ClearSustainedResistances();
             _permanentResistances.Clear();
         }
 
@@ -331,10 +335,11 @@ namespace FingerDiceDuel.Core
             Health = MaximumHealth;
             LeftHand = new Hand(1);
             RightHand = new Hand(1);
+            MonkRules.Bind(this);
         }
 
         // ============ 角色管理 ============
-        public void BindCharacter(ICharacterBehavior character) => Character = character;
+        public void BindCharacter(ICharacterBehavior character) { Character = character; MonkRules.Bind(this); }
 
         /// <summary>绑定角色数据（由 <see cref="CharacterFactory"/> 调用）。</summary>
         public void BindDefinition(CharacterDefinition definition) => Definition = definition;
@@ -512,7 +517,7 @@ namespace FingerDiceDuel.Core
             ClearVulnerabilities();
             ClearImmunities(); _permanentImmunities.Clear();
             SetResonance(false);
-            ClearFalseLife();
+            ClearFalseLife(); ResetMonkKi();
         }
 
         public override string ToString() => $"{Name}(HP={Health}/{MaximumHealth})";

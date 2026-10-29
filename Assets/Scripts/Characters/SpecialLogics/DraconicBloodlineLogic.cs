@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context != null) context.StatusDuration = 3;
+            if (context != null && !context.IsStatusDamage && (context.AttackType==AttackDamageType.None||context.AttackType==Element)) context.StatusDuration++;
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context) => Element;

@@ -207,7 +207,8 @@ namespace FingerDiceDuel.Tests
                 Assert.IsTrue(b.HasStatus(StatusEffect.Decay),"双将免费暗蚀保留腐朽");
                 Assert.IsTrue(CharacterBehaviors.FirstImplementer<IAttackBlocker>(a)!=null);
                 int hooks=0;foreach(var h in CharacterBehaviors.Implementers<ITurnStartHook>(a)) hooks++;
-                Assert.AreEqual(2,hooks);
+                Assert.AreEqual(1,hooks);
+                Assert.IsTrue(CharacterBehaviors.FirstImplementer<IPortentBook>(a)!=null);
             }
         }
     }

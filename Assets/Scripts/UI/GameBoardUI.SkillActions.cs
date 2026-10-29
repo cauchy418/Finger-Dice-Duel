@@ -104,7 +104,7 @@ namespace FingerDiceDuel.UI
             if (Visible(_acceptButton))
             {
                 if (_skillEffect == HandEffect.SwashbucklerDodge) _acceptButton.GetComponentInChildren<Text>().text = "闪避 · 1→2";
-                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "潇洒气质 · 2→3";
+                if (_skillEffect == HandEffect.SwashbucklerDuelistThrust) _acceptButton.GetComponentInChildren<Text>().text = "潇洒无畏 · 2→3";
                 DecorateSkillAction(_acceptButton, _battleChoiceOwner, new Vector2(290, start - row++ * gap), height);
             }
             if (Visible(_declineButton))

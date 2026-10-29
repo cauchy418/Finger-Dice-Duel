@@ -73,7 +73,7 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.OathOfTheCrownId] = new HandValueProfile();
 
             // ---- 战士·破阵者（攻 +1）----
-            // 5 = 成盾（挡一次伤害）。盾还能当运算源，主动碎掉触发**连锁破盾**
+            // 5 = 成盾（挡一次伤害）。盾还能当运算源，主动碎掉触发**破阵强袭**
             // （再击碎场上一面成型盾）—— 所以 5 对他的价值尤其高。
             Own[CharacterDefinition.BreakerId] = new HandValueProfile()
                 .Set(5, 95)                       // 成盾
@@ -381,6 +381,7 @@ namespace FingerDiceDuel.Assistant
                 .Set(8, 70).Set(6, 64).Set(4, 58).Set(5, 54).Set(9, 56)
                 .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48);
             // 三所新学派：分别重视7的预言、1/2的暗蚀与抵挡、2的抗性。
+            Own[CharacterDefinition.WayOfTheDrunkenMasterId]=new HandValueProfile().Set(9,100).Set(5,70).Set(4,65).Set(6,68).Set(8,75).Set(7,60).Set(2,45).Set(1,40).Set(3,45);
             Own[CharacterDefinition.SchoolOfDivinationId]=new HandValueProfile()
                 .Set(7,90).Set(8,76).Set(6,70).Set(4,64).Set(5,72).Set(9,62);
             Own[CharacterDefinition.SchoolOfNecromancyId]=new HandValueProfile()
@@ -626,7 +627,7 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对战士·破阵者 ----
-            // 他的两个技能（碎盾换射程、连锁破盾）**都以盾为前提**。
+            // 他的两个技能（碎盾换射程、破阵强袭）**都以盾为前提**。
             // ⚠️ 玩家补了一句"**法师·咒法学派除外**" —— 那是指"我选法师·咒法学派时盾本来就无效"
             //    （见上面"面对法师·咒法学派"那条），所以这一条只对"面对战士·破阵者"生效。
             OpponentAdjust[CharacterDefinition.BreakerId] = new List<ValueAdjust>
@@ -680,6 +681,19 @@ namespace FingerDiceDuel.Assistant
                 new ValueAdjust(8, -12),
             };
 
+            // Current monk resource economy and persistent wizard defenses (2026-10-30).
+            Own[CharacterDefinition.WayOfTheNinjaId]=new HandValueProfile().Set(8,78).Set(6,72).Set(4,66).Set(5,72).Set(9,72).Set(1,52).Set(2,52).Set(3,52).Set(7,48);
+            Own[CharacterDefinition.WayOfTheOpenHandId]=new HandValueProfile().Set(8,82).Set(6,76).Set(4,72).Set(5,70).Set(9,74).Set(1,52).Set(2,52).Set(3,52).Set(7,48);
+            Own[CharacterDefinition.WayOfTheFourElementsId]=new HandValueProfile().Set(8,82).Set(6,76).Set(4,72).Set(5,70).Set(9,74).Set(1,52).Set(2,52).Set(3,52).Set(7,48);
+            Own[CharacterDefinition.SchoolOfDivinationId]=new HandValueProfile().Set(7,96).Set(8,78).Set(6,74).Set(4,68).Set(5,76).Set(9,78).Set(0,35).Set(1,48).Set(2,50).Set(3,48);
+            Own[CharacterDefinition.SchoolOfAbjurationId]=new HandValueProfile().Set(2,82).Set(8,82).Set(6,78).Set(4,74).Set(5,72).Set(9,74).Set(1,50).Set(3,50).Set(7,46);
+            Own[CharacterDefinition.SchoolOfEvocationId]=new HandValueProfile().Set(8,86).Set(6,80).Set(4,76).Set(5,74).Set(9,76).Set(1,54).Set(2,54).Set(3,54).Set(7,48);
+            OpponentAdjust[CharacterDefinition.SchoolOfDivinationId]=new List<ValueAdjust>{new ValueAdjust(7,-28),new ValueAdjust(9,-8),new ValueAdjust(5,-8)};
+            OpponentAdjust[CharacterDefinition.SchoolOfAbjurationId]=new List<ValueAdjust>{new ValueAdjust(2,-22),new ValueAdjust(4,-8)};
+            OpponentAdjust[CharacterDefinition.SchoolOfEvocationId]=new List<ValueAdjust>{new ValueAdjust(8,-18),new ValueAdjust(6,-14),new ValueAdjust(4,-12)};
+            OpponentAdjust[CharacterDefinition.WayOfTheOpenHandId]=new List<ValueAdjust>{new ValueAdjust(8,-16),new ValueAdjust(6,-12),new ValueAdjust(4,-10)};
+            OpponentAdjust[CharacterDefinition.WayOfTheFourElementsId]=new List<ValueAdjust>{new ValueAdjust(8,-16),new ValueAdjust(6,-12),new ValueAdjust(4,-10)};
+            OpponentAdjust[CharacterDefinition.WayOfTheDrunkenMasterId]=new List<ValueAdjust>{new ValueAdjust(9,-24)};
             // ---- 面对武僧·忍宗 ----
             // 玩家原话："和常规一样，尽量避免给高价值数字，
             //            而 8 本身价值就大于 6 再大于 4。"

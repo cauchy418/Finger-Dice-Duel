@@ -33,6 +33,9 @@ namespace FingerDiceDuel.Assistant
         private void ContinueSelectedOperation()
         {
             PrepareOperationDisplay();
+            if(_game.RequestPortentOperation(ActivePlayer,SelectedHand,_selectedTarget,()=>{}))
+            {TryStartWizardBoundary(ContinueSelectedOperation);return;}
+            _operationDisplay.Clear();PrepareOperationDisplay();
             _pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,_selectedTarget).IsAttack;
             if(BeginPreTargetChoicesIfAny())return;
             if(TryEnterHealTargetChoice())return;

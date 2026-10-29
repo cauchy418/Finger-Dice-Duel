@@ -35,14 +35,14 @@ namespace FingerDiceDuel.Core
                     if(ReferenceEquals(vow.VowTarget,player))result.Add(new CombatStatusIcon("Effects/vow_of_enmity",
                         "仇敌誓言 · 来源："+source.Name+"\n该来源对你伤害+1，对其他角色−1；你每打碎其一面盾，使其可额外纯运算一次。",""));
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
-                "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；黑暗强运可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
+                "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；直坠噩梦可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
                 result.Add(new CombatStatusIcon("Status/"+StatusNames.IconKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),
                     player.StatusTurnsLeft(status).ToString(),status));
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
-                    ResistanceNames.Name(type)+(player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
+                    ResistanceNames.Name(type)+(player.HasSustainedResistance(type)?"：技能持续抗性；不因受击消耗，按对应技能条件结束。":player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
             if(player.Character is INpcCircuitProgress phantom)
                 result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3"));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
@@ -57,8 +57,13 @@ namespace FingerDiceDuel.Core
             }
             if(barrier?.BarrierPoints>0) result.Add(new CombatStatusIcon("Effects/arcane_barrier",
                 "奥术守御 · "+barrier.BarrierPoints+"点\n抗性后吸收伤害，使用即全部消耗。",barrier.BarrierPoints.ToString()));
-            foreach(var resource in CharacterBehaviors.Implementers<IKiResource>(player))
-                result.Add(new CombatStatusIcon("Effects/ki","气 · "+resource.Ki+" / 6\n武僧技能资源；数字为当前气点，不是剩余回合。",resource.Ki.ToString()));
+            var resource=CharacterBehaviors.FirstImplementer<IKiResource>(player);
+            if(resource!=null)
+                result.Add(new CombatStatusIcon("Effects/ki","气 · "+resource.Ki+" / 6\n初始2、上限6；正常行动后双手相同获得1气，双将共用。",resource.Ki.ToString()));
+            if(MonkRules.DrunkenOf(player)!=null)result.Add(new CombatStatusIcon("Effects/drunken_fist","醉拳：所有数字攻击，每段基础1d10；受到攻击每段改为1d5。回合开始消耗1气维持；持续伤害不变。",""));
+            if(player.HasResonance)result.Add(new CombatStatusIcon("Effects/hidden_force","暗劲 · 来源："+player.HiddenForceSource?.Name+"\n仅施加者后续首次命中引爆，造成应有伤害一半的真实伤害。无倒计时，不叠加。",""));
+            var portentBook=CharacterBehaviors.FirstImplementer<IPortentBook>(player);
+            if(portentBook!=null){var values=new List<int>(portentBook.Portents);values.Sort();result.Add(new CombatStatusIcon("Effects/portent","预兆："+(values.Count==0?"无":string.Join("、",values))+"\n持有7时可消耗记录替换角色运算结果。",values.Count.ToString()));}
             if(game!=null)
             {
                 var sources=new List<string>();

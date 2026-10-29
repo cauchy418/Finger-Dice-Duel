@@ -129,7 +129,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Breaker { get; } = new CharacterDefinition(
             BreakerId, "战士·破阵者", SpecialLogicType.Breaker,
             attackBonus: 1,
-            description: "己方盾碎可连锁破盾，新合盾可修复另一手的碎盾；攻击主动碎盾命中附流血2回合。攻击 +1。");
+            description: "己方盾碎可破阵强袭，新合盾可修复另一手的碎盾；攻击主动碎盾命中附流血2回合。攻击 +1。");
 
         public static CharacterDefinition SchoolOfConjuration { get; } = new CharacterDefinition(
             SchoolOfConjurationId, "法师·咒法学派", SpecialLogicType.SchoolOfConjuration,
@@ -176,9 +176,8 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition WayOfTheNinja { get; } = new CharacterDefinition(
             WayOfTheNinjaId, "武僧·忍宗", SpecialLogicType.WayOfTheNinja,
-            attackBonus: 1, defenseBonus: -1,
-            description: "攻击改为两段伤害减半（4→两次 2、6→两次 3、8→两次 4），每段各自结算攻防加成。" +
-                         "攻防 +1 / -1。");
+            attackBonus: 0, defenseBonus: 0,
+            description: "影分身：发起攻击时可消耗1气，基础伤害减半、攻击两段。攻防0/0，距离1，钝击。正常行动后双手相同获得1气，共用2/6气。");
 
         public static CharacterDefinition Assassin { get; } = new CharacterDefinition(
             AssassinId, "游荡者·刺客", SpecialLogicType.Assassin,
@@ -267,11 +266,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition WayOfTheTaiChi { get; } = new CharacterDefinition(
             WayOfTheTaiChiId, "武僧·太极宗", SpecialLogicType.WayOfTheTaiChi,
             attackBonus: 0, defenseBonus: 0,
-            description: "5 不合成盾牌，而是进入太极形态：被攻击时可以把那张 5 变成 0，" +
-                         "只受本次攻击应有伤害的一半，并把剩余的一半反弹给攻击方" +
-                         "（反弹无视距离、可被盾挡下、可被游荡者·风流剑客闪避，但无法被邪术师·至高妖精取消）。" +
-                         "对法师·咒法学派的攻击无减半也不反弹。自己的 0 被他人当加数触碰后立即变成 1。" +
-                         "攻防 0 / 0，攻击距离 1。");
+            description: "气初始2、上限6。5改为太极；受到攻击可把太极5变0，受一半、反弹一半。借力打力可耗1气选择免伤或全额反弹。0被别人触碰先变1。");
 
         /// <summary>
         /// 野蛮人·巨人道途：攻 +2 / 防 +2，攻击距离 1。
@@ -346,15 +341,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition SchoolOfEvocation { get; } = new CharacterDefinition(
             SchoolOfEvocationId, "法师·塑能学派", SpecialLogicType.SchoolOfEvocation,
             attackBonus: 0, defenseBonus: -1,
-            description: "运算出攻击数字（4/6/8）时，可以选择放弃这次攻击，" +
-                         "改为给下一次攻击指定一种伤害类型（10 选 1）：" +
-                         "雷鸣（残响）、强酸、毒素、光耀（目盲）、暗蚀（腐朽）、" +
-                         "火焰（燃烧）、寒冷（冰冻）、闪电（感电）、" +
-                         "力场（同法师·咒法学派，不挂状态）、心灵（震慑）。" +
-                         "命中后目标获得对应负面状态，持续目标自己的 2 个回合；" +
-                         "被盾抵挡 / 太极减免仍算命中，被闪避或被取消则作废（要重新放弃一次）。" +
-                         "连续放弃时只保留最新的选择。" +
-                         "攻 0 / 防 −1，攻击距离 1。");
+            description: "距离∞。法术塑形：打出攻击数字可放弃攻击，为下次攻击选择一种魔法伤害类型；消耗该类型前获得对应抗性，受击不消耗。下一击命中附对应效果，闪避／取消也消耗所选类型。");
 
         /// <summary>
         /// 术士·狂野魔法（WildMagic）：攻 0 / 防 −1，攻击距离无限，混乱善良。
@@ -427,7 +414,7 @@ namespace FingerDiceDuel.Core
             SchoolOfDivinationId, "法师·预言学派", SpecialLogicType.SchoolOfDivination,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Divination",
-            description: "攻击距离∞，距离1内钝击、1外穿刺。打出7后至你的下个回合开始：其他角色行动时若手牌有数字等于你打出7时另一只手，本次运算只改变手值，不攻击、回复、合盾或触发其它技能。");
+            description: "预兆：打出7记录另一手点数，每个数字最多一份。预知未来：持有7时，可消耗一份记录替换任意角色的运算结果，再按新数字结算效果，可不发动。");
 
         public static CharacterDefinition SchoolOfNecromancy { get; } = new CharacterDefinition(
             SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,
@@ -439,7 +426,7 @@ namespace FingerDiceDuel.Core
             SchoolOfAbjurationId, "法师·防护学派", SpecialLogicType.SchoolOfAbjuration,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Abjuration",
-            description: "攻击距离∞，距离1内钝击、1外穿刺。打出2选择存活角色，赋予物理整组或雷鸣、强酸、火焰、寒冷、闪电抗性；不能赋予心灵、力场、毒素、光耀、暗蚀抗性。攻击数字可存储奥术守御，在护盾/抗性后、扣血前吸收，使用即清空。");
+            description: "打出2选择目标并授予物理整组或五元素抗性，持续至施法者死亡或再次施法；再次施法撤销旧赋予。攻击数字可存入奥术守御，吸收后清空。");
 
         /// <summary>
         /// 牧师·光明领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，中立善良。
@@ -471,7 +458,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
             DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,
             defenseBonus: -1, englishName: "Draconic Bloodline",
-            description: "开局选择寒冷/火焰/闪电/毒素/强酸之一；攻击改为该类型，获得该元素永久抗性，该类型状态持续3回合。攻0/防-1，距离∞。");
+            description: "首次自身回合选择寒冷／火焰／闪电／毒素／强酸，攻击改为该类型并获得永久抗性；龙族体魄使对应负面效果基础时长+1。");
 
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
@@ -481,12 +468,12 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition WayOfTheOpenHand { get; } = new CharacterDefinition(
             WayOfTheOpenHandId, "武僧·散打宗", SpecialLogicType.WayOfTheOpenHand,
             englishName: "Way of the Open Hand",
-            description: "开局2气、上限6；行动后双手相同得1气。攻击时4气挂共鸣，或2气给目标倒伏/震慑2回合。攻击共鸣目标引爆半伤真实伤害。回合开始气=体力可跳回合发动混元体，移除全部气并回复2倍气点。");
+            description: "共用气初始2、上限6。散打技巧1气附倒伏／震慑；渗透劲3气打入暗劲，仅施加者后续命中引爆半伤真实伤害。回合开始气等于体力可耗尽气回复双倍，保留行动。");
 
         public static CharacterDefinition WayOfTheFourElements { get; } = new CharacterDefinition(
             WayOfTheFourElementsId, "武僧·四象宗", SpecialLogicType.WayOfTheFourElements,
             englishName: "Way of the Four Elements",
-            description: "开局2气、上限6；行动后双手相同得1气。攻击可耗2气改火焰/寒冷/闪电/雷鸣/强酸；受到这些元素攻击时有气则自动耗1气获得该元素抗性。");
+            description: "共用气初始2、上限6。四象门徒1气选择五元素攻击；受到五元素攻击时，四象法门可选耗1气获得对应抗性。");
 
         public static CharacterDefinition CircleOfTheMoon { get; } = new CharacterDefinition(
             CircleOfTheMoonId, "德鲁伊·月亮结社", SpecialLogicType.CircleOfTheMoon,
@@ -538,11 +525,14 @@ namespace FingerDiceDuel.Core
         public const string OathOfConquestId="paladin_oath_of_conquest";
         public static CharacterDefinition OathOfConquest {get;}=new CharacterDefinition(OathOfConquestId,"圣武士·征服之誓",SpecialLogicType.OathOfConquest,attackBonus:0,defenseBonus:0,englishName:"Oath of Conquest",description:"攻击开始持5则整次攻击后攻击+1；被攻击开始持5则结算后防御+1。回合结束未发起攻击则技能攻击加成−1，未持5则技能防御加成−1，最低0。按攻击开始时实际数值，攻击加成高于受击者或被防御加成低于自己的角色攻击，结算后令对方恐慌2回合。距离1，钝击，攻防0/0。");
         public const string OathOfVengeanceId="paladin_oath_of_vengeance";
-        public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+1，对其他角色−1。仇敌每打碎自己一面盾（包括连锁破盾），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
+        public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+1，对其他角色−1。仇敌每打碎自己一面盾（包括破阵强袭），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
 
         public const string TrickeryDomainId="cleric_trickery_domain", TempestDomainId="cleric_tempest_domain";
         public static CharacterDefinition TrickeryDomain {get;}=new CharacterDefinition(TrickeryDomainId,"牧师·诡术领域",SpecialLogicType.TrickeryDomain,defenseBonus:-1,englishName:"Trickery Domain",description:"他人借你的手运算，若原运算手、原加数或结果为2，可交换你的原加数与对方结果；对方按换入数字打出，你仅改手值。交换后可令运算者魅惑2回合。距离∞，近钝击远穿刺。");
         public static CharacterDefinition TempestDomain {get;}=new CharacterDefinition(TempestDomainId,"牧师·风暴领域",SpecialLogicType.TempestDomain,defenseBonus:-1,englishName:"Tempest Domain",description:"回合开始可做一次只改手值的运算。受攻击前持4，可用一只4对来袭者发起闪电或雷鸣反击，再用同手纯运算；每次来袭限一次，反击不递归，击杀来袭者终止原攻击。距离∞，近钝击远穿刺。");
+        public const string WayOfTheDrunkenMasterId="monk_way_of_the_drunken_master";
+        public static CharacterDefinition WayOfTheDrunkenMaster {get;}=new CharacterDefinition(WayOfTheDrunkenMasterId,"武僧·醉拳宗",SpecialLogicType.WayOfTheDrunkenMaster,englishName:"Way of the Drunken Master",description:"气初始2、上限6。打出9先回复，再可入醉。醉拳中所有数字攻击，每段基础1d10；受到攻击每段改为1d5。回合开始消耗1气维持，气不足解除。");
+
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -558,7 +548,7 @@ namespace FingerDiceDuel.Core
             CircleOfTheLand, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
-            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain
+            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

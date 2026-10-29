@@ -1395,7 +1395,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"不发动"按钮。
         ///
-        /// 角色的抉择可能允许放弃（游荡者·风流剑客的闪避、潇洒气质、野蛮人·守望者道途的锁手），
+        /// 角色的抉择可能允许放弃（游荡者·风流剑客的闪避、潇洒无畏、野蛮人·守望者道途的锁手），
         /// 这时必须给玩家一个明确的"放弃"出口，否则他会以为必须选一张手牌。
         /// </summary>
         public void SetDeclineButtonVisible(bool visible)
@@ -1417,7 +1417,7 @@ namespace FingerDiceDuel.UI
         /// <summary>
         /// 显示/隐藏"发动"按钮。
         ///
-        /// 只有一个候选的抉择（战士·剑士追加攻击、游荡者·风流剑客潇洒气质）用按钮比"点手牌"直观得多，
+        /// 只有一个候选的抉择（战士·剑士追加攻击、游荡者·风流剑客潇洒无畏）用按钮比"点手牌"直观得多，
         /// 所以这类抉择会在"不发动"左侧显示一个发动按钮。
         /// </summary>
         public void SetAcceptButtonVisible(bool visible)

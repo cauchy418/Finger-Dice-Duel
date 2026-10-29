@@ -1,86 +1,36 @@
 ﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
-
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>武僧·散打宗：气、共鸣、倒伏/震慑与混元体。</summary>
-    public sealed class WayOfTheOpenHandLogic : CharacterTemplate, IAttackTypeProvider, IKiResource, IPreTurnChoiceProvider
+    public sealed class WayOfTheOpenHandLogic : MonkLogic, ITurnStartHook
     {
-        public const int MaxKi = 6;
-        public int Ki { get; private set; } = 2;
-        private int? _technique;
-
-        public override string DisplayName => "武僧·散打宗";
-        public override int BaseAttackRange => 1;
-
-        public override void OnMatchReset(PlayerState owner, GameManager manager)
-        {
-            Ki = 2;_technique=null;
-        }
-
-        public override void OnOperationResolved(PlayerState owner, Hand actedHand,
-                                                  int actedHandValueBefore, int targetValue,
-                                                  HandEffectType effect, GameManager manager,
-                                                  IPreTurnChoiceSink choiceSink)
-        {
-            if (owner?.LeftHand == null || owner.RightHand == null) return;
-            if (owner.LeftHand.Value == owner.RightHand.Value)
-                Ki = System.Math.Min(MaxKi, Ki + 1);
-        }
-
+        private int? _technique;private int _harmonyTurn=-1;
+        public override string DisplayName=>"武僧·散打宗";
+        public override void OnMatchReset(PlayerState owner,GameManager game){base.OnMatchReset(owner,game);_technique=null;_harmonyTurn=-1;}
         public override void CollectPreTurnChoices(PreTurnChoiceContext context,IList<ChoiceRequest> requests)
         {
-            if(!CharacterBehaviors.ActorHas(context.Actor,this)) return;
-            _technique=null;if(!context.IsAttack) return;
-            int ki=System.Math.Min(MaxKi,Ki+(context.Actor.GetOtherHand(context.ActedHand)?.Value==context.EffectiveResult?1:0));
-            if(ki<2) return;
-            requests.Add(new ChoiceRequest(HandEffect.OpenHandTechnique,"散打 · 选择本次招式",null,decider:context.Actor,
-                options:MartialSkillChoices.OpenHandOptions(ki),applyOption:value=>_technique=value,optionKey:MartialSkillChoices.OpenHand));
+            if(!CharacterBehaviors.ActorHas(context.Actor,this))return;_technique=null;if(!context.IsAttack||Ki<1)return;
+            requests.Add(new ChoiceRequest(HandEffect.OpenHandTechnique,"散打技巧／渗透劲 · 选择招式或不发动",null,decider:context.Actor,
+                options:MartialSkillChoices.OpenHandOptions(Ki),applyOption:v=>_technique=v,optionKey:MartialSkillChoices.OpenHand));
         }
-
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context?.Defender == null) return;
-
-            // 引爆旧共鸣：按正常命中、尚未经护盾/抗性处理的伤害取半。
-            if (context.Defender.HasResonance)
-            {
-                int expected = context.FinalDamage
-                             + StatusRules.EffectiveAttackBonus(context.Attacker)
-                             - StatusRules.EffectiveDefenseBonus(context.Defender);
-                if (expected < 0) expected = 0;
-                context.ExtraTrueDamage += expected / 2;
-                context.Defender.SetResonance(false);
-                context.Manager?.NoteSkill(context.Attacker, "共鸣引爆", $"额外 {expected / 2} 点真实伤害");
-            }
-
-            int choice=_technique??SkillChoicePolicy.Choose(MartialSkillChoices.OpenHand,MartialSkillChoices.OpenHandOptions(Ki),context.Attacker,context.Defender,context.Manager);
-            _technique=null;
-            if(choice==-1 && Ki>=4)
-            {
-                Ki-=4;context.ApplyUntimedOnHit(()=>{context.Defender.SetResonance(true);context.Manager?.NoteSkill(context.Attacker,"共鸣之气",$"{context.Defender.Name} 被共鸣");});
-            }
-            else if(Ki>=2 && (choice==(int)StatusEffect.KnockedDown || choice==(int)StatusEffect.Stunned))
-            {
-                Ki-=2;var status=(StatusEffect)choice;context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"散打");
-
-            }
+            if(context.IsStatusDamage||context.IsReflected||context.Defender==null)return;
+            int choice=_technique??SkillChoicePolicy.Choose(MartialSkillChoices.OpenHand,MartialSkillChoices.OpenHandOptions(Ki),context.Attacker,context.Defender,context.Manager);_technique=null;
+            if(choice==-1&&Spend(3))context.ApplyUntimedOnHit(()=>{context.Defender.SetHiddenForce(context.Attacker);context.Manager?.NoteSkill(context.Attacker,"渗透劲",context.Defender.Name+" 被打入暗劲");});
+            else if((choice==(int)StatusEffect.KnockedDown||choice==(int)StatusEffect.Stunned)&&Spend(1))
+                context.ApplyAttachedStatus(context.Defender,(StatusEffect)choice,2,context.Attacker,context.Manager,"散打技巧");
         }
-
-        /// <summary>回合开始、气点等于当前体力时，可跳过回合发动混元体。</summary>
-        public bool TryHarmonyBody(PlayerState owner, GameManager manager)
+        public void OnTurnStarted(PlayerState owner,GameManager game)
         {
-            if (owner == null || manager == null || !owner.IsAlive) return false;
-            if (Ki <= 0 || Ki != owner.Health) return false;
-            int heal = Ki * 2;
-            Ki = 0;
-            owner.Heal(heal);
-            manager.NoteSkill(owner, "混元体", $"移除气点，回复 {heal}");
-            manager.SkipTurnAlreadyValidated();
-            return true;
+            if(!ReferenceEquals(game.CurrentPlayer,owner)||!owner.IsAlive||Ki<=0||Ki!=owner.Health||_harmonyTurn==game.TurnCount)return;
+            _harmonyTurn=game.TurnCount;
+            MonkRules.Offer(owner,game,MonkRules.Harmony,"混元体 · 移除全部气回复体力，保留正常行动？",MonkRules.YesNo("发动混元体"),v=>{if(v==1)TryHarmonyBody(owner,game);});
         }
-
-        public override AttackDamageType AttackTypeOf(AttackContext context)
-            => AttackDamageType.Bludgeoning;
+        public bool TryHarmonyBody(PlayerState owner,GameManager game)
+        {
+            if(owner==null||!owner.IsAlive||Ki<=0||Ki!=owner.Health)return false;
+            int amount=Ki;owner.TrySpendMonkKi(amount);owner.Heal(amount*2);game?.NoteSkill(owner,"混元体",$"移除{amount}气，回复{amount*2}体力");return true;
+        }
     }
 }

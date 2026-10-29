@@ -1,0 +1,9 @@
+PASS raycast AdventureConfirm
+PASS actual tower lesson records portent4
+PASS scripted guard performs its arithmetic
+PASS tower pauses for new divination skill
+PASS required replacement button is visible and enabled
+PASS decline stays visible but disabled in prescribed step
+PASS raycast WizardOption0
+PASS new tower sample resolves rewritten damage
+PASS final outcome remains on battlefield until trial-end click

@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Tests
             "curseweaver|wizard_school_of_conjuration|法师·咒法学派|wizard|School of Conjuration|-1|0|20|2147483647",
             "hexer|warlock_the_archfey|邪术师·至高妖精|warlock|The Archfey|0|-1|20|2147483647",
             "warlock|warlock_the_great_old_one|邪术师·旧日支配者|warlock|The Great Old One|0|-1|20|2147483647",
-            "wizard|wizard_school_of_evocation|法师·塑能学派|wizard|School of Evocation|0|-1|20|1",
+            "wizard|wizard_school_of_evocation|法师·塑能学派|wizard|School of Evocation|0|-1|20|2147483647",
             "sorcerer|sorcerer_wild_magic|术士·狂野魔法|sorcerer|Wild Magic|0|-1|20|2147483647",
             "bard|bard_college_of_valor|吟游诗人·勇气学院|bard|College of Valor|0|-1|20|3",
             "ranger|rogue_swashbuckler|游荡者·风流剑客|rogue|Swashbuckler|0|-2|20|1",
@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Tests
             "magician|rogue_magician|游荡者·魔术师|rogue|Magician|0|-1|20|2",
             "swordsman|fighter_swordsman|战士·剑士|fighter|Swordsman|2|-1|20|1",
             "monk|monk_way_of_the_tai_chi|武僧·太极宗|monk|Way of the Tai Chi|0|0|20|1",
-            "ninja|monk_way_of_the_ninja|武僧·忍宗|monk|Way of the Ninja|1|-1|20|1",
+            "ninja|monk_way_of_the_ninja|武僧·忍宗|monk|Way of the Ninja|0|0|20|1",
             "barbarian|barbarian_path_of_the_warden|野蛮人·守望者道途|barbarian|Path of the Warden|0|1|20|1",
             "berserker|barbarian_path_of_the_berserker|野蛮人·狂战士道途|barbarian|Path of the Berserker|-1|-2|25|1",
             "giant|barbarian_path_of_the_giant|野蛮人·巨人道途|barbarian|Path of the Giant|2|2|25|1",
@@ -61,7 +61,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(54, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(55, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 7, 6, 5, 9, 4, 3, 2, 5, 2, 4, 4, 3 };
+            int[] counts = { 7, 6, 5, 9, 4, 3, 2, 5, 2, 5, 4, 3 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

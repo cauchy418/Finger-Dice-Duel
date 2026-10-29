@@ -216,6 +216,7 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.IsChoiceCandidate(wayOfTheTaiChi.RightHand),
                 "候选应只剩下右手的太极。");
             Assert.True(board.ClickHand(wayOfTheTaiChi.RightHand), "点发动太极（用右手的太极）。");
+            if(board.PendingSkillOptions.Count>0)board.ChooseSkillOption(0);
 
             int monkLost = monkBefore - wayOfTheTaiChi.Health;
             int foeLost = foeBefore - foe.Health;
@@ -303,6 +304,7 @@ namespace FingerDiceDuel.Tests
 
             // 点它 = 发动
             Assert.True(board.ClickHand(wayOfTheTaiChi.RightHand), "点发动太极。");
+            if(board.PendingSkillOptions.Count>0)board.ChooseSkillOption(0);
 
             int monkLost = monkBefore - wayOfTheTaiChi.Health;
             int foeLost = foeBefore - foe.Health;

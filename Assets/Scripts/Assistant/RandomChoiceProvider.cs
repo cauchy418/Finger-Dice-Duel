@@ -10,13 +10,13 @@ namespace FingerDiceDuel.Assistant
     ///
     /// 设计取舍：
     /// - 锁手一定发动（对野蛮人·守望者道途有利，没有理由放弃）。
-    /// - 连锁破盾默认放弃，可通过 <see cref="ChainBreakChance"/> 调整（破盾有风险也有收益）。
+    /// - 破阵强袭默认放弃，可通过 <see cref="ChainBreakChance"/> 调整（破盾有风险也有收益）。
     /// </summary>
     public sealed class RandomChoiceProvider : AbstractChoiceProvider, IMoveSelector
     {
         private readonly Random _rng;
 
-        /// <summary>战士·破阵者连锁破盾的发动概率，0 = 从不发动，1 = 总是发动。</summary>
+        /// <summary>战士·破阵者破阵强袭的发动概率，0 = 从不发动，1 = 总是发动。</summary>
         public double ChainBreakChance { get; set; }
 
         public RandomChoiceProvider() : this(Environment.TickCount) { }

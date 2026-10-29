@@ -19,7 +19,7 @@
             if (context == null || !CharacterBehaviors.ActorHas(context.Attacker, this)
                 || context.IsSpecialAttack || context.IsReflected || context.AttackerHandSumAtStart != 10) return;
 
-            // 独立倍率不改变风流剑客“是否使用潇洒气质”的伤害类型判定，也不会被其倍率覆盖。
+            // 独立倍率不改变风流剑客“是否使用潇洒无畏”的伤害类型判定，也不会被其倍率覆盖。
             context.AdditionalBaseDamageMultiplier *= HeavyStrikeMultiplier;
             SkillUseCount++;
             context.Manager?.NoteSkill(context.Attacker, "精通重击", "双手和10，基础伤害×1.5");

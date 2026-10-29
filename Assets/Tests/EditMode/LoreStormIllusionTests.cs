@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Tests
             }
             Assert.AreEqual(Alignment.LawfulNeutral,CharacterCodex.For(CharacterDefinition.CollegeOfLore).Alignment);
             Assert.AreEqual(Alignment.ChaoticNeutral,CharacterCodex.For(CharacterDefinition.StormSorcery).Alignment);
-            Assert.AreEqual(Alignment.ChaoticNeutral,CharacterCodex.For(CharacterDefinition.SchoolOfIllusion).Alignment);
+            Assert.AreEqual(Alignment.ChaoticEvil,CharacterCodex.For(CharacterDefinition.SchoolOfIllusion).Alignment);
         }
         [Test] public void Lore_records_unique_actual_results_but_not_initial_hands()
         {
@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Storm_extra_operation_is_optional_and_changes_only_hand_without_healing()
         {
             var board=Board(CharacterDefinition.StormSorcery,CharacterDefinition.Blank,out var g);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Thunder);g.PlayerA.SetHealthExact(12);
-            board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("暴风魔法"));Assert.AreEqual(g.PlayerA,board.Chooser);Assert.AreEqual(1,g.TurnCount);
+            board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("风暴导向"));Assert.AreEqual(g.PlayerA,board.Chooser);Assert.AreEqual(1,g.TurnCount);
             board.ChooseWizardHand(g.PlayerA.LeftHand);g.PlayerB.LeftHand.SetValue(7);board.ChooseWizardHand(g.PlayerB.LeftHand);Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(12,g.PlayerA.Health);Assert.AreEqual(20,g.PlayerB.Health);Assert.AreEqual(1,g.TurnCount);Assert.True(board.PendingWizardChoice==null);
         }
         [Test] public void Storm_extra_operation_can_be_declined_at_each_step()

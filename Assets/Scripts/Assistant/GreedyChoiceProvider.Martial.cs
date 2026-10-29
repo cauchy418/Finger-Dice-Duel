@@ -21,6 +21,8 @@ namespace FingerDiceDuel.Assistant
                 else if(key==NewSubclassChoices.IllusionDefense)score=option.Value==1?20:0;
                 else if(key==AncientRoleChoices.FiendPact) score=FiendPactScore(option.Value,owner,target,game);
                 else if(key==MartialSkillChoices.Draconic) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
+                else if(key==MonkRules.Ninja||key==MonkRules.Taichi||key==MonkRules.Defense||key==MonkRules.Harmony||key==MonkRules.Drunken)score=MonkOptionScore(key,option.Value,owner,target,game);
+                else if(key==DivinationRules.Key)score=DivinationRules.AiScore(option.Value,owner,target,game);
                 else if(key==MartialSkillChoices.OpenHand) score=OpenHandScore(option.Value,owner,target);
                 else if(key==MartialSkillChoices.FourElements) score=ElementScore(option.Value,owner,target,game);
                 else score=0;
@@ -33,7 +35,7 @@ namespace FingerDiceDuel.Assistant
         {
             if(target==null) return value==0?1:0;
             if(value==0) return 2;
-            if(target.HasStatus(StatusEffect.HolyLight)) return -10;
+            if(target.HasStatus(StatusEffect.HolyLight)&&value!=-1) return -10;
             if(value==-1)
                 return target.HasResonance || target.Health<=6 ? -2 : 14+Math.Min(12,target.Health/2);
             var status=(StatusEffect)value;

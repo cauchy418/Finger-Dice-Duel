@@ -56,10 +56,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                   IPreTurnChoiceSink choiceSink)
         {
             if (owner == null || actedHand == null || actedHand.Value != 3) return;
-            AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"自然恢复 · 选择角色或不发动",owner,manager,
+            AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"大地束缚 · 选择角色或不发动",owner,manager,
                 AncientRoleChoices.OtherPlayers(owner,manager,false),true,true,hand=>{
                     var target=manager.OwnerOfHand(hand);target.ApplyStatus(StatusEffect.Restrained,2,owner);
-                    manager.NoteSkill(owner,"自然恢复",$"{target.Name} 束缚2回合");});
+                    manager.NoteSkill(owner,"大地束缚",$"{target.Name} 束缚2回合");});
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context)

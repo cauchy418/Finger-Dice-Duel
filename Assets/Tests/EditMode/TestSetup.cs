@@ -39,6 +39,7 @@ namespace FingerDiceDuel.Tests
                     int value=unchecked(seed+i*97);
                     if(part is StormSorceryLogic storm)storm.Rng=new System.Random(unchecked(value+79));
                     if(part is WildMagicLogic wild)wild.Rng=new System.Random(unchecked(value+89));
+                    if(part is WayOfTheDrunkenMasterLogic drunk)drunk.Rng=new System.Random(unchecked(value+91));
                 }
         }
         public static void SeedControllerSampling(BoardController board,System.Collections.Generic.IReadOnlyList<IMoveSelector> selectors,int seed)

@@ -26,7 +26,7 @@ internal static class Program
         bool verbose = args.Any(a => a == "-v" || a == "--verbose");
         bool skipStatistics = args.Any(a => a == "--skip-statistics");
         var statistics = new HashSet<string> {
-            "All_characters_round_robin_win_rates", "All_dual_general_matchups_run_without_crashing",
+            "Revision_all_modes_win_rates", "All_characters_round_robin_win_rates", "All_dual_general_matchups_run_without_crashing",
             "Eight_player_dual_faction_battle_2000_games", "Three_focus_policies_per_role_600_games_two_seed_segments",
             "Identity_random_character_win_rates_2000_games", "Identity_biased_character_win_rates_2000_games",
             "Two_versus_two_round_robin_win_rates_and_seat_bias"

@@ -251,7 +251,7 @@ namespace FingerDiceDuel.Tests
                         // 玩家指示："游荡者·风流剑客只需检查是否**倾向于合 1** 即可"
                         //
                         // 理由：闪避能不能用出来取决于对手打不打我，
-                        // 而 1 是闪避的**前提**（也是潇洒气质的前提）——
+                        // 而 1 是闪避的**前提**（也是潇洒无畏的前提）——
                         // 所以"有没有去凑 1"才是 AI 该被衡量的东西。
                         if (pA.LeftHand.Value == 1 || pA.RightHand.Value == 1)
                             hit = true;
@@ -368,7 +368,7 @@ namespace FingerDiceDuel.Tests
                     break;
 
                 case CharacterDefinition.BreakerId:
-                    // ⚠️ 连锁破盾与碎盾换射程在场上**没有别的痕迹**
+                    // ⚠️ 破阵强袭与碎盾换射程在场上**没有别的痕迹**
                     //    （盾会被后续操作覆盖），所以只能靠角色自己的计数器。
                     if (pA.Character is BreakerLogic w
                         && (w.ChainBreakCount > 0 || w.RangeBreakCount > 0)) hit = true;

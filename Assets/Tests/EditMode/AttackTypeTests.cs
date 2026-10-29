@@ -65,8 +65,8 @@ namespace FingerDiceDuel.Tests
                 "野蛮人·野兽道途 = 挥砍");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.SwordsmanId),
                 "战士·剑士（含追加攻击）= 挥砍");
-            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.WayOfTheNinjaId),
-                "武僧·忍宗 = 挥砍");
+            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.WayOfTheNinjaId),
+                "武僧·忍宗 = 钝击");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.GamblerId),
                 "游荡者·赌徒 = 挥砍");
             Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.ThiefId),
@@ -192,7 +192,7 @@ namespace FingerDiceDuel.Tests
 
             var empowered = new AttackContext(self, foe, self.LeftHand, 4)
             {
-                DamageMultiplier = 1.5f,      // 潇洒气质就是这么标记的
+                DamageMultiplier = 1.5f,      // 潇洒无畏就是这么标记的
             };
             Assert.AreEqual(AttackDamageType.Piercing, tmpl.AttackTypeOf(empowered),
                 "游荡者·风流剑客 用 2 强化 = 穿刺");

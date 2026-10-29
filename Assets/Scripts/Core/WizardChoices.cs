@@ -34,9 +34,9 @@ namespace FingerDiceDuel.Core
         public static List<SkillChoiceOption> OpenHandOptions(int ki)
         {
             var options=new List<SkillChoiceOption>();
-            if(ki>=4) options.Add(new SkillChoiceOption(-1,"共鸣 · 4气","Effects/ki","附加共鸣，下次攻击引爆。"));
-            if(ki>=2) foreach(var status in new[]{StatusEffect.KnockedDown,StatusEffect.Stunned})
-                options.Add(new SkillChoiceOption((int)status,StatusNames.Of(status)+" · 2气","Status/"+StatusNames.IconKeyOf(status),StatusNames.Describe(status)));
+            if(ki>=3) options.Add(new SkillChoiceOption(-1,"渗透劲 · 3气","Effects/hidden_force","命中施加暗劲，仅由自己的后续命中引爆。"));
+            if(ki>=1) foreach(var status in new[]{StatusEffect.KnockedDown,StatusEffect.Stunned})
+                options.Add(new SkillChoiceOption((int)status,"散打技巧·"+StatusNames.Of(status)+" · 1气","Status/"+StatusNames.IconKeyOf(status),StatusNames.Describe(status)));
             options.Add(new SkillChoiceOption(0,"保留气点","Effects/ki","本次不消耗气点。"));return options;
         }
         public static List<SkillChoiceOption> Elements(bool draconic,bool includeDecline=true)
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Core
             var list=new List<SkillChoiceOption>();
             var types=draconic?new[]{AttackDamageType.Cold,AttackDamageType.Fire,AttackDamageType.Lightning,AttackDamageType.Poison,AttackDamageType.Acid}
                 :new[]{AttackDamageType.Fire,AttackDamageType.Cold,AttackDamageType.Lightning,AttackDamageType.Thunder,AttackDamageType.Acid};
-            foreach(var type in types) list.Add(new SkillChoiceOption((int)type,AttackDamageTypes.NameOf(type)+(draconic?"":" · 2气"),"Damage/"+AttackDamageTypes.IconKeyOf(type),draconic?"永久抗性；攻击改为此元素。":"本次攻击改为此元素。"));
+            foreach(var type in types) list.Add(new SkillChoiceOption((int)type,AttackDamageTypes.NameOf(type)+(draconic?"":" · 1气"),"Damage/"+AttackDamageTypes.IconKeyOf(type),draconic?"永久抗性；攻击改为此元素。":"本次攻击改为此元素。"));
             if(!draconic&&includeDecline) list.Add(new SkillChoiceOption(0,"保留气点","Effects/ki","本次保持原攻击类型。"));return list;
         }
     }

@@ -49,21 +49,21 @@ namespace FingerDiceDuel.Assistant
             return this;
         }
 
-        /// <summary>下一次战士·破阵者连锁破盾时，放弃发动。</summary>
+        /// <summary>下一次战士·破阵者破阵强袭时，放弃发动。</summary>
         public ScriptedChoiceProvider DeclineChainBreak()
         {
             _chainBreaks.Enqueue((w, list) => default);
             return this;
         }
 
-        /// <summary>下一次战士·破阵者连锁破盾时，选择候选列表中的第 index 项。</summary>
+        /// <summary>下一次战士·破阵者破阵强袭时，选择候选列表中的第 index 项。</summary>
         public ScriptedChoiceProvider ChainBreakAt(int index)
         {
             _chainBreaks.Enqueue((w, list) => (index >= 0 && index < list.Count) ? list[index] : default);
             return this;
         }
 
-        /// <summary>下一次战士·破阵者连锁破盾时，选择满足条件的第一项。</summary>
+        /// <summary>下一次战士·破阵者破阵强袭时，选择满足条件的第一项。</summary>
         public ScriptedChoiceProvider ChainBreakWhere(Func<ChainBreakTarget, bool> predicate)
         {
             if (predicate == null) throw new ArgumentNullException(nameof(predicate));

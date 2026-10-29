@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Core
         Hand AskWhichShieldToBlock(PlayerState defender, Hand shieldA, Hand shieldB, AttackContext context);
 
         /// <summary>
-        /// 战士·破阵者连锁破盾：从候选盾中选一面击碎。
+        /// 战士·破阵者破阵强袭：从候选盾中选一面击碎。
         /// 返回 <c>default(ChainBreakTarget)</c>（其 Shield 为 null）表示放弃发动。
         /// </summary>
         ChainBreakTarget AskBreakerChainBreakTarget(PlayerState breaker, IReadOnlyList<ChainBreakTarget> candidates);
@@ -31,7 +31,7 @@ namespace FingerDiceDuel.Core
         Hand ChooseHandFor(ChoiceRequest request, PlayerState decider);
     }
 
-    /// <summary>战士·破阵者连锁破盾的候选目标：某玩家某一只处于 Formed 状态的盾。</summary>
+    /// <summary>战士·破阵者破阵强袭的候选目标：某玩家某一只处于 Formed 状态的盾。</summary>
     public readonly struct ChainBreakTarget
     {
         public PlayerState Owner { get; }

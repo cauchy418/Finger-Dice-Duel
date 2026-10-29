@@ -4,7 +4,7 @@
     using FingerDiceDuel.Core;
 
     /// <summary>
-    /// **法师·塑能学派（SchoolOfEvocation）**：攻 0 / 防 −1，攻击距离 **1**。
+    /// **法师·塑能学派（SchoolOfEvocation）**：攻 0 / 防 −1，攻击距离 **∞**。
     ///
     /// 玩家设计的核心机制：
     ///   运算出**攻击数字（4/6/8）**时，可以选择**放弃这次攻击**，
@@ -31,11 +31,15 @@
     /// 玩家表示之后可以把法师·咒法学派的描述改成"伤害改为力场伤害"。
     /// </summary>
     public sealed class SchoolOfEvocationLogic : CharacterTemplate,
-        IStatusApplyingAttack, IDodgeBlocker, IMageState, IPreTurnChoiceProvider
+        IPendingElementResistance, IStatusApplyingAttack, IDodgeBlocker, IMageState, IPreTurnChoiceProvider
     {
         /// <summary>法师·塑能学派能"放弃攻击"的数字（与其他角色一致，2 不是攻击）。</summary>
         public const int MinAttackValue = 4;
 
+        public override int BaseAttackRange=>InfiniteAttackRange;
+        private bool _resistanceSuppressed;
+        public bool ProvidesResistance(AttackDamageType type)=>!_resistanceSuppressed&&HasPendingType&&type==AttackDamageTypes.FromDamageType(PendingDamageType);
+        public void SuppressResistance()=>_resistanceSuppressed=true;
         public override string DisplayName => "法师·塑能学派";
 
         // ============================================================
@@ -57,7 +61,7 @@
         /// </summary>
         public void SetPendingDamageType(DamageType type)
         {
-            PendingDamageType = type;
+            PendingDamageType = type;_resistanceSuppressed=false;
         }
 
         /// <summary>清掉待用的伤害类型（没命中 / 已用掉）。</summary>
@@ -105,11 +109,11 @@
         public override void CollectPreTurnChoices(PreTurnChoiceContext context,
                                                    IList<ChoiceRequest> requests)
         {
-            
+
 
             if (context == null || requests == null) return;
 
-            
+
 
             // 归属校验：双将容器里可能挂着别的角色，别替别人登记
             if (!CharacterBehaviors.ActorHas(context.Actor, this)) return;
@@ -160,7 +164,7 @@
                 skipWhen: () => !WantsToAbandonThisTurn);
             requests.Add(pick);
 
-            
+
         }
 
         /// <summary>
@@ -238,7 +242,7 @@
         /// </summary>
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context == null) return;
+            if (context == null || context.IsStatusDamage) return;
             if (!IsForceAttack) return;
 
             context.IgnoreShield = true;
@@ -257,7 +261,7 @@
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)
             => PendingDamageType = DamageType.None;
-    
+
         /// <summary>
         /// 法师·塑能学派：**有附加效果时由附加的类型决定**；
         /// 没有附加时，距离 1 内是**钝击**、距离 1 以外是**穿刺**（玩家指定）。

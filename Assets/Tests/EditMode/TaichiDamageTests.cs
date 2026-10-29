@@ -100,6 +100,7 @@ namespace FingerDiceDuel.Tests
             int fired = 0;
             for (int i = 0; i < 4 && board.Phase == BoardPhase.ChoosingPreTurnChoice; i++)
             {
+                if(board.PendingSkillOptions.Count>0){board.ChooseSkillOption(0);i--;continue;}
                 Hand pick = null;
                 for (int k = 0; k < board.ChoiceCandidates.Count; k++)
                 {
@@ -118,6 +119,7 @@ namespace FingerDiceDuel.Tests
                 log.Append("taichi" + fired + "->" + board.Phase + " ");
             }
 
+            if(board.PendingSkillOptions.Count>0)board.ChooseSkillOption(0);
             r.WayOfTheTaiChiLost = monkBefore - wayOfTheTaiChi.Health;
             r.AtkLost = atkBefore - atk.Health;
             r.Log = log.ToString() + "fired=" + fired;

@@ -1,0 +1,27 @@
+PASS runtime texture Effects/portent
+PASS runtime texture Effects/drunken_fist
+PASS runtime texture Effects/hidden_force
+PASS runtime texture Subclasses/monk_way_of_the_drunken_master
+PASS 55 selectable subclass codex entries
+PASS canonical profession text monk_way_of_the_drunken_master
+PASS full scroll height monk_way_of_the_drunken_master
+PASS canonical profession text monk_way_of_the_ninja
+PASS full scroll height monk_way_of_the_ninja
+PASS canonical profession text monk_way_of_the_open_hand
+PASS full scroll height monk_way_of_the_open_hand
+PASS canonical profession text monk_way_of_the_tai_chi
+PASS full scroll height monk_way_of_the_tai_chi
+PASS canonical profession text wizard_school_of_divination
+PASS full scroll height wizard_school_of_divination
+PASS canonical profession text wizard_school_of_evocation
+PASS full scroll height wizard_school_of_evocation
+PASS canonical profession text wizard_school_of_abjuration
+PASS full scroll height wizard_school_of_abjuration
+PASS human can interrupt opponent result before targeting
+PASS pre-replacement result 8 is displayed
+PASS raycast WizardOption0
+PASS actual button replaces 8 with shield 5 before damage
+PASS only selected record is consumed
+PASS drunken role state uses new icon
+PASS hidden force target marker has source
+PASS export all 55 runtime role profiles

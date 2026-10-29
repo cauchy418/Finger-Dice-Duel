@@ -110,7 +110,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void New_five_roles_registered_profiled_and_coded()
         {
-            Assert.AreEqual(54,CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(55,CharacterDefinition.BuiltIn.Length);
             foreach(var def in new[]{CharacterDefinition.SchoolOfTransmutation,CharacterDefinition.SchoolOfEnchantment,CharacterDefinition.EldritchKnight,CharacterDefinition.Bladesinging,CharacterDefinition.TheHexblade})
             {Assert.True(CharacterFactory.IsRegistered(def.Logic));Assert.True(HandValueProfiles.HasExplicitProfile(def));Assert.NotNull(CharacterCodex.For(def));Assert.AreEqual(def,CharacterDefinition.Find(def.Id));}
         }

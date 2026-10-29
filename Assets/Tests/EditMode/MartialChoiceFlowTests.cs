@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsFalse(board.ChooseSkillOption(12345));Assert.IsFalse(board.AcceptPendingChoice());
             Assert.IsTrue(board.ChooseSkillOption((int)StatusEffect.Stunned));
             Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.Stunned));Assert.IsFalse(game.PlayerB.HasStatus(StatusEffect.KnockedDown));
-            Assert.AreEqual(0,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
+            Assert.AreEqual(1,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
         }
         [Test] public void Open_hand_can_keep_ki_and_does_not_apply_default_status()
         {
@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(HandEffect.FourElementsTechnique,board.PendingEffect);Assert.AreEqual(6,board.PendingSkillOptions.Count);
             Assert.IsTrue(board.ChooseSkillOption((int)AttackDamageType.Cold));
             Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.Frost));Assert.IsFalse(game.PlayerB.HasStatus(StatusEffect.Burn));
-            Assert.AreEqual(0,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
+            Assert.AreEqual(1,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
         }
         [Test] public void Four_elements_can_save_ki_and_keep_physical_attack()
         {
@@ -172,7 +172,7 @@ namespace FingerDiceDuel.Tests
                 var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();var game=new GameManager(a,b,ca,cb);
                 var board=new BoardController(game,ca,cb,new GreedyChoiceProvider(),null);Attack(board,game);
                 Assert.AreEqual(1,game.TurnCount);Assert.AreEqual(0,board.PendingSkillOptions.Count);
-                Assert.AreEqual(0,((IKiResource)a.Character).Ki);
+                Assert.AreEqual(1,((IKiResource)a.Character).Ki);
             }
         }
     }
