@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {if(_initialized||!owner.IsAlive)return;_initialized=true;OfferTarget(owner,game,false);}
         private void Mark(PlayerState target,GameManager game)
-        {if(target==null||!target.IsAlive||ReferenceEquals(target,_owner))return;VowTarget=target;game?.NoteSkill(_owner,"仇敌誓言","标记 "+target.Name);}
+        {if(target==null||!target.IsAlive||ReferenceEquals(target,_owner))return;var previous=VowTarget;var frame=game?.CaptureVisualFrame();VowTarget=target;if(!ReferenceEquals(previous,target))game?.RecordVowTransfer(_owner,previous,target,frame);game?.NoteSkill(_owner,"仇敌誓言","标记 "+target.Name);}
         private void OfferTarget(PlayerState owner,GameManager game,bool optional)
         {
             var targets=new List<PlayerState>();foreach(var p in game.Players)if(p.IsAlive&&!ReferenceEquals(p,owner))targets.Add(p);

@@ -1,0 +1,55 @@
+PASS queue busy 0
+PASS gameplay locked 0
+PASS last hit not hidden by victory
+PASS input restored 0
+PASS windup cleared 0
+PASS victory after last-hit animation
+PASS queue busy 1
+PASS gameplay locked 1
+PASS input restored 1
+PASS windup cleared 1
+PASS queue busy 2
+PASS gameplay locked 2
+PASS input restored 2
+PASS windup cleared 2
+PASS two segments use one shield and one hit
+PASS queue busy 3
+PASS gameplay locked 3
+PASS input restored 3
+PASS windup cleared 3
+PASS fey no damage
+PASS queue busy 4
+PASS gameplay locked 4
+PASS input restored 4
+PASS windup cleared 4
+PASS dodge no damage
+PASS queue busy 5
+PASS gameplay locked 5
+PASS input restored 5
+PASS windup cleared 5
+PASS target-selection windup mode 6
+PASS queue busy 6
+PASS gameplay locked 6
+PASS input restored 6
+PASS windup cleared 6
+PASS target-selection windup mode 7
+PASS queue busy 7
+PASS gameplay locked 7
+PASS input restored 7
+PASS windup cleared 7
+PASS queue busy 8
+PASS gameplay locked 8
+PASS input restored 8
+PASS windup cleared 8
+PASS queue busy 9
+PASS gameplay locked 9
+PASS input restored 9
+PASS windup cleared 9
+PASS queue busy 10
+PASS gameplay locked 10
+PASS input restored 10
+PASS windup cleared 10
+PASS queue busy 11
+PASS gameplay locked 11
+PASS input restored 11
+PASS windup cleared 11

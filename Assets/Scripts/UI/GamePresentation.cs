@@ -155,6 +155,7 @@ namespace FingerDiceDuel.UI
         /// <summary>停止所有表现并还原（退出对局 / 重开时调用）。</summary>
         public void StopAll()
         {
+            if(_floats!=null)foreach(Transform child in _floats.transform)Destroy(child.gameObject);
             if (_shaker != null) _shaker.Stop();
 
             foreach (var pair in _flashByPlayer)

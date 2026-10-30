@@ -74,7 +74,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnResolveAttack(AttackContext ctx)
         {
             if(ctx.IsStatusDamage||ctx.IsReflected||Enchantment==AttackDamageType.None)return;
-            ctx.AttackType=Enchantment;Enchantment=AttackDamageType.None;
+            ctx.AttackType=Enchantment;ctx.VisualWeapon="weapon_sword";Enchantment=AttackDamageType.None;
             ctx.Manager?.NoteSkill(ctx.Attacker,"奥法武器",AttackDamageTypes.NameOf(ctx.AttackType)+"攻击，消耗附魔");
         }
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>Enchantment!=AttackDamageType.None?Enchantment:AttackDamageType.Slashing;
@@ -106,7 +106,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if(value==0||owner.HasStatus(StatusEffect.HolyLight)||owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;
                 Singing=true;SongElement=(AttackDamageType)value;game.NoteSkill(owner,"剑歌","攻防+1，攻击改为"+AttackDamageTypes.NameOf(SongElement));});
         }
-        public override void OnResolveAttack(AttackContext ctx){if(Singing&&!ctx.IsStatusDamage&&!ctx.IsReflected)ctx.AttackType=SongElement;}
+        public override void OnResolveAttack(AttackContext ctx){if(Singing&&!ctx.IsStatusDamage&&!ctx.IsReflected){ctx.AttackType=SongElement;ctx.VisualWeapon="weapon_sword";}}
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>Singing?SongElement:AttackDamageType.Slashing;
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>Singing?ArcaneChoices.ElementStatus(ctx.AttackType):StatusEffect.None;
     }

@@ -970,6 +970,7 @@ namespace FingerDiceDuel.UI
         /// <summary>停止所有表现并还原（退出对局 / 重开时调用）。</summary>
         public void StopAnimations()
         {
+            StopCombatPlayback();
             if (_presentation != null) _presentation.StopAll();
             if (_sfx != null) _sfx.StopAll();      // 清掉待播音效，避免退出后还在响
         }

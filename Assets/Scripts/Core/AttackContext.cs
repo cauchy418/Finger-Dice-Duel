@@ -344,9 +344,15 @@ namespace FingerDiceDuel.Core
             _independentHitTypes = PerHitTypeProvider != null && fixedRule == null && AttackType == PreparedPerHitType;
             _preparedDamageDisabled=damageDisabled;_intendedDefender=intendedDefender;_preparedDefenderChoice=defenderChoice;
         }
+        public string VisualWeapon { get; set; }
+        public string VisualRedirectKind {get;private set;}
+        public PlayerState VisualEvasionActor {get;private set;}
+        private Hand _reflectionSource;
+        public PlayerState VisualIntendedTarget => _intendedDefender;
+        private CombatVisualToken _visualHit;
         public void Resolve(IChoiceProvider defenderChoice,GameManager manager)
         {
-            PrepareResolution(defenderChoice,manager);if(WasCancelled)return;
+            PrepareResolution(defenderChoice,manager);if(WasCancelled){manager?.FinishVisualAttack(manager.BeginVisualAttack(this,0),CombatVisualOutcome.Cancelled);return;}
             if(!TempestReactionPrepared)manager?.OfferTempestReaction(this,()=>{});
             if(!Attacker.IsAlive||!Defender.IsAlive){WasCancelled=true;CancelledBy=!Attacker.IsAlive?"风暴之怒（来袭者已阵亡）":"目标已阵亡";HitCount=0;return;}
             defenderChoice=_preparedDefenderChoice;bool damageDisabled=_preparedDamageDisabled;var intendedDefender=_intendedDefender;
@@ -423,6 +429,7 @@ namespace FingerDiceDuel.Core
                     currentBase = ConfigureHitInteraction(currentBase);
                 }
                 _segmentTypes.Add(AttackType);
+                _visualHit=manager?.BeginVisualAttack(this,i);
                 int defenseChoice = _independentHitTypes && AttackType != AttackDamageType.Force ? nonForceChoice++ : i;
                 // 2a. **闪避**（游荡者·风流剑客每次消耗一只"1"；游荡者·刺客潜行则整次攻击都打不到）
                 //
@@ -432,6 +439,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasDodged = true;
                     DodgedHits++;
+                    manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Dodged);
                     continue;
                 }
 
@@ -449,6 +457,7 @@ namespace FingerDiceDuel.Core
                     WasBlocked = true;
                     BlockedHits++;
                     RecordElementHit(i,AttackGuard.Necromancy);
+                    manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Blocked);
                     ApplyIndependentHitStatus(manager);
                     continue;
                 }
@@ -531,6 +540,7 @@ namespace FingerDiceDuel.Core
                     {
                         WasCancelled = true;
                         CancelledBy = savior.Name + "（替死）";
+                        manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Cancelled);
                         break;
                     }
                 }
@@ -549,6 +559,7 @@ namespace FingerDiceDuel.Core
                 AppliedDamage += dealt;
                 LandedHits++;
                 ApplyIndependentHitStatus(manager);
+                manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Hit,actualDamage);
 
                 if (Defender.LastDamageToOriginalForm > 0)
                     foreach(var postDamage in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
@@ -561,9 +572,11 @@ namespace FingerDiceDuel.Core
             // 散打宗：暗劲引爆的额外真实伤害，不经过护盾/抗性/防御。
             if (!damageDisabled && ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
             {
+                var trueFrame=manager?.CaptureVisualFrame();
                 int healthBeforeTrue=Defender.Health;
                 int falseLifeBeforeTrue=Defender.FalseLife;
                 int actualTrue=Defender.TakeDamageResolved(ExtraTrueDamage);ActualHealthDamage+=actualTrue;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
+                manager?.RecordVisualTrueDamage(this,actualTrue,trueFrame);
                 if(falseLifeBeforeTrue>Defender.FalseLife)manager?.NoteSkill(Defender,"虚假生命",$"吸收{falseLifeBeforeTrue-Defender.FalseLife}，剩余{Defender.FalseLife}");
                 if(Defender.LastDamageToOriginalForm>0)
                     foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
@@ -836,6 +849,7 @@ namespace FingerDiceDuel.Core
 
             if (Defender?.Character is not IDamageMitigator mitigator) return false;
 
+            bool leftWasTaichi=Defender.LeftHand.IsTaichi,rightWasTaichi=Defender.RightHand.IsTaichi;
             if (!mitigator.TryMitigate(Defender, this, segmentDamage, stagesUsed,
                                       out _, out int totalReduced, out int totalReflect))
             {
@@ -843,6 +857,8 @@ namespace FingerDiceDuel.Core
             }
 
             reduced = totalReduced;
+            if(leftWasTaichi&&!Defender.LeftHand.IsTaichi)_reflectionSource=Defender.LeftHand;
+            else if(rightWasTaichi&&!Defender.RightHand.IsTaichi)_reflectionSource=Defender.RightHand;
             reflect = totalReflect;
 
             WasMitigated = true;
@@ -878,6 +894,7 @@ namespace FingerDiceDuel.Core
             if (transferred != null && !ReferenceEquals(transferred, original))
             {
                 Defender = transferred;
+                VisualRedirectKind="transfer";
                 WasRedirected = true;
                 manager.NoteSkill(original, "憎恨灵光", $"由 {transferred.Name} 承受整次攻击");
                 original = transferred;
@@ -895,6 +912,7 @@ namespace FingerDiceDuel.Core
                     && redirector.TryRedirectToSelf(p, Attacker, original, manager))
                 {
                     Defender = p;
+                    VisualRedirectKind="protection";
                     WasRedirected = true;
                     manager.NoteSkill(p, "守护之誓", $"代替 {original.Name} 承受攻击");
                     return;
@@ -1007,6 +1025,7 @@ namespace FingerDiceDuel.Core
                     {
                         WasCancelled = true;
                         CancelledBy = p.Name;
+                        VisualEvasionActor=p;
                         manager.NoteSkill(p, "妖精步伐·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
                         return true;
                     }
@@ -1019,6 +1038,7 @@ namespace FingerDiceDuel.Core
                 {
                     WasCancelled = true;
                     CancelledBy = p.Name;
+                    VisualEvasionActor=p;
                     manager.NoteSkill(p, "妖精步伐·取消攻击", $"取消 {Attacker.Name} 的攻击");
                     return true;
                 }
@@ -1130,6 +1150,7 @@ namespace FingerDiceDuel.Core
                 return false;
 
             ConsumedShield = chosen;
+            manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Blocked);
             manager?.BreakShieldAndNotify(Defender, chosen, Attacker);
             return true;
         }

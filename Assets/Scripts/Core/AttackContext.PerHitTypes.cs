@@ -37,7 +37,7 @@ namespace FingerDiceDuel.Core
         private void ResolveReflection(GameManager manager, int amount, AttackDamageType type)
         {
             if (amount <= 0 || !Attacker.IsAlive || manager == null) return;
-            var reflected = new AttackContext(Defender, Attacker, Defender.LeftHand ?? Defender.RightHand, amount)
+            var reflected = new AttackContext(Defender, Attacker, _reflectionSource ?? Defender.LeftHand ?? Defender.RightHand, amount)
             {
                 IsSpecialAttack = true, IgnoreStatBonuses = true, IsReflected = true,
                 ReflectDepth = ReflectDepth + 1,

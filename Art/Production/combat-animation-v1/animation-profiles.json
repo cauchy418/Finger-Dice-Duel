@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "status": "assets_ready_playback_not_integrated",
+  "status": "runtime_integrated",
   "resourcePrefix": "Art/Battle/v1/Animation/",
   "coordinateSpace": "Canvas local",
   "sourceAnchor": "attack source hand center",
@@ -64,5 +64,6 @@
     "sorting": "battlefield < animation < choices/modals",
     "pool": true
   },
-  "rules": "Visual-only; consume immutable resolved combat events; no damage rerolls."
+  "rules": "Visual-only; consume immutable resolved combat events; no damage rerolls.",
+  "evidence": "Art/Integration/combat-animation/README.md"
 }

@@ -111,6 +111,10 @@ namespace FingerDiceDuel.UI
         public void Refresh(PlayerState player, GameManager game=null)
         {
             var list=CombatStatusIcons.For(player,game);
+            RefreshSnapshot(player,list);
+        }
+        public void RefreshSnapshot(PlayerState player,IReadOnlyList<CombatStatusIcon> list)
+        {
             int count=System.Math.Min(list.Count,MaxIcons);
             for(int i=0;i<MaxIcons;i++)
             {

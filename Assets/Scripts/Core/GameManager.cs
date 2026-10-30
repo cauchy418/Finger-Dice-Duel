@@ -1954,6 +1954,7 @@ namespace FingerDiceDuel.Core
             {
                 myHand.SetShieldState(ShieldState.Formed);
                 actor.FormedShieldThisTurn=true;
+                RecordVisualState(CharacterBehaviors.FirstImplementer<WayOfTheTaiChiLogic>(actor)!=null?CombatVisualKind.Taichi:CombatVisualKind.ShieldForm,actor,myHand);
                 actor.Character?.OnShieldFormed(actor, myHand, this);
             }
             else if (effect == HandEffectType.Heal)
@@ -2879,6 +2880,7 @@ namespace FingerDiceDuel.Core
 
                 case HandEffectType.Shield:
                     actor.FormedShieldThisTurn=true;
+                    RecordVisualState(CharacterBehaviors.FirstImplementer<WayOfTheTaiChiLogic>(actor)!=null?CombatVisualKind.Taichi:CombatVisualKind.ShieldForm,actor,actedHand);
                     actor.Character?.OnShieldFormed(actor, actedHand, this);
                     break;
 
@@ -3356,6 +3358,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void NotifyOwnShieldBroken(PlayerState owner, Hand shield)
         {
+            RecordVisualState(CombatVisualKind.ShieldBreak,owner,shield);
             owner.Character?.OnOwnShieldBroken(owner, shield, this);
         }
 

@@ -3363,8 +3363,11 @@ namespace FingerDiceDuel.UI
         private void RefreshView()
         {
             if (_controller == null || _board == null || _game == null) return;
+            if(TryPlayCombatQueue())return;
             _adventure?.Tick();
+            if(TryPlayCombatQueue())return;
             SyncSeatLayout();
+            UpdateCombatWindup();
 
             // ⚠️ **必须先算可点性，再刷新高亮**。
             //
@@ -3817,7 +3820,7 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>是否还在"回合间停顿"中。</summary>
-        private bool IsPausing => Time.unscaledTime < _pauseUntil;
+        private bool IsPausing => _board.CombatAnimationBusy || Time.unscaledTime < _pauseUntil;
 
         /// <summary>放弃按钮的文案（按抉择类型区分）。</summary>
         private string DeclineLabel()

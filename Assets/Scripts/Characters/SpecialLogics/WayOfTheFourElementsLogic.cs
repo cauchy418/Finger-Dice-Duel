@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(context.IsStatusDamage||context.IsReflected||Ki<1)return;
             int choice=_elementChoice??(context.Manager?.GetSkillPolicy(context.Attacker)!=null?SkillChoicePolicy.Choose(MartialSkillChoices.FourElements,MartialSkillChoices.Elements(false),context.Attacker,context.Defender,context.Manager):(int)ChosenElement);
             _elementChoice=null;if(choice==0||!IsElement((AttackDamageType)choice)||!Spend(1))return;
-            context.AttackType=(AttackDamageType)choice;context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗1气，改为"+AttackDamageTypes.NameOf(context.AttackType));
+            context.AttackType=(AttackDamageType)choice;context.VisualWeapon="weapon_fist";context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗1气，改为"+AttackDamageTypes.NameOf(context.AttackType));
         }
         public void OnIncomingElementAttack(AttackContext context,GameManager game)
         {
