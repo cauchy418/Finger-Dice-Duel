@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context == null || context.AttackValue != AttackValue) return;
             context.HitCount = 1;
             context.FinalDamage = AttackValue;
-            context.Manager?.NoteSkill(context.Attacker, "破誓", "5 转为攻击");
+            context.Manager?.NoteSkill(context.Attacker, "恐惧打击", "5 转为攻击");
         }
 
         // 仅供本轮收集后续防御抉择，不用于跨回合结算。
@@ -63,7 +63,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                         hands.Add(p.LeftHand); hands.Add(p.RightHand);
                     }
             return new ChoiceRequest(HandEffect.OathbreakerTransfer,
-                "圣武士·破誓者【转移攻击】：选择一名持完整盾牌的角色承受整次攻击，或不发动。保留手中的5。",
+                "圣武士·破誓者【憎恨灵光】：选择一名持完整盾牌的角色承受整次攻击，或不发动。保留手中的5。",
                 hands, allowDecline: true, declineResult: null, decider: owner);
         }
 

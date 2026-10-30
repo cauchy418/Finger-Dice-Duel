@@ -15,10 +15,11 @@ namespace FingerDiceDuel.UI
         private Text _towerChapterStatus;
         private bool TowerUnlocked => PlayerPrefs.GetInt(AdventureChapter.CompletionKey,0)!=0
             || PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level10.Completed",0)!=0;
-        private IReadOnlyList<CharacterDefinition> SelectedFinaleRoster => _storyChapter==2?MageTowerChapter.FinaleRoster:AdventureChapter.FinaleRoster;
+        private IReadOnlyList<CharacterDefinition> SelectedFinaleRoster => _storyChapter==3?TatteredBannersChapter.FinaleRoster:_storyChapter==2?MageTowerChapter.FinaleRoster:AdventureChapter.FinaleRoster;
         private void OpenStoryChapter(int chapter)
         {
             if(chapter==2&&!TowerUnlocked){ShowModalWithScrollReset("法师高塔尚未开放","请先完成边境哨站·终战，取得高塔通行印。");return;}
+            if(chapter==3&&!BannersUnlocked){ShowModalWithScrollReset("残旗战场尚未开放","请先完成法师高塔·终战，读完高塔典籍的试炼。");return;}
             _storyChapter=chapter;ShowScreen(GameScreen.StoryBattleSelect);
         }
         private void StartMageTowerLevel(int level,bool launchFinale=false,int sampleIndex=-1)
@@ -83,6 +84,7 @@ namespace FingerDiceDuel.UI
             _board.ShowAdventureVictory((lesson.IsComplete?lesson.ResultHeading:"试验未完成")+" · "+lesson.Sample.Title,
                 text,lesson.GuideAvatarKey,()=>StartMageTowerLevel(lesson.LevelNumber,true,lesson.SampleIndex),ReturnToAdventure,
                 next,nextLabel,lesson.UsesClassicSetup?"重新投骰":"重试本试验",lesson.GuideName);
+            if(lesson.LevelNumber==20&&lesson.IsComplete)_board.SetAdventureExtraAction(()=>ShowBannersTransition(),"前往残旗战场");
         }
 
         private void ShowTowerTransition(int page=0)
@@ -103,11 +105,25 @@ namespace FingerDiceDuel.UI
             _selectRoot.Find("FinaleTitle").GetComponent<Text>().text=tower?"法师高塔·终战 · 选择角色":"边境哨站·终战 · 选择角色";
             _selectRoot.Find("FinaleHint").GetComponent<Text>().text=tower?"仅限法师子职 · 经典规则挑战法师幻影":"仅限战士子职 · 按经典规则击败骑士即可通关";
             var foe=_selectRoot.Find("FinaleKnight");
+            var foeEmblem=foe.Find("Emblem").GetComponent<RectTransform>();foeEmblem.anchoredPosition=new Vector2(0,160);foeEmblem.sizeDelta=new Vector2(270,270);
+            var foeName=foe.Find("Name").GetComponent<RectTransform>();foeName.anchoredPosition=new Vector2(0,-5);foeName.sizeDelta=new Vector2(350,50);
             BattleArt.Apply(foe.Find("Emblem").GetComponent<Image>(),tower?"Adventure/npc_mage_phantom":AdventureChapter.KnightEmblem);
             foe.Find("Name").GetComponent<Text>().text=tower?"法师幻影":"哨站骑士";
             var stats=foe.Find("Stats").GetComponent<Text>();
+            stats.rectTransform.anchoredPosition=new Vector2(0,-155);stats.rectTransform.sizeDelta=new Vector2(345,240);
             stats.fontSize=tower?22:25;
             stats.text=tower?"生命32  攻0 / 防0  距∞\n强酸攻击\n本场永久：火焰、寒冷抗性\n毒素免疫\n\n汲能回路：每3次普通攻击\n实际伤人后回复3生命":"生命20\n攻击+1  防御+1\n距离1\n\n经典先攻 · 正常AI\n胜利即第一章通关";
+            if(_storyChapter==3)
+            {
+                _selectRoot.Find("FinaleTitle").GetComponent<Text>().text="残旗战场·终战 · 选择角色";
+                _selectRoot.Find("FinaleHint").GetComponent<Text>().text="仅限圣武士子职 · 同袍古贤之誓 · 真实经典2v2";
+                BattleArt.Apply(foe.Find("Emblem").GetComponent<Image>(),"Subclasses/"+TatteredBannersChapter.Commander.Id);
+                foe.Find("Name").GetComponent<Text>().text="同袍与对手";stats.fontSize=20;
+                foeEmblem.anchoredPosition=new Vector2(0,200);foeEmblem.sizeDelta=new Vector2(200,200);
+                foeName.anchoredPosition=new Vector2(0,65);foeName.sizeDelta=new Vector2(350,42);
+                stats.rectTransform.anchoredPosition=new Vector2(0,-124);stats.rectTransform.sizeDelta=new Vector2(345,330);
+                stats.text="同袍：古贤之誓\n20生命  攻−1 / 防+1  距1钝击\n指挥官：24生命\n攻+1 / 防0  距1挥砍\n弩手：20生命\n攻0 / 防0  距2穿刺\n\n四人1d20 · 正常AI\n允许失败 · 全队胜利通关";
+            }
         }
     }
 }

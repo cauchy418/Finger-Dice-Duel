@@ -36,6 +36,8 @@ namespace FingerDiceDuel.UI
         private Text _hintText;
 
         private Button _rollButton;
+        private Button _lessonReturn;
+        private Text _lessonText;
         private Button _flipButton;
         private RectTransform _optionsRoot;
         private readonly List<GameObject> _optionButtons = new List<GameObject>();
@@ -123,6 +125,7 @@ namespace FingerDiceDuel.UI
         /// <summary>用"已建好四人"的控制器开始先攻（初始只显示"掷骰"按钮）。</summary>
         public void Begin(TwoOnTwoStartController controller)
         {
+            SetLesson(null,null);
             _controller = controller;
             for (int i = 0; i < 4; i++)
             {
@@ -140,6 +143,20 @@ namespace FingerDiceDuel.UI
             _hintText.text = "点「掷骰」开始（座位由点数决定）";
 
             _root.gameObject.SetActive(true);
+        }
+
+        public void SetLesson(string title,Action onReturn)
+        {
+            bool visible=!string.IsNullOrEmpty(title);
+            _titleText.text=visible?title:"2 v 2 掷骰先攻";
+            var parent=(RectTransform)_titleText.transform.parent;
+            if(_lessonText==null)
+                _lessonText=MakeText(parent,"LessonGuide",new Vector2(0,372),new Vector2(1500,40),19,TextAnchor.MiddleCenter,BattleArt.Gold);
+            _lessonText.gameObject.SetActive(visible);
+            _lessonText.text="军士长：四人各投1d20；比两队大点、再比小点，高点队坐1／4。按4→3→2→1分手值，1最先、20最后；一位先行动。";
+            if(_lessonReturn==null)_lessonReturn=MakeButton(parent,"LessonReturn",new Vector2(690,435),new Vector2(170,46),"返回章节",21);
+            _lessonReturn.gameObject.SetActive(visible);_lessonReturn.onClick.RemoveAllListeners();
+            if(visible)_lessonReturn.onClick.AddListener(()=>onReturn?.Invoke());
         }
 
         private void OnRollClicked()

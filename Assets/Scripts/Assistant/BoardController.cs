@@ -312,6 +312,9 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public TurnResult LastTurn { get; private set; }
 
+        /// <summary>完成的标准运算与休整数（含奖惩运算）。纯运算不计；不改变公共轮次。</summary>
+        public int CompletedActions { get; private set; }
+
         /// <summary>
         /// 刚才那次结算属于第几回合（<see cref="GameManager.TurnCount"/> 的值）。
         ///
@@ -622,6 +625,7 @@ namespace FingerDiceDuel.Assistant
             _statusTurnEndFor = ActivePlayer;
             if (scriptedRest) _game.SkipTurnAlreadyValidated();
             else _game.SkipTurn();
+            CompletedActions++;
 
             SelectedHand = null;
             _selectedTarget = null;
@@ -2379,9 +2383,8 @@ namespace FingerDiceDuel.Assistant
             if (ActivePlayer == null) return null;
 
             IMoveSelector ai = GetAi(ActivePlayer);
-            if (ai is not GreedyChoiceProvider greedy) return null;
-
-            PlayerState intended = greedy.IntendedVictim;
+            PlayerState intended = ai is IAttackTargetIntent intent ? intent.IntendedVictim
+                : (ai as GreedyChoiceProvider)?.IntendedVictim;
             if (intended == null || ReferenceEquals(intended, ActivePlayer)) return null;
             if (!CanBeAttacked(intended)) return null;
 
@@ -4213,6 +4216,7 @@ namespace FingerDiceDuel.Assistant
             _game.SuppressAttackDamage=false;_game.RangeOverride=-1;_game.DamageTargetPlayer=null;_giveUpAttack=false;
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
+            CompletedActions++;
 
             // 法师·塑能学派的状态体系：记下"这一位的回合该在换人时结算结束"
             _statusTurnEndFor = result.Actor;

@@ -1,0 +1,35 @@
+PASS human initiative candidates visible
+PASS raycast Split0
+PASS classic assignment completes through real candidate buttons
+PASS actual human and ally preserved after dice seating
+PASS actual first seat starts
+PASS finale has no guided restrictions
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale AI proxy advances
+PASS free finale reaches ordinary victory/defeat
+PASS chapter completion uses team victory
+PASS finale result remains on battlefield
+PASS raycast TrialEnd
+PASS finale summary opens only by trial end
+PASS win saves completion; loss preserves old result
+PASS reselect offered on finale result
+PASS raycast AdventureSkipTutorial
+PASS reselect returns to paladin profession
+PASS leaving clears chapter director/controller
+PASS leaving closes result modal

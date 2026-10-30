@@ -14,6 +14,9 @@ namespace FingerDiceDuel.UI
             if(_trialEndButton==null&&visible)
                 _trialEndButton=FrontEndArt.Button(_canvasRoot,"TrialEnd","试炼结束",new Vector2(795,350),new Vector2(236,48),fontSize:24);
             if(_trialEndButton==null)return;
+            bool eight=!_paintedBattle&&_ringCount==8;
+            Position((RectTransform)_trialEndButton.transform,new Vector2(eight?850:795,350),new Vector2(eight?190:236,48));
+            _trialEndButton.GetComponentInChildren<Text>().fontSize=eight?20:24;
             _trialEndButton.gameObject.SetActive(visible);_trialEndButton.onClick.RemoveAllListeners();
             if(visible){_trialEndButton.onClick.AddListener(()=>clicked?.Invoke());TutorialButton(_trialEndButton,true);_trialEndButton.transform.SetAsLastSibling();}
         }
@@ -64,11 +67,12 @@ namespace FingerDiceDuel.UI
         public void ConfigureAdventureGuide(bool compact)
         {
             _adventureGuideCompact=compact;
-            _adventurePanel?.SetCompact(compact);
+            _adventurePanel?.SetCompact(compact,_ringCount==8);
             if(compact)
             {
-                Position(_battleHint,new Vector2(0,-82),new Vector2(1160,44));
-                _hintText.rectTransform.sizeDelta=new Vector2(1100,38);_hintText.fontSize=17;
+                bool eight=_ringCount==8;
+                Position(_battleHint,new Vector2(0,eight?40:-82),new Vector2(eight?990:1160,44));
+                _hintText.rectTransform.sizeDelta=new Vector2(eight?940:1100,38);_hintText.fontSize=eight?16:17;
             }
         }
     }

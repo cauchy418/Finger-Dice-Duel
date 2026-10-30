@@ -18,6 +18,8 @@ internal static class Program
 {
     private static int Main(string[] args)
     {
+        if(args.Length==2&&args[0]=="--banners-probe")
+        {TatteredBannersTests.RunFinaleProbe(args[1]);return 0;}
         if(args.Length==2&&args[0]=="--tower-probe")
         {MageTowerTests.RunFinaleProbe(args[1]);return 0;}
         if(args.Length==4&&args[0]=="--dual-shard")

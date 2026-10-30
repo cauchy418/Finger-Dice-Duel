@@ -2,7 +2,7 @@
   "date": "2026-10-30",
   "method": "builtin image_gen",
   "resource_key": "Backgrounds/tattered_banners_chapter_03",
-  "runtime_connected": false,
+  "runtime_connected": true,
   "processing": "Pillow RGB, LANCZOS ImageOps.fit to 1920x1080; source preserved",
   "prompt": "prompt.txt",
   "files": [

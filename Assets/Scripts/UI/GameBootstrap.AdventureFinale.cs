@@ -36,7 +36,7 @@ namespace FingerDiceDuel.UI
             FrontEndArt.Text(foe.rectTransform, "Stats", "生命20\n攻击+1  防御+1\n距离1\n\n经典先攻 · 正常AI\n胜利即第一章通关", new Vector2(0, -155), new Vector2(345, 240), 25);
             _screenAdventureFinale.Add(foe.gameObject);
             var start = FrontEndArt.Button(_selectRoot, "FinaleStart", "开始挑战", new Vector2(180, -445), new Vector2(310, 64));
-            start.onClick.AddListener(() => StartAdventureLevel(_storyChapter==2?20:10, true)); _screenAdventureFinale.Add(start.gameObject);
+            start.onClick.AddListener(() => StartAdventureLevel(_storyChapter*10, true)); _screenAdventureFinale.Add(start.gameObject);
             var back = FrontEndArt.Button(_selectRoot, "FinaleBack", "返回章节", new Vector2(-220, -445), new Vector2(270, 64));
             back.onClick.AddListener(() => ShowScreen(GameScreen.StoryBattleSelect)); _screenAdventureFinale.Add(back.gameObject);
         }

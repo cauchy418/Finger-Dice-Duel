@@ -114,6 +114,8 @@ namespace FingerDiceDuel.UI
         /// <summary>隐藏冒险引导面板（旁白 + 模态全部）。</summary>
         public void HideAdventureGuide() => _adventurePanel?.HideAll();
 
+        public void SetAdventureExtraAction(Action action,string label)=>_adventurePanel?.SetExtraVictoryAction(action,label);
+
         /// <summary>冒险引导的模态层是否可见（开场 / 胜利）。</summary>
         public bool AdventureModalVisible
             => _adventurePanel != null && _adventurePanel.IsModalVisible;

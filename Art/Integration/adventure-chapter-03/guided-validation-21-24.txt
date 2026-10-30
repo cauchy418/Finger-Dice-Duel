@@ -1,0 +1,462 @@
+PASS intro modal 21/0
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 21/0
+PASS guide does not overlap player 21/0 step 0
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 0
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 0
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 0
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 21/0 step 1
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 1
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 1
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 1
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 21/0 step 2
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 2
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 2
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 2
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 21/0 step 3
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 3
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 3
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 3
+PASS NPC/player emblem resolves 21/0
+PASS raycast AdventureGuidePrevious
+PASS raycast AdventureGuideCurrent
+PASS guide history does not undo or replay 21/0
+PASS NPC action/skill advances 21/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 21/0 step 4
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 4
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 4
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 4
+PASS NPC/player emblem resolves 21/0
+PASS NPC action/skill advances 21/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 21/0 step 5
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 5
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 5
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 5
+PASS NPC/player emblem resolves 21/0
+PASS NPC action/skill advances 21/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 21/0 step 6
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 6
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 6
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 6
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 21/0 step 7
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 7
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 7
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 7
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 21/0 step 8
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 8
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 8
+PASS NPC/player emblem resolves 21/0
+PASS guide does not overlap player 21/0 step 8
+PASS NPC/player emblem resolves 21/0
+PASS human has required hand/target 21/0
+PASS correct button enabled 21/0
+PASS raycast PaintedHandCard
+PASS actual UI sample finishes 21/0
+PASS last result remains on battlefield 21/0
+PASS trial end available 21/0
+PASS trial end does not cover player 21/0
+PASS trial end does not cover player 21/0
+PASS trial end does not cover player 21/0
+PASS trial end does not cover player 21/0
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 21/0
+PASS sample progress saved 21/0
+PASS intro modal 22/0
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 22/0
+PASS guide does not overlap player 22/0 step 0
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 0
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 0
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 0
+PASS NPC/player emblem resolves 22/0
+PASS human has required hand/target 22/0
+PASS correct button enabled 22/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 22/0 step 1
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 1
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 1
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 1
+PASS NPC/player emblem resolves 22/0
+PASS human has required hand/target 22/0
+PASS correct button enabled 22/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 22/0 step 2
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 2
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 2
+PASS NPC/player emblem resolves 22/0
+PASS guide does not overlap player 22/0 step 2
+PASS NPC/player emblem resolves 22/0
+PASS human has required hand/target 22/0
+PASS correct button enabled 22/0
+PASS raycast PaintedHandCard
+PASS actual UI sample finishes 22/0
+PASS last result remains on battlefield 22/0
+PASS trial end available 22/0
+PASS trial end does not cover player 22/0
+PASS trial end does not cover player 22/0
+PASS trial end does not cover player 22/0
+PASS trial end does not cover player 22/0
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 22/0
+PASS sample progress saved 22/0
+PASS intro modal 22/1
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 22/1
+PASS guide does not overlap player 22/1 step 0
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 0
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 0
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 0
+PASS NPC/player emblem resolves 22/1
+PASS NPC action/skill advances 22/1 phase ChoosingAttackerHand
+PASS guide does not overlap player 22/1 step 1
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 1
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 1
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 1
+PASS NPC/player emblem resolves 22/1
+PASS raycast AdventureGuidePrevious
+PASS raycast AdventureGuideCurrent
+PASS guide history does not undo or replay 22/1
+PASS NPC action/skill advances 22/1 phase ChoosingAttackerHand
+PASS guide does not overlap player 22/1 step 2
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 2
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 2
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 2
+PASS NPC/player emblem resolves 22/1
+PASS NPC action/skill advances 22/1 phase ChoosingAttackerHand
+PASS guide does not overlap player 22/1 step 3
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 3
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 3
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 3
+PASS NPC/player emblem resolves 22/1
+PASS human has required hand/target 22/1
+PASS correct button enabled 22/1
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 22/1 step 4
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 4
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 4
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 4
+PASS NPC/player emblem resolves 22/1
+PASS human has required hand/target 22/1
+PASS correct button enabled 22/1
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 22/1 step 5
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 5
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 5
+PASS NPC/player emblem resolves 22/1
+PASS guide does not overlap player 22/1 step 5
+PASS NPC/player emblem resolves 22/1
+PASS human has required hand/target 22/1
+PASS correct button enabled 22/1
+PASS raycast PaintedHandCard
+PASS actual UI sample finishes 22/1
+PASS last result remains on battlefield 22/1
+PASS trial end available 22/1
+PASS trial end does not cover player 22/1
+PASS trial end does not cover player 22/1
+PASS trial end does not cover player 22/1
+PASS trial end does not cover player 22/1
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 22/1
+PASS sample progress saved 22/1
+PASS intro modal 23/0
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 23/0
+PASS guide does not overlap player 23/0 step 0
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 0
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 0
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 0
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 23/0 step 1
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 1
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 1
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 1
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 23/0 step 2
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 2
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 2
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 2
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast SkillChoice0
+PASS guide does not overlap player 23/0 step 3
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 3
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 3
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 3
+PASS NPC/player emblem resolves 23/0
+PASS raycast AdventureGuidePrevious
+PASS raycast AdventureGuideCurrent
+PASS guide history does not undo or replay 23/0
+PASS NPC action/skill advances 23/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 23/0 step 4
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 4
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 4
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 4
+PASS NPC/player emblem resolves 23/0
+PASS NPC action/skill advances 23/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 23/0 step 5
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 5
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 5
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 5
+PASS NPC/player emblem resolves 23/0
+PASS NPC action/skill advances 23/0 phase ChoosingAttackerHand
+PASS guide does not overlap player 23/0 step 6
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 6
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 6
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 6
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 23/0 step 7
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 7
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 7
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 7
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast PaintedHandCard
+PASS guide does not overlap player 23/0 step 8
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 8
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 8
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 8
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast SkillChoice0
+PASS guide does not overlap player 23/0 step 9
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 9
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 9
+PASS NPC/player emblem resolves 23/0
+PASS guide does not overlap player 23/0 step 9
+PASS NPC/player emblem resolves 23/0
+PASS human has required hand/target 23/0
+PASS correct button enabled 23/0
+PASS raycast SkillChoice0
+PASS actual UI sample finishes 23/0
+PASS last result remains on battlefield 23/0
+PASS trial end available 23/0
+PASS trial end does not cover player 23/0
+PASS trial end does not cover player 23/0
+PASS trial end does not cover player 23/0
+PASS trial end does not cover player 23/0
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 23/0
+PASS sample progress saved 23/0
+PASS intro modal 24/0
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 24/0
+PASS guide does not overlap player 24/0 step 0
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 0
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 0
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 0
+PASS NPC/player emblem resolves 24/0
+PASS NPC action/skill advances 24/0 phase ChoosingLockTarget
+PASS guide does not overlap player 24/0 step 1
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 1
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 1
+PASS NPC/player emblem resolves 24/0
+PASS guide does not overlap player 24/0 step 1
+PASS NPC/player emblem resolves 24/0
+PASS human has required hand/target 24/0
+PASS decline remains visible but disabled 24/0
+PASS correct button enabled 24/0
+PASS raycast SkillChoice0
+PASS actual UI sample finishes 24/0
+PASS last result remains on battlefield 24/0
+PASS trial end available 24/0
+PASS trial end does not cover player 24/0
+PASS trial end does not cover player 24/0
+PASS trial end does not cover player 24/0
+PASS trial end does not cover player 24/0
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 24/0
+PASS sample progress saved 24/0
+PASS intro modal 24/1
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 24/1
+PASS guide does not overlap player 24/1 step 0
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 0
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 0
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 0
+PASS NPC/player emblem resolves 24/1
+PASS NPC action/skill advances 24/1 phase ChoosingLockTarget
+PASS guide does not overlap player 24/1 step 1
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 1
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 1
+PASS NPC/player emblem resolves 24/1
+PASS guide does not overlap player 24/1 step 1
+PASS NPC/player emblem resolves 24/1
+PASS human has required hand/target 24/1
+PASS decline remains visible but disabled 24/1
+PASS correct button enabled 24/1
+PASS raycast SkillChoice0
+PASS actual UI sample finishes 24/1
+PASS last result remains on battlefield 24/1
+PASS trial end available 24/1
+PASS trial end does not cover player 24/1
+PASS trial end does not cover player 24/1
+PASS trial end does not cover player 24/1
+PASS trial end does not cover player 24/1
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 24/1
+PASS sample progress saved 24/1
+PASS intro modal 24/2
+PASS raycast AdventureConfirm
+PASS intro starts actual lesson 24/2
+PASS guide does not overlap player 24/2 step 0
+PASS NPC/player emblem resolves 24/2
+PASS guide does not overlap player 24/2 step 0
+PASS NPC/player emblem resolves 24/2
+PASS guide does not overlap player 24/2 step 0
+PASS NPC/player emblem resolves 24/2
+PASS guide does not overlap player 24/2 step 0
+PASS NPC/player emblem resolves 24/2
+PASS NPC action/skill advances 24/2 phase ChoosingAttackerHand
+PASS actual UI sample finishes 24/2
+PASS last result remains on battlefield 24/2
+PASS trial end available 24/2
+PASS trial end does not cover player 24/2
+PASS trial end does not cover player 24/2
+PASS trial end does not cover player 24/2
+PASS trial end does not cover player 24/2
+PASS raycast HistoryButton
+PASS combat log available after last action
+PASS raycast HistoryButton
+PASS raycast TrialEnd
+PASS summary opens only after end click 24/2
+PASS sample progress saved 24/2

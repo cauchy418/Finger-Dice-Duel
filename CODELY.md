@@ -573,11 +573,15 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 最终验证：1380项全量通过、0失败；开启连锁的正式双将AI另跑1,839,264局及3项专项，异常0；该阶段功能回归1373项、统计7项独立运行。Unity/NUnit与170脚本UI编译通过，142项实机检查及62枚徽记校验通过。七份模式报告、150项角色胜率与50角色手值／应对清单均已同步。
 
-## 第三章：残旗战场设计（2026-10-30，待实现）
+## 第三章：残旗战场（2026-10-30，已实现）
 
 [章节总案](Docs/Adventure/chapter-03.md)、[转场](Docs/Adventure/chapter-03-transition.md)与全局21～30十份逐战设计已落盘。六个圣武士子职依次教学借数／攻击目标分离、王冠成长、奉献合盾与援护、古贤辅助、破誓转移、征服时点、复仇标记与纯运算；九战引入公开3／3／2八人关系、距离与普通击杀奖励，终战为六圣武士自选的真实经典2v2。普通攻击可误伤队友；借手合法性、攻击距离、援护范围与转移范围分别处理，教学不能改变公共规则。
 
-仅完成设计与[专用背景素材](Art/Production/tattered-banners-v1/README.md)，**未增加章节入口、关卡导演或第三章运行时测试**。背景资源键`Backgrounds/tattered_banners_chapter_03`；内置image_gen原图1672×941，运行时选用1920×1080，保留原图、提示词、加工说明与SHA-256。后续按总案实现输入门禁、多人布局、NPC徽记映射、样本恢复与结束留场；终战六子职共享种子采样尚未进行，不改现有胜率统计。
+`TatteredBannersChapter`配置23个独立样本、六圣武士选角与专用NPC；`TatteredBannersLesson`通过`ITutorialInput`执行实际战斗操作，标准运算／休整／奖励行动使用`BoardController.CompletedActions`独立计数，纯运算不计、不篡改公共轮次。脚本出招实现`IAttackTargetIntent`，将加数与受击者分开。`GameBootstrap.TatteredBanners`连接章节、恢复进度、经典四人先攻、队伍胜负与结果页。终战落座后以实际人类引用构建导演，不假定人类是PlayerA；全局关卡21～30及每样本独立保存，失败／平局保留旧胜利。第二章胜利页保留旧三按钮，另加第三章转场。
+
+背景资源键`Backgrounds/tattered_banners_chapter_03`已接入；NPC徽记通过`BattleArt`集中映射教官、指挥官、弩手，所有技能目标共用；八人指引／提示／技能栏分层，结束按钮放右侧留白，阵亡后标题更新存活队友／对手人数。正常选项保持显示，指定项高亮可点，其他禁用。末拍留战场、日志可用，点击试炼结束才弹总结。离场清导演、输入、模式与背景。
+
+功能回归1541项、Unity条件测试及UI编译通过；23样本实际引擎按钮流程与1983个界面检查点通过，含两种分辨率、续练／重试、旧存档解锁和第二章转场。模态正文保留作者分段、使用原生折行，避免缩放造成短行。终战困难AI、六子职各200个共享种子、真实四人先攻共1200局，736胜／463负／1平，0安全中止；不并入竞技统计。命令：`dotnet Tools/HeadlessTests/bin/HeadlessTests.dll --banners-probe Art/Integration/adventure-chapter-03/finale-ai-probe.csv`。详见[第三章验收](Art/Integration/adventure-chapter-03/README.md)。
 
 ## 第二章：法师高塔（2026-10-26）
 

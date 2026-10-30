@@ -257,7 +257,7 @@ namespace FingerDiceDuel.Core
 
             var request = new ChoiceRequest(
                 HandEffect.OathOfDevotionShockTarget,
-                $"圣武士·奉献之誓：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点伤害。",
+                $"圣武士·奉献之誓【卫护斩】：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点冲击伤害。",
                 handCandidates,
                 allowDecline: false,          // 强制发动 -> 不能放弃
                 declineResult: null,
@@ -291,7 +291,7 @@ namespace FingerDiceDuel.Core
             if (owner == null || !owner.IsAlive || ReferenceEquals(owner, attacker)
                 || ReferenceEquals(owner, target) || !manager.CanReach(owner, target)) return;
             requests.Add(new ChoiceRequest(HandEffect.OathOfDevotionRedirect,
-                $"圣武士·奉献之誓【代挡】：攻击已转移至 {target.Name}，是否由自己承受？",
+                $"圣武士·奉献之誓【守护之誓】：攻击已转移至 {target.Name}，是否由自己承受？",
                 new List<Hand> { owner.LeftHand, owner.RightHand }, true, null, owner,resultValue:attackValue,relatedTarget:target,relatedActor:attacker));
         }
 
@@ -471,7 +471,7 @@ namespace FingerDiceDuel.Core
 
             requests.Add(new ChoiceRequest(
                 HandEffect.OathOfDevotionShockTarget,
-                $"圣武士·奉献之誓（{reason}）：请选攻击范围内一名角色，" +
+                $"圣武士·奉献之誓【卫护斩】（{reason}）：请选攻击范围内一名角色，" +
                 $"造成 {ShockDamage} 点伤害（可被护盾挡下或闪避）。",
                 hands,
                 allowDecline: false,             // 强制发动（玩家只选目标）

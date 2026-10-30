@@ -1,0 +1,7 @@
+role,games,player_team_wins,enemy_team_wins,draws,safety_aborts,mean_actions
+paladin_oath_of_devotion,200,168,32,0,0,27.43
+paladin_oath_of_the_crown,200,87,113,0,0,22.92
+paladin_oathbreaker,200,128,72,0,0,21.84
+paladin_oath_of_the_ancients,200,125,75,0,0,28.98
+paladin_oath_of_conquest,200,115,84,1,0,25.84
+paladin_oath_of_vengeance,200,113,87,0,0,23.88

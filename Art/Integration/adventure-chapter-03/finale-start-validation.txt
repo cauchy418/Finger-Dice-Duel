@@ -1,0 +1,16 @@
+PASS third chapter locked before tower victory
+PASS legacy tower completion unlocks third chapter
+PASS chapter heading
+PASS ten battles in chapter menu
+PASS raycast StoryFinale
+PASS finale chooses paladin profession before six subclasses
+PASS raycast Profession_paladin
+PASS all six paladins available
+PASS raycast Card0
+PASS ally and both enemy stats fit preview
+PASS raycast FinaleStart
+PASS finale briefing before dice
+PASS raycast AdventureConfirm
+PASS real four-player initiative created
+PASS sergeant explains 2v2 initiative on dice screen
+PASS raycast RollButton

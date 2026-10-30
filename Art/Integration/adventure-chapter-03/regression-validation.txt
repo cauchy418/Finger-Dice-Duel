@@ -1,0 +1,51 @@
+PASS resume first incomplete sample
+PASS raycast AdventureConfirm
+PASS resume reaches real protection request
+PASS actual render target 1280x720
+PASS protection-1280x720 guide/player bounds
+PASS protection-1280x720 guide/player bounds
+PASS protection-1280x720 guide/player bounds
+PASS protection-1280x720 guide/player bounds
+PASS protection-1280x720 guide/action bounds
+PASS actual render target 1920x1080
+PASS protection-1920x1080 guide/player bounds
+PASS protection-1920x1080 guide/player bounds
+PASS protection-1920x1080 guide/player bounds
+PASS protection-1920x1080 guide/player bounds
+PASS protection-1920x1080 guide/action bounds
+PASS resumed sample completes
+PASS raycast TrialEnd
+PASS raycast AdventureConfirm
+PASS retry rebuilds same sample with fresh state
+PASS leave resets director and multiplayer flags
+PASS raycast AdventureConfirm
+PASS actual render target 1280x720
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/player bounds
+PASS eight-protection-1280x720 guide/action bounds
+PASS actual render target 1920x1080
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/player bounds
+PASS eight-protection-1920x1080 guide/action bounds
+PASS tower victory fixture resolves actual attack
+PASS raycast TrialEnd
+PASS tower victory retains reselection
+PASS tower victory adds third chapter transition
+PASS extra transition does not overlap old controls
+PASS modal preserves author paragraphs and fits without injected short lines
+PASS raycast AdventureNextChapter
+PASS raycast AdventureConfirm
+PASS raycast AdventureConfirm
+PASS two transition pages reach chapter three

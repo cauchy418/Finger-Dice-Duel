@@ -14,12 +14,12 @@ namespace FingerDiceDuel.Assistant
         protected readonly List<Beat> _beats = new List<Beat>();
         private int _beatIndex = -1;
 
-        protected AdventureLesson(GameManager game, BoardController board)
+        protected AdventureLesson(GameManager game, BoardController board, PlayerState human = null)
         {
             _game = game ?? throw new ArgumentNullException(nameof(game));
             _board = board ?? throw new ArgumentNullException(nameof(board));
-            _player = game.PlayerA;
-            _soldier = game.PlayerB;
+            _player = human ?? game.PlayerA;
+            _soldier = human == null ? game.PlayerB : game.GetOpponent(human);
         }
 
         public virtual string GuideName => AdventureLevel1.GuideName;
@@ -213,7 +213,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>拒绝点击时的提示文案（界面弹气泡用）。</summary>
-        public string RejectionHint
+        public virtual string RejectionHint
         {
             get
             {

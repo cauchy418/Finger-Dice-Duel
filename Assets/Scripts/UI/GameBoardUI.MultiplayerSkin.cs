@@ -120,7 +120,7 @@ namespace FingerDiceDuel.UI
                 BattleArt.Apply(_ringActionRoot.GetComponent<Image>(), "UI/panel_tooltip", true);
             }
             bool eight = _ringCount == 8;
-            Position(_battleHint, _adventureGuideCompact ? new Vector2(0,-82) : new Vector2(0, eight ? 72 : 0), _adventureGuideCompact ? new Vector2(1160,44) : new Vector2(990,96));
+            Position(_battleHint, _adventureGuideCompact ? new Vector2(0,eight?40:-82) : new Vector2(0, eight ? 72 : 0), _adventureGuideCompact ? new Vector2(eight?990:1160,44) : new Vector2(990,96));
             bool mateOnLeft = FindPanel(RingPosition.LowerLeft)?.Owner != null;
             Position(_ringActionRoot, eight ? new Vector2(0, -60) : new Vector2(mateOnLeft ? 650 : -650, -295),
                 eight ? new Vector2(990, 152) : new Vector2(500, 360));

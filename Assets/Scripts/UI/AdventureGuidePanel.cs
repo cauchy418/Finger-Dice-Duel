@@ -28,6 +28,7 @@ namespace FingerDiceDuel.UI
         private Text _confirmLabel;
         private Text _secondLabel;
         private Button _skipTutorialButton;
+        private Button _extraVictoryButton;
         private Action _skipTutorialAction;
         private Action _confirmAction;
         private Action _secondAction;
@@ -65,8 +66,10 @@ namespace FingerDiceDuel.UI
         {
             if (_modalRoot == null) return;
 
+            SetExtraVictoryAction(null,null);
+
             _modalTitle.text = title;
-            FrontEndArt.SetNarrationText(_modalBody, introText, 630f, 20);
+            SetModalText(introText);
             _modalGuideName.text = guideName;   // 头像下方的署名
             SetAvatar(_modalAvatar, avatarKey);
 
@@ -91,8 +94,10 @@ namespace FingerDiceDuel.UI
         {
             if (_modalRoot == null) return;
 
+            SetExtraVictoryAction(null,null);
+
             _modalTitle.text = title;
-            FrontEndArt.SetNarrationText(_modalBody, victoryText, 630f, 20);
+            SetModalText(victoryText);
             _modalGuideName.text = guideName;
             _skipTutorialButton.GetComponentInChildren<Text>().text = nextLabel;
             _skipTutorialButton.gameObject.SetActive(onNext != null);
@@ -108,6 +113,26 @@ namespace FingerDiceDuel.UI
             _secondButton.gameObject.SetActive(true);
             _modalRoot.gameObject.SetActive(true);
             _modalRoot.SetAsLastSibling();
+        }
+
+        public void SetExtraVictoryAction(Action action,string label)
+        {
+            if(_skipTutorialButton==null)return;
+            ((RectTransform)_skipTutorialButton.transform).anchoredPosition=new Vector2(action==null?0:-165,-164);
+            if(_extraVictoryButton==null&&action!=null)
+                _extraVictoryButton=MakeButton((RectTransform)_skipTutorialButton.transform.parent,"NextChapter",label,new Vector2(165,-164),()=>{});
+            if(_extraVictoryButton==null)return;
+            _extraVictoryButton.gameObject.SetActive(action!=null);_extraVictoryButton.onClick.RemoveAllListeners();
+            _extraVictoryButton.GetComponentInChildren<Text>().text=label;
+            if(action!=null)_extraVictoryButton.onClick.AddListener(()=>{HideModal();action();});
+        }
+
+        private void SetModalText(string value)
+        {
+            // 保留作者的分段，交由当前画布原生折行，避免缩放后手动换行再次被拆成短行。
+            _modalBody.text=value??"";_modalBody.horizontalOverflow=HorizontalWrapMode.Wrap;
+            for(int size=20;size>=17;size--)
+            {_modalBody.fontSize=size;if(_modalBody.preferredHeight<=_modalBody.rectTransform.rect.height+1)break;}
         }
 
         /// <summary>关闭模态层（不影响过程引导）。</summary>
@@ -132,9 +157,11 @@ namespace FingerDiceDuel.UI
             _guideRoot.gameObject.SetActive(true);
         }
 
-        public void SetCompact(bool compact)
+        private bool _eight;
+        public void SetCompact(bool compact,bool eight=false)
         {
-            if(_compact==compact)return;_compact=compact;
+            eight&=compact;
+            if(_compact==compact&&_eight==eight)return;_compact=compact;_eight=eight;
             _guideRoot.anchoredPosition=compact?Vector2.zero:new Vector2(-750,50);
             _guideRoot.sizeDelta=compact?new Vector2(1180,112):new Vector2(320,470);
             PlaceGuide(_guideAvatar.rectTransform,compact?new Vector2(-550,10):new Vector2(-108,156),Vector2.one*(compact?56:72));
@@ -149,6 +176,18 @@ namespace FingerDiceDuel.UI
                 PlaceGuide((RectTransform)buttons[i].transform,compact?new Vector2(-520+i*95,-31):new Vector2(-99+i*99,-197),compact?new Vector2(85,28):new Vector2(92,34));
                 var text=buttons[i].GetComponentInChildren<Text>();text.rectTransform.sizeDelta=compact?new Vector2(82,26):new Vector2(88,30);text.fontSize=compact?14:16;
             }
+            if(eight)
+            {
+                PlaceGuide(_guideRoot,new Vector2(0,114),new Vector2(990,84));
+                PlaceGuide(_guideAvatar.rectTransform,new Vector2(-460,4),new Vector2(48,48));
+                PlaceGuide(_guideName.rectTransform,new Vector2(-350,22),new Vector2(160,20));_guideName.fontSize=14;
+                PlaceGuide(_guidePage.rectTransform,new Vector2(-350,2),new Vector2(160,16));_guidePage.fontSize=12;
+                PlaceGuide(_guideText.rectTransform,new Vector2(116,0),new Vector2(700,74));
+                for(int i=0;i<buttons.Length;i++)
+                {PlaceGuide((RectTransform)buttons[i].transform,new Vector2(-440+i*80,-26),new Vector2(72,22));var t=buttons[i].GetComponentInChildren<Text>();t.rectTransform.sizeDelta=new Vector2(70,20);t.fontSize=12;}
+            }
+            _guideText.resizeTextForBestFit=compact;_guideText.resizeTextMinSize=14;_guideText.resizeTextMaxSize=eight?17:18;
+            _guideText.verticalOverflow=VerticalWrapMode.Truncate;
             RefreshGuidePage();
         }
         private static void PlaceGuide(RectTransform rect,Vector2 position,Vector2 size)
