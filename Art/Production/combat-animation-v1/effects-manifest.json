@@ -1,0 +1,113 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "fx_fire",
+      "source": "Art/Production/combat-animation-v1/source/fx_fire.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_fire.png",
+      "sha256": "a2d4373e794ac8d3f258f76ed9246bbd304def072064e286854d218348e67d40",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact orange-red curling flame, clear fiery core and few ember sparks. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_cold",
+      "source": "Art/Production/combat-animation-v1/source/fx_cold.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_cold.png",
+      "sha256": "fec9fb821bb90016a28aa0e80397348199697fae20ebdfd8f67044451ea9a427",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact sharp pale cyan frost crystal burst, translucent icy shards and frosty vapor. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_acid",
+      "source": "Art/Production/combat-animation-v1/source/fx_acid.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_acid.png",
+      "sha256": "b1ae02dc5dcaf5ec3a2b3aa7714f21fa3203969129f2c4a15e6a20f5e58a1b88",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact vivid yellow-green corrosive globule with pitted droplets and dissolving vapor, NO skull. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_poison",
+      "source": "Art/Production/combat-animation-v1/source/fx_poison.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_poison.png",
+      "sha256": "fae4103719b0f1a6c8b61087866d7188fa282a46fab74ea8c89501eff347c873",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact emerald poisonous smoke wisp with a tiny spectral skull suggestion and suspended venom droplets, distinct from acid yellow-green. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_lightning",
+      "source": "Art/Production/combat-animation-v1/source/fx_lightning.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_lightning.png",
+      "sha256": "15c290734b299886f8c4c99c851cbf4d85b3ae27d35181f49b7e1c893bc8bee0",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact intense electric blue branching lightning strike, thin jagged forks around white core. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_thunder",
+      "source": "Art/Production/combat-animation-v1/source/fx_thunder.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_thunder.png",
+      "sha256": "ee88953cafe3de1af1dd9fda79c4efce4ab80fd28fa6d99f119d9e88964ac2e6",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact violet-blue concussive sound pulse with three clear concentric rippling arcs and fractured air, NO lightning bolt. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_force",
+      "source": "Art/Production/combat-animation-v1/source/fx_force.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_force.png",
+      "sha256": "489d85277a7ba969099b0f734ff15447bca80dd73ced3653682c1613404a185a",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact crimson-magenta geometric arcane force pulse, clean concentric angular rune-free rings around bright core. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_psychic",
+      "source": "Art/Production/combat-animation-v1/source/fx_psychic.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_psychic.png",
+      "sha256": "50bf8302539e48ceb1429232a3398c7affe479850e0a79a912bfbd88b5212d50",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact luminous pink-purple spectral eye-shaped thought wave and wispy psychic tendrils, no literal face. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_radiant",
+      "source": "Art/Production/combat-animation-v1/source/fx_radiant.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_radiant.png",
+      "sha256": "9fe22b187a1372c7c0db5c66743a6ac4049f4204378dc0765b177271ada08ef4",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact warm golden-white radiant starburst with broad divine rays. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_necrotic",
+      "source": "Art/Production/combat-animation-v1/source/fx_necrotic.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_necrotic.png",
+      "sha256": "b53c210b1c9f2484be0218d6fdf9a4923db727f3fd988091dff360b1ad9d66ca",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact violet-black spectral death mist with pale violet grasping wisps, dark necrotic energy, NO green. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_slash",
+      "source": "Art/Production/combat-animation-v1/source/fx_slash.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_slash.png",
+      "sha256": "cdfbda343497df74525cd45e06a5faca98513cce561beaa840d2da0123e729c5",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a single broad steel-white curved crescent swoosh, antique gold edge glint, transparent inner and outer void; neutral sword swing trail, no sword. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "fx_impact",
+      "source": "Art/Production/combat-animation-v1/source/fx_impact.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fx_impact.png",
+      "sha256": "ff99a8322f2c45dd24492fd5213d4de82b3fe972936b75843f8242c8c0deb03d",
+      "prompt": "Use case: stylized-concept. Asset type: standalone alpha VFX sprite for dark fantasy 2D Unity combat animation. Subject: a compact neutral pale-gold and steel-white radial impact burst with a clear bright center and eight tapering shards, no weapon, no blood. Painterly fantasy spell illustration with soft translucent alpha edges, concentrated readable shape at small size. Single centered effect filling 70% square with fully transparent padding; can serve as flying projectile or overlay on sword tip or fist. No scenery, background, UI frame, lettering, text, numbers, weapon, hand. Genuinely transparent background, keep color luminous yet dark-fantasy restrained. No square smoke backdrop.",
+      "size": 512,
+      "alpha": true
+    }
+  ]
+}

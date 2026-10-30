@@ -1,0 +1,68 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "weapon_sword",
+      "source": "Art/Production/combat-animation-v1/source/weapon_sword.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_sword.png",
+      "sha256": "8ae5ea742437ea2eab0c7b78e423cf80f1933d86222274dfde8358fa333324ca",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. A single straight double-edged medieval longsword, NOT curved saber; old gold simple crossguard at left, black leather grip, bright steel straight blade extends horizontally to a sharp point at right. Side-on view. No magical effect. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "weapon_hammer",
+      "source": "Art/Production/combat-animation-v1/source/weapon_hammer.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_hammer.png",
+      "sha256": "6f94bf8adf92ec70df2f1cfcc5634737d4d7707f0ac445c28194af07ffd5d738",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. A single paladin warhammer, leather handle extends horizontally from left to an antique gold dark iron heavy rectangular hammer head at right, compact holy engravings, no cross religious symbol, side-on view. No glow. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "weapon_staff",
+      "source": "Art/Production/combat-animation-v1/source/weapon_staff.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_staff.png",
+      "sha256": "255eb5be6193a54bfb71bbe3b9f5816a249d3510d39e29a6c42c93e86539f811",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. A single mage quarterstaff, dark carved wood shaft runs horizontally from left to right, right striking end capped with old gold and a small blue crystal, slender and readable. No magical effect. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "weapon_fist",
+      "source": "Art/Production/combat-animation-v1/source/weapon_fist.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_fist.png",
+      "sha256": "3aad1bce31686c41557c1d4fd83bd0bb4d4a880c8cf9137dbd1dd72a4e990649",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. A single human martial artist clenched fist and short wrist, wrist enters from left, knuckles point right, side-on slightly three quarter. FOUR curled finger knuckles and ONE thumb wrapping OUTSIDE, anatomically exactly five fingers, ivory cloth wrist wraps with a narrow antique gold cuff. No extra arm, no magic. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "weapon_rapier",
+      "source": "Art/Production/combat-animation-v1/source/weapon_rapier.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_rapier.png",
+      "sha256": "d69fdad2c30ab0b5de88bd94ed5bf474ec7f0997b144b0a028b7fa0d76f14597",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. A single slim straight thrusting rapier, dark leather grip and antique gold swept basket guard at left, very thin straight steel blade horizontal pointing right, side-on view, clearly distinct from heavy longsword. No curved blade. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "weapon_bow",
+      "source": "Art/Production/combat-animation-v1/source/weapon_bow.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/weapon_bow.png",
+      "sha256": "2c852c9b31c188da2c5aea5be9c3794c6ee1b8e5ae0f5c25d983dec15246fe77",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. One single medieval recurve bow, vertically oriented wooden bow arms and taut string; bow points toward right, dark wood and old gold fittings. No arrow, no hand or archer. Centered with clear open interior. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    },
+    {
+      "key": "projectile_arrow",
+      "source": "Art/Production/combat-animation-v1/source/projectile_arrow.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/projectile_arrow.png",
+      "sha256": "3acb9edf358d24f75d1f622f07cb7ea16ec72fbe61422314025de76a7784a32e",
+      "prompt": "Use case: stylized-concept. Production game animation cutout sprite for Finger Dice Duel dark fantasy UI. One single arrow flying horizontally toward right: small steel arrowhead at right, straight wooden shaft, dark pale feather fletching at left, restrained old gold binding. No bow, no motion blur. Detailed painterly hand-painted materials, black iron, aged gold, dark wood, restrained specular edges. Unframed standalone object, perfectly transparent background. Orthographic inventory sprite with clear complete silhouette, no perspective distortion. Fill central 80 percent of square with generous fully transparent margin. No writing, numbers, scene, card, borders, ground shadow. Must support rotation and movement as independent 2D Unity UI sprite.",
+      "size": 512,
+      "alpha": true
+    }
+  ]
+}

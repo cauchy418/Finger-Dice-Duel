@@ -1,0 +1,25 @@
+PASS Assets/Resources/Art/Battle/v1/Overlay/shield.png
+PASS Assets/Resources/Art/Battle/v1/Overlay/shield_broken.png
+PASS Assets/Resources/Art/Battle/v1/Overlay/taichi.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_sword.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_hammer.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_staff.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_fist.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_rapier.png
+PASS Assets/Resources/Art/Battle/v1/Animation/weapon_bow.png
+PASS Assets/Resources/Art/Battle/v1/Animation/projectile_arrow.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_fire.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_cold.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_acid.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_poison.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_lightning.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_thunder.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_force.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_psychic.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_radiant.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_necrotic.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_slash.png
+PASS Assets/Resources/Art/Battle/v1/Animation/fx_impact.png
+PASS Assets/Resources/Art/Battle/v1/Animation/shield_fragment_1.png
+PASS Assets/Resources/Art/Battle/v1/Animation/shield_fragment_2.png
+24 RGBA runtime assets validated.

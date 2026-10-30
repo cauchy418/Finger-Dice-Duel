@@ -99,7 +99,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Human_defender_can_select_transfer_in_the_real_board_flow()
         {
-            var game = Match(out var sinks); var board = Board(game, sinks);
+            var game = Match(out var sinks);
+            game.Players[3].RightHand.SetValue(5);game.Players[3].RightHand.SetShieldState(ShieldState.Formed);
+            var board = Board(game, sinks);
             Assert.AreEqual(HandEffect.OathbreakerTransfer, board.PendingEffect);
             Assert.AreSame(game.PlayerB, board.Chooser); Assert.True(board.IsHumanChooser);
             Assert.True(board.CanDeclinePendingChoice);
@@ -112,12 +114,16 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void OathOfDevotion_gets_a_visible_choice_after_transfer_and_can_take_the_attack()
         {
-            var game = Match(out var sinks); var board = Board(game, sinks);
+            var game = Match(out var sinks);
+            game.Players[3].RightHand.SetValue(5);game.Players[3].RightHand.SetShieldState(ShieldState.Formed);
+            var board = Board(game, sinks);
             board.ClickHand(game.Players[2].LeftHand);
             Assert.AreEqual(HandEffect.OathOfDevotionRedirect, board.PendingEffect);
             Assert.AreSame(game.Players[3], board.Chooser);
             Assert.True(board.ClickHand(game.Players[3].LeftHand));
-            Assert.AreEqual(16, game.Players[3].Health);
+            Assert.AreEqual(HandEffect.OathOfDevotionShockTarget, board.PendingEffect);
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand));
+            Assert.AreEqual(20, game.Players[3].Health);
             Assert.AreEqual(20, game.PlayerB.Health);
             Assert.AreEqual(ShieldState.Formed, game.Players[2].LeftHand.State);
         }

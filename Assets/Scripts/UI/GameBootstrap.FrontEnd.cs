@@ -47,7 +47,7 @@ namespace FingerDiceDuel.UI
             _screenMainMenu.Add(title.gameObject);
             _screenMainMenu.Add(FrontEndArt.Text(_selectRoot, "SubTitle", "F I N G E R   D I C E   D U E L", new Vector2(0, 252), new Vector2(1100, 44), 26).gameObject);
             _screenMainMenu.Add(FrontEndArt.Image(_selectRoot, "MainDivider", "UI/divider_horizontal", new Vector2(0, 202), new Vector2(740, 24)).gameObject);
-            _screenMainMenu.Add(CreateArtModeButton(_selectRoot, "ModeAdventure", new Vector2(0, 90), "冒险模式", "边境哨站 / 法师高塔", () => ShowScreen(GameScreen.Adventure), "adventure").gameObject);
+            _screenMainMenu.Add(CreateArtModeButton(_selectRoot, "ModeAdventure", new Vector2(0, 90), "冒险模式", "边境哨站 / 法师高塔 / 残旗战场", () => ShowScreen(GameScreen.Adventure), "adventure").gameObject);
             _screenMainMenu.Add(CreateArtModeButton(_selectRoot, "ModeCompetition", new Vector2(0, -73), "竞技模式", "对战：1v1 / 2v2 / 8 人", () => ShowScreen(GameScreen.Competition), "competition").gameObject);
             _screenMainMenu.Add(CreateArtModeButton(_selectRoot, "ModeCasual", new Vector2(0, -236), "娱乐模式", "双将等变体玩法", () => ShowScreen(GameScreen.Casual), "casual").gameObject);
             Footer("Codex", "角色图鉴", "codex", -375, OnCodexClicked);

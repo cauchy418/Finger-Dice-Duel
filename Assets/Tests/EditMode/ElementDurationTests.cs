@@ -57,10 +57,10 @@ namespace FingerDiceDuel.Tests
   {foreach(var d in new[]{CharacterDefinition.CollegeOfLore,CharacterDefinition.SchoolOfIllusion}){var g=Game(d);g.SkillPolicyFor=p=>new YesPolicy();var b=g.PlayerB;
     if(b.Character is CollegeOfLoreLogic lore){b.LeftHand.SetValue(8);lore.OnOperationResolved(b,b.LeftHand,1,7,HandEffectType.Attack8,g,null);}
     b.LeftHand.SetValue(1);b.RightHand.SetValue(3);var c=Hit(g,2);Assert.True((c.ElementHits[0].Guard&AttackGuard.WholeAttackReduction)!=0);Assert.AreEqual(1,c.ElementHits[1].Duration(2));Assert.AreEqual(1,b.StatusTurnsLeft(StatusEffect.Burn));}}
-  [Test] public void Devotion_redirect_is_guard_even_without_a_shield()
+  [Test] public void Devotion_cannot_redirect_without_a_complete_shield()
   {var p=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("C",CharacterDefinition.OathOfDevotion),CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank)};
    var g=GameManager.Create2v2(p,new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});g.AnsweredLookupFor=(owner,e,v)=>ReferenceEquals(owner,p[2])&&e==HandEffect.OathOfDevotionRedirect?p[2].LeftHand:null;
-   var c=Hit(g);Assert.AreEqual(p[2],c.Defender);Assert.True((c.ElementHits[0].Guard&AttackGuard.Transfer)!=0);Assert.AreEqual(1,p[2].StatusTurnsLeft(StatusEffect.Burn));Assert.False(p[1].HasStatus(StatusEffect.Burn));}
+   var c=Hit(g);Assert.AreEqual(p[1],c.Defender);Assert.False(c.WasRedirected);Assert.AreEqual(2,p[1].StatusTurnsLeft(StatusEffect.Burn));Assert.False(p[2].HasStatus(StatusEffect.Burn));}
   [Test] public void Oathbreaker_transfer_plus_shield_is_one_guard_penalty()
   {var p=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("B",CharacterDefinition.Oathbreaker),CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank)};
    var g=GameManager.Create2v2(p,new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});p[1].LeftHand.SetValue(5);Shield(p[2].LeftHand);g.AnsweredLookupFor=(owner,e,v)=>e==HandEffect.OathbreakerTransfer?p[2].LeftHand:null;

@@ -1,0 +1,3 @@
+1542 passed, 0 failed; 8 independent statistical fixtures skipped.
+UI compile: real Unity/Tuanjie assemblies, succeeded.
+New regression: full shield gate; decline keeps shield and omits shock; accepted protection collects target and deals exactly 2 shock; transfer then protection; chapter 24 no-shield observation.

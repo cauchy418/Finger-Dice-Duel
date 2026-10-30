@@ -1580,10 +1580,12 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/shield.svg",
-      "bytes": 4048,
-      "sha256": "e4ff8ae27e7198968bcd699803c67d42169c71fa218992edb69695eb4ecbafa7",
-      "resourcesKey": "Art/Battle/v1/Overlay/shield"
+      "source": "Art/Production/hand-states-v2/source/shield.png",
+      "bytes": 62420,
+      "sha256": "ed442c0167c0460ffc783be9bad7d4e1293d39cdf9f78d1e285b5c8e569aa099",
+      "resourcesKey": "Art/Battle/v1/Overlay/shield",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "shield_broken",
@@ -1592,10 +1594,12 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/shield_broken.svg",
-      "bytes": 5326,
-      "sha256": "a812aa4927978d8f08310f1e5794ce0cbc9a329770a827a48c821be6d6d6f5d3",
-      "resourcesKey": "Art/Battle/v1/Overlay/shield_broken"
+      "source": "Art/Production/hand-states-v2/source/shield_broken.png",
+      "bytes": 66728,
+      "sha256": "f35d011db9def572381a941c6456fc4e6ec6355c8439ebbdec87388526fb513a",
+      "resourcesKey": "Art/Battle/v1/Overlay/shield_broken",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "locked",
@@ -1616,10 +1620,12 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/taichi.svg",
-      "bytes": 8173,
-      "sha256": "fa2862a101165780b0152cf5b8059e7f0c4335463a3ae48fdd3de9ce8fe137b6",
-      "resourcesKey": "Art/Battle/v1/Overlay/taichi"
+      "source": "Art/Production/hand-states-v2/source/taichi.png",
+      "bytes": 79574,
+      "sha256": "810a3c1cafe4baa1fd7ebd97f258423b287485300a5911337de0c81f1a636663",
+      "resourcesKey": "Art/Battle/v1/Overlay/taichi",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "concealed",

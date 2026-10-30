@@ -288,7 +288,7 @@ namespace FingerDiceDuel.Core
         public void CollectRedirectChoice(PlayerState owner, PlayerState attacker, PlayerState target,
             GameManager manager, IList<ChoiceRequest> requests,int attackValue=0)
         {
-            if (owner == null || !owner.IsAlive || ReferenceEquals(owner, attacker)
+            if (owner == null || !owner.IsAlive || !HasFormedShield(owner) || ReferenceEquals(owner, attacker)
                 || ReferenceEquals(owner, target) || !manager.CanReach(owner, target)) return;
             requests.Add(new ChoiceRequest(HandEffect.OathOfDevotionRedirect,
                 $"圣武士·奉献之誓【守护之誓】：攻击已转移至 {target.Name}，是否由自己承受？",
@@ -311,7 +311,7 @@ namespace FingerDiceDuel.Core
         {
             if (owner == null || attacker == null || intendedTarget == null) return false;
             if (ReferenceEquals(owner, intendedTarget)) return false;   // 本来就是自己
-            if (!owner.IsAlive) return false;
+            if (!owner.IsAlive || !HasFormedShield(owner)) return false;
 
             // **挨打的人**必须在自己攻击距离内（这才是"范围内的角色"）
             if (!manager.CanReach(owner, intendedTarget)) return false;
@@ -407,8 +407,17 @@ namespace FingerDiceDuel.Core
             }
         }
 
+        public void CollectProtectionShock(PlayerState owner, GameManager manager, IList<ChoiceRequest> requests)
+        {
+            if (!HasFormedShield(owner)) return;
+            foreach (var request in requests)
+                if (request.Effect == HandEffect.OathOfDevotionShockTarget
+                    && ReferenceEquals(request.Decider, owner) && request.Variant == ShockVariantBreak) return;
+            AddShockRequest(owner, null, requests, manager, ShockVariantBreak, "代挡碎盾");
+        }
+
         /// <summary>该玩家是否有一面**成型的盾**（可能被打碎 -> 触发冲击）。</summary>
-        private static bool HasFormedShield(PlayerState player)
+        public static bool HasFormedShield(PlayerState player)
             => player != null
                && ((player.LeftHand != null && player.LeftHand.State == ShieldState.Formed)
                    || (player.RightHand != null && player.RightHand.State == ShieldState.Formed));

@@ -1,0 +1,20 @@
+{
+  "assets": [
+    {
+      "key": "shield_fragment_1",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/shield_fragment_1.png",
+      "size": 512,
+      "source": "Art/Production/hand-states-v2/source/shield_broken.png",
+      "processing": "diagonal alpha mask, common canvas and pivot",
+      "sha256": "111ab91547c866f701b65a9fead952e9b97573a619b9da5ac14e2b3722d7f838"
+    },
+    {
+      "key": "shield_fragment_2",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/shield_fragment_2.png",
+      "size": 512,
+      "source": "Art/Production/hand-states-v2/source/shield_broken.png",
+      "processing": "diagonal alpha mask, common canvas and pivot",
+      "sha256": "9799bd19526cde65430968ea5976a091d640bead76cf115f8e56363acfd4cefb"
+    }
+  ]
+}

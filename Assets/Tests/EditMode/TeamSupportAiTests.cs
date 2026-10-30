@@ -10,6 +10,29 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class TeamSupportAiTests
     {
+        [Test] public void Human_protection_requires_intact_shield_and_collects_break_shock_after_acceptance()
+        {
+            foreach (int mode in new[]{0,1,2})
+            {
+                var g=Four(out var a,out var b,out var c,out var d,out var ai);
+                var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+                foreach(var p in g.Players)board.BindPlayer(p,null,new SimpleChoiceProvider());
+                b.BindCharacter(new RangedBlank());b.LeftHand.SetValue(1);d.LeftHand.SetValue(3);
+                a.RightHand.SetValue(5);a.RightHand.SetShieldState(mode==0?ShieldState.Broken:ShieldState.Formed);
+                g.ForceActivePlayerForTest(b);board.BeginTurn();
+                board.ClickHand(b.LeftHand);board.ClickHand(d.LeftHand);board.ClickHand(d.LeftHand);
+                if(mode==0){Assert.AreEqual(16,d.Health);Assert.AreEqual(20,a.Health);continue;}
+                Assert.AreEqual(HandEffect.OathOfDevotionRedirect,board.PendingEffect);
+                if(mode==1){board.DeclinePendingChoice();Assert.AreEqual(16,d.Health);Assert.True(a.RightHand.IsShield);Assert.AreEqual(20,b.Health);continue;}
+                board.ClickHand(a.LeftHand);
+                Assert.AreEqual(HandEffect.OathOfDevotionShockTarget,board.PendingEffect);
+                Assert.AreEqual(OathOfDevotionLogic.ShockVariantBreak,board.PendingRequest.Value.Variant);
+                Assert.AreEqual(a,board.PendingRequest.Value.Decider);
+                board.ClickHand(b.LeftHand);
+                Assert.AreEqual(20,d.Health);Assert.AreEqual(20,a.Health);
+                Assert.AreEqual(18,b.Health);Assert.AreEqual(ShieldState.Broken,a.RightHand.State);
+            }
+        }
         private sealed class RangedBlank:CharacterTemplate{public override int BaseAttackRange=>InfiniteAttackRange;}
         private static GameManager Four(out PlayerState paladin,out PlayerState enemy,out PlayerState enemy2,out PlayerState human,out GreedyChoiceProvider ai)
         {

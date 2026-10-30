@@ -1,0 +1,32 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "shield",
+      "source": "Art/Production/hand-states-v2/source/shield.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Overlay/shield.png",
+      "sha256": "ed442c0167c0460ffc783be9bad7d4e1293d39cdf9f78d1e285b5c8e569aa099",
+      "prompt": "Use case: stylized-concept. Asset type: standalone transparent game HUD status icon for dark fantasy Finger Dice Duel. Subject: An intact medieval heater shield, polished dark blued iron face with a simple aged gold central boss and beveled old-gold rim, sturdy intact silhouette, subtle cool blue reflection. Painterly hand painted fantasy inventory artwork, material brushwork, dark iron and antique gold ornamental detailing, excellent legibility at 38px. One centered object fills 82% of square with 9% transparent padding each side. No text, no numbers, no hand, no square card, no scene, no cast shadow on backdrop. Genuinely transparent outside object.",
+      "size": 256,
+      "alpha": true
+    },
+    {
+      "key": "shield_broken",
+      "source": "Art/Production/hand-states-v2/source/shield_broken.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Overlay/shield_broken.png",
+      "sha256": "f35d011db9def572381a941c6456fc4e6ec6355c8439ebbdec87388526fb513a",
+      "prompt": "Use case: stylized-concept. Asset type: standalone transparent game HUD status icon for dark fantasy Finger Dice Duel. Subject: A broken medieval heater shield split by a single wide jagged diagonal fracture, two visibly separated dark iron halves with aged gold beveled rims, a few restrained gold sparks, clearly broken silhouette. Painterly hand painted fantasy inventory artwork, material brushwork, dark iron and antique gold ornamental detailing, excellent legibility at 38px. One centered object fills 82% of square with 9% transparent padding each side. No text, no numbers, no hand, no square card, no scene, no cast shadow on backdrop. Genuinely transparent outside object.",
+      "size": 256,
+      "alpha": true
+    },
+    {
+      "key": "taichi",
+      "source": "Art/Production/hand-states-v2/source/taichi.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Overlay/taichi.png",
+      "sha256": "810a3c1cafe4baa1fd7ebd97f258423b287485300a5911337de0c81f1a636663",
+      "prompt": "Use case: stylized-concept. Asset type: standalone transparent game HUD status icon for dark fantasy Finger Dice Duel. Subject: A clear yin-yang taiji emblem carved from black obsidian and pale aged ivory, exactly two interlocking comma shapes and two opposite dots, round antique gold rim, restrained jade glow, sacred martial talisman. Painterly hand painted fantasy inventory artwork, material brushwork, dark iron and antique gold ornamental detailing, excellent legibility at 38px. One centered object fills 82% of square with 9% transparent padding each side. No text, no numbers, no hand, no square card, no scene, no cast shadow on backdrop. Genuinely transparent outside object.",
+      "size": 256,
+      "alpha": true
+    }
+  ]
+}

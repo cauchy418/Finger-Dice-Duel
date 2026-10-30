@@ -3051,6 +3051,10 @@ namespace FingerDiceDuel.Assistant
 
             int before = _pendingRequests.Count;
             provider.CollectFollowUpChoices(answered, answer, _pendingRequests);
+            // 代挡者并非原防守方；确认代挡后再收集其碎盾冲击目标。
+            if (answered.Effect == HandEffect.OathOfDevotionRedirect && answer != null)
+                foreach (var devotion in CharacterBehaviors.Implementers<OathOfDevotionLogic>(answered.Decider ?? ActivePlayer))
+                    devotion.CollectProtectionShock(answered.Decider ?? ActivePlayer, _game, _pendingRequests);
 
             // 防御性：不要空候选
             for (int i = _pendingRequests.Count - 1; i >= before; i--)

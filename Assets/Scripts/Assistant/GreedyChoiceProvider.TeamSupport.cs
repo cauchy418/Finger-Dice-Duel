@@ -29,6 +29,7 @@ namespace FingerDiceDuel.Assistant
                 ||Game.IsKnownAlly(owner,attacker)||!Game.CanReach(owner,target))return request.DeclineResult;
             bool targetShield=target.LeftHand.IsShield||target.RightHand.IsShield;
             bool ownShield=owner.LeftHand.IsShield||owner.RightHand.IsShield;
+            if(!ownShield)return request.DeclineResult;
             var ctx=new AttackContext(attacker,target,attacker.LeftHand,request.ResultValue>0?request.ResultValue:4,Game);
             var type=Game.CurrentRedirectAttack?.AttackType??(attacker.Character as IAttackTypeProvider)?.AttackTypeOf(ctx)??AttackDamageType.Slashing;
             if(target.HasImmunity(type)||targetShield&&type!=AttackDamageType.Force)return request.DeclineResult;

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "status": "assets_ready_playback_not_integrated",
+  "resourcePrefix": "Art/Battle/v1/Animation/",
+  "coordinateSpace": "Canvas local",
+  "sourceAnchor": "attack source hand center",
+  "targetAnchor": "actual defender emblem/health center",
+  "defaultFacing": "+X",
+  "timingSeconds": {
+    "anticipation": 0.08,
+    "travel": 0.24,
+    "impact": 0.08,
+    "fade": 0.12,
+    "betweenHits": 0.06
+  },
+  "weapons": {
+    "slashing": "weapon_sword",
+    "bludgeoning": {
+      "paladin": "weapon_hammer",
+      "wizard": "weapon_staff",
+      "sorcerer": "weapon_staff",
+      "cleric": "weapon_staff",
+      "monk": "weapon_fist",
+      "fallback": "weapon_hammer"
+    },
+    "piercing": {
+      "distanceAtMost1": "weapon_rapier",
+      "distanceAbove1": {
+        "stationary": "weapon_bow",
+        "moving": "projectile_arrow"
+      }
+    }
+  },
+  "magicCarriers": {
+    "default": "element_projectile",
+    "eldritch_knight": "weapon_sword",
+    "bladesinging": "weapon_sword",
+    "way_of_the_four_elements": "weapon_fist",
+    "dualGeneral": "use actual skill source"
+  },
+  "effects": {
+    "fire": "fx_fire",
+    "cold": "fx_cold",
+    "acid": "fx_acid",
+    "poison": "fx_poison",
+    "lightning": "fx_lightning",
+    "thunder": "fx_thunder",
+    "force": "fx_force",
+    "psychic": "fx_psychic",
+    "radiant": "fx_radiant",
+    "necrotic": "fx_necrotic",
+    "slash": "fx_slash",
+    "impact": "fx_impact"
+  },
+  "shield": {
+    "formed": "Overlay/shield",
+    "broken": "Overlay/shield_broken",
+    "fragmentTopLeft": "Animation/shield_fragment_1",
+    "fragmentBottomRight": "Animation/shield_fragment_2",
+    "taichi": "Overlay/taichi"
+  },
+  "render": {
+    "raycastTarget": false,
+    "sorting": "battlefield < animation < choices/modals",
+    "pool": true
+  },
+  "rules": "Visual-only; consume immutable resolved combat events; no damage rerolls."
+}

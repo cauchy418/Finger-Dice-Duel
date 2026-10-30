@@ -1,5 +1,9 @@
 # CODELY.md
 
+当前奉献之誓的守护之誓在收集与结算时均要求自身完整盾，AI同样遵守；确认代挡后才收集卫护斩目标。第三章四战首段已改成无盾不能援护。1542项功能回归通过，UI程序集编译通过；详见[本轮验收](Art/Integration/devotion-shield-animation/README.md)。
+
+战斗动画目前已完成[基础设计](Docs/combat-animation-design.md)及21张透明动画素材，尚未接入播放控制器。完整盾／碎盾／太极三张常驻标记已替换。资源复现使用`Tools/Art/export_combat_animation.py`，清单保留原图和完整生成提示词。
+
 > 工程结构与开发约定。**规则权威文档是 [`RULES.md`](RULES.md)** ——
 > 代码、测试、UI 都必须与它一致，改动规则先改那里。
 

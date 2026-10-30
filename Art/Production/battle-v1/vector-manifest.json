@@ -771,7 +771,9 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/shield.svg"
+      "source": "Art/Production/hand-states-v2/source/shield.png",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "shield_broken",
@@ -780,7 +782,9 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/shield_broken.svg"
+      "source": "Art/Production/hand-states-v2/source/shield_broken.png",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "locked",
@@ -798,7 +802,9 @@
       "width": 256,
       "height": 256,
       "alpha": true,
-      "source": "Art/Production/battle-v1/svg/Overlay/taichi.svg"
+      "source": "Art/Production/hand-states-v2/source/taichi.png",
+      "generator": "built-in image_gen",
+      "rasterOverride": true
     },
     {
       "key": "concealed",

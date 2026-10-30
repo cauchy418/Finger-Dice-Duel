@@ -74,10 +74,10 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Protection(List<BannersSample> list)
         {
-            var a=Make("bodyguard","替同袍承受",CharacterDefinition.OathOfDevotion,new[]{1,2,3,2,2,4,3,1},"同袍12生命，教官甲为距离2弩手，先攻击同袍。保护范围看你到同袍的距离；代挡后用你自己的防御。");
+            var a=Make("bodyguard","替同袍承受",CharacterDefinition.OathOfDevotion,new[]{1,2,3,2,2,4,3,1},"你没有完整盾，不能发动守护之誓。同袍12生命，教官甲为距离2弩手，先攻击同袍；先观察无盾时无法援护。");
             a.First=1;a.Ranges=new[]{1,2,1,1};a.Prepare=g=>Hp(P(g,3),12);
-            a.Turn(1,0,0,0,3,"教官甲3＋你的左1＝4，选择守护之誓代挡：同袍不掉血，你20→17。");
-            a.Verify=l=>l.Player.Health==17&&l.Seats[3].Health==12;list.Add(a);
+            a.Turn(1,0,0,0,3,"教官甲3＋你的左1＝4攻击同袍。你无完整盾，不能代挡；同袍12→8，你仍20。");
+            a.Verify=l=>l.Player.Health==20&&l.Seats[3].Health==8;list.Add(a);
             var b=Make("shieldguard","你的盾接住这一击",CharacterDefinition.OathOfDevotion,new[]{5,2,3,2,2,4,3,3},"重新布置：你的左5为完整盾，同袍12生命。你代挡后由自己的盾格挡，再选择自己的卫护斩目标。");
             b.First=1;b.Ranges=new[]{1,2,1,1};b.Prepare=g=>{Shield(P(g,0));Hp(P(g,3),12);};
             b.Turn(1,0,3,1,3,"教官甲3＋同袍右3＝6攻击同袍。代挡，以盾接住，再冲击距离1的教官甲。");
