@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace FingerDiceDuel.UI
 {
     /// <summary>Visual-only playback. The rule engine has already resolved each event exactly once.</summary>
-    public sealed class CombatAnimationPlayer : MonoBehaviour
+    public sealed partial class CombatAnimationPlayer : MonoBehaviour
     {
         public bool Busy {get;private set;}
         public float Speed {get;private set;}=1;
@@ -78,7 +78,7 @@ namespace FingerDiceDuel.UI
                 if(!_skip)yield return PlayOne(ev);else _apply(ev.After);
                 PlayedEvents++;ReleaseUsed();
             }
-            _apply(final);Busy=false;Current=null;_controls.SetActive(false);_routine=null;var complete=_complete;_complete=null;complete?.Invoke();
+            _pose(null,Vector2.zero,1);_apply(final);Busy=false;Current=null;_controls.SetActive(false);_routine=null;var complete=_complete;_complete=null;complete?.Invoke();
         }
         private IEnumerator PlayOne(CombatVisualEvent e)
         {
@@ -132,25 +132,6 @@ namespace FingerDiceDuel.UI
             }
             else yield return Tween(.12f,t=>{if(evade!=null)evade.color=new Color(dodge?.3f:.9f,dodge?1:.4f,1,1-t);});
         }
-        private IEnumerator Skill(CombatVisualEvent e,Vector2 from,Vector2 to)
-        {
-            string skill=e.RedirectKind??"";
-            var sigil=Take(e.Weapon,115);var trail=Take(skill=="元素反应"?"fx_radiant":"fx_psychic",95);
-            bool exchange=skill=="王车易位"||skill=="幻术默发"||skill=="诡诈换位"||skill=="不死奴仆";
-            bool barrier=skill=="奥术守御"||skill=="不死适应"||skill=="法术抗性";
-            bool shape=skill.Contains("形态")||skill=="变形术";
-            Image twin=exchange?Take(e.Weapon,100):null;
-            yield return Tween(.38f,t=>{
-                float arc=Mathf.Sin(t*Mathf.PI);Vector2 path=Vector2.Lerp(from,to,t)+Vector2.up*(exchange?70:25)*arc;
-                sigil.rectTransform.anchoredPosition=barrier||shape?to:path;
-                sigil.rectTransform.localScale=Vector3.one*(shape?.5f+t:barrier?1.2f-t*.35f:.65f+arc*.55f);
-                sigil.rectTransform.localRotation=Quaternion.Euler(0,0,shape?t*180:exchange?t*360:0);
-                sigil.color=new Color(1,1,1,Mathf.Sin(t*Mathf.PI)*.9f);
-                trail.rectTransform.anchoredPosition=to;trail.rectTransform.localScale=Vector3.one*(.6f+t*1.3f);
-                trail.color=skill=="元素反应"?new Color(1,.95f,.7f,arc*.85f):barrier?new Color(.45f,.7f,1,arc*.5f):new Color(.8f,.5f,1,arc*.4f);
-                if(twin!=null){twin.rectTransform.anchoredPosition=Vector2.Lerp(to,from,t)-Vector2.up*70*arc;twin.color=sigil.color;}
-            });_impact(e); // Skill cues may be nested inside an attack; never roll back its health snapshot.
-        }
         private IEnumerator Shield(CombatVisualEvent e,Vector2 pos)
         {
             if(e.Kind==CombatVisualKind.Sync){_apply(e.After);yield break;}
@@ -167,7 +148,7 @@ namespace FingerDiceDuel.UI
         private IEnumerator Tween(float duration,Action<float> update)
         {for(float t=0;t<duration&&!_skip;t+=Time.unscaledDeltaTime*Speed){update(Mathf.Clamp01(t/duration));yield return null;}update(1);}
         public void StopPlayback()
-        {if(_routine!=null)StopCoroutine(_routine);_pose?.Invoke(null,Vector2.zero,1);_routine=null;_complete=null;Busy=false;Current=null;_skip=false;HideWindup();ReleaseUsed();if(_controls!=null)_controls.SetActive(false);}
+        {if(_routine!=null)StopCoroutine(_routine);ClearFinalNumbers();_pose?.Invoke(null,Vector2.zero,1);_routine=null;_complete=null;Busy=false;Current=null;_skip=false;HideWindup();ReleaseUsed();if(_controls!=null)_controls.SetActive(false);}
         private void OnDisable()=>StopPlayback();
     }
 }

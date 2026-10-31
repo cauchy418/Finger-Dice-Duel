@@ -87,7 +87,7 @@ namespace FingerDiceDuel.Core
                 &&IsLegalMove(touch.Actor,touch.Source,touch.Alternate,out _);
             var actual=use?touch.Alternate:touch.Selected;
             NoteSkill(touch.Owner,"幻术默发",$"{touch.Actor.Name}的{CombatText.HandName(touch.Actor,touch.Source)}{touch.SourceValue}"
-                +(use?$"改用{CombatText.HandName(touch.Owner,actual)}{actual.Value}作加数":"保留原加数"),touch.Actor);
+                +(use?$"改用{CombatText.HandName(touch.Owner,actual)}{actual.Value}作加数":"保留原加数"),touch.Actor,new SkillVisualData(touch.Selected,actual,touch.Selected.Value,actual.Value,destinationOwner:touch.Owner));
             return actual;
         }
         // 直接内核调用同步使用策略；控制器先经Request暂停询问人类，再复用同一缓存。

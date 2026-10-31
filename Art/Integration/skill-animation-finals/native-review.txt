@@ -1,0 +1,344 @@
+PASS cue portal
+PASS sprite portal CombatSprite
+PASS sprite portal CombatSprite
+PASS sprite portal CombatSprite
+PASS sprite portal CombatSprite
+PASS cleanup portal
+PASS cue portent-record
+PASS sprite portent-record CombatSprite
+PASS sprite portent-record CombatSprite
+PASS cleanup portent-record
+PASS cue portent-use
+PASS sprite portent-use CombatSprite
+PASS sprite portent-use CombatSprite
+PASS cleanup portent-use
+PASS cue illusion-hand
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS cleanup illusion-hand
+PASS cue trickery-swap
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS cleanup trickery-swap
+PASS cue necromancy-swap
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS cleanup necromancy-swap
+PASS cue ward-absorb
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS cleanup ward-absorb
+PASS cue ward-store
+PASS sprite ward-store CombatSprite
+PASS cleanup ward-store
+PASS cue resistance-grant
+PASS sprite resistance-grant CombatSprite
+PASS cleanup resistance-grant
+PASS cue undead-guard
+PASS sprite undead-guard CombatSprite
+PASS cleanup undead-guard
+PASS cue polymorph
+PASS sprite polymorph CombatSprite
+PASS sprite polymorph CombatSprite
+PASS sprite polymorph CombatSprite
+PASS cleanup polymorph
+PASS cue specter
+PASS sprite specter CombatSprite
+PASS sprite specter CombatSprite
+PASS sprite specter CombatSprite
+PASS cleanup specter
+PASS cue assassin-stealth
+PASS sprite assassin-stealth CombatSprite
+PASS sprite assassin-stealth CombatSprite
+PASS sprite assassin-stealth CombatSprite
+PASS sprite assassin-stealth CombatSprite
+PASS cleanup assassin-stealth
+PASS cue gloom-ambush
+PASS sprite gloom-ambush CombatSprite
+PASS sprite gloom-ambush CombatSprite
+PASS sprite gloom-ambush CombatSprite
+PASS sprite gloom-ambush CombatSprite
+PASS cleanup gloom-ambush
+PASS cue shadow-dodge
+PASS sprite shadow-dodge CombatSprite
+PASS sprite shadow-dodge CombatSprite
+PASS sprite shadow-dodge CombatSprite
+PASS sprite shadow-dodge CombatSprite
+PASS cleanup shadow-dodge
+PASS cue ninja-clones
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS cleanup ninja-clones
+PASS cue hidden-force-plant
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS cleanup hidden-force-plant
+PASS cue hidden-force-detonate
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS cleanup hidden-force-detonate
+PASS cue bladesong-enter
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS cleanup bladesong-enter
+PASS cue bladesong-exit
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS cleanup bladesong-exit
+PASS cue blessing
+PASS sprite blessing CombatSprite
+PASS sprite blessing CombatSprite
+PASS sprite blessing CombatSprite
+PASS cleanup blessing
+PASS cue curse
+PASS sprite curse CombatSprite
+PASS sprite curse CombatSprite
+PASS sprite curse CombatSprite
+PASS sprite curse CombatSprite
+PASS sprite curse CombatSprite
+PASS cleanup curse
+PASS cue hunter-mark
+PASS sprite hunter-mark CombatSprite
+PASS sprite hunter-mark CombatSprite
+PASS sprite hunter-mark CombatSprite
+PASS sprite hunter-mark CombatSprite
+PASS sprite hunter-mark CombatSprite
+PASS cleanup hunter-mark
+PASS cue moon-bear-enter
+PASS sprite moon-bear-enter CombatSprite
+PASS sprite moon-bear-enter CombatSprite
+PASS sprite moon-bear-enter CombatSprite
+PASS sprite moon-bear-enter CombatSprite
+PASS sprite moon-bear-enter CombatSprite
+PASS cleanup moon-bear-enter
+PASS cue moon-bear-exit
+PASS sprite moon-bear-exit CombatSprite
+PASS sprite moon-bear-exit CombatSprite
+PASS sprite moon-bear-exit CombatSprite
+PASS sprite moon-bear-exit CombatSprite
+PASS sprite moon-bear-exit CombatSprite
+PASS cleanup moon-bear-exit
+PASS cue moon-wolf-enter
+PASS sprite moon-wolf-enter CombatSprite
+PASS sprite moon-wolf-enter CombatSprite
+PASS sprite moon-wolf-enter CombatSprite
+PASS sprite moon-wolf-enter CombatSprite
+PASS sprite moon-wolf-enter CombatSprite
+PASS cleanup moon-wolf-enter
+PASS cue moon-wolf-exit
+PASS sprite moon-wolf-exit CombatSprite
+PASS sprite moon-wolf-exit CombatSprite
+PASS sprite moon-wolf-exit CombatSprite
+PASS sprite moon-wolf-exit CombatSprite
+PASS sprite moon-wolf-exit CombatSprite
+PASS cleanup moon-wolf-exit
+PASS cue moon-eagle-enter
+PASS sprite moon-eagle-enter CombatSprite
+PASS sprite moon-eagle-enter CombatSprite
+PASS sprite moon-eagle-enter CombatSprite
+PASS sprite moon-eagle-enter CombatSprite
+PASS sprite moon-eagle-enter CombatSprite
+PASS cleanup moon-eagle-enter
+PASS cue moon-eagle-exit
+PASS sprite moon-eagle-exit CombatSprite
+PASS sprite moon-eagle-exit CombatSprite
+PASS sprite moon-eagle-exit CombatSprite
+PASS sprite moon-eagle-exit CombatSprite
+PASS sprite moon-eagle-exit CombatSprite
+PASS cleanup moon-eagle-exit
+PASS cue moon-snake-enter
+PASS sprite moon-snake-enter CombatSprite
+PASS sprite moon-snake-enter CombatSprite
+PASS sprite moon-snake-enter CombatSprite
+PASS sprite moon-snake-enter CombatSprite
+PASS sprite moon-snake-enter CombatSprite
+PASS cleanup moon-snake-enter
+PASS cue moon-snake-exit
+PASS sprite moon-snake-exit CombatSprite
+PASS sprite moon-snake-exit CombatSprite
+PASS sprite moon-snake-exit CombatSprite
+PASS sprite moon-snake-exit CombatSprite
+PASS sprite moon-snake-exit CombatSprite
+PASS cleanup moon-snake-exit
+PASS cue stars-archer-enter
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS sprite stars-archer-enter CombatSprite
+PASS cleanup stars-archer-enter
+PASS cue stars-archer-exit
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS sprite stars-archer-exit CombatSprite
+PASS cleanup stars-archer-exit
+PASS cue stars-chalice-enter
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS sprite stars-chalice-enter CombatSprite
+PASS cleanup stars-chalice-enter
+PASS cue stars-chalice-exit
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS sprite stars-chalice-exit CombatSprite
+PASS cleanup stars-chalice-exit
+PASS cue stars-dragon-enter
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS sprite stars-dragon-enter CombatSprite
+PASS cleanup stars-dragon-enter
+PASS cue stars-dragon-exit
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS sprite stars-dragon-exit CombatSprite
+PASS cleanup stars-dragon-exit
+PASS cue tempest-lightning
+PASS sprite tempest-lightning CombatSprite
+PASS sprite tempest-lightning CombatSprite
+PASS sprite tempest-lightning CombatSprite
+PASS cleanup tempest-lightning
+PASS cue tempest-thunder
+PASS sprite tempest-thunder CombatSprite
+PASS sprite tempest-thunder CombatSprite
+PASS sprite tempest-thunder CombatSprite
+PASS cleanup tempest-thunder
+PASS cue breach
+PASS sprite breach CombatSprite
+PASS sprite breach CombatSprite
+PASS sprite breach CombatSprite
+PASS sprite breach CombatSprite
+PASS cleanup breach
+PASS cue reaction-cold-frost
+PASS sprite reaction-cold-frost CombatSprite
+PASS sprite reaction-cold-frost CombatSprite
+PASS sprite reaction-cold-frost CombatSprite
+PASS sprite reaction-cold-frost CombatSprite
+PASS cleanup reaction-cold-frost
+PASS cue reaction-cold-wet
+PASS sprite reaction-cold-wet CombatSprite
+PASS sprite reaction-cold-wet CombatSprite
+PASS sprite reaction-cold-wet CombatSprite
+PASS sprite reaction-cold-wet CombatSprite
+PASS cleanup reaction-cold-wet
+PASS cue reaction-cold-frozen
+PASS sprite reaction-cold-frozen CombatSprite
+PASS sprite reaction-cold-frozen CombatSprite
+PASS sprite reaction-cold-frozen CombatSprite
+PASS cleanup reaction-cold-frozen
+PASS cue reaction-cold-burn
+PASS sprite reaction-cold-burn CombatSprite
+PASS sprite reaction-cold-burn CombatSprite
+PASS sprite reaction-cold-burn CombatSprite
+PASS cleanup reaction-cold-burn
+PASS cue reaction-fire-frost
+PASS sprite reaction-fire-frost CombatSprite
+PASS sprite reaction-fire-frost CombatSprite
+PASS sprite reaction-fire-frost CombatSprite
+PASS cleanup reaction-fire-frost
+PASS cue reaction-fire-wet
+PASS sprite reaction-fire-wet CombatSprite
+PASS sprite reaction-fire-wet CombatSprite
+PASS sprite reaction-fire-wet CombatSprite
+PASS cleanup reaction-fire-wet
+PASS cue reaction-fire-greased
+PASS sprite reaction-fire-greased CombatSprite
+PASS sprite reaction-fire-greased CombatSprite
+PASS sprite reaction-fire-greased CombatSprite
+PASS cleanup reaction-fire-greased
+PASS cue reaction-lightning-wet
+PASS sprite reaction-lightning-wet CombatSprite
+PASS sprite reaction-lightning-wet CombatSprite
+PASS sprite reaction-lightning-wet CombatSprite
+PASS cleanup reaction-lightning-wet
+PASS cue reaction-thunder-resonance
+PASS sprite reaction-thunder-resonance CombatSprite
+PASS sprite reaction-thunder-resonance CombatSprite
+PASS sprite reaction-thunder-resonance CombatSprite
+PASS sprite reaction-thunder-resonance CombatSprite
+PASS cleanup reaction-thunder-resonance
+PASS cue reaction-lightning-resonance
+PASS sprite reaction-lightning-resonance CombatSprite
+PASS sprite reaction-lightning-resonance CombatSprite
+PASS sprite reaction-lightning-resonance CombatSprite
+PASS sprite reaction-lightning-resonance CombatSprite
+PASS cleanup reaction-lightning-resonance
+PASS cue reaction-thunder-shock
+PASS sprite reaction-thunder-shock CombatSprite
+PASS sprite reaction-thunder-shock CombatSprite
+PASS sprite reaction-thunder-shock CombatSprite
+PASS sprite reaction-thunder-shock CombatSprite
+PASS cleanup reaction-thunder-shock
+PASS cue reaction-acid-poison
+PASS sprite reaction-acid-poison CombatSprite
+PASS sprite reaction-acid-poison CombatSprite
+PASS sprite reaction-acid-poison CombatSprite
+PASS cleanup reaction-acid-poison
+PASS cue reaction-poison-acid
+PASS sprite reaction-poison-acid CombatSprite
+PASS sprite reaction-poison-acid CombatSprite
+PASS sprite reaction-poison-acid CombatSprite
+PASS cleanup reaction-poison-acid

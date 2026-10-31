@@ -117,7 +117,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     if(target==null || !_owner.IsAlive || manager.IsGameOver) return;
                     int a=source.Value,b=target.Value; source.SetValue(b);target.SetValue(a);
                     ownUsed.Add(source);deadUsed.Add(target);
-                    manager.NoteSkill(_owner,"不死奴仆",$"与{dead.Name}交换{CombatText.HandName(_owner,source)} {a}↔{b}",dead);
+                    manager.NoteSkill(_owner,"不死奴仆",$"与{dead.Name}交换{CombatText.HandName(_owner,source)} {a}↔{b}",dead,new SkillVisualData(source,target,a,b));
                     QueueExchange(dead,manager,ownUsed,deadUsed);
                 });
                 if(manager.DeferWizardChoice?.Invoke(destination)==true) return;

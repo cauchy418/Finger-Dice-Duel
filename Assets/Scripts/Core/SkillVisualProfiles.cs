@@ -14,7 +14,7 @@
                 case "影分身":case "渗透劲":return "Effects/hidden_force";
                 case "荒野形态":case "解除荒野":return "fx_cold";
                 case "星耀形态":case "解除星耀":case "巨龙座":case "圣杯座":return "fx_radiant";
-                case "猎人印记":case "猎人标记":case "灭族者":return "Effects/hunters_mark";
+                case "猎人印记":case "猎人标记":return "Effects/hunters_mark";
                 case "咒剑诅咒":case "咒缚幽灵":return "Effects/hexblades_curse";
                 case "剑歌":return "Effects/bladesong";
                 case "战争祭司":return "Status/war_blessing";
@@ -34,11 +34,11 @@
     }
     public partial class GameManager
     {
-        public void RecordSkillVisual(PlayerState owner,string skill,PlayerState target=null)
+        public void RecordSkillVisual(PlayerState owner,string skill,PlayerState target=null,SkillVisualData data=null)
         {
             if(!RecordCombatVisuals||owner==null)return;var key=SkillVisualProfiles.Key(skill);if(key==null)return;
             var frame=CaptureVisualFrame();
-            _combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Skill,CombatVisualOutcome.Hit,owner,target??owner,owner,owner.LeftHand,AttackDamageType.None,key,0,0,0,false,false,frame,frame,skill));
+            _combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Skill,CombatVisualOutcome.Hit,owner,target??owner,owner,data?.Source??owner.LeftHand,AttackDamageType.None,key,0,0,0,false,false,frame,frame,skill,null,data));
         }
     }
 }

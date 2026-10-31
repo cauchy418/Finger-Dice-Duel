@@ -1,0 +1,1182 @@
+{
+  "date": "2026-10-31",
+  "renderer": "Unity native Canvas / production DrawFinalPose",
+  "capture": "controlled review fixtures; not a claim that every frame is a real rule-triggered skill",
+  "size": [
+    1280,
+    720
+  ],
+  "durationSeconds": 0.72,
+  "sourceSha256": {
+    "Assets/Scripts/UI/CombatAnimationPlayer.FinalSkills.cs": "a70cd41c83c35c9822087d6d75d8ad6584fa0dd1a9c7af5c4ec41de9d3426592",
+    "Assets/Scripts/Core/FinalSkillAnimation.cs": "e555670624233171e160fca79c6a7af7ec871c9d7c96584610d9fc070394bf3b"
+  },
+  "clips": [
+    {
+      "id": "portal",
+      "skill": "王车易位",
+      "definition": "SchoolOfConjuration",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "portal/windup.png",
+          "progress": 0.28,
+          "sha256": "801cd2ccba640aae05bc4275a5feb64292e8507982559b887fab4267b822ebb6"
+        },
+        {
+          "path": "portal/peak.png",
+          "progress": 0.62,
+          "sha256": "94a6a83ee3002d2e133f83a397b3528daec1948d50550e83c993e34acf48d1f2"
+        }
+      ]
+    },
+    {
+      "id": "portent-record",
+      "skill": "预兆",
+      "definition": "SchoolOfDivination",
+      "variant": "",
+      "value": 4,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "portent-record/windup.png",
+          "progress": 0.28,
+          "sha256": "1afe5715013aa6fbec40aba36b7de98c068f7e94f72e286f012c218c45e54244"
+        },
+        {
+          "path": "portent-record/peak.png",
+          "progress": 0.62,
+          "sha256": "358d0c05dc67bbde53cb4104111851d5a9d3b5bf8972ec17ff88f471c20381ec"
+        }
+      ]
+    },
+    {
+      "id": "portent-use",
+      "skill": "预知未来",
+      "definition": "SchoolOfDivination",
+      "variant": "",
+      "value": 7,
+      "previous": 3,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "portent-use/windup.png",
+          "progress": 0.28,
+          "sha256": "931f730b7dde9d28aff18b5b063b88836e75c96a03d794051ca356579ae85760"
+        },
+        {
+          "path": "portent-use/peak.png",
+          "progress": 0.62,
+          "sha256": "efec1ad2235a3eb13fa302d262b5e221b8bb922801db7c66c6dc96ce6a52727f"
+        }
+      ]
+    },
+    {
+      "id": "illusion-hand",
+      "skill": "幻术默发",
+      "definition": "SchoolOfIllusion",
+      "variant": "",
+      "value": 2,
+      "previous": 6,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "illusion-hand/windup.png",
+          "progress": 0.28,
+          "sha256": "0db4e496c25a906bfa0cd9d10c7c7dc20f12fe46d061cedfc0dd8d3c56b68e12"
+        },
+        {
+          "path": "illusion-hand/peak.png",
+          "progress": 0.62,
+          "sha256": "090c14c46a7e9e16e12a3a9573c4c071a50251af0c85a942a8bc15d61338cb01"
+        }
+      ]
+    },
+    {
+      "id": "trickery-swap",
+      "skill": "诡诈换位",
+      "definition": "TrickeryDomain",
+      "variant": "",
+      "value": 2,
+      "previous": 8,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "trickery-swap/windup.png",
+          "progress": 0.28,
+          "sha256": "39b08703b8ebeb588387aef6141b8ca2dc0e680891205479c65ca1e7a830db88"
+        },
+        {
+          "path": "trickery-swap/peak.png",
+          "progress": 0.62,
+          "sha256": "e88c9d8e4a724aa2d29b3cd95d76239880bba95715180f5e836f47a0026fb885"
+        }
+      ]
+    },
+    {
+      "id": "necromancy-swap",
+      "skill": "不死奴仆",
+      "definition": "SchoolOfNecromancy",
+      "variant": "",
+      "value": 3,
+      "previous": 9,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "necromancy-swap/windup.png",
+          "progress": 0.28,
+          "sha256": "9f9a177e316db9f430adcafa09a8c1f5bc663ba672b8fd1992293433c57520c4"
+        },
+        {
+          "path": "necromancy-swap/peak.png",
+          "progress": 0.62,
+          "sha256": "4aaac3b024dcbb5a56cf843a3771cf246ca31630967c6712d927d0bc6c2263a4"
+        }
+      ]
+    },
+    {
+      "id": "ward-absorb",
+      "skill": "奥术守御",
+      "definition": "SchoolOfAbjuration",
+      "variant": "",
+      "value": 4,
+      "previous": 8,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "ward-absorb/windup.png",
+          "progress": 0.28,
+          "sha256": "e322974394772048c58f6009feb8480e403ae94c40bb70c568cdc2fefd8339c0"
+        },
+        {
+          "path": "ward-absorb/peak.png",
+          "progress": 0.62,
+          "sha256": "3d32df78817f39744d2e37a8a3956aa24281012eb98153dd3449f8ab4054dc94"
+        }
+      ]
+    },
+    {
+      "id": "ward-store",
+      "skill": "奥术守御",
+      "definition": "SchoolOfAbjuration",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "ward-store/windup.png",
+          "progress": 0.28,
+          "sha256": "7512b5ae7a9f7e54b1b8a6ba179570943948ac32b7be4d32bd195d86042e0433"
+        },
+        {
+          "path": "ward-store/peak.png",
+          "progress": 0.62,
+          "sha256": "d5172d4c5530b2bd835628c649389834f4a4860a6f0157fa709361f0a1112a0c"
+        }
+      ]
+    },
+    {
+      "id": "resistance-grant",
+      "skill": "法术抗性",
+      "definition": "SchoolOfAbjuration",
+      "variant": "grant",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "resistance-grant/windup.png",
+          "progress": 0.28,
+          "sha256": "7a9107acaf19534dc5519f369ea3000af0bbe612f52a15c64721a03474674c84"
+        },
+        {
+          "path": "resistance-grant/peak.png",
+          "progress": 0.62,
+          "sha256": "963879667a464fe96b1290da0e69c282f58edcd20bd558d5ddb3bfce4928e238"
+        }
+      ]
+    },
+    {
+      "id": "undead-guard",
+      "skill": "不死适应",
+      "definition": "SchoolOfNecromancy",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "undead-guard/windup.png",
+          "progress": 0.28,
+          "sha256": "5e2f35fb94dc81e342a25af14e526c5f2e59d42518239f74bbd75cfb68f70763"
+        },
+        {
+          "path": "undead-guard/peak.png",
+          "progress": 0.62,
+          "sha256": "e19311e0528a54abe4cc17b796ab6afd2441c15952636fc35e66353f33d7aec6"
+        }
+      ]
+    },
+    {
+      "id": "polymorph",
+      "skill": "变形术",
+      "definition": "SchoolOfTransmutation",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "polymorph/windup.png",
+          "progress": 0.28,
+          "sha256": "0b110e4291b42f1dc727b8c14b47e1683b19b7fd6942ba43bc4eaba8fdc11e21"
+        },
+        {
+          "path": "polymorph/peak.png",
+          "progress": 0.62,
+          "sha256": "00ffe0c961d757f04472281af47b76f47ebea186d048f758c78fe8dedd99261e"
+        }
+      ]
+    },
+    {
+      "id": "specter",
+      "skill": "咒缚幽灵",
+      "definition": "TheHexblade",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "specter/windup.png",
+          "progress": 0.28,
+          "sha256": "153d97a11f4a6efb4b07b523b91b8dec009f0ffda59b525f0a0c5759a1c00834"
+        },
+        {
+          "path": "specter/peak.png",
+          "progress": 0.62,
+          "sha256": "0ca29e395dd9e8a4c188185a5ad5de7c7c31f373c03f28f4522399e4b9bb8df3"
+        }
+      ]
+    },
+    {
+      "id": "assassin-stealth",
+      "skill": "暗杀",
+      "definition": "Assassin",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "assassin-stealth/windup.png",
+          "progress": 0.28,
+          "sha256": "6d029adcfde35ea696848b50f8afa8bc7ff24bc23a21299e1727812aae7f5161"
+        },
+        {
+          "path": "assassin-stealth/peak.png",
+          "progress": 0.62,
+          "sha256": "56deaaa5618d65f88e4edc5a880e24213fa580c832eeaef3044d6e57ada73128"
+        }
+      ]
+    },
+    {
+      "id": "gloom-ambush",
+      "skill": "伏击",
+      "definition": "GloomStalker",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "gloom-ambush/windup.png",
+          "progress": 0.28,
+          "sha256": "bc6b9eac41465e78d764c9603ff626b66e1680353df60b2f151fa06fdfe4492f"
+        },
+        {
+          "path": "gloom-ambush/peak.png",
+          "progress": 0.62,
+          "sha256": "e59b76111f1ea722ec05d3724f79a31384c0a11dc628e1d60467161a6bb08909"
+        }
+      ]
+    },
+    {
+      "id": "shadow-dodge",
+      "skill": "阴影闪避",
+      "definition": "GloomStalker",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "shadow-dodge/windup.png",
+          "progress": 0.28,
+          "sha256": "700fb7666432293dc850c33c3a8174ebfafaeeb08d2f8dadf87f9bff83252e78"
+        },
+        {
+          "path": "shadow-dodge/peak.png",
+          "progress": 0.62,
+          "sha256": "5848c30bb2c298a1e5267c982d48c432e363cfdc2bcc560c28431467884291bc"
+        }
+      ]
+    },
+    {
+      "id": "ninja-clones",
+      "skill": "影分身",
+      "definition": "WayOfTheNinja",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "ninja-clones/windup.png",
+          "progress": 0.28,
+          "sha256": "ae39a7aadd9e33a29434d59f2a9e614ff0acd28b3bae13228d89355f3cf3d771"
+        },
+        {
+          "path": "ninja-clones/peak.png",
+          "progress": 0.62,
+          "sha256": "a243ac2b732caa7e9cb5394b2eb8efd515872337e7f158ca6c61459e50919f62"
+        }
+      ]
+    },
+    {
+      "id": "hidden-force-plant",
+      "skill": "渗透劲",
+      "definition": "WayOfTheOpenHand",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "hidden-force-plant/windup.png",
+          "progress": 0.28,
+          "sha256": "a074104177650d00c0cde87a26ba73955c2e29c12949115414a7ff8f0c02b32c"
+        },
+        {
+          "path": "hidden-force-plant/peak.png",
+          "progress": 0.62,
+          "sha256": "df910f9e190cf8d05abd05c6bced42d3827fdc048fe149f7cc72d3115eb4de68"
+        }
+      ]
+    },
+    {
+      "id": "hidden-force-detonate",
+      "skill": "渗透劲",
+      "definition": "WayOfTheOpenHand",
+      "variant": "detonate",
+      "value": 4,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "hidden-force-detonate/windup.png",
+          "progress": 0.28,
+          "sha256": "1e1af0d4a84bc5c826b54ecbc24d3dccf674d9e1191752a27332295c8a26698e"
+        },
+        {
+          "path": "hidden-force-detonate/peak.png",
+          "progress": 0.62,
+          "sha256": "9ebe7f2a2207d941a0f9ff9f28b21604993b371848c678b744e060c3365818a4"
+        }
+      ]
+    },
+    {
+      "id": "bladesong-enter",
+      "skill": "剑歌",
+      "definition": "Bladesinging",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "bladesong-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "678c87b9e400b86a04778d8981c327e0b6e952b840e22186cf5ce632c9d7dd46"
+        },
+        {
+          "path": "bladesong-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "83e1f02aac367d0c280450137031293f13b8fd16a394ba86f8def1104874e4a9"
+        }
+      ]
+    },
+    {
+      "id": "bladesong-exit",
+      "skill": "剑歌",
+      "definition": "Bladesinging",
+      "variant": "",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "bladesong-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "86eb1337984dcd2d933c27bbd9f7b21ef07e80401a71209f6f9d650e21402002"
+        },
+        {
+          "path": "bladesong-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "3b7bf4d71994c89c2b58e9f7ad81c4a0cfed14ebedef2184e8aa937f2adb4d59"
+        }
+      ]
+    },
+    {
+      "id": "blessing",
+      "skill": "战争祭司",
+      "definition": "WarDomain",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "blessing/windup.png",
+          "progress": 0.28,
+          "sha256": "6b78fc49b39e3135e9138bc0da5cc58c5bd97ae10cc98c268d05caf37bb16d0a"
+        },
+        {
+          "path": "blessing/peak.png",
+          "progress": 0.62,
+          "sha256": "0948c00029998f66f4e258e66882f52e02654e6efdc5b1e8e17ae0d2d960f03b"
+        }
+      ]
+    },
+    {
+      "id": "curse",
+      "skill": "咒剑诅咒",
+      "definition": "TheHexblade",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "curse/windup.png",
+          "progress": 0.28,
+          "sha256": "da4576dbcf88bea29175eff69442a843343772d3cfe585812c67763deb0b1c1c"
+        },
+        {
+          "path": "curse/peak.png",
+          "progress": 0.62,
+          "sha256": "0d76677c5fcf82ba6c145fe4158b3d38de3f1dcd25f1401cd0cd65322bd0bd64"
+        }
+      ]
+    },
+    {
+      "id": "hunter-mark",
+      "skill": "猎人印记",
+      "definition": "RangerHunter",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "hunter-mark/windup.png",
+          "progress": 0.28,
+          "sha256": "3287d11df71055139d86b874f15cc9a55aadfafd6fe5f0e2115046dcd830645a"
+        },
+        {
+          "path": "hunter-mark/peak.png",
+          "progress": 0.62,
+          "sha256": "f62bf482584172ccae626fd9be2317a646a1d8334a06710800852d7fd1c9b767"
+        }
+      ]
+    },
+    {
+      "id": "moon-bear-enter",
+      "skill": "荒野形态",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_bear",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-bear-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "3ae7c79808cd3d3c21d56c36b82be8cb598ee2f76d41b8eeede5f4587b65cc9b"
+        },
+        {
+          "path": "moon-bear-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "fc4bf8a3adeda7ab7e92bcfbcec2bb6d96249054c2dec7e76a8180b9e707c604"
+        }
+      ]
+    },
+    {
+      "id": "moon-bear-exit",
+      "skill": "解除荒野",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_bear",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-bear-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "8f8057201dacb915762d90f1f495840534dbde90061cf2b3ef7a9bf728246e40"
+        },
+        {
+          "path": "moon-bear-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "88bef700dd6669d105359892ba585d4995aee5ceed5a3dbd07c0f80bb7c4daf0"
+        }
+      ]
+    },
+    {
+      "id": "moon-wolf-enter",
+      "skill": "荒野形态",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_wolf",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-wolf-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "a0709e04605dbeb6da319207f445c25e06c044af9656ec2eed6094f8beb7f30f"
+        },
+        {
+          "path": "moon-wolf-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "b424ed95b36469a6a60e08f10d1348861cbe80a0c3d537920836ff5585aadb95"
+        }
+      ]
+    },
+    {
+      "id": "moon-wolf-exit",
+      "skill": "解除荒野",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_wolf",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-wolf-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "bcf419a076aca759b08bed114db9bf29b3414fe932eed3f90d1531e9707f9fad"
+        },
+        {
+          "path": "moon-wolf-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "d092a10294fb20d27a3d66c6caa2a2aefb6433fa6cd53c3c1c696f8202a7c739"
+        }
+      ]
+    },
+    {
+      "id": "moon-eagle-enter",
+      "skill": "荒野形态",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_eagle",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-eagle-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "107ac50fff7e7a43ab853e78022d3ec9cd8c0200d41fe8d4604190d1477d5b0e"
+        },
+        {
+          "path": "moon-eagle-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "e57a02239288beab6ef723c52c4f6ebc1b05c368bb209a992651330a58206c5b"
+        }
+      ]
+    },
+    {
+      "id": "moon-eagle-exit",
+      "skill": "解除荒野",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_eagle",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-eagle-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "e35820055ca19a56248df23f574649ec957279f92cf70c7b01911583f191f009"
+        },
+        {
+          "path": "moon-eagle-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "492832361c23e7c6ed5385664aaec46e7cf32fd63551059483028fa40789665d"
+        }
+      ]
+    },
+    {
+      "id": "moon-snake-enter",
+      "skill": "荒野形态",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_snake",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-snake-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "86efc11f878189cf86560b9d22a64f2d574b4956c9640ac50c653800321b9b40"
+        },
+        {
+          "path": "moon-snake-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "fe3315408c0de265396f606d99ef88eb0256265d921768abbde4a35550bc783f"
+        }
+      ]
+    },
+    {
+      "id": "moon-snake-exit",
+      "skill": "解除荒野",
+      "definition": "CircleOfTheMoon",
+      "variant": "moon_snake",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "moon-snake-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "d4841b469bac364fc5f299a9b86a9aaabc2f08b9387200a673f20c722eaf709e"
+        },
+        {
+          "path": "moon-snake-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "c40574eda4864cd2cf4e32377790dd858e7727a4c1d35e18865367a4c49dd6fc"
+        }
+      ]
+    },
+    {
+      "id": "stars-archer-enter",
+      "skill": "星耀形态",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_archer",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-archer-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "8722166253d3be88046e303bee2d218149d019657703b62f8ccc797e4e0b38b6"
+        },
+        {
+          "path": "stars-archer-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "3402ec81e4113c15d81504665156d4685ae0f9728bb945ba2d6aba69d020ae87"
+        }
+      ]
+    },
+    {
+      "id": "stars-archer-exit",
+      "skill": "解除星耀",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_archer",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-archer-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "f54b5ba77bd2fbbdc3990b6fd449504cb5601e2cddec25e46478c90e47e35605"
+        },
+        {
+          "path": "stars-archer-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "52d63f4e6f0c5e1b707150b0107e034ea0ac57c400cf71f4103b47302cf38e2c"
+        }
+      ]
+    },
+    {
+      "id": "stars-chalice-enter",
+      "skill": "星耀形态",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_chalice",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-chalice-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "437993b059133d08b7bcdd4d46c8c92a5d3ebbedcfec61004445bd9e7d7d75ed"
+        },
+        {
+          "path": "stars-chalice-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "6bf5004d21f1350cdc0516d940c8f8ad7d1a618dbe7b8e3a5f667fb2465851ee"
+        }
+      ]
+    },
+    {
+      "id": "stars-chalice-exit",
+      "skill": "解除星耀",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_chalice",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-chalice-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "a45aadec30975296be1557344f903755185af4db9f658e871039e87ec7962ecd"
+        },
+        {
+          "path": "stars-chalice-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "7b19d7f8a3b83024328d32df602593912a682d0c52e87aedab3f64e3399eaf76"
+        }
+      ]
+    },
+    {
+      "id": "stars-dragon-enter",
+      "skill": "星耀形态",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_dragon",
+      "value": 1,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-dragon-enter/windup.png",
+          "progress": 0.28,
+          "sha256": "4c1c5cffaf2afaf5e56fbd24f7a8cca06b2b0ec4750de6329f3cdc661acc8886"
+        },
+        {
+          "path": "stars-dragon-enter/peak.png",
+          "progress": 0.62,
+          "sha256": "d5b8db9c1d121924323cbc5b578f79dfb18634558c83462b9167575db33f5113"
+        }
+      ]
+    },
+    {
+      "id": "stars-dragon-exit",
+      "skill": "解除星耀",
+      "definition": "CircleOfTheStars",
+      "variant": "stars_dragon",
+      "value": 0,
+      "previous": -1,
+      "self": true,
+      "status": "final",
+      "frames": [
+        {
+          "path": "stars-dragon-exit/windup.png",
+          "progress": 0.28,
+          "sha256": "d24cfd2d3ece6e600a83978bbc3e13e1ffb05a0ac84a2610bf8b4b66fec72cd3"
+        },
+        {
+          "path": "stars-dragon-exit/peak.png",
+          "progress": 0.62,
+          "sha256": "b3f79d5ac9bc7933e44e71b576672fd7d93d1cf6edb00ebc1b34b555771584ae"
+        }
+      ]
+    },
+    {
+      "id": "tempest-lightning",
+      "skill": "风暴之怒",
+      "definition": "TempestDomain",
+      "variant": "lightning",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "tempest-lightning/windup.png",
+          "progress": 0.28,
+          "sha256": "93df8e185235126c02438faffead09487f031b16cc2dacaa9ece09aa4dfffd9a"
+        },
+        {
+          "path": "tempest-lightning/peak.png",
+          "progress": 0.62,
+          "sha256": "354c463b4278238999500bcdf85c746ffca76f75e07d9e41cab4deb12d94f639"
+        }
+      ]
+    },
+    {
+      "id": "tempest-thunder",
+      "skill": "风暴之怒",
+      "definition": "TempestDomain",
+      "variant": "thunder",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "tempest-thunder/windup.png",
+          "progress": 0.28,
+          "sha256": "01dc458bbfa6ce49cc07c4623c7046500388881af7f58e75d708c73917c7b506"
+        },
+        {
+          "path": "tempest-thunder/peak.png",
+          "progress": 0.62,
+          "sha256": "d32c52e8a2ed77ad737dd2122186b73961c8a6b7695054d71df3f9031eb7f6b2"
+        }
+      ]
+    },
+    {
+      "id": "breach",
+      "skill": "破阵强袭",
+      "definition": "Breaker",
+      "variant": "",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "breach/windup.png",
+          "progress": 0.28,
+          "sha256": "97b263e580ae0e120e72e877d2cca65ce9b98581ac1aa20ec1c18d9da7e46f48"
+        },
+        {
+          "path": "breach/peak.png",
+          "progress": 0.62,
+          "sha256": "2300b6d3a2d2e6d69a4b8777ebe950229b524f0e64853f7e35071336c3f26b43"
+        }
+      ]
+    },
+    {
+      "id": "reaction-cold-frost",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "cold_frost",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-cold-frost/windup.png",
+          "progress": 0.28,
+          "sha256": "036b4f533a075433c89c8f31096a90f1d5017701f679b77822c77e84258f92aa"
+        },
+        {
+          "path": "reaction-cold-frost/peak.png",
+          "progress": 0.62,
+          "sha256": "a6cb70d7840a2bf2f342a37b0fbb7457532e059f35c6d69db55c7d4f0292a233"
+        }
+      ]
+    },
+    {
+      "id": "reaction-cold-wet",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "cold_wet",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-cold-wet/windup.png",
+          "progress": 0.28,
+          "sha256": "74f2f2682ad6e78cb5e2abe7021f7f7667dd53578a182463c44fa2fb2743f46a"
+        },
+        {
+          "path": "reaction-cold-wet/peak.png",
+          "progress": 0.62,
+          "sha256": "04cc4f5258b6146f648e9013b907388b190d6039858ecee38a305c9286b39fdc"
+        }
+      ]
+    },
+    {
+      "id": "reaction-cold-frozen",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "cold_frozen",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-cold-frozen/windup.png",
+          "progress": 0.28,
+          "sha256": "e82bb7cf42dfe6044fc5d27b559b36d0c8cbe2bf933fa4761d6b0e9782980534"
+        },
+        {
+          "path": "reaction-cold-frozen/peak.png",
+          "progress": 0.62,
+          "sha256": "b9a07e6299e872cda878f5a03a09770fd2614e0c157e945f9defa022b848f599"
+        }
+      ]
+    },
+    {
+      "id": "reaction-cold-burn",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "cold_burn",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-cold-burn/windup.png",
+          "progress": 0.28,
+          "sha256": "e3b452cf7a54f24d3b4487778a4688e9856f312c7270335ed2d3d9090416b5ba"
+        },
+        {
+          "path": "reaction-cold-burn/peak.png",
+          "progress": 0.62,
+          "sha256": "87ce08d4dbbaaeea52a382679bba4589b848b24a88df2c36b6cacdf22f480988"
+        }
+      ]
+    },
+    {
+      "id": "reaction-fire-frost",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "fire_frost",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-fire-frost/windup.png",
+          "progress": 0.28,
+          "sha256": "c9ed13fc2e751b30b3726dab29f66d8cdfc36fd55c77869df07b781e138f441f"
+        },
+        {
+          "path": "reaction-fire-frost/peak.png",
+          "progress": 0.62,
+          "sha256": "5aa1394cb2bdf61a8b6803e6fcb627b12e0b55b0ccc621fa18cd3265f3383d0f"
+        }
+      ]
+    },
+    {
+      "id": "reaction-fire-wet",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "fire_wet",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-fire-wet/windup.png",
+          "progress": 0.28,
+          "sha256": "a545d5648c129a8d8991a68f0c7ff35253d9496bdc30085fd73cdb170c706791"
+        },
+        {
+          "path": "reaction-fire-wet/peak.png",
+          "progress": 0.62,
+          "sha256": "4a9bb1310e4982a1743b3170fc72fa1e7f76a07a1a007160b3bd900c113061b3"
+        }
+      ]
+    },
+    {
+      "id": "reaction-fire-greased",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "fire_greased",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-fire-greased/windup.png",
+          "progress": 0.28,
+          "sha256": "98e67dcd830f0fd4066d7e00e36e03589f1e902ad6d17db652892e9e50a70542"
+        },
+        {
+          "path": "reaction-fire-greased/peak.png",
+          "progress": 0.62,
+          "sha256": "066dedd8a1b237b0889a3a14d504d9bf1a45bf096ab7af705dbc7a9983aef181"
+        }
+      ]
+    },
+    {
+      "id": "reaction-lightning-wet",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "lightning_wet",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-lightning-wet/windup.png",
+          "progress": 0.28,
+          "sha256": "5591608a219972450208c39c991319aff01592dfe9e10f0dc4c0403d2d1ff479"
+        },
+        {
+          "path": "reaction-lightning-wet/peak.png",
+          "progress": 0.62,
+          "sha256": "5f0f71ae96d7593860c89604bedec4db6051c505479e6d29275acfab6118f29a"
+        }
+      ]
+    },
+    {
+      "id": "reaction-thunder-resonance",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "thunder_resonance",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-thunder-resonance/windup.png",
+          "progress": 0.28,
+          "sha256": "68632e7fdc384118d8b3a5018a0b345dd1d1d924e84723bf39cbb5ecf0ff5f2c"
+        },
+        {
+          "path": "reaction-thunder-resonance/peak.png",
+          "progress": 0.62,
+          "sha256": "dd0ed9c82e9ca43c931144c5f8b9b300409a3a53e1b85c21b16b7efa3cff5b28"
+        }
+      ]
+    },
+    {
+      "id": "reaction-lightning-resonance",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "lightning_resonance",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-lightning-resonance/windup.png",
+          "progress": 0.28,
+          "sha256": "ec9d905e874da5b59e6bb946cb1f44e4d665d75bb63941625b75bcaa51be6e47"
+        },
+        {
+          "path": "reaction-lightning-resonance/peak.png",
+          "progress": 0.62,
+          "sha256": "7ebf420f5ac6313c2683a717aa76a3d109ef340bc4c46acf3dfc97fd93626086"
+        }
+      ]
+    },
+    {
+      "id": "reaction-thunder-shock",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "thunder_shock",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-thunder-shock/windup.png",
+          "progress": 0.28,
+          "sha256": "10fb19dc3f0230984451f8b0c5aa43992aafee9f3d16859433cf1f5338fc4722"
+        },
+        {
+          "path": "reaction-thunder-shock/peak.png",
+          "progress": 0.62,
+          "sha256": "a4a86182f38cc93001cf798dcd9498441f2e513a31776776f6ff089d22e7e3eb"
+        }
+      ]
+    },
+    {
+      "id": "reaction-acid-poison",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "acid_poison",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-acid-poison/windup.png",
+          "progress": 0.28,
+          "sha256": "6617d748461f7c56ee74f4d4bb3f0bb1de5bde3e2c40c64626dce1c78a17c8dd"
+        },
+        {
+          "path": "reaction-acid-poison/peak.png",
+          "progress": 0.62,
+          "sha256": "d647016a6e36f636e5939ee36675c0dd95109f88afd800922a990669caf61414"
+        }
+      ]
+    },
+    {
+      "id": "reaction-poison-acid",
+      "skill": "元素反应",
+      "definition": "SchoolOfEvocation",
+      "variant": "poison_acid",
+      "value": -1,
+      "previous": -1,
+      "self": false,
+      "status": "final",
+      "frames": [
+        {
+          "path": "reaction-poison-acid/windup.png",
+          "progress": 0.28,
+          "sha256": "95623c00477d335495d5b90af3bfa814109eb434df60f9eba92ae579ffb9a57c"
+        },
+        {
+          "path": "reaction-poison-acid/peak.png",
+          "progress": 0.62,
+          "sha256": "a40e8783ad25a3382d051e894575b13484756401a5ff10a9b853f9ee29580ceb"
+        }
+      ]
+    }
+  ]
+}

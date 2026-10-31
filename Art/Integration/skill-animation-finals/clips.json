@@ -1,0 +1,479 @@
+[
+  {
+    "id": "portal",
+    "skill": "王车易位",
+    "definition": "SchoolOfConjuration",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "portent-record",
+    "skill": "预兆",
+    "definition": "SchoolOfDivination",
+    "variant": "",
+    "value": 4,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "portent-use",
+    "skill": "预知未来",
+    "definition": "SchoolOfDivination",
+    "variant": "",
+    "value": 7,
+    "previous": 3,
+    "self": false
+  },
+  {
+    "id": "illusion-hand",
+    "skill": "幻术默发",
+    "definition": "SchoolOfIllusion",
+    "variant": "",
+    "value": 2,
+    "previous": 6,
+    "self": false
+  },
+  {
+    "id": "trickery-swap",
+    "skill": "诡诈换位",
+    "definition": "TrickeryDomain",
+    "variant": "",
+    "value": 2,
+    "previous": 8,
+    "self": false
+  },
+  {
+    "id": "necromancy-swap",
+    "skill": "不死奴仆",
+    "definition": "SchoolOfNecromancy",
+    "variant": "",
+    "value": 3,
+    "previous": 9,
+    "self": false
+  },
+  {
+    "id": "ward-absorb",
+    "skill": "奥术守御",
+    "definition": "SchoolOfAbjuration",
+    "variant": "",
+    "value": 4,
+    "previous": 8,
+    "self": true
+  },
+  {
+    "id": "ward-store",
+    "skill": "奥术守御",
+    "definition": "SchoolOfAbjuration",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "resistance-grant",
+    "skill": "法术抗性",
+    "definition": "SchoolOfAbjuration",
+    "variant": "grant",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "undead-guard",
+    "skill": "不死适应",
+    "definition": "SchoolOfNecromancy",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "polymorph",
+    "skill": "变形术",
+    "definition": "SchoolOfTransmutation",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "specter",
+    "skill": "咒缚幽灵",
+    "definition": "TheHexblade",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "assassin-stealth",
+    "skill": "暗杀",
+    "definition": "Assassin",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "gloom-ambush",
+    "skill": "伏击",
+    "definition": "GloomStalker",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "shadow-dodge",
+    "skill": "阴影闪避",
+    "definition": "GloomStalker",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "ninja-clones",
+    "skill": "影分身",
+    "definition": "WayOfTheNinja",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "hidden-force-plant",
+    "skill": "渗透劲",
+    "definition": "WayOfTheOpenHand",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "hidden-force-detonate",
+    "skill": "渗透劲",
+    "definition": "WayOfTheOpenHand",
+    "variant": "detonate",
+    "value": 4,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "bladesong-enter",
+    "skill": "剑歌",
+    "definition": "Bladesinging",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "bladesong-exit",
+    "skill": "剑歌",
+    "definition": "Bladesinging",
+    "variant": "",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "blessing",
+    "skill": "战争祭司",
+    "definition": "WarDomain",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "curse",
+    "skill": "咒剑诅咒",
+    "definition": "TheHexblade",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "hunter-mark",
+    "skill": "猎人印记",
+    "definition": "RangerHunter",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "moon-bear-enter",
+    "skill": "荒野形态",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_bear",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-bear-exit",
+    "skill": "解除荒野",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_bear",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-wolf-enter",
+    "skill": "荒野形态",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_wolf",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-wolf-exit",
+    "skill": "解除荒野",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_wolf",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-eagle-enter",
+    "skill": "荒野形态",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_eagle",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-eagle-exit",
+    "skill": "解除荒野",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_eagle",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-snake-enter",
+    "skill": "荒野形态",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_snake",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "moon-snake-exit",
+    "skill": "解除荒野",
+    "definition": "CircleOfTheMoon",
+    "variant": "moon_snake",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-archer-enter",
+    "skill": "星耀形态",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_archer",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-archer-exit",
+    "skill": "解除星耀",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_archer",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-chalice-enter",
+    "skill": "星耀形态",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_chalice",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-chalice-exit",
+    "skill": "解除星耀",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_chalice",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-dragon-enter",
+    "skill": "星耀形态",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_dragon",
+    "value": 1,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "stars-dragon-exit",
+    "skill": "解除星耀",
+    "definition": "CircleOfTheStars",
+    "variant": "stars_dragon",
+    "value": 0,
+    "previous": -1,
+    "self": true
+  },
+  {
+    "id": "tempest-lightning",
+    "skill": "风暴之怒",
+    "definition": "TempestDomain",
+    "variant": "lightning",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "tempest-thunder",
+    "skill": "风暴之怒",
+    "definition": "TempestDomain",
+    "variant": "thunder",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "breach",
+    "skill": "破阵强袭",
+    "definition": "Breaker",
+    "variant": "",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-cold-frost",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "cold_frost",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-cold-wet",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "cold_wet",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-cold-frozen",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "cold_frozen",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-cold-burn",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "cold_burn",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-fire-frost",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "fire_frost",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-fire-wet",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "fire_wet",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-fire-greased",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "fire_greased",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-lightning-wet",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "lightning_wet",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-thunder-resonance",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "thunder_resonance",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-lightning-resonance",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "lightning_resonance",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-thunder-shock",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "thunder_shock",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-acid-poison",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "acid_poison",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  },
+  {
+    "id": "reaction-poison-acid",
+    "skill": "元素反应",
+    "definition": "SchoolOfEvocation",
+    "variant": "poison_acid",
+    "value": -1,
+    "previous": -1,
+    "self": false
+  }
+]

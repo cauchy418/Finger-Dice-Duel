@@ -524,11 +524,11 @@ namespace FingerDiceDuel.Core
                         if (protector == null || !protector.IsAlive) continue;
                         if (CharacterBehaviors.FirstImplementer<IIncomingDamageBarrier>(protector) is IIncomingDamageBarrier barrier)
                         {
-                            int before = dealt;
+                            int before = dealt;int pointsBefore=(barrier as IAbjurationSkill)?.BarrierPoints??before;
                             dealt = barrier.AbsorbDamage(Defender, dealt, this, manager);
                             if(dealt<before)guard|=AttackGuard.Barrier;
                             if (dealt != before)
-                                manager.NoteSkill(protector, "奥术守御", $"吸收 {before - dealt}，剩余 {dealt}");
+                                manager.NoteSkill(protector, "奥术守御", $"吸收 {before - dealt}，剩余 {dealt}",Defender,new SkillVisualData(value:before-dealt,previous:pointsBefore));
                         }
                     }
                 }
@@ -568,7 +568,7 @@ namespace FingerDiceDuel.Core
             }
 
             if(detonateHidden && ElementHits.Count>0 && !WasCancelled)
-            {Defender.SetResonance(false);ExtraTrueDamage+=hiddenExpected/2;manager?.NoteSkill(Attacker,"渗透劲","暗劲引爆，真实伤害"+(hiddenExpected/2));}
+            {Defender.SetResonance(false);ExtraTrueDamage+=hiddenExpected/2;manager?.NoteSkill(Attacker,"渗透劲","暗劲引爆，真实伤害"+(hiddenExpected/2),Defender,new SkillVisualData(value:hiddenExpected/2,variant:"detonate"));}
 
             // 散打宗：暗劲引爆的额外真实伤害，不经过护盾/抗性/防御。
             if (!damageDisabled && ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
@@ -711,7 +711,7 @@ namespace FingerDiceDuel.Core
         {
             if (Attacker == null || WasCancelled || IsStatusDamage) return;
             if(_visualReaction&&!_visualReactionShown&&!WasTypeImmune&&(LandedHits>0||BlockedHits>0))
-            {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender);}
+            {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender,new SkillVisualData(variant:_reactionVariant));}
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
             if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
 

@@ -11,6 +11,7 @@ namespace FingerDiceDuel.Core
         public IReadOnlyList<AttackDamageType> SegmentTypes => _segmentTypes;
         private readonly List<KeyValuePair<AttackDamageType, int>> _typedReflections = new List<KeyValuePair<AttackDamageType, int>>();
 
+        private string _reactionVariant;
         private int ConfigureHitInteraction(int damage)
         {
             _visualReaction = AttackType==AttackDamageType.Cold&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Frozen)||Defender.HasStatus(StatusEffect.Burn))
@@ -22,6 +23,14 @@ namespace FingerDiceDuel.Core
             _acidPoisonReaction = !WasTypeImmune && (AttackType == AttackDamageType.Acid && Defender.HasStatus(StatusEffect.Poison)
                 || AttackType == AttackDamageType.Poison && Defender.HasStatus(StatusEffect.Acid));
             _visualReaction|=_sonicCrossReaction||_acidPoisonReaction;
+            StatusEffect partner=StatusEffect.None;
+            if(AttackType==AttackDamageType.Fire)partner=Defender.HasStatus(StatusEffect.Greased)?StatusEffect.Greased:Defender.HasStatus(StatusEffect.Frost)?StatusEffect.Frost:StatusEffect.Wet;
+            else if(AttackType==AttackDamageType.Cold)partner=Defender.HasStatus(StatusEffect.Frozen)?StatusEffect.Frozen:Defender.HasStatus(StatusEffect.Burn)?StatusEffect.Burn:Defender.HasStatus(StatusEffect.Frost)?StatusEffect.Frost:StatusEffect.Wet;
+            else if(AttackType==AttackDamageType.Lightning)partner=_sonicCrossReaction?StatusEffect.Resonance:StatusEffect.Wet;
+            else if(AttackType==AttackDamageType.Thunder)partner=_sonicCrossReaction?StatusEffect.Shock:StatusEffect.Resonance;
+            else if(AttackType==AttackDamageType.Acid)partner=StatusEffect.Poison;
+            else if(AttackType==AttackDamageType.Poison)partner=StatusEffect.Acid;
+            _reactionVariant=AttackType.ToString().ToLowerInvariant()+"_"+partner.ToString().ToLowerInvariant();
             InteractionStatus = StatusEffect.None;
             InteractionDamageType = DamageType.None;
             if (Manager == null || AttackType == AttackDamageType.None || WasTypeImmune) return damage;

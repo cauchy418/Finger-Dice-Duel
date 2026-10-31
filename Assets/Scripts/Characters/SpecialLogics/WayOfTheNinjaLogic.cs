@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(context.IsStatusDamage||context.IsReflected||Ki<1)return;
             int choice=_choice??SkillChoicePolicy.Choose(MonkRules.Ninja,MonkRules.YesNo("影分身 · 1气"),context.Attacker,context.Defender,context.Manager);_choice=null;
             if(choice!=1||!Spend(1))return;context.HitCount=2;context.NinjaShadowSplit=true;
-            context.Manager?.NoteSkill(context.Attacker,"影分身","消耗1气，初始伤害减半，攻击两段");
+            context.Manager?.NoteSkill(context.Attacker,"影分身","消耗1气，初始伤害减半，攻击两段",context.Defender);
         }
         public override void OnMatchReset(PlayerState owner,GameManager game){base.OnMatchReset(owner,game);_choice=null;}
     }

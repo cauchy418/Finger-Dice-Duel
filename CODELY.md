@@ -1,6 +1,8 @@
-# CODELY.md
+﻿# CODELY.md
 
-动画P1第一批：SkillVisualProfiles由实际技能日志触发可视事件，带明确目标；元素反应单独以真实命中／免疫快照生成。技能提示不得把其历史血量快照回写到父攻击后，避免吸收／护盾技能嵌套导致血条回跳。CombatStatusMotion按显示快照维持徽记环境效果，每人最多3层轮换；全部状态图标独立轻动。详见[范围与验收](Docs/animation-p1-progress.md)。
+动画P1专属细化：`SkillVisualData`保存实际左右手引用、捕获数字、屏障点数和形态／反应变体；不可在播放中重新读取可变数字来推断旧结果。门户起终点只捕获一次。53种变体的两阶段原生渲染截图、复现与报告见[定稿索引](Art/Integration/skill-animation-finals/README.md)。以后每个动画最终稿必须保存效果截图并更新索引；动画修改后重拍。规则与异步播放分开验收。
+
+动画事件与持续状态：SkillVisualProfiles由实际技能日志触发可视事件，带明确目标；元素反应单独以真实命中／免疫快照生成。技能提示不得把其历史血量快照回写到父攻击后，避免吸收／护盾技能嵌套导致血条回跳。CombatStatusMotion按显示快照维持徽记环境效果，每人最多3层轮换；全部状态图标独立轻动。详见[范围与验收](Docs/animation-p1-progress.md)。
 
 当前奉献之誓的守护之誓在收集与结算时均要求自身完整盾，AI同样遵守；确认代挡后才收集卫护斩目标。第三章四战首段已改成无盾不能援护。1542项功能回归通过，UI程序集编译通过；详见[本轮验收](Art/Integration/devotion-shield-animation/README.md)。
 

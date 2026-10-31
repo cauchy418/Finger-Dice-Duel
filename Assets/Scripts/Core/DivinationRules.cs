@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Core
                 CurrentPortentResult=now;
                 var request=new WizardChoice(owner,"【预知未来】"+actor.Name+"运算结果为"+now+"，选择一个预兆替换结果，或不发动。",options,value=>{
                     if(epoch!=_portentEpoch||_portentTurn!=TurnCount)return;
-                    if(value>=0&&book.ConsumePortent(value)){_portentResult=value;NoteSkill(owner,"预知未来",actor.Name+"结果"+now+"→"+value+"，消耗预兆"+value,actor);}
+                    if(value>=0&&book.ConsumePortent(value)){_portentResult=value;NoteSkill(owner,"预知未来",actor.Name+"结果"+now+"→"+value+"，消耗预兆"+value,actor,new SkillVisualData(destination:source,value:value,previous:now));}
                     next(index+1);
                 });
                 if(DeferWizardChoice?.Invoke(request)==true){deferred=true;return;}

@@ -91,7 +91,7 @@ namespace FingerDiceDuel.Core
                 bool shield=t.Addend.IsShield;t.Addend.SetValue(final);final=t.AddendValue;source.SetValue(final);changed=true;
                 if(shield)foreach(var w in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(t.Owner))w.OnOwnShieldBroken(t.Owner,t.Addend,this);
                 if(step.Charm)actor.ApplyStatus(StatusEffect.Charm,2,t.Owner);
-                NoteSkill(t.Owner,"诡诈换位",$"{actor.Name}打出{final}；{CombatText.HandName(t.Owner,t.Addend)}→{t.Addend.Value}"+(step.Charm?"，魅惑2回合":""),actor);
+                NoteSkill(t.Owner,"诡诈换位",$"{actor.Name}打出{final}；{CombatText.HandName(t.Owner,t.Addend)}→{t.Addend.Value}"+(step.Charm?"，魅惑2回合":""),actor,new SkillVisualData(t.Addend,source,t.AddendValue,t.Addend.Value));
             }return changed;
         }
         public Func<AttackContext,Action,bool> DeferClericAttack {get;set;}
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
                     if(!owner.IsAlive||!enemy.IsAlive){completed();return;}
                     var counter=new AttackContext(owner,enemy,source,4){IsTempestCounter=true,AttackType=(AttackDamageType)v,AttackValueOverride=4,AttackerProvider=GetChoiceProvider(owner)};
                     Action finish=()=>{
-                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴之怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害",enemy);
+                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴之怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害",enemy,new SkillVisualData(variant:counter.AttackType.ToString().ToLowerInvariant()));
                         ClericChoices.FreeOperation(owner,this,source,false,"风暴之怒",completed);
                     };
                     if(DeferWizardAttack?.Invoke(counter,finish)!=true)finish();

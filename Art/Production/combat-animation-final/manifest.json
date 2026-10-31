@@ -1,0 +1,26 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "portal_frame",
+      "source": "Art/Production/combat-animation-final/source/portal_frame.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/portal_frame.png",
+      "prompt": "Production transparent VFX sprite for dark fantasy Finger Dice Duel, hand-painted fantasy materials matching black iron antique gold interface. One tall oval magical portal doorway, ornate aged gold frame and dark blue iron runic rim, hollow fully transparent central opening, small sapphire sparks at the rim; front orthographic view, no ground, no scene. Single centered complete object with 12% transparent margin. No lettering, no UI card, no numbers. Genuine transparent alpha background.",
+      "sha256": "9196fdd7f19050990d9aee6b47097a338abba5e3b559c80303392a404e8051d1"
+    },
+    {
+      "key": "shadow_monk",
+      "source": "Art/Production/combat-animation-final/source/shadow_monk.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/shadow_monk.png",
+      "prompt": "Production transparent VFX sprite for dark fantasy Finger Dice Duel, hand-painted fantasy materials matching black iron antique gold interface. One full body shadow martial artist silhouette in a dynamic forward palm strike stance, anonymous hoodless monk in layered cloth robes, two arms and two legs anatomically correct, charcoal ink body with cool teal rimlight and flowing translucent cloth edges, no circle frame, no weapons, no face details, no ground. Single centered complete object with 12% transparent margin. No lettering, no UI card, no numbers. Genuine transparent alpha background.",
+      "sha256": "8638980442bf182c101c698812c7133df2804f6ba6afe19d966d06bf60ea67b8"
+    },
+    {
+      "key": "accursed_specter",
+      "source": "Art/Production/combat-animation-final/source/accursed_specter.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/accursed_specter.png",
+      "prompt": "Production transparent VFX sprite for dark fantasy Finger Dice Duel, hand-painted fantasy materials matching black iron antique gold interface. One full floating spectral humanoid wraith with torn old robes and long tapering ghostly lower body, pale cyan ethereal face and purple-black translucent fabric, arms open, no legs required, dark fantasy painted ghost, no badge or circle frame, no ground. Single centered complete object with 12% transparent margin. No lettering, no UI card, no numbers. Genuine transparent alpha background.",
+      "sha256": "fcc25bd2f0e4f0031f174e44b6f963e14e6909b74567743e83e7f4e31e655d50"
+    }
+  ]
+}

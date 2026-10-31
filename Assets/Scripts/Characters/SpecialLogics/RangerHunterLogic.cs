@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var request=new WizardChoice(owner,"猎人印记 · 选择射程3内的角色",hands,true,hand=> {
                 var target=manager.OwnerOfHand(hand);
                 if(target==null || !target.IsAlive || ReferenceEquals(target,owner) || manager.DistanceBetween(owner,target)>3) return;
-                Mark(target);manager.NoteSkill(owner,"猎人印记",$"{target.Name} 被标记");
+                Mark(target);manager.NoteSkill(owner,"猎人印记",$"{target.Name} 被标记",target);
             },targetsPlayer:true,declineLabel:"不标记");
             if(manager.DeferWizardChoice?.Invoke(request)==true) return;
             var policy=manager.GetSkillPolicy(owner);
@@ -99,7 +99,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 {
                     extra.Resolve(game.GetChoiceProvider(target), game);
                     game.NoteSkill(owner, "灭族者", target.Name + "：" + AttackDamageTypes.NameOf(extra.AttackType)
-                        + " " + extra.AppliedDamage + "伤害" + (extra.WasCancelled ? "，取消" : extra.WasDodged ? "，闪避" : extra.WasBlocked ? "，格挡" : ""));
+                        + " " + extra.AppliedDamage + "伤害" + (extra.WasCancelled ? "，取消" : extra.WasDodged ? "，闪避" : extra.WasBlocked ? "，格挡" : ""),target);
                     game.RefreshGameOver();
                     OfferVolley(owner, original, game, used);
                 };

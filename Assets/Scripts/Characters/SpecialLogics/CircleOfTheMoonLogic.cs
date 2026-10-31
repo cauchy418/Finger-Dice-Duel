@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (Form != WildShape.None || !System.Enum.IsDefined(typeof(WildShape),form) || form == WildShape.None || owner == null) return false;
             if (owner.LeftHand.Value + owner.RightHand.Value != 10) return false;
             Form = form;
-            manager?.NoteSkill(owner, "荒野形态", DruidForms.Name(CircleKey,(int)form));
+            manager?.NoteSkill(owner, "荒野形态", DruidForms.Name(CircleKey,(int)form),owner,new SkillVisualData(variant:"moon_"+form.ToString().ToLowerInvariant()));
             return true;
         }
 
@@ -30,8 +30,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (Form == WildShape.None || owner == null) return false;
             if (owner.LeftHand.Value != owner.RightHand.Value) return false;
-            Form = WildShape.None;
-            manager?.NoteSkill(owner, "解除荒野", "恢复基础形态");
+            var previous=Form;Form = WildShape.None;
+            manager?.NoteSkill(owner, "解除荒野", "恢复基础形态",owner,new SkillVisualData(value:0,variant:"moon_"+previous.ToString().ToLowerInvariant()));
             return true;
         }
 

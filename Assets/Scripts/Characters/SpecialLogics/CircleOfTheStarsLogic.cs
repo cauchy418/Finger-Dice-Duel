@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (Form != StarryForm.None || !System.Enum.IsDefined(typeof(StarryForm),form) || form == StarryForm.None || owner == null) return false;
             if (owner.LeftHand.Value + owner.RightHand.Value != 10) return false;
             Form = form;
-            manager?.NoteSkill(owner, "星耀形态", DruidForms.Name(CircleKey,(int)form));
+            manager?.NoteSkill(owner, "星耀形态", DruidForms.Name(CircleKey,(int)form),owner,new SkillVisualData(variant:"stars_"+form.ToString().ToLowerInvariant()));
             return true;
         }
 
@@ -28,8 +28,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (Form == StarryForm.None || owner == null) return false;
             if (owner.LeftHand.Value != owner.RightHand.Value) return false;
-            Form = StarryForm.None;
-            manager?.NoteSkill(owner, "解除星耀", "恢复基础形态");
+            var previous=Form;Form = StarryForm.None;
+            manager?.NoteSkill(owner, "解除星耀", "恢复基础形态",owner,new SkillVisualData(value:0,variant:"stars_"+previous.ToString().ToLowerInvariant()));
             return true;
         }
 

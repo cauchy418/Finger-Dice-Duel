@@ -98,7 +98,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(Singing)
             {
                 if(!owner.BeganAttackThisTurn&&!owner.FormedShieldThisTurn&&!owner.HealedThisTurn)
-                {Singing=false;SongElement=AttackDamageType.None;game.NoteSkill(owner,"剑歌","未完成攻击／合盾／有效回复，剑歌结束");}
+                {Singing=false;SongElement=AttackDamageType.None;game.NoteSkill(owner,"剑歌","未完成攻击／合盾／有效回复，剑歌结束",owner,new SkillVisualData(value:0));}
                 return;
             }
             if(owner.HasStatus(StatusEffect.HolyLight)||owner.LeftHand.Value+owner.RightHand.Value!=owner.Health)return;

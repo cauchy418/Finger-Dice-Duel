@@ -64,7 +64,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             }
             GrantResistance(target,SelectedResistance);
             string label=AttackDamageTypes.IsMagic(SelectedResistance)?ResistanceNames.Name(SelectedResistance):"物理抗性";
-            manager?.NoteSkill(owner,"法术抗性",$"赋予{target.Name}{label}，持续至施法者死亡或再次施法");
+            manager?.NoteSkill(owner,"法术抗性",$"赋予{target.Name}{label}，持续至施法者死亡或再次施法",target,new SkillVisualData(variant:"grant"));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => (context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1

@@ -26,7 +26,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             DivineChoices.ChooseTarget(DivineChoices.Blessing,$"战争祭司 · 选择角色（剩余{remaining}次），或不发动",owner,game,targets,true,target=>{
                 if(target==null)return;
                 target.ApplyStatus(StatusEffect.WarBlessing,2,owner);selected.Add(target);SkillUseCount++;
-                game.NoteSkill(owner,"战争祭司",target.Name+" 攻防+1，持续2回合；9可改攻击");
+                game.NoteSkill(owner,"战争祭司",target.Name+" 攻防+1，持续2回合；9可改攻击",target);
                 Offer(owner,game,remaining-1,selected);
             });
         }

@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(hand?.Value!=7)return;
             int value=owner.GetOtherHand(hand).Value;
-            if(_portents.Add(value))manager?.NoteSkill(owner,"预兆","记录"+value);
+            if(_portents.Add(value))manager?.NoteSkill(owner,"预兆","记录"+value,owner,new SkillVisualData(source:owner.GetOtherHand(hand),value:value));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>ByDistance(AttackDamageType.Bludgeoning,AttackDamageType.Piercing);
     }

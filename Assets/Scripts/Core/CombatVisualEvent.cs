@@ -52,11 +52,12 @@ namespace FingerDiceDuel.Core
         public bool Mitigated { get; }
         public string RedirectKind {get;}
         public PlayerState EvasionActor {get;}
+        public SkillVisualData SkillData {get;}
         public CombatVisualFrame Before { get; }
         public CombatVisualFrame After { get; }
         internal CombatVisualEvent(CombatVisualKind kind,CombatVisualOutcome outcome,PlayerState actor,PlayerState target,PlayerState intended,
-            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null)
-        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;}
+            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null,SkillVisualData skillData=null)
+        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;SkillData=skillData;}
     }
     public sealed class CombatVisualToken
     {
