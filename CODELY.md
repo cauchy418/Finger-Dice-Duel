@@ -1,5 +1,7 @@
 ﻿# CODELY.md
 
+配乐由`MusicPolicy`只读选择菜单／战斗／剧情终战，`MusicPlayer`用DSP同钟播放intro→loop及等长鼓层。半血检查所有非召唤参战者，触发后锁定到本局结束；新局重置。设置只控制音乐源mute，不写AudioListener音量或音效源；偏好键`FingerDiceDuel.Audio.MusicEnabled`。十份OGG按立体声流式导入；新增配乐先保留无损源、采样边界与SHA256，再验证循环和同步。见[音乐说明](Docs/music-and-audio.md)及[验收](Art/Integration/music-v1/README.md)。
+
 P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作，107种定稿变体及两阶段截图见[范围与验收](Docs/animation-p2-p3-progress.md)。`SkillVisualData.Element/Status`传真实类型与附加状态；0回合、拒绝附加不发成功表现。`CombatVisualEvent.Power/Unsteady`仅控制本段载体；不参与伤害计算。资源图标保存只读Value和TargetHand，气／逸闻／回路按实际数量，双手锁定按手分开。持续效果每人同时最多3层、按组轮换，退出立即停用再销毁。后续最终稿继续保存关键帧，可用PNG或逐像素核对的无损WebP；记录源版本、进度及SHA256。
 
 动画P1专属细化：`SkillVisualData`保存实际左右手引用、捕获数字、屏障点数和形态／反应变体；不可在播放中重新读取可变数字来推断旧结果。门户起终点只捕获一次。53种变体的两阶段原生渲染截图、复现与报告见[定稿索引](Art/Integration/skill-animation-finals/README.md)。以后每个动画最终稿必须保存效果截图并更新索引；动画修改后重拍。规则与异步播放分开验收。

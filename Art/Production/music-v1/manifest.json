@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-01",
+  "source": "user-provided stereo WAVs; FLAC preserves original PCM",
+  "drums": "Additional synthesized low kick, tom and soft snare; not isolated original stems. Fixed export seed 418. Actual detected beat positions; no gameplay RNG.",
+  "tracks": [
+    {
+      "title": "River at Dusk",
+      "key": "dusk",
+      "sourceWavSha256": "93b2d5e94aac308769d0deca732bcd3d6fe2cabd12b1344bcd9817c02e5f8c36",
+      "losslessSource": "Art\\Production\\music-v1\\source\\dusk.flac",
+      "losslessSha256": "7893d314809c1d12b8cb6f641b8f007dce854e6896b7d69707466a66fe248437",
+      "sampleRate": 48000,
+      "loopStartSample": 1633920,
+      "loopEndSample": 7094400,
+      "loopStart": 34.04,
+      "loopEnd": 147.8,
+      "beats": 256,
+      "estimatedBpm": 135.03236263072083,
+      "crossfadeSeconds": 0.16,
+      "sourceGain": 1.0,
+      "seamMaxDelta": 0.0067138671875,
+      "seamContextRms": 0.09678007662296295,
+      "files": [
+        {
+          "path": "Assets/Resources/Audio/Music/dusk_intro.ogg",
+          "samples": 7094400,
+          "seconds": 147.8,
+          "peak": 0.6177978515625,
+          "sha256": "31ebc5871c582c39c3d1e74b05325ffd3d84bde4ea425b5c55b7548da0ef047c"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/dusk_loop.ogg",
+          "samples": 5460480,
+          "seconds": 113.76,
+          "peak": 0.6177978515625,
+          "sha256": "929568457db95983031895b7138da2335a200df9820f255b4e3ef6249b214f6b"
+        }
+      ]
+    },
+    {
+      "title": "River at Battlefield",
+      "key": "battlefield",
+      "sourceWavSha256": "49ed061fbe693b61f3441e22218a407357166d47570906f96c4753fadb9b6ae4",
+      "losslessSource": "Art\\Production\\music-v1\\source\\battlefield.flac",
+      "losslessSha256": "a36d5a7a9ee42b13423b3de74f172c060f4f5acd7aaaeeb699dd2d3094e6e108",
+      "sampleRate": 48000,
+      "loopStartSample": 3811200,
+      "loopEndSample": 7829760,
+      "loopStart": 79.4,
+      "loopEnd": 163.12,
+      "beats": 192,
+      "estimatedBpm": 137.42178538221324,
+      "crossfadeSeconds": 0.16,
+      "sourceGain": 1.0,
+      "seamMaxDelta": 0.066131591796875,
+      "seamContextRms": 0.08899898082017899,
+      "files": [
+        {
+          "path": "Assets/Resources/Audio/Music/battlefield_intro.ogg",
+          "samples": 7829760,
+          "seconds": 163.12,
+          "peak": 0.583160400390625,
+          "sha256": "74f43733db2c7e0e7f4cbffdeade63b8e09f208001e059298398c2600514a119"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/battlefield_loop.ogg",
+          "samples": 4018560,
+          "seconds": 83.72,
+          "peak": 0.583160400390625,
+          "sha256": "0f94df0a74f63663d3410e15855bdb947a30f44ab8aae89135983b12f8582915"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/battlefield_drums_intro.ogg",
+          "samples": 7829760,
+          "seconds": 163.12,
+          "peak": 0.6726466417312622,
+          "sha256": "09a30cbfb99f0e7fb050f04da0faf8be35dfbe5649a85e33154c80be3ecc9766"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/battlefield_drums_loop.ogg",
+          "samples": 4018560,
+          "seconds": 83.72,
+          "peak": 0.6726466417312622,
+          "sha256": "9c11049d6f700fa2a0215714a227ae7df3c7d765805e9c9aaaa6aa267829df00"
+        }
+      ]
+    },
+    {
+      "title": "Dawn of Steel",
+      "key": "dawn",
+      "sourceWavSha256": "314be4acd29434d0ab8a1bf319b35788bcc2a0ed826af26c2cc0dec717653af0",
+      "losslessSource": "Art\\Production\\music-v1\\source\\dawn.flac",
+      "losslessSha256": "2458c3a794522d36e7b1900da026be6274ccfe444f5d386149d62f1bace9ed18",
+      "sampleRate": 48000,
+      "loopStartSample": 2768640,
+      "loopEndSample": 7037760,
+      "loopStart": 57.68,
+      "loopEnd": 146.62,
+      "beats": 192,
+      "estimatedBpm": 128.88384997199128,
+      "crossfadeSeconds": 0.16,
+      "sourceGain": 1.0,
+      "seamMaxDelta": 0.0218505859375,
+      "seamContextRms": 0.1406777799129486,
+      "files": [
+        {
+          "path": "Assets/Resources/Audio/Music/dawn_intro.ogg",
+          "samples": 7037760,
+          "seconds": 146.62,
+          "peak": 0.533355712890625,
+          "sha256": "b78291b29e04a2db0cb5838ad8372a501a4d2fa92c7b76e4f8d5b72820c7fdb1"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/dawn_loop.ogg",
+          "samples": 4269120,
+          "seconds": 88.94,
+          "peak": 0.533355712890625,
+          "sha256": "261d75567870452c04eb59c3ae7cceac450e2d03ca10f5a03948ea93bd536613"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/dawn_drums_intro.ogg",
+          "samples": 7037760,
+          "seconds": 146.62,
+          "peak": 0.6726466417312622,
+          "sha256": "882a0053952806c9fe4619b946903ab747318ed58cc9c44f91bdcda6f6b326f1"
+        },
+        {
+          "path": "Assets/Resources/Audio/Music/dawn_drums_loop.ogg",
+          "samples": 4269120,
+          "seconds": 88.94,
+          "peak": 0.6726466417312622,
+          "sha256": "f8e8e813ee6850aaf145854fbf7ca69ecfdc88c46257132e674efc1650b6105f"
+        }
+      ]
+    }
+  ]
+}

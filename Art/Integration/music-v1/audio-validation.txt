@@ -1,0 +1,15 @@
+PASS lossless original PCM dusk
+PASS decoded samples / stereo / no clipping dusk_intro
+PASS decoded samples / stereo / no clipping dusk_loop
+PASS lossless original PCM battlefield
+PASS decoded samples / stereo / no clipping battlefield_intro
+PASS decoded samples / stereo / no clipping battlefield_loop
+PASS decoded samples / stereo / no clipping battlefield_drums_intro
+PASS decoded samples / stereo / no clipping battlefield_drums_loop
+PASS bed / percussion exact sample length battlefield
+PASS lossless original PCM dawn
+PASS decoded samples / stereo / no clipping dawn_intro
+PASS decoded samples / stereo / no clipping dawn_loop
+PASS decoded samples / stereo / no clipping dawn_drums_intro
+PASS decoded samples / stereo / no clipping dawn_drums_loop
+PASS bed / percussion exact sample length dawn

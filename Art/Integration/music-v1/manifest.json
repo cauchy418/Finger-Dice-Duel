@@ -1,0 +1,24 @@
+{
+  "date": "2026-11-01",
+  "sourceSha256": {
+    "Assets/Scripts/Assistant/MusicPolicy.cs": "332f92b81ab329b0015af239b264a2e3dd9fdfb47d7a697d0324e62a2a7573e5",
+    "Assets/Scripts/UI/MusicPlayer.cs": "a74c70841b563954f2b5030511ada264555101733f338b43903d9ef4d7bfdd22",
+    "Assets/Scripts/UI/GameBootstrap.Music.cs": "a59fe90fbfceb5ea8b5fedb1bc49fa330bbbfe8f7449159390a57cf641ead995",
+    "Assets/Scripts/UI/GameBootstrap.cs": "89cb12c51178842241d34d193de63ecfac3646c51e902dbb4e77e42742eb1aa9",
+    "Assets/Scripts/UI/GameBootstrap.FrontEnd.cs": "bc7fd4df1f604a8401e8dc53074cbcbb2e50e3b748b22cc6d5a2c7c1f578e978",
+    "Assets/Scripts/UI/TitleArt.cs": "8e1a43fe1165c905b072a5e119b23fbdca703bcfd1505afc0b9d5987cdde977c"
+  },
+  "screens": {
+    "loop-overview.png": "5ff34b74c7e09e30782f543978330fcaccad4221829dd49040c9bf6ad24498c8",
+    "main-menu.png": "9020048a1238b632ff5ada1bd82f5ed88dd390731de4501fe97a1b7628f682c6",
+    "settings-off.png": "bf05cba353e302223b6311d311ef446a6a2ed6718e2ed0abd063f4caa7f22984",
+    "settings-on.png": "44b80ee0e144f16ddeb6750cdd276e1d62835b95fcbd14e6484aa0c6ccafe6be"
+  },
+  "checks": {
+    "functional": 1576,
+    "native": 48,
+    "multiplayer": 8,
+    "audioFiles": 15
+  },
+  "note": "Screens are native Unity UI; loop plot is offline waveform analysis. No manual listening validation claimed."
+}

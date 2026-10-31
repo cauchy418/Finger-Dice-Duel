@@ -85,6 +85,7 @@ namespace FingerDiceDuel.UI
         StoryBattleSelect = 24,
 
         AdventureFinaleSelect = 25,
+        Settings = 26,
     }
 
     /// <summary>

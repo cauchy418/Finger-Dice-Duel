@@ -1,0 +1,48 @@
+PASS main menu uses dusk
+PASS settings footer visible
+PASS footer opens settings
+PASS toggle disables music
+PASS disabled preference persisted
+PASS muted MusicIntro0
+PASS muted MusicLoop0
+PASS muted MusicDrumIntro0
+PASS muted MusicDrumLoop0
+PASS muted MusicIntro1
+PASS muted MusicLoop1
+PASS muted MusicDrumIntro1
+PASS muted MusicDrumLoop1
+PASS global listener unchanged
+PASS new player restores disabled preference
+PASS toggle reenables music
+PASS menu navigation keeps playback bank
+PASS ordinary match uses battlefield
+PASS full health has no added drums
+PASS enemy half health enables drums
+PASS healing retains drums this match
+PASS chapter finale uses dawn 10
+PASS chapter finale uses dawn 20
+PASS chapter finale uses dawn 30
+PASS return clears battle intensity
+PASS clips imported 0
+PASS stereo preserved 0
+PASS streaming enabled 0
+PASS intro once loop repeats 0
+PASS DSP intro to real loop plays 0
+PASS clips imported 1
+PASS stereo preserved 1
+PASS streaming enabled 1
+PASS intro once loop repeats 1
+PASS intro stem samples match 1
+PASS loop stem samples match 1
+PASS DSP intro to real loop plays 1
+PASS drum stem transitions to loop 1
+PASS drum/main phase alignment 1
+PASS clips imported 2
+PASS stereo preserved 2
+PASS streaming enabled 2
+PASS intro once loop repeats 2
+PASS intro stem samples match 2
+PASS loop stem samples match 2
+PASS DSP intro to real loop plays 2
+PASS drum stem transitions to loop 2
+PASS drum/main phase alignment 2

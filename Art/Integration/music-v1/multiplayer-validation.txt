@@ -1,0 +1,8 @@
+PASS actual multiplayer layout 21
+PASS full health multiplayer music 21
+PASS non-duel participant enables drums 21
+PASS multiplayer healing keeps intensity 21
+PASS actual multiplayer layout 29
+PASS full health multiplayer music 29
+PASS non-duel participant enables drums 29
+PASS multiplayer healing keeps intensity 29

@@ -460,6 +460,7 @@ namespace FingerDiceDuel.UI
             BuildRoster();
             BuildSelectCanvas();
             BuildMainMenuScreen();
+            BuildMusicSettings();
             BuildOneOnOneScreen();
             BuildTwoOnTwoScreen();
 
@@ -2478,6 +2479,8 @@ namespace FingerDiceDuel.UI
         public void ShowScreen(GameScreen screen)
         {
             _screen = screen;
+            _screenSettings?.SetVisible(screen == GameScreen.Settings);
+            UpdateMusic();
             ApplyFrontEndScreen(screen);
 
             // 保险：画布是三个界面共用的，切回来时必须确保它是激活的
@@ -3274,6 +3277,7 @@ namespace FingerDiceDuel.UI
 
         private void Update()
         {
+            UpdateMusic();
             if (_controller == null) return;
             if (_controller.Phase == BoardPhase.GameOver) return;
             if (_board.AdventureModalVisible || (_adventure != null && (!_adventure.Started || _adventure.IsFinished))) { _aiDelayTimer = 0f; return; }
