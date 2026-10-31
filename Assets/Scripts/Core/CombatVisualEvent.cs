@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
-    public enum CombatVisualKind { Attack, ShieldForm, ShieldBreak, Taichi, Sync, VowTransfer }
+    public enum CombatVisualKind { Attack, ShieldForm, ShieldBreak, Taichi, Sync, VowTransfer, Skill }
     public enum CombatVisualOutcome { Hit, Blocked, Dodged, Cancelled }
 
     // Copies only display data. No live status collections or mutable Hand values escape.

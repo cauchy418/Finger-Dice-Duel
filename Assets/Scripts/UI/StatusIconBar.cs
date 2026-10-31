@@ -120,6 +120,7 @@ namespace FingerDiceDuel.UI
             {
                 bool show=i<count;_icons[i].gameObject.SetActive(show);if(!show) continue;
                 var entry=list[i];var sprite=BattleArt.Get(entry.ResourceKey);
+                var motion=_icons[i].GetComponent<CombatStatusIconMotion>();if(motion==null)motion=_icons[i].gameObject.AddComponent<CombatStatusIconMotion>();motion.Bind(entry);
                 _icons[i].sprite=sprite;
                 _icons[i].color=sprite!=null?Color.white:ColorOf(entry.NegativeStatus);
                 _glyphs[i].text=sprite!=null?"":GlyphOf(entry.NegativeStatus);

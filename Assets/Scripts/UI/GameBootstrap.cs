@@ -3590,6 +3590,7 @@ namespace FingerDiceDuel.UI
             }
 
             DiagnoseIfNeeded(canDecline, acceptLabel, canAccept);
+            _board.SyncCombatStatus(_game.CaptureVisualFrame());
         }
 
         /// <summary>

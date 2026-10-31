@@ -164,7 +164,7 @@ namespace FingerDiceDuel.Core
                 var dead=pair.Key;var owner=pair.Value;
                 if(!owner.IsOriginalAlive||dead.IsAlive||dead.IsSummon||IsGameOver)continue;
                 foreach(var existing in _players)if(existing.IsSummon&&ReferenceEquals(existing.SummonOwner,owner)){existing.RestoreDeadSeat();SeatRevision++;}
-                dead.BecomeSpecter(owner,RoundCount+1);SeatRevision++;NoteSkill(owner,"咒缚幽灵",$"在死者座位召唤，下一轮行动");
+                dead.BecomeSpecter(owner,RoundCount+1);SeatRevision++;NoteSkill(owner,"咒缚幽灵",$"在死者座位召唤，下一轮行动",dead);
             }
             _pendingSpecters.Clear();
         }

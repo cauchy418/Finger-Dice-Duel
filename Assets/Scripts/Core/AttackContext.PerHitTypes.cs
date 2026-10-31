@@ -13,11 +13,15 @@ namespace FingerDiceDuel.Core
 
         private int ConfigureHitInteraction(int damage)
         {
+            _visualReaction = AttackType==AttackDamageType.Cold&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Frozen)||Defender.HasStatus(StatusEffect.Burn))
+                ||AttackType==AttackDamageType.Fire&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Greased))
+                ||AttackType==AttackDamageType.Lightning&&Defender.HasStatus(StatusEffect.Wet)||AttackType==AttackDamageType.Thunder&&Defender.HasStatus(StatusEffect.Resonance);
             WasTypeImmune = Defender.HasImmunity(AttackType);
             _sonicCrossReaction = !WasTypeImmune && StatusRules.HasSonicCrossReaction(Defender, AttackType);
             _greaseReaction = !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Greased);
             _acidPoisonReaction = !WasTypeImmune && (AttackType == AttackDamageType.Acid && Defender.HasStatus(StatusEffect.Poison)
                 || AttackType == AttackDamageType.Poison && Defender.HasStatus(StatusEffect.Acid));
+            _visualReaction|=_sonicCrossReaction||_acidPoisonReaction;
             InteractionStatus = StatusEffect.None;
             InteractionDamageType = DamageType.None;
             if (Manager == null || AttackType == AttackDamageType.None || WasTypeImmune) return damage;

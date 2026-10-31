@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&ArcaneChoices.MatchingHands(owner,p))targets.Add(p);
             ArcaneChoices.Target(ArcaneChoices.Transmute,"变形术 · 选择双手数字相同的角色变羊2回合",owner,game,targets,target=>{
                 if(!ArcaneChoices.MatchingHands(owner,target)||!target.TryPolymorph())return;
-                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（10/10，−2/−2，距离1）");});
+                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（10/10，−2/−2，距离1）",target);});
         }
         public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==context.OtherHandValue?8:0;
     }
@@ -125,7 +125,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(!ReferenceEquals(owner,game.CurrentPlayer)||!owner.IsAlive||(owner.LeftHand.Value!=7&&owner.RightHand.Value!=7))return;
             var targets=new List<PlayerState>();foreach(var p in game.Players)if(p.IsAlive&&!ReferenceEquals(p,owner)&&!p.HasStatus(StatusEffect.HolyLight))targets.Add(p);
             ArcaneChoices.Target(ArcaneChoices.Hex,"咒剑诅咒 · 选择目标、移动诅咒，或不发动",owner,game,targets,target=>{
-                CurseTarget=target;CurseTurns=2;game.NoteSkill(owner,"咒剑诅咒",$"{target.Name} 2回合，对其每段攻击+2");});
+                CurseTarget=target;CurseTurns=2;game.NoteSkill(owner,"咒剑诅咒",$"{target.Name} 2回合，对其每段攻击+2",target);});
         }
         public void TickCurse(PlayerState ended)
         {if(CurseTarget==null)return;if(!CurseTarget.IsAlive||ReferenceEquals(ended,CurseTarget)&&--CurseTurns<=0){CurseTarget=null;CurseTurns=0;}}

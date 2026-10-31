@@ -40,6 +40,7 @@ namespace FingerDiceDuel.Core
             if (_roundActionOrder==null) _roundActionOrder=new List<PlayerState>(_players);
             _players[x]=b; _players[y]=a;
             SeatRevision++;
+            RecordSkillVisual(a,"王车易位",b);
             return true;
         }
 

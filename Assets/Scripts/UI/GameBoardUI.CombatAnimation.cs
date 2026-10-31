@@ -9,6 +9,7 @@ namespace FingerDiceDuel.UI
     public sealed partial class GameBoardUI
     {
         private CombatAnimationPlayer _combatAnimations;private CanvasGroup _combatInput;
+        private CombatStatusMotion _statusMotion;
         public bool CombatAnimationBusy=>_combatAnimations!=null&&_combatAnimations.Busy;
         private void EnsureCombatAnimations()
         {
@@ -16,6 +17,8 @@ namespace FingerDiceDuel.UI
             _combatInput=_canvasRoot.GetComponent<CanvasGroup>();if(_combatInput==null)_combatInput=_canvasRoot.gameObject.AddComponent<CanvasGroup>();
             _combatAnimations=_canvasRoot.gameObject.AddComponent<CombatAnimationPlayer>();
             _combatAnimations.Initialize(_canvasRoot,_font,CombatHandAnchor,CombatTargetAnchor,ApplyCombatFrame,CombatImpact,PoseCombatEvasion);
+            var ambient=new GameObject("PersistentStatusEffects",typeof(RectTransform));ambient.transform.SetParent(_canvasRoot,false);var rect=(RectTransform)ambient.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
+            rect.SetSiblingIndex(((RectTransform)fieldAnimationRoot()).GetSiblingIndex());_statusMotion=ambient.AddComponent<CombatStatusMotion>();_statusMotion.Initialize(rect,CombatStatusAnchor);
             // Return and the history remain available while gameplay controls are locked.
             foreach(var button in new[]{_exitButton})if(button!=null)
             {var g=button.GetComponent<CanvasGroup>();if(g==null)g=button.gameObject.AddComponent<CanvasGroup>();g.ignoreParentGroups=true;}
@@ -23,12 +26,19 @@ namespace FingerDiceDuel.UI
         public void ShowCombatWindup(PlayerState actor,Hand hand,string weapon,AttackDamageType type)
         {EnsureCombatAnimations();_combatAnimations.SetWindup(actor,hand,weapon,type);}
         public void HideCombatWindup(){_combatAnimations?.HideWindup();}
+        private Transform fieldAnimationRoot()=>_canvasRoot.Find("CombatAnimationLayer");
+        public void SyncCombatStatus(CombatVisualFrame frame){EnsureCombatAnimations();_statusMotion.Sync(frame);}
         public void PlayCombatEvents(IReadOnlyList<CombatVisualEvent> events,CombatVisualFrame final,Action complete)
         {
             EnsureCombatAnimations();_combatInput.interactable=false;
             _combatAnimations.Play(events,final,()=>{_combatInput.interactable=true;complete?.Invoke();});
         }
         private Vector2 CombatPosition(RectTransform rect)=>rect==null?Vector2.zero:(Vector2)_canvasRoot.InverseTransformPoint(rect.TransformPoint(rect.rect.center));
+        private Vector2 CombatStatusAnchor(PlayerState player)
+        {
+            foreach(var panel in _ringPanels)if(panel.Root.gameObject.activeInHierarchy&&ReferenceEquals(panel.Owner,player))return CombatPosition(panel.Emblem.rectTransform);
+            return CombatPosition(ReferenceEquals(_cardsA[0].Owner,player)?_badgeA.rectTransform:_badgeB.rectTransform);
+        }
         private readonly Dictionary<RectTransform,Vector2> _evadeOrigins=new Dictionary<RectTransform,Vector2>();
         private void PoseCombatEvasion(PlayerState player,Vector2 offset,float alpha)
         {
@@ -61,6 +71,7 @@ namespace FingerDiceDuel.UI
         private void ApplyCombatFrame(CombatVisualFrame frame)
         {
             if(frame==null)return;
+            _statusMotion?.Sync(frame);
             foreach(var state in frame.Players)
             {
                 var p=state.Player;
@@ -90,6 +101,8 @@ namespace FingerDiceDuel.UI
         }
         private void CombatImpact(CombatVisualEvent e)
         {
+            _statusMotion?.Flash(e.Target,e.Kind==CombatVisualKind.Skill?.6f:.35f);
+            if(e.Kind==CombatVisualKind.Skill){_presentation?.PlaySfx(SfxKind.ShieldUp);return;}
             if(e.Kind!=CombatVisualKind.Attack){_presentation?.PlaySfx(SfxKind.ShieldUp);return;}
             bool hit=e.Outcome==CombatVisualOutcome.Hit,blocked=e.Outcome==CombatVisualOutcome.Blocked;
             string text=hit?"−"+e.Damage:blocked?"格挡":e.Outcome==CombatVisualOutcome.Dodged?"闪避":e.EvasionActor!=null?"妖精步伐 · 取消":"攻击中止";
@@ -101,6 +114,6 @@ namespace FingerDiceDuel.UI
             _presentation?.PlaySfx(blocked?SfxKind.Blocked:!hit?SfxKind.Dodged:e.Damage>=6?SfxKind.HitHeavy:SfxKind.HitLight);
         }
         private void StopCombatPlayback()
-        {_combatAnimations?.StopPlayback();if(_combatInput!=null)_combatInput.interactable=true;}
+        {_combatAnimations?.StopPlayback();_statusMotion?.Clear();if(_combatInput!=null)_combatInput.interactable=true;}
     }
 }

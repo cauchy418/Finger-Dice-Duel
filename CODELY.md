@@ -1,5 +1,7 @@
 # CODELY.md
 
+动画P1第一批：SkillVisualProfiles由实际技能日志触发可视事件，带明确目标；元素反应单独以真实命中／免疫快照生成。技能提示不得把其历史血量快照回写到父攻击后，避免吸收／护盾技能嵌套导致血条回跳。CombatStatusMotion按显示快照维持徽记环境效果，每人最多3层轮换；全部状态图标独立轻动。详见[范围与验收](Docs/animation-p1-progress.md)。
+
 当前奉献之誓的守护之誓在收集与结算时均要求自身完整盾，AI同样遵守；确认代挡后才收集卫护斩目标。第三章四战首段已改成无盾不能援护。1542项功能回归通过，UI程序集编译通过；详见[本轮验收](Art/Integration/devotion-shield-animation/README.md)。
 
 战斗动画已按[基础设计](Docs/combat-animation-design.md)接入21张透明素材与播放控制器。Core仅对可视对局启用事件快照，AttackContext按段预留槽位，盾碎与反击按嵌套发生顺序记录；UI播放独立队列，不重跑规则、不使用动画随机数影响AI。目标选择阶段保持起手，命中时更新生命／手牌状态，最后同步其余状态；AI、胜负与试炼结束等待队列，支持倍速／跳过及退出清理。待做的55子职与持续状态见[清单](Docs/skill-and-status-animation-list.md)。完整盾／碎盾／太极三张常驻标记已替换。资源复现使用`Tools/Art/export_combat_animation.py`，清单保留原图和完整生成提示词。

@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(context.IsStatusDamage||context.IsReflected||context.Defender==null)return;
             int choice=_technique??SkillChoicePolicy.Choose(MartialSkillChoices.OpenHand,MartialSkillChoices.OpenHandOptions(Ki),context.Attacker,context.Defender,context.Manager);_technique=null;
-            if(choice==-1&&Spend(3))context.ApplyUntimedOnHit(()=>{context.Defender.SetHiddenForce(context.Attacker);context.Manager?.NoteSkill(context.Attacker,"渗透劲",context.Defender.Name+" 被打入暗劲");});
+            if(choice==-1&&Spend(3))context.ApplyUntimedOnHit(()=>{context.Defender.SetHiddenForce(context.Attacker);context.Manager?.NoteSkill(context.Attacker,"渗透劲",context.Defender.Name+" 被打入暗劲",context.Defender);});
             else if((choice==(int)StatusEffect.KnockedDown||choice==(int)StatusEffect.Stunned)&&Spend(1))
                 context.ApplyAttachedStatus(context.Defender,(StatusEffect)choice,2,context.Attacker,context.Manager,"散打技巧");
         }

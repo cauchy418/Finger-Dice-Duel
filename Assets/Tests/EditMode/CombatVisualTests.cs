@@ -9,6 +9,10 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class CombatVisualTests
     {
+        [Test] public void P1_skill_cues_have_explicit_target_and_disabled_recording_stays_silent()
+        {var g=Match();g.NoteSkill(g.PlayerA,"变形术","变羊",g.PlayerB);var e=g.DrainCombatVisuals();Assert.AreEqual(1,e.Count);Assert.AreEqual(CombatVisualKind.Skill,e[0].Kind);Assert.AreEqual(g.PlayerB,e[0].Target);Assert.AreEqual("Status/polymorph",e[0].Weapon);g.RecordCombatVisuals=false;g.NoteSkill(g.PlayerA,"预知未来","替换",g.PlayerB);Assert.AreEqual(0,g.DrainCombatVisuals().Count);}
+        [Test] public void Element_reaction_highlight_is_emitted_once_and_immunity_prevents_it()
+        {foreach(bool immune in new[]{false,true}){var g=Match();g.PlayerB.ApplyStatus(StatusEffect.Wet,2);if(immune)g.PlayerB.AddPermanentImmunity(AttackDamageType.Fire);var a=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){AttackType=AttackDamageType.Fire};a.Resolve(g.GetChoiceProvider(g.PlayerB),g);var events=g.DrainCombatVisuals();Assert.AreEqual(immune?0:1,events.Count(e=>e.Kind==CombatVisualKind.Skill&&e.RedirectKind=="元素反应"));}}
         private static GameManager Match(CharacterDefinition a=null,CharacterDefinition b=null)
         {var g=CharacterFactory.CreateMatch(a??CharacterDefinition.Blank,b??CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());g.RecordCombatVisuals=true;return g;}
         [Test] public void Frames_are_copied_and_recording_does_not_change_damage()

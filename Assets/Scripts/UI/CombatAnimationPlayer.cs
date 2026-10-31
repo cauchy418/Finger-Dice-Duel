@@ -55,7 +55,7 @@ namespace FingerDiceDuel.UI
             if(Busy||owner==null||hand==null){HideWindup();return;}
             if(_ready!=null&&ReferenceEquals(owner,_readyOwner)&&ReferenceEquals(hand,_readyHand)&&_ready.sprite==BattleArt.Get("Animation/"+weapon))return;
             HideWindup();_readyOwner=owner;_readyHand=hand;
-            _ready=Take(weapon,140);_used.Remove(_ready);
+            _ready=Take(weapon,210);_used.Remove(_ready);
             if(AttackDamageTypes.IsMagic(type)&&weapon.StartsWith("weapon_")){_readyElement=Take("fx_"+AttackDamageTypes.IconKeyOf(type),70);_used.Remove(_readyElement);}
             Update();
         }
@@ -83,6 +83,7 @@ namespace FingerDiceDuel.UI
         private IEnumerator PlayOne(CombatVisualEvent e)
         {
             Vector2 from=_hand(e.Actor,e.SourceHand),to=_target(e.Target);
+            if(e.Kind==CombatVisualKind.Skill){yield return Skill(e,from,to);yield break;}
             if(e.Kind==CombatVisualKind.VowTransfer)
             {
                 var vow=Take("Effects/vow_of_enmity",88);var origin=e.IntendedTarget==null?_target(e.Actor):_target(e.IntendedTarget);
@@ -94,7 +95,10 @@ namespace FingerDiceDuel.UI
             Vector2 delta=to-from;float angle=Mathf.Atan2(delta.y,delta.x)*Mathf.Rad2Deg;
             if(!ReferenceEquals(e.Target,e.IntendedTarget))
             {var guard=Take(e.RedirectKind=="protection"?"fx_radiant":"fx_force",90);yield return Tween(.16f,t=>{guard.rectTransform.anchoredPosition=Vector2.Lerp(_target(e.IntendedTarget),to,t);guard.color=e.RedirectKind=="protection"?new Color(1,.85f,.4f,1-t*.4f):new Color(1,.35f,.5f,1-t*.4f);});guard.gameObject.SetActive(false);}
-            var weapon=Take(e.Weapon??"fx_impact",e.Weapon=="weapon_fist"?110:180);
+            bool swing=e.Weapon=="weapon_sword"||e.Weapon=="weapon_hammer"||e.Weapon=="weapon_staff";
+            var weapon=Take(e.Weapon??"fx_impact",e.Weapon=="weapon_fist"?175:swing?300:e.Weapon=="weapon_rapier"?255:210);
+            if(swing)weapon.rectTransform.pivot=new Vector2(.18f,.5f);
+            Image slash=swing?Take("fx_slash",230):null;
             Image bow=e.Weapon=="projectile_arrow"?Take("weapon_bow",160):null;
             Image element=AttackDamageTypes.IsMagic(e.Type)&&e.Weapon!=null&&e.Weapon.StartsWith("weapon_")?Take("fx_"+AttackDamageTypes.IconKeyOf(e.Type),100):null;
             Image evade=dodge?Take("fx_slash",120):cancel?Take("fx_psychic",130):null;
@@ -102,12 +106,15 @@ namespace FingerDiceDuel.UI
             Image ghost=dodge?Take(e.Target.BattleEmblemKey,100):null;
             Vector2 evadeOrigin=_target(evader);
             Vector2 end=dodge?to+new Vector2(100,45):to;
-            yield return Tween(cancel?.24f:.34f,t=>{
+            yield return Tween(cancel?.30f:.50f,t=>{
                 float travel=Mathf.Clamp01((t-.18f)/.82f);Vector2 pos=Vector2.Lerp(from,end,travel);
-                if(e.Weapon=="weapon_sword"||e.Weapon=="weapon_hammer"||e.Weapon=="weapon_staff")pos+=new Vector2(-delta.y,delta.x).normalized*Mathf.Sin(travel*Mathf.PI)*70;
+                // Hold at the source for windup, then sweep around a grip near the target.
+                // The weapon rotates about its handle rather than translating like a missile.
+                if(swing){pos=travel<.23f?from:end-delta.normalized*145;float sweep=Mathf.SmoothStep(0,1,Mathf.Clamp01((travel-.23f)/.77f));weapon.rectTransform.localRotation=Quaternion.Euler(0,0,angle+Mathf.Lerp(-100,38,sweep));
+                    slash.rectTransform.anchoredPosition=end;slash.rectTransform.localRotation=Quaternion.Euler(0,0,angle-30+sweep*55);slash.color=new Color(1,1,1,cancel?0:Mathf.Sin(sweep*Mathf.PI)*.85f);}
                 weapon.rectTransform.anchoredPosition=cancel?from:pos;
-                weapon.rectTransform.localRotation=Quaternion.Euler(0,0,angle+(e.Weapon=="weapon_sword"?Mathf.Lerp(-65,20,travel):e.Weapon=="weapon_hammer"?Mathf.Lerp(65,-20,travel):0));
-                weapon.color=new Color(1,1,1,cancel?1-t:1);
+                if(!swing)weapon.rectTransform.localRotation=Quaternion.Euler(0,0,angle);
+                weapon.color=new Color(1,1,1,cancel?1-t:swing&&travel<.3f?Mathf.Abs(travel-.23f)/.23f:1);
                 if(bow!=null){bow.rectTransform.anchoredPosition=from;bow.rectTransform.localRotation=Quaternion.Euler(0,0,angle);bow.color=new Color(1,1,1,1-t);}
                 if(element!=null){element.rectTransform.anchoredPosition=pos+delta.normalized*52;element.color=new Color(1,1,1,.85f);}
                 if(evade!=null){evade.rectTransform.anchoredPosition=evadeOrigin+(dodge?new Vector2(Mathf.Sin(t*Mathf.PI)*70,20*t):Vector2.zero);evade.rectTransform.localScale=Vector3.one*(.6f+t);evade.color=cancel?new Color(.9f,.4f,1,1-t*.4f):new Color(.3f,1,1,1-t*.4f);}
@@ -121,9 +128,28 @@ namespace FingerDiceDuel.UI
             {
                 var impact=Take(e.Mitigated?"Overlay/taichi":e.Outcome==CombatVisualOutcome.Blocked?"Overlay/shield":AttackDamageTypes.IsMagic(e.Type)?"fx_"+AttackDamageTypes.IconKeyOf(e.Type):e.Type==AttackDamageType.Slashing?"fx_slash":"fx_impact",120);
                 impact.rectTransform.anchoredPosition=to;
-                yield return Tween(.18f,t=>{impact.rectTransform.localScale=Vector3.one*(.7f+t*.7f);impact.rectTransform.localRotation=Quaternion.Euler(0,0,e.Mitigated?t*180:0);impact.color=new Color(1,1,1,1-t);});
+                yield return Tween(.22f,t=>{impact.rectTransform.localScale=Vector3.one*(.7f+t*.7f);impact.rectTransform.localRotation=Quaternion.Euler(0,0,e.Mitigated?t*180:0);impact.color=new Color(1,1,1,1-t);});
             }
             else yield return Tween(.12f,t=>{if(evade!=null)evade.color=new Color(dodge?.3f:.9f,dodge?1:.4f,1,1-t);});
+        }
+        private IEnumerator Skill(CombatVisualEvent e,Vector2 from,Vector2 to)
+        {
+            string skill=e.RedirectKind??"";
+            var sigil=Take(e.Weapon,115);var trail=Take(skill=="元素反应"?"fx_radiant":"fx_psychic",95);
+            bool exchange=skill=="王车易位"||skill=="幻术默发"||skill=="诡诈换位"||skill=="不死奴仆";
+            bool barrier=skill=="奥术守御"||skill=="不死适应"||skill=="法术抗性";
+            bool shape=skill.Contains("形态")||skill=="变形术";
+            Image twin=exchange?Take(e.Weapon,100):null;
+            yield return Tween(.38f,t=>{
+                float arc=Mathf.Sin(t*Mathf.PI);Vector2 path=Vector2.Lerp(from,to,t)+Vector2.up*(exchange?70:25)*arc;
+                sigil.rectTransform.anchoredPosition=barrier||shape?to:path;
+                sigil.rectTransform.localScale=Vector3.one*(shape?.5f+t:barrier?1.2f-t*.35f:.65f+arc*.55f);
+                sigil.rectTransform.localRotation=Quaternion.Euler(0,0,shape?t*180:exchange?t*360:0);
+                sigil.color=new Color(1,1,1,Mathf.Sin(t*Mathf.PI)*.9f);
+                trail.rectTransform.anchoredPosition=to;trail.rectTransform.localScale=Vector3.one*(.6f+t*1.3f);
+                trail.color=skill=="元素反应"?new Color(1,.95f,.7f,arc*.85f):barrier?new Color(.45f,.7f,1,arc*.5f):new Color(.8f,.5f,1,arc*.4f);
+                if(twin!=null){twin.rectTransform.anchoredPosition=Vector2.Lerp(to,from,t)-Vector2.up*70*arc;twin.color=sigil.color;}
+            });_impact(e); // Skill cues may be nested inside an attack; never roll back its health snapshot.
         }
         private IEnumerator Shield(CombatVisualEvent e,Vector2 pos)
         {

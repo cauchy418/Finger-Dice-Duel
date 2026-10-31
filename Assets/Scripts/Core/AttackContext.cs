@@ -350,6 +350,7 @@ namespace FingerDiceDuel.Core
         private Hand _reflectionSource;
         public PlayerState VisualIntendedTarget => _intendedDefender;
         private CombatVisualToken _visualHit;
+        private bool _visualReaction,_visualReactionShown;
         public void Resolve(IChoiceProvider defenderChoice,GameManager manager)
         {
             PrepareResolution(defenderChoice,manager);if(WasCancelled){manager?.FinishVisualAttack(manager.BeginVisualAttack(this,0),CombatVisualOutcome.Cancelled);return;}
@@ -709,6 +710,8 @@ namespace FingerDiceDuel.Core
         private void ApplyAttackerStatus(GameManager manager, ElementHit onlyHit = null)
         {
             if (Attacker == null || WasCancelled || IsStatusDamage) return;
+            if(_visualReaction&&!_visualReactionShown&&!WasTypeImmune&&(LandedHits>0||BlockedHits>0))
+            {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender);}
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
             if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
 
