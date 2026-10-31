@@ -7,7 +7,8 @@ clips=json.loads((folder/'clips.json').read_text(encoding='utf-8'))
 def compress(path):
  with Image.open(path) as im:
   im.load();assert im.size==(1280,720),path
-  im.save(path,optimize=True)
+  copy=im.copy()
+ copy.save(path,optimize=True)
 with ThreadPoolExecutor(max_workers=4) as executor:list(executor.map(compress,folder.rglob('*.png')))
 font=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',15)
 for page in range((len(clips)+11)//12):
@@ -27,6 +28,7 @@ for c in clips:
  manifest['clips'].append(entry)
 (folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
 lines=['# 专属动画定稿与截图','', '2026-10-31。**53种播放变体，106张1280×720 PNG**。每种包含起势（进度0.28）与高峰（进度0.62）；它们是播放变体，不是53名角色。','', '截图来自Unity原生Canvas与生产播放器的同一个绘制方法；使用受控角色及技能数据审阅外观、落点、可读性，未把静态姿态预览当成真实规则触发。实际规则数据另由功能测试验证，异步队列由现场播放脚本验证。截图无后期绘画；以下总览仅缩放拼接原图。','', '## 总览','']
+lines[6:6]=['P2／P3接入后，修正临时数字同帧清理与资源定位，15个相关片段已重拍；见[重拍报告](number-refresh.txt)和[片段清单](../animation-p2-p3/live-playback/p1-refreshed.json)。其余片段与原有验证记录保留。','']
 for i in range(1,6):lines+= [f'![专属动画总览{i}](review-{i}.jpg)','']
 lines+=['## 每项最终稿','', '| 片段 | 技能／变体 | 起势 | 高峰 |','|---|---|---|---|']
 for c in clips:

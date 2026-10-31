@@ -1,0 +1,2802 @@
+{
+  "date": "2026-10-31",
+  "renderer": "Unity native Canvas / production DrawFinalPose and DrawSecondaryPose",
+  "capture": "controlled review fixtures; actual rule-trigger and asynchronous queue validation are separate",
+  "size": [
+    1280,
+    720
+  ],
+  "format": "lossless WebP, pixel-identical to native PNG captures",
+  "sourceSha256": {
+    "Assets/Scripts/Core/SecondarySkillAnimation.cs": "4bdc9ceb138a69cb94c7c3fef40839e9d9e4ac377fddda2e99dfcc8c545c29d2",
+    "Assets/Scripts/UI/CombatAnimationPlayer.SecondarySkills.cs": "47c124bda0520126a631ade61d434ee1634bc84a9cc5e0e408139ce18f3482c0",
+    "Assets/Scripts/UI/CombatAnimationPlayer.FinalSkills.cs": "ae3dda84f4da4497451d97c0f4c6ca1278fcb0f126330fa64dc2e228d47c7fac",
+    "Assets/Scripts/UI/CombatStatusMotion.Secondary.cs": "83d1634a183f791f59f7e4693ae7386540494b89609a19d01ce75fcb75946659"
+  },
+  "profiles": 64,
+  "motionFamilies": 33,
+  "clips": [
+    {
+      "id": "p3-01-strike",
+      "skill": "精通重击",
+      "definition": "Champion",
+      "style": "Strike",
+      "tier": 3,
+      "variant": "critical",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-01-strike/windup.webp",
+          "progress": 0.28,
+          "sha256": "f46196edd29892de03b24735def52b499c01bd4a84aacb2db16d61c7af84c63b"
+        },
+        {
+          "path": "p3-01-strike/peak.webp",
+          "progress": 0.62,
+          "sha256": "4226b38d20f951a0636d094978521e179324488bb9bd3793f5bbb8867659de5b"
+        }
+      ]
+    },
+    {
+      "id": "p2-02-strike",
+      "skill": "无畏冲锋",
+      "definition": "Breaker",
+      "style": "Strike",
+      "tier": 2,
+      "variant": "charge",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-02-strike/windup.webp",
+          "progress": 0.28,
+          "sha256": "ebb74977b5efd27516a06689778cfcecccfbc4e41ff4e580aa5277525ff3df61"
+        },
+        {
+          "path": "p2-02-strike/peak.webp",
+          "progress": 0.62,
+          "sha256": "ac4a1999cf3181beed37412573db2cf38f6f3df3ea4701a1ce53fddc09128aa7"
+        }
+      ]
+    },
+    {
+      "id": "p2-03-repair",
+      "skill": "盾阵重整",
+      "definition": "Breaker",
+      "style": "Repair",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-03-repair/windup.webp",
+          "progress": 0.28,
+          "sha256": "b3f8ba86ebbba31827562adc8d33f91fe944b87c3be12a192f28219e80fee28e"
+        },
+        {
+          "path": "p2-03-repair/peak.webp",
+          "progress": 0.62,
+          "sha256": "f4ff1d026aed97b3b3a3d0999f6ba478077831d4c7d79951d2f220f0dadb913e"
+        }
+      ]
+    },
+    {
+      "id": "p2-04-arrows",
+      "skill": "奥术射击·魔能齐射",
+      "definition": "ArcaneArcher",
+      "style": "Arrows",
+      "tier": 2,
+      "variant": "volley",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-04-arrows/windup.webp",
+          "progress": 0.28,
+          "sha256": "6a0016aa08e72bfc84eedfbb88381c4fc33f33ad3a346fc85eeb889b093b3dbf"
+        },
+        {
+          "path": "p2-04-arrows/peak.webp",
+          "progress": 0.62,
+          "sha256": "676713168815bc60ab0624032113a258410d8a9c3dea5da93d23c9a1a636a85f"
+        }
+      ]
+    },
+    {
+      "id": "p2-05-arrows",
+      "skill": "奥术射击·强力射击",
+      "definition": "ArcaneArcher",
+      "style": "Arrows",
+      "tier": 2,
+      "variant": "power",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-05-arrows/windup.webp",
+          "progress": 0.28,
+          "sha256": "a3900e74501ddc9c2f46560e4102f76cea02d4798eaadf3785ce9f7e68caab07"
+        },
+        {
+          "path": "p2-05-arrows/peak.webp",
+          "progress": 0.62,
+          "sha256": "f475ec241381bb5531565153b48a5a0deb3cafba01ff14edae2ffc6b32430529"
+        }
+      ]
+    },
+    {
+      "id": "p2-06-arrows",
+      "skill": "奥术射击·穿透箭",
+      "definition": "ArcaneArcher",
+      "style": "Arrows",
+      "tier": 2,
+      "variant": "piercing",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-06-arrows/windup.webp",
+          "progress": 0.28,
+          "sha256": "f2c987bbf78fa7e3c72591c7b3d80db05d5553e6c0a8a43635760bfd206697c5"
+        },
+        {
+          "path": "p2-06-arrows/peak.webp",
+          "progress": 0.62,
+          "sha256": "0ef990f96dcf81f6f827955aa9e32226c2eeec142f4942a33d31494e52e6124b"
+        }
+      ]
+    },
+    {
+      "id": "p3-07-growth",
+      "skill": "神圣誓忠",
+      "definition": "OathOfTheCrown",
+      "style": "Growth",
+      "tier": 3,
+      "variant": "crown",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-07-growth/windup.webp",
+          "progress": 0.28,
+          "sha256": "df8750672b1147906dab3f4d5c05817abc90427ec77359f1341c9782f8f09b74"
+        },
+        {
+          "path": "p3-07-growth/peak.webp",
+          "progress": 0.62,
+          "sha256": "c1b6f645a1b49dc2a6708f1398109256eff693e0d904845c0619e8d9ce564b2b"
+        }
+      ]
+    },
+    {
+      "id": "p2-08-heal",
+      "skill": "生命门徒",
+      "definition": "LifeDomain",
+      "style": "Heal",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-08-heal/windup.webp",
+          "progress": 0.28,
+          "sha256": "a624c5f5f453ea30d8f12e8a292b61a434edbbc1419d65a0215dc7a50e22bc44"
+        },
+        {
+          "path": "p2-08-heal/peak.webp",
+          "progress": 0.62,
+          "sha256": "d9d0f164fac2e985b4896af7c572bf52655eedbbf2765fdddef75ce37477db05"
+        }
+      ]
+    },
+    {
+      "id": "p2-09-heal",
+      "skill": "维持生命",
+      "definition": "LifeDomain",
+      "style": "Heal",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-09-heal/windup.webp",
+          "progress": 0.28,
+          "sha256": "2ec9086ead485af448747568d743b3f1e5db97b81d8acf1066828382707af3ca"
+        },
+        {
+          "path": "p2-09-heal/peak.webp",
+          "progress": 0.62,
+          "sha256": "3906426120a6856a2113bff1065c218c1a3880c2a1110015dba0cc5ded38e2cf"
+        }
+      ]
+    },
+    {
+      "id": "p2-10-cleanse",
+      "skill": "净化",
+      "definition": "LifeDomain",
+      "style": "Cleanse",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-10-cleanse/windup.webp",
+          "progress": 0.28,
+          "sha256": "61e19d1d2d83d16b0bfd3399c17a8390d58c75fe189ff912963b304b30e41f08"
+        },
+        {
+          "path": "p2-10-cleanse/peak.webp",
+          "progress": 0.62,
+          "sha256": "e16f641254ef73b5baab0aec19ce8954d3fb1e270e3e2537829f8c3386738803"
+        }
+      ]
+    },
+    {
+      "id": "p2-11-eye",
+      "skill": "思维之盾",
+      "definition": "TheGreatOldOne",
+      "style": "Eye",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-11-eye/windup.webp",
+          "progress": 0.28,
+          "sha256": "405751114d25c773eadda1e95de01f0f2d769a722207590fa953c43a2eee169c"
+        },
+        {
+          "path": "p2-11-eye/peak.webp",
+          "progress": 0.62,
+          "sha256": "817893e14b582ed172a4dced4c4e4b865ab8c0fcdaacbea5d5e7159d878b0498"
+        }
+      ]
+    },
+    {
+      "id": "p2-12-enchant",
+      "skill": "法术塑形",
+      "definition": "SchoolOfEvocation",
+      "style": "Enchant",
+      "tier": 2,
+      "variant": "prepare",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-12-enchant/windup.webp",
+          "progress": 0.28,
+          "sha256": "63e071bbcfc719f57f7c40b783837524c56d60ad263b5e1fc869ddc0ba69a41d"
+        },
+        {
+          "path": "p2-12-enchant/peak.webp",
+          "progress": 0.62,
+          "sha256": "24afad197db1d0e5db5646561c9bdf00772f54d752e0fd9d203f3432979de772"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge/windup.webp",
+          "progress": 0.28,
+          "sha256": "1b15850c9a495d06bd2cb0cc46f48b6aca3406b326abfb45d6248339536ffe98"
+        },
+        {
+          "path": "p2-13-surge/peak.webp",
+          "progress": 0.62,
+          "sha256": "66738a2b6826c4e556f15c9c1473a15c9f2cafa9d2e0b61f13b5fdabb28da372"
+        }
+      ]
+    },
+    {
+      "id": "p2-14-music",
+      "skill": "战斗激励",
+      "definition": "CollegeOfValor",
+      "style": "Music",
+      "tier": 2,
+      "variant": "BoostAttack",
+      "value": 3,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-14-music/windup.webp",
+          "progress": 0.28,
+          "sha256": "be72b81099b422d5ee43aa461c24a35df282200eccd89eb29d87182d1da9781c"
+        },
+        {
+          "path": "p2-14-music/peak.webp",
+          "progress": 0.62,
+          "sha256": "dd3cc4f1ff96eae2506de9096be2a739a7ceb8f7dbb3065fc178a9cef8f2a2ce"
+        }
+      ]
+    },
+    {
+      "id": "p2-15-steal",
+      "skill": "快手",
+      "definition": "Thief",
+      "style": "Steal",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-15-steal/windup.webp",
+          "progress": 0.28,
+          "sha256": "f53e0b92b66b173d4b0104f4df552ced5c46310eaa171db101e227e5f80a9aec"
+        },
+        {
+          "path": "p2-15-steal/peak.webp",
+          "progress": 0.62,
+          "sha256": "60327ed491c273321b26f88373c145cf301e6d4af4704e314b9f0a1f348feb07"
+        }
+      ]
+    },
+    {
+      "id": "p2-16-strike",
+      "skill": "死亡突袭",
+      "definition": "Assassin",
+      "style": "Strike",
+      "tier": 2,
+      "variant": "shadow",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-16-strike/windup.webp",
+          "progress": 0.28,
+          "sha256": "583ebf9c62316a71920ec774a3c7c06855a24176a14858f4258b2230d026b9f7"
+        },
+        {
+          "path": "p2-16-strike/peak.webp",
+          "progress": 0.62,
+          "sha256": "5cf2d20b1542a6b86d37e8898c74933a8b36959863a668b71190e6e770e32cf9"
+        }
+      ]
+    },
+    {
+      "id": "p2-17-hand",
+      "skill": "法师之手",
+      "definition": "Magician",
+      "style": "Hand",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-17-hand/windup.webp",
+          "progress": 0.28,
+          "sha256": "1ac1aaad330dffb85941457e7e9216a6fac31d085df6ac6d1bb0cc755054d82f"
+        },
+        {
+          "path": "p2-17-hand/peak.webp",
+          "progress": 0.62,
+          "sha256": "e8ba78cd9f5474ecc2647becf495a1a4822bbb8907a1d0b97f422c465ee1acdd"
+        }
+      ]
+    },
+    {
+      "id": "p2-18-cards",
+      "skill": "魔术攻击",
+      "definition": "Magician",
+      "style": "Cards",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-18-cards/windup.webp",
+          "progress": 0.28,
+          "sha256": "4cd51d1e9adce34726c462e42f734e5a426918ed0066e4a199a4e65fbf904a3d"
+        },
+        {
+          "path": "p2-18-cards/peak.webp",
+          "progress": 0.62,
+          "sha256": "622ebf7d58ba891ac876c99b8d7645d0659f316aa56af664073b21c51dabe828"
+        }
+      ]
+    },
+    {
+      "id": "p2-19-taichiboost",
+      "skill": "太极八卦",
+      "definition": "WayOfTheTaiChi",
+      "style": "TaichiBoost",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-19-taichiboost/windup.webp",
+          "progress": 0.28,
+          "sha256": "4351f95a4b24ac04ace466679fb61673fff4b9297deb32fc1f73619583427151"
+        },
+        {
+          "path": "p2-19-taichiboost/peak.webp",
+          "progress": 0.62,
+          "sha256": "1cca53f4978252852ec92d7273beb11d5eea07344633757747e0868a8f337003"
+        }
+      ]
+    },
+    {
+      "id": "p2-20-taichiboost",
+      "skill": "借力打力",
+      "definition": "WayOfTheTaiChi",
+      "style": "TaichiBoost",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-20-taichiboost/windup.webp",
+          "progress": 0.28,
+          "sha256": "6ccf75347ac28d11b9d8a1dbe71b2877e0b7a07fe6180f88d9e346c604ca44f0"
+        },
+        {
+          "path": "p2-20-taichiboost/peak.webp",
+          "progress": 0.62,
+          "sha256": "e19d699301b13913867d9563437832621512e149905ce7d4c583f8c1e39d3b50"
+        }
+      ]
+    },
+    {
+      "id": "p2-21-taichiboost",
+      "skill": "阴阳流转",
+      "definition": "WayOfTheTaiChi",
+      "style": "TaichiBoost",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-21-taichiboost/windup.webp",
+          "progress": 0.28,
+          "sha256": "7d11b0754a512a0edd338df11da1d51d0b1802cf940e7954062431f853e1750f"
+        },
+        {
+          "path": "p2-21-taichiboost/peak.webp",
+          "progress": 0.62,
+          "sha256": "19655c0738f9cfa01d5e559931fda8666f35fde189656b2824fcef6e7a2bc60d"
+        }
+      ]
+    },
+    {
+      "id": "p2-22-tether",
+      "skill": "守望束缚",
+      "definition": "PathOfTheWarden",
+      "style": "Tether",
+      "tier": 2,
+      "variant": "chain",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-22-tether/windup.webp",
+          "progress": 0.28,
+          "sha256": "07c5804ce884ace8402740b12f9f15f625811a99fe47bdbfebab4f7e4fc0c0f8"
+        },
+        {
+          "path": "p2-22-tether/peak.webp",
+          "progress": 0.62,
+          "sha256": "083fa6ebd9dc0e6f294e885c10c2e537c5135fa470ed2a83a9b75821b428701a"
+        }
+      ]
+    },
+    {
+      "id": "p2-23-rage",
+      "skill": "狂怒",
+      "definition": "PathOfTheBerserker",
+      "style": "Rage",
+      "tier": 2,
+      "variant": "",
+      "value": 9,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-23-rage/windup.webp",
+          "progress": 0.28,
+          "sha256": "a0c0c6aee9935cfdf231e4d18bebaf56b4432ccd93a3a02023e0567c6fac73e8"
+        },
+        {
+          "path": "p2-23-rage/peak.webp",
+          "progress": 0.62,
+          "sha256": "b178ebe8d86ed09594ad52245f4078c75724c2131ba59efee748e27c1a5fe1a6"
+        }
+      ]
+    },
+    {
+      "id": "p2-24-rage",
+      "skill": "狂乱",
+      "definition": "PathOfTheBerserker",
+      "style": "Rage",
+      "tier": 2,
+      "variant": "frenzy",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-24-rage/windup.webp",
+          "progress": 0.28,
+          "sha256": "124f5b846be78d68a7db3fd3b696ba5dbd3937525ded7195e5d0b75e227aecd2"
+        },
+        {
+          "path": "p2-24-rage/peak.webp",
+          "progress": 0.62,
+          "sha256": "6b1e800ce0951ad5c0e44ede250de2570a69cd0a78b7602c21b5eafc8b63e536"
+        }
+      ]
+    },
+    {
+      "id": "p2-25-drain",
+      "skill": "嗜血",
+      "definition": "PathOfTheBerserker",
+      "style": "Drain",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-25-drain/windup.webp",
+          "progress": 0.28,
+          "sha256": "bd5935f0e2dc147cd4cd7f867adb2f944967f77abf8d21bcc8d629a8c34ad6b8"
+        },
+        {
+          "path": "p2-25-drain/peak.webp",
+          "progress": 0.62,
+          "sha256": "45ec9b86a5f2cfb9ca8b3c83bbee5c46d29d81e5704395f9c8cbe325ea4ef2b7"
+        }
+      ]
+    },
+    {
+      "id": "p3-26-strike",
+      "skill": "巨人之力",
+      "definition": "PathOfTheGiant",
+      "style": "Strike",
+      "tier": 3,
+      "variant": "giant",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-26-strike/windup.webp",
+          "progress": 0.28,
+          "sha256": "abd2b078b77063380bf37af917ba2c4fa0d212bbcd0a68971d0a562bdb78bb3c"
+        },
+        {
+          "path": "p3-26-strike/peak.webp",
+          "progress": 0.62,
+          "sha256": "360dfb78872774231ea5deb35a2d8b9c42f9630c6ecf5faffac8bfb55cd4e66b"
+        }
+      ]
+    },
+    {
+      "id": "p3-27-heal",
+      "skill": "巨人恢复",
+      "definition": "PathOfTheGiant",
+      "style": "Heal",
+      "tier": 3,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-27-heal/windup.webp",
+          "progress": 0.28,
+          "sha256": "f6b923833c98e9adf928b83df4c78634d58a64f2d16644d439f7328cfe77fb45"
+        },
+        {
+          "path": "p3-27-heal/peak.webp",
+          "progress": 0.62,
+          "sha256": "00c227224050b8ee7386a86ab9a4b9ae485b0caffbc1d6e6a3144649890138b4"
+        }
+      ]
+    },
+    {
+      "id": "p3-28-growth",
+      "skill": "野兽形态",
+      "definition": "PathOfTheBeast",
+      "style": "Growth",
+      "tier": 3,
+      "variant": "claw",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-28-growth/windup.webp",
+          "progress": 0.28,
+          "sha256": "78f42d0e21c69f545bad2cc3bc6baebd0146b5dc1b08facd62af18a1b3a68cce"
+        },
+        {
+          "path": "p3-28-growth/peak.webp",
+          "progress": 0.62,
+          "sha256": "49ddfd920bd6fab6da51f17dc58f05c2be2dd297bc619064f11a6479edbf05d1"
+        }
+      ]
+    },
+    {
+      "id": "p2-29-dice",
+      "skill": "命运赌博",
+      "definition": "Gambler",
+      "style": "Dice",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-29-dice/windup.webp",
+          "progress": 0.28,
+          "sha256": "933c6785b4202c6bded5bda1a709dc5dddd0aa30feb0005754a91ff3940966fc"
+        },
+        {
+          "path": "p2-29-dice/peak.webp",
+          "progress": 0.62,
+          "sha256": "650872748f99884ee245f919ff97046edaf9b19befd6d13c685921f2e0c2f796"
+        }
+      ]
+    },
+    {
+      "id": "p2-30-dice",
+      "skill": "赌徒之运",
+      "definition": "Gambler",
+      "style": "Dice",
+      "tier": 2,
+      "variant": "forced",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-30-dice/windup.webp",
+          "progress": 0.28,
+          "sha256": "9e47a5fbf896ae8540dcbd721034331dbf1b19b42c3b972e185bf5d523fee555"
+        },
+        {
+          "path": "p2-30-dice/peak.webp",
+          "progress": 0.62,
+          "sha256": "fe85aa8210ad3b7d7ba374e63713ab2bbff35ed9fc9107ff01608b81bf63a637"
+        }
+      ]
+    },
+    {
+      "id": "p3-31-measure",
+      "skill": "战术优势",
+      "definition": "Tactician",
+      "style": "Measure",
+      "tier": 3,
+      "variant": "",
+      "value": 12,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-31-measure/windup.webp",
+          "progress": 0.28,
+          "sha256": "73e845b2379a89f246d3318846fe3f46d68dd5c423a5b339705312b68e277e06"
+        },
+        {
+          "path": "p3-31-measure/peak.webp",
+          "progress": 0.62,
+          "sha256": "b2190e94f1a740969d826d587a901f8f9cda204573fa4c0de6a5a1db7c511016"
+        }
+      ]
+    },
+    {
+      "id": "p2-32-sun",
+      "skill": "黎明曙光",
+      "definition": "LightDomain",
+      "style": "Sun",
+      "tier": 2,
+      "variant": "dawn",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-32-sun/windup.webp",
+          "progress": 0.28,
+          "sha256": "fd47e30dda8f4c5f1b842334b214fb3c235ac030a8a429f139f8aabd6e006f4f"
+        },
+        {
+          "path": "p2-32-sun/peak.webp",
+          "progress": 0.62,
+          "sha256": "8c3c804dc7edb17483b4c3f17f5c5096aeaa5bd12f2607222c70fdba31a55f31"
+        }
+      ]
+    },
+    {
+      "id": "p2-33-sun",
+      "skill": "守御闪光",
+      "definition": "LightDomain",
+      "style": "Sun",
+      "tier": 2,
+      "variant": "brand",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-33-sun/windup.webp",
+          "progress": 0.28,
+          "sha256": "8cdf0b5c54ab8b7d5c3b423db80617b15ee2749716ddae53f119a498f34de293"
+        },
+        {
+          "path": "p2-33-sun/peak.webp",
+          "progress": 0.62,
+          "sha256": "04717d36b941e24f7ad6b444563c001a522daccd7bb429eb1efcd2451021a4c5"
+        }
+      ]
+    },
+    {
+      "id": "p2-34-maneuver",
+      "skill": "卓越战技",
+      "definition": "BattleMaster",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-34-maneuver/windup.webp",
+          "progress": 0.28,
+          "sha256": "150310469d0ac96e2839896e8638615b3322013fc4dfd8e1b21b0721c33738ad"
+        },
+        {
+          "path": "p2-34-maneuver/peak.webp",
+          "progress": 0.62,
+          "sha256": "8d81a33b7e97bbb733e6192b606228000cba7c0260f25f16aff93d89957a56a5"
+        }
+      ]
+    },
+    {
+      "id": "p2-35-dragon",
+      "skill": "龙族先祖",
+      "definition": "DraconicBloodline",
+      "style": "Dragon",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-35-dragon/windup.webp",
+          "progress": 0.28,
+          "sha256": "91c0465ac8f08e2f4142b159197e09e30935cb4185242e70d299fff61897f200"
+        },
+        {
+          "path": "p2-35-dragon/peak.webp",
+          "progress": 0.62,
+          "sha256": "d72eef62a2cb3c99bb8f8407c2f2edb6f22f728f370d72eef3bcbb8d274bb20f"
+        }
+      ]
+    },
+    {
+      "id": "p2-36-surge",
+      "skill": "龙族体魄",
+      "definition": "DraconicBloodline",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "dragon",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-36-surge/windup.webp",
+          "progress": 0.28,
+          "sha256": "da954ad7f840946ce9e02ceac70d9a93d33321ae49379c6789738fcda37dc1b1"
+        },
+        {
+          "path": "p2-36-surge/peak.webp",
+          "progress": 0.62,
+          "sha256": "1db439bca949886fda1efdc926db6bfa5cd9c6aac51c60f3858d1caf19af3fcd"
+        }
+      ]
+    },
+    {
+      "id": "p2-37-elementfist",
+      "skill": "四象门徒",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementFist",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-37-elementfist/windup.webp",
+          "progress": 0.28,
+          "sha256": "88d85e2e07c3bbb8294158860bb278586f85a86e69baeba37a9f866747f5b93a"
+        },
+        {
+          "path": "p2-37-elementfist/peak.webp",
+          "progress": 0.62,
+          "sha256": "5e36e9fe1892390db493319b6ff7c3b84417812dcc2487fd2c73ff7b8626de38"
+        }
+      ]
+    },
+    {
+      "id": "p2-38-elementguard",
+      "skill": "四象法门",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-38-elementguard/windup.webp",
+          "progress": 0.28,
+          "sha256": "227e36b34f9af3c882f1b41ba5658b4598336060b073c315a98007821dea7ac3"
+        },
+        {
+          "path": "p2-38-elementguard/peak.webp",
+          "progress": 0.62,
+          "sha256": "2482d6796207d5d9563142f57f703852001e835c8c96417ac3ced9196182e5d8"
+        }
+      ]
+    },
+    {
+      "id": "p2-39-tether",
+      "skill": "大地束缚",
+      "definition": "CircleOfTheLand",
+      "style": "Tether",
+      "tier": 2,
+      "variant": "vine",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-39-tether/windup.webp",
+          "progress": 0.28,
+          "sha256": "eeaf3cf2e68bd908756f139ed3f4404a326f7fb6ff889992dbb8c165502c347a"
+        },
+        {
+          "path": "p2-39-tether/peak.webp",
+          "progress": 0.62,
+          "sha256": "a74c5fb400b8d55180013bbeffdf23b889ebf75ab635195c728f35375cca4967"
+        }
+      ]
+    },
+    {
+      "id": "p2-40-tether",
+      "skill": "大地行者",
+      "definition": "CircleOfTheLand",
+      "style": "Tether",
+      "tier": 2,
+      "variant": "roots",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-40-tether/windup.webp",
+          "progress": 0.28,
+          "sha256": "aa8b8231d82b246dfe3c665dd0f19602675c7c299131f7135cad9be8afa7ca45"
+        },
+        {
+          "path": "p2-40-tether/peak.webp",
+          "progress": 0.62,
+          "sha256": "4f8c4b8a72076695c40c3dfdef1dabc1260949f22eddb650674eee38e637e9a3"
+        }
+      ]
+    },
+    {
+      "id": "p2-41-tether",
+      "skill": "自然之怒",
+      "definition": "OathOfTheAncients",
+      "style": "Tether",
+      "tier": 2,
+      "variant": "vine",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-41-tether/windup.webp",
+          "progress": 0.28,
+          "sha256": "0c1802fee4e070d70ff7fe579d580f3e0cee4e7327b66b51b6132e81788c4e5e"
+        },
+        {
+          "path": "p2-41-tether/peak.webp",
+          "progress": 0.62,
+          "sha256": "4d26c08225085225a5816bed622410ad39aeca69c82c1020bbb5eb0276ba0c81"
+        }
+      ]
+    },
+    {
+      "id": "p2-42-heal",
+      "skill": "不灭哨卫",
+      "definition": "OathOfTheAncients",
+      "style": "Heal",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-42-heal/windup.webp",
+          "progress": 0.28,
+          "sha256": "e039a45aabd3f35d9cd1f1186912a79fdf7c4cc5b78b96fbc222369d8f9ccf19"
+        },
+        {
+          "path": "p2-42-heal/peak.webp",
+          "progress": 0.62,
+          "sha256": "342aae4ac896fd39d4799eb293aa46d949650d441fe1aa6a5caddfb0883a2fb2"
+        }
+      ]
+    },
+    {
+      "id": "p2-43-falselife",
+      "skill": "黑暗赐福",
+      "definition": "TheFiend",
+      "style": "FalseLife",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-43-falselife/windup.webp",
+          "progress": 0.28,
+          "sha256": "6a71db051791f9c26b137322dd868402bfc2de3a5adbd3ff0a318a281f2df9ac"
+        },
+        {
+          "path": "p2-43-falselife/peak.webp",
+          "progress": 0.62,
+          "sha256": "fe1a617ca9c6ff27ecabf33c041a1352d764a6b86dcd17501abc335cd66df568"
+        }
+      ]
+    },
+    {
+      "id": "p2-44-nightmare",
+      "skill": "直坠噩梦",
+      "definition": "TheFiend",
+      "style": "Nightmare",
+      "tier": 2,
+      "variant": "prepare",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-44-nightmare/windup.webp",
+          "progress": 0.28,
+          "sha256": "1a9c49252d0f3faeb72a07230c0408d4b6af2f93337406d85e9c2785edea8628"
+        },
+        {
+          "path": "p2-44-nightmare/peak.webp",
+          "progress": 0.62,
+          "sha256": "41d2068257234b7b3b3034b1e8197f580e1d9971ba7df3e19b34750ffbec1288"
+        }
+      ]
+    },
+    {
+      "id": "p2-45-drain",
+      "skill": "黑暗强运",
+      "definition": "TheFiend",
+      "style": "Drain",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-45-drain/windup.webp",
+          "progress": 0.28,
+          "sha256": "d4ef086e323fc808f74a07b58211e6c367f8222815f45f98ce0a1e844d8948fc"
+        },
+        {
+          "path": "p2-45-drain/peak.webp",
+          "progress": 0.62,
+          "sha256": "c26ecf23ddc9bd4c529e00b422eaf41067a7a99c0a68bc07e091e987a060bec3"
+        }
+      ]
+    },
+    {
+      "id": "p2-46-book",
+      "skill": "逸闻记录",
+      "definition": "CollegeOfLore",
+      "style": "Book",
+      "tier": 2,
+      "variant": "record",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-46-book/windup.webp",
+          "progress": 0.28,
+          "sha256": "d679b15248cf45c2b9f24d0d874276eb2f0baa9236229e728760e06a56d819a3"
+        },
+        {
+          "path": "p2-46-book/peak.webp",
+          "progress": 0.62,
+          "sha256": "9b85ba4db86b21a1a63b67451bf844f0aa1066aec97cd83007ad412e33b4a64e"
+        }
+      ]
+    },
+    {
+      "id": "p2-47-book",
+      "skill": "切割语",
+      "definition": "CollegeOfLore",
+      "style": "Book",
+      "tier": 2,
+      "variant": "consume",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-47-book/windup.webp",
+          "progress": 0.28,
+          "sha256": "b730bef702047a7e030f6ffc8cacccc05d8ee075813a2467587d5719d517c46c"
+        },
+        {
+          "path": "p2-47-book/peak.webp",
+          "progress": 0.62,
+          "sha256": "dd15ab7427df9dffddd3afff1a42a042a8bf1d2b5e1186d996aae6393bf693f6"
+        }
+      ]
+    },
+    {
+      "id": "p2-48-book",
+      "skill": "无与伦比技艺",
+      "definition": "CollegeOfLore",
+      "style": "Book",
+      "tier": 2,
+      "variant": "growth",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-48-book/windup.webp",
+          "progress": 0.28,
+          "sha256": "73d17f8ac6d32bcc99bd782df5ed9d957d33540c6db69497798eaf28ff8c8074"
+        },
+        {
+          "path": "p2-48-book/peak.webp",
+          "progress": 0.62,
+          "sha256": "451eca0e659eba1befc92b479cc870bd727f80b139d47f6a3e1f2f7d39527591"
+        }
+      ]
+    },
+    {
+      "id": "p2-49-elementguard",
+      "skill": "风暴之护",
+      "definition": "StormSorcery",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-49-elementguard/windup.webp",
+          "progress": 0.28,
+          "sha256": "3a0f1612eb73b91316f837441da82763d58fc1498dd5d468710202626a15047d"
+        },
+        {
+          "path": "p2-49-elementguard/peak.webp",
+          "progress": 0.62,
+          "sha256": "37d56c081e9670214c722bc16f28e38225c8e91e4bb38d96a69ad703396c6b27"
+        }
+      ]
+    },
+    {
+      "id": "p2-50-surge",
+      "skill": "暴风狂怒",
+      "definition": "StormSorcery",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-50-surge/windup.webp",
+          "progress": 0.28,
+          "sha256": "a992a0f94d7f6609d31da1f9dc662f03ad980b62432f5d5005ee0f2765dd5cf7"
+        },
+        {
+          "path": "p2-50-surge/peak.webp",
+          "progress": 0.62,
+          "sha256": "464f16051a86bf32ab1b12c637a1759816583633e9578d24ec8e366e53ad1b21"
+        }
+      ]
+    },
+    {
+      "id": "p2-51-wind",
+      "skill": "风暴导向",
+      "definition": "StormSorcery",
+      "style": "Wind",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-51-wind/windup.webp",
+          "progress": 0.28,
+          "sha256": "6bf438c78d01b9c6f357004c01fa883cdb51f9a8c4675ffb9536321fbb5d8d54"
+        },
+        {
+          "path": "p2-51-wind/peak.webp",
+          "progress": 0.62,
+          "sha256": "bc06fb26562f6262ed7539acbfc800f496959e1e4730b52f00f939bfd8e355e7"
+        }
+      ]
+    },
+    {
+      "id": "p2-52-wind",
+      "skill": "风暴之心",
+      "definition": "TempestDomain",
+      "style": "Wind",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-52-wind/windup.webp",
+          "progress": 0.28,
+          "sha256": "3c1500d27ef4be48d7083460c12c9f74ac639ae9a26234c2e3dc097e8d838310"
+        },
+        {
+          "path": "p2-52-wind/peak.webp",
+          "progress": 0.62,
+          "sha256": "4e3a1a66f969b356869662d29008bfd49097daf3f44d85e09617c84ce3002063"
+        }
+      ]
+    },
+    {
+      "id": "p2-53-enchant",
+      "skill": "奥法武器",
+      "definition": "EldritchKnight",
+      "style": "Enchant",
+      "tier": 2,
+      "variant": "prepare",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-53-enchant/windup.webp",
+          "progress": 0.28,
+          "sha256": "ad80a7c58ad0d64e7f032f1d6cd9935d532a86cd652bb6ca69e2f0e81d1a56dc"
+        },
+        {
+          "path": "p2-53-enchant/peak.webp",
+          "progress": 0.62,
+          "sha256": "79a8d3aafb4aad7195fefaf10e0173207db1576b90e6ea68a61672916a030909"
+        }
+      ]
+    },
+    {
+      "id": "p2-54-enchant",
+      "skill": "法术回响",
+      "definition": "EldritchKnight",
+      "style": "Enchant",
+      "tier": 2,
+      "variant": "prepare",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-54-enchant/windup.webp",
+          "progress": 0.28,
+          "sha256": "629c7c171a0849ede44ba035cdac7b3ca87176a3ae00d35447ce9e2537446017"
+        },
+        {
+          "path": "p2-54-enchant/peak.webp",
+          "progress": 0.62,
+          "sha256": "37e858d4c8c95c6ff9433a4f53b4940d5a6ecfd08b8a3644ef9bc67c0f27cfa1"
+        }
+      ]
+    },
+    {
+      "id": "p2-55-growth",
+      "skill": "征服威压",
+      "definition": "OathOfConquest",
+      "style": "Growth",
+      "tier": 2,
+      "variant": "conquest",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-55-growth/windup.webp",
+          "progress": 0.28,
+          "sha256": "7f214f3009d31d1421806db21e0bf7df4ec9447424acc40b613b44f54457db72"
+        },
+        {
+          "path": "p2-55-growth/peak.webp",
+          "progress": 0.62,
+          "sha256": "41cf93db61c47981d62d9d2b4c12b9d095aeada002d587821158551031700905"
+        }
+      ]
+    },
+    {
+      "id": "p2-56-nightmare",
+      "skill": "恐惧光环",
+      "definition": "OathOfConquest",
+      "style": "Nightmare",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-56-nightmare/windup.webp",
+          "progress": 0.28,
+          "sha256": "ff62cde572a8e46627cb91d2302b3a194b0d85cec710b04941450abaaf54a3bb"
+        },
+        {
+          "path": "p2-56-nightmare/peak.webp",
+          "progress": 0.62,
+          "sha256": "1787acb7f27cf46ac90bdc8e71a29b73ed28fbbfcfb22ac1f8975a57b9a58f0f"
+        }
+      ]
+    },
+    {
+      "id": "p2-57-charm",
+      "skill": "催眠凝视",
+      "definition": "SchoolOfEnchantment",
+      "style": "Charm",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-57-charm/windup.webp",
+          "progress": 0.28,
+          "sha256": "17ba58da9d852365b702fcf149554b2947bd889a05ab11f07252fc27e9521e4d"
+        },
+        {
+          "path": "p2-57-charm/peak.webp",
+          "progress": 0.62,
+          "sha256": "85fbd96d4cf552b3727a9d8adbc824deb577a5f3076fc47a4edd6cb5b869d948"
+        }
+      ]
+    },
+    {
+      "id": "p2-58-maneuver",
+      "skill": "散打技巧",
+      "definition": "WayOfTheOpenHand",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-58-maneuver/windup.webp",
+          "progress": 0.28,
+          "sha256": "272e06816368b2026b7dafcc4cb55e520869b697d792f86b72e0475bf3f7482a"
+        },
+        {
+          "path": "p2-58-maneuver/peak.webp",
+          "progress": 0.62,
+          "sha256": "a072403ddb428cb6330a41a2b5a56ab47052b5944a101cbc222891a7d3d5cc1c"
+        }
+      ]
+    },
+    {
+      "id": "p2-59-heal",
+      "skill": "混元体",
+      "definition": "WayOfTheOpenHand",
+      "style": "Heal",
+      "tier": 2,
+      "variant": "",
+      "value": 5,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-59-heal/windup.webp",
+          "progress": 0.28,
+          "sha256": "df2e97251aad298bc2963a9f10b1691a464c783b461930f77f666a4052f72ec8"
+        },
+        {
+          "path": "p2-59-heal/peak.webp",
+          "progress": 0.62,
+          "sha256": "21fa323abe48ef5baa26ab89a1161f8804e1bb436295be3e572a8e92952394a6"
+        }
+      ]
+    },
+    {
+      "id": "p2-60-drunk",
+      "skill": "醉拳技巧",
+      "definition": "WayOfTheDrunkenMaster",
+      "style": "Drunk",
+      "tier": 2,
+      "variant": "",
+      "value": 2,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-60-drunk/windup.webp",
+          "progress": 0.28,
+          "sha256": "03261706820d482f2275012429b681fc4046d596243de5e4829ef0d37848aa0a"
+        },
+        {
+          "path": "p2-60-drunk/peak.webp",
+          "progress": 0.62,
+          "sha256": "4c194f0237a9fbeba76cb7634b8396ba38556a4ad33336dc23722871dc578ce1"
+        }
+      ]
+    },
+    {
+      "id": "p2-61-drunk",
+      "skill": "酣醉若狂",
+      "definition": "WayOfTheDrunkenMaster",
+      "style": "Drunk",
+      "tier": 2,
+      "variant": "upkeep",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-61-drunk/windup.webp",
+          "progress": 0.28,
+          "sha256": "1f9d5bcfac4b7932f1126ca2a6e0146c9c7cbf1273f7cc7ff7ea7cd566ae6559"
+        },
+        {
+          "path": "p2-61-drunk/peak.webp",
+          "progress": 0.62,
+          "sha256": "679d86c6e5a369183a060804090957e12c777824fc52f3774eae39321bb36598"
+        }
+      ]
+    },
+    {
+      "id": "p2-62-ki",
+      "skill": "气",
+      "definition": "WayOfTheNinja",
+      "style": "Ki",
+      "tier": 2,
+      "variant": "",
+      "value": 3,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-62-ki/windup.webp",
+          "progress": 0.28,
+          "sha256": "7b8c2853ead8176bd151ef9378b54c1bdb64e5603f07ab8a11332f058b531e36"
+        },
+        {
+          "path": "p2-62-ki/peak.webp",
+          "progress": 0.62,
+          "sha256": "f6b38044f7fcb79a9ffbb5ceef5ca06a9e60785faa30768da5c7a61532ce79ad"
+        }
+      ]
+    },
+    {
+      "id": "p3-63-circuit",
+      "skill": "汲能回路",
+      "definition": "Phantom",
+      "style": "Circuit",
+      "tier": 3,
+      "variant": "charge",
+      "value": 1,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-63-circuit/windup.webp",
+          "progress": 0.28,
+          "sha256": "fdbdfe5891e007512ba3d9f50b3bc6b88bdc3f21105b86b2ea5edde1e17ad3ef"
+        },
+        {
+          "path": "p3-63-circuit/peak.webp",
+          "progress": 0.62,
+          "sha256": "cf0dd6ed27cc8b441ac0dbbae9f809ac626c634cfa5f855cf02e2467e5a08a8f"
+        }
+      ]
+    },
+    {
+      "id": "p2-35-dragon-cold",
+      "skill": "龙族先祖",
+      "definition": "DraconicBloodline",
+      "style": "Dragon",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Cold",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-35-dragon-cold/windup.webp",
+          "progress": 0.28,
+          "sha256": "cc044b508c9ce3a26cdd922e4ae72fbc51c8f5d143326d71e2ec3a9b0d3e9599"
+        },
+        {
+          "path": "p2-35-dragon-cold/peak.webp",
+          "progress": 0.62,
+          "sha256": "c91f29f53bf20b0aa2cade893bda32b06c9040d95ffd983aa539a121088dc132"
+        }
+      ]
+    },
+    {
+      "id": "p2-35-dragon-lightning",
+      "skill": "龙族先祖",
+      "definition": "DraconicBloodline",
+      "style": "Dragon",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-35-dragon-lightning/windup.webp",
+          "progress": 0.28,
+          "sha256": "f4a5b309e0bb5ef51443ede4d21da66f556dd55f7cdfaa4d11ab38848701d967"
+        },
+        {
+          "path": "p2-35-dragon-lightning/peak.webp",
+          "progress": 0.62,
+          "sha256": "1f18e464dc4823b393853f598bc0bf0f51cc523df86ebbb40fa49917d6256fc7"
+        }
+      ]
+    },
+    {
+      "id": "p2-35-dragon-poison",
+      "skill": "龙族先祖",
+      "definition": "DraconicBloodline",
+      "style": "Dragon",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Poison",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-35-dragon-poison/windup.webp",
+          "progress": 0.28,
+          "sha256": "1ae0a6c8bf442eaad352c25fd960735036b52b1ed32aa232c24b3678a3be3a49"
+        },
+        {
+          "path": "p2-35-dragon-poison/peak.webp",
+          "progress": 0.62,
+          "sha256": "4aae25eaaa67b1ffaa1320ae09e069476a4accd176328cd2bfec0a337ef77028"
+        }
+      ]
+    },
+    {
+      "id": "p2-35-dragon-acid",
+      "skill": "龙族先祖",
+      "definition": "DraconicBloodline",
+      "style": "Dragon",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Acid",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-35-dragon-acid/windup.webp",
+          "progress": 0.28,
+          "sha256": "3fdede2e68e0da56643ab8fdac4d71788ca7309748813ca5642ccee754546dcc"
+        },
+        {
+          "path": "p2-35-dragon-acid/peak.webp",
+          "progress": 0.62,
+          "sha256": "822708e603370a140b4c24507fb2cd032aa18430a16ae4edd253c529ed27fa74"
+        }
+      ]
+    },
+    {
+      "id": "p2-37-elementfist-cold",
+      "skill": "四象门徒",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementFist",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Cold",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-37-elementfist-cold/windup.webp",
+          "progress": 0.28,
+          "sha256": "642f2423d3b245d33ad608ea101d0a6eba436f04f2201f8e89183d9d308c569a"
+        },
+        {
+          "path": "p2-37-elementfist-cold/peak.webp",
+          "progress": 0.62,
+          "sha256": "f6b1964f78048920c6d28ab9b88e29a276f0b909cf604f8c637edf4eeb5a44bb"
+        }
+      ]
+    },
+    {
+      "id": "p2-37-elementfist-lightning",
+      "skill": "四象门徒",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementFist",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-37-elementfist-lightning/windup.webp",
+          "progress": 0.28,
+          "sha256": "828b967ab57248c68181caa195736cac538816a44cf90a94243d82e89c251c07"
+        },
+        {
+          "path": "p2-37-elementfist-lightning/peak.webp",
+          "progress": 0.62,
+          "sha256": "f126f291067710c6bf67841ab23bef588165fa51a7b5be62628ae2f8a5897fbe"
+        }
+      ]
+    },
+    {
+      "id": "p2-37-elementfist-thunder",
+      "skill": "四象门徒",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementFist",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Thunder",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-37-elementfist-thunder/windup.webp",
+          "progress": 0.28,
+          "sha256": "372b42038aaafa269524e4a207695fe3830747c4d17ddd314838d230434d24a6"
+        },
+        {
+          "path": "p2-37-elementfist-thunder/peak.webp",
+          "progress": 0.62,
+          "sha256": "d1fcc4743964f9aacacddf91aa6a0835c47fc1fbca3f070d2fc214f732f51b90"
+        }
+      ]
+    },
+    {
+      "id": "p2-37-elementfist-acid",
+      "skill": "四象门徒",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementFist",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Acid",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-37-elementfist-acid/windup.webp",
+          "progress": 0.28,
+          "sha256": "8bb0ae9db17850463fd9ecea54bc8b7c421deb249badc1bf54c2b330b184be8d"
+        },
+        {
+          "path": "p2-37-elementfist-acid/peak.webp",
+          "progress": 0.62,
+          "sha256": "c678cb081a5b7d1ad744935acf416c590b80b6811297e6d14fdafd101404a09c"
+        }
+      ]
+    },
+    {
+      "id": "p2-38-elementguard-cold",
+      "skill": "四象法门",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Cold",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-38-elementguard-cold/windup.webp",
+          "progress": 0.28,
+          "sha256": "bd09dc454c26525f01eb25342eec20f3b8e48a0bea6f04ec218e123f7f430dfd"
+        },
+        {
+          "path": "p2-38-elementguard-cold/peak.webp",
+          "progress": 0.62,
+          "sha256": "edab95a5de4d0d47d6521d73fe1d028260d3ee5dc8039874621fc78065d9c33b"
+        }
+      ]
+    },
+    {
+      "id": "p2-38-elementguard-lightning",
+      "skill": "四象法门",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-38-elementguard-lightning/windup.webp",
+          "progress": 0.28,
+          "sha256": "d194d778d6a2df7c9384f7cfc7f47d387c4b3282662aed8a54e243d80ac51297"
+        },
+        {
+          "path": "p2-38-elementguard-lightning/peak.webp",
+          "progress": 0.62,
+          "sha256": "b879d968b71df7e1658606d155ae89e0864b179d3fb95d06e39e46e2f00f556a"
+        }
+      ]
+    },
+    {
+      "id": "p2-38-elementguard-thunder",
+      "skill": "四象法门",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Thunder",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-38-elementguard-thunder/windup.webp",
+          "progress": 0.28,
+          "sha256": "cf8a5026180438052267d51138759ad39a7310e3dc33d2eeff3bb8ce9dc3012b"
+        },
+        {
+          "path": "p2-38-elementguard-thunder/peak.webp",
+          "progress": 0.62,
+          "sha256": "9f6da324370031fce9f7c13be6d15c229cd30d88a1ca289e8665a3dbf81302aa"
+        }
+      ]
+    },
+    {
+      "id": "p2-38-elementguard-acid",
+      "skill": "四象法门",
+      "definition": "WayOfTheFourElements",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Acid",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-38-elementguard-acid/windup.webp",
+          "progress": 0.28,
+          "sha256": "40029b2832b11fa2fc379bfd8fa8181a049c1e228914e28e62ea305bc06b9d0c"
+        },
+        {
+          "path": "p2-38-elementguard-acid/peak.webp",
+          "progress": 0.62,
+          "sha256": "f5bda13681bc40ecd0878082d56e46c93e956d6717d54a360d2cff4c5f13d4de"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-thunder",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Thunder",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-thunder/windup.webp",
+          "progress": 0.28,
+          "sha256": "ddad6e9c0dfbb84c827a95a3d00367cede1a9d188b15299251b25355c3adc4db"
+        },
+        {
+          "path": "p2-13-surge-thunder/peak.webp",
+          "progress": 0.62,
+          "sha256": "13f333acb08bff1c69965270c7132bdd44b6430b2f932f2ef3d9dad6b1237c6a"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-acid",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Acid",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-acid/windup.webp",
+          "progress": 0.28,
+          "sha256": "aca56e4ff3c5b259484d3bd36fe37e8e7df882fe573f0cfe67824069efa20e7d"
+        },
+        {
+          "path": "p2-13-surge-acid/peak.webp",
+          "progress": 0.62,
+          "sha256": "d2990b38478b1d47a8436fd2f863e8af60a26fb25a08bdee7517930534311cd4"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-poison",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Poison",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-poison/windup.webp",
+          "progress": 0.28,
+          "sha256": "b3c9d3c9ff47017c2c00eb821465941505b37ebc6a77f88f2f7b973e5fe1e407"
+        },
+        {
+          "path": "p2-13-surge-poison/peak.webp",
+          "progress": 0.62,
+          "sha256": "b020583e718167ad2f3f1a3b5125204975309d48b3bc08906244a543c950c4dc"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-radiant",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Radiant",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-radiant/windup.webp",
+          "progress": 0.28,
+          "sha256": "575b383e86edd16d1c32a12fabfad4af156d227c299cdb66decaa0ae318e81d5"
+        },
+        {
+          "path": "p2-13-surge-radiant/peak.webp",
+          "progress": 0.62,
+          "sha256": "bd3e4201b0817fdf24e5644a826921724f0c59e2990c10a37ac459006d172e9b"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-necrotic",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Necrotic",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-necrotic/windup.webp",
+          "progress": 0.28,
+          "sha256": "d9b873a47baf807e304e9ad61002294ceeb44123638002730c329d62320a0cb1"
+        },
+        {
+          "path": "p2-13-surge-necrotic/peak.webp",
+          "progress": 0.62,
+          "sha256": "fc51311cdfc07545fe61ac4d711a12b395cdaab15cb4953846cc5765414b6c0f"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-cold",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Cold",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-cold/windup.webp",
+          "progress": 0.28,
+          "sha256": "d0a102f9c732beca7ddc4926ca6e5ac2bad03e117675c4a8a9cb3e9243e9e2a3"
+        },
+        {
+          "path": "p2-13-surge-cold/peak.webp",
+          "progress": 0.62,
+          "sha256": "1f0dba172065e776e67a973c42ac5772b256ac67beb9532226fbe3075ff66207"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-lightning",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Lightning",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-lightning/windup.webp",
+          "progress": 0.28,
+          "sha256": "6addc84d08483a38a69cb4390b5fcd26eaad7a413ccdc58c5f3dd4f449ef083c"
+        },
+        {
+          "path": "p2-13-surge-lightning/peak.webp",
+          "progress": 0.62,
+          "sha256": "afec27b73d7ce1355cb6085e72fdb278012aa3d7958d0aa24f1c3491693336d0"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-psychic",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Psychic",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-psychic/windup.webp",
+          "progress": 0.28,
+          "sha256": "7bb31ce01bb38a9f81b2799c45507d5c0fe96b83b4bc9ce343e23124e6de4302"
+        },
+        {
+          "path": "p2-13-surge-psychic/peak.webp",
+          "progress": 0.62,
+          "sha256": "173e19c8e2dfa824ef3fe4457542d66faf79ebafbe30f1f7069966a10175dfc7"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-force",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Force",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-force/windup.webp",
+          "progress": 0.28,
+          "sha256": "76f1b03028945f7141da981a5b42e4b3a5f81e54ba002fa5c750e191e69d9f8e"
+        },
+        {
+          "path": "p2-13-surge-force/peak.webp",
+          "progress": 0.62,
+          "sha256": "142c26023584bc0d9cd493b5b02053dd4536a894cc7f11a55bbbadf480691144"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-bludgeoning",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Bludgeoning",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-bludgeoning/windup.webp",
+          "progress": 0.28,
+          "sha256": "c8d6e868f233497336f9fc4d18ce232229a91f6847443acc393fbb6984c10ef6"
+        },
+        {
+          "path": "p2-13-surge-bludgeoning/peak.webp",
+          "progress": 0.62,
+          "sha256": "fe32faa98f6b6e61db3023252cbc1c239055878db2a783ff2aa9e7d5d986e062"
+        }
+      ]
+    },
+    {
+      "id": "p2-13-surge-piercing",
+      "skill": "狂野魔法浪涌",
+      "definition": "WildMagic",
+      "style": "Surge",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Piercing",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-13-surge-piercing/windup.webp",
+          "progress": 0.28,
+          "sha256": "792f663f41e840a5cb2210a34becb8ea96043ec88362a7026c2e954328dd09de"
+        },
+        {
+          "path": "p2-13-surge-piercing/peak.webp",
+          "progress": 0.62,
+          "sha256": "d4a2b6737a06b2ff473bb9ca87029f15ef8c420c1922aeed804fcdca0a287f11"
+        }
+      ]
+    },
+    {
+      "id": "p2-34-maneuver-limp",
+      "skill": "卓越战技",
+      "definition": "BattleMaster",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-34-maneuver-limp/windup.webp",
+          "progress": 0.28,
+          "sha256": "29734e45594c69b9abacf49047541fa00f37cc45a74a44238a1bfa6ed0504bbf"
+        },
+        {
+          "path": "p2-34-maneuver-limp/peak.webp",
+          "progress": 0.62,
+          "sha256": "2164403a82ea21296df7060cd24f1e0d360e814287b8aad5479cab5411f37098"
+        }
+      ]
+    },
+    {
+      "id": "p2-34-maneuver-stunned",
+      "skill": "卓越战技",
+      "definition": "BattleMaster",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-34-maneuver-stunned/windup.webp",
+          "progress": 0.28,
+          "sha256": "f8316f029ed10589a69dd7a08124df2635ddaf6599a83c89f79bdd4a14f9af60"
+        },
+        {
+          "path": "p2-34-maneuver-stunned/peak.webp",
+          "progress": 0.62,
+          "sha256": "8e45b48e2e71a602a5f6758dd812fa733841083d055fd243835147b525a48353"
+        }
+      ]
+    },
+    {
+      "id": "p2-34-maneuver-knockeddown",
+      "skill": "卓越战技",
+      "definition": "BattleMaster",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-34-maneuver-knockeddown/windup.webp",
+          "progress": 0.28,
+          "sha256": "0f8aebce13a7d0d4688ffd82672569aab80d2d7fafe8f691f300bf095929a62e"
+        },
+        {
+          "path": "p2-34-maneuver-knockeddown/peak.webp",
+          "progress": 0.62,
+          "sha256": "20bb13d5f2080db43c173e8cc265f6b08ae9b293ac4f1723b3f03827dcbfc8f3"
+        }
+      ]
+    },
+    {
+      "id": "p2-58-maneuver-stunned",
+      "skill": "散打技巧",
+      "definition": "WayOfTheOpenHand",
+      "style": "Maneuver",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-58-maneuver-stunned/windup.webp",
+          "progress": 0.28,
+          "sha256": "90e0f97cd08d8ead95ac233b0d4853ea44ecc31a5ae74828b596dce8a12535d9"
+        },
+        {
+          "path": "p2-58-maneuver-stunned/peak.webp",
+          "progress": 0.62,
+          "sha256": "f0424fcbb01c19bb7dd8bb9b046503e3761adc9953384b6a9425ec3c76bccdf4"
+        }
+      ]
+    },
+    {
+      "id": "p2-14-music-weaken",
+      "skill": "战斗激励",
+      "definition": "CollegeOfValor",
+      "style": "Music",
+      "tier": 2,
+      "variant": "WeakenDefense",
+      "value": 2,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-14-music-weaken/windup.webp",
+          "progress": 0.28,
+          "sha256": "e71df5798af097cd61da498d39b836a0ea74747a05c3200f7a40cdb8fa961182"
+        },
+        {
+          "path": "p2-14-music-weaken/peak.webp",
+          "progress": 0.62,
+          "sha256": "21d8496248cf39739e3b9270b641c2f3b949d5a0ab17ae50cadab1a6d10e93c9"
+        }
+      ]
+    },
+    {
+      "id": "p2-12-enchant-consume",
+      "skill": "法术塑形",
+      "definition": "SchoolOfEvocation",
+      "style": "Enchant",
+      "tier": 2,
+      "variant": "consume",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-12-enchant-consume/windup.webp",
+          "progress": 0.28,
+          "sha256": "507d90505543c4bafb02fe328df9f6a503c18cefce885b79f01bb87af81dbaa3"
+        },
+        {
+          "path": "p2-12-enchant-consume/peak.webp",
+          "progress": 0.62,
+          "sha256": "1c2ab5c40a49d9e211aa53db09e055856503a155b4fa3eea79457cfa37413d39"
+        }
+      ]
+    },
+    {
+      "id": "p2-53-enchant-consume",
+      "skill": "奥法武器",
+      "definition": "EldritchKnight",
+      "style": "Enchant",
+      "tier": 2,
+      "variant": "consume",
+      "value": 4,
+      "previous": 2,
+      "element": "Fire",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-53-enchant-consume/windup.webp",
+          "progress": 0.28,
+          "sha256": "b4cf9a00ee50a56dc89cc557783cae8e888188eed81385d0f291194e208d9549"
+        },
+        {
+          "path": "p2-53-enchant-consume/peak.webp",
+          "progress": 0.62,
+          "sha256": "bc706fedd8d4e1a5f1ee986e6378d604479c8ad838d15371845ae42c99dabf8c"
+        }
+      ]
+    },
+    {
+      "id": "p2-49-elementguard-thunder",
+      "skill": "风暴之护",
+      "definition": "StormSorcery",
+      "style": "ElementGuard",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "Thunder",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-49-elementguard-thunder/windup.webp",
+          "progress": 0.28,
+          "sha256": "60b045230fead8bd1763e362b7062b8e46b99ac883c3e13b05df31e226c56bc1"
+        },
+        {
+          "path": "p2-49-elementguard-thunder/peak.webp",
+          "progress": 0.62,
+          "sha256": "20ae0e20d1bc1f4accbb5ca4413cd5fef174bdd0dc470605c9d39e01d52dc9f2"
+        }
+      ]
+    },
+    {
+      "id": "p2-20-taichiboost-guard",
+      "skill": "借力打力",
+      "definition": "WayOfTheTaiChi",
+      "style": "TaichiBoost",
+      "tier": 2,
+      "variant": "guard",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-20-taichiboost-guard/windup.webp",
+          "progress": 0.28,
+          "sha256": "d098c3df24d47bf30fab8ae9df96f763676a03945ba84d8dce0bcf52b49bffae"
+        },
+        {
+          "path": "p2-20-taichiboost-guard/peak.webp",
+          "progress": 0.62,
+          "sha256": "d44d877579a9cf03572dd1bc4354046386a3933622d33910243cc2b6bfe69a27"
+        }
+      ]
+    },
+    {
+      "id": "p2-55-growth-decay",
+      "skill": "征服威压",
+      "definition": "OathOfConquest",
+      "style": "Growth",
+      "tier": 2,
+      "variant": "decay",
+      "value": 0,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-55-growth-decay/windup.webp",
+          "progress": 0.28,
+          "sha256": "d2606401347e0f88ec3848029f2f8448f471573d42310012a342e3571f9a57f1"
+        },
+        {
+          "path": "p2-55-growth-decay/peak.webp",
+          "progress": 0.62,
+          "sha256": "bc6e9f93c761c0d15be8d865b1b1b57421cc8ad91c3a4d49c7cddca9c7ee8b31"
+        }
+      ]
+    },
+    {
+      "id": "p2-44-nightmare-panic-applied",
+      "skill": "直坠噩梦",
+      "definition": "TheFiend",
+      "style": "Nightmare",
+      "tier": 2,
+      "variant": "applied",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-44-nightmare-panic-applied/windup.webp",
+          "progress": 0.28,
+          "sha256": "e0263d66693152eb407a61b5972af20d94fd35b04b9c71f7929808d723f8a1e1"
+        },
+        {
+          "path": "p2-44-nightmare-panic-applied/peak.webp",
+          "progress": 0.62,
+          "sha256": "d48ab2e628413b85cb26ac26f59cb2bb09169356845aa88cb98faf166126ed0c"
+        }
+      ]
+    },
+    {
+      "id": "p2-44-nightmare-disabled-applied",
+      "skill": "直坠噩梦",
+      "definition": "TheFiend",
+      "style": "Nightmare",
+      "tier": 2,
+      "variant": "applied",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-44-nightmare-disabled-applied/windup.webp",
+          "progress": 0.28,
+          "sha256": "c5b847a9de8085e800fd2d4b4782cf795e20491e27733c2242f9372b1429c866"
+        },
+        {
+          "path": "p2-44-nightmare-disabled-applied/peak.webp",
+          "progress": 0.62,
+          "sha256": "5c8f8ea44c072e964035031220d1016ab2ae2f59fb5cc08b157549becbb37fd8"
+        }
+      ]
+    },
+    {
+      "id": "p2-57-charm-disabled",
+      "skill": "催眠凝视",
+      "definition": "SchoolOfEnchantment",
+      "style": "Charm",
+      "tier": 2,
+      "variant": "",
+      "value": 4,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-57-charm-disabled/windup.webp",
+          "progress": 0.28,
+          "sha256": "5e5faa86f6f90e44b55b66ac75585028868e6bb853d7871628185cf10ecf4112"
+        },
+        {
+          "path": "p2-57-charm-disabled/peak.webp",
+          "progress": 0.62,
+          "sha256": "92cca1330644b0fa46d2da6052189d2d1b8ad864686237501da13970da6a528e"
+        }
+      ]
+    },
+    {
+      "id": "p2-61-drunk-expire",
+      "skill": "酣醉若狂",
+      "definition": "WayOfTheDrunkenMaster",
+      "style": "Drunk",
+      "tier": 2,
+      "variant": "expire",
+      "value": 0,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-61-drunk-expire/windup.webp",
+          "progress": 0.28,
+          "sha256": "8861530515e9205302923ca9afa20b614dcdcfa7a424ab21c93e5cc65538e1f6"
+        },
+        {
+          "path": "p2-61-drunk-expire/peak.webp",
+          "progress": 0.62,
+          "sha256": "8dbffe2db982f68b5c619c49a34ca0883a62526ee59d509cf6126613591db3d4"
+        }
+      ]
+    },
+    {
+      "id": "p2-62-ki-empty",
+      "skill": "气",
+      "definition": "WayOfTheNinja",
+      "style": "Ki",
+      "tier": 2,
+      "variant": "spend",
+      "value": 0,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-62-ki-empty/windup.webp",
+          "progress": 0.28,
+          "sha256": "7429cd926ee2c1fe4c48de5aa3c3337b046d614beb694324cd76aafa318802f4"
+        },
+        {
+          "path": "p2-62-ki-empty/peak.webp",
+          "progress": 0.62,
+          "sha256": "18aa7b01f4026b3546f7f2f87850370e5c5b6fb3d907d21cee6f49ef8b63bba0"
+        }
+      ]
+    },
+    {
+      "id": "p2-62-ki-full",
+      "skill": "气",
+      "definition": "WayOfTheNinja",
+      "style": "Ki",
+      "tier": 2,
+      "variant": "gain",
+      "value": 6,
+      "previous": 5,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-62-ki-full/windup.webp",
+          "progress": 0.28,
+          "sha256": "0f935b4823fcc90c6d58ef9c78469547f0efcc7f20b72762865b5b75dad6c65c"
+        },
+        {
+          "path": "p2-62-ki-full/peak.webp",
+          "progress": 0.62,
+          "sha256": "4a244f82fe0312195b52f688a3078e0fa097d10786e03d2fa1f8bf99f72f3889"
+        }
+      ]
+    },
+    {
+      "id": "p3-63-circuit-second",
+      "skill": "汲能回路",
+      "definition": "Phantom",
+      "style": "Circuit",
+      "tier": 3,
+      "variant": "charge",
+      "value": 2,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-63-circuit-second/windup.webp",
+          "progress": 0.28,
+          "sha256": "d81d5704aec09616977b9946153aea2fc5c9c940090427dd3970b534b4fe387a"
+        },
+        {
+          "path": "p3-63-circuit-second/peak.webp",
+          "progress": 0.62,
+          "sha256": "e4e2116e5feee3c9f699a8d2c1b86c17a90f147e5c27ed630463a79d11fd187a"
+        }
+      ]
+    },
+    {
+      "id": "p3-63-circuit-recover",
+      "skill": "汲能回路",
+      "definition": "Phantom",
+      "style": "Circuit",
+      "tier": 3,
+      "variant": "recover",
+      "value": 0,
+      "previous": 3,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-63-circuit-recover/windup.webp",
+          "progress": 0.28,
+          "sha256": "e6ef6d78fba56a304c60acb921f31162db42efb21006bfd1ead7980694bd883d"
+        },
+        {
+          "path": "p3-63-circuit-recover/peak.webp",
+          "progress": 0.62,
+          "sha256": "c3164656476264180832372cdb741a7f7f684ed79dea5d4b1f8780a753f0a222"
+        }
+      ]
+    },
+    {
+      "id": "p3-63-circuit-blocked",
+      "skill": "汲能回路",
+      "definition": "Phantom",
+      "style": "Circuit",
+      "tier": 3,
+      "variant": "recover",
+      "value": 0,
+      "previous": 0,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.38,
+      "frames": [
+        {
+          "path": "p3-63-circuit-blocked/windup.webp",
+          "progress": 0.28,
+          "sha256": "a8609040bd2a371a8ed50b6fd3aa1b1e696201902fce01a85a9e5078bf97ef27"
+        },
+        {
+          "path": "p3-63-circuit-blocked/peak.webp",
+          "progress": 0.62,
+          "sha256": "de22288f4f4ae94cbc5ea00c11c6e519d102479a2612351dc45ab01bc4611bbd"
+        }
+      ]
+    },
+    {
+      "id": "p2-64-convert",
+      "skill": "战争祝福",
+      "definition": "WarDomain",
+      "style": "Convert",
+      "tier": 2,
+      "variant": "attack",
+      "value": 9,
+      "previous": 9,
+      "element": "None",
+      "status": "final",
+      "self": true,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-64-convert/windup.webp",
+          "progress": 0.28,
+          "sha256": "6feb2c807f0fceb114e83d0e2db92b4ddc957e693c0a069fcb2d0961c2d11971"
+        },
+        {
+          "path": "p2-64-convert/peak.webp",
+          "progress": 0.62,
+          "sha256": "38792eb87b1c7e8751696e230ccf7d13908b884b41225ef04b6c473a1019d575"
+        }
+      ]
+    },
+    {
+      "id": "p2-11-eye-expire",
+      "skill": "思维之盾",
+      "definition": "TheGreatOldOne",
+      "style": "Eye",
+      "tier": 2,
+      "variant": "expire",
+      "value": 0,
+      "previous": 2,
+      "element": "None",
+      "status": "final",
+      "self": false,
+      "durationSeconds": 0.56,
+      "frames": [
+        {
+          "path": "p2-11-eye-expire/windup.webp",
+          "progress": 0.28,
+          "sha256": "f25fc612dc94c5211b12982ad9ea30800e440c1e027831227c7b3ad37033f81a"
+        },
+        {
+          "path": "p2-11-eye-expire/peak.webp",
+          "progress": 0.62,
+          "sha256": "48590b4d8d9003c25cdabe4461cc6e4cd86b44264991e37f016e58eb1d0743c5"
+        }
+      ]
+    }
+  ]
+}

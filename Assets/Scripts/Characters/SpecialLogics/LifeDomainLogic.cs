@@ -340,13 +340,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         /// <summary>每段牧师·生命领域回复先净化再回血；满血也净化，腐朽清除后不再阻止本次回复。</summary>
-        public static void CleanseAndHeal(PlayerState owner, PlayerState target, int amount, GameManager manager)
+        public static void CleanseAndHeal(PlayerState owner, PlayerState target, int amount, GameManager manager,string visualSkill="生命门徒")
         {
             if (target == null) return;
               int removed = target.Statuses.Count + target.Vulnerabilities.Count;
             target.ClearNegativeStatuses();
-            target.Heal(amount);
-            if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态");
+            if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态",target,new SkillVisualData(value:removed));
+            int before=target.Health;target.Heal(amount);
+            manager?.RecordSkillVisual(owner,visualSkill,target,new SkillVisualData(value:target.Health-before));
         }
 
         // ============================================================
@@ -372,7 +373,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             PlayerState target = ResolveTarget(owner, manager, choiceSink,
                                                HandEffect.LifeDomainExtraHealTarget);
             int before = target?.Health ?? 0;
-            CleanseAndHeal(owner, target, ExtraHealAmount, manager);
+            CleanseAndHeal(owner, target, ExtraHealAmount, manager,"维持生命");
             manager?.NoteSkill(owner, "双九回复", $"{target?.Name} 回复 {(target?.Health ?? 0) - before}");
         }
 

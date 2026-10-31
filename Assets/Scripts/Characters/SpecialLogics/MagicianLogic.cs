@@ -57,7 +57,7 @@ namespace FingerDiceDuel.Core
             //    于是计数**永远是 0**（发动率统计里游荡者·魔术师一直显示 0% 的真因）。
             //    这里用入参 `targetValue`（= 被加数的值）去比。
             if (_selfAddendMark != null && targetValue == _selfAddendMark.Value)
-                SelfAddendCount++;
+            {SelfAddendCount++;manager?.RecordSkillVisual(actor,"法师之手",actor,new SkillVisualData(source:actedHand,value:result));}
 
             if (result == MagicAttackValue)
                 return HandEffectType.Attack4;
@@ -136,7 +136,7 @@ namespace FingerDiceDuel.Core
             // 若不压，别的机制可能按 4 去分段（例如双将里配战士·魔射手）。
             context.HitCount = 1;
             context.FinalDamage = MagicAttackValue;
-            context.Manager?.NoteSkill(context.Attacker, "魔术攻击", "运算出 2，转为攻击");
+            context.Manager?.NoteSkill(context.Attacker, "魔术攻击", "运算出 2，转为攻击",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)

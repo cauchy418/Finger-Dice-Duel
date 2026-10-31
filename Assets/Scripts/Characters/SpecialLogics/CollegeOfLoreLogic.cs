@@ -18,13 +18,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int BaseAttackRange=>1+LoreLevel;
         public override void OnMatchReset(PlayerState owner,GameManager manager){_records.Clear();LoreLevel=0;_defend=null;_preparedValue=0;}
         public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)
-        {if(hand?.Value>=1&&hand.Value<=9&&_records.Add(hand.Value))game?.NoteSkill(owner,"逸闻记录",$"记录{hand.Value}（{RecordCount}/9）");}
+        {if(hand?.Value>=1&&hand.Value<=9&&_records.Add(hand.Value))game?.NoteSkill(owner,"逸闻记录",$"记录{hand.Value}（{RecordCount}/9）",owner,new SkillVisualData(source:hand,value:hand.Value,previous:RecordCount,variant:"record"));}
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {
             if(!owner.IsAlive||RecordCount!=9)return;
             var options=NewSubclassChoices.YesNo("清空记录 · 成长","Subclasses/bard_college_of_lore","保留九数记录");
             var request=new WizardChoice(owner,"无与伦比技艺 · 清空九数记录，攻／防／距离各+1",options,value=>{
-                if(value!=1||RecordCount!=9)return;_records.Clear();LoreLevel++;game.NoteSkill(owner,"无与伦比技艺",$"攻／防／距离各+1（累计{LoreLevel}）");});
+                if(value!=1||RecordCount!=9)return;_records.Clear();LoreLevel++;game.NoteSkill(owner,"无与伦比技艺",$"攻／防／距离各+1（累计{LoreLevel}）",owner,new SkillVisualData(value:LoreLevel,variant:"growth"));});
             if(game.DeferWizardChoice?.Invoke(request)==true)return;
             request.ChooseOption(SkillChoicePolicy.Choose(NewSubclassChoices.LoreGrowth,options,owner,null,game));
         }
@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             bool use=_defend==true&&_preparedValue==value;
             if(game?.AnsweredLookupFor==null)use=SkillChoicePolicy.Choose(NewSubclassChoices.LoreDefense,NewSubclassChoices.YesNo("减伤","Subclasses/bard_college_of_lore"),context.Defender,context.Attacker,game)==1;
             _defend=null;if(!use)return;_records.Remove(value);context.HalveWholeAttackDamage();
-            game?.NoteSkill(context.Defender,"切割语",$"清除记录{value}，本次伤害减半");
+            game?.NoteSkill(context.Defender,"切割语",$"清除记录{value}，本次伤害减半",context.Attacker,new SkillVisualData(value:value,variant:"consume"));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>AttackDamageType.Bludgeoning;
     }

@@ -158,7 +158,7 @@ namespace FingerDiceDuel.Core
             try { manager.BreakActiveShieldAndNotify(actor,other); }
             finally { _resolvingRangeBreak=false; }
             RangeBreakCount++;
-            manager.NoteSkill(actor, "无畏冲锋", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞");
+            manager.NoteSkill(actor, "无畏冲锋", $"{CombatText.HandName(actor, other)}盾破碎，本次距离∞",actor,new SkillVisualData(source:actedHand,variant:"charge"));
         }
 
         /// <summary>构造"无畏冲锋"的抉择（收集与结算共用同一份，避免两处漂移）。</summary>
@@ -352,7 +352,7 @@ namespace FingerDiceDuel.Core
             if (otherHand != null && otherHand.State == ShieldState.Broken)
             {
                 otherHand.SetShieldState(ShieldState.Formed);
-                manager?.NoteSkill(owner, "盾阵重整", $"{CombatText.HandName(owner, otherHand)}碎盾修复");
+                manager?.NoteSkill(owner, "盾阵重整", $"{CombatText.HandName(owner, otherHand)}碎盾修复",owner,new SkillVisualData(source:otherHand));
             }
         }
 

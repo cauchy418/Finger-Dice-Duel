@@ -24,14 +24,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(context.IsStatusDamage||context.IsReflected||Ki<1)return;
             int choice=_elementChoice??(context.Manager?.GetSkillPolicy(context.Attacker)!=null?SkillChoicePolicy.Choose(MartialSkillChoices.FourElements,MartialSkillChoices.Elements(false),context.Attacker,context.Defender,context.Manager):(int)ChosenElement);
             _elementChoice=null;if(choice==0||!IsElement((AttackDamageType)choice)||!Spend(1))return;
-            context.AttackType=(AttackDamageType)choice;context.VisualWeapon="weapon_fist";context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗1气，改为"+AttackDamageTypes.NameOf(context.AttackType));
+            context.AttackType=(AttackDamageType)choice;context.VisualWeapon="weapon_fist";context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗1气，改为"+AttackDamageTypes.NameOf(context.AttackType),context.Defender,new SkillVisualData(source:context.SourceHand,element:context.AttackType));
         }
         public void OnIncomingElementAttack(AttackContext context,GameManager game)
         {
             if(context.IsStatusDamage||context.Defender==null||!IsElement(context.AttackType)||context.Defender.HasResistance(context.AttackType)||Ki<1)return;
             if(!ReferenceEquals(_defenseAttack,context)){_defenseAttack=context;_defend=_preparedDefense??(SkillChoicePolicy.Choose(MonkRules.Defense,MonkRules.YesNo("四象法门 · 1气"),context.Defender,context.Attacker,game)==1);_preparedDefense=null;}
             if(!_defend||!Spend(1))return;context.Defender.AddResistance(context.AttackType);
-            game?.NoteSkill(context.Defender,"四象法门","消耗1气，获得"+AttackDamageTypes.NameOf(context.AttackType)+"抗性");
+            game?.NoteSkill(context.Defender,"四象法门","消耗1气，获得"+AttackDamageTypes.NameOf(context.AttackType)+"抗性",context.Defender,new SkillVisualData(element:context.AttackType));
         }
         public StatusEffect StatusToApplyOnHit(AttackContext context)=>StatusNames.StatusOf(AttackDamageTypes.ToDamageType(context.AttackType));
         public static bool IsElement(AttackDamageType type)=>type==AttackDamageType.Fire||type==AttackDamageType.Cold||type==AttackDamageType.Lightning||type==AttackDamageType.Thunder||type==AttackDamageType.Acid;

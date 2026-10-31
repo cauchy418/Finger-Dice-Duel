@@ -1,0 +1,450 @@
+[
+  {
+    "name": "精通重击",
+    "style": "Strike",
+    "sprite": "weapon_sword",
+    "tier": 3,
+    "flavor": "critical"
+  },
+  {
+    "name": "无畏冲锋",
+    "style": "Strike",
+    "sprite": "weapon_sword",
+    "tier": 2,
+    "flavor": "charge"
+  },
+  {
+    "name": "盾阵重整",
+    "style": "Repair",
+    "sprite": "Overlay/shield",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "奥术射击·魔能齐射",
+    "style": "Arrows",
+    "sprite": "projectile_arrow",
+    "tier": 2,
+    "flavor": "volley"
+  },
+  {
+    "name": "奥术射击·强力射击",
+    "style": "Arrows",
+    "sprite": "projectile_arrow",
+    "tier": 2,
+    "flavor": "power"
+  },
+  {
+    "name": "奥术射击·穿透箭",
+    "style": "Arrows",
+    "sprite": "projectile_arrow",
+    "tier": 2,
+    "flavor": "piercing"
+  },
+  {
+    "name": "神圣誓忠",
+    "style": "Growth",
+    "sprite": "Professions/paladin",
+    "tier": 3,
+    "flavor": "crown"
+  },
+  {
+    "name": "生命门徒",
+    "style": "Heal",
+    "sprite": "Professions/cleric",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "维持生命",
+    "style": "Heal",
+    "sprite": "Professions/cleric",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "净化",
+    "style": "Cleanse",
+    "sprite": "Professions/cleric",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "思维之盾",
+    "style": "Eye",
+    "sprite": "Subclasses/warlock_the_great_old_one",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "法术塑形",
+    "style": "Enchant",
+    "sprite": "fx_force",
+    "tier": 2,
+    "flavor": "orb"
+  },
+  {
+    "name": "狂野魔法浪涌",
+    "style": "Surge",
+    "sprite": "fx_psychic",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "战斗激励",
+    "style": "Music",
+    "sprite": "Professions/bard",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "快手",
+    "style": "Steal",
+    "sprite": "Hands/hand_right_2",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "死亡突袭",
+    "style": "Strike",
+    "sprite": "weapon_sword",
+    "tier": 2,
+    "flavor": "shadow"
+  },
+  {
+    "name": "法师之手",
+    "style": "Hand",
+    "sprite": "spectral_hand",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "魔术攻击",
+    "style": "Cards",
+    "sprite": "Subclasses/rogue_magician",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "太极八卦",
+    "style": "TaichiBoost",
+    "sprite": "Overlay/taichi",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "借力打力",
+    "style": "TaichiBoost",
+    "sprite": "Overlay/taichi",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "阴阳流转",
+    "style": "TaichiBoost",
+    "sprite": "Overlay/taichi",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "守望束缚",
+    "style": "Tether",
+    "sprite": "Overlay/locked",
+    "tier": 2,
+    "flavor": "chain"
+  },
+  {
+    "name": "狂怒",
+    "style": "Rage",
+    "sprite": "fx_fire",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "狂乱",
+    "style": "Rage",
+    "sprite": "fx_impact",
+    "tier": 2,
+    "flavor": "frenzy"
+  },
+  {
+    "name": "嗜血",
+    "style": "Drain",
+    "sprite": "fx_necrotic",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "巨人之力",
+    "style": "Strike",
+    "sprite": "weapon_fist",
+    "tier": 3,
+    "flavor": "giant"
+  },
+  {
+    "name": "巨人恢复",
+    "style": "Heal",
+    "sprite": "Professions/barbarian",
+    "tier": 3,
+    "flavor": ""
+  },
+  {
+    "name": "野兽形态",
+    "style": "Growth",
+    "sprite": "Subclasses/barbarian_path_of_the_beast",
+    "tier": 3,
+    "flavor": "claw"
+  },
+  {
+    "name": "命运赌博",
+    "style": "Dice",
+    "sprite": "fate_die",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "赌徒之运",
+    "style": "Dice",
+    "sprite": "fate_die",
+    "tier": 2,
+    "flavor": "forced"
+  },
+  {
+    "name": "战术优势",
+    "style": "Measure",
+    "sprite": "Professions/fighter",
+    "tier": 3,
+    "flavor": ""
+  },
+  {
+    "name": "黎明曙光",
+    "style": "Sun",
+    "sprite": "fx_radiant",
+    "tier": 2,
+    "flavor": "dawn"
+  },
+  {
+    "name": "守御闪光",
+    "style": "Sun",
+    "sprite": "Status/holy_light",
+    "tier": 2,
+    "flavor": "brand"
+  },
+  {
+    "name": "卓越战技",
+    "style": "Maneuver",
+    "sprite": "weapon_sword",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "龙族先祖",
+    "style": "Dragon",
+    "sprite": "ancestral_dragon",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "龙族体魄",
+    "style": "Surge",
+    "sprite": "fx_fire",
+    "tier": 2,
+    "flavor": "dragon"
+  },
+  {
+    "name": "四象门徒",
+    "style": "ElementFist",
+    "sprite": "weapon_fist",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "四象法门",
+    "style": "ElementGuard",
+    "sprite": "Effects/ki",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "大地束缚",
+    "style": "Tether",
+    "sprite": "Status/restrained",
+    "tier": 2,
+    "flavor": "vine"
+  },
+  {
+    "name": "大地行者",
+    "style": "Tether",
+    "sprite": "Status/restrained",
+    "tier": 2,
+    "flavor": "roots"
+  },
+  {
+    "name": "自然之怒",
+    "style": "Tether",
+    "sprite": "Status/restrained",
+    "tier": 2,
+    "flavor": "vine"
+  },
+  {
+    "name": "不灭哨卫",
+    "style": "Heal",
+    "sprite": "Professions/druid",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "黑暗赐福",
+    "style": "FalseLife",
+    "sprite": "Effects/false_life",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "直坠噩梦",
+    "style": "Nightmare",
+    "sprite": "Effects/false_life",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "黑暗强运",
+    "style": "Drain",
+    "sprite": "Effects/false_life",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "逸闻记录",
+    "style": "Book",
+    "sprite": "lore_book",
+    "tier": 2,
+    "flavor": "record"
+  },
+  {
+    "name": "切割语",
+    "style": "Book",
+    "sprite": "lore_book",
+    "tier": 2,
+    "flavor": "consume"
+  },
+  {
+    "name": "无与伦比技艺",
+    "style": "Book",
+    "sprite": "lore_book",
+    "tier": 2,
+    "flavor": "growth"
+  },
+  {
+    "name": "风暴之护",
+    "style": "ElementGuard",
+    "sprite": "fx_thunder",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "暴风狂怒",
+    "style": "Surge",
+    "sprite": "fx_lightning",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "风暴导向",
+    "style": "Wind",
+    "sprite": "fx_slash",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "风暴之心",
+    "style": "Wind",
+    "sprite": "fx_slash",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "奥法武器",
+    "style": "Enchant",
+    "sprite": "weapon_sword",
+    "tier": 2,
+    "flavor": "blade"
+  },
+  {
+    "name": "法术回响",
+    "style": "Enchant",
+    "sprite": "weapon_sword",
+    "tier": 2,
+    "flavor": "echo"
+  },
+  {
+    "name": "征服威压",
+    "style": "Growth",
+    "sprite": "Professions/paladin",
+    "tier": 2,
+    "flavor": "conquest"
+  },
+  {
+    "name": "恐惧光环",
+    "style": "Nightmare",
+    "sprite": "Status/panic",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "催眠凝视",
+    "style": "Charm",
+    "sprite": "Status/charm",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "散打技巧",
+    "style": "Maneuver",
+    "sprite": "weapon_fist",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "混元体",
+    "style": "Heal",
+    "sprite": "Effects/ki",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "醉拳技巧",
+    "style": "Drunk",
+    "sprite": "Effects/drunken_fist",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "酣醉若狂",
+    "style": "Drunk",
+    "sprite": "Effects/drunken_fist",
+    "tier": 2,
+    "flavor": "upkeep"
+  },
+  {
+    "name": "气",
+    "style": "Ki",
+    "sprite": "Effects/ki",
+    "tier": 2,
+    "flavor": ""
+  },
+  {
+    "name": "汲能回路",
+    "style": "Circuit",
+    "sprite": "Adventure/npc_mage_phantom",
+    "tier": 3,
+    "flavor": ""
+  },
+  {
+    "name": "战争祝福",
+    "style": "Convert",
+    "sprite": "Overlay/attack",
+    "tier": 2,
+    "flavor": "nine"
+  }
+]

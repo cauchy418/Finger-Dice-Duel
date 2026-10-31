@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(_chosen || _queued || !ReferenceEquals(manager.CurrentPlayer,owner)) return;
             var options=MartialSkillChoices.Elements(true);_queued=true;
             var request=new WizardChoice(owner,"龙族先祖 · 选择本局元素",options,value=> {
-                ChooseElement((AttackDamageType)value);manager.NoteSkill(owner,"龙族先祖",AttackDamageTypes.NameOf(Element)+"血脉 / 永久抗性");
+                ChooseElement((AttackDamageType)value);manager.NoteSkill(owner,"龙族先祖",AttackDamageTypes.NameOf(Element)+"血脉 / 永久抗性",owner,new SkillVisualData(element:Element));
             });
             if(manager.DeferWizardChoice?.Invoke(request)==true) return;
             request.ChooseOption(SkillChoicePolicy.Choose(MartialSkillChoices.Draconic,options,owner,null,manager));
@@ -40,7 +40,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context != null && !context.IsStatusDamage && (context.AttackType==AttackDamageType.None||context.AttackType==Element)) context.StatusDuration++;
+            if (context != null && !context.IsStatusDamage && (context.AttackType==AttackDamageType.None||context.AttackType==Element)){context.StatusDuration++;context.Manager?.RecordSkillVisual(context.Attacker,"龙族体魄",context.Defender,new SkillVisualData(source:context.SourceHand,element:Element));}
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context) => Element;

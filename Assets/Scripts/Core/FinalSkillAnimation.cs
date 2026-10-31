@@ -3,9 +3,10 @@
     public enum FinalSkillStyle { Portal, Number, Exchange, Ward, Sheep, Specter, Stealth, Clones, HiddenForce, BladeSong, Blessing, Curse, Hunt, Moon, Stars, Counter, Chain, Reaction, Status }
     public sealed class SkillVisualData
     {
+        public AttackDamageType Element {get;}public StatusEffect Status {get;}
         public Hand Source {get;}public Hand Destination {get;}public int Value {get;}public int Previous {get;}public string Variant {get;}public PlayerState DestinationOwner {get;}
-        public SkillVisualData(Hand source=null,Hand destination=null,int value=-1,int previous=-1,string variant=null,PlayerState destinationOwner=null)
-        {Source=source;Destination=destination;Value=value;Previous=previous;Variant=variant;DestinationOwner=destinationOwner;}
+        public SkillVisualData(Hand source=null,Hand destination=null,int value=-1,int previous=-1,string variant=null,PlayerState destinationOwner=null,AttackDamageType element=AttackDamageType.None,StatusEffect status=StatusEffect.None)
+        {Element=element;Status=status;Source=source;Destination=destination;Value=value;Previous=previous;Variant=variant;DestinationOwner=destinationOwner;}
     }
     public static class FinalSkillAnimation
     {

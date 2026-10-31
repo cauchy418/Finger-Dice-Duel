@@ -33,7 +33,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             _restricted = hand;
             hand.SetTargetRestricted(this,true);
             var target=manager.OwnerOfHand(hand);
-            manager.NoteSkill(_owner, "大地行者", $"{target.Name}{(ReferenceEquals(target.LeftHand,hand)?"左手":"右手")}禁作加数，至下次回合开始");
+            manager.NoteSkill(_owner, "大地行者", $"{target.Name}{(ReferenceEquals(target.LeftHand,hand)?"左手":"右手")}禁作加数，至下次回合开始",target,new SkillVisualData(destination:hand,variant:"roots"));
             return true;
         }
 
@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             AncientRoleChoices.Offer(AncientRoleChoices.LandRestrain,"大地束缚 · 选择角色或不发动",owner,manager,
                 AncientRoleChoices.OtherPlayers(owner,manager,false),true,true,hand=>{
                     var target=manager.OwnerOfHand(hand);target.ApplyStatus(StatusEffect.Restrained,2,owner);
-                    manager.NoteSkill(owner,"大地束缚",$"{target.Name} 束缚2回合");});
+                    manager.NoteSkill(owner,"大地束缚",$"{target.Name} 束缚2回合",target,new SkillVisualData(value:2,status:StatusEffect.Restrained));});
         }
 
         public override AttackDamageType AttackTypeOf(AttackContext context)

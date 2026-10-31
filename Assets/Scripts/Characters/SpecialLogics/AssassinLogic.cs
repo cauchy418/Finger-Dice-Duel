@@ -166,7 +166,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             context.FinalDamage += StealthBonusDamage;
             context.InflictsBleed = true;
-            context.Manager?.NoteSkill(context.Attacker, "死亡突袭", $"本次伤害＋{StealthBonusDamage}");
+            context.Manager?.NoteSkill(context.Attacker, "死亡突袭", $"本次伤害＋{StealthBonusDamage}",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
         }
 
         /// <summary>

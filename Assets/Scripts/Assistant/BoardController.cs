@@ -4234,7 +4234,8 @@ namespace FingerDiceDuel.Assistant
             //    放在结算收尾处：这是唯一能确定"这一回合到底做了什么"的时点。
             if (result.Actor?.Character is GamblerLogic)
             {
-                result.Actor.MustGamble = !result.WasGamble;
+                bool wasRequired=result.Actor.MustGamble;result.Actor.MustGamble = !result.WasGamble;
+                if(result.Actor.MustGamble&&!wasRequired)_game.RecordSkillVisual(result.Actor,"赌徒之运",result.Actor,new SkillVisualData(value:result.ResultValue,variant:"forced"));
             }
             string extraPrefix = result.IsExtraAction ? "【额外行动】" : "";
             foreach (string line in DescribeTurnLines(result)) _log.Add(extraPrefix + line);

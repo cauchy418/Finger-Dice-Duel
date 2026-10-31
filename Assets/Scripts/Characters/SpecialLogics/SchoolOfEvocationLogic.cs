@@ -243,6 +243,7 @@
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null || context.IsStatusDamage) return;
+            if(HasPendingType&&!context.IsReflected)context.Manager?.RecordSkillVisual(context.Attacker,"法术塑形",context.Defender,new SkillVisualData(source:context.SourceHand,element:AttackDamageTypes.FromDamageType(PendingDamageType),variant:"consume"));
             if (!IsForceAttack) return;
 
             context.IgnoreShield = true;

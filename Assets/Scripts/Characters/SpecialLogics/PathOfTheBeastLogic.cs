@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             // 永久成长
             GrowStats(GrowthPerTrigger, GrowthPerTrigger);
-            manager?.NoteSkill(owner, "野兽形态", $"回复 {owner.Health - healthBefore}，永久攻防＋1");
+            manager?.NoteSkill(owner, "野兽形态", $"回复 {owner.Health - healthBefore}，永久攻防＋1",owner,new SkillVisualData(value:1,previous:owner.Health-healthBefore));
         }
 
         // 「凑 7 特别值钱」原本在这里硬编码（+200）。

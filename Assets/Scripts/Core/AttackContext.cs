@@ -9,6 +9,7 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public partial class AttackContext
     {
+        public float VisualPower {get;set;}=1f;
         public PlayerState Attacker { get; }
 
         /// <summary>
@@ -757,6 +758,7 @@ namespace FingerDiceDuel.Core
                 string penalty=(hit.Guard!=AttackGuard.None?"格挡−1":"")+(hit.Resisted?(hit.Guard!=AttackGuard.None?"，抗性−1":"抗性−1"):"");
                 if(turns<=0){manager?.NoteSkill(Attacker,"附加抵挡",$"第{hit.Index+1}段：{penalty}，附加0回合，不施加或刷新状态");continue;}
                 victim.ApplyStatus(status,turns,Attacker);
+                if(status==StatusEffect.HolyLight&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"守御闪光",victim,new SkillVisualData(value:turns,status:status));
                 manager?.NoteSkill(Attacker,"施加状态",$"第{hit.Index+1}段 {victim.Name}：{StatusNames.Of(status)} {turns}回合"+(penalty.Length>0?"（"+penalty+"）":""));
             }
         }

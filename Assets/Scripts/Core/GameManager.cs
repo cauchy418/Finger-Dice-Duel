@@ -847,7 +847,7 @@ namespace FingerDiceDuel.Core
                 if (!ReferenceEquals(p.B, owner)) continue;      // 记在**目标**身上
 
                 p.TurnsLeft--;
-                if (p.TurnsLeft <= 0) _distancePenalties.RemoveAt(i);
+                if (p.TurnsLeft <= 0){_distancePenalties.RemoveAt(i);RecordSkillVisual(p.A,"思维之盾",p.B,new SkillVisualData(value:0,previous:p.Amount,variant:"expire"));}
             }
         }
 
@@ -1915,7 +1915,7 @@ namespace FingerDiceDuel.Core
                 StealTaken = outcome.Stolen,
                 StealEffective = outcome.Effective,
             };
-            NoteSkill(actor, "快手", $"{CombatText.HandName(actor, myHand)} {outcome.Original}↔{outcome.Stolen}，" + (outcome.Effective ? "触发偷得数字效果" : "仅交换，不触发效果"));
+            NoteSkill(actor, "快手", $"{CombatText.HandName(actor, myHand)} {outcome.Original}↔{outcome.Stolen}，" + (outcome.Effective ? "触发偷得数字效果" : "仅交换，不触发效果"),OwnerOfHand(theirHand),new SkillVisualData(myHand,theirHand,outcome.Stolen,outcome.Original));
 
             // ⚠️ 无论生效与否，交换**已经发生**（在 ThiefLogic.Steal 里），
             //    所以这里只负责"要不要触发效果"。
@@ -1988,7 +1988,7 @@ namespace FingerDiceDuel.Core
 
             actor.Character?.OnOperationResolved(actor, myHand, outcome.Original, stolen,
                                                  effect, this, null);
-            MonkRules.AfterAction(actor);
+            MonkRules.AfterAction(actor,this);
 
             CheckGameOver();
 
@@ -2351,6 +2351,7 @@ namespace FingerDiceDuel.Core
             if (actedHand.IsLocked || actedHand.IsRestrained)
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
+            RecordSkillVisual(actor,"命运赌博",actor,new SkillVisualData(source:actedHand,value:roll));
             try{return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
                                gambleResult: roll, extraAction: extraAction);}
             finally{WarBlessingNineAttack=null;}
@@ -2904,7 +2905,7 @@ namespace FingerDiceDuel.Core
                                 : LifeDomainLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
                             if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
-                            else target?.Heal(amount);
+                            else {target?.Heal(amount);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -2935,7 +2936,7 @@ namespace FingerDiceDuel.Core
             actor.Character?.OnOperationResolved(
                 actor, actedHand, result.ActedHandValueBefore, otherHandValue, effect, this,
                 GetChoiceProvider(actor) as IPreTurnChoiceSink);
-            MonkRules.AfterAction(actor);
+            MonkRules.AfterAction(actor,this);
 
             // 3d. 收下角色在结算中登记的"追加攻击"（战士·剑士），供战报单独显示一行。
             result.ExtraAttack = PendingExtraAttack;
@@ -2985,6 +2986,7 @@ namespace FingerDiceDuel.Core
                 && actor?.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mageRestore)
             {
                 mageRestore.SetPendingDamageType(unspent);
+                RecordSkillVisual(actor,"法术塑形",actor,new SkillVisualData(source:actedHand,element:AttackDamageTypes.FromDamageType(unspent),variant:"prepare"));
                 NoteSkill(actor, "附魔", $"下一次攻击：{StatusNames.Of(unspent)}");
                 result.ChosenDamageType = unspent;
             }

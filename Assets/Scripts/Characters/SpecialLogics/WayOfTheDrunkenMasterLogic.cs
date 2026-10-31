@@ -21,13 +21,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {
             if(!ReferenceEquals(game.CurrentPlayer,owner)||!Drunken||_upkeepTurn==game.TurnCount)return;_upkeepTurn=game.TurnCount;
-            if(!Spend(1)){EndDrunken();game.NoteSkill(owner,"酣醉若狂","气不足，解除醉拳");}
-            else game.NoteSkill(owner,"酣醉若狂","消耗1气，维持醉拳");
+            if(!Spend(1)){EndDrunken();game.NoteSkill(owner,"酣醉若狂","气不足，解除醉拳",owner,new SkillVisualData(value:Ki,variant:"expire"));}
+            else game.NoteSkill(owner,"酣醉若狂","消耗1气，维持醉拳",owner,new SkillVisualData(value:Ki,variant:"upkeep"));
         }
         public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)
         {
             if(Drunken||hand?.Value!=9||!owner.IsAlive||owner.HasStatus(StatusEffect.HolyLight))return;
-            MonkRules.Offer(owner,game,MonkRules.Drunken,"醉拳技巧 · 本次回复已完成，是否进入醉拳？",MonkRules.YesNo("进入醉拳","Effects/drunken_fist"),v=>{if(v==1&&TryEnter(owner))game.NoteSkill(owner,"醉拳技巧","进入醉拳状态");});
+            MonkRules.Offer(owner,game,MonkRules.Drunken,"醉拳技巧 · 本次回复已完成，是否进入醉拳？",MonkRules.YesNo("进入醉拳","Effects/drunken_fist"),v=>{if(v==1&&TryEnter(owner))game.NoteSkill(owner,"醉拳技巧","进入醉拳状态",owner,new SkillVisualData(value:Ki,variant:"enter"));});
         }
     }
 }

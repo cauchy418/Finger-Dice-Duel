@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             AncientRoleChoices.Offer(AncientRoleChoices.AncientRestrain,"自然之怒 · 选择射程内角色或不发动",owner,manager,
                 AncientRoleChoices.OtherPlayers(owner,manager,true),true,true,hand=>{
                     var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                    target.ApplyStatus(StatusEffect.Restrained,2,owner);manager.NoteSkill(owner,"自然之怒",$"{target.Name} 束缚2回合");});
+                    target.ApplyStatus(StatusEffect.Restrained,2,owner);manager.NoteSkill(owner,"自然之怒",$"{target.Name} 束缚2回合",target,new SkillVisualData(value:2,status:StatusEffect.Restrained));});
         }
 
         public void OnDamageTaken(PlayerState owner, int damage, AttackContext context, GameManager manager)
@@ -34,12 +34,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"不灭哨卫 · 选择射程内另一名角色回复2",owner,manager,
                     AncientRoleChoices.OtherPlayers(owner,manager,true),false,true,hand=>{
                         var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{target.Health-before}");});
+                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{target.Health-before}",target,new SkillVisualData(value:target.Health-before));});
             }
             else
             {
-                owner.Heal(2);
-                manager.NoteSkill(owner, "不灭哨卫", "回复 2 点");
+                int before=owner.Health;owner.Heal(2);
+                manager.NoteSkill(owner, "不灭哨卫", "回复 2 点",owner,new SkillVisualData(value:owner.Health-before));
             }
         }
 

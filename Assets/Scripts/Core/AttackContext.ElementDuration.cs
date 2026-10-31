@@ -33,9 +33,9 @@ namespace FingerDiceDuel.Core
                 if(IsStatusDamage){if(enchantment)actual.ApplyEnchantment(status,source,turns);else actual.ApplyStatus(status,turns,source);return;}
                 foreach(var hit in _elementHits){
                     if(requireDamage&&hit.Damage<=0||requireHealthDamage&&hit.HealthDamage<=0)continue;
-                    int duration=hit.StatusDuration(status,turns,false);if(duration<=0){game?.NoteSkill(source,skill,$"第{hit.Index+1}段：附加0回合");continue;}
+                    int duration=hit.StatusDuration(status,turns,false);if(duration<=0){game?.NoteSkill(source,skill,$"第{hit.Index+1}段：附加0回合",actual,new SkillVisualData(value:0,variant:"blocked",status:status));continue;}
                     if(enchantment)actual.ApplyEnchantment(status,source,duration);else actual.ApplyStatus(status,duration,source);
-                    game?.NoteSkill(source,skill,$"第{hit.Index+1}段 {actual.Name}：{StatusNames.Of(status)} {duration}回合"+(enchantment?"，后续受伤解除":""));
+                    if(actual.HasStatus(status))game?.NoteSkill(source,skill,$"第{hit.Index+1}段 {actual.Name}：{StatusNames.Of(status)} {duration}回合"+(enchantment?"，后续受伤解除":""),actual,new SkillVisualData(value:duration,variant:"applied",status:status));
                 }
             };
             if(_attachedStatusReady||IsStatusDamage)apply();else _queuedAttachedStatuses.Add(apply);

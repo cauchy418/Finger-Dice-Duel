@@ -28,7 +28,7 @@
                 case "感电":return "fx_lightning";
                 case "圣光":return "fx_radiant";
                 case "预言压制":return "Effects/portent";
-                default:return null;
+                default:return SecondarySkillAnimation.Find(skill)?.Sprite;
             }
         }
     }
@@ -36,7 +36,9 @@
     {
         public void RecordSkillVisual(PlayerState owner,string skill,PlayerState target=null,SkillVisualData data=null)
         {
-            if(!RecordCombatVisuals||owner==null)return;var key=SkillVisualProfiles.Key(skill);if(key==null)return;
+            if(!RecordCombatVisuals||owner==null||data?.Variant=="blocked")return;
+            if(data!=null&&data.Status!=StatusEffect.None&&data.Variant!="prepare"&&target!=null&&!target.HasStatus(data.Status))return;
+            var key=SkillVisualProfiles.Key(skill);if(key==null)return;
             var frame=CaptureVisualFrame();
             _combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Skill,CombatVisualOutcome.Hit,owner,target??owner,owner,data?.Source??owner.LeftHand,AttackDamageType.None,key,0,0,0,false,false,frame,frame,skill,null,data));
         }

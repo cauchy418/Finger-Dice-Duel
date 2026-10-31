@@ -64,18 +64,18 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         private void Broken(PlayerState owner,GameManager game)
             =>ArcaneChoices.Option(ArcaneChoices.KnightElement,"奥法武器 · 选择下一次攻击的元素",owner,null,game,ArcaneChoices.Elements("保留当前附魔"),value=>Set((AttackDamageType)value,owner,game));
         private void Set(AttackDamageType type,PlayerState owner,GameManager game)
-        {if(type==AttackDamageType.None)return;Enchantment=type;game.NoteSkill(owner,"奥法武器","下次攻击改为"+AttackDamageTypes.NameOf(type));}
+        {if(type==AttackDamageType.None)return;Enchantment=type;game.NoteSkill(owner,"奥法武器","下次攻击改为"+AttackDamageTypes.NameOf(type),owner,new SkillVisualData(element:type,variant:"prepare"));}
         public void OnAttackDamageTaken(PlayerState owner,AttackContext ctx,GameManager game)
         {
             if(ctx.ActualHealthDamage<=0||!AttackDamageTypes.IsMagic(ctx.AttackType))return;
             var options=NewSubclassChoices.YesNo("记忆 · "+AttackDamageTypes.NameOf(ctx.AttackType),"Damage/"+AttackDamageTypes.IconKeyOf(ctx.AttackType),"保留当前附魔");
-            ArcaneChoices.Option(ArcaneChoices.KnightCopy,"法术回响 · 是否记录此次伤害类型",owner,ctx.Attacker,game,options,v=>{if(v==1)Set(ctx.AttackType,owner,game);});
+            ArcaneChoices.Option(ArcaneChoices.KnightCopy,"法术回响 · 是否记录此次伤害类型",owner,ctx.Attacker,game,options,v=>{if(v==1){Set(ctx.AttackType,owner,game);game.RecordSkillVisual(owner,"法术回响",ctx.Attacker,new SkillVisualData(element:ctx.AttackType,variant:"echo"));}});
         }
         public override void OnResolveAttack(AttackContext ctx)
         {
             if(ctx.IsStatusDamage||ctx.IsReflected||Enchantment==AttackDamageType.None)return;
             ctx.AttackType=Enchantment;ctx.VisualWeapon="weapon_sword";Enchantment=AttackDamageType.None;
-            ctx.Manager?.NoteSkill(ctx.Attacker,"奥法武器",AttackDamageTypes.NameOf(ctx.AttackType)+"攻击，消耗附魔");
+            ctx.Manager?.NoteSkill(ctx.Attacker,"奥法武器",AttackDamageTypes.NameOf(ctx.AttackType)+"攻击，消耗附魔",ctx.Defender,new SkillVisualData(source:ctx.SourceHand,element:ctx.AttackType,variant:"consume"));
         }
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>Enchantment!=AttackDamageType.None?Enchantment:AttackDamageType.Slashing;
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>ArcaneChoices.ElementStatus(ctx.AttackType);

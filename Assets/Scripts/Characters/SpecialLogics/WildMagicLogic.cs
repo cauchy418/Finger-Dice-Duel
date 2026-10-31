@@ -113,7 +113,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             context.AttackType = element == DamageType.None
                 ? ((context.Manager?.DistanceBetween(context.Attacker, context.Defender) ?? LastAttackDistance) <= 1 ? AttackDamageType.Bludgeoning : AttackDamageType.Piercing)
                 : AttackDamageTypes.FromDamageType(element);
-            context.Manager?.NoteSkill(context.Attacker, "狂野魔法浪涌", $"第{hitIndex + 1}段 {AttackDamageTypes.NameOf(context.AttackType)}");
+            context.Manager?.NoteSkill(context.Attacker, "狂野魔法浪涌", $"第{hitIndex + 1}段 {AttackDamageTypes.NameOf(context.AttackType)}",context.Defender,new SkillVisualData(source:context.SourceHand,value:hitIndex,element:context.AttackType));
         }
 
         /// <summary>

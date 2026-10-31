@@ -1,0 +1,82 @@
+PASS cue portent-record
+PASS sprite portent-record CombatSprite
+PASS sprite portent-record CombatSprite
+PASS cleanup portent-record
+PASS cue portent-use
+PASS sprite portent-use CombatSprite
+PASS sprite portent-use CombatSprite
+PASS cleanup portent-use
+PASS cue illusion-hand
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS sprite illusion-hand CombatSprite
+PASS cleanup illusion-hand
+PASS cue trickery-swap
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS sprite trickery-swap CombatSprite
+PASS cleanup trickery-swap
+PASS cue necromancy-swap
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS sprite necromancy-swap CombatSprite
+PASS cleanup necromancy-swap
+PASS cue ward-absorb
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS sprite ward-absorb CombatSprite
+PASS cleanup ward-absorb
+PASS cue ward-store
+PASS sprite ward-store CombatSprite
+PASS cleanup ward-store
+PASS cue resistance-grant
+PASS sprite resistance-grant CombatSprite
+PASS cleanup resistance-grant
+PASS cue undead-guard
+PASS sprite undead-guard CombatSprite
+PASS cleanup undead-guard
+PASS cue polymorph
+PASS sprite polymorph CombatSprite
+PASS sprite polymorph CombatSprite
+PASS sprite polymorph CombatSprite
+PASS cleanup polymorph
+PASS cue ninja-clones
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS sprite ninja-clones CombatSprite
+PASS cleanup ninja-clones
+PASS cue hidden-force-plant
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS sprite hidden-force-plant CombatSprite
+PASS cleanup hidden-force-plant
+PASS cue hidden-force-detonate
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS sprite hidden-force-detonate CombatSprite
+PASS cleanup hidden-force-detonate
+PASS cue bladesong-enter
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS sprite bladesong-enter CombatSprite
+PASS cleanup bladesong-enter
+PASS cue bladesong-exit
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS sprite bladesong-exit CombatSprite
+PASS cleanup bladesong-exit

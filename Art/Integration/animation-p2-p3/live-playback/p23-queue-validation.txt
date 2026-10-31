@@ -1,0 +1,41 @@
+PASS queue starts 0
+PASS input locks 0
+PASS queue completes 0
+PASS every clip played 0 count=107
+PASS input restores 0
+PASS digit helpers cleaned 0
+PASS poses restored 0
+PASS expected layout 0
+PASS queue starts 1
+PASS input locks 1
+PASS queue completes 1
+PASS every clip played 1 count=12
+PASS input restores 1
+PASS digit helpers cleaned 1
+PASS poses restored 1
+PASS expected layout 1
+PASS queue starts 2
+PASS input locks 2
+PASS queue completes 2
+PASS every clip played 2 count=12
+PASS input restores 2
+PASS digit helpers cleaned 2
+PASS poses restored 2
+PASS expected layout 2
+PASS queue starts 3
+PASS input locks 3
+PASS queue completes 3
+PASS every clip played 3 count=107
+PASS input restores 3
+PASS digit helpers cleaned 3
+PASS poses restored 3
+PASS expected layout 3
+PASS queue starts 4
+PASS input locks 4
+PASS mid-play stop clears busy
+PASS mid-play stop unlocks input
+PASS queue completes 4
+PASS input restores 4
+PASS digit helpers cleaned 4
+PASS poses restored 4
+PASS expected layout 4

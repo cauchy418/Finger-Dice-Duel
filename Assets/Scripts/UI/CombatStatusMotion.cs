@@ -15,15 +15,18 @@ namespace FingerDiceDuel.UI
             bool burst=Time.unscaledTime<_burst;transform.localScale=Vector3.one*(1+pulse*(burst?.12f:.035f));_image.color=Color.Lerp(new Color(.76f,.78f,.84f),Color.white,burst?1:.55f+pulse*.45f);}
         private void OnDisable(){transform.localScale=Vector3.one;_signature=null;}
     }
-    public sealed class CombatStatusMotion:MonoBehaviour
+    public sealed partial class CombatStatusMotion:MonoBehaviour
     {
-        private sealed class Aura{public Image Image;public PlayerState Player;public int Index,Groups=1;public string Signature;public float Flash,Remove;}
-        private RectTransform _root;private Func<PlayerState,Vector2> _anchor;
+        private sealed class Aura{public Image Image;public PlayerState Player;public int Index,Groups=1;public string Signature;public float Flash,Remove;public string Key;public int Value;public Hand Hand;public readonly List<Image> Bits=new List<Image>();}
+        private RectTransform _root;private Func<PlayerState,Vector2> _anchor;private Func<PlayerState,Hand,Vector2> _handAnchor;
         private readonly Dictionary<string,Aura> _auras=new Dictionary<string,Aura>();private readonly HashSet<string> _wanted=new HashSet<string>();
         public int Count=>_auras.Count;
-        public void Initialize(RectTransform root,Func<PlayerState,Vector2> anchor){_root=root;_anchor=anchor;}
+        public void Initialize(RectTransform root,Func<PlayerState,Vector2> anchor,Func<PlayerState,Hand,Vector2> handAnchor=null){_root=root;_anchor=anchor;_handAnchor=handAnchor;}
         public static string Effect(string key)
         {
+            if(key=="Overlay/locked")return "chain_link";
+            if(key.Contains("restrain"))return "vine_tendril";
+            if(key.Contains("stealth"))return "fx_necrotic";
             if(key.Contains("cold")||key.Contains("frost")||key.Contains("frozen")||key.Contains("freeze"))return "fx_cold";
             if(key.Contains("burn")||key.Contains("fire"))return "fx_fire";
             if(key.Contains("poison")||key.Contains("false_life"))return "fx_poison";
@@ -38,20 +41,20 @@ namespace FingerDiceDuel.UI
         }
         public void Sync(CombatVisualFrame frame)
         {
-            if(frame==null)return;_wanted.Clear();
+            if(frame==null)return;_wanted.Clear();SyncStatAccents(frame);
             foreach(var state in frame.Players)
             {
                 if(state.Health<=0)continue;int index=0;
                 foreach(var icon in state.Icons)
                 {
-                    if(icon.Counter=="0"||icon.Counter=="0/9")continue;
-                    string id=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(state.Player)+"|"+icon.ResourceKey;_wanted.Add(id);
+                    if(icon.Counter=="0"&&icon.ResourceKey!="Effects/ki"||icon.Counter=="0/9")continue;
+                    string id=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(state.Player)+"|"+icon.ResourceKey+"|"+(icon.TargetHand==null?0:System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(icon.TargetHand))+"|"+icon.NegativeStatus;_wanted.Add(id);
                     if(!_auras.TryGetValue(id,out var aura))
                     {var go=new GameObject("StatusAura",typeof(Image));go.transform.SetParent(_root,false);var image=go.GetComponent<Image>();image.raycastTarget=false;image.preserveAspect=true;
                      image.rectTransform.anchorMin=image.rectTransform.anchorMax=new Vector2(.5f,.5f);image.rectTransform.sizeDelta=Vector2.one*72;
                      aura=new Aura{Image=image,Player=state.Player,Flash=Time.unscaledTime+.25f};_auras[id]=aura;}
                     string signature=icon.Counter+icon.Description;if(aura.Signature!=null&&aura.Signature!=signature)aura.Flash=Time.unscaledTime+.4f;
-                    aura.Signature=signature;aura.Index=index++;aura.Remove=0;aura.Image.sprite=BattleArt.Get("Animation/"+Effect(icon.ResourceKey));
+                    aura.Signature=signature;aura.Index=index++;aura.Remove=0;PrepareSecondaryAura(aura,icon);aura.Image.sprite=BattleArt.Get("Animation/"+Effect(icon.ResourceKey));
                 }
                 if(state.Left.IsConcealed||state.Right.IsConcealed)Flash(state.Player,.12f);
                 foreach(var a in _auras.Values)if(ReferenceEquals(a.Player,state.Player))a.Groups=Mathf.Max(1,(index+2)/3);
@@ -68,13 +71,14 @@ namespace FingerDiceDuel.UI
                 var a=pair.Value;if(a.Remove>0&&time>=a.Remove){Destroy(a.Image.gameObject);dead.Add(pair.Key);continue;}
                 bool visible=a.Index/3==Mathf.FloorToInt(time/2)%a.Groups;bool burst=time<a.Flash;
                 a.Image.enabled=visible;float angle=time*.35f+a.Index*2.399f;var r=a.Image.rectTransform;
-                r.anchoredPosition=_anchor(a.Player)+new Vector2(Mathf.Cos(angle)*18,Mathf.Sin(angle)*18);
+                r.anchoredPosition=(a.Hand!=null&&_handAnchor!=null?_handAnchor(a.Player,a.Hand)+Vector2.up*60:_anchor(a.Player))+new Vector2(Mathf.Cos(angle)*18,Mathf.Sin(angle)*18);
                 r.localRotation=Quaternion.Euler(0,0,Mathf.Sin(time+a.Index)*18);r.localScale=Vector3.one*(burst?1.4f:1+.08f*Mathf.Sin(time*2+a.Index));
                 float fade=a.Remove==0?1:Mathf.Clamp01((a.Remove-time)/.3f);a.Image.color=new Color(1,1,1,(burst?.7f:.12f+.06f*Mathf.Sin(time*2))*fade);
+                PoseSecondaryAura(a,time,visible,fade);
             }
-            foreach(var key in dead)_auras.Remove(key);
+            foreach(var key in dead)_auras.Remove(key);UpdateStatAccents(time);
         }
-        public void Clear(){foreach(var a in _auras.Values)Destroy(a.Image.gameObject);_auras.Clear();}
+        public void Clear(){foreach(var a in _auras.Values){a.Image.gameObject.SetActive(false);Destroy(a.Image.gameObject);}_auras.Clear();ClearStatAccents();}
         private void OnDisable()=>Clear();
     }
 }

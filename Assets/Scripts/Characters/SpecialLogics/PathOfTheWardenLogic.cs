@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
             target.Lock();
             _lockMap[shieldHand] = target;
             LockCount++;
-            manager.NoteSkill(owner, "守望束缚", $"锁定 {opponent.Name} {CombatText.HandName(opponent, target)}");
+            manager.NoteSkill(owner, "守望束缚", $"锁定 {opponent.Name} {CombatText.HandName(opponent, target)}",opponent,new SkillVisualData(destination:target));
         }
 
         /// <summary>

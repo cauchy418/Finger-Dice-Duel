@@ -97,6 +97,7 @@ namespace FingerDiceDuel.UI
             {var guard=Take(e.RedirectKind=="protection"?"fx_radiant":"fx_force",90);yield return Tween(.16f,t=>{guard.rectTransform.anchoredPosition=Vector2.Lerp(_target(e.IntendedTarget),to,t);guard.color=e.RedirectKind=="protection"?new Color(1,.85f,.4f,1-t*.4f):new Color(1,.35f,.5f,1-t*.4f);});guard.gameObject.SetActive(false);}
             bool swing=e.Weapon=="weapon_sword"||e.Weapon=="weapon_hammer"||e.Weapon=="weapon_staff";
             var weapon=Take(e.Weapon??"fx_impact",e.Weapon=="weapon_fist"?175:swing?300:e.Weapon=="weapon_rapier"?255:210);
+            weapon.rectTransform.sizeDelta*=e.Power;
             if(swing)weapon.rectTransform.pivot=new Vector2(.18f,.5f);
             Image slash=swing?Take("fx_slash",230):null;
             Image bow=e.Weapon=="projectile_arrow"?Take("weapon_bow",160):null;
@@ -113,6 +114,7 @@ namespace FingerDiceDuel.UI
                 if(swing){pos=travel<.23f?from:end-delta.normalized*145;float sweep=Mathf.SmoothStep(0,1,Mathf.Clamp01((travel-.23f)/.77f));weapon.rectTransform.localRotation=Quaternion.Euler(0,0,angle+Mathf.Lerp(-100,38,sweep));
                     slash.rectTransform.anchoredPosition=end;slash.rectTransform.localRotation=Quaternion.Euler(0,0,angle-30+sweep*55);slash.color=new Color(1,1,1,cancel?0:Mathf.Sin(sweep*Mathf.PI)*.85f);}
                 weapon.rectTransform.anchoredPosition=cancel?from:pos;
+                if(e.Unsteady&&!cancel){weapon.rectTransform.anchoredPosition+=new Vector2(Mathf.Sin(t*18)*20,Mathf.Sin(t*12)*9);weapon.rectTransform.localRotation*=Quaternion.Euler(0,0,Mathf.Sin(t*16)*12);}
                 if(!swing)weapon.rectTransform.localRotation=Quaternion.Euler(0,0,angle);
                 weapon.color=new Color(1,1,1,cancel?1-t:swing&&travel<.3f?Mathf.Abs(travel-.23f)/.23f:1);
                 if(bow!=null){bow.rectTransform.anchoredPosition=from;bow.rectTransform.localRotation=Quaternion.Euler(0,0,angle);bow.color=new Color(1,1,1,1-t);}

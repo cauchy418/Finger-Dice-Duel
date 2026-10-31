@@ -1,5 +1,7 @@
 ﻿# CODELY.md
 
+P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作，107种定稿变体及两阶段截图见[范围与验收](Docs/animation-p2-p3-progress.md)。`SkillVisualData.Element/Status`传真实类型与附加状态；0回合、拒绝附加不发成功表现。`CombatVisualEvent.Power/Unsteady`仅控制本段载体；不参与伤害计算。资源图标保存只读Value和TargetHand，气／逸闻／回路按实际数量，双手锁定按手分开。持续效果每人同时最多3层、按组轮换，退出立即停用再销毁。后续最终稿继续保存关键帧，可用PNG或逐像素核对的无损WebP；记录源版本、进度及SHA256。
+
 动画P1专属细化：`SkillVisualData`保存实际左右手引用、捕获数字、屏障点数和形态／反应变体；不可在播放中重新读取可变数字来推断旧结果。门户起终点只捕获一次。53种变体的两阶段原生渲染截图、复现与报告见[定稿索引](Art/Integration/skill-animation-finals/README.md)。以后每个动画最终稿必须保存效果截图并更新索引；动画修改后重拍。规则与异步播放分开验收。
 
 动画事件与持续状态：SkillVisualProfiles由实际技能日志触发可视事件，带明确目标；元素反应单独以真实命中／免疫快照生成。技能提示不得把其历史血量快照回写到父攻击后，避免吸收／护盾技能嵌套导致血条回跳。CombatStatusMotion按显示快照维持徽记环境效果，每人最多3层轮换；全部状态图标独立轻动。详见[范围与验收](Docs/animation-p1-progress.md)。

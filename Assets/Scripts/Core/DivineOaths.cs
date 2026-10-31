@@ -51,7 +51,7 @@ namespace FingerDiceDuel.Core
             int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));
             ApplyTrickery(actor,source,target,value,out value);source.SetValue(value);
             if(shield)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
-            NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）");ClearPreparedOperationAddend();return true;
+            NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）",actor,new SkillVisualData(source:source,value:value,previous:before));ClearPreparedOperationAddend();return true;
         }
         public bool? WarBlessingNineAttack { get; set; }
         public PlayerState ShieldBreaker { get; private set; }
@@ -68,7 +68,7 @@ namespace FingerDiceDuel.Core
             bool attack=WarBlessingNineAttack??SkillChoicePolicy.Choose(DivineChoices.Nine,DivineChoices.NineOptions(),actor,DamageTargetPlayer??GetOpponent(actor),this)==1;
             WarBlessingNineAttack=attack;
             if(!attack)return effect;
-            NoteSkill(actor,"战争祝福","9放弃回复，改为攻击");return HandEffectType.Attack8;
+            NoteSkill(actor,"战争祝福","9放弃回复，改为攻击",actor,new SkillVisualData(source:hand,value:9,variant:"attack"));return HandEffectType.Attack8;
         }
     }
     public partial class PlayerState

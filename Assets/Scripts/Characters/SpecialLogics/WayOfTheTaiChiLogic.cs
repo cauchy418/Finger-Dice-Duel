@@ -85,7 +85,7 @@
             if (shieldHand.Value != TaichiValue) return;
 
             shieldHand.SetShieldState(ShieldState.Taichi);
-            manager?.NoteSkill(owner, "阴阳流转", "合成太极手");
+            manager?.NoteSkill(owner, "阴阳流转", "合成太极手",owner,new SkillVisualData(source:shieldHand));
         }
 
         // ============================================================
@@ -197,7 +197,7 @@
             totalReduced = boost==1?segmentDamage:reflect;
             totalReflect = boost==2?segmentDamage:reflect;
             stages = stagesUsed + 1;
-            context.Manager?.NoteSkill(owner, boost==0?"太极八卦":"借力打力", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {totalReduced}、反弹 {totalReflect}");
+            context.Manager?.NoteSkill(owner, boost==0?"太极八卦":"借力打力", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {totalReduced}、反弹 {totalReflect}",context.Attacker,new SkillVisualData(source:taichi,value:totalReflect,previous:totalReduced,variant:boost==1?"guard":"reflect"));
 
             // taken 不用回传：外层用"perHit - 累计减免"自己算。
             _ = taken;

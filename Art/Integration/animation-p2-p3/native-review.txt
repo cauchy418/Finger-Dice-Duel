@@ -1,0 +1,986 @@
+PASS cue p3-01-strike
+PASS no stale digits p3-01-strike
+PASS sprite p3-01-strike
+PASS sprite p3-01-strike
+PASS sprite p3-01-strike
+PASS sprite p3-01-strike
+PASS visible effect p3-01-strike
+PASS cleanup p3-01-strike
+PASS cue p2-02-strike
+PASS no stale digits p2-02-strike
+PASS sprite p2-02-strike
+PASS sprite p2-02-strike
+PASS sprite p2-02-strike
+PASS sprite p2-02-strike
+PASS visible effect p2-02-strike
+PASS cleanup p2-02-strike
+PASS cue p2-03-repair
+PASS no stale digits p2-03-repair
+PASS sprite p2-03-repair
+PASS sprite p2-03-repair
+PASS sprite p2-03-repair
+PASS sprite p2-03-repair
+PASS visible effect p2-03-repair
+PASS cleanup p2-03-repair
+PASS cue p2-04-arrows
+PASS no stale digits p2-04-arrows
+PASS sprite p2-04-arrows
+PASS sprite p2-04-arrows
+PASS sprite p2-04-arrows
+PASS sprite p2-04-arrows
+PASS visible effect p2-04-arrows
+PASS cleanup p2-04-arrows
+PASS cue p2-05-arrows
+PASS no stale digits p2-05-arrows
+PASS sprite p2-05-arrows
+PASS sprite p2-05-arrows
+PASS sprite p2-05-arrows
+PASS sprite p2-05-arrows
+PASS visible effect p2-05-arrows
+PASS cleanup p2-05-arrows
+PASS cue p2-06-arrows
+PASS no stale digits p2-06-arrows
+PASS sprite p2-06-arrows
+PASS sprite p2-06-arrows
+PASS sprite p2-06-arrows
+PASS sprite p2-06-arrows
+PASS sprite p2-06-arrows
+PASS visible effect p2-06-arrows
+PASS cleanup p2-06-arrows
+PASS cue p3-07-growth
+PASS no stale digits p3-07-growth
+PASS sprite p3-07-growth
+PASS sprite p3-07-growth
+PASS sprite p3-07-growth
+PASS sprite p3-07-growth
+PASS visible effect p3-07-growth
+PASS cleanup p3-07-growth
+PASS cue p2-08-heal
+PASS no stale digits p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS sprite p2-08-heal
+PASS visible effect p2-08-heal
+PASS cleanup p2-08-heal
+PASS cue p2-09-heal
+PASS no stale digits p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS sprite p2-09-heal
+PASS visible effect p2-09-heal
+PASS cleanup p2-09-heal
+PASS cue p2-10-cleanse
+PASS no stale digits p2-10-cleanse
+PASS sprite p2-10-cleanse
+PASS sprite p2-10-cleanse
+PASS sprite p2-10-cleanse
+PASS sprite p2-10-cleanse
+PASS sprite p2-10-cleanse
+PASS visible effect p2-10-cleanse
+PASS cleanup p2-10-cleanse
+PASS cue p2-11-eye
+PASS no stale digits p2-11-eye
+PASS sprite p2-11-eye
+PASS sprite p2-11-eye
+PASS sprite p2-11-eye
+PASS sprite p2-11-eye
+PASS sprite p2-11-eye
+PASS visible effect p2-11-eye
+PASS cleanup p2-11-eye
+PASS cue p2-12-enchant
+PASS no stale digits p2-12-enchant
+PASS sprite p2-12-enchant
+PASS sprite p2-12-enchant
+PASS sprite p2-12-enchant
+PASS sprite p2-12-enchant
+PASS sprite p2-12-enchant
+PASS sprite p2-12-enchant
+PASS visible effect p2-12-enchant
+PASS cleanup p2-12-enchant
+PASS cue p2-13-surge
+PASS no stale digits p2-13-surge
+PASS sprite p2-13-surge
+PASS sprite p2-13-surge
+PASS sprite p2-13-surge
+PASS sprite p2-13-surge
+PASS sprite p2-13-surge
+PASS visible effect p2-13-surge
+PASS cleanup p2-13-surge
+PASS cue p2-14-music
+PASS no stale digits p2-14-music
+PASS sprite p2-14-music
+PASS sprite p2-14-music
+PASS visible effect p2-14-music
+PASS cleanup p2-14-music
+PASS cue p2-15-steal
+PASS no stale digits p2-15-steal
+PASS sprite p2-15-steal
+PASS sprite p2-15-steal
+PASS visible effect p2-15-steal
+PASS cleanup p2-15-steal
+PASS cue p2-16-strike
+PASS no stale digits p2-16-strike
+PASS sprite p2-16-strike
+PASS sprite p2-16-strike
+PASS sprite p2-16-strike
+PASS sprite p2-16-strike
+PASS visible effect p2-16-strike
+PASS cleanup p2-16-strike
+PASS cue p2-17-hand
+PASS no stale digits p2-17-hand
+PASS sprite p2-17-hand
+PASS sprite p2-17-hand
+PASS sprite p2-17-hand
+PASS sprite p2-17-hand
+PASS sprite p2-17-hand
+PASS visible effect p2-17-hand
+PASS cleanup p2-17-hand
+PASS cue p2-18-cards
+PASS no stale digits p2-18-cards
+PASS sprite p2-18-cards
+PASS sprite p2-18-cards
+PASS sprite p2-18-cards
+PASS sprite p2-18-cards
+PASS sprite p2-18-cards
+PASS sprite p2-18-cards
+PASS visible effect p2-18-cards
+PASS cleanup p2-18-cards
+PASS cue p2-19-taichiboost
+PASS no stale digits p2-19-taichiboost
+PASS sprite p2-19-taichiboost
+PASS sprite p2-19-taichiboost
+PASS sprite p2-19-taichiboost
+PASS visible effect p2-19-taichiboost
+PASS cleanup p2-19-taichiboost
+PASS cue p2-20-taichiboost
+PASS no stale digits p2-20-taichiboost
+PASS sprite p2-20-taichiboost
+PASS sprite p2-20-taichiboost
+PASS sprite p2-20-taichiboost
+PASS visible effect p2-20-taichiboost
+PASS cleanup p2-20-taichiboost
+PASS cue p2-21-taichiboost
+PASS no stale digits p2-21-taichiboost
+PASS sprite p2-21-taichiboost
+PASS sprite p2-21-taichiboost
+PASS sprite p2-21-taichiboost
+PASS visible effect p2-21-taichiboost
+PASS cleanup p2-21-taichiboost
+PASS cue p2-22-tether
+PASS no stale digits p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS sprite p2-22-tether
+PASS visible effect p2-22-tether
+PASS cleanup p2-22-tether
+PASS cue p2-23-rage
+PASS no stale digits p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS visible effect p2-23-rage
+PASS cleanup p2-23-rage
+PASS cue p2-24-rage
+PASS no stale digits p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS visible effect p2-24-rage
+PASS cleanup p2-24-rage
+PASS cue p2-25-drain
+PASS no stale digits p2-25-drain
+PASS sprite p2-25-drain
+PASS sprite p2-25-drain
+PASS sprite p2-25-drain
+PASS sprite p2-25-drain
+PASS sprite p2-25-drain
+PASS visible effect p2-25-drain
+PASS cleanup p2-25-drain
+PASS cue p3-26-strike
+PASS no stale digits p3-26-strike
+PASS sprite p3-26-strike
+PASS sprite p3-26-strike
+PASS sprite p3-26-strike
+PASS sprite p3-26-strike
+PASS visible effect p3-26-strike
+PASS cleanup p3-26-strike
+PASS cue p3-27-heal
+PASS no stale digits p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS sprite p3-27-heal
+PASS visible effect p3-27-heal
+PASS cleanup p3-27-heal
+PASS cue p3-28-growth
+PASS no stale digits p3-28-growth
+PASS sprite p3-28-growth
+PASS sprite p3-28-growth
+PASS sprite p3-28-growth
+PASS sprite p3-28-growth
+PASS visible effect p3-28-growth
+PASS cleanup p3-28-growth
+PASS cue p2-29-dice
+PASS no stale digits p2-29-dice
+PASS sprite p2-29-dice
+PASS visible effect p2-29-dice
+PASS cleanup p2-29-dice
+PASS cue p2-30-dice
+PASS no stale digits p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS visible effect p2-30-dice
+PASS cleanup p2-30-dice
+PASS cue p3-31-measure
+PASS no stale digits p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS visible effect p3-31-measure
+PASS cleanup p3-31-measure
+PASS cue p2-32-sun
+PASS no stale digits p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS sprite p2-32-sun
+PASS visible effect p2-32-sun
+PASS cleanup p2-32-sun
+PASS cue p2-33-sun
+PASS no stale digits p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS sprite p2-33-sun
+PASS visible effect p2-33-sun
+PASS cleanup p2-33-sun
+PASS cue p2-34-maneuver
+PASS no stale digits p2-34-maneuver
+PASS sprite p2-34-maneuver
+PASS sprite p2-34-maneuver
+PASS sprite p2-34-maneuver
+PASS sprite p2-34-maneuver
+PASS visible effect p2-34-maneuver
+PASS cleanup p2-34-maneuver
+PASS resolve initial choice p2-35-dragon
+PASS cue p2-35-dragon
+PASS no stale digits p2-35-dragon
+PASS sprite p2-35-dragon
+PASS sprite p2-35-dragon
+PASS sprite p2-35-dragon
+PASS sprite p2-35-dragon
+PASS sprite p2-35-dragon
+PASS sprite p2-35-dragon
+PASS visible effect p2-35-dragon
+PASS cleanup p2-35-dragon
+PASS resolve initial choice p2-36-surge
+PASS cue p2-36-surge
+PASS no stale digits p2-36-surge
+PASS sprite p2-36-surge
+PASS sprite p2-36-surge
+PASS sprite p2-36-surge
+PASS sprite p2-36-surge
+PASS sprite p2-36-surge
+PASS visible effect p2-36-surge
+PASS cleanup p2-36-surge
+PASS cue p2-37-elementfist
+PASS no stale digits p2-37-elementfist
+PASS sprite p2-37-elementfist
+PASS sprite p2-37-elementfist
+PASS visible effect p2-37-elementfist
+PASS cleanup p2-37-elementfist
+PASS cue p2-38-elementguard
+PASS no stale digits p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS sprite p2-38-elementguard
+PASS visible effect p2-38-elementguard
+PASS cleanup p2-38-elementguard
+PASS cue p2-39-tether
+PASS no stale digits p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS sprite p2-39-tether
+PASS visible effect p2-39-tether
+PASS cleanup p2-39-tether
+PASS cue p2-40-tether
+PASS no stale digits p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS sprite p2-40-tether
+PASS visible effect p2-40-tether
+PASS cleanup p2-40-tether
+PASS cue p2-41-tether
+PASS no stale digits p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS sprite p2-41-tether
+PASS visible effect p2-41-tether
+PASS cleanup p2-41-tether
+PASS cue p2-42-heal
+PASS no stale digits p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS sprite p2-42-heal
+PASS visible effect p2-42-heal
+PASS cleanup p2-42-heal
+PASS cue p2-43-falselife
+PASS no stale digits p2-43-falselife
+PASS sprite p2-43-falselife
+PASS sprite p2-43-falselife
+PASS sprite p2-43-falselife
+PASS sprite p2-43-falselife
+PASS sprite p2-43-falselife
+PASS visible effect p2-43-falselife
+PASS cleanup p2-43-falselife
+PASS cue p2-44-nightmare
+PASS no stale digits p2-44-nightmare
+PASS sprite p2-44-nightmare
+PASS sprite p2-44-nightmare
+PASS sprite p2-44-nightmare
+PASS sprite p2-44-nightmare
+PASS sprite p2-44-nightmare
+PASS visible effect p2-44-nightmare
+PASS cleanup p2-44-nightmare
+PASS cue p2-45-drain
+PASS no stale digits p2-45-drain
+PASS sprite p2-45-drain
+PASS sprite p2-45-drain
+PASS sprite p2-45-drain
+PASS sprite p2-45-drain
+PASS sprite p2-45-drain
+PASS visible effect p2-45-drain
+PASS cleanup p2-45-drain
+PASS cue p2-46-book
+PASS no stale digits p2-46-book
+PASS sprite p2-46-book
+PASS visible effect p2-46-book
+PASS cleanup p2-46-book
+PASS cue p2-47-book
+PASS no stale digits p2-47-book
+PASS sprite p2-47-book
+PASS visible effect p2-47-book
+PASS cleanup p2-47-book
+PASS cue p2-48-book
+PASS no stale digits p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS visible effect p2-48-book
+PASS cleanup p2-48-book
+PASS resolve initial choice p2-49-elementguard
+PASS cue p2-49-elementguard
+PASS no stale digits p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS sprite p2-49-elementguard
+PASS visible effect p2-49-elementguard
+PASS cleanup p2-49-elementguard
+PASS resolve initial choice p2-50-surge
+PASS cue p2-50-surge
+PASS no stale digits p2-50-surge
+PASS sprite p2-50-surge
+PASS sprite p2-50-surge
+PASS sprite p2-50-surge
+PASS sprite p2-50-surge
+PASS sprite p2-50-surge
+PASS visible effect p2-50-surge
+PASS cleanup p2-50-surge
+PASS resolve initial choice p2-51-wind
+PASS cue p2-51-wind
+PASS no stale digits p2-51-wind
+PASS sprite p2-51-wind
+PASS sprite p2-51-wind
+PASS sprite p2-51-wind
+PASS sprite p2-51-wind
+PASS visible effect p2-51-wind
+PASS cleanup p2-51-wind
+PASS resolve initial hand p2-52-wind
+PASS cue p2-52-wind
+PASS no stale digits p2-52-wind
+PASS sprite p2-52-wind
+PASS sprite p2-52-wind
+PASS sprite p2-52-wind
+PASS sprite p2-52-wind
+PASS visible effect p2-52-wind
+PASS cleanup p2-52-wind
+PASS cue p2-53-enchant
+PASS no stale digits p2-53-enchant
+PASS sprite p2-53-enchant
+PASS sprite p2-53-enchant
+PASS sprite p2-53-enchant
+PASS sprite p2-53-enchant
+PASS sprite p2-53-enchant
+PASS sprite p2-53-enchant
+PASS visible effect p2-53-enchant
+PASS cleanup p2-53-enchant
+PASS cue p2-54-enchant
+PASS no stale digits p2-54-enchant
+PASS sprite p2-54-enchant
+PASS sprite p2-54-enchant
+PASS sprite p2-54-enchant
+PASS sprite p2-54-enchant
+PASS sprite p2-54-enchant
+PASS sprite p2-54-enchant
+PASS visible effect p2-54-enchant
+PASS cleanup p2-54-enchant
+PASS cue p2-55-growth
+PASS no stale digits p2-55-growth
+PASS sprite p2-55-growth
+PASS sprite p2-55-growth
+PASS sprite p2-55-growth
+PASS sprite p2-55-growth
+PASS visible effect p2-55-growth
+PASS cleanup p2-55-growth
+PASS cue p2-56-nightmare
+PASS no stale digits p2-56-nightmare
+PASS sprite p2-56-nightmare
+PASS sprite p2-56-nightmare
+PASS sprite p2-56-nightmare
+PASS sprite p2-56-nightmare
+PASS sprite p2-56-nightmare
+PASS visible effect p2-56-nightmare
+PASS cleanup p2-56-nightmare
+PASS cue p2-57-charm
+PASS no stale digits p2-57-charm
+PASS sprite p2-57-charm
+PASS sprite p2-57-charm
+PASS sprite p2-57-charm
+PASS sprite p2-57-charm
+PASS sprite p2-57-charm
+PASS visible effect p2-57-charm
+PASS cleanup p2-57-charm
+PASS cue p2-58-maneuver
+PASS no stale digits p2-58-maneuver
+PASS sprite p2-58-maneuver
+PASS sprite p2-58-maneuver
+PASS sprite p2-58-maneuver
+PASS sprite p2-58-maneuver
+PASS sprite p2-58-maneuver
+PASS visible effect p2-58-maneuver
+PASS cleanup p2-58-maneuver
+PASS cue p2-59-heal
+PASS no stale digits p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS sprite p2-59-heal
+PASS visible effect p2-59-heal
+PASS cleanup p2-59-heal
+PASS cue p2-60-drunk
+PASS no stale digits p2-60-drunk
+PASS sprite p2-60-drunk
+PASS sprite p2-60-drunk
+PASS sprite p2-60-drunk
+PASS sprite p2-60-drunk
+PASS sprite p2-60-drunk
+PASS visible effect p2-60-drunk
+PASS cleanup p2-60-drunk
+PASS cue p2-61-drunk
+PASS no stale digits p2-61-drunk
+PASS sprite p2-61-drunk
+PASS sprite p2-61-drunk
+PASS sprite p2-61-drunk
+PASS sprite p2-61-drunk
+PASS sprite p2-61-drunk
+PASS visible effect p2-61-drunk
+PASS cleanup p2-61-drunk
+PASS cue p2-62-ki
+PASS no stale digits p2-62-ki
+PASS sprite p2-62-ki
+PASS sprite p2-62-ki
+PASS sprite p2-62-ki
+PASS sprite p2-62-ki
+PASS sprite p2-62-ki
+PASS sprite p2-62-ki
+PASS visible effect p2-62-ki
+PASS cleanup p2-62-ki
+PASS cue p3-63-circuit
+PASS no stale digits p3-63-circuit
+PASS sprite p3-63-circuit
+PASS sprite p3-63-circuit
+PASS sprite p3-63-circuit
+PASS sprite p3-63-circuit
+PASS visible effect p3-63-circuit
+PASS cleanup p3-63-circuit
+PASS resolve initial choice p2-35-dragon-cold
+PASS cue p2-35-dragon-cold
+PASS no stale digits p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS sprite p2-35-dragon-cold
+PASS visible effect p2-35-dragon-cold
+PASS cleanup p2-35-dragon-cold
+PASS resolve initial choice p2-35-dragon-lightning
+PASS cue p2-35-dragon-lightning
+PASS no stale digits p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS sprite p2-35-dragon-lightning
+PASS visible effect p2-35-dragon-lightning
+PASS cleanup p2-35-dragon-lightning
+PASS resolve initial choice p2-35-dragon-poison
+PASS cue p2-35-dragon-poison
+PASS no stale digits p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS sprite p2-35-dragon-poison
+PASS visible effect p2-35-dragon-poison
+PASS cleanup p2-35-dragon-poison
+PASS resolve initial choice p2-35-dragon-acid
+PASS cue p2-35-dragon-acid
+PASS no stale digits p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS sprite p2-35-dragon-acid
+PASS visible effect p2-35-dragon-acid
+PASS cleanup p2-35-dragon-acid
+PASS cue p2-37-elementfist-cold
+PASS no stale digits p2-37-elementfist-cold
+PASS sprite p2-37-elementfist-cold
+PASS sprite p2-37-elementfist-cold
+PASS visible effect p2-37-elementfist-cold
+PASS cleanup p2-37-elementfist-cold
+PASS cue p2-37-elementfist-lightning
+PASS no stale digits p2-37-elementfist-lightning
+PASS sprite p2-37-elementfist-lightning
+PASS sprite p2-37-elementfist-lightning
+PASS visible effect p2-37-elementfist-lightning
+PASS cleanup p2-37-elementfist-lightning
+PASS cue p2-37-elementfist-thunder
+PASS no stale digits p2-37-elementfist-thunder
+PASS sprite p2-37-elementfist-thunder
+PASS sprite p2-37-elementfist-thunder
+PASS visible effect p2-37-elementfist-thunder
+PASS cleanup p2-37-elementfist-thunder
+PASS cue p2-37-elementfist-acid
+PASS no stale digits p2-37-elementfist-acid
+PASS sprite p2-37-elementfist-acid
+PASS sprite p2-37-elementfist-acid
+PASS visible effect p2-37-elementfist-acid
+PASS cleanup p2-37-elementfist-acid
+PASS cue p2-38-elementguard-cold
+PASS no stale digits p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS sprite p2-38-elementguard-cold
+PASS visible effect p2-38-elementguard-cold
+PASS cleanup p2-38-elementguard-cold
+PASS cue p2-38-elementguard-lightning
+PASS no stale digits p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS sprite p2-38-elementguard-lightning
+PASS visible effect p2-38-elementguard-lightning
+PASS cleanup p2-38-elementguard-lightning
+PASS cue p2-38-elementguard-thunder
+PASS no stale digits p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS sprite p2-38-elementguard-thunder
+PASS visible effect p2-38-elementguard-thunder
+PASS cleanup p2-38-elementguard-thunder
+PASS cue p2-38-elementguard-acid
+PASS no stale digits p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS sprite p2-38-elementguard-acid
+PASS visible effect p2-38-elementguard-acid
+PASS cleanup p2-38-elementguard-acid
+PASS cue p2-13-surge-thunder
+PASS no stale digits p2-13-surge-thunder
+PASS sprite p2-13-surge-thunder
+PASS sprite p2-13-surge-thunder
+PASS sprite p2-13-surge-thunder
+PASS sprite p2-13-surge-thunder
+PASS sprite p2-13-surge-thunder
+PASS visible effect p2-13-surge-thunder
+PASS cleanup p2-13-surge-thunder
+PASS cue p2-13-surge-acid
+PASS no stale digits p2-13-surge-acid
+PASS sprite p2-13-surge-acid
+PASS sprite p2-13-surge-acid
+PASS sprite p2-13-surge-acid
+PASS sprite p2-13-surge-acid
+PASS sprite p2-13-surge-acid
+PASS visible effect p2-13-surge-acid
+PASS cleanup p2-13-surge-acid
+PASS cue p2-13-surge-poison
+PASS no stale digits p2-13-surge-poison
+PASS sprite p2-13-surge-poison
+PASS sprite p2-13-surge-poison
+PASS sprite p2-13-surge-poison
+PASS sprite p2-13-surge-poison
+PASS sprite p2-13-surge-poison
+PASS visible effect p2-13-surge-poison
+PASS cleanup p2-13-surge-poison
+PASS cue p2-13-surge-radiant
+PASS no stale digits p2-13-surge-radiant
+PASS sprite p2-13-surge-radiant
+PASS sprite p2-13-surge-radiant
+PASS sprite p2-13-surge-radiant
+PASS sprite p2-13-surge-radiant
+PASS sprite p2-13-surge-radiant
+PASS visible effect p2-13-surge-radiant
+PASS cleanup p2-13-surge-radiant
+PASS cue p2-13-surge-necrotic
+PASS no stale digits p2-13-surge-necrotic
+PASS sprite p2-13-surge-necrotic
+PASS sprite p2-13-surge-necrotic
+PASS sprite p2-13-surge-necrotic
+PASS sprite p2-13-surge-necrotic
+PASS sprite p2-13-surge-necrotic
+PASS visible effect p2-13-surge-necrotic
+PASS cleanup p2-13-surge-necrotic
+PASS cue p2-13-surge-cold
+PASS no stale digits p2-13-surge-cold
+PASS sprite p2-13-surge-cold
+PASS sprite p2-13-surge-cold
+PASS sprite p2-13-surge-cold
+PASS sprite p2-13-surge-cold
+PASS sprite p2-13-surge-cold
+PASS visible effect p2-13-surge-cold
+PASS cleanup p2-13-surge-cold
+PASS cue p2-13-surge-lightning
+PASS no stale digits p2-13-surge-lightning
+PASS sprite p2-13-surge-lightning
+PASS sprite p2-13-surge-lightning
+PASS sprite p2-13-surge-lightning
+PASS sprite p2-13-surge-lightning
+PASS sprite p2-13-surge-lightning
+PASS visible effect p2-13-surge-lightning
+PASS cleanup p2-13-surge-lightning
+PASS cue p2-13-surge-psychic
+PASS no stale digits p2-13-surge-psychic
+PASS sprite p2-13-surge-psychic
+PASS sprite p2-13-surge-psychic
+PASS sprite p2-13-surge-psychic
+PASS sprite p2-13-surge-psychic
+PASS sprite p2-13-surge-psychic
+PASS visible effect p2-13-surge-psychic
+PASS cleanup p2-13-surge-psychic
+PASS cue p2-13-surge-force
+PASS no stale digits p2-13-surge-force
+PASS sprite p2-13-surge-force
+PASS sprite p2-13-surge-force
+PASS sprite p2-13-surge-force
+PASS sprite p2-13-surge-force
+PASS sprite p2-13-surge-force
+PASS visible effect p2-13-surge-force
+PASS cleanup p2-13-surge-force
+PASS cue p2-13-surge-bludgeoning
+PASS no stale digits p2-13-surge-bludgeoning
+PASS sprite p2-13-surge-bludgeoning
+PASS sprite p2-13-surge-bludgeoning
+PASS sprite p2-13-surge-bludgeoning
+PASS sprite p2-13-surge-bludgeoning
+PASS sprite p2-13-surge-bludgeoning
+PASS visible effect p2-13-surge-bludgeoning
+PASS cleanup p2-13-surge-bludgeoning
+PASS cue p2-13-surge-piercing
+PASS no stale digits p2-13-surge-piercing
+PASS sprite p2-13-surge-piercing
+PASS sprite p2-13-surge-piercing
+PASS sprite p2-13-surge-piercing
+PASS sprite p2-13-surge-piercing
+PASS sprite p2-13-surge-piercing
+PASS visible effect p2-13-surge-piercing
+PASS cleanup p2-13-surge-piercing
+PASS cue p2-34-maneuver-limp
+PASS no stale digits p2-34-maneuver-limp
+PASS sprite p2-34-maneuver-limp
+PASS sprite p2-34-maneuver-limp
+PASS sprite p2-34-maneuver-limp
+PASS sprite p2-34-maneuver-limp
+PASS visible effect p2-34-maneuver-limp
+PASS cleanup p2-34-maneuver-limp
+PASS cue p2-34-maneuver-stunned
+PASS no stale digits p2-34-maneuver-stunned
+PASS sprite p2-34-maneuver-stunned
+PASS sprite p2-34-maneuver-stunned
+PASS sprite p2-34-maneuver-stunned
+PASS sprite p2-34-maneuver-stunned
+PASS sprite p2-34-maneuver-stunned
+PASS visible effect p2-34-maneuver-stunned
+PASS cleanup p2-34-maneuver-stunned
+PASS cue p2-34-maneuver-knockeddown
+PASS no stale digits p2-34-maneuver-knockeddown
+PASS sprite p2-34-maneuver-knockeddown
+PASS sprite p2-34-maneuver-knockeddown
+PASS sprite p2-34-maneuver-knockeddown
+PASS sprite p2-34-maneuver-knockeddown
+PASS sprite p2-34-maneuver-knockeddown
+PASS visible effect p2-34-maneuver-knockeddown
+PASS cleanup p2-34-maneuver-knockeddown
+PASS cue p2-58-maneuver-stunned
+PASS no stale digits p2-58-maneuver-stunned
+PASS sprite p2-58-maneuver-stunned
+PASS sprite p2-58-maneuver-stunned
+PASS sprite p2-58-maneuver-stunned
+PASS sprite p2-58-maneuver-stunned
+PASS sprite p2-58-maneuver-stunned
+PASS visible effect p2-58-maneuver-stunned
+PASS cleanup p2-58-maneuver-stunned
+PASS cue p2-14-music-weaken
+PASS no stale digits p2-14-music-weaken
+PASS sprite p2-14-music-weaken
+PASS sprite p2-14-music-weaken
+PASS visible effect p2-14-music-weaken
+PASS cleanup p2-14-music-weaken
+PASS cue p2-12-enchant-consume
+PASS no stale digits p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS sprite p2-12-enchant-consume
+PASS visible effect p2-12-enchant-consume
+PASS cleanup p2-12-enchant-consume
+PASS cue p2-53-enchant-consume
+PASS no stale digits p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS sprite p2-53-enchant-consume
+PASS visible effect p2-53-enchant-consume
+PASS cleanup p2-53-enchant-consume
+PASS resolve initial choice p2-49-elementguard-thunder
+PASS cue p2-49-elementguard-thunder
+PASS no stale digits p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS sprite p2-49-elementguard-thunder
+PASS visible effect p2-49-elementguard-thunder
+PASS cleanup p2-49-elementguard-thunder
+PASS cue p2-20-taichiboost-guard
+PASS no stale digits p2-20-taichiboost-guard
+PASS sprite p2-20-taichiboost-guard
+PASS sprite p2-20-taichiboost-guard
+PASS visible effect p2-20-taichiboost-guard
+PASS cleanup p2-20-taichiboost-guard
+PASS cue p2-55-growth-decay
+PASS no stale digits p2-55-growth-decay
+PASS sprite p2-55-growth-decay
+PASS sprite p2-55-growth-decay
+PASS sprite p2-55-growth-decay
+PASS sprite p2-55-growth-decay
+PASS visible effect p2-55-growth-decay
+PASS cleanup p2-55-growth-decay
+PASS cue p2-44-nightmare-panic-applied
+PASS no stale digits p2-44-nightmare-panic-applied
+PASS sprite p2-44-nightmare-panic-applied
+PASS sprite p2-44-nightmare-panic-applied
+PASS sprite p2-44-nightmare-panic-applied
+PASS sprite p2-44-nightmare-panic-applied
+PASS sprite p2-44-nightmare-panic-applied
+PASS visible effect p2-44-nightmare-panic-applied
+PASS cleanup p2-44-nightmare-panic-applied
+PASS cue p2-44-nightmare-disabled-applied
+PASS no stale digits p2-44-nightmare-disabled-applied
+PASS sprite p2-44-nightmare-disabled-applied
+PASS sprite p2-44-nightmare-disabled-applied
+PASS sprite p2-44-nightmare-disabled-applied
+PASS sprite p2-44-nightmare-disabled-applied
+PASS sprite p2-44-nightmare-disabled-applied
+PASS visible effect p2-44-nightmare-disabled-applied
+PASS cleanup p2-44-nightmare-disabled-applied
+PASS cue p2-57-charm-disabled
+PASS no stale digits p2-57-charm-disabled
+PASS sprite p2-57-charm-disabled
+PASS sprite p2-57-charm-disabled
+PASS sprite p2-57-charm-disabled
+PASS sprite p2-57-charm-disabled
+PASS sprite p2-57-charm-disabled
+PASS visible effect p2-57-charm-disabled
+PASS cleanup p2-57-charm-disabled
+PASS cue p2-61-drunk-expire
+PASS no stale digits p2-61-drunk-expire
+PASS sprite p2-61-drunk-expire
+PASS sprite p2-61-drunk-expire
+PASS sprite p2-61-drunk-expire
+PASS sprite p2-61-drunk-expire
+PASS sprite p2-61-drunk-expire
+PASS visible effect p2-61-drunk-expire
+PASS cleanup p2-61-drunk-expire
+PASS cue p2-62-ki-empty
+PASS no stale digits p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS sprite p2-62-ki-empty
+PASS visible effect p2-62-ki-empty
+PASS cleanup p2-62-ki-empty
+PASS cue p2-62-ki-full
+PASS no stale digits p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS sprite p2-62-ki-full
+PASS visible effect p2-62-ki-full
+PASS cleanup p2-62-ki-full
+PASS cue p3-63-circuit-second
+PASS no stale digits p3-63-circuit-second
+PASS sprite p3-63-circuit-second
+PASS sprite p3-63-circuit-second
+PASS sprite p3-63-circuit-second
+PASS sprite p3-63-circuit-second
+PASS visible effect p3-63-circuit-second
+PASS cleanup p3-63-circuit-second
+PASS cue p3-63-circuit-recover
+PASS no stale digits p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS sprite p3-63-circuit-recover
+PASS visible effect p3-63-circuit-recover
+PASS cleanup p3-63-circuit-recover
+PASS cue p3-63-circuit-blocked
+PASS no stale digits p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS sprite p3-63-circuit-blocked
+PASS visible effect p3-63-circuit-blocked
+PASS cleanup p3-63-circuit-blocked
+PASS cue p2-64-convert
+PASS no stale digits p2-64-convert
+PASS sprite p2-64-convert
+PASS sprite p2-64-convert
+PASS visible effect p2-64-convert
+PASS cleanup p2-64-convert

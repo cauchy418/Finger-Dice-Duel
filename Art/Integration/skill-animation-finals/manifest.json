@@ -8,8 +8,8 @@
   ],
   "durationSeconds": 0.72,
   "sourceSha256": {
-    "Assets/Scripts/UI/CombatAnimationPlayer.FinalSkills.cs": "a70cd41c83c35c9822087d6d75d8ad6584fa0dd1a9c7af5c4ec41de9d3426592",
-    "Assets/Scripts/Core/FinalSkillAnimation.cs": "e555670624233171e160fca79c6a7af7ec871c9d7c96584610d9fc070394bf3b"
+    "Assets/Scripts/UI/CombatAnimationPlayer.FinalSkills.cs": "ae3dda84f4da4497451d97c0f4c6ca1278fcb0f126330fa64dc2e228d47c7fac",
+    "Assets/Scripts/Core/FinalSkillAnimation.cs": "5329005618e81c9fee6e3e712d4fa0f30ad48b462bbd1eb311d9b86c6891a321"
   },
   "clips": [
     {
@@ -47,12 +47,12 @@
         {
           "path": "portent-record/windup.png",
           "progress": 0.28,
-          "sha256": "1afe5715013aa6fbec40aba36b7de98c068f7e94f72e286f012c218c45e54244"
+          "sha256": "d29844386a8bee6818204341b46dfc05d4750b4b8e61fc52b2321c4978065f88"
         },
         {
           "path": "portent-record/peak.png",
           "progress": 0.62,
-          "sha256": "358d0c05dc67bbde53cb4104111851d5a9d3b5bf8972ec17ff88f471c20381ec"
+          "sha256": "440b3e9aff149b7fd3dbaeedc85cff9987e8ebfe0f53126d2c4fcff0a28a0720"
         }
       ]
     },
@@ -69,12 +69,12 @@
         {
           "path": "portent-use/windup.png",
           "progress": 0.28,
-          "sha256": "931f730b7dde9d28aff18b5b063b88836e75c96a03d794051ca356579ae85760"
+          "sha256": "8c2586f37b7cce5b28eae24d89468480d2d87eb1f1a5ad6d1b80c30d15acc4f1"
         },
         {
           "path": "portent-use/peak.png",
           "progress": 0.62,
-          "sha256": "efec1ad2235a3eb13fa302d262b5e221b8bb922801db7c66c6dc96ce6a52727f"
+          "sha256": "5a7af937c4acf57a8dc70ce0acd2c2a7283bcbc578550d3bcbc73e8c0ced4f70"
         }
       ]
     },
@@ -91,12 +91,12 @@
         {
           "path": "illusion-hand/windup.png",
           "progress": 0.28,
-          "sha256": "0db4e496c25a906bfa0cd9d10c7c7dc20f12fe46d061cedfc0dd8d3c56b68e12"
+          "sha256": "33289e9e150b051796af1f04581c9d31843c4f866a219b9e309f48bd15c79f8c"
         },
         {
           "path": "illusion-hand/peak.png",
           "progress": 0.62,
-          "sha256": "090c14c46a7e9e16e12a3a9573c4c071a50251af0c85a942a8bc15d61338cb01"
+          "sha256": "c59af5067de6436c1746a6ac0e7722022c025b38e6406fcb1a0b47e1c4ff3e1e"
         }
       ]
     },
@@ -113,12 +113,12 @@
         {
           "path": "trickery-swap/windup.png",
           "progress": 0.28,
-          "sha256": "39b08703b8ebeb588387aef6141b8ca2dc0e680891205479c65ca1e7a830db88"
+          "sha256": "46249539ecd5277e5e7937e3b04a1d4b21758ef6faae97d36fef907765b40a05"
         },
         {
           "path": "trickery-swap/peak.png",
           "progress": 0.62,
-          "sha256": "e88c9d8e4a724aa2d29b3cd95d76239880bba95715180f5e836f47a0026fb885"
+          "sha256": "06815fb3900a35307cbd5bd6de32b00f7d4b72dc63a8c5842eac9a8f4053c8f2"
         }
       ]
     },
@@ -135,12 +135,12 @@
         {
           "path": "necromancy-swap/windup.png",
           "progress": 0.28,
-          "sha256": "9f9a177e316db9f430adcafa09a8c1f5bc663ba672b8fd1992293433c57520c4"
+          "sha256": "6c58fadd27daef65da9ec99cf68a6d24b39d965f6b7c4d9946867e2e7823dba7"
         },
         {
           "path": "necromancy-swap/peak.png",
           "progress": 0.62,
-          "sha256": "4aaac3b024dcbb5a56cf843a3771cf246ca31630967c6712d927d0bc6c2263a4"
+          "sha256": "a3f311b464b06fc787c382827ddd713ce46ffbc50ee8fbb5ccd1dd9b3cfc9130"
         }
       ]
     },
@@ -157,12 +157,12 @@
         {
           "path": "ward-absorb/windup.png",
           "progress": 0.28,
-          "sha256": "e322974394772048c58f6009feb8480e403ae94c40bb70c568cdc2fefd8339c0"
+          "sha256": "c9eef1b2ff44fe4061c207037783fe450fdec6c1bc6690e8a0c15342fc94e025"
         },
         {
           "path": "ward-absorb/peak.png",
           "progress": 0.62,
-          "sha256": "3d32df78817f39744d2e37a8a3956aa24281012eb98153dd3449f8ab4054dc94"
+          "sha256": "76706374221c1801cb31f626faa5bf6df9377caea933a0419f8b454bac2df6ef"
         }
       ]
     },
@@ -179,12 +179,12 @@
         {
           "path": "ward-store/windup.png",
           "progress": 0.28,
-          "sha256": "7512b5ae7a9f7e54b1b8a6ba179570943948ac32b7be4d32bd195d86042e0433"
+          "sha256": "72fffdfff71dd1247f3b533a1e454bb233bc19db31901cfdc715da571a24fe34"
         },
         {
           "path": "ward-store/peak.png",
           "progress": 0.62,
-          "sha256": "d5172d4c5530b2bd835628c649389834f4a4860a6f0157fa709361f0a1112a0c"
+          "sha256": "62feaf931815e6b8a76f31b7356944412cc84abe2f0336041f76f2d76d83bb11"
         }
       ]
     },
@@ -201,12 +201,12 @@
         {
           "path": "resistance-grant/windup.png",
           "progress": 0.28,
-          "sha256": "7a9107acaf19534dc5519f369ea3000af0bbe612f52a15c64721a03474674c84"
+          "sha256": "6238c7242e54f401f87a0807b93cd65a4e2bbd2f5aebdebf7f330a1c073ff844"
         },
         {
           "path": "resistance-grant/peak.png",
           "progress": 0.62,
-          "sha256": "963879667a464fe96b1290da0e69c282f58edcd20bd558d5ddb3bfce4928e238"
+          "sha256": "4c22f464b87cd2fa22f9a65bfdd0eb06f2a34c5b49b706f4d45d693b5ab8231b"
         }
       ]
     },
@@ -223,12 +223,12 @@
         {
           "path": "undead-guard/windup.png",
           "progress": 0.28,
-          "sha256": "5e2f35fb94dc81e342a25af14e526c5f2e59d42518239f74bbd75cfb68f70763"
+          "sha256": "7e2eaa86ca81bbd2cd275ed76f1c9533eff9c7f6598622d0b9ec214ca401c435"
         },
         {
           "path": "undead-guard/peak.png",
           "progress": 0.62,
-          "sha256": "e19311e0528a54abe4cc17b796ab6afd2441c15952636fc35e66353f33d7aec6"
+          "sha256": "867cdb3a4ee6448ffb67e46865c28da71d11c4fa1c2836d217b11579bea44795"
         }
       ]
     },
@@ -245,12 +245,12 @@
         {
           "path": "polymorph/windup.png",
           "progress": 0.28,
-          "sha256": "0b110e4291b42f1dc727b8c14b47e1683b19b7fd6942ba43bc4eaba8fdc11e21"
+          "sha256": "c6cfd5a7571f3b1167aa700b1271723653145fab616e9383d2e8f30b3b0effb8"
         },
         {
           "path": "polymorph/peak.png",
           "progress": 0.62,
-          "sha256": "00ffe0c961d757f04472281af47b76f47ebea186d048f758c78fe8dedd99261e"
+          "sha256": "b15b7a3a97355988a131c134bcfd6933a0ace4b31e1cc2f89fff7f5753d78572"
         }
       ]
     },
@@ -355,12 +355,12 @@
         {
           "path": "ninja-clones/windup.png",
           "progress": 0.28,
-          "sha256": "ae39a7aadd9e33a29434d59f2a9e614ff0acd28b3bae13228d89355f3cf3d771"
+          "sha256": "e03ad6f468040e5ff464106b107562bd7726cb48eeb69b95f2ea1b0b55bf0737"
         },
         {
           "path": "ninja-clones/peak.png",
           "progress": 0.62,
-          "sha256": "a243ac2b732caa7e9cb5394b2eb8efd515872337e7f158ca6c61459e50919f62"
+          "sha256": "7fe2e074007b5a8de9c167efee5846d707737cf4bcf93ac364730407b7c317ea"
         }
       ]
     },
@@ -377,12 +377,12 @@
         {
           "path": "hidden-force-plant/windup.png",
           "progress": 0.28,
-          "sha256": "a074104177650d00c0cde87a26ba73955c2e29c12949115414a7ff8f0c02b32c"
+          "sha256": "63726424e9c7082ed32cade9ea3258198d7d2930196ca1f082f9cd6a7ceb6287"
         },
         {
           "path": "hidden-force-plant/peak.png",
           "progress": 0.62,
-          "sha256": "df910f9e190cf8d05abd05c6bced42d3827fdc048fe149f7cc72d3115eb4de68"
+          "sha256": "d02e319050448cd6f57777721c949e127f082882dcc2bbefc6d450ad42fa1448"
         }
       ]
     },
@@ -399,12 +399,12 @@
         {
           "path": "hidden-force-detonate/windup.png",
           "progress": 0.28,
-          "sha256": "1e1af0d4a84bc5c826b54ecbc24d3dccf674d9e1191752a27332295c8a26698e"
+          "sha256": "eb210f545626bd6580df04dce8341875d9de0e99b051a5dfcae7e88868f193d1"
         },
         {
           "path": "hidden-force-detonate/peak.png",
           "progress": 0.62,
-          "sha256": "9ebe7f2a2207d941a0f9ff9f28b21604993b371848c678b744e060c3365818a4"
+          "sha256": "92e16c9a89fc50ca604408f10fe83d38f7b75ddaa713971643e33dc295dd9387"
         }
       ]
     },
@@ -421,12 +421,12 @@
         {
           "path": "bladesong-enter/windup.png",
           "progress": 0.28,
-          "sha256": "678c87b9e400b86a04778d8981c327e0b6e952b840e22186cf5ce632c9d7dd46"
+          "sha256": "3b672bd767d2e4dd4638e94fd5952b404c02bcf4587e2fa0488b1606ac3e5cd3"
         },
         {
           "path": "bladesong-enter/peak.png",
           "progress": 0.62,
-          "sha256": "83e1f02aac367d0c280450137031293f13b8fd16a394ba86f8def1104874e4a9"
+          "sha256": "86dc422c0e3116861dfc4d4d8284076a0658ee0c5c61ef00f85b1f63de0a2e0c"
         }
       ]
     },
@@ -443,12 +443,12 @@
         {
           "path": "bladesong-exit/windup.png",
           "progress": 0.28,
-          "sha256": "86eb1337984dcd2d933c27bbd9f7b21ef07e80401a71209f6f9d650e21402002"
+          "sha256": "fb00cc7814b066b9993b19c3f438a6c26507d4353afc653affe9613742866611"
         },
         {
           "path": "bladesong-exit/peak.png",
           "progress": 0.62,
-          "sha256": "3b7bf4d71994c89c2b58e9f7ad81c4a0cfed14ebedef2184e8aa937f2adb4d59"
+          "sha256": "300ef2c8ff64dac4f97ab32dceebebb4cb4605fcb49d9a8450156c1c30cb29ec"
         }
       ]
     },

@@ -1,6 +1,6 @@
 ﻿# 手指骰子对决 · Finger Dice Duel
 
-战斗使用放大的物理弧线挥击、持续状态轻动与触发高亮。换位、飞数、分身、形态和元素反应已有专属表现，53种播放变体附有[效果截图](Art/Integration/skill-animation-finals/README.md)；完整范围见[动画进度](Docs/animation-p1-progress.md)。
+战斗使用物理弧线挥击、持续状态轻动与技能专属反馈。换位、飞数、形态、治疗、元素、资源和成长均有对应表现；[P1截图](Art/Integration/skill-animation-finals/README.md)与[P2／P3截图](Art/Integration/animation-p2-p3/README.md)可直接查看，范围见[动画进度](Docs/animation-p2-p3-progress.md)。
 
 一款暗色奇幻风格的2D回合制对战游戏：用两只手的数字运算发动攻击、回复与护盾，再利用职业技能、负面状态和座位距离争取胜利。
 

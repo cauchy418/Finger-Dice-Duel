@@ -1,0 +1,48 @@
+PASS cue p2-23-rage
+PASS no stale digits p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS sprite p2-23-rage
+PASS visible effect p2-23-rage
+PASS cleanup p2-23-rage
+PASS cue p2-24-rage
+PASS no stale digits p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS sprite p2-24-rage
+PASS visible effect p2-24-rage
+PASS cleanup p2-24-rage
+PASS cue p3-31-measure
+PASS no stale digits p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS sprite p3-31-measure
+PASS visible effect p3-31-measure
+PASS cleanup p3-31-measure
+PASS cue p2-48-book
+PASS no stale digits p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS sprite p2-48-book
+PASS visible effect p2-48-book
+PASS cleanup p2-48-book
+PASS cue p2-11-eye-expire
+PASS no stale digits p2-11-eye-expire
+PASS sprite p2-11-eye-expire
+PASS sprite p2-11-eye-expire
+PASS sprite p2-11-eye-expire
+PASS sprite p2-11-eye-expire
+PASS sprite p2-11-eye-expire
+PASS visible effect p2-11-eye-expire
+PASS cleanup p2-11-eye-expire

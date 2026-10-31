@@ -167,9 +167,9 @@ namespace FingerDiceDuel.Assistant
         {
             if(attack.IsStatusDamage||attack.IsReflected||attack.IsSpecialAttack||attack.IsNecromancyFreeAttack
                 ||attack.ActualHealthDamage<=0||!attack.Attacker.IsAlive)return;
-            if(++CircuitProgress<3)return;CircuitProgress=0;
+            if(++CircuitProgress<3){game?.RecordSkillVisual(attack.Attacker,"汲能回路",attack.Attacker,new SkillVisualData(value:CircuitProgress,variant:"charge"));return;}CircuitProgress=0;
             int hp=attack.Attacker.Health;attack.Attacker.Heal(3);
-            game?.NoteSkill(attack.Attacker,"汲能回路","回复"+(attack.Attacker.Health-hp)+"生命，进度归0");
+            game?.NoteSkill(attack.Attacker,"汲能回路","回复"+(attack.Attacker.Health-hp)+"生命，进度归0",attack.Attacker,new SkillVisualData(value:0,previous:attack.Attacker.Health-hp,variant:"recover"));
         }
     }
 }

@@ -1,0 +1,13 @@
+PASS cue p2-29-dice
+PASS no stale digits p2-29-dice
+PASS sprite p2-29-dice
+PASS visible effect p2-29-dice
+PASS cleanup p2-29-dice
+PASS cue p2-30-dice
+PASS no stale digits p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS sprite p2-30-dice
+PASS visible effect p2-30-dice
+PASS cleanup p2-30-dice

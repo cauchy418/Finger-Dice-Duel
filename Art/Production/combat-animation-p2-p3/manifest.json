@@ -1,0 +1,53 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "key": "vine_tendril",
+      "source": "Art/Production/combat-animation-p2-p3/source/vine_tendril.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/vine_tendril.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. A single flexible curling green thorny vine tendril with 5 to 7 small leaves, gently S shaped on a horizontal path left to right, strong readable dark green silhouette and subtle gold-green sap highlights, organic winding plant stem, not a necklace, no square frame.",
+      "sourceSha256": "6e7d226985ff9a51745825d2f4318bcf42af263247ab52574cb75aa228598b1d",
+      "sha256": "5ac0908212145f0c49ce47d9b664c4570a260b8cb15b3d81ac0db7ed551751da"
+    },
+    {
+      "key": "chain_link",
+      "source": "Art/Production/combat-animation-p2-p3/source/chain_link.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/chain_link.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. A short horizontal section of exactly three interlocked oval black iron chain links with worn antique gold highlights and rough forged metal texture, laid from left to right, readable openings and thick metal, empty transparent holes, no lock and no circle frame.",
+      "sourceSha256": "a3dc4d82e67ff6cbdcf0972ee8670a1303d7662061d18414fd5d59be01dbefe6",
+      "sha256": "67f66d6ce4a8299f8a9879edac09b4fce24f147374055bce40c0298c11998a6d"
+    },
+    {
+      "key": "lore_book",
+      "source": "Art/Production/combat-animation-p2-p3/source/lore_book.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/lore_book.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. An open old leather spellbook with two broad ivory parchment pages, worn antique gold corners and clasps, a few subtle nonlegible magical strokes and tiny gold sparks lifting from the pages. Floating three-quarter view from slightly above, complete open book silhouette, no hand, no desk, no readable writing.",
+      "sourceSha256": "d58ae1583c4350372d60dd34688ceaa04e4da10cc9173f538be7774fa6fec89a",
+      "sha256": "542d0798fec8c18581b8f35f7c680bec875cd93846fe551ada6b04eab814b9df"
+    },
+    {
+      "key": "spectral_hand",
+      "source": "Art/Production/combat-animation-p2-p3/source/spectral_hand.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/spectral_hand.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. One floating ethereal wizard hand and short tapered wrist, open palm facing viewer at a slight angle. Exactly five fingers total: one distinct thumb and four separate fingers, anatomically correct. Semi-transparent sapphire blue and violet spectral material with subtle painted highlights and wispy wrist ending. No body, no other hands, no solid human skin, no jewellery or border.",
+      "sourceSha256": "0471302af9a676e0f7f54c9d972288d8c71a34b488119a5dd5eb4e1ff8e96df4",
+      "sha256": "1c804a616b8ae5d9c84a1fa6b98840040c396277b1dd78e05e3fe546e674ab1e"
+    },
+    {
+      "key": "ancestral_dragon",
+      "source": "Art/Production/combat-animation-p2-p3/source/ancestral_dragon.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/ancestral_dragon.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. One intangible ancestral dragon apparition, complete small serpentine dragon silhouette with head, two spread wings, two forelimbs and winding tail, formed of blue-violet spectral vapour with sparse antique gold embers. Majestic ghostly creature, unmistakably a dragon and never a humanoid dragonborn; translucency and dissolving edges, no medallion, no frame, no gemstones.",
+      "sourceSha256": "9bc90b87abce369c5b01d28ee77b3184659b5fe395f84547874ac3ee33e31e1c",
+      "sha256": "66f704c27b2ac50708beeafa4550a4895a64298bb6810e0b0acd6d27dc634f21"
+    },
+    {
+      "key": "fate_die",
+      "source": "Art/Production/combat-animation-p2-p3/source/fate_die.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Animation/fate_die.png",
+      "prompt": "Use case: stylized-concept. Production transparent animation sprite for the hand-painted dark fantasy game Finger Dice Duel. Painterly game VFX prop, black iron and aged antique gold palette, muted detailed brush texture and controlled magical light. ONE isolated subject centered with at least 12 percent empty transparent margin; orthographic or restrained three-quarter view; no background, no scene, no ground plane, no drop-shadow rectangle, no UI frame, no badge, no icon border, no letters, no digits. Genuine transparent RGBA background. One chunky faceted fantasy fate die, ten-sided crystal geometry in dark obsidian and black iron, thick aged gold edges and worn painterly metal. Restrained three-quarter view with one broad blank dark front facet reserved for a number drawn later by the game. ALL facets blank, no engraved symbols or digits, no surrounding coins or props.",
+      "sourceSha256": "e3c9864e1166e1679deed4e1c04021fa46a9c4d70a5a25e3eaf657579ff3c205",
+      "sha256": "454d7b2043557d4a45e3b19a15d9c2da2364a391ba1a2a9faeff837224de1246"
+    }
+  ]
+}

@@ -6,11 +6,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     public sealed class TheFiendLogic : CharacterTemplate,
         IAttackTypeProvider, IHealingOverflow, IOnDamageDealt, IPreTurnChoiceProvider
     {
-        private int? _pactChoice;
+        private int? _pactChoice;private GameManager _visualGame;
         public override string DisplayName => "邪术师·妖魔";
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
-        public override void OnMatchReset(PlayerState owner,GameManager manager) { _pactChoice=null; }
+        public override void OnMatchReset(PlayerState owner,GameManager manager) { _pactChoice=null;_visualGame=manager; }
         public override void CollectPreTurnChoices(PreTurnChoiceContext context,System.Collections.Generic.IList<ChoiceRequest> requests)
         {
             if(!CharacterBehaviors.ActorHas(context.Actor,this))return;
@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public void OnHealingOverflow(PlayerState owner, int overflow)
         {
-            owner?.GainFalseLife(overflow);
+            if(owner==null)return;int before=owner.FalseLife;owner.GainFalseLife(overflow);if(owner.FalseLife!=before)_visualGame?.RecordSkillVisual(owner,"黑暗赐福",owner,new SkillVisualData(value:owner.FalseLife,previous:before,variant:"gain"));
         }
 
         public override void OnResolveAttack(AttackContext context)
@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var status=(StatusEffect)choice;
             context.Attacker.ClearFalseLife();
             context.ApplyAttachedStatus(context.Defender,status,2,context.Attacker,context.Manager,"直坠噩梦");
-            context.Manager?.NoteSkill(context.Attacker, "直坠噩梦", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}");
+            context.Manager?.NoteSkill(context.Attacker, "直坠噩梦", $"耗尽虚假生命，准备附加{StatusNames.Of(status)}",context.Defender,new SkillVisualData(variant:"prepare",status:status));
         }
 
         public void OnHitLanded(AttackContext context, GameManager manager)
@@ -44,8 +44,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context.Defender != null
                 && context.Defender.Health * 2 <= context.Defender.MaximumHealth)
             {
-                context.Attacker.Heal(3);
-                manager?.NoteSkill(context.Attacker, "黑暗强运", "回复 3 点");
+                int before=context.Attacker.Health;context.Attacker.Heal(3);
+                manager?.NoteSkill(context.Attacker, "黑暗强运", "回复 3 点",context.Defender,new SkillVisualData(value:context.Attacker.Health-before));
             }
         }
         public void OnDamageDealt(AttackContext context,GameManager manager) => OnHitLanded(context,manager);

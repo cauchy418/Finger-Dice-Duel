@@ -51,6 +51,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             context.IgnoreStatBonuses = true;          // 无视攻防加成
             context.IgnoreIncomingModifiers = true;    // 无视倒伏 ×1.5 等目标侧增减
             context.AttackerStatusOverride = StatusEffect.HolyLight;
+            context.Manager?.RecordSkillVisual(context.Attacker,"黎明曙光",context.Defender,new SkillVisualData(source:context.SourceHand,element:AttackDamageType.Radiant));
         }
 
         /// <summary>攻击类型兜底（OnResolveAttack 已设类型时不会被问到）。</summary>

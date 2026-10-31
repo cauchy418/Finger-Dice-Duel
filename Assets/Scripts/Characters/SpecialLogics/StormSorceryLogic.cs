@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var options=NewSubclassChoices.StormResistances();
             var request=new WizardChoice(owner,"风暴之护 · 选择本局永久抗性",options,value=>{
                 var type=(AttackDamageType)value;if(type!=AttackDamageType.Lightning&&type!=AttackDamageType.Thunder)return;
-                if(_chosen)return;Resistance=type;owner.AddPermanentResistance(type);_chosen=true;_queued=false;game.NoteSkill(owner,"风暴之护",AttackDamageTypes.NameOf(type)+"永久抗性");});
+                if(_chosen)return;Resistance=type;owner.AddPermanentResistance(type);_chosen=true;_queued=false;game.NoteSkill(owner,"风暴之护",AttackDamageTypes.NameOf(type)+"永久抗性",owner,new SkillVisualData(element:type));});
             if(game.DeferWizardChoice?.Invoke(request)==true)return;
             request.ChooseOption(SkillChoicePolicy.Choose(NewSubclassChoices.StormResistance,options,owner,null,game));
         }
@@ -26,7 +26,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(context.AttackType!=AttackDamageType.None)return;
             int roll=ForcedRoll>=0?ForcedRoll%100:(Rng??(Rng=new Random())).Next(100);
             context.AttackType=roll<30?AttackDamageType.Lightning:roll<60?AttackDamageType.Thunder:AttackTypeOf(context);
-            context.Manager?.NoteSkill(context.Attacker,"暴风狂怒",AttackDamageTypes.NameOf(context.AttackType));
+            context.Manager?.NoteSkill(context.Attacker,"暴风狂怒",AttackDamageTypes.NameOf(context.AttackType),context.Defender,new SkillVisualData(source:context.SourceHand,element:context.AttackType));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>(context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
         public StatusEffect StatusToApplyOnHit(AttackContext context)=>StatusNames.StatusOf(AttackDamageTypes.ToDamageType(context.AttackType));

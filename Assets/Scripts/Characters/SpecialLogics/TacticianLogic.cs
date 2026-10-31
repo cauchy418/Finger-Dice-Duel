@@ -25,6 +25,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             owner.SetDynamicBonuses(x, x);
         }
 
+        public override void OnResolveAttack(AttackContext context)
+        {if(context?.Manager==null||context.IsStatusDamage)return;int min=int.MaxValue,max=0;foreach(var player in context.Manager.Players)if(player.IsAlive){min=System.Math.Min(min,player.Health);max=System.Math.Max(max,player.Health);}int spread=min==int.MaxValue?0:max-min;context.Manager.RecordSkillVisual(context.Attacker,"战术优势",context.Attacker,new SkillVisualData(source:context.SourceHand,value:spread,previous:spread/3));}
         public override AttackDamageType AttackTypeOf(AttackContext context)
             => AttackDamageType.Slashing;
     }

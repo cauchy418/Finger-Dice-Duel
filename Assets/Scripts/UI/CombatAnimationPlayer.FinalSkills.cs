@@ -15,7 +15,8 @@ namespace FingerDiceDuel.UI
         {
             _finalImages.Clear();ClearFinalNumbers();var data=e.SkillData;
             // Capture once: moving panels must never feed their changed anchors back into the path.
-            _skillOrigin=_target(e.Actor)+Vector2.down*150;_skillTarget=_target(e.Target)+Vector2.down*150;
+            bool adaptive=SecondarySkillAnimation.Find(e.RedirectKind)!=null;
+            _skillOrigin=adaptive?SkillBodyAnchor(e.Actor):_target(e.Actor)+Vector2.down*150;_skillTarget=adaptive?SkillBodyAnchor(e.Target):_target(e.Target)+Vector2.down*150;
             _skillFrom=_hand(e.Actor,data?.Source??e.SourceHand);
             _skillTo=data?.Destination!=null?_hand(data.DestinationOwner??e.Target,data.Destination):_skillTarget;
         }
@@ -38,6 +39,7 @@ namespace FingerDiceDuel.UI
         {
             foreach(var img in _finalImages)img.enabled=false;foreach(var label in _finalNumbers)label.text="";
             var data=e.SkillData;string name=e.RedirectKind??"",variant=data?.Variant??"";var style=FinalSkillAnimation.Style(name);
+            var secondary=SecondarySkillAnimation.Find(name);if(secondary!=null){DrawSecondaryPose(secondary,e,t);return;}
             Vector2 origin=_skillOrigin,target=_skillTarget,from=_skillFrom,to=_skillTo;
             float pulse=Mathf.Sin(Mathf.PI*Mathf.Clamp01(t));float arrive=Mathf.SmoothStep(0,1,t);float last=Mathf.Clamp01((t-.45f)/.55f);
             string value=data!=null&&data.Value>=0?data.Value.ToString():"",previous=data!=null&&data.Previous>=0?data.Previous.ToString():"";
@@ -128,14 +130,14 @@ namespace FingerDiceDuel.UI
                     Picture(0,e.Weapon,target,120,pulse,0,Vector2.one*(.7f+arrive*.6f));break;
             }
         }
-        private void ClearFinalNumbers(){foreach(var text in _finalNumbers)if(text!=null)Destroy(text.gameObject);_finalNumbers.Clear();}
+        private void ClearFinalNumbers(){foreach(var text in _finalNumbers)if(text!=null){text.gameObject.SetActive(false);Destroy(text.gameObject);}_finalNumbers.Clear();}
         private void Line(int slot,Vector2 a,Vector2 b,float alpha)
         {Vector2 d=b-a;Picture(slot,"UI/divider",(a+b)*.5f,d.magnitude,alpha,Mathf.Atan2(d.y,d.x)*Mathf.Rad2Deg,new Vector2(1,.07f),new Color(.8f,.65f,1));}
         private IEnumerator Skill(CombatVisualEvent e,Vector2 from,Vector2 to)
         {
-            StartFinalPose(e);yield return Tween(.72f,t=>DrawFinalPose(e,t));
+            StartFinalPose(e);yield return Tween(SecondarySkillAnimation.Find(e.RedirectKind)?.Priority==3?.38f:SecondarySkillAnimation.Find(e.RedirectKind)!=null?.56f:.72f,t=>DrawFinalPose(e,t));
             _pose(null,Vector2.zero,1);
-            foreach(var label in _finalNumbers)if(label!=null)Destroy(label.gameObject);_finalNumbers.Clear();_impact(e);
+            ClearFinalNumbers();_impact(e);
         }
         // Native review uses the exact production pose renderer, without advancing game rules.
         public void PreviewFinalSkill(CombatVisualEvent e,float progress)

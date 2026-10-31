@@ -1,0 +1,12 @@
+PASS typed counter Effects/ki=3
+PASS point slots Effects/ki=6
+PASS aura exists Effects/ki
+PASS typed counter Effects/ki=0
+PASS point slots Effects/ki=6
+PASS aura exists Effects/ki
+PASS typed counter Subclasses/bard_college_of_lore=9
+PASS point slots Subclasses/bard_college_of_lore=9
+PASS aura exists Subclasses/bard_college_of_lore
+PASS enter drunken stance
+PASS all ambient resources clear
+PASS stat accents clear

@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Core
         public PlayerState Player { get; }
         public int Health { get; }
         public int MaximumHealth { get; }
-        public string Stats { get; }
+        public string Stats { get; }public int Attack {get;}public int Defense {get;}public int Range {get;}
         public string Emblem { get; }
         public IReadOnlyList<CombatStatusIcon> Icons { get; }
         private readonly Hand _left,_right;
@@ -22,7 +22,8 @@ namespace FingerDiceDuel.Core
         {
             Player=p;Health=p.Health;MaximumHealth=p.MaximumHealth;Emblem=p.BattleEmblemKey;
             int range=StatusRules.EffectiveAttackRange(p,game);if(range<0)range=GameManager.BaseRangeOf(p);
-            Stats="攻 "+Signed(StatusRules.EffectiveAttackBonus(p))+"    防 "+Signed(StatusRules.EffectiveDefenseBonus(p))+"    距 "+(range==int.MaxValue?"∞":range.ToString());
+            Attack=StatusRules.EffectiveAttackBonus(p);Defense=StatusRules.EffectiveDefenseBonus(p);Range=range;
+            Stats="攻 "+Signed(Attack)+"    防 "+Signed(Defense)+"    距 "+(range==int.MaxValue?"∞":range.ToString());
             Icons=CombatStatusIcons.For(p,game).AsReadOnly();_left=Copy(p.LeftHand);_right=Copy(p.RightHand);
         }
         private static string Signed(int n)=>n>0?"+"+n:n.ToString();
@@ -53,15 +54,16 @@ namespace FingerDiceDuel.Core
         public string RedirectKind {get;}
         public PlayerState EvasionActor {get;}
         public SkillVisualData SkillData {get;}
+        public float Power {get;}public bool Unsteady {get;}
         public CombatVisualFrame Before { get; }
         public CombatVisualFrame After { get; }
         internal CombatVisualEvent(CombatVisualKind kind,CombatVisualOutcome outcome,PlayerState actor,PlayerState target,PlayerState intended,
-            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null,SkillVisualData skillData=null)
-        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;SkillData=skillData;}
+            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null,SkillVisualData skillData=null,float power=1f,bool unsteady=false)
+        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;SkillData=skillData;Power=power;Unsteady=unsteady;}
     }
     public sealed class CombatVisualToken
     {
-        internal int Index;internal AttackContext Attack;internal int Segment,Distance;internal string Weapon;
+        internal int Index;internal AttackContext Attack;internal int Segment,Distance;internal string Weapon;internal float Power;internal bool Unsteady;
         internal CombatVisualFrame Before;internal bool Finished;
     }
     public partial class GameManager
@@ -77,14 +79,14 @@ namespace FingerDiceDuel.Core
         {
             if(!RecordCombatVisuals||attack.IsStatusDamage)return null;
             var token=new CombatVisualToken{Index=_combatVisuals.Count,Attack=attack,Segment=segment,
-                Distance=DistanceBetween(attack.Attacker,attack.Defender),Weapon=CombatVisualRouting.Weapon(attack,this),Before=CaptureVisualFrame()};
+                Distance=DistanceBetween(attack.Attacker,attack.Defender),Weapon=CombatVisualRouting.Weapon(attack,this),Before=CaptureVisualFrame(),Power=attack.VisualPower,Unsteady=!attack.IsStatusDamage&&MonkRules.DrunkenOf(attack.Attacker)!=null};
             _combatVisuals.Add(null);return token;
         }
         public void FinishVisualAttack(CombatVisualToken token,CombatVisualOutcome outcome,int damage=0)
         {
             if(token==null||token.Finished)return;token.Finished=true;var a=token.Attack;
             _combatVisuals[token.Index]=new CombatVisualEvent(CombatVisualKind.Attack,outcome,a.Attacker,a.Defender,a.VisualIntendedTarget??a.Defender,
-                a.SourceHand,a.AttackType,token.Weapon,token.Distance,token.Segment,damage,a.IsReflected,a.WasMitigated,token.Before,CaptureVisualFrame(),a.VisualRedirectKind,a.VisualEvasionActor);
+                a.SourceHand,a.AttackType,token.Weapon,token.Distance,token.Segment,damage,a.IsReflected,a.WasMitigated,token.Before,CaptureVisualFrame(),a.VisualRedirectKind,a.VisualEvasionActor,null,token.Power,token.Unsteady);
         }
         public void RecordVowTransfer(PlayerState owner,PlayerState previous,PlayerState target,CombatVisualFrame before)
         {if(RecordCombatVisuals)_combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.VowTransfer,CombatVisualOutcome.Hit,owner,target,previous,owner.LeftHand,AttackDamageType.None,"Effects/vow_of_enmity",0,0,0,false,false,before,CaptureVisualFrame()));}

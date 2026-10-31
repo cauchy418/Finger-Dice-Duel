@@ -18,7 +18,7 @@ namespace FingerDiceDuel.UI
             _combatAnimations=_canvasRoot.gameObject.AddComponent<CombatAnimationPlayer>();
             _combatAnimations.Initialize(_canvasRoot,_font,CombatHandAnchor,CombatTargetAnchor,ApplyCombatFrame,CombatImpact,PoseCombatEvasion);
             var ambient=new GameObject("PersistentStatusEffects",typeof(RectTransform));ambient.transform.SetParent(_canvasRoot,false);var rect=(RectTransform)ambient.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
-            rect.SetSiblingIndex(((RectTransform)fieldAnimationRoot()).GetSiblingIndex());_statusMotion=ambient.AddComponent<CombatStatusMotion>();_statusMotion.Initialize(rect,CombatStatusAnchor);
+            rect.SetSiblingIndex(((RectTransform)fieldAnimationRoot()).GetSiblingIndex());_statusMotion=ambient.AddComponent<CombatStatusMotion>();_statusMotion.Initialize(rect,CombatStatusAnchor,CombatHandAnchor);
             // Return and the history remain available while gameplay controls are locked.
             foreach(var button in new[]{_exitButton})if(button!=null)
             {var g=button.GetComponent<CanvasGroup>();if(g==null)g=button.gameObject.AddComponent<CanvasGroup>();g.ignoreParentGroups=true;}
@@ -102,7 +102,7 @@ namespace FingerDiceDuel.UI
         private void CombatImpact(CombatVisualEvent e)
         {
             _statusMotion?.Flash(e.Target,e.Kind==CombatVisualKind.Skill?.6f:.35f);
-            if(e.Kind==CombatVisualKind.Skill){_presentation?.PlaySfx(SfxKind.ShieldUp);return;}
+            if(e.Kind==CombatVisualKind.Skill){var profile=SecondarySkillAnimation.Find(e.RedirectKind);if(profile==null||profile.Style==SecondarySkillStyle.Repair||profile.Style==SecondarySkillStyle.ElementGuard)_presentation?.PlaySfx(SfxKind.ShieldUp);else if(profile.Style==SecondarySkillStyle.Heal||profile.Style==SecondarySkillStyle.Cleanse)_presentation?.PlaySfx(SfxKind.Heal);return;}
             if(e.Kind!=CombatVisualKind.Attack){_presentation?.PlaySfx(SfxKind.ShieldUp);return;}
             bool hit=e.Outcome==CombatVisualOutcome.Hit,blocked=e.Outcome==CombatVisualOutcome.Blocked;
             string text=hit?"−"+e.Damage:blocked?"格挡":e.Outcome==CombatVisualOutcome.Dodged?"闪避":e.EvasionActor!=null?"妖精步伐 · 取消":"攻击中止";

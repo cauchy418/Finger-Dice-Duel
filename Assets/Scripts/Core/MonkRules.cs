@@ -14,8 +14,8 @@ namespace FingerDiceDuel.Core
             if(game.DeferWizardChoice?.Invoke(request)!=true)request.ChooseOption(SkillChoicePolicy.Choose(key,options,owner,null,game));
         }
         public static void Bind(PlayerState owner){foreach(var monk in CharacterBehaviors.Implementers<IMonkResource>(owner))monk.BindMonkOwner(owner);}
-        public static void AfterAction(PlayerState owner)
-        {if(owner?.IsAlive==true&&!owner.IsPolymorphed&&CharacterBehaviors.FirstImplementer<IMonkResource>(owner)!=null&&owner.LeftHand.Value==owner.RightHand.Value)owner.GainMonkKi();}
+        public static void AfterAction(PlayerState owner,GameManager game=null)
+        {if(owner?.IsAlive==true&&!owner.IsPolymorphed&&CharacterBehaviors.FirstImplementer<IMonkResource>(owner)!=null&&owner.LeftHand.Value==owner.RightHand.Value){int before=owner.MonkKi;owner.GainMonkKi();if(owner.MonkKi!=before)game?.RecordSkillVisual(owner,"气",owner,new SkillVisualData(value:owner.MonkKi,previous:before,variant:"gain"));}}
         public static IDrunkenStance DrunkenOf(PlayerState owner)
         {var stance=CharacterBehaviors.FirstImplementer<IDrunkenStance>(owner);return stance?.Drunken==true?stance:null;}
     }

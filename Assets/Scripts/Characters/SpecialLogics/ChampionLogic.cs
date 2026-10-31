@@ -21,8 +21,8 @@
 
             // 独立倍率不改变风流剑客“是否使用潇洒无畏”的伤害类型判定，也不会被其倍率覆盖。
             context.AdditionalBaseDamageMultiplier *= HeavyStrikeMultiplier;
-            SkillUseCount++;
-            context.Manager?.NoteSkill(context.Attacker, "精通重击", "双手和10，基础伤害×1.5");
+            SkillUseCount++;context.VisualPower=System.Math.Max(context.VisualPower,1.35f);
+            context.Manager?.NoteSkill(context.Attacker, "精通重击", "双手和10，基础伤害×1.5",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
         }
 
         public int EstimateLethalDamage(LethalContext context, int resultValue,
