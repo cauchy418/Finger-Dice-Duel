@@ -39,9 +39,7 @@ class Page{
 }
 async function menu(bg,file){
  const p=new Page(bg);
- await p.center('手指骰子对决',960,125,108,'#E7C680',true);
- await p.center('F I N G E R   D I C E   D U E L',960,276,25,'#CEB784');
- await p.box('divider_horizontal',610,326,700,24);
+ await p.pic('UI/title_logo_zh',475,38,970,323);
  const rows=[['adventure','冒险模式','剧情与挑战（敬请期待）','normal'],['competition','竞技模式','对战：1v1 / 2v2 / 8 人','selected'],['casual','娱乐模式','双将等变体玩法','normal']];
  for(let i=0;i<rows.length;i++){
   const [key,label,sub,state]=rows[i],y=375+i*164;

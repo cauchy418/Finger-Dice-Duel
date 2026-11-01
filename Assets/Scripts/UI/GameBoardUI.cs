@@ -221,7 +221,7 @@ namespace FingerDiceDuel.UI
             _titleText = CreateText(_canvasRoot, "Title", new Vector2(0, -30), new Vector2(1200, 50),
                                     36, TextAnchor.MiddleCenter, TextColor);
             UiFont.ApplyBold(_titleText);
-            _titleText.text = "手指骰子对决";
+            _titleText.text = "指骰对决";
 
             // 中部：提示条（说明"现在该做什么"）。
             //

@@ -1,4 +1,4 @@
-﻿# 手指骰子对决 · Finger Dice Duel
+﻿# 指骰对决 · Finger Dice Duel
 
 战斗使用物理弧线挥击、持续状态轻动与技能专属反馈。换位、飞数、形态、治疗、元素、资源和成长均有对应表现；[P1截图](Art/Integration/skill-animation-finals/README.md)与[P2／P3截图](Art/Integration/animation-p2-p3/README.md)可直接查看，范围见[动画进度](Docs/animation-p2-p3-progress.md)。
 

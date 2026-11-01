@@ -30,7 +30,7 @@ async function assembly(){
  await text('战报',1445,246,30);
  await add('UI/divider.png',1440,290,390,24);
  for(const [i,t] of ['法师·塑能学派运算结果为 6','战士·勇士受到 4 点伤害','法师·塑能学派的回合结束','轮到战士·勇士行动'].entries())await text(t,1450,340+i*65,21);
- await text('手指骰子对决',70,58,48);
+ await text('指骰对决',70,58,48);
  await text('第 3 轮',115,144,28);
  for(const [y,key,name,hp] of [[30,'wizard_school_of_evocation','法师·塑能学派','18 / 20'],[628,'fighter_champion','战士·勇士','16 / 20']]){
    if(paintedClasses)await add(`Subclasses/${key}.png`,685,y-5,118,118);
