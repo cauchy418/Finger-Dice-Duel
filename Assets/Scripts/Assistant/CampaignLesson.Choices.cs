@@ -130,12 +130,12 @@ namespace FingerDiceDuel.Assistant
                 return null;
             }
         }
-        public override string RejectionHint=>"请完成本步高亮选择；需要等待时使用右侧【观摩】，不会重置战场。";
+        public override string RejectionHint=>"请完成本步高亮选择；需要等待时使用右侧【观摩】。";
         private sealed class CampaignMoves:AbstractChoiceProvider,IMoveSelector,IAttackTargetIntent,IAncientRoleChoicePolicy,IArcaneChoicePolicy
         {
             private readonly CampaignLesson _lesson;private readonly GreedyChoiceProvider _ai;
             public CampaignMoves(CampaignLesson lesson){_lesson=lesson;_ai=NewAi(lesson.Game);}
-            public string Describe=>"同场操演";
+            public string Describe=>"操演";
             public PlayerState IntendedVictim=>_lesson.Step!=null&&_lesson.Step.Victim>=0?_lesson.Seats[_lesson.Step.Victim]:null;
             public LegalMove ChooseMove(GameManager game,PlayerState actor)
             {

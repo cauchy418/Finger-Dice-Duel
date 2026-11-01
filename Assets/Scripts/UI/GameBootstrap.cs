@@ -742,6 +742,11 @@ namespace FingerDiceDuel.UI
         /// <summary>开场剧情确认：进入第一教学拍。</summary>
         private void OnAdventureIntroConfirmed()
         {
+            if(_adventure is CampaignLesson campaign){ShowCampaignSkillDialogue(campaign);return;}
+            ContinueAdventureIntro();
+        }
+        private void ContinueAdventureIntro()
+        {
             if (_adventure == null) return;
             if (_adventure.UsesClassicSetup)
             {

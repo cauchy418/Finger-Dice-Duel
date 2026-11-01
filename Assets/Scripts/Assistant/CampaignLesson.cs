@@ -52,10 +52,10 @@ namespace FingerDiceDuel.Assistant
         public override bool IsFinished=>_game.IsGameOver;
         public override bool IsComplete=>TeachingComplete&&_game.IsGameOver&&_game.Winner!=null&&(ReferenceEquals(_game.Winner,_player)||_game.IsTeammate(_game.Winner,_player));
         public override string ResultHeading=>_level%10==0?"第"+(_level/10)+"章通关":"试炼胜利";
-        public override string SummaryText=>"你已在同一场战斗中完成教学并取得胜利。当前伤势、成长、手值和队伍关系一直保留，教学完成没有替你赢下比赛。";
-        public override string FailureText=>TeachingComplete?"本次实战未获胜，未新增通关。可重试整场或返回章节；已有通关记录保留。":"教学尚未完成，本次不记通关。重试从本课开场开始，关内不会重置战场。";
-        public override string OpeningText=>OpeningSummary();
-        public override string Narration=>Stage==CampaignPhase.AwaitingHorn?"教学结束。等待当前技能和动画结算，随后在原战场进入自主战斗。":TeachingComplete?"自主战斗：选择任意合法行动。对手会正常进攻、合盾和回复，取得实际胜利才能通关。":Step?.Text;
+        public override string SummaryText=>_level<=10?"老兵点了点头：记住刚才的判断。能把招式用在合适的时候，才算真正学会。":_level<=20?"典籍翻过一页：你已看清这道术式的奥秘。带着这份领悟，继续向塔顶前进。":"军士长收起残旗：这一仗打得漂亮。记住身旁的同袍，下一场还要并肩作战。";
+        public override string FailureText=>"此番交锋失利。歇息片刻，再来挑战吧。";
+        public override string OpeningText=>_level==1?"边境哨站，身负旧伤的老兵拦住了去路。\n「新兵，先学会指尖骰术，再谈闯荡。」":_level<=10?"老兵将兵器摆在你面前。\n「这一课，试试"+_player.Definition.DisplayName+"的本领。」":_level<=20?"高塔深处，秘法典籍缓缓展开。\n「以"+_player.Definition.DisplayName+"的术式，解开眼前的考验。」":"残旗在风中猎猎作响，军士长示意你归队。\n「这一战，留意同袍，也留意敌人的动向。」";
+        public override string Narration=>Stage==CampaignPhase.AwaitingHorn?GuideName+"：要领已经讲过，准备迎战。":TeachingComplete?GuideName+"：接下来，由你判断。击败眼前的对手。":Step?.Text;
         protected override int OpeningMoveCount=>0;
         protected override ScriptedMoveSelector CreateOpeningScript()=>new ScriptedMoveSelector();
         private CampaignLesson(int level,PlayerState[] seats,GameManager game,BoardController board,List<CampaignStep> steps,int guardian):base(game,board,seats[0])
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Assistant
             for(int i=0;i<seats.Length;i++)
             {
                 var p=seats[i];p.TrainingProtected=Guided&&(i==0||game.IsTeammate(p,_player)||i==guardian||level==29&&i==5);
-                p.TrainingProtectionTriggered=()=>game.NoteSkill(p,"操演护持","教学期间最低保留1生命",p);
+                p.TrainingProtectionTriggered=()=>game.NoteSkill(p,"操演护持","护持生效，保留1生命",p);
             }
         }
         public override void BeginTutorial(){base.BeginTutorial();}
@@ -144,7 +144,7 @@ namespace FingerDiceDuel.Assistant
         public void Equip(PlayerState owner,AttackDamageType type)
         {if(owner.Character is CampaignNpcLogic npc){npc.Weapon=type;_game.NoteSkill(owner,"符文换装",AttackDamageTypes.NameOf(type),owner,new SkillVisualData(element:type));}}
         public void Refit(PlayerState owner,int heal=16)
-        {owner.ClearNegativeStatuses();_game.NoteSkill(owner,"训练整备","净化已观察负面",owner);CampaignNpcLogic.Heal(_game,owner,owner,heal,"训练整备");}
+        {owner.ClearNegativeStatuses();_game.NoteSkill(owner,"训练整备","净化负面效果",owner);CampaignNpcLogic.Heal(_game,owner,owner,heal,"训练整备");}
         public static GreedyChoiceProvider NewAi(GameManager game)
         {var ai=new GreedyChoiceProvider{Game=game,UseLearnedFocus=true};ai.ApplyDifficulty(AiDifficulty.Hard);return ai;}
         private bool ReadyOperation
@@ -173,12 +173,5 @@ namespace FingerDiceDuel.Assistant
             _obstacleMoved=true;_game.NoteSkill(actor,"推开路障","一侧石头移向场边，最短距离已缩短");return true;
         }
         public bool ObstacleMoved=>_obstacleMoved;
-        private string OpeningSummary()
-        {
-            var lines=new List<string>{GuideName+"：先完成引导，再在同一战场自主获胜。中途不重置；退出重试从本课开场开始。","本场："+_player.Definition.DisplayName+"，生命"+_player.Health+"／"+_player.MaximumHealth+"。"};
-            for(int i=1;i<Seats.Length;i++)lines.Add(Seats[i].Name+" "+Seats[i].Health+"／"+Seats[i].MaximumHealth+"，攻"+Seats[i].Character.AttackBonus+" 防"+Seats[i].Character.DefenseBonus+" 距"+(GameManager.BaseRangeOf(Seats[i])>=CharacterTemplate.InfiniteAttackRange?"∞":GameManager.BaseRangeOf(Seats[i]).ToString()));
-            foreach(var p in Seats)if(p.Character is CampaignNpcLogic npc&&!string.IsNullOrEmpty(npc.AbilitySummary))lines.Add(p.Name+"："+npc.AbilitySummary);
-            return string.Join("\n",lines);
-        }
     }
 }

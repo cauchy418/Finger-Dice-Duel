@@ -1,5 +1,7 @@
 ﻿# CODELY.md
 
+剧情玩家文案仅保留剧情、教学和战斗结果；实现约束不放进开场、指引、胜利提示或战报。开场确认后通过数段角色对话介绍敌人与同袍技能；人物徽记悬停展示完整技能和剩余次数／冷却，不使用“剧情专用对手”占位说明。
+
 前三章已迁移至`CampaignLesson`连续战斗导演，`GameBootstrap.StartAdventureLevel`统一进入`StartCampaignLevel`。旧AdventureLevel／MageTowerLesson／TatteredBannersLesson保留历史回归，不再是主菜单实际建局入口。当前配置与流程以[总案](Docs/Adventure/single-battle-v2/README.md)及[实现验收](Art/Integration/campaign-v2/README.md)为准；下文旧独立样本、旧NPC数值与旧采样均属历史记录。
 
 `CampaignContent.ChapterOne/Two/Three`配置30课；`CampaignLesson.Choices`统一教学输入白名单，`BoardController.Campaign`在普通行动和全部回合末选择结束后通知导演。进入自主阶段只解除护持、一次有限治疗并替换选择器，不Create／Reset。观摩和NPC架盾／急救消耗一次正常行动，推障调用`MoveSeatObstacle`。终战30投骰完成后仅`InitializeSeatOrder`重排原参战引用，队伍字典不变；不重建已创建的游戏。真实胜利写原Level键，10／20／30再写章节键；不再写旧Sample键。

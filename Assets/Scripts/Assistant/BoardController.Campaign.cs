@@ -21,7 +21,7 @@ namespace FingerDiceDuel.Assistant
         }
         private bool CompleteCampaignAction(string label)
         {
-            _log.Add(CombatText.Skill(ActivePlayer,label,"消耗本次正常行动"));
+            _log.Add(CombatText.Skill(ActivePlayer,label,"消耗本次行动"));
             _statusTurnEndFor=ActivePlayer;_settlingCampaignAction=ActivePlayer;
             _game.SkipTurnAlreadyValidated(extraAction:_extraActionActive);CompletedActions++;
             SelectedHand=null;_selectedTarget=null;_chosenDefenseShield=null;_shieldChoices.Clear();

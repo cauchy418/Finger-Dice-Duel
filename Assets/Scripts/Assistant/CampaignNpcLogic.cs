@@ -11,8 +11,10 @@ namespace FingerDiceDuel.Assistant
         public int ShieldCooldown,AidCooldown,AidCharges=2;
         public int CircuitProgress{get;private set;}
         public bool RallySpent,MusterSpent;
+        public string TrainingNotes="";
         private int _attacks;
         public string AbilitySummary=>
+            (!FreeCombat?TrainingNotes:"")+
             (CanRaiseShield?"架盾：低于半血时消耗正常行动形成5盾，冷却3自身回合。":"")+
             (CanAid?"军需急救：消耗正常行动，距离1内自己或队友回复4，2次，冷却3自身回合。":"")+
             (CanRally?"整军：不高于半血时消耗正常行动回复6，限一次。":"")+

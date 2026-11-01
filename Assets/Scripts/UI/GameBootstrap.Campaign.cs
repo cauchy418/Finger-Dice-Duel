@@ -8,6 +8,26 @@ namespace FingerDiceDuel.UI
 {
     public sealed partial class GameBootstrap
     {
+        private void ShowCampaignSkillDialogue(CampaignLesson lesson)
+        {
+            var pages=new List<string>();var seen=new HashSet<string>();
+            foreach(var p in lesson.Seats)
+            {
+                if(ReferenceEquals(p,lesson.Player))continue;
+                string skill=p.Character is CampaignNpcLogic npc?npc.AbilitySummary:SkillHintText(p.Definition);
+                if(string.IsNullOrEmpty(skill)||!seen.Add(skill))continue;
+                pages.Add(p.Name+"：\n「"+skill+"」");
+            }
+            if(pages.Count==0)pages.Add(lesson.GuideName+"：看清对手的手值，用攻击、合盾和回复应对他的行动。");
+            ShowCampaignSkillDialoguePage(lesson,pages,0);
+        }
+        private void ShowCampaignSkillDialoguePage(CampaignLesson lesson,List<string> pages,int index)
+        {
+            if(!ReferenceEquals(_adventure,lesson))return;
+            _board.ShowAdventureIntro("交锋之前",pages[index],lesson.GuideAvatarKey,lesson.GuideName,
+                ()=>{if(index+1<pages.Count)ShowCampaignSkillDialoguePage(lesson,pages,index+1);else ContinueAdventureIntro();},
+                ReturnToAdventure,null,index+1<pages.Count?"继续对话":lesson.UsesClassicSetup?"开始投骰":"开始交锋");
+        }
         private void StartCampaignLevel(int level,bool launchFinale)
         {
             if(level<1||level>30)throw new ArgumentOutOfRangeException(nameof(level));

@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Core
         public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
-            if(player.TrainingProtected)result.Add(new CombatStatusIcon("Effects/arcane_barrier","操演护持 · 仅教学期间原形生命最低保留1；不是格挡或免疫，自主战斗时解除。",""));
+            if(player.TrainingProtected)result.Add(new CombatStatusIcon("Effects/arcane_barrier","操演护持 · 原形生命最低保留1；实战号角响起时结束。",""));
             if(CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.AssassinLogic>(player)?.IsStealthedNow==true)
                 result.Add(new CombatStatusIcon("Overlay/stealth","专业渗透 · 潜行：由暗杀技能维持；出手后按角色规则解除。",""));
             if(CharacterBehaviors.FirstImplementer<GloomStalkerLogic>(player)?.IsAmbushing==true)

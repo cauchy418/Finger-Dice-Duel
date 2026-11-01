@@ -65,6 +65,18 @@ namespace FingerDiceDuel.Tests
         [Test] public void Chapter_three_continues_without_rebuilding(){Chapter(21,29);}
         [Test] public void Finale_values_and_roles_match_the_new_design()
         {Assert.AreEqual(40,CampaignLesson.Create(10).Seats[1].MaximumHealth);Assert.AreEqual(40,CampaignLesson.Create(20).Seats[1].MaximumHealth);var l=CampaignLesson.Create(30);Assert.AreEqual(36,l.Seats[1].MaximumHealth);Assert.AreEqual(28,l.Seats[2].MaximumHealth);Assert.AreEqual(CharacterDefinition.OathOfTheAncients,l.Seats[3].Definition);}
+        [Test] public void Campaign_player_copy_contains_story_and_teaching_instead_of_implementation_notes()
+        {
+            var banned=new[]{"重置","重开一局","后台","预置","教学完成没有","同一场战斗","正常AI","未新增通关"};
+            for(int n=1;n<=30;n++)
+            {
+                var l=CampaignLesson.Create(n);var copy=l.OpeningText+l.SummaryText+l.FailureText+l.Narration+l.RejectionHint;
+                foreach(var step in l.Steps)copy+=step.Text;
+                foreach(var phrase in banned)Assert.IsFalse(copy.Contains(phrase),"L"+n+"："+phrase);
+                foreach(var p in l.Seats)if(p.Character is CampaignNpcLogic npc)
+                {Assert.IsFalse(p.Definition.Description.Contains("剧情专用"));Assert.IsTrue(p.Definition.Description.Contains(npc.AbilitySummary));}
+            }
+        }
         [Test] public void Every_lesson_can_finish_real_combat_without_resetting()
         {
             for(int n=1;n<=30;n++)

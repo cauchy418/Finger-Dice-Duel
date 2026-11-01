@@ -40,6 +40,18 @@ namespace FingerDiceDuel.Assistant
         }
         public static string FinaleDescription(int chapter)=>chapter==1?"生命40\n攻+2 防+1 距2\n挥砍\n架盾／一次整军回复6":chapter==2?"生命40\n攻+1 防0 距∞\n强酸\n永久火／寒抗性、毒免\n汲能回路3次伤人后回复3":"指挥官36：+1/+1 距2\n一次集结令，己方回复4\n弩手28：+1/0 距2\n穿刺／稳弦\n同袍：古贤20生命";
         internal static void Shield(PlayerState p,int side=0){p.GetHand(side).SetShieldState(ShieldState.Formed);}
+        internal static string TrainingSkills(int level,int seat)
+        {
+            if(level==5||level%10==0)return "";
+            string text="演练调律：行动前可调整自己可用且无完整盾的手值。";
+            if(seat!=1)return text+(level==16&&seat==2?"符文换装：切换武装的伤害类型。":"");
+            if(level==9)text+="训练整备：净化自身负面并回复16，限一次。";
+            if(level==12)text+="训练整备：净化自身负面并回复16，限四次。注水铭刻：使自身潮湿2回合。";
+            if(level==11||level==12||level==14||level==16)text+="符文换装：切换武装的伤害类型。";
+            if(level==14)text+="稳息术：清除你的燃烧并回复8，限两次。试验铭刻：施加一次伤害类型的易伤、抗性或免疫。";
+            if(level==19)text+="试验铭刻：使自身获得一次钝击易伤。";
+            return text;
+        }
     }
     public sealed partial class CampaignLesson
     {
@@ -59,8 +71,9 @@ namespace FingerDiceDuel.Assistant
                     else
                     {
                         var npc=new CampaignNpcLogic(n.Name,n.Attack,n.Defense,n.Range,n.Type){FreeAttackDelta=n.FreeAttack,CanRaiseShield=n.Shield,CanAid=n.Aid,Phantom=n.Phantom,CanRally=n.Rally,CanMuster=n.Muster,Steady=n.Steady,PeriodicForce=n.Force};
+                        npc.TrainingNotes=CampaignContent.TrainingSkills(level,i);
                         seats[i]=new PlayerState(n.Name,npc,n.Maximum);
-                        seats[i].BindDefinition(new CharacterDefinition(n.Id,n.Name,SpecialLogicType.None,n.Attack,n.Defense,n.Maximum,"剧情专用对手",n.Name));
+                        seats[i].BindDefinition(new CharacterDefinition(n.Id,n.Name,SpecialLogicType.None,n.Attack,n.Defense,n.Maximum,AttackDamageTypes.NameOf(n.Type)+"伤害。"+npc.AbilitySummary,n.Name));
                     }
                     seats[i].DisplayNameOverride=n.Name;
                 }

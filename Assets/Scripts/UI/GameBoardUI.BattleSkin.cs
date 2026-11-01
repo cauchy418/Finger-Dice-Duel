@@ -273,7 +273,7 @@ namespace FingerDiceDuel.UI
             (top ? _healthTextB : _healthTextA).text = player.Health + " / " + player.MaximumHealth;
             string id = player.Definition != null ? player.Definition.Id : "fighter_champion";
             (top ? _badgeB : _badgeA).sprite = BattleArt.Get(id == CharacterDefinition.BlankId ? "Adventure/guide_soldier" : player.BattleEmblemKey);
-            BattleTooltip.Set(top ? _badgeB : _badgeA, display + "\n" + (player.Definition != null ? player.Definition.Description : ""));
+            BattleTooltip.Set(top ? _badgeB : _badgeA, CharacterNotes(player,display));
         }
 
         private void LateUpdate()
