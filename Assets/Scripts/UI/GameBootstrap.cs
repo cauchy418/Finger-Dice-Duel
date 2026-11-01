@@ -736,58 +736,7 @@ namespace FingerDiceDuel.UI
 
         private void StartAdventureLevel(int levelNumber, bool launchFinale = false)
         {
-            if(levelNumber>=21&&levelNumber<=30){StartBannersLevel(levelNumber,launchFinale);return;}
-            if(levelNumber>=11&&levelNumber<=20){StartMageTowerLevel(levelNumber,launchFinale);return;}
-            _storyChapter=1;
-            if (levelNumber < 1 || levelNumber > AdventureChapter.BattleCount) throw new ArgumentOutOfRangeException(nameof(levelNumber));
-            CleanupMatch();
-            if (levelNumber == 10 && !launchFinale) { ConfigureFinaleScreen(); ShowScreen(GameScreen.AdventureFinaleSelect); return; }
-            _pendingDefA = levelNumber == 10 ? AdventureChapter.FinaleRoster[Mathf.Clamp(_finaleIndex, 0, AdventureChapter.FinaleRoster.Count - 1)] : AdventureChapter.PlayerDefinition(levelNumber);
-            _pendingDefB = levelNumber == 10 ? AdventureChapter.Knight : CharacterDefinition.Blank;
-
-            _choiceA = new SimpleChoiceProvider();
-            _choiceB = new SimpleChoiceProvider();
-            _game = CharacterFactory.CreateMatch(_pendingDefA, _pendingDefB, _choiceA, _choiceB);
-
-            _controller = new BoardController(_game, _choiceA, _choiceB);
-            _controller.AiResolver = new AiChoiceResolver(ProviderFor);
-
-            switch (levelNumber)
-            {
-                case 1: AdventureLevel1.PrepareSoldier(_game.PlayerB); _adventure = AdventureLevel1.Attach(_game, _controller); break;
-                case 2: AdventureLevel2.Prepare(_game); _adventure = AdventureLevel2.Attach(_game, _controller); break;
-                case 3: AdventureLevel3.Prepare(_game); _adventure = AdventureLevel3.Attach(_game, _controller); break;
-                case 4: AdventureLevel4.Prepare(_game); _adventure = AdventureLevel4.Attach(_game, _controller); break;
-                case 5: _game.PlayerB.Rename(AdventureChapter.InstructorName); _adventure = AdventureLevel5.Attach(_game, _controller); break;
-                case 6: AdventureLevel6.Prepare(_game); _adventure = AdventureLevel6.Attach(_game, _controller); break;
-                case 7: AdventureLevel7.Prepare(_game); _adventure = AdventureLevel7.Attach(_game, _controller); break;
-                case 8: AdventureLevel8.Prepare(_game); _adventure = AdventureLevel8.Attach(_game, _controller); break;
-                case 9: AdventureLevel9.Prepare(_game); _adventure = AdventureLevel9.Attach(_game, _controller); break;
-                case 10: _adventure = AdventureLevel10.Attach(_game, _controller); break;
-                default: throw new ArgumentOutOfRangeException(nameof(levelNumber));
-            }
-            _adventure.Bind(_controller);
-            _adventureVictoryShown = false;
-
-            // 与 PrepareMatch 相同的残留清理：本关固定 1v1，其余模式标志全部复位。
-            _isTwoOnTwo = false;
-            _twoOnTwoSeated = null;
-            _isEightPlayer = false;
-            _eightSeated = null;
-            _isDualGeneral = false;
-
-            StartPreparedMatch(beginTurn: !_adventure.UsesClassicSetup);
-            _board.SetTitle(_adventure.DisplayTitle);
-            _board.SetBattleBackground(_adventure.BattleBackgroundKey);
-            _board.ShowAdventureObstacles(_adventure.LevelNumber == 4 || _adventure.LevelNumber == 7, _adventure.LevelNumber == 7 ? 2 : 1);
-
-            // 开场剧情（模态）——确认后才进入教学拍；「稍后再来」返回章内战斗列表。
-            _board.HideAdventureNarration();
-            _board.ShowAdventureIntro(_adventure.DisplayTitle,
-                _adventure.OpeningText, _adventure.GuideAvatarKey,
-                _adventure.GuideName, OnAdventureIntroConfirmed, ReturnToAdventure,
-                _adventure.AllowsTutorialSkip && PlayerPrefs.GetInt(_adventure.CompletionKey, 0) != 0 ? (System.Action)OnAdventureSkipTutorial : null,
-                _adventure.UsesClassicSetup ? "学习先攻" : "跟随指引");
+            StartCampaignLevel(levelNumber,launchFinale);
         }
 
         /// <summary>开场剧情确认：进入第一教学拍。</summary>
@@ -796,6 +745,7 @@ namespace FingerDiceDuel.UI
             if (_adventure == null) return;
             if (_adventure.UsesClassicSetup)
             {
+                if(_adventure is CampaignLesson campaign&&campaign.LevelNumber==30){BeginCampaignInitiative();return;}
                 if(_adventure is TatteredBannersLesson){BeginBannersInitiative();return;}
                 _board.SetVisible(false);
                 _diceRoll.Begin(_game);
@@ -2306,6 +2256,7 @@ namespace FingerDiceDuel.UI
         private void OnTwoOnTwoInitiativeFinished()
         {
             if (_twoOnTwoStart == null || _twoOnTwoRoster == null) return;
+            if(_adventure is CampaignLesson){FinishCampaignInitiative();return;}
             if(_adventure is TatteredBannersLesson){FinishBannersInitiative();return;}
 
             // 按座位重排：seated[0] = 1 号位
@@ -3042,6 +2993,7 @@ namespace FingerDiceDuel.UI
             _adventureEndReady=false;
             _board.SetBattleBackground();
             _board.ShowAdventureObstacles(false);
+            _board.ShowCampaignAction(null);
             _diceRoll?.SetLesson(null, null);
             _screenTwoOnTwoInitiative?.SetLesson(null,null);
             _board.SetExitButtonVisible(false);
@@ -3551,12 +3503,13 @@ namespace FingerDiceDuel.UI
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
             {
+                if(_adventure is CampaignLesson campaign)SetCampaignPresentation(campaign);
                 if(_adventure is TatteredBannersLesson banners)SetBannersPresentation(banners);
                 _board.ConfigureAdventureGuide(_isTwoOnTwo||_isEightPlayer);
                 if(_adventure.Started&&_adventure.IsFinished&&!_adventureVictoryShown)
                     _board.ShowAdventureNarration(_adventure.GuideName+" · 观察结果","本次试炼的最后一回合已结束。可查看战场与战斗记录，点击右侧【试炼结束】查看总结。",_adventure.GuideAvatarKey);
                 else if (_adventure.Started && !_adventure.IsFinished)
-                    _board.ShowAdventureNarration($"{_adventure.GuideName} · {_adventure.StepNumber}/{_adventure.StepCount}", _adventure.Narration,
+                    _board.ShowAdventureNarration((_adventure.IsFreeStage?"自主战斗":$"{_adventure.GuideName} · 引导{_adventure.StepNumber}/{_adventure.StepCount}"), _adventure.Narration,
                                                   _adventure.GuideAvatarKey);
                 else
                     _board.HideAdventureNarration();

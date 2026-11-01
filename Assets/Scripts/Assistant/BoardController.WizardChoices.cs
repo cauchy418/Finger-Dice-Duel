@@ -75,7 +75,7 @@ namespace FingerDiceDuel.Assistant
         }
         public bool ChooseWizardHand(Hand hand)
         {
-            if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsHand(hand))return false;
+            if(IsHumanChooser && TutorialInput!=null && !(hand==null?TutorialInput.AllowsDecline:TutorialInput.AllowsHand(hand)))return false;
             if(Phase!=BoardPhase.ChoosingWizardChoice || PendingWizardChoice==null) return false;
             var choice=PendingWizardChoice;
             if(!choice.Choose(hand)) return false;

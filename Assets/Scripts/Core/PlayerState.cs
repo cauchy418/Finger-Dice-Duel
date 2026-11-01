@@ -509,6 +509,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void Reset()
         {
+            TrainingProtected=false;TrainingProtectionTriggered=null;
             RestoreDeadSeat(); EndPolymorph(); ClearEnchantments();
             Health = MaximumHealth;
             LeftHand.Reset(1);

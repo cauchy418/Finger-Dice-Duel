@@ -10,7 +10,8 @@ namespace FingerDiceDuel.UI
         {
             if(_adventure==null||!_adventure.IsFinished||_adventureEndReady)return;
             _adventureEndReady=true;
-            if(_adventure is MageTowerLesson tower)SaveTowerResult(tower);
+            if(_adventure is CampaignLesson campaign)SaveCampaignResult(campaign);
+            else if(_adventure is MageTowerLesson tower)SaveTowerResult(tower);
             else if(_adventure is TatteredBannersLesson banners)SaveBannersResult(banners);
             else if(_adventure.IsComplete)
             {
@@ -27,6 +28,7 @@ namespace FingerDiceDuel.UI
         }
         private void PresentAdventureResult()
         {
+            if(_adventure is CampaignLesson campaign){ShowCampaignResult(campaign);return;}
             if(_adventure is MageTowerLesson tower){ShowTowerResult(tower);return;}
             if(_adventure is TatteredBannersLesson banners){ShowBannersResult(banners);return;}
             string heading=_adventure.IsComplete?_adventure.ResultHeading:_game.Winner==null?"训练平局":"训练失利";

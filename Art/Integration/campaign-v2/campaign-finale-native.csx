@@ -1,0 +1,14 @@
+using System.Reflection;
+using UnityEngine;
+using FingerDiceDuel.Assistant;
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();var f=BindingFlags.NonPublic|BindingFlags.Instance;var t=boot.GetType();boot.enabled=false;
+int prior=PlayerPrefs.GetInt(MageTowerChapter.CompletionKey,0);PlayerPrefs.SetInt(MageTowerChapter.CompletionKey,1);
+t.GetMethod("StartAdventureLevel",f).Invoke(boot,new object[]{30,true});PlayerPrefs.SetInt(MageTowerChapter.CompletionKey,prior);
+var board=(FingerDiceDuel.UI.GameBoardUI)t.GetField("_board",f).GetValue(boot);board.HideAdventureGuide();
+t.GetMethod("OnAdventureIntroConfirmed",f).Invoke(boot,null);
+var lesson=(CampaignLesson)t.GetField("_adventure",f).GetValue(boot);var game=lesson.Game;
+var start=(TwoOnTwoStartController)t.GetField("_twoOnTwoStart",f).GetValue(boot);start.AutoResolve(p=>false,TwoOnTwoStartController.DefaultAiSplit);start.ApplyToPlayers();
+t.GetMethod("FinishCampaignInitiative",f).Invoke(boot,null);
+if(!object.ReferenceEquals(game,lesson.Game)||game.TurnCount>1)throw new System.Exception("Initiative rebuilt or played match");
+UnityEditor.EditorApplication.isPaused=false;ScreenCapture.CaptureScreenshot("C:/Users/29391/Finger Dice Duel/Art/Integration/campaign-v2/chapter-three-finale.png");
+return "PASS level30 true initiative; same GameManager and players; round="+game.RoundCount;

@@ -1,0 +1,14 @@
+using System.Reflection;
+using UnityEngine;
+using UnityEditor;
+var boot=UnityEngine.Object.FindObjectOfType<FingerDiceDuel.UI.GameBootstrap>();
+if(boot==null)return "NO_BOOT";
+var flags=BindingFlags.NonPublic|BindingFlags.Instance;
+var t=boot.GetType();boot.enabled=false;
+int old=PlayerPrefs.GetInt(FingerDiceDuel.Assistant.AdventureChapter.CompletionKey,0);PlayerPrefs.SetInt(FingerDiceDuel.Assistant.AdventureChapter.CompletionKey,1);
+t.GetMethod("StartAdventureLevel",flags).Invoke(boot,new object[]{13,true});PlayerPrefs.SetInt(FingerDiceDuel.Assistant.AdventureChapter.CompletionKey,old);
+((FingerDiceDuel.UI.GameBoardUI)t.GetField("_board",flags).GetValue(boot)).HideAdventureGuide();
+t.GetMethod("OnAdventureIntroConfirmed",flags).Invoke(boot,null);
+UnityEditor.EditorApplication.isPaused=false;
+ScreenCapture.CaptureScreenshot("C:/Users/29391/Finger Dice Duel/Art/Integration/campaign-v2/chapter-two-guide.png");
+return "Started continuous level13; "+((FingerDiceDuel.Assistant.AdventureLesson)t.GetField("_adventure",flags).GetValue(boot)).GetType().Name;

@@ -28,6 +28,21 @@ namespace FingerDiceDuel.Core
         private List<PlayerState> _roundActionOrder;
         private List<PlayerState> _originalSeatOrder;
         public int SeatRevision { get; private set; }
+        /// <summary>经典先攻完成后初始化座位，保留角色、队伍及所有状态；仅能在开战前调用。</summary>
+        public void InitializeSeatOrder(IReadOnlyList<PlayerState> seats)
+        {
+            if(TurnCount!=0||RoundCount!=0)throw new InvalidOperationException("仅开战前可初始化座位。");
+            if(seats==null||seats.Count!=_players.Count)throw new ArgumentException("座位数不符。");
+            var seen=new HashSet<PlayerState>();
+            foreach(var p in seats)if(!_players.Contains(p)||!seen.Add(p))throw new ArgumentException("座位必须包含原参战角色且不重复。");
+            _players.Clear();_players.AddRange(seats);_roundActionOrder=null;_originalSeatOrder=null;SeatRevision++;
+        }
+        /// <summary>关卡推障的真实距离变化，不重建角色或清除行动顺序。</summary>
+        public bool MoveSeatObstacle(int afterSeat)
+        {
+            if(_seatObstacles==null||afterSeat<0||afterSeat>=_seatObstacles.Length||_seatObstacles[afterSeat]==0)return false;
+            _seatObstacles[afterSeat]--;StaticSeatObstacleCount--;SeatRevision++;return true;
+        }
         private List<PlayerState> ActionOrder => _roundActionOrder ?? _players;
 
         /// <summary>供已校验的座位技能使用；不改变队伍、身份、行动者或手牌。</summary>

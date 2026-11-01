@@ -112,7 +112,7 @@ namespace FingerDiceDuel.UI
             var stats=foe.Find("Stats").GetComponent<Text>();
             stats.rectTransform.anchoredPosition=new Vector2(0,-155);stats.rectTransform.sizeDelta=new Vector2(345,240);
             stats.fontSize=tower?22:25;
-            stats.text=tower?"生命32  攻0 / 防0  距∞\n强酸攻击\n本场永久：火焰、寒冷抗性\n毒素免疫\n\n汲能回路：每3次普通攻击\n实际伤人后回复3生命":"生命20\n攻击+1  防御+1\n距离1\n\n经典先攻 · 正常AI\n胜利即第一章通关";
+            stats.text=CampaignContent.FinaleDescription(_storyChapter);
             if(_storyChapter==3)
             {
                 _selectRoot.Find("FinaleTitle").GetComponent<Text>().text="残旗战场·终战 · 选择角色";
@@ -122,7 +122,7 @@ namespace FingerDiceDuel.UI
                 foeEmblem.anchoredPosition=new Vector2(0,200);foeEmblem.sizeDelta=new Vector2(200,200);
                 foeName.anchoredPosition=new Vector2(0,65);foeName.sizeDelta=new Vector2(350,42);
                 stats.rectTransform.anchoredPosition=new Vector2(0,-124);stats.rectTransform.sizeDelta=new Vector2(345,330);
-                stats.text="同袍：古贤之誓\n20生命  攻−1 / 防+1  距1钝击\n指挥官：24生命\n攻+1 / 防0  距1挥砍\n弩手：20生命\n攻0 / 防0  距2穿刺\n\n四人1d20 · 正常AI\n允许失败 · 全队胜利通关";
+                stats.text=CampaignContent.FinaleDescription(3);
             }
         }
     }

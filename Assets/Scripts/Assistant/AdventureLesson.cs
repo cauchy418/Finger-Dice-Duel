@@ -109,12 +109,12 @@ namespace FingerDiceDuel.Assistant
             }
         }
 
-        public int StepNumber => CurrentBeat == null ? 0 : _beatIndex + 1;
-        public int StepCount => _beats.Count;
-        public bool IsFreeStage => CurrentBeat != null && CurrentBeat.FreeClicks;
+        public virtual int StepNumber => CurrentBeat == null ? 0 : _beatIndex + 1;
+        public virtual int StepCount => _beats.Count;
+        public virtual bool IsFreeStage => CurrentBeat != null && CurrentBeat.FreeClicks;
 
         /// <summary>仅由已通关后的界面入口调用；新开对局不回放对手的引导动作。</summary>
-        public void SkipTutorial() => _beatIndex = _beats.Count - 1;
+        public virtual void SkipTutorial() => _beatIndex = _beats.Count - 1;
 
         private LegalMove RecommendedAttack()
         {
@@ -130,7 +130,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>开始教学（开场剧情确认后调用；重复调用无副作用）。</summary>
-        public void BeginTutorial()
+        public virtual void BeginTutorial()
         {
             if (_beatIndex >= 0) return;
             _beatIndex = 0;
@@ -157,7 +157,7 @@ namespace FingerDiceDuel.Assistant
         public virtual bool AllowAcceptChoice => !TryRequiredChoice(out var hand) || hand != null;
         public virtual bool AllowDeclineChoice => !TryRequiredChoice(out var hand) || hand == null;
 
-        public bool AllowManeuver(StatusEffect status)
+        public virtual bool AllowManeuver(StatusEffect status)
             => IsFreeStage || CurrentBeat?.Maneuver == null || CurrentBeat.Maneuver.Value == status;
 
         private bool TryRequiredChoice(out Hand hand)

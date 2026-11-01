@@ -618,6 +618,7 @@ namespace FingerDiceDuel.Assistant
 
         private bool FinishBasicSkip()
         {
+            _settlingCampaignAction=ActivePlayer;
             bool scriptedRest = CanScriptedRest;
             string reason = scriptedRest ? "休整，等待下一次练习" : !StatusRules.CanAct(ActivePlayer) ? "冻结，无法行动"
                 : !_game.HasAnyLegalOperation(ActivePlayer) ? "无可用运算" : "结束本回合";
@@ -949,6 +950,7 @@ namespace FingerDiceDuel.Assistant
 
             // 回合结束技能须读完有效行动标记，并完成玩家抉择，才能清标记并进入下一回合。
             if(TryStartWizardBoundary(BeginTurn)) return;
+            SettleCampaignAction();
             _game.BeginTurn();
 
             ActivePlayer = _game.CurrentPlayer;
@@ -3499,6 +3501,9 @@ namespace FingerDiceDuel.Assistant
             if (_game.IsGameOver || Phase != BoardPhase.ChoosingAttackerHand) return false;
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
+            BeforeAutomaticAction?.Invoke(ActivePlayer);
+            if(StatusRules.CanAct(ActivePlayer)&&TryAutomaticCampaignAction?.Invoke(ActivePlayer)==true)
+                return CompleteCampaignAction("战术行动");
             // 冻结、双锁、暗置与距离限制导致无运算时，AI 使用同一个跳过出口。
             if (CanScriptedRest) return SkipTurn();
             if (!_game.HasAnyLegalOperation(ActivePlayer) && CanSkipTurn) return SkipTurn();
@@ -4224,6 +4229,7 @@ namespace FingerDiceDuel.Assistant
 
             // 法师·塑能学派的状态体系：记下"这一位的回合该在换人时结算结束"
             _statusTurnEndFor = result.Actor;
+            _settlingCampaignAction=result.Actor;
 
             // ⚠️ **游荡者·赌徒的强制赌博状态**（玩家确认的规则）：
             //    "若游荡者·赌徒上一个自己的回合进行了正常的运算（非赌博），

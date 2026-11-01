@@ -1,6 +1,9 @@
 ﻿# CODELY.md
 
-前三章连续战斗改造为**待实现设计**，见[总案](Docs/Adventure/single-battle-v2/README.md)及[实现差异](Docs/Adventure/single-battle-v2/implementation-audit.md)。目标是每关只建一次对局、同场教学后正常AI自主战斗、真实胜利才记通关；不能只改“下一试验”按钮而继续Create。文档中的NPC新数值／观摩／补给尚未接入，不是竞技规则或已验证难度。旧逐关与章节文档顶部已标记并保留现行实现记录。
+前三章已迁移至`CampaignLesson`连续战斗导演，`GameBootstrap.StartAdventureLevel`统一进入`StartCampaignLevel`。旧AdventureLevel／MageTowerLesson／TatteredBannersLesson保留历史回归，不再是主菜单实际建局入口。当前配置与流程以[总案](Docs/Adventure/single-battle-v2/README.md)及[实现验收](Art/Integration/campaign-v2/README.md)为准；下文旧独立样本、旧NPC数值与旧采样均属历史记录。
+
+`CampaignContent.ChapterOne/Two/Three`配置30课；`CampaignLesson.Choices`统一教学输入白名单，`BoardController.Campaign`在普通行动和全部回合末选择结束后通知导演。进入自主阶段只解除护持、一次有限治疗并替换选择器，不Create／Reset。观摩和NPC架盾／急救消耗一次正常行动，推障调用`MoveSeatObstacle`。终战30投骰完成后仅`InitializeSeatOrder`重排原参战引用，队伍字典不变；不重建已创建的游戏。真实胜利写原Level键，10／20／30再写章节键；不再写旧Sample键。
+
 
 配乐由`MusicPolicy`只读选择菜单／战斗／剧情终战，`MusicPlayer`用DSP同钟播放intro→loop及等长鼓层。半血检查所有非召唤参战者，触发后锁定到本局结束；新局重置。设置只控制音乐源mute，不写AudioListener音量或音效源；偏好键`FingerDiceDuel.Audio.MusicEnabled`。十份OGG按立体声流式导入；新增配乐先保留无损源、采样边界与SHA256，再验证循环和同步。见[音乐说明](Docs/music-and-audio.md)及[验收](Art/Integration/music-v1/README.md)。
 

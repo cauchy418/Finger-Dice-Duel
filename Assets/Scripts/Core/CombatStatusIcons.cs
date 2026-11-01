@@ -16,6 +16,7 @@ namespace FingerDiceDuel.Core
         public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
+            if(player.TrainingProtected)result.Add(new CombatStatusIcon("Effects/arcane_barrier","操演护持 · 仅教学期间原形生命最低保留1；不是格挡或免疫，自主战斗时解除。",""));
             if(CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.AssassinLogic>(player)?.IsStealthedNow==true)
                 result.Add(new CombatStatusIcon("Overlay/stealth","专业渗透 · 潜行：由暗杀技能维持；出手后按角色规则解除。",""));
             if(CharacterBehaviors.FirstImplementer<GloomStalkerLogic>(player)?.IsAmbushing==true)
@@ -50,7 +51,7 @@ namespace FingerDiceDuel.Core
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
                     ResistanceNames.Name(type)+(player.HasSustainedResistance(type)?"：技能持续抗性；不因受击消耗，按对应技能条件结束。":player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
-            if(player.Character is INpcCircuitProgress phantom)
+            if(player.Character is INpcCircuitProgress phantom&&player.Definition?.Id=="mage_tower_phantom")
                 result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3",value:phantom.CircuitProgress));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
             foreach (var type in ResistanceNames.All)

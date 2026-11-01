@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         public int PolymorphTurns {get;private set;}
         public bool BeganAttackThisTurn {get;internal set;}
         public bool FormedShieldThisTurn {get;internal set;}
-        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
+        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
         public ICharacterBehavior PersistentCharacter=>_untransformedCharacter??Character;
         public bool TryPolymorph(int turns=2)
         {
@@ -99,17 +99,26 @@ namespace FingerDiceDuel.Core
         }
         private void ClearEnchantments(){_enchantments.Clear();_enchantmentSources.Clear();}
         public int LastDamageToOriginalForm {get;private set;}
+        // Explicit, opt-in campaign protection; ordinary games never install it.
+        public bool TrainingProtected {get;set;}
+        public Action TrainingProtectionTriggered {get;set;}
+        private int ProtectOriginalHealth(int damage)
+        {
+            if(!TrainingProtected || damage<Health || Health<=0)return damage;
+            TrainingProtectionTriggered?.Invoke();return Math.Max(0,Health-1);
+        }
         public int TakeDamageResolved(int amount)
         {
             LastDamageToOriginalForm=0;
             if(amount<=0)return 0;
             int absorbed=Math.Min(FalseLife,amount);FalseLife-=absorbed;amount-=absorbed;
             bool wasSheep=IsPolymorphed;
+            if(!wasSheep)amount=ProtectOriginalHealth(amount);
             int actual=Math.Min(Health,amount);Health-=actual;int overflow=amount-actual;
             if(!wasSheep)LastDamageToOriginalForm=actual;
             if(actual>0)ClearEnchantments();
             if(IsPolymorphed&&Health<=0)
-            {EndPolymorph();int loss=Math.Min(Health,overflow);Health-=loss;actual+=loss;LastDamageToOriginalForm=loss;}
+            {EndPolymorph();int loss=Math.Min(Health,ProtectOriginalHealth(overflow));Health-=loss;actual+=loss;LastDamageToOriginalForm=loss;}
             TookDamageThisTurn=true;return actual;
         }
 

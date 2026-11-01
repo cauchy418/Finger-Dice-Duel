@@ -54,6 +54,7 @@ namespace FingerDiceDuel.Assistant
             if (!SeatSwapSkills.Of(actor).TrySwapSeats(actor,target,_game)) return false;
             _log.Add(CombatText.Skill(actor,"王车易位",$"与{target.Name}换位 {from}↔{to}，跳过回合"));
             _statusTurnEndFor=actor;
+            _settlingCampaignAction=actor;
             _game.SkipTurnAlreadyValidated(extraAction: _extraActionActive);
             SelectedHand=null; _selectedTarget=null; _chosenDefenseShield=null;
             _shieldChoices.Clear(); _pendingChoiceCandidates.Clear();

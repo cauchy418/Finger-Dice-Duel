@@ -24,6 +24,10 @@ namespace FingerDiceDuel.UI
             if(path=="Subclasses/tattered_banners_guard")path="Subclasses/fighter_champion";
             if(path=="Subclasses/tattered_banners_commander")path="Adventure/knight_original";
             if(path=="Subclasses/tattered_banners_arbalest")path="Subclasses/fighter_arcane_archer";
+            if(path=="Subclasses/campaign_drillmaster")path="Adventure/npc_outpost_drillmaster";
+            if(path=="Subclasses/campaign_arcane_tuner")path="Adventure/npc_arcane_guard";
+            if(path=="Subclasses/campaign_banner_warden")path="Adventure/knight_original";
+            if(path=="Subclasses/campaign_banner_crossbowman")path="Subclasses/fighter_arcane_archer";
             Sprite sprite;
             if (Cache.TryGetValue(path, out sprite)) return sprite;
             var texture = Resources.Load<Texture2D>(Root + path);
