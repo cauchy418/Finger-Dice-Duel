@@ -705,3 +705,5 @@ HunterWildIntegrationTests新增22项：真实控制器、人类放弃与防守�
 ## 幽影魔法与失明
 
 `ShadowMagicLogic`通过`ITurnEndHook`和普通WizardChoice提供黑暗术发动／不发动；按当下座位距离覆盖敌友。`IShadowEyes`只在ApplyStatus入口拦截`DarknessBlind`，不拦`Blind`。`IGraveStrength`在TakeDamageResolved原形归0后、死亡奖励与胜负结算前恢复至1；双将按部件发现，羊形态暂停，重开恢复次数。逐段伤害在攻防及目标加伤后调用ShadowRules.Outgoing，保留不可增减伤害例外，AI估算共用规则。失明追加枚举24，所有计时、净化、状态栏与手册负面分组统一登记。新增56号技能及56个可选子职，中立轴19人、双将495组。AI比较周围敌友后决定是否施放，不空放，手值评分重视双手和10。本次不采样胜率。
+
+四章剧情重排设计见[万象回廊与章节迁移](Docs/Adventure/four-chapter-v3/README.md)：新第二章、剑咏者教学、初战重甲战士、实战整备及双重试入口；设计提交尚未等同运行时已实现。

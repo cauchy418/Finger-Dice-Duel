@@ -114,3 +114,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 ## 许可
 
 [MIT](./LICENSE)。字体使用思源黑体（Noto Sans CJK SC）与思源宋体，遵循 SIL Open Font License 1.1，详见 [字体许可](./Assets/Resources/Fonts/README-字体许可.txt)。
+
+四章剧情重排设计见[万象回廊与章节迁移](Docs/Adventure/four-chapter-v3/README.md)：新第二章、剑咏者教学、初战重甲战士、实战整备及双重试入口；设计提交尚未等同运行时已实现。
