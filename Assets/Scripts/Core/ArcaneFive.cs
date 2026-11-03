@@ -119,6 +119,7 @@ namespace FingerDiceDuel.Core
             if(actual>0)ClearEnchantments();
             if(IsPolymorphed&&Health<=0)
             {EndPolymorph();int loss=Math.Min(Health,ProtectOriginalHealth(overflow));Health-=loss;actual+=loss;LastDamageToOriginalForm=loss;}
+            if(Health<=0&&!IsPolymorphed)foreach(var grave in CharacterBehaviors.Implementers<IGraveStrength>(this))grave.SurviveDeath(this);
             TookDamageThisTurn=true;return actual;
         }
 

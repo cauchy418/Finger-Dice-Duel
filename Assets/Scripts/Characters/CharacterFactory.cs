@@ -78,6 +78,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.OathOfTheAncients] = () => new OathOfTheAncientsLogic();
             _registry[SpecialLogicType.TheFiend] = () => new TheFiendLogic();
             _registry[SpecialLogicType.CollegeOfLore] = () => new CollegeOfLoreLogic();
+            _registry[SpecialLogicType.ShadowMagic] = () => new ShadowMagicLogic();
             _registry[SpecialLogicType.StormSorcery] = () => new StormSorceryLogic();
             _registry[SpecialLogicType.SchoolOfIllusion] = () => new SchoolOfIllusionLogic();
             _registry[SpecialLogicType.SchoolOfTransmutation] = () => new SchoolOfTransmutationLogic();

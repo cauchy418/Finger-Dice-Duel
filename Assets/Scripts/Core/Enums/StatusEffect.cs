@@ -115,6 +115,7 @@
         Greased = 21,
         WarBlessing = 22,
         Tinnitus = 23,
+        DarknessBlind = 24,
     }
 
     /// <summary>
@@ -192,6 +193,7 @@
                 case StatusEffect.Greased: return "greased";
                 case StatusEffect.WarBlessing: return "war_blessing";
                 case StatusEffect.Tinnitus: return "tinnitus";
+                case StatusEffect.DarknessBlind: return "darkness_blind";
                 default: return null;
             }
         }
@@ -243,6 +245,7 @@
                 case StatusEffect.Greased: return "油腻";
                 case StatusEffect.WarBlessing: return "战争祝福";
                 case StatusEffect.Tinnitus: return "耳鸣";
+                case StatusEffect.DarknessBlind: return "失明";
                 default: return "无";
             }
         }
@@ -252,6 +255,7 @@
         {
             switch (status)
             {
+                case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。与目盲是不同状态。";
                 case StatusEffect.Resonance:
                     return "只能攻击与自己距离 1 的角色";
                 case StatusEffect.Acid:
@@ -339,7 +343,7 @@
         public static bool IsNegativeStatus(StatusEffect status)
             => status != StatusEffect.None && status != StatusEffect.HolyLight && status != StatusEffect.WarBlessing;
 
-        /// <summary>全部22种计时状态（排除兼容别名，顺序固定）。</summary>
+        /// <summary>全部24种计时状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -349,7 +353,7 @@
             StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
-            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus,
+            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
         };
 
         /// <summary>
@@ -411,6 +415,7 @@
                 case StatusEffect.Disabled: return 0x6E7A8A;    // 失能灰蓝
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 case StatusEffect.WarBlessing: return 0xDBB662;
+                case StatusEffect.DarknessBlind: return 0x67558D;
                 case StatusEffect.Tinnitus: return 0xB99DCD;
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
                 case StatusEffect.Restrained: return 0x638653;
@@ -454,6 +459,7 @@
                 case StatusEffect.Disabled: return "⊘";    // ⊘ 失能
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
                 case StatusEffect.WarBlessing: return "⚔";
+                case StatusEffect.DarknessBlind: return "◈";
                 case StatusEffect.Tinnitus: return "≋";
                 case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
                 case StatusEffect.Restrained: return "♧";

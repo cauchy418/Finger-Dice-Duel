@@ -433,6 +433,7 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.BladesingingId]=new HandValueProfile().Set(8,78).Set(6,75).Set(4,70).Set(5,70).Set(9,73);
             Own[CharacterDefinition.TheHexbladeId]=new HandValueProfile().Set(7,100).Set(8,78).Set(6,72).Set(4,67).Set(5,68).Set(9,70);
             Own[CharacterDefinition.CollegeOfLoreId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,64).Set(5,66).Set(9,70);
+            Own[CharacterDefinition.ShadowMagicId]=new HandValueProfile().Set(8,78).Set(6,74).Set(4,70).Set(5,67).Set(9,72).AddCombo(ComboRule.ContainsAll(35,"黑暗术",1,9)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",2,8)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",3,7)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",4,6)).AddCombo(ComboRule.DoublesOf(35,"黑暗术",5));
             Own[CharacterDefinition.StormSorceryId]=new HandValueProfile().Set(8,76).Set(6,70).Set(4,64).Set(5,65).Set(9,70);
             Own[CharacterDefinition.SchoolOfIllusionId]=new HandValueProfile().Set(2,90).Set(4,75).Set(8,70).Set(6,68).Set(5,65).Set(9,65)
                 .AddCombo(ComboRule.ContainsAll(70,"差2且持2的幻术防守",2,4));

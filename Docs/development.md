@@ -1,4 +1,4 @@
-# 开发与测试
+﻿# 开发与测试
 
 [返回索引](README.md)
 
@@ -34,10 +34,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | [RULES](../RULES.md) | 权威规则、完整技能数值、状态与特殊交互 |
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [模式与战斗](modes-and-combat.md) | 回合流程、模式细则、伤害类型、状态与元素反应 |
-| [角色图鉴](roster.md) | 55 名子职数值、阵营分类、全角色胜率 |
+| [角色图鉴](roster.md) | 56 名子职数值、阵营分类、全角色胜率 |
 | [图鉴写法](../CODE-STYLE.md) | 文案长度、关键交互与排版约定 |
 | [测试工具](../Tools/HeadlessTests/README.md) | 环境、参数与专项运行方法 |
-| [全角色AI策略与权重](ai-strategy-reference.md) | 55 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
+| [全角色AI策略与权重](ai-strategy-reference.md) | 56 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
 | [AI策略检查](../Tools/ai-strategy-audit.md) | 专属策略、覆盖范围与统计说明 |
 | [美术制作](../Art/Production/)／[接入验收](../Art/Integration/) | 原图、提示词、导入清单与实际界面截图 |
 

@@ -1,0 +1,16 @@
+using System;
+using System.Reflection;
+using UnityEngine;
+using FingerDiceDuel.UI;
+using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Core;
+var boot=UnityEngine.Object.FindObjectOfType<GameBootstrap>();boot.enabled=false;boot.StartMatch(CharacterDefinition.ShadowMagic,CharacterDefinition.Blank);
+var flags=BindingFlags.NonPublic|BindingFlags.Instance;var type=boot.GetType();var game=(GameManager)type.GetField("_game",flags).GetValue(boot);var board=(BoardController)type.GetField("_controller",flags).GetValue(boot);
+game.PlayerA.LeftHand.SetValue(1);game.PlayerA.RightHand.SetValue(6);game.PlayerB.LeftHand.SetValue(3);board.ClickHand(game.PlayerA.LeftHand);board.ClickHand(game.PlayerB.LeftHand);board.ClickHand(game.PlayerB.LeftHand);
+if(board.PendingWizardChoice==null||board.PendingSkillOptions.Count!=2)throw new Exception("Darkness choices absent");
+if(Resources.Load<Texture2D>("Art/Battle/v1/Subclasses/sorcerer_shadow_magic")==null||Resources.Load<Texture2D>("Art/Battle/v1/Status/darkness_blind")==null)throw new Exception("Dedicated resources missing");
+if(BattleArt.Get("Subclasses/sorcerer_shadow_magic")==null||BattleArt.Get("Status/darkness_blind")==null)throw new Exception("Artwork missing");
+board.ChooseSkillOption(1);if(!game.PlayerB.HasStatus(StatusEffect.DarknessBlind))throw new Exception("Status missing");
+if(CombatStatusIcons.For(game.PlayerB,game).Find(x=>x.ResourceKey=="Status/darkness_blind")==null)throw new Exception("Status icon missing");
+boot.ShowScreen(GameScreen.MainMenu);boot.enabled=true;
+return "PASS: selectable subclass, two human darkness options, negative status icon and dedicated painted artwork; no win-rate sampling";

@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Tests
             //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
             Assert.AreEqual(2, s.Groups.Count);
-            Assert.AreEqual(21, s.Groups[0].Entries.Count, "21种负面状态。");
+            Assert.AreEqual(22, s.Groups[0].Entries.Count, "22种负面状态。");
             Assert.AreEqual(4, s.Groups[1].Entries.Count, "圣光、剑歌、战争祝福和醉拳属于角色状态。");
             var uniqueKeys = new HashSet<string>();
 

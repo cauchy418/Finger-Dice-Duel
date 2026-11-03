@@ -59,6 +59,7 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("ancients", "paladin_oath_of_the_ancients", "paladin", "古贤之誓", "Oath of the Ancients"),
             new CharacterIdentity("fiend", "warlock_the_fiend", "warlock", "妖魔", "The Fiend"),
             new CharacterIdentity("lore", "bard_college_of_lore", "bard", "逸闻学院", "College of Lore"),
+            new CharacterIdentity("shadow_magic", "sorcerer_shadow_magic", "sorcerer", "幽影魔法", "Shadow Magic"),
             new CharacterIdentity("storm", "sorcerer_storm_sorcery", "sorcerer", "风暴术法", "Storm Sorcery"),
             new CharacterIdentity("illusion", "wizard_school_of_illusion", "wizard", "幻术学派", "School of Illusion"),
             new CharacterIdentity("transmutation", "wizard_school_of_transmutation", "wizard", "变化学派", "School of Transmutation"),

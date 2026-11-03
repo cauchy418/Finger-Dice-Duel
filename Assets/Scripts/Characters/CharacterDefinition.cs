@@ -116,6 +116,8 @@ namespace FingerDiceDuel.Core
         public const string OathOfTheAncientsId = "paladin_oath_of_the_ancients";
         public const string TheFiendId = "warlock_the_fiend";
         public const string CollegeOfLoreId = "bard_college_of_lore";
+        public const string ShadowMagicId="sorcerer_shadow_magic";
+        public static CharacterDefinition ShadowMagic {get;}=new CharacterDefinition(ShadowMagicId,"术士·幽影魔法",SpecialLogicType.ShadowMagic,defenseBonus:-1,englishName:"Shadow Magic",description:"首次体力归0恢复至1；回合末双手和10可令距离1内角色失明2回合。免疫失明，攻击失明目标伤害+2并改为暗蚀。距离∞，近钝击远穿刺。付出的生命不会因治疗重新获得保命次数。");
         public const string StormSorceryId = "sorcerer_storm_sorcery";
         public const string SchoolOfIllusionId = "wizard_school_of_illusion";
         public const string LightDomainId = "cleric_light_domain";
@@ -546,7 +548,7 @@ namespace FingerDiceDuel.Core
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
             CircleOfTheMoon, CircleOfTheStars,
             CircleOfTheLand, OathOfTheAncients, TheFiend,
-            CollegeOfLore, StormSorcery, SchoolOfIllusion,
+            CollegeOfLore, StormSorcery, ShadowMagic, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
             OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——

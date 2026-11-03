@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 <img src=".github/assets/menu.jpg" alt="指骰对决 主界面" width="100%">
 </div>
 
@@ -23,7 +23,7 @@
 </tr>
 <tr>
 <td align="center"><sub>冒险模式第一章：老兵手把手教三步运算</sub></td>
-<td align="center"><sub>双将对决：两名同阵营子职叠加，477 种组合</sub></td>
+<td align="center"><sub>双将对决：两名同阵营子职叠加，495 种组合</sub></td>
 </tr>
 </table>
 
@@ -80,13 +80,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 项目 | 数量 |
 |---|---|
-| 职业 / 子职 | 12 / 55（战士 7、圣武士 6、牧师 5、野蛮人 4、游侠 2、游荡者 5、吟游诗人 2、法师 9、术士 3、邪术师 4、德鲁伊 3、武僧 5） |
+| 职业 / 子职 | 12 / 56（战士 7、圣武士 6、牧师 5、野蛮人 4、游侠 2、游荡者 5、吟游诗人 2、法师 9、术士 4、邪术师 4、德鲁伊 3、武僧 5） |
 | 对局模式 | 6（剧情、1v1、2v2、双将、8 人阵营、8 人身份） |
 | 伤害类型 | 13 |
-| 负面状态 | 21 |
+| 负面状态 | 22 |
 | 角色状态 | 3（圣光 / 剑歌 / 战争祝福） |
 | 元素反应 | 11 条 |
-| 双将组合 | 477 种无序组合 |
+| 双将组合 | 495 种无序组合 |
 | 回归测试 | 1533 项通过、0 失败 |
 
 ## 现在的样子
@@ -102,8 +102,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、21 种状态、11 条元素反应 |
-| [角色图鉴](./Docs/roster.md) | 55 名子职的数值与关键机制、阵营分类、全角色胜率 |
+| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、22 种负面状态、11 条元素反应 |
+| [角色图鉴](./Docs/roster.md) | 56 名子职的数值与关键机制、阵营分类、全角色胜率 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [开发与测试](./Docs/development.md) | 测试环境、AI 策略参考、美术制作与接入验收索引 |

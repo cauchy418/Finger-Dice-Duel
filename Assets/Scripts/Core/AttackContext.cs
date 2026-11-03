@@ -447,6 +447,7 @@ namespace FingerDiceDuel.Core
 
                 perHit=damageDisabled?0:IgnoreStatBonuses?currentBase:ApplyStatBonuses(currentBase);
                 if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
+                if(!IsStatusDamage&&!IsReflected&&!IgnoreIncomingModifiers)perHit=ShadowRules.Outgoing(Attacker,Defender,perHit);
                 for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
                 if(detonateHidden)hiddenExpected+=System.Math.Max(0,perHit);
                 var drunkenDefense=!IsStatusDamage&&!IgnoreIncomingModifiers?MonkRules.DrunkenOf(Defender):null;

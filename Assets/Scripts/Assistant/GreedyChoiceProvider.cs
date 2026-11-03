@@ -982,6 +982,7 @@ namespace FingerDiceDuel.Assistant
             {
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
                     if(defense.CanReduceAttack(victim,result))total=(total+1)/2;
+                total=ShadowRules.Outgoing(actor,victim,total);
                 total=StatusRules.ApplyIncomingDamage(victim,total);
             }
             total=StatusRules.ApplyDamageAffinities(victim,total,type);
@@ -1006,6 +1007,8 @@ namespace FingerDiceDuel.Assistant
                                                   attacker.Character?.AttackBonus ?? 0,
                                                   victim.Character?.DefenseBonus ?? 0,
                                                   ignorePositiveDefense: false);
+            damage+=ArcaneChoices.BonusAgainst(attacker,victim);
+            if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
             var context = new AttackContext(attacker, victim, attacker.LeftHand, result);
             var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)

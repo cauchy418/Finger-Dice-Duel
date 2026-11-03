@@ -69,7 +69,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>枚举上限包含束缚、油腻；用于稳定顺序显示状态。</summary>
-        private const int MaxStatusValue = (int)StatusEffect.Tinnitus;
+        private const int MaxStatusValue = (int)StatusEffect.DarknessBlind;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)
@@ -92,6 +92,7 @@ namespace FingerDiceDuel.Core
                                 PlayerState source = null)
         {
             if (status == StatusEffect.None || turns <= 0) return;
+            if(status==StatusEffect.DarknessBlind&&!IsPolymorphed&&CharacterBehaviors.FirstImplementer<IShadowEyes>(this)!=null)return;
 
             // ⚠️ **圣光（牧师·光明领域）的两个特例**（玩家口径，2026-10-23）：
             //    ① 施加圣光时，先清除目标身上**其他全部状态**与**全部抗性**

@@ -207,6 +207,7 @@
         OathOfVengeance = 52,
         TrickeryDomain = 53,
         TempestDomain = 54,
+        ShadowMagic = 56,
         WayOfTheDrunkenMaster = 55
     }
 }

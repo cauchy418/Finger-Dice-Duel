@@ -327,7 +327,7 @@ namespace FingerDiceDuel.Core
             character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "21种负面状态；圣光、剑歌、战争祝福、醉拳为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
+                "22种负面状态；圣光、剑歌、战争祝福、醉拳为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>
