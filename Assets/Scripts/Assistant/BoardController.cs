@@ -3091,7 +3091,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// **轮次上限**（所有模式统一 50 轮）。
         /// </summary>
-        public int RoundLimit => _game?.RoundLimit ?? GameManager.DefaultRoundLimit;
+        public int RoundLimit => TutorialInput is CampaignLesson lesson&&lesson.Version3&&lesson.TeachingComplete?50:_game?.RoundLimit ?? GameManager.DefaultRoundLimit;
 
         /// <summary>
         /// UI 显示的"当前是第几轮"（**从 1 开始**）。
@@ -3103,7 +3103,7 @@ namespace FingerDiceDuel.Assistant
         /// 它的语义（已完成数）被上限判定依赖，改语义的连带风险很大。
         /// **只在显示层换算。**
         /// </summary>
-        public int DisplayRound => Math.Min(RoundCount + 1, RoundLimit);
+        public int DisplayRound => Math.Min(RoundCount + 1-(TutorialInput is CampaignLesson lesson&&lesson.Version3&&lesson.TeachingComplete?lesson.TrialStartRound:0), RoundLimit);
 
         /// <summary>
         /// UI 显示的"当前是第几回合"（**从 1 开始**）。

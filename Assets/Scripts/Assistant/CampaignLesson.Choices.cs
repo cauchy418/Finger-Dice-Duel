@@ -12,6 +12,11 @@ namespace FingerDiceDuel.Assistant
             if(q!=null&&q.Options.Count==0)
             {
                 person=q.TargetsPlayer;
+                if(Version3&&q.Prompt.Contains("风暴导向"))
+                {
+                    if(s.PureSource<0)return null;
+                    return q.Prompt.Contains("加数")?Seats[s.PureOwner].GetHand(s.PureAddend):_player.GetHand(s.PureSource);
+                }
                 if(person)
                 {
                     if(q.Prompt.Contains("仇敌誓言"))return Seats[s.VowSeat].LeftHand;

@@ -1,4 +1,4 @@
-﻿# 开发与测试
+# 开发与测试
 
 [返回索引](README.md)
 
@@ -25,7 +25,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-最新结果：**1533 项功能回归通过，0 失败**；8 项独立统计默认跳过，本轮专用五模式采样已另行完成。Unity/NUnit 条件编译、195 脚本表现层编译及 36 项真实界面检查通过，见[验收记录](../Art/Integration/monks-portents-rebalance/README.md)。
+最新结果：**1601 项功能回归通过，0 失败**；8 项独立统计跳过，本轮没有重采胜率。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
 
 ## 文档
 

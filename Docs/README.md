@@ -8,8 +8,8 @@
 |---|---|
 | [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 22 种负面状态 |
 | [角色图鉴](roster.md) | 56 名子职的数值与关键机制、阵营分类、全角色胜率 |
-| [剧情教学](Adventure/single-battle-v2/README.md) | 三章三十战的连续战斗版设计 |
-| [共同规则与 NPC](Adventure/single-battle-v2/common.md) | 操演护持、实战号角、调律与整备 |
+| [剧情教学](Adventure/four-chapter-v3/README.md) | 四章40关，万象回廊与高塔重排 |
+| [共同流程](Adventure/four-chapter-v3/common-flow.md) | 中央实战确认、敌方整备、50轮与两个重试入口 |
 | [音乐与音频](music-and-audio.md) | 配乐切换逻辑与设置持久化 |
 
 ## 想改代码
@@ -27,8 +27,9 @@
 
 | 文档 | 内容 |
 |---|---|
-| [single-battle-v2](Adventure/single-battle-v2/README.md) | **现行**：三章连续战斗版，同场教学转自由战斗 |
-| [chapter-01](Adventure/single-battle-v2/chapter-01.md) · [chapter-02](Adventure/single-battle-v2/chapter-02.md) · [chapter-03](Adventure/single-battle-v2/chapter-03.md) | 分章十战配置 |
+| [four-chapter-v3](Adventure/four-chapter-v3/README.md) | **现行**：四章40关、技能教学与实战、旧存档迁移 |
+| [single-battle-v2](Adventure/single-battle-v2/README.md) | 历史：三章连续战斗改造，现行流程已由V3取代 |
+| [chapter-01](Adventure/single-battle-v2/chapter-01.md) · [chapter-02](Adventure/single-battle-v2/chapter-02.md) · [chapter-03](Adventure/single-battle-v2/chapter-03.md) | 历史分章十战配置 |
 | [implementation-audit](Adventure/single-battle-v2/implementation-audit.md) | 改造前的差异清单与验收要求 |
 | `Adventure/level-*.md`、`Adventure/chapter-0*.md` | **历史**：逐关独立样本时代的旧设计稿，仅作实现记录保留 |
 

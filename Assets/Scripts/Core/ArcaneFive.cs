@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Core
         public int PolymorphTurns {get;private set;}
         public bool BeganAttackThisTurn {get;internal set;}
         public bool FormedShieldThisTurn {get;internal set;}
-        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
+        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_elemental_spirit"?"Adventure/npc_elemental_spirit":Definition?.Id=="campaign_elemental_echo"?"Adventure/npc_elemental_echo":Definition?.Id=="story_heavy_fighter"?"Adventure/knight_original":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
         public ICharacterBehavior PersistentCharacter=>_untransformedCharacter??Character;
         public bool TryPolymorph(int turns=2)
         {

@@ -10,6 +10,14 @@ namespace FingerDiceDuel.UI
     {
         private void ShowCampaignSkillDialogue(CampaignLesson lesson)
         {
+            if(lesson.Version3)
+            {
+                if(lesson.UsesClassicSetup)
+                    _board.ShowAdventureIntro("交锋之前",string.Join("\n",CampaignGuideText.For(lesson.LevelNumber)),lesson.GuideAvatarKey,lesson.GuideName,
+                        ContinueAdventureIntro,ReturnToAdventure,null,"开始投骰");
+                else ContinueAdventureIntro();
+                return;
+            }
             var pages=new List<string>();var seen=new HashSet<string>();
             foreach(var p in lesson.Seats)
             {
@@ -30,14 +38,24 @@ namespace FingerDiceDuel.UI
         }
         private void StartCampaignLevel(int level,bool launchFinale)
         {
-            if(level<1||level>30)throw new ArgumentOutOfRangeException(nameof(level));
+            if(level<1||level>40)throw new ArgumentOutOfRangeException(nameof(level));
             _storyChapter=(level-1)/10+1;
-            if(_storyChapter==2&&!TowerUnlocked){OpenStoryChapter(2);return;}
-            if(_storyChapter==3&&!BannersUnlocked){OpenStoryChapter(3);return;}
+            if(!CampaignUnlocked(_storyChapter)){OpenStoryChapter(_storyChapter);return;}
             CleanupMatch();
             if(level%10==0&&!launchFinale){ConfigureFinaleScreen();ShowScreen(GameScreen.AdventureFinaleSelect);return;}
             var role=level%10==0?SelectedFinaleRoster[Mathf.Clamp(_finaleIndex,0,SelectedFinaleRoster.Count-1)]:null;
-            var lesson=CampaignLesson.Create(level,role);
+            var lesson=CampaignLesson.CreateV3(level,role);
+            AttachCampaign(lesson);
+            StartPreparedMatch(beginTurn:!lesson.UsesClassicSetup);SetCampaignPresentation(lesson);
+            _board.HideAdventureNarration();
+            _board.ShowAdventureIntro(lesson.DisplayTitle,lesson.OpeningText,lesson.GuideAvatarKey,lesson.GuideName,
+                OnAdventureIntroConfirmed,ReturnToAdventure,
+                lesson.AllowsTutorialSkip&&PlayerPrefs.GetInt(lesson.CompletionKey,0)!=0?(Action)OnAdventureSkipTutorial:null,
+                lesson.UsesClassicSetup?"学习先攻":"跟随指引");
+        }
+        private void AttachCampaign(CampaignLesson lesson)
+        {
+            _campaignTrialPrompt=false;
             _adventure=lesson;_game=lesson.Game;_controller=lesson.Board;
             _pendingDefA=lesson.Player.Definition;_pendingDefB=lesson.Seats[1].Definition;
             _choiceA=_game.ChoiceProviderA as SimpleChoiceProvider;_choiceB=_game.ChoiceProviderB as SimpleChoiceProvider;
@@ -49,17 +67,11 @@ namespace FingerDiceDuel.UI
             _isEightPlayer=lesson.Seats.Length==8;_eightSeated=_isEightPlayer?new List<PlayerState>(lesson.Seats):null;
             _eightHumanPlayer=_isEightPlayer?lesson.Player:null;
             _isIdentity=false;_isDualGeneral=false;_adventureVictoryShown=false;_adventureEndReady=false;
-            StartPreparedMatch(beginTurn:!lesson.UsesClassicSetup);SetCampaignPresentation(lesson);
-            _board.HideAdventureNarration();
-            _board.ShowAdventureIntro(lesson.DisplayTitle,lesson.OpeningText,lesson.GuideAvatarKey,lesson.GuideName,
-                OnAdventureIntroConfirmed,ReturnToAdventure,
-                lesson.AllowsTutorialSkip&&PlayerPrefs.GetInt(lesson.CompletionKey,0)!=0?(Action)OnAdventureSkipTutorial:null,
-                lesson.UsesClassicSetup?"学习先攻":"跟随指引");
         }
         private void SetCampaignPresentation(CampaignLesson lesson)
         {
             _board.SetTitle(lesson.DisplayTitle);_board.SetBattleBackground(lesson.BattleBackgroundKey);
-            _board.ShowAdventureObstacles(lesson.LevelNumber==4||lesson.LevelNumber==7,lesson.LevelNumber==7?2:1);
+            _board.ShowAdventureObstacles(lesson.LevelNumber==4||lesson.LevelNumber==7||lesson.LevelNumber==11,lesson.LevelNumber==7?2:lesson.LevelNumber==11?99:1);
             _board.SetCampaignObstacleMoved(lesson.ObstacleMoved);
             _board.ShowCampaignAction(lesson.Started?lesson.Board.CurrentCampaignAction:null,()=>{if(_controller.UseCampaignAction())RefreshView();});
         }
@@ -83,6 +95,11 @@ namespace FingerDiceDuel.UI
         {
             if(!lesson.IsComplete)return;
             PlayerPrefs.SetInt(lesson.CompletionKey,1);
+            if(lesson.Version3)
+            {
+                if(lesson.LevelNumber%10==0)PlayerPrefs.SetInt(lesson.Chapter.CompletionKey,1);
+                PlayerPrefs.Save();return;
+            }
             if(lesson.LevelNumber==10)PlayerPrefs.SetInt(AdventureChapter.CompletionKey,1);
             if(lesson.LevelNumber==20)PlayerPrefs.SetInt(MageTowerChapter.CompletionKey,1);
             if(lesson.LevelNumber==30)PlayerPrefs.SetInt(TatteredBannersChapter.CompletionKey,1);
@@ -91,6 +108,21 @@ namespace FingerDiceDuel.UI
         private void ShowCampaignResult(CampaignLesson lesson)
         {
             Action next=null;string label=null;
+            if(lesson.Version3)
+            {
+                if(lesson.IsComplete)
+                {
+                    int chapter=lesson.Chapter.Number;
+                    if(lesson.LevelNumber%10==0&&chapter<4){next=()=>ShowCampaignTransition(chapter);label="前往"+CampaignChapter.At(chapter+1).Name;}
+                    else if(lesson.LevelNumber<40){next=()=>StartAdventureLevel(lesson.LevelNumber+1);label="继续"+AdventureChapter.BattleName(lesson.LevelNumber%10+1);}
+                }
+                else if(lesson.CanRetryTrial){next=()=>RetryCampaignTrial(lesson);label="再次试炼";}
+                _board.ShowAdventureVictory((lesson.IsComplete?lesson.ResultHeading:_game.Winner==null?"试炼平局":"试炼失利")+" · "+lesson.DisplayTitle,
+                    lesson.IsComplete?lesson.SummaryText:lesson.FailureText,lesson.GuideAvatarKey,
+                    OnAdventureReplay,ReturnToAdventure,next,label,lesson.UsesClassicSetup?"重新投骰":"重新指引",lesson.GuideName);
+                if(lesson.LevelNumber%10==0)_board.SetAdventureExtraAction(()=>{CleanupMatch();ConfigureFinaleScreen();ShowScreen(GameScreen.AdventureFinaleSelect);},"重新选择子职");
+                return;
+            }
             if(lesson.IsComplete)
             {
                 if(lesson.LevelNumber==10){next=()=>ShowTowerTransition();label="前往法师高塔";}

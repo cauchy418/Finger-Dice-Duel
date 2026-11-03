@@ -2,17 +2,20 @@
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
-    public sealed class CampaignNpcLogic:CharacterTemplate,IStatusApplyingAttack,ICompletedDamageDealt,INpcCircuitProgress,ITurnStartHook
+    public sealed class CampaignNpcLogic:CharacterTemplate,IStatusApplyingAttack,ICompletedDamageDealt,INpcCircuitProgress,ITurnStartHook,ITurnEndHook
     {
         public readonly string Name;
         public int Attack,Defense,Range,FreeAttackDelta;
         public AttackDamageType Weapon;
-        public bool FreeCombat,CanRaiseShield,CanAid,CanRally,CanMuster,Steady,Phantom,PeriodicForce;
+        public AttackDamageType EveryThird;
+        public bool FreeCombat,CanRaiseShield,CanAid,CanRally,CanMuster,Steady,Phantom,PeriodicForce,ElementalCycle;
         public int ShieldCooldown,AidCooldown,AidCharges=2;
         public int CircuitProgress{get;private set;}
         public bool RallySpent,MusterSpent;
         public string TrainingNotes="";
-        private int _attacks;
+        private int _attacks,_ownTurns;
+        private static readonly AttackDamageType[] CycleTypes={AttackDamageType.Fire,AttackDamageType.Cold,AttackDamageType.Lightning,AttackDamageType.Thunder,AttackDamageType.Acid};
+        private static readonly AttackDamageType[] ShellTypes={AttackDamageType.Fire,AttackDamageType.Cold,AttackDamageType.Poison,AttackDamageType.Acid,AttackDamageType.Lightning,AttackDamageType.Thunder,AttackDamageType.Radiant,AttackDamageType.Necrotic,AttackDamageType.Psychic,AttackDamageType.Force};
         public string AbilitySummary=>
             (!FreeCombat?TrainingNotes:"")+
             (CanRaiseShield?"架盾：低于半血时消耗正常行动形成5盾，冷却3自身回合。":"")+
@@ -21,7 +24,9 @@ namespace FingerDiceDuel.Assistant
             (CanMuster?"集结令：不高于半血时消耗正常行动，为自己和距离2内队友回复4，限一次。":"")+
             (Steady?"稳弦：普通6攻击基础伤害+1。":"")+
             (Phantom?"永久火焰、寒冷抗性及毒素免疫；每3次普通攻击实际伤人后回复3。":"")+
-            (PeriodicForce?"每第三次普通攻击改为力场。":"");
+            (PeriodicForce?"每第三次普通攻击改为力场。":"")+
+            (EveryThird!=AttackDamageType.None?"每第三次普通攻击改为"+AttackDamageTypes.NameOf(EveryThird)+"。":"")+
+            (ElementalCycle?"轮转术式：每第二次普通攻击依次改为火焰、寒冷、闪电、雷鸣、强酸，其余近钝击远穿刺。折光外壳：每第三个自身回合结束，依次获得火焰、寒冷、毒素、强酸、闪电、雷鸣、光耀、暗蚀、心灵、力场的一次免疫。":"");
         public CampaignNpcLogic(string name,int attack=0,int defense=0,int range=1,AttackDamageType weapon=AttackDamageType.Slashing)
         {Name=name;Attack=attack;Defense=defense;Range=range;Weapon=weapon;}
         public override string DisplayName=>Name;
@@ -29,14 +34,20 @@ namespace FingerDiceDuel.Assistant
         public override int DefaultDefenseBonus=>Defense;
         public override int BaseAttackRange=>Range;
         public override AttackDamageType AttackTypeOf(AttackContext context)
-            =>FreeCombat&&PeriodicForce&&(_attacks+1)%3==0?AttackDamageType.Force:Weapon;
+            =>ElementalCycle?((_attacks+1)%2==0?CycleTypes[((_attacks+1)/2-1)%CycleTypes.Length]:ArcaneChoices.NearFar(context)):FreeCombat&&(_attacks+1)%3==0&&(PeriodicForce||EveryThird!=AttackDamageType.None)?PeriodicForce?AttackDamageType.Force:EveryThird:Weapon;
         public StatusEffect StatusToApplyOnHit(AttackContext context)=>ArcaneChoices.ElementStatus(context.AttackType);
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {if(!ReferenceEquals(game.CurrentPlayer,owner))return;if(ShieldCooldown>0)ShieldCooldown--;if(AidCooldown>0)AidCooldown--;}
         public override void OnMatchReset(PlayerState owner,GameManager game)
         {
-            ShieldCooldown=AidCooldown=CircuitProgress=_attacks=0;AidCharges=2;RallySpent=MusterSpent=false;
+            ShieldCooldown=AidCooldown=CircuitProgress=_attacks=_ownTurns=0;AidCharges=2;RallySpent=MusterSpent=false;
             if(Phantom){owner.AddPermanentResistance(AttackDamageType.Fire);owner.AddPermanentResistance(AttackDamageType.Cold);owner.AddPermanentImmunity(AttackDamageType.Poison);}
+        }
+        public void OnTurnEnded(PlayerState owner,GameManager game)
+        {
+            if(!ElementalCycle||!owner.IsAlive||++_ownTurns%3!=0)return;
+            var type=ShellTypes[(_ownTurns/3-1)%ShellTypes.Length];
+            owner.AddImmunity(type);game.NoteSkill(owner,"折光外壳",AttackDamageTypes.NameOf(type)+"一次免疫",owner,new SkillVisualData(element:type));
         }
         public override void OnResolveAttack(AttackContext attack)
         {

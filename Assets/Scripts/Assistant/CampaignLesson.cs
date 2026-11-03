@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
@@ -10,6 +10,9 @@ namespace FingerDiceDuel.Assistant
         public string Id,Text;
         public int Actor,Source,AddendOwner=1,Addend,Victim=1;
         public int? Result,Option;
+        public int GuideIndex;
+        public int? ForcedRoll;
+        public int PureSource=-1,PureOwner=-1,PureAddend=-1;
         public DamageType? Element;
         public AttackDamageType? Resistance;
         public StatusEffect? Maneuver;
@@ -40,32 +43,32 @@ namespace FingerDiceDuel.Assistant
         public bool Guided=>Stage==CampaignPhase.Guide;
         public bool TeachingComplete=>Stage==CampaignPhase.FreeCombat||Stage==CampaignPhase.Finished;
         public override int LevelNumber=>_level;
-        public override int StepNumber=>Guided?Cursor+1:0;
-        public override int StepCount=>Steps.Count;
+        public override int StepNumber=>Guided?(Version3?Step.GuideIndex+1:Cursor+1):0;
+        public override int StepCount=>Version3?CampaignGuideText.For(_level).Length:Steps.Count;
         public override bool IsFreeStage=>TeachingComplete;
         public override bool UsesClassicSetup=>_level==5||_level%10==0;
         public override bool AllowsTutorialSkip=>!UsesClassicSetup;
-        public override string DisplayTitle=>(_level<=10?"第一章：边境哨站":_level<=20?"第二章：法师高塔":"第三章：残旗战场")+"·"+AdventureChapter.BattleName((_level-1)%10+1);
-        public override string GuideName=>_level<=10?"老兵":_level<=20?"秘法典籍":"残旗军士长";
-        public override string GuideAvatarKey=>_level<=10?AdventureLevel1.GuideAvatarKey:_level<=20?"Adventure/guide_arcane_codex":"Subclasses/"+CharacterDefinition.OathOfTheCrownId;
-        public override string BattleBackgroundKey=>_level<=10?"Backgrounds/border_outpost_chapter_01":_level<=20?"Backgrounds/mage_tower_chapter_02":TatteredBannersChapter.Background;
+        public override string DisplayTitle=>Version3?Chapter.Title+"·"+AdventureChapter.BattleName((_level-1)%10+1):(_level<=10?"第一章：边境哨站":_level<=20?"第二章：法师高塔":"第三章：残旗战场")+"·"+AdventureChapter.BattleName((_level-1)%10+1);
+        public override string GuideName=>Version3?Chapter.Guide:_level<=10?"老兵":_level<=20?"秘法典籍":"残旗军士长";
+        public override string GuideAvatarKey=>Version3?Chapter.Avatar:_level<=10?AdventureLevel1.GuideAvatarKey:_level<=20?"Adventure/guide_arcane_codex":"Subclasses/"+CharacterDefinition.OathOfTheCrownId;
+        public override string BattleBackgroundKey=>Version3?Chapter.Background:_level<=10?"Backgrounds/border_outpost_chapter_01":_level<=20?"Backgrounds/mage_tower_chapter_02":TatteredBannersChapter.Background;
         public override bool IsFinished=>_game.IsGameOver;
         public override bool IsComplete=>TeachingComplete&&_game.IsGameOver&&_game.Winner!=null&&(ReferenceEquals(_game.Winner,_player)||_game.IsTeammate(_game.Winner,_player));
         public override string ResultHeading=>_level%10==0?"第"+(_level/10)+"章通关":"试炼胜利";
-        public override string SummaryText=>_level<=10?"老兵点了点头：记住刚才的判断。能把招式用在合适的时候，才算真正学会。":_level<=20?"典籍翻过一页：你已看清这道术式的奥秘。带着这份领悟，继续向塔顶前进。":"军士长收起残旗：这一仗打得漂亮。记住身旁的同袍，下一场还要并肩作战。";
+        public override string SummaryText=>Version3?VictoryCopy:_level<=10?"老兵点了点头：记住刚才的判断。能把招式用在合适的时候，才算真正学会。":_level<=20?"典籍翻过一页：你已看清这道术式的奥秘。带着这份领悟，继续向塔顶前进。":"军士长收起残旗：这一仗打得漂亮。记住身旁的同袍，下一场还要并肩作战。";
         public override string FailureText=>"此番交锋失利。歇息片刻，再来挑战吧。";
-        public override string OpeningText=>_level==1?"边境哨站，身负旧伤的老兵拦住了去路。\n「新兵，先学会指尖骰术，再谈闯荡。」":_level<=10?"老兵将兵器摆在你面前。\n「这一课，试试"+_player.Definition.DisplayName+"的本领。」":_level<=20?"高塔深处，秘法典籍缓缓展开。\n「以"+_player.Definition.DisplayName+"的术式，解开眼前的考验。」":"残旗在风中猎猎作响，军士长示意你归队。\n「这一战，留意同袍，也留意敌人的动向。」";
+        public override string OpeningText=>Version3?OpeningCopy:_level==1?"边境哨站，身负旧伤的老兵拦住了去路。\n「新兵，先学会指尖骰术，再谈闯荡。」":_level<=10?"老兵将兵器摆在你面前。\n「这一课，试试"+_player.Definition.DisplayName+"的本领。」":_level<=20?"高塔深处，秘法典籍缓缓展开。\n「以"+_player.Definition.DisplayName+"的术式，解开眼前的考验。」":"残旗在风中猎猎作响，军士长示意你归队。\n「这一战，留意同袍，也留意敌人的动向。」";
         public override string Narration=>Stage==CampaignPhase.AwaitingHorn?GuideName+"：要领已经讲过，准备迎战。":TeachingComplete?GuideName+"：接下来，由你判断。击败眼前的对手。":Step?.Text;
         protected override int OpeningMoveCount=>0;
         protected override ScriptedMoveSelector CreateOpeningScript()=>new ScriptedMoveSelector();
-        private CampaignLesson(int level,PlayerState[] seats,GameManager game,BoardController board,List<CampaignStep> steps,int guardian):base(game,board,seats[0])
+        private CampaignLesson(int level,PlayerState[] seats,GameManager game,BoardController board,List<CampaignStep> steps,int guardian,bool version3=false):base(game,board,seats[0])
         {
-            _level=level;Seats=seats;Steps=steps;GuardianSeat=guardian;Stage=steps.Count==0?CampaignPhase.FreeCombat:CampaignPhase.Guide;
+            _level=level;Version3=version3;Seats=seats;Steps=steps;GuardianSeat=guardian;Stage=steps.Count==0?CampaignPhase.FreeCombat:CampaignPhase.Guide;
             foreach(var p in seats)if(p.Character is CampaignNpcLogic npc)npc.FreeCombat=TeachingComplete;
             _beats.Add(new Beat{FreeClicks=true});Bind(board);
             for(int i=0;i<seats.Length;i++)
             {
-                var p=seats[i];p.TrainingProtected=Guided&&(i==0||game.IsTeammate(p,_player)||i==guardian||level==29&&i==5);
+                var p=seats[i];p.TrainingProtected=Guided&&(i==0||game.IsTeammate(p,_player)||i==guardian||CourseLevel==29&&i==5);
                 p.TrainingProtectionTriggered=()=>game.NoteSkill(p,"操演护持","护持生效，保留1生命",p);
             }
         }
@@ -74,7 +77,8 @@ namespace FingerDiceDuel.Assistant
         public override void Tick()
         {
             if(!Started)return;
-            if(Stage==CampaignPhase.AwaitingHorn&&SafeBoundary)EnterFree(true);
+            if(!Version3&&Stage==CampaignPhase.AwaitingHorn&&SafeBoundary)EnterFree(true);
+            if(Version3&&Guided)SetGuidedRoll();
             if(_game.IsGameOver&&TeachingComplete)Stage=CampaignPhase.Finished;
         }
         private bool SafeBoundary=>_board.PendingWizardChoice==null&&!_board.PendingRequest.HasValue&&!_board.CollegeOfValorChoicePending&&_board.Phase!=BoardPhase.ChoosingDefenseShield;
@@ -91,14 +95,16 @@ namespace FingerDiceDuel.Assistant
         {
             if(TeachingComplete)return;
             Stage=CampaignPhase.FreeCombat;
+            if(Version3)RestoreTrialOpposition();
             if(horn)
             {
                 HornCount++;var source=Seats[GuardianSeat];
-                if(source.IsAlive&&!source.IsPolymorphed)CampaignNpcLogic.Heal(_game,source,source,12,"实战号角");
+                if(!Version3&&source.IsAlive&&!source.IsPolymorphed)CampaignNpcLogic.Heal(_game,source,source,12,"实战号角");
                 foreach(var p in Seats)if(p.IsAlive&&(ReferenceEquals(p,_player)||_game.IsTeammate(p,_player)))CampaignNpcLogic.Heal(_game,source,p,6,"实战号角");
-                if(_level==29&&Seats[5].IsAlive)CampaignNpcLogic.Heal(_game,Seats[5],Seats[5],12,"实战号角");
+                if(!Version3&&CourseLevel==29&&Seats[5].IsAlive)CampaignNpcLogic.Heal(_game,Seats[5],Seats[5],12,"实战号角");
             }
             foreach(var p in Seats){p.TrainingProtected=false;if(p.Character is CampaignNpcLogic npc)npc.FreeCombat=true;}
+            if(Version3){TrialStartRound=_game.RoundCount;_game.RoundLimit=TrialStartRound+50;ReleaseGuidedRolls();}
             _board.ScriptedRestAllowed=null;
             for(int i=1;i<Seats.Length;i++)_board.BindPlayer(Seats[i],NewAi(_game),_game.GetChoiceProvider(Seats[i]) as IPlayerChoiceSink??new SimpleChoiceProvider());
         }
@@ -109,6 +115,7 @@ namespace FingerDiceDuel.Assistant
             if(Step.Kind==CampaignActionKind.Operation&&(!fresh||!ReferenceEquals(turn.Actor,actor)||!ReferenceEquals(turn.ActedHand,actor.GetHand(Step.Source==2?ReferenceEquals(turn.ActedHand,actor.LeftHand)?0:1:Step.Source))))return;
             if(Step.Verify!=null&&!Step.Verify(this))return;
             Observations.Add(Step.Id);Cursor++;_preparedOwners.Clear();
+            if(Version3)SetGuidedRoll();
             if(Cursor>=Steps.Count)Stage=CampaignPhase.AwaitingHorn;
         }
         private void PrepareNpc(PlayerState actor)
@@ -160,14 +167,14 @@ namespace FingerDiceDuel.Assistant
         {
             if(!ReferenceEquals(actor,_player))return null;
             if(Guided&&(Step?.Kind==CampaignActionKind.Observe&&Step.Actor==0||Step!=null&&(Step.Actor!=0||Step.Kind==CampaignActionKind.Operation&&!ReadyOperation)))return "观摩 · 保留手值";
-            return TeachingComplete&&(_level==4||_level==7)&&!_obstacleMoved?"推开路障":null;
+            return TeachingComplete&&(CourseLevel==4||CourseLevel==7)&&!_obstacleMoved?"推开路障":null;
         }
         private bool PerformAction(PlayerState actor)
         {if(ActionLabel(actor)==null)return false;if(TeachingComplete)return TryPush(actor);return true;}
         private bool _obstacleMoved;
         private bool TryPush(PlayerState actor)
         {
-            if((_level!=4&&_level!=7)||_obstacleMoved||!StatusRules.CanAct(actor))return false;
+            if((CourseLevel!=4&&CourseLevel!=7)||_obstacleMoved||!StatusRules.CanAct(actor))return false;
             if(!ReferenceEquals(actor,_player)&&_game.CanReach(actor,_player))return false;
             if(!_game.MoveSeatObstacle(0))return false;
             _obstacleMoved=true;_game.NoteSkill(actor,"推开路障","一侧石头移向场边，最短距离已缩短");return true;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -10,8 +10,7 @@ namespace FingerDiceDuel.UI
     public sealed partial class GameBootstrap
     {
         private Text _bannersChapterStatus;
-        private bool BannersUnlocked=>PlayerPrefs.GetInt(MageTowerChapter.CompletionKey,0)!=0
-            ||PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level20.Completed",0)!=0;
+        private bool BannersUnlocked=>CampaignUnlocked(4);
         private void StartBannersLevel(int level,bool launchFinale=false,int sampleIndex=-1)
         {
             if(!BannersUnlocked){OpenStoryChapter(3);return;}

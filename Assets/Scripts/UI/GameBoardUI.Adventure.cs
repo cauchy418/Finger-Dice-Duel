@@ -36,7 +36,7 @@ namespace FingerDiceDuel.UI
                 distance.raycastTarget = false;
             }
             _adventureObstaclesRoot.Find("DistanceLesson").GetComponent<Text>().text =
-                "环形座位：你 → 石头 → 教官 → 石头    双方距离2 · 你的通常射程" + playerRange;
+                "环形座位：你 → 石头 → 对手 → 石头    双方距离2 · 你的通常射程" + (playerRange>=99?"∞":playerRange.ToString());
             _adventureObstaclesRoot.gameObject.SetActive(visible);
         }
     }

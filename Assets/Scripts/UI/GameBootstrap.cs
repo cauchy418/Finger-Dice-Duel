@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;   // 图鉴资料（表现层入口是唯一允许看到它的地方）
@@ -655,7 +655,7 @@ namespace FingerDiceDuel.UI
             _screenAdventure.Add(MakeSubTitle(_selectRoot, "AdvTitle", "冒险模式").gameObject);
 
             Button pve = MakeSubModeButton(_selectRoot, "AdvPve", new Vector2(0f, 60f),
-                                           "剧情冒险", "边境哨站 / 法师高塔 / 残旗战场 · 三章试炼",
+                                           "剧情冒险", "边境哨站 / 万象回廊 / 法师高塔 / 残旗战场 · 四章试炼",
                                            () => ShowScreen(GameScreen.StoryChapterSelect));
             Button chal = MakeSubModeButton(_selectRoot, "AdvChallenge", new Vector2(0f, -96f),
                                             "挑战关卡", "即将开放",
@@ -668,20 +668,21 @@ namespace FingerDiceDuel.UI
 
         private void BuildStoryChapterScreen()
         {
+            MigrateCampaignProgress();
             _screenStoryChapter = new ScreenGroup();
             _screenStoryChapter.Add(MakeSubTitle(_selectRoot, "StoryChaptersTitle", "剧情冒险").gameObject);
-            _screenStoryChapter.Add(MakeSubModeButton(_selectRoot, "StoryChapter01", new Vector2(0f, 150f),
-                "第一章：边境哨站", "十场试炼 · 老兵的指尖骰术指导",
-                () => OpenStoryChapter(1)).gameObject);
-            var tower = MakeSubModeButton(_selectRoot, "StoryChapter02", new Vector2(0f, -6f),
-                "第二章：法师高塔", "奥法骑士 / 法师九学派与试炼", () => OpenStoryChapter(2));
-            _towerChapterStatus=tower.transform.Find("Sub").GetComponent<Text>();
-            _screenStoryChapter.Add(tower.gameObject);
-            var banners=MakeSubModeButton(_selectRoot,"StoryChapter03",new Vector2(0f,-162f),
-                "第三章：残旗战场","十场试炼 · 与同袍并肩",()=>OpenStoryChapter(3));
-            _bannersChapterStatus=banners.transform.Find("Sub").GetComponent<Text>();
-            _screenStoryChapter.Add(banners.gameObject);
-            _screenStoryChapter.Add(MakeBackButton(_selectRoot, GameScreen.Adventure).gameObject);
+            for(int chapter=1;chapter<=4;chapter++)
+            {
+                int number=chapter;var definition=CampaignChapter.At(chapter);
+                var button=MakeSubModeButton(_selectRoot,"StoryChapter0"+chapter,new Vector2(0,225-(chapter-1)*150),definition.Title,"十场试炼",()=>OpenStoryChapter(number));
+                _screenStoryChapter.Add(button.gameObject);
+                var status=button.transform.Find("Sub").GetComponent<Text>();
+                if(chapter==2)_galleryChapterStatus=status;
+                if(chapter==3)_towerChapterStatus=status;
+                if(chapter==4)_bannersChapterStatus=status;
+                if(chapter==1)status.text="十场试炼 · 老兵的指尖骰术指导";
+            }
+            _screenStoryChapter.Add(MakeBackButton(_selectRoot, GameScreen.Adventure, -425f).gameObject);
 
             _screenStoryBattles = new ScreenGroup();
             var heading = MakeSubTitle(_selectRoot, "StoryChapterTitle", "第一章：边境哨站");
@@ -711,15 +712,17 @@ namespace FingerDiceDuel.UI
 
         private void RefreshStoryProgress()
         {
-            _storyHeading.text=_storyChapter==3?"第三章：残旗战场":_storyChapter==2?"第二章：法师高塔":"第一章：边境哨站";
-            if(_towerChapterStatus!=null)_towerChapterStatus.text=TowerUnlocked?"十场试炼 · 秘法典籍指引":"完成第一章终战后开放";
-            if(_bannersChapterStatus!=null)_bannersChapterStatus.text=BannersUnlocked?"十场试炼 · 与同袍并肩":"完成第二章终战后开放";
+            var chapter=CampaignChapter.At(_storyChapter);_storyHeading.text=chapter.Title;
+            if(_galleryChapterStatus!=null)_galleryChapterStatus.text=CampaignUnlocked(2)?"十场试炼 · 魔法伤害与元素反应":"完成第一章终战后开放";
+            if(_towerChapterStatus!=null)_towerChapterStatus.text=TowerUnlocked?"十场试炼 · 秘法典籍指引":"完成第二章终战后开放";
+            if(_bannersChapterStatus!=null)_bannersChapterStatus.text=BannersUnlocked?"十场试炼 · 与同袍并肩":"完成第三章终战后开放";
             for(int i=0;i<10;i++)
             {
                 int level=i+1+(_storyChapter-1)*10;
-                string hint=_storyChapter==3?TatteredBannersChapter.Hint(level):_storyChapter==2?MageTowerChapter.Hint(level):AdventureChapter.Hint(level);
-                _storyBattleButtons[i].transform.Find("Label").GetComponent<Text>().text=(_storyChapter==3?"残旗战场·":_storyChapter==2?"法师高塔·":"边境哨站·")+AdventureChapter.BattleName(i+1);
-                _storyStatuses[i].text=hint+" · "+(PlayerPrefs.GetInt("FingerDiceDuel.Adventure.Level"+level+".Completed",0)!=0?"已通关":i==0?"推荐先学":"待练习");
+                var spec=CampaignContent.BuildV3(level);
+                string hint=level%10==0?"经典先攻 · "+(chapter.Profession=="sorcerer"?"全部术士子职":chapter.Profession=="wizard"?"法师子职":chapter.Profession=="paladin"?"圣武士子职":"战士子职"):spec.Role.DisplayName;
+                _storyBattleButtons[i].transform.Find("Label").GetComponent<Text>().text=chapter.Name+"·"+AdventureChapter.BattleName(i+1);
+                _storyStatuses[i].text=hint+" · "+(PlayerPrefs.GetInt(CampaignChapter.LevelKey(level),0)!=0?"已通关":i==0?"推荐先学":"待练习");
             }
         }
 
@@ -750,7 +753,7 @@ namespace FingerDiceDuel.UI
             if (_adventure == null) return;
             if (_adventure.UsesClassicSetup)
             {
-                if(_adventure is CampaignLesson campaign&&campaign.LevelNumber==30){BeginCampaignInitiative();return;}
+                if(_adventure is CampaignLesson campaign&&campaign.Seats.Length==4){BeginCampaignInitiative();return;}
                 if(_adventure is TatteredBannersLesson){BeginBannersInitiative();return;}
                 _board.SetVisible(false);
                 _diceRoll.Begin(_game);
@@ -2990,6 +2993,7 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void CleanupMatch()
         {
+            if(_adventure is CampaignLesson leaving)leaving.LeaveLesson();
             _board.HideGameOver();
             _board.HideAdventureGuide();
             _board.ShowTrialEndButton(false);
@@ -3508,7 +3512,15 @@ namespace FingerDiceDuel.UI
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
             {
-                if(_adventure is CampaignLesson campaign)SetCampaignPresentation(campaign);
+                if(_adventure is CampaignLesson campaign)
+                {
+                    SetCampaignPresentation(campaign);
+                    if(campaign.Version3)
+                    {
+                        if(campaign.TeachingComplete)campaign.CaptureTrial();
+                        if(campaign.TrialConfirmationPending)ShowCampaignTrial(campaign);
+                    }
+                }
                 if(_adventure is TatteredBannersLesson banners)SetBannersPresentation(banners);
                 _board.ConfigureAdventureGuide(_isTwoOnTwo||_isEightPlayer);
                 if(_adventure.Started&&_adventure.IsFinished&&!_adventureVictoryShown)

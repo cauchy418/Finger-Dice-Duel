@@ -1,11 +1,14 @@
-﻿# CODELY.md
+# CODELY.md
 
 剧情玩家文案仅保留剧情、教学和战斗结果；实现约束不放进开场、指引、胜利提示或战报。开场确认后通过数段角色对话介绍敌人与同袍技能；人物徽记悬停展示完整技能和剩余次数／冷却，不使用“剧情专用对手”占位说明。
 
-前三章已迁移至`CampaignLesson`连续战斗导演，`GameBootstrap.StartAdventureLevel`统一进入`StartCampaignLevel`。旧AdventureLevel／MageTowerLesson／TatteredBannersLesson保留历史回归，不再是主菜单实际建局入口。当前配置与流程以[总案](Docs/Adventure/single-battle-v2/README.md)及[实现验收](Art/Integration/campaign-v2/README.md)为准；下文旧独立样本、旧NPC数值与旧采样均属历史记录。
+四章40关统一由`CampaignLesson.CreateV3`进入，`GameBootstrap.StartAdventureLevel`是实际菜单入口；`CampaignChapter`提供稳定地点／关卡ID、背景、指引、职业池与展示编号。`Create`及旧AdventureLevel／MageTowerLesson／TatteredBannersLesson仅保留历史回归。当前权威为[四章文档](Docs/Adventure/four-chapter-v3/README.md)及[实现验收](Art/Integration/campaign-v3/README.md)，下文旧逐样本、旧编号、数值与采样均属历史记录。
 
-`CampaignContent.ChapterOne/Two/Three`配置30课；`CampaignLesson.Choices`统一教学输入白名单，`BoardController.Campaign`在普通行动和全部回合末选择结束后通知导演。进入自主阶段只解除护持、一次有限治疗并替换选择器，不Create／Reset。观摩和NPC架盾／急救消耗一次正常行动，推障调用`MoveSeatObstacle`。终战30投骰完成后仅`InitializeSeatOrder`重排原参战引用，队伍字典不变；不重建已创建的游戏。真实胜利写原Level键，10／20／30再写章节键；不再写旧Sample键。
+`BuildV3`复用第一／四章及高塔既有检查点，新增Gallery、短防护课和剑咏课；初战`story_heavy_fighter`为+2/+2无技能，未加入BuiltIn。`CampaignGuideText`保存40关最多10句文案，多个运算检查点可共用一条提示。`CampaignLesson.Choices`保留正常选项，仅限制并高亮正确项；风暴纯运算仍点真实手，王车易位及其他人物选择仍列角色。
 
+末个检查点经`CampaignActionSettled`到AwaitingHorn；V3不自动切换，UI等动画队列结束再开中央“实战试炼”确认框。确认后整备存活敌方、正常治疗同袍6、释放固定Roll及护持，不Create／Reset同场GameManager；轮序与队伍保留。记录TrialStartRound，绝对RoundLimit改为起点+50，UI显示阶段1～50。第五关和四章终战直接经典，CaptureTrial须等Started及所有开场选择结束，避免在骰点分配前保存错误基准。
+
+`CampaignCheckpoint`仅深拷贝纯模型对象图，重建引用键字典／集合、闭包和委托，使座位、技能来源、请求续体指向新对象；不克隆Unity对象或UI回调，重试后重新注入AI解析器与界面。每次重试使用新随机源，清上一尝试动画，不追加补给；基准仅存在内存。`MigrateCampaignProgress`先读全量旧键再写稳定V3键，旧塑能完成仅归档，保留旧访问资格。胜利只写V3关卡／章节键，旧样本键不再驱动建局。
 
 配乐由`MusicPolicy`只读选择菜单／战斗／剧情终战，`MusicPlayer`用DSP同钟播放intro→loop及等长鼓层。半血检查所有非召唤参战者，触发后锁定到本局结束；新局重置。设置只控制音乐源mute，不写AudioListener音量或音效源；偏好键`FingerDiceDuel.Audio.MusicEnabled`。十份OGG按立体声流式导入；新增配乐先保留无损源、采样边界与SHA256，再验证循环和同步。见[音乐说明](Docs/music-and-audio.md)及[验收](Art/Integration/music-v1/README.md)。
 
@@ -706,4 +709,4 @@ HunterWildIntegrationTests新增22项：真实控制器、人类放弃与防守�
 
 `ShadowMagicLogic`通过`ITurnEndHook`和普通WizardChoice提供黑暗术发动／不发动；按当下座位距离覆盖敌友。`IShadowEyes`只在ApplyStatus入口拦截`DarknessBlind`，不拦`Blind`。`IGraveStrength`在TakeDamageResolved原形归0后、死亡奖励与胜负结算前恢复至1；双将按部件发现，羊形态暂停，重开恢复次数。逐段伤害在攻防及目标加伤后调用ShadowRules.Outgoing，保留不可增减伤害例外，AI估算共用规则。失明追加枚举24，所有计时、净化、状态栏与手册负面分组统一登记。新增56号技能及56个可选子职，中立轴19人、双将495组。AI比较周围敌友后决定是否施放，不空放，手值评分重视双手和10。本次不采样胜率。
 
-四章剧情重排设计见[万象回廊与章节迁移](Docs/Adventure/four-chapter-v3/README.md)：新第二章、剑咏者教学、初战重甲战士、实战整备及双重试入口；设计提交尚未等同运行时已实现。
+现行四章关卡见[万象回廊与章节迁移](Docs/Adventure/four-chapter-v3/README.md)，本轮实现与验证见[四章验收](Art/Integration/campaign-v3/README.md)。

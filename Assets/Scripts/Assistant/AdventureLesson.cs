@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -34,7 +34,7 @@ namespace FingerDiceDuel.Assistant
         public abstract string DisplayTitle { get; }
         public abstract string OpeningText { get; }
         public abstract string SummaryText { get; }
-        public string CompletionKey => "FingerDiceDuel.Adventure.Level" + LevelNumber + ".Completed";
+        public virtual string CompletionKey => "FingerDiceDuel.Adventure.Level" + LevelNumber + ".Completed";
         protected abstract ScriptedMoveSelector CreateOpeningScript();
         protected abstract int OpeningMoveCount { get; }
 

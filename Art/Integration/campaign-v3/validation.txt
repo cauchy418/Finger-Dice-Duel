@@ -1,0 +1,116 @@
+PASS legacy tower maps to tower, never gallery
+PASS legacy finale retained, new bladesinger remains unpassed
+PASS chapter button 1
+PASS chapter button 2
+PASS chapter button 3
+PASS chapter button 4
+PASS actual UI starts v3 lesson 1
+PASS battle and skill emblem 重甲战士
+PASS battle and skill emblem 老兵
+PASS advance lesson 1 step 0
+PASS advance lesson 1 step 0
+PASS advance lesson 1 step 1
+PASS advance lesson 1 step 2
+PASS advance lesson 1 step 2
+PASS advance lesson 1 step 3
+PASS advance lesson 1 step 4
+PASS advance lesson 1 step 4
+PASS advance lesson 1 step 5
+PASS advance lesson 1 step 6
+PASS trial awaits confirmation 1
+PASS central trial modal 1
+PASS confirmed trial snapshot 1
+PASS Mono snapshot 1
+PASS actual UI starts v3 lesson 11
+PASS battle and skill emblem 术士·风暴术法
+PASS battle and skill emblem 元素精魂
+PASS advance lesson 11 step 0
+PASS advance lesson 11 step 0
+PASS advance lesson 11 step 0
+PASS advance lesson 11 step 0
+PASS advance lesson 11 step 0
+PASS advance lesson 11 step 1
+PASS advance lesson 11 step 2
+PASS advance lesson 11 step 3
+PASS trial awaits confirmation 11
+PASS central trial modal 11
+PASS confirmed trial snapshot 11
+PASS Mono snapshot 11
+PASS actual UI starts v3 lesson 22
+PASS battle and skill emblem 法师·咒法学派
+PASS battle and skill emblem 奥法护卫甲
+PASS battle and skill emblem 奥法护卫乙
+PASS battle and skill emblem 同袍
+PASS advance lesson 22 step 0
+PASS advance lesson 22 step 0
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 1
+PASS advance lesson 22 step 2
+PASS advance lesson 22 step 2
+PASS advance lesson 22 step 2
+PASS advance lesson 22 step 2
+PASS advance lesson 22 step 2
+PASS advance lesson 22 step 3
+PASS advance lesson 22 step 4
+PASS advance lesson 22 step 5
+PASS advance lesson 22 step 6
+PASS trial awaits confirmation 22
+PASS central trial modal 22
+PASS confirmed trial snapshot 22
+PASS Mono snapshot 22
+PASS actual UI starts v3 lesson 23
+PASS battle and skill emblem 法师·防护学派
+PASS battle and skill emblem 奥法护卫
+PASS new tower guard identity 23
+PASS advance lesson 23 step 0
+PASS advance lesson 23 step 0
+PASS advance lesson 23 step 0
+PASS advance lesson 23 step 1
+PASS advance lesson 23 step 2
+PASS advance lesson 23 step 2
+PASS advance lesson 23 step 2
+PASS advance lesson 23 step 3
+PASS advance lesson 23 step 4
+PASS advance lesson 23 step 4
+PASS advance lesson 23 step 4
+PASS advance lesson 23 step 4
+PASS advance lesson 23 step 5
+PASS advance lesson 23 step 6
+PASS advance lesson 23 step 6
+PASS advance lesson 23 step 7
+PASS advance lesson 23 step 7
+PASS advance lesson 23 step 8
+PASS trial awaits confirmation 23
+PASS central trial modal 23
+PASS confirmed trial snapshot 23
+PASS Mono snapshot 23
+PASS actual UI starts v3 lesson 29
+PASS battle and skill emblem 法师·剑咏者
+PASS battle and skill emblem 奥法护卫
+PASS new tower guard identity 29
+PASS advance lesson 29 step 0
+PASS advance lesson 29 step 0
+PASS advance lesson 29 step 0
+PASS advance lesson 29 step 1
+PASS advance lesson 29 step 2
+PASS advance lesson 29 step 2
+PASS advance lesson 29 step 3
+PASS advance lesson 29 step 4
+PASS advance lesson 29 step 4
+PASS advance lesson 29 step 4
+PASS advance lesson 29 step 5
+PASS advance lesson 29 step 6
+PASS advance lesson 29 step 6
+PASS advance lesson 29 step 7
+PASS trial awaits confirmation 29
+PASS central trial modal 29
+PASS confirmed trial snapshot 29
+PASS Mono snapshot 29
+PASS real loss fixture
+PASS loss stays on battlefield until trial-end button
+PASS loss exposes both retry paths
+PASS UI direct retry attaches snapshot

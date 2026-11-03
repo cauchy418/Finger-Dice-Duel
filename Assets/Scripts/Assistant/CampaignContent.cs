@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
@@ -8,7 +8,8 @@ namespace FingerDiceDuel.Assistant
         public string Name,Id;
         public int Maximum=28,Health=-1,Attack,Defense,Range=1,FreeAttack;
         public AttackDamageType Type=AttackDamageType.Slashing;
-        public bool Shield,Aid,Phantom,Rally,Muster,Steady,Force;
+        public AttackDamageType EveryThird=AttackDamageType.None;
+        public bool Shield,Aid,Phantom,Rally,Muster,Steady,Force,Cycle;
         public CharacterDefinition Role;
         public CampaignNpcSpec(string name,string id="campaign_drillmaster",int health=28){Name=name;Id=id;Maximum=health;}
     }
@@ -19,6 +20,8 @@ namespace FingerDiceDuel.Assistant
         public int[] Hands;
         public CampaignNpcSpec[] Npcs;
         public Action<CampaignLesson> Opening;
+        public int[] TrialHands;
+        public Action<CampaignLesson> TrialSetup;
         public readonly List<CampaignStep> Steps=new List<CampaignStep>();
         public CampaignSpec(int level,CharacterDefinition role,int[] hands)
         {Level=level;Role=role;Hands=hands;Npcs=new CampaignNpcSpec[hands.Length/2];for(int i=1;i<Npcs.Length;i++)Npcs[i]=new CampaignNpcSpec(i==3?"同袍":level<11?"哨站教官":level<21?"奥法护卫"+(i==1?"甲":"乙"):"残旗教官"+(i==1?"甲":"乙"),level<11?"campaign_drillmaster":level<21?"campaign_arcane_tuner":"campaign_banner_warden",i==3?20:28);if(Npcs.Length==4)Npcs[3].Aid=true;}
@@ -36,7 +39,7 @@ namespace FingerDiceDuel.Assistant
         }
         public static string NpcEmblem(string id)
         {
-            switch(id){case "campaign_drillmaster":return "Adventure/npc_outpost_drillmaster";case "campaign_arcane_tuner":return "Adventure/npc_arcane_guard";case "campaign_banner_warden":return "Adventure/knight_original";case "campaign_banner_crossbowman":return "Subclasses/fighter_arcane_archer";default:return null;}
+            switch(id){case "campaign_elemental_spirit":return "Adventure/npc_elemental_spirit";case "campaign_elemental_echo":return "Adventure/npc_elemental_echo";case "story_heavy_fighter":return "Adventure/knight_original";case "campaign_drillmaster":return "Adventure/npc_outpost_drillmaster";case "campaign_arcane_tuner":return "Adventure/npc_arcane_guard";case "campaign_banner_warden":return "Adventure/knight_original";case "campaign_banner_crossbowman":return "Subclasses/fighter_arcane_archer";default:return null;}
         }
         public static string FinaleDescription(int chapter)=>chapter==1?"生命40\n攻+2 防+1 距2\n挥砍\n架盾／一次整军回复6":chapter==2?"生命40\n攻+1 防0 距∞\n强酸\n永久火／寒抗性、毒免\n汲能回路3次伤人后回复3":"指挥官36：+1/+1 距2\n一次集结令，己方回复4\n弩手28：+1/0 距2\n穿刺／稳弦\n同袍：古贤20生命";
         internal static void Shield(PlayerState p,int side=0){p.GetHand(side).SetShieldState(ShieldState.Formed);}
@@ -57,8 +60,14 @@ namespace FingerDiceDuel.Assistant
     {
         public static CampaignLesson Create(int level,CharacterDefinition chosen=null)
         {
-            var spec=CampaignContent.Build(level);var role=chosen??spec.Role;
-            if(level%10==0&&role.Profession?.Id!=(level==10?"fighter":level==20?"wizard":"paladin"))throw new ArgumentException("终战职业不符");
+            return CreateSpec(level,CampaignContent.Build(level),chosen,false);
+        }
+        public static CampaignLesson CreateV3(int level,CharacterDefinition chosen=null)
+        {return CreateSpec(level,CampaignContent.BuildV3(level),chosen,true);}
+        private static CampaignLesson CreateSpec(int level,CampaignSpec spec,CharacterDefinition chosen,bool v3)
+        {
+            var role=chosen??spec.Role;
+            if(level%10==0&&role.Profession?.Id!=(v3?CampaignChapter.ForLevel(level).Profession:level==10?"fighter":level==20?"wizard":"paladin"))throw new ArgumentException("终战职业不符");
             var seats=new PlayerState[spec.Hands.Length/2];var providers=new IChoiceProvider[seats.Length];
             for(int i=0;i<seats.Length;i++)
             {
@@ -70,8 +79,8 @@ namespace FingerDiceDuel.Assistant
                     if(n.Role!=null)seats[i]=CharacterFactory.CreatePlayer(n.Name,n.Role);
                     else
                     {
-                        var npc=new CampaignNpcLogic(n.Name,n.Attack,n.Defense,n.Range,n.Type){FreeAttackDelta=n.FreeAttack,CanRaiseShield=n.Shield,CanAid=n.Aid,Phantom=n.Phantom,CanRally=n.Rally,CanMuster=n.Muster,Steady=n.Steady,PeriodicForce=n.Force};
-                        npc.TrainingNotes=CampaignContent.TrainingSkills(level,i);
+                        var npc=new CampaignNpcLogic(n.Name,n.Attack,n.Defense,n.Range,n.Type){FreeAttackDelta=n.FreeAttack,CanRaiseShield=n.Shield,CanAid=n.Aid,Phantom=n.Phantom,CanRally=n.Rally,CanMuster=n.Muster,Steady=n.Steady,PeriodicForce=n.Force,ElementalCycle=n.Cycle,EveryThird=n.EveryThird};
+                        npc.TrainingNotes=v3?CampaignContent.TrainingSkillsV3(level,i):CampaignContent.TrainingSkills(level,i);
                         seats[i]=new PlayerState(n.Name,npc,n.Maximum);
                         seats[i].BindDefinition(new CharacterDefinition(n.Id,n.Name,SpecialLogicType.None,n.Attack,n.Defense,n.Maximum,AttackDamageTypes.NameOf(n.Type)+"伤害。"+npc.AbilitySummary,n.Name));
                     }
@@ -81,7 +90,8 @@ namespace FingerDiceDuel.Assistant
             var game=seats.Length==8?GameManager.CreateEight(seats,providers,TatteredBannersChapter.EightTeams):seats.Length==4?GameManager.Create2v2(seats,providers):new GameManager(seats[0],seats[1],providers[0],providers[1]);
             for(int i=0;i<seats.Length;i++){seats[i].LeftHand.SetValue(spec.Hands[i*2]);seats[i].RightHand.SetValue(spec.Hands[i*2+1]);if(i>0){seats[i].SetMaxHealth(spec.Npcs[i].Maximum);seats[i].SetHealthExact(spec.Npcs[i].Health<0?spec.Npcs[i].Maximum:spec.Npcs[i].Health);}}
             var board=new BoardController(game,(IPlayerChoiceSink)providers[0],(IPlayerChoiceSink)providers[1]);
-            var lesson=new CampaignLesson(level,seats,game,board,spec.Steps,spec.Guardian);spec.Opening?.Invoke(lesson);board.SetFirstPlayer(seats[spec.First]);
+            var lesson=new CampaignLesson(level,seats,game,board,spec.Steps,spec.Guardian,v3);lesson._spec=spec;spec.Opening?.Invoke(lesson);board.SetFirstPlayer(seats[spec.First]);
+            if(v3){lesson.SetGuidedRoll();game.RoundLimit=lesson.UsesClassicSetup?50:80;}
             game.TakeSkillLog();return lesson;
         }
     }

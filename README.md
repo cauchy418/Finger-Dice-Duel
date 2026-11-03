@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 <img src=".github/assets/menu.jpg" alt="指骰对决 主界面" width="100%">
 </div>
 
@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1533_passed-success)
+![tests](https://img.shields.io/badge/regression-1601_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -46,7 +46,7 @@
 
 | 入口 | 适合谁 | 内容 |
 |---|---|---|
-| **冒险模式** | 第一次上手 | 边境哨站 / 法师高塔 / 残旗战场三章，各十战 + 终战。跟着老兵学会基础运算，再逐步解锁距离、元素反应、援护和八人协作 |
+| **冒险模式** | 第一次上手 | 边境哨站 / 万象回廊 / 法师高塔 / 残旗战场四章，各十战（含终战）。跟着老兵学会基础运算，再逐步解锁距离、元素反应、援护和八人协作 |
 | **竞技模式** | 想直接开打 | 1v1、2v2、8 人阵营混战、8 人身份对局 |
 | **娱乐模式** | 想玩花的 | 双将对决：两名同阵营子职的技能叠在一个人身上 |
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行——这也是为什么 1533 项回归能每天跑。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行——这也是为什么 1601 项回归能每天跑。
 
 ## 现在有什么
 
@@ -87,7 +87,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 3（圣光 / 剑歌 / 战争祝福） |
 | 元素反应 | 11 条 |
 | 双将组合 | 495 种无序组合 |
-| 回归测试 | 1533 项通过、0 失败 |
+| 回归测试 | 1601 项通过、0 失败 |
 
 ## 现在的样子
 
@@ -95,7 +95,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 - **只有本地对 AI**，联网对战没做。
 - **平衡还没收敛。** 2026-10-30 采样 58,476 局，1v1 胜率从 15.5% 到 93.1%。数据反映固定 AI 下的结果，不等于真人排名；但这跨度说明还要调。
-- **剧情难度待校准。** 三章改成了同场连续战斗，教学结束即刻换正常 AI，具体数值还在等真人试玩。
+- **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
 ## 文档
@@ -115,4 +115,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 [MIT](./LICENSE)。字体使用思源黑体（Noto Sans CJK SC）与思源宋体，遵循 SIL Open Font License 1.1，详见 [字体许可](./Assets/Resources/Fonts/README-字体许可.txt)。
 
-四章剧情重排设计见[万象回廊与章节迁移](Docs/Adventure/four-chapter-v3/README.md)：新第二章、剑咏者教学、初战重甲战士、实战整备及双重试入口；设计提交尚未等同运行时已实现。
+四章关卡与剧情详见[冒险试炼](Docs/Adventure/four-chapter-v3/README.md)。初战使用无特殊技能的重甲战士（攻+2／防+2）；教学结束确认后进入实战，失败可重新指引或直接再次试炼。
