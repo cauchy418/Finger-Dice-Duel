@@ -255,7 +255,7 @@
         {
             switch (status)
             {
-                case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。与目盲是不同状态。";
+                case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。";
                 case StatusEffect.Resonance:
                     return "只能攻击与自己距离 1 的角色";
                 case StatusEffect.Acid:

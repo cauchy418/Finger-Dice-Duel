@@ -369,7 +369,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"首次归0恢复至1；双手和10可施黑暗术，免疫失明，对失明目标暗蚀伤害+2。",
                 playGuide:"回合末双手和10时选择发动黑暗术或不发动；靠近敌人再施放，留意附近同袍也会失明。",
                 counter:"拉开距离避免失明；首次致命伤只能迫使其恢复至1，继续追击。",
-                interactions:new[]{"失明与目盲独立；幽暗之瞳免疫失明，不免疫目盲。暗蚀攻击命中按普通规则附加腐朽。"});
+                interactions:new[]{"暗蚀攻击命中按普通规则附加腐朽。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
                 shortSkill:"选永久雷抗；攻击30%闪电、30%雷鸣，行动后可无效果运算。",
                 playGuide:"开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
