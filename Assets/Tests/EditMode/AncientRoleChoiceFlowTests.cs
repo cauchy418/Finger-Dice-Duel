@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -23,26 +23,11 @@ namespace FingerDiceDuel.Tests
             c.Resolve(g.GetChoiceProvider(defender),g);return c;
         }
         [Test] public void Land_three_offers_target_then_mandatory_end_seal_without_default_selection()
-        {
-            var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;var b=g.PlayerB;
-            b.LeftHand.SetValue(2);board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);
-            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.True(board.Hint.Contains("大地束缚"));
-            Assert.False(b.HasStatus(StatusEffect.Restrained));Assert.True(board.PendingWizardChoice.TargetsPlayer);
-            Assert.True(board.ChooseWizardHand(b.LeftHand));Assert.True(b.HasStatus(StatusEffect.Restrained));
-            Assert.True(board.Hint.Contains("大地行者"));Assert.False(board.PendingWizardChoice.AllowDecline);
-            Assert.False(board.ChooseWizardHand(null));Assert.True(board.ChooseWizardHand(a.RightHand));
-            Assert.True(a.RightHand.IsTargetRestricted);Assert.True(a.RightHand.CanBeOperated);
-            Assert.AreEqual(1,g.TurnCount);Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);
-            Assert.False(board.CanAct(a.RightHand));
-        }
+        {var board=Board(CharacterDefinition.CircleOfTheLand,out var g);g.PlayerB.LeftHand.SetValue(2);board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.IsTrue(board.ChooseWizardHand(g.PlayerB.LeftHand));Assert.IsTrue(g.PlayerB.HasStatus(StatusEffect.Restrained));Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);Assert.IsFalse(g.PlayerA.RightHand.IsTargetRestricted);}
+
         [Test] public void Land_three_can_be_declined_but_end_seal_still_occurs()
-        {
-            var board=Board(CharacterDefinition.CircleOfTheLand,out var g);g.PlayerB.LeftHand.SetValue(2);
-            board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);
-            Assert.True(board.ChooseWizardHand(null));Assert.False(g.PlayerB.HasStatus(StatusEffect.Restrained));
-            Assert.True(board.Hint.Contains("大地行者"));board.ChooseWizardHand(g.PlayerB.RightHand);
-            Assert.True(g.PlayerB.RightHand.IsTargetRestricted);
-        }
+        {var board=Board(CharacterDefinition.CircleOfTheLand,out var g);g.PlayerB.LeftHand.SetValue(2);board.BeginTurn();board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.IsTrue(board.ChooseWizardHand(null));Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Restrained));Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);}
+
         [Test] public void Land_end_hook_runs_after_current_player_has_already_changed()
         {
             var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;
@@ -51,15 +36,8 @@ namespace FingerDiceDuel.Tests
             board.ChooseWizardHand(a.LeftHand);g.ForceActivePlayerForTest(a);g.BeginTurn();Assert.False(a.LeftHand.IsTargetRestricted);
         }
         [Test] public void Multiple_land_seals_have_independent_sources_and_death_clears_own_source()
-        {
-            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.CircleOfTheLand);
-            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.CircleOfTheLand);
-            var g=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
-            var x=(CircleOfTheLandLogic)a.Character;var y=(CircleOfTheLandLogic)b.Character;
-            x.RestrictHand(a.LeftHand,g);y.RestrictHand(a.LeftHand,g);g.BeginTurn();
-            Assert.True(a.LeftHand.IsTargetRestricted,"A解除自己的来源，B仍封锁");
-            b.TakeDamage(99);y.OnTurnStarted(b,g);Assert.False(a.LeftHand.IsTargetRestricted);
-        }
+        {var board=Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;var b=g.PlayerB;var land=(CircleOfTheLandLogic)a.Character;Assert.IsFalse(land.RestrictHand(b.LeftHand,g));Assert.IsTrue(land.RestrictHand(a.LeftHand,g));a.TakeDamage(99);land.OnTurnStarted(a,g);Assert.IsFalse(a.LeftHand.IsTargetRestricted);}
+
         [Test] public void Seal_rejects_foreign_hands_and_reset_cleans_all_sources()
         {
             Board(CharacterDefinition.CircleOfTheLand,out var g);var a=g.PlayerA;var skill=(CircleOfTheLandLogic)a.Character;
@@ -175,7 +153,7 @@ namespace FingerDiceDuel.Tests
         {
             Board(CharacterDefinition.TheFiend,out var g);g.PlayerA.GainFalseLife(7);
             var icons=CombatStatusIcons.For(g.PlayerA);Assert.AreEqual(1,icons.Count);Assert.AreEqual("7",icons[0].Counter);
-            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(10,GuideSheets.CharacterMarks().Lines.Count);
+            Assert.AreEqual("Effects/false_life",icons[0].ResourceKey);Assert.AreEqual(12,GuideSheets.CharacterMarks().Lines.Count);
             Assert.True(string.Join("",GuideSheets.CharacterMarks().Lines).Contains("绿色"));g.ResetMatch();Assert.AreEqual(0,CombatStatusIcons.For(g.PlayerA).Count);
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Core;
@@ -492,16 +492,17 @@ namespace FingerDiceDuel.UI
             if(_druidGallery==null)_druidGallery=FrontEndArt.Rect(_detailRoot,"DruidGallery",new Vector2(-385,-200),new Vector2(280,270));
             if(_druidGalleryId==id)return;_druidGalleryId=id;
             foreach(Transform child in _druidGallery){child.gameObject.SetActive(false);UnityEngine.Object.Destroy(child.gameObject);}
-            bool moon=id=="druid_circle_of_the_moon",stars=id=="druid_circle_of_the_stars";
+            bool moon=id=="druid_circle_of_the_moon"||id=="druid_circle_of_the_land"||id=="druid_circle_of_spores",stars=id=="druid_circle_of_the_stars";
             _druidGallery.gameObject.SetActive(moon||stars);
             _detailRoot.Find("EmblemCaption").gameObject.SetActive(!moon&&!stars);
             if(!moon&&!stars)return;
             var options=DruidForms.Options(moon?"moon":"stars",false);
+            if(moon&&id!="druid_circle_of_the_moon")options.RemoveAll(o=>o.Value>=5);
             for(int i=0;i<options.Count;i++)
             {
-                var option=options[i];var image=FrontEndArt.Rect(_druidGallery,"Form_"+option.Value,new Vector2(i%2*130-65,70-i/2*130),Vector2.one*88).gameObject.AddComponent<Image>();image.sprite=BattleArt.Get(option.IconKey);image.preserveAspect=true;
+                var option=options[i];var image=FrontEndArt.Rect(_druidGallery,"Form_"+option.Value,new Vector2(i%2*130-65,90-i/2*100),Vector2.one*76).gameObject.AddComponent<Image>();image.sprite=BattleArt.Get(option.IconKey);image.preserveAspect=true;
                 BattleTooltip.Set(image,option.Label+"\n"+option.Description);
-                FrontEndArt.Text(_druidGallery,"FormName_"+i,option.Label,new Vector2(i%2*130-65,12-i/2*130),new Vector2(120,28),19);
+                FrontEndArt.Text(_druidGallery,"FormName_"+i,option.Label,new Vector2(i%2*130-65,40-i/2*100),new Vector2(120,28),19);
             }
         }
     }

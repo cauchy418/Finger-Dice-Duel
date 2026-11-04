@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>52个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
@@ -53,9 +53,10 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("hunter_marksman", "ranger_hunter", "ranger", "猎人", "Hunter"),
             new CharacterIdentity("open_hand", "monk_way_of_the_open_hand", "monk", "散打宗", "Way of the Open Hand"),
             new CharacterIdentity("four_elements", "monk_way_of_the_four_elements", "monk", "四象宗", "Way of the Four Elements"),
-            new CharacterIdentity("moon", "druid_circle_of_the_moon", "druid", "月亮结社", "Circle of the Moon"),
+            new CharacterIdentity("moon", "druid_circle_of_the_moon", "druid", "月光结社", "Circle of the Moon"),
             new CharacterIdentity("stars", "druid_circle_of_the_stars", "druid", "星辰结社", "Circle of the Stars"),
             new CharacterIdentity("land", "druid_circle_of_the_land", "druid", "大地结社", "Circle of the Land"),
+            new CharacterIdentity("spores", "druid_circle_of_spores", "druid", "孢子结社", "Circle of Spores"),
             new CharacterIdentity("ancients", "paladin_oath_of_the_ancients", "paladin", "古贤之誓", "Oath of the Ancients"),
             new CharacterIdentity("fiend", "warlock_the_fiend", "warlock", "妖魔", "The Fiend"),
             new CharacterIdentity("lore", "bard_college_of_lore", "bard", "逸闻学院", "College of Lore"),

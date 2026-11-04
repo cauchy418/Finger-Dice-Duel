@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
@@ -103,12 +103,7 @@ namespace FingerDiceDuel.Tests
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TrickeryDomain);WizardChoice request=null;g.DeferWizardChoice=c=>{request=c;return true;};
    g.PlayerA.LeftHand.SetValue(2);g.PlayerB.LeftHand.SetValue(4);bool completed=false;
    Assert.True(g.RequestTrickeryOperation(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand,()=>completed=true));g.ResetMatch();request.ChooseOption(1);Assert.False(completed);}
-  [Test] public void Dragon_second_addend_can_offer_trickery_independently()
-  {var p=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.CircleOfTheStars),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("C",CharacterDefinition.TrickeryDomain),CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank)};
-   var g=GameManager.Create2v2(p,new IChoiceProvider[4]);g.ClericPolicyFor=o=>new Policy{Charm=false};p[0].LeftHand.SetValue(4);p[0].RightHand.SetValue(6);
-   ((FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic)p[0].Character).TryEnter(FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic.StarryForm.Dragon,p[0],g);
-   p[1].LeftHand.SetValue(4);p[2].LeftHand.SetValue(2);g.DruidSecondAddend=p[2].LeftHand;
-   var result=g.ExecuteTurn(p[0],p[0].LeftHand,p[1].LeftHand);Assert.AreEqual(2,result.ResultValue);Assert.AreEqual(1,p[2].LeftHand.Value);Assert.AreEqual(4,p[1].LeftHand.Value);}
+
   [Test] public void Counter_kill_returns_board_gameover_with_completed_turn_log()
   {var board=Board(CharacterDefinition.Blank,CharacterDefinition.TempestDomain,out var g);var a=g.PlayerA;var b=g.PlayerB;a.TakeDamage(17);a.LeftHand.SetValue(1);b.LeftHand.SetValue(4);b.RightHand.SetValue(3);
    board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.RightHand);if(board.Phase==BoardPhase.ChoosingTargetPlayer)board.ClickHand(b.LeftHand);

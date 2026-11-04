@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -111,9 +111,9 @@ namespace FingerDiceDuel.Tests
         {
             // 当前54子职：守序18、中立17、混乱19，共460对。
             Assert.AreEqual(18,CharacterCodex.Filter("守序",null).Count);
-            Assert.AreEqual(19,CharacterCodex.Filter("中立",null).Count);
+            Assert.AreEqual(20,CharacterCodex.Filter("中立",null).Count);
             Assert.AreEqual(19,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(495,all.Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(514,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(990,built);
+            Assert.AreEqual(1028,built);
         }
 
         [Test]
@@ -311,7 +311,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(5940,operations);
+            Assert.AreEqual(6168,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
@@ -110,7 +110,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void New_five_roles_registered_profiled_and_coded()
         {
-            Assert.AreEqual(56,CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(57,CharacterDefinition.BuiltIn.Length);
             foreach(var def in new[]{CharacterDefinition.SchoolOfTransmutation,CharacterDefinition.SchoolOfEnchantment,CharacterDefinition.EldritchKnight,CharacterDefinition.Bladesinging,CharacterDefinition.TheHexblade})
             {Assert.True(CharacterFactory.IsRegistered(def.Logic));Assert.True(HandValueProfiles.HasExplicitProfile(def));Assert.NotNull(CharacterCodex.For(def));Assert.AreEqual(def,CharacterDefinition.Find(def.Id));}
         }
@@ -119,13 +119,13 @@ namespace FingerDiceDuel.Tests
         [Test] public void Transmutation_offers_self_and_matching_players_and_decline()
         {var g=Match(CharacterDefinition.SchoolOfTransmutation,CharacterDefinition.Blank);var list=Capture(g);((SchoolOfTransmutationLogic)g.PlayerA.Character).OnTurnEnded(g.PlayerA,g);Assert.AreEqual(2,list[0].Candidates.Count);Assert.True(list[0].TargetsPlayer);list[0].Choose(null);Assert.False(g.PlayerA.IsPolymorphed);((SchoolOfTransmutationLogic)g.PlayerA.Character).OnTurnEnded(g.PlayerA,g);list[1].Choose(g.PlayerA.LeftHand);Assert.True(g.PlayerA.IsPolymorphed);}
         [Test] public void Sheep_has_independent_health_exact_stats_range_and_no_original_capabilities()
-        {var g=Match(CharacterDefinition.PathOfTheGiant,CharacterDefinition.Blank);var p=g.PlayerA;p.SetHealthExact(18);p.AddIdentityBonus(5,5);p.TryPolymorph();Assert.AreEqual(10,p.Health);Assert.AreEqual(10,p.MaximumHealth);Assert.AreEqual(-2,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(-2,StatusRules.EffectiveDefenseBonus(p));Assert.AreEqual(1,GameManager.BaseRangeOf(p));Assert.False(p.Character is IHandEffectRewriter);Assert.AreEqual("Units/polymorphed_sheep",p.BattleEmblemKey);p.EndPolymorph();Assert.AreEqual(18,p.Health);Assert.True(p.Character is PathOfTheGiantLogic);}
+        {var g=Match(CharacterDefinition.PathOfTheGiant,CharacterDefinition.Blank);var p=g.PlayerA;p.SetHealthExact(18);p.AddIdentityBonus(5,5);p.TryPolymorph();Assert.AreEqual(5,p.Health);Assert.AreEqual(5,p.MaximumHealth);Assert.AreEqual(-2,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(-2,StatusRules.EffectiveDefenseBonus(p));Assert.AreEqual(1,GameManager.BaseRangeOf(p));Assert.False(p.Character is IHandEffectRewriter);Assert.AreEqual("Units/polymorphed_sheep",p.BattleEmblemKey);p.EndPolymorph();Assert.AreEqual(18,p.Health);Assert.True(p.Character is PathOfTheGiantLogic);}
         [Test] public void Sheep_damage_break_restores_original_health_and_only_overflow_hits_it()
-        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerB;p.SetHealthExact(18);p.TryPolymorph();Assert.AreEqual(13,p.TakeDamageResolved(13));Assert.False(p.IsPolymorphed);Assert.AreEqual(15,p.Health);}
+        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerB;p.SetHealthExact(18);p.TryPolymorph();Assert.AreEqual(13,p.TakeDamageResolved(13));Assert.False(p.IsPolymorphed);Assert.AreEqual(10,p.Health);}
         [Test] public void Sheep_expiry_and_refresh_do_not_heal_shell_and_statuses_keep_ticking()
-        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerA;p.SetHealthExact(13);p.ApplyStatus(StatusEffect.Wet,3);p.TryPolymorph();p.TakeDamage(4);p.TryPolymorph();Assert.AreEqual(6,p.Health);p.TickStatuses();Assert.True(p.IsPolymorphed);Assert.AreEqual(2,p.StatusTurnsLeft(StatusEffect.Wet));p.TickStatuses();Assert.False(p.IsPolymorphed);Assert.AreEqual(13,p.Health);Assert.AreEqual(1,p.StatusTurnsLeft(StatusEffect.Wet));}
+        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerA;p.SetHealthExact(13);p.ApplyStatus(StatusEffect.Wet,3);p.TryPolymorph();p.TakeDamage(4);p.TryPolymorph();Assert.AreEqual(1,p.Health);p.TickStatuses();Assert.True(p.IsPolymorphed);Assert.AreEqual(2,p.StatusTurnsLeft(StatusEffect.Wet));p.TickStatuses();Assert.False(p.IsPolymorphed);Assert.AreEqual(13,p.Health);Assert.AreEqual(1,p.StatusTurnsLeft(StatusEffect.Wet));}
         [Test] public void Sheep_multihit_recomputes_defense_after_shell_break()
-        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerB;p.SetHealthExact(18);p.TryPolymorph();var ctx=Hit(g,g.PlayerA,p,16,2);Assert.AreEqual(18,ctx.ActualHealthDamage);Assert.AreEqual(10,p.Health);}
+        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerB;p.SetHealthExact(18);p.TryPolymorph();var ctx=Hit(g,g.PlayerA,p,16,2);Assert.AreEqual(18,ctx.ActualHealthDamage);Assert.AreEqual(5,p.Health);}
         [Test] public void Holy_light_blocks_and_cleanses_polymorph()
         {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);var p=g.PlayerA;p.ApplyStatus(StatusEffect.HolyLight);Assert.False(p.TryPolymorph());p.ClearStatuses();p.TryPolymorph();p.ApplyStatus(StatusEffect.HolyLight);Assert.False(p.IsPolymorphed);}
         [Test] public void Enchantment_prompts_once_after_entire_attack_and_new_effect_survives_that_attack()

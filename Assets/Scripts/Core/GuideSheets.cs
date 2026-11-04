@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -245,12 +245,14 @@ namespace FingerDiceDuel.Core
                 new GuideEntry("arcane_barrier", 0x58BFFF, "奥术守御：法师·防护学派的防护标记。累积攻击数字；在伤害修正后吸收伤害，使用即全部消耗。角标是剩余屏障点。", resourceKey: "Effects/arcane_barrier"),
                 new GuideEntry("hidden_force",0x82D7C9,"暗劲：渗透劲命中后施加，不叠加；仅施加者后续首次命中引爆，造成该击攻防结算后、盾与抗性前应有伤害的一半真实伤害，向下取整。盾挡算命中，闪避／取消不引爆。",resourceKey:"Effects/hidden_force"),
                 new GuideEntry("portent",0x82A5FF,"预兆：打出7记录另一手数字，0～9各存一份。持有7时可在角色运算完成后、数字效果结算前消耗记录替换结果；可不发动。",resourceKey:"Effects/portent"),
-                new GuideEntry("ki", 0x82D7C9, "气：全体武僧共用的技能资源，初始2、上限6。正常行动后双手相同获得1气；双将同一次行动至多获得1气。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
+                new GuideEntry("ki", 0x82D7C9, "气：全体武僧共用的技能资源，单武僧初始2，双武僧初始4，上限6。正常行动后双手相同获得1气；双将同一次行动至多获得1气。角标是当前气点，不是剩余回合。", resourceKey: "Effects/ki"),
                 new GuideEntry("hunters_mark", 0xCFAC54, "猎人标记：游侠·猎人的专属标记，由对应猎人的攻击消耗。悬停查看来源；多人标记时角标为来源人数，没有回合倒计时。", resourceKey: "Effects/hunters_mark"),
+                new GuideEntry("wild_charge",0x83BF75,"荒野充能：德鲁伊初始2、月光结社初始3；双德鲁伊初始相加。变形消耗1，枭熊／黑豹消耗2；孢子结社可由相邻死亡回充，最多恢复初始总量。",resourceKey:"Professions/druid"),
+                new GuideEntry("spore_life",0x69D59A,"孢子生命：一体共生消耗1充能获得10点；先于虚假生命吸伤，溢伤继续扣后续防护与体力，无回合期限，不叠加。存在时攻击改为毒素。",resourceKey:"Effects/spore_life"),
                 new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
                 new GuideEntry("vow_of_enmity",0xC34D50,"仇敌誓言：复仇之誓的单一目标标记；本人对其每段伤害+1，对其他角色−1。仇敌每破一盾，可额外纯运算一次。无固定回合数，受攻击或仇敌死亡时可选择转移。",resourceKey:"Effects/vow_of_enmity"),
                 new GuideEntry("hexblades_curse",0xA05FDD,"咒剑诅咒：咒剑持7时可选择或移动一个目标，持续该目标2回合；来源每段攻击+2，亲自击杀后召唤幽灵。",resourceKey:"Effects/hexblades_curse"),
-                new GuideEntry("polymorph",0x58BEAD,"变羊：变化学派的2回合形态；独立10生命、攻防−2/−2、距离1，无原技能。解除恢复原生命，击破的溢伤扣原生命。",resourceKey:"Status/polymorph"),
+                new GuideEntry("polymorph",0x58BEAD,"变羊：变化学派的2回合形态；独立5生命、攻防−2/−2、距离1，无原技能。解除恢复原生命，击破的溢伤扣原生命。",resourceKey:"Status/polymorph"),
                 new GuideEntry("hexbound_specter",0x58BEAD,"咒缚幽灵：10生命，继承死者手值与座位、占位计距，从下轮开始AI行动；不计胜负人数。暗蚀/毒素永久免疫，五元素永久抗性。",resourceKey:"Units/hexbound_specter") };
             var lines = new List<string>(); foreach(var entry in entries) lines.Add(entry.Text);
             return new GuideSheet("角色标记", "Character Marks", lines, true,

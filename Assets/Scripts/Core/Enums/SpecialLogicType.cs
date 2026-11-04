@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色特殊逻辑标识，用于 CharacterData / CharacterFactory 在编辑器中
@@ -208,6 +208,7 @@
         TrickeryDomain = 53,
         TempestDomain = 54,
         ShadowMagic = 56,
-        WayOfTheDrunkenMaster = 55
+        WayOfTheDrunkenMaster = 55,
+        CircleOfSpores = 57
     }
 }

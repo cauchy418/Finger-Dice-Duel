@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 using UnityEngine;
@@ -96,6 +96,7 @@ namespace FingerDiceDuel.UI
             panel.HpText.text = player.Health + " / " + player.MaximumHealth;
             UpdateHealthBar(panel.HpFill, player);
             string id = player.Definition?.Id ?? "fighter_champion";
+            if(player.IsWildShaped&&!player.IsPolymorphed)panel.NameText.text=DruidForms.Name("moon",player.WildForm)+(player.WildStar>0?" · "+DruidForms.Name("stars",player.WildStar):"");
             panel.Emblem.sprite = BattleArt.Get(player.BattleEmblemKey);
             panel.Emblem.color = player.IsAlive ? Color.white : new Color(0.5f, 0.5f, 0.5f);
             panel.Root.GetComponent<Image>().color = player.IsAlive ? Color.white : new Color(0.58f, 0.58f, 0.58f);

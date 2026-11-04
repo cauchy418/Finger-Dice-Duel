@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -337,6 +337,7 @@ namespace FingerDiceDuel.Core
             LeftHand = new Hand(1);
             RightHand = new Hand(1);
             MonkRules.Bind(this);
+            ResetMonkKi();
         }
 
         // ============ 角色管理 ============
@@ -511,7 +512,7 @@ namespace FingerDiceDuel.Core
         public void Reset()
         {
             TrainingProtected=false;TrainingProtectionTriggered=null;
-            RestoreDeadSeat(); EndPolymorph(); ClearEnchantments();
+            RestoreDeadSeat(); EndPolymorph(); ResetWild(); ClearEnchantments();
             Health = MaximumHealth;
             LeftHand.Reset(1);
             RightHand.Reset(1);

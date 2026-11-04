@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
@@ -133,8 +133,8 @@ namespace FingerDiceDuel.Assistant
             s.Wait(0,"观摩保留4／7，让恢复的护卫在自己的回合调律。");
             s.Wait(1,"护卫调为7／1，并给自己一次钝击易伤，为完整羊血池溢伤作对照。").Prepare=(l,p)=>{l.Tune(p,p.LeftHand,7);l.Tune(p,p.RightHand,1);p.AddVulnerability(AttackDamageType.Bludgeoning);l.Game.NoteSkill(p,"试验铭刻","一次钝击易伤",p);};
             s.Op(0,0,1,0,"4＋7＝1，与护卫7／1匹配；再次选择变形。").TargetSeat=1;
-            s.Op(1,1,0,0,"羊1＋己1＝2，无伤，仍是完整10血池。",0);
-            s.Op(0,0,1,0,"1＋羊7＝8，10×1.5＝15：先打空羊10，再把溢出5扣原形，不二次算防御。").Verify=l=>!l.Seats[1].IsPolymorphed;
+            s.Op(1,1,0,0,"羊1＋己1＝2，无伤，仍是完整5血池。",0);
+            s.Op(0,0,1,0,"1＋羊7＝8，10×1.5＝15：先打空羊5，再把溢出10扣原形，不二次算防御。").Verify=l=>!l.Seats[1].IsPolymorphed;
         }
     }
 }

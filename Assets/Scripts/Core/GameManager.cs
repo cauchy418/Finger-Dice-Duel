@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -1384,7 +1384,7 @@ namespace FingerDiceDuel.Core
         private List<LegalMove> BuildLegalMoves(PlayerState actor)
         {
             _legalMoves.Clear();
-            if (actor == null || IsGameOver) return _legalMoves;
+            if (actor == null || IsGameOver || actor.WildSkipPending) return _legalMoves;
             PrepareRestraint(actor);
             if (!StatusRules.CanAct(actor)) return _legalMoves;
 
@@ -3125,6 +3125,7 @@ namespace FingerDiceDuel.Core
             _brokenThisTurn.Clear();
 
             // 通知角色"跳过已发生"（游荡者·刺客用它消耗掉潜行的那次跳过机会）
+            CurrentPlayer.WildSkipPending=false;
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
             PlayerState skippedActor = CurrentPlayer;
@@ -3149,6 +3150,7 @@ namespace FingerDiceDuel.Core
             if (IsGameOver) return;
 
             _brokenThisTurn.Clear();
+            CurrentPlayer.WildSkipPending=false;
             (CurrentPlayer.Character as ITurnSkipRule)?.OnTurnSkipped(CurrentPlayer, this);
 
             if (!extraAction)
@@ -3247,6 +3249,7 @@ namespace FingerDiceDuel.Core
         public bool CanSkipTurnFor(PlayerState player)
         {
             if (player == null) return false;
+            if(player.WildSkipPending)return true;
             if (!StatusRules.CanAct(player)) return true;
 
             // ⚠️ **两只手都被锁** -> 无手可用 -> 允许跳过。
@@ -3424,6 +3427,7 @@ namespace FingerDiceDuel.Core
             for(int i=0;i<_players.Count;i++)
                 foreach(var hook in CharacterBehaviors.Implementers<ITurnStartHook>(_players[i]))
                     hook.OnTurnStarted(_players[i],this);
+            DruidWildShape.Offer(CurrentPlayer,this);
         }
 
         /// <summary>刷新野蛮人·狂战士道途 / 战士·战术家等角色的动态攻防。</summary>
@@ -3546,6 +3550,19 @@ namespace FingerDiceDuel.Core
                 if (p == null || p.IsAlive || _deathNotified.Contains(p)) continue;
                 _deathNotified.Add(p);
                 list.Add(p);
+            }
+            if(list.Count>0)
+            {
+                var before=new List<PlayerState>();foreach(var p in _players)if(p.IsAlive||list.Contains(p))before.Add(p);
+                var positions=new Dictionary<PlayerState,int>();int circumference=0;
+                for(int i=0;i<_players.Count;i++){var p=_players[i];if(before.Contains(p)){positions[p]=circumference;circumference++;}if(_seatObstacles!=null)circumference+=_seatObstacles[i];}
+                foreach(var corpse in list)if(!corpse.IsSummon)
+                    foreach(var listener in before)if(listener.IsAlive&&!ReferenceEquals(listener,corpse))
+                    {
+                        int gap=Math.Abs(positions[listener]-positions[corpse]);
+                        if(Math.Min(gap,circumference-gap)!=1)continue;
+                        foreach(var hook in CharacterBehaviors.Implementers<ISporeDruid>(listener))hook.OnNearbyDeath(listener,this);
+                    }
             }
             return list;
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -418,6 +418,9 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.CircleOfTheLandId] = new HandValueProfile()
                 .Set(3, 86).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 64).Set(9, 58)
                 .AddCombo(ComboRule.ContainsAll(60, "3可束缚", 3));
+            Own[CharacterDefinition.CircleOfSporesId]=new HandValueProfile()
+                .Set(9,80).Set(5,72).Set(8,74).Set(6,70).Set(4,66).Set(1,60).Set(2,60).Set(3,56).Set(7,54)
+                .AddCombo(ComboRule.DoublesOf(65,"双手相同可获得孢子生命",1,2,3,4,5,6,7,8,9));
 
             Own[CharacterDefinition.OathOfTheAncientsId] = new HandValueProfile()
                 .Set(5, 76).Set(8, 70).Set(6, 66).Set(4, 60).Set(9, 58)

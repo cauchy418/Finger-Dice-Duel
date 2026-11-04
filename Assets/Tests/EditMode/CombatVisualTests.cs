@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Assistant;
@@ -15,11 +15,7 @@ namespace FingerDiceDuel.Tests
         {foreach(bool immune in new[]{false,true}){var g=Match();g.PlayerB.ApplyStatus(StatusEffect.Wet,2);if(immune)g.PlayerB.AddPermanentImmunity(AttackDamageType.Fire);var a=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){AttackType=AttackDamageType.Fire};a.Resolve(g.GetChoiceProvider(g.PlayerB),g);var events=g.DrainCombatVisuals();Assert.AreEqual(immune?0:1,events.Count(e=>e.Kind==CombatVisualKind.Skill&&e.RedirectKind=="元素反应"));}}
         [Test] public void Semantic_skill_data_keeps_selected_hand_identity_and_captured_digits()
         {var g=Match();var source=g.PlayerA.RightHand;var dest=g.PlayerB.LeftHand;g.NoteSkill(g.PlayerA,"诡诈换位","交换",g.PlayerB,new SkillVisualData(source,dest,2,8));source.SetValue(6);dest.SetValue(1);var e=g.DrainCombatVisuals()[0];Assert.AreEqual(source,e.SourceHand);Assert.AreEqual(dest,e.SkillData.Destination);Assert.AreEqual(2,e.SkillData.Value);Assert.AreEqual(8,e.SkillData.Previous);}
-        [Test] public void All_seven_forms_record_their_actual_entry_and_exit_variant()
-        {
-            for(int i=1;i<=4;i++){var g=Match(a:CharacterDefinition.CircleOfTheMoon);var logic=CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.CircleOfTheMoonLogic>(g.PlayerA);g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);Assert.IsTrue(logic.TryEnter((FingerDiceDuel.Characters.SpecialLogics.CircleOfTheMoonLogic.WildShape)i,g.PlayerA,g));var entered=g.DrainCombatVisuals()[0];g.PlayerA.LeftHand.SetValue(6);Assert.IsTrue(logic.TryExit(g.PlayerA,g));var exited=g.DrainCombatVisuals()[0];Assert.AreEqual(entered.SkillData.Variant,exited.SkillData.Variant);Assert.AreEqual(0,exited.SkillData.Value);}
-            for(int i=1;i<=3;i++){var g=Match(a:CharacterDefinition.CircleOfTheStars);var logic=CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic>(g.PlayerA);g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);Assert.IsTrue(logic.TryEnter((FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic.StarryForm)i,g.PlayerA,g));var entered=g.DrainCombatVisuals()[0];g.PlayerA.LeftHand.SetValue(6);Assert.IsTrue(logic.TryExit(g.PlayerA,g));var exited=g.DrainCombatVisuals()[0];Assert.AreEqual(entered.SkillData.Variant,exited.SkillData.Variant);Assert.AreEqual(0,exited.SkillData.Value);}
-        }
+
         [Test] public void Actual_portent_record_captures_the_other_hand_and_digit()
         {var g=Match(a:CharacterDefinition.SchoolOfDivination);g.PlayerA.LeftHand.SetValue(7);g.PlayerA.RightHand.SetValue(4);var logic=CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.SchoolOfDivinationLogic>(g.PlayerA);logic.OnOperationResolved(g.PlayerA,g.PlayerA.LeftHand,1,6,HandEffectType.None,g,null);var e=g.DrainCombatVisuals()[0];Assert.AreEqual(4,e.SkillData.Value);Assert.AreEqual(g.PlayerA.RightHand,e.SkillData.Source);}
         [Test] public void Reaction_metadata_ignores_unrelated_states_and_captures_before_clearing()

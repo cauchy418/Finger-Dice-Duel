@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -16,6 +16,8 @@ namespace FingerDiceDuel.Core
         public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
+            if(player.SporeLife>0)result.Add(new CombatStatusIcon("Effects/spore_life","孢子生命 · 剩余"+player.SporeLife+"；先于虚假生命吸收伤害，溢出继续结算。",player.SporeLife.ToString(),value:player.SporeLife));
+            if(player.WildStar>0)result.Add(new CombatStatusIcon("Forms/"+DruidForms.StarKeys[player.WildStar],DruidForms.StarDescriptions[player.WildStar],""));
             if(player.TrainingProtected)result.Add(new CombatStatusIcon("Effects/arcane_barrier","操演护持 · 原形生命最低保留1；实战号角响起时结束。",""));
             if(CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.AssassinLogic>(player)?.IsStealthedNow==true)
                 result.Add(new CombatStatusIcon("Overlay/stealth","专业渗透 · 潜行：由暗杀技能维持；出手后按角色规则解除。",""));
@@ -29,7 +31,8 @@ namespace FingerDiceDuel.Core
                 var values=new List<string>();for(int n=1;n<=9;n++)if(book.HasRecord(n))values.Add(n.ToString());
                 result.Add(new CombatStatusIcon("Subclasses/bard_college_of_lore","逸闻记录 · "+book.RecordCount+" / 9\n已记录："+(values.Count==0?"无":string.Join("、",values))+"\n成长"+book.LoreLevel+"次；消耗对应记录可使本次伤害减半。",book.RecordCount+"/9",value:book.RecordCount));
             }
-            if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立10生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
+            if(DruidWildShape.Has<IDruidCaster>(player.DruidOriginal))result.Add(new CombatStatusIcon("Professions/druid","荒野充能 · 剩余"+player.WildCharges,player.WildCharges.ToString(),value:player.WildCharges));
+            if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立5生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
             if(player.IsSummon)result.Add(new CombatStatusIcon("Units/hexbound_specter","咒缚幽灵 · 来源："+player.SummonOwner?.Name+"\n占位计距，AI行动；召唤者死亡或替换时消失，不计胜负存活人数。",""));
             foreach(var spell in CharacterBehaviors.Implementers<IElementEnchantment>(player))
                 if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法武器 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));

@@ -1,0 +1,21 @@
+PASS round shape sprite moon_bear
+PASS round shape sprite moon_wolf
+PASS round shape sprite moon_eagle
+PASS round shape sprite moon_snake
+PASS round shape sprite moon_owlbear
+PASS round shape sprite moon_panther
+PASS spores artwork
+PASS six moon forms and decline
+PASS choose owlbear
+PASS retain form after paid turn
+PASS owlbear pool and charge cost
+PASS emblem replaced
+PASS second stage star choice
+PASS dragon optional start
+PASS dragon mandatory end
+PASS pure operation adds no turn
+PASS human optional symbiosis prompt
+PASS spore buffer and remaining charge
+PASS codex emblem 德鲁伊·月光结社
+PASS codex emblem 德鲁伊·孢子结社
+PASS four druid subclasses in filter

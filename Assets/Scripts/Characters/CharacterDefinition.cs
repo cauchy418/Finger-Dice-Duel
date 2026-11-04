@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -113,6 +113,8 @@ namespace FingerDiceDuel.Core
         public const string CircleOfTheMoonId = "druid_circle_of_the_moon";
         public const string CircleOfTheStarsId = "druid_circle_of_the_stars";
         public const string CircleOfTheLandId = "druid_circle_of_the_land";
+        public const string CircleOfSporesId = "druid_circle_of_spores";
+        public static CharacterDefinition CircleOfSpores {get;}=new CharacterDefinition(CircleOfSporesId,"德鲁伊·孢子结社",SpecialLogicType.CircleOfSpores,description:"孢子环绕：回合开始使相邻且体力低于自己的角色腐朽2回合。一体共生：双手相同时可消耗1荒野充能获得10孢子生命，存在时攻击为毒素。真菌感染：相邻角色死亡恢复1荒野充能。");
         public const string OathOfTheAncientsId = "paladin_oath_of_the_ancients";
         public const string TheFiendId = "warlock_the_fiend";
         public const string CollegeOfLoreId = "bard_college_of_lore";
@@ -480,17 +482,17 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition CircleOfTheMoon { get; } = new CharacterDefinition(
             CircleOfTheMoonId, "德鲁伊·月亮结社", SpecialLogicType.CircleOfTheMoon,
             englishName: "Circle of the Moon",
-            description: "回合开始双手和10可进入荒野形态；熊-1/+2且4合盾，狼+2/-1且攻击吸血1/2，鹰+1/-1且射程3/攻击全穿刺/6无法攻击，蛇0/0且攻击改毒素。回合结束双手相同可解除；不能直接切换形态。");
+            description: "德鲁伊｜职业：攻0，防0，距离1，钝击伤害。初始2点荒野充能；双德鲁伊初始充能相加。\n\n荒野形态｜主动技能：回合开始时，若双手点数之和为10，可以消耗1点荒野充能并跳过本回合，选择熊、狼、鹰或蛇。使用独立形态体力，原角色与双将另一子职的技能暂停；形态体力归零时恢复原体力并承受溢出伤害，每个自己回合结束可选择解除。\n\n月之魔力｜子职：初始荒野充能+1；可消耗2点充能变为枭熊或黑豹。\n\n结社形态｜形态说明：熊12体力，攻−1／防+1，距离1挥砍，4改为合盾；狼10体力，攻0／防−1，距离1挥砍，回复每段实际生命伤害的一半，向下取整；鹰8体力，攻+1／防−1，距离3穿刺，6不能攻击；蛇8体力，攻0／防0，距离1毒素。\n\n枭熊｜形态说明：16体力，攻0／防+2，距离2挥砍；攻击基础伤害增加双方距离。\n\n黑豹｜形态说明：10体力，攻+2／防0，距离1挥砍；攻击命中附加2回合流血。");
 
         public static CharacterDefinition CircleOfTheStars { get; } = new CharacterDefinition(
             CircleOfTheStarsId, "德鲁伊·星辰结社", SpecialLogicType.CircleOfTheStars,
             englishName: "Circle of the Stars",
-            description: "回合开始双手和10可进入星耀形态；射手+2/-1且攻击光耀，圣杯0/0且9的回复可额外给一名其他角色，巨龙+1/+1且运算先加一只手、结算前再加一只手。回合结束双手相同可解除；不能直接切换形态。");
+            description: "德鲁伊｜职业：攻0，防0，距离1，钝击伤害。初始2点荒野充能；双德鲁伊初始充能相加。\n\n荒野形态｜主动技能：回合开始时，若双手点数之和为10，可以消耗1点荒野充能并跳过本回合，选择熊、狼、鹰或蛇。使用独立形态体力，原角色与双将另一子职的技能暂停；形态体力归零时恢复原体力并承受溢出伤害，每个自己回合结束可选择解除。\n\n观星修行｜子职：进入荒野时额外选择一种星耀形态；两者攻防相加、距离取高，一并解除。\n\n射手座｜形态说明：攻+2／防−1，距离3，攻击改为光耀。\n\n圣杯座｜形态说明：攻0／防0，距离1，荒野形态体力上限+4；运算打出9回复后，可以额外选择一名存活角色（可选自己）回复9体力。\n\n巨龙座｜形态说明：攻+1／防+1，距离3；回合开始可以纯运算一次，未进行则回合结束必须纯运算一次，无合法运算时略过。\n\n结社形态｜形态说明：熊12体力，攻−1／防+1，距离1挥砍，4改为合盾；狼10体力，攻0／防−1，距离1挥砍，回复每段实际生命伤害的一半，向下取整；鹰8体力，攻+1／防−1，距离3穿刺，6不能攻击；蛇8体力，攻0／防0，距离1毒素。");
 
         public static CharacterDefinition CircleOfTheLand { get; } = new CharacterDefinition(
             CircleOfTheLandId, "德鲁伊·大地结社", SpecialLogicType.CircleOfTheLand,
-            defenseBonus: 1, englishName: "Circle of the Land",
-            description: "回合结束选一只手，直到下回合不能作为被加数；打出3可令另一名角色束缚2回合。攻0/防+1，距离1钝击。");
+            defenseBonus: 0, englishName: "Circle of the Land",
+            description: "德鲁伊｜职业：攻0，防0，距离1，钝击伤害。初始2点荒野充能；双德鲁伊初始充能相加。\n\n荒野形态｜主动技能：回合开始时，若双手点数之和为10，可以消耗1点荒野充能并跳过本回合，选择熊、狼、鹰或蛇。使用独立形态体力，原角色与双将另一子职的技能暂停；形态体力归零时恢复原体力并承受溢出伤害，每个自己回合结束可选择解除。\n\n大地束缚｜主动技能：运算打出3时，可以选择另一名角色附加2回合束缚。\n\n大地行者｜主动技能：回合结束时，若双手都没有3，可以选择自己一只手，使其不能成为被加数，直到自己下回合开始。\n\n结社形态｜形态说明：熊12体力，攻−1／防+1，距离1挥砍，4改为合盾；狼10体力，攻0／防−1，距离1挥砍，回复每段实际生命伤害的一半，向下取整；鹰8体力，攻+1／防−1，距离3穿刺，6不能攻击；蛇8体力，攻0／防0，距离1毒素。");
 
         public static CharacterDefinition OathOfTheAncients { get; } = new CharacterDefinition(
             OathOfTheAncientsId, "圣武士·古贤之誓", SpecialLogicType.OathOfTheAncients,
@@ -514,7 +516,7 @@ namespace FingerDiceDuel.Core
             description:"持有2时，他人选你的任意手作加数，你可查看其运算手与原加数，再选择是否改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
 
         public const string SchoolOfTransmutationId = "wizard_school_of_transmutation";
-        public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立10生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。距离∞，近钝击远穿刺。");
+        public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立5生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。距离∞，近钝击远穿刺。");
         public const string SchoolOfEnchantmentId = "wizard_school_of_enchantment";
         public static CharacterDefinition SchoolOfEnchantment {get;} = new CharacterDefinition(SchoolOfEnchantmentId,"法师·惑控学派",SpecialLogicType.SchoolOfEnchantment,attackBonus:0,defenseBonus:-1,englishName:"School of Enchantment",description:"造成或受到实际伤害后，可令受伤者或伤害来源失能或魅惑2回合，后续实际掉血解除本技能的效果。整次攻击结算后选择。距离∞，近钝击远穿刺。");
         public const string EldritchKnightId = "fighter_eldritch_knight";
@@ -547,7 +549,7 @@ namespace FingerDiceDuel.Core
             LightDomain, WarDomain, BattleMaster,
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
             CircleOfTheMoon, CircleOfTheStars,
-            CircleOfTheLand, OathOfTheAncients, TheFiend,
+            CircleOfTheLand, CircleOfSpores, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, ShadowMagic, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
             OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster

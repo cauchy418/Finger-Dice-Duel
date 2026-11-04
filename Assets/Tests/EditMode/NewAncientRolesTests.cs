@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
@@ -26,11 +26,11 @@ namespace FingerDiceDuel.Tests
                                     CharacterDefinition.Champion,
                                     out PlayerState land, out PlayerState foe);
             var logic = (CircleOfTheLandLogic)land.Character;
-            Hand hand = foe.LeftHand;
+            Hand hand = land.LeftHand;
             Assert.IsTrue(logic.RestrictHand(hand, game));
             Assert.IsFalse(StatusRules.CanUseHandAsAddend(land, hand, game));
             Assert.IsTrue(hand.CanBeOperated, "封锁目标不等于封锁运算源。");
-            Assert.AreEqual(1, land.Character.DefenseBonus + 0);
+            Assert.AreEqual(0, land.Character.DefenseBonus + 0);
         }
 
         [Test]

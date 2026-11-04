@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -31,8 +31,8 @@ namespace FingerDiceDuel.Tests
             var a=DualGeneralFactory.Create("双僧",CharacterDefinition.WayOfTheOpenHand,CharacterDefinition.WayOfTheNinja);var b=P(CharacterDefinition.Blank);
             var policy=new Policy();policy.Answers[MartialSkillChoices.OpenHand]=0;policy.Answers[MonkRules.Ninja]=0;
             var g=new GameManager(a,b,policy,new SimpleChoiceProvider());a.LeftHand.SetValue(1);a.RightHand.SetValue(4);b.LeftHand.SetValue(3);
-            g.ExecuteTurn(a,a.LeftHand,b.LeftHand);Assert.AreEqual(3,a.MonkKi);
-            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a))Assert.AreEqual(3,ki.Ki);
+            g.ExecuteTurn(a,a.LeftHand,b.LeftHand);Assert.AreEqual(5,a.MonkKi);
+            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a))Assert.AreEqual(5,ki.Ki);
             Assert.AreEqual(1,CombatStatusIcons.For(a,g).FindAll(i=>i.ResourceKey=="Effects/ki").Count);
         }
         [Test] public void Ninja_can_decline_or_spend_one_without_borrowing_future_gain()

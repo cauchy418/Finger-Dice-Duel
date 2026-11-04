@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace FingerDiceDuel.UI
             if(key.Contains("stealth"))return "fx_necrotic";
             if(key.Contains("cold")||key.Contains("frost")||key.Contains("frozen")||key.Contains("freeze"))return "fx_cold";
             if(key.Contains("burn")||key.Contains("fire"))return "fx_fire";
-            if(key.Contains("poison")||key.Contains("false_life"))return "fx_poison";
+            if(key.Contains("poison")||key.Contains("false_life")||key.Contains("spore"))return "fx_poison";
             if(key.Contains("acid")||key.Contains("restrain"))return "fx_acid";
             if(key.Contains("shock")||key.Contains("lightning"))return "fx_lightning";
             if(key.Contains("radiant")||key.Contains("holy")||key.Contains("blessing"))return "fx_radiant";

@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -262,6 +262,7 @@ namespace FingerDiceDuel.UI
             string display = player.Definition?.Id == CharacterDefinition.BlankId ? player.Name
                 : !string.IsNullOrEmpty(player.DisplayNameOverride) ? player.DisplayNameOverride
                 : player.Definition != null ? player.Definition.DisplayName : player.Name;
+            if(player.IsWildShaped&&!player.IsPolymorphed)display=DruidForms.Name("moon",player.WildForm)+(player.WildStar>0?" · "+DruidForms.Name("stars",player.WildStar):"");
             name.text = (player.Name == display ? display : display + "（" + player.Name + "）")+(player.IsPolymorphed?" · 变羊":"");
             var stats = top ? _statusTextB : _statusTextA;
             int range = GameManager.BaseRangeOf(player);

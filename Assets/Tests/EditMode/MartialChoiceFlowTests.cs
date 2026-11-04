@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
@@ -145,7 +145,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(HandEffect.OpenHandTechnique,board.PendingEffect);board.ChooseSkillOption((int)StatusEffect.Stunned);
             Assert.AreEqual(HandEffect.FourElementsTechnique,board.PendingEffect);board.ChooseSkillOption((int)AttackDamageType.Cold);
             Assert.IsTrue(b.HasStatus(StatusEffect.Stunned));Assert.IsTrue(b.HasStatus(StatusEffect.Frost));
-            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a)) Assert.AreEqual(0,ki.Ki);
+            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a)) Assert.AreEqual(2,ki.Ki);
             Assert.AreEqual(1,game.TurnCount);
         }
         [Test] public void Four_elements_all_five_player_choices_use_matching_damage_and_status()

@@ -70,12 +70,12 @@ namespace FingerDiceDuel.Core
         public int PolymorphTurns {get;private set;}
         public bool BeganAttackThisTurn {get;internal set;}
         public bool FormedShieldThisTurn {get;internal set;}
-        public string BattleEmblemKey=>IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_elemental_spirit"?"Adventure/npc_elemental_spirit":Definition?.Id=="campaign_elemental_echo"?"Adventure/npc_elemental_echo":Definition?.Id=="story_heavy_fighter"?"Adventure/knight_original":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
-        public ICharacterBehavior PersistentCharacter=>_untransformedCharacter??Character;
+        public string BattleEmblemKey=>!IsPolymorphed&&IsWildShaped?"Forms/"+DruidForms.MoonKeys[WildForm]:IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_elemental_spirit"?"Adventure/npc_elemental_spirit":Definition?.Id=="campaign_elemental_echo"?"Adventure/npc_elemental_echo":Definition?.Id=="story_heavy_fighter"?"Adventure/knight_original":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
+        public ICharacterBehavior PersistentCharacter=>_wildOriginal??_untransformedCharacter??Character;
         public bool TryPolymorph(int turns=2)
         {
             if(!IsAlive||turns<=0||HasStatus(StatusEffect.HolyLight))return false;
-            if(!IsPolymorphed){_untransformedCharacter=Character??new SheepBehavior();_untransformedHealth=Health;_untransformedMaximum=MaximumHealth;Character=new SheepBehavior();MaximumHealth=10;Health=10;}
+            if(!IsPolymorphed){_untransformedCharacter=Character??new SheepBehavior();_untransformedHealth=Health;_untransformedMaximum=MaximumHealth;Character=new SheepBehavior();MaximumHealth=5;Health=5;}
             PolymorphTurns=turns;return true;
         }
         public void EndPolymorph()
@@ -111,14 +111,20 @@ namespace FingerDiceDuel.Core
         {
             LastDamageToOriginalForm=0;
             if(amount<=0)return 0;
+            int spores=Math.Min(SporeLife,amount);SporeLife-=spores;amount-=spores;
             int absorbed=Math.Min(FalseLife,amount);FalseLife-=absorbed;amount-=absorbed;
-            bool wasSheep=IsPolymorphed;
+            bool wasSheep=IsPolymorphed||IsWildShaped;
             if(!wasSheep)amount=ProtectOriginalHealth(amount);
             int actual=Math.Min(Health,amount);Health-=actual;int overflow=amount-actual;
             if(!wasSheep)LastDamageToOriginalForm=actual;
             if(actual>0)ClearEnchantments();
-            if(IsPolymorphed&&Health<=0)
-            {EndPolymorph();int loss=Math.Min(Health,ProtectOriginalHealth(overflow));Health-=loss;actual+=loss;LastDamageToOriginalForm=loss;}
+            while(Health<=0&&(IsPolymorphed||IsWildShaped))
+            {
+                if(IsPolymorphed)EndPolymorph();else EndWild();
+                int loss=Math.Min(Health,IsPolymorphed||IsWildShaped?overflow:ProtectOriginalHealth(overflow));
+                Health-=loss;overflow-=loss;actual+=loss;
+                if(!IsPolymorphed&&!IsWildShaped)LastDamageToOriginalForm=loss;
+            }
             if(Health<=0&&!IsPolymorphed)foreach(var grave in CharacterBehaviors.Implementers<IGraveStrength>(this))grave.SurviveDeath(this);
             TookDamageThisTurn=true;return actual;
         }

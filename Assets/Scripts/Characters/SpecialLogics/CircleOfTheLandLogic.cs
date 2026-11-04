@@ -1,16 +1,17 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>德鲁伊·大地结社：回合结束封锁一只手作为被加数；3 可束缚。</summary>
     public sealed class CircleOfTheLandLogic : CharacterTemplate,
-        IAttackTypeProvider, ITurnStartHook, ITurnEndHook
+        IAttackTypeProvider, ITurnStartHook, ITurnEndHook, IDruidCaster, IDruidForm
     {
         private PlayerState _owner;
         private Hand _restricted;
 
         public override string DisplayName => "德鲁伊·大地结社";
-        public override int DefaultDefenseBonus => 1;
+        public override int DefaultDefenseBonus => 0;
+        public string CircleKey=>"moon";public int FormValue=>0;public bool NeedsSecondAddend=>false;
         public override int AttackBonus => 0;
         public override int BaseAttackRange => 1;
 
@@ -28,7 +29,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public bool RestrictHand(Hand hand, GameManager manager)
         {
-            if (hand == null || manager?.OwnerOfHand(hand)?.IsAlive!=true) return false;
+            if (hand == null || _owner==null || !_owner.Owns(hand) || _owner.LeftHand.Value==3 || _owner.RightHand.Value==3 || manager?.OwnerOfHand(hand)?.IsAlive!=true) return false;
             ClearRestriction();
             _restricted = hand;
             hand.SetTargetRestricted(this,true);
@@ -44,10 +45,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public void OnTurnEnded(PlayerState owner, GameManager manager)
         {
-            if (!owner.IsAlive || manager==null) return;
+            if (!owner.IsAlive || manager==null || owner.LeftHand.Value==3 || owner.RightHand.Value==3) return;
             var hands=new System.Collections.Generic.List<Hand>();
-            foreach(var p in manager.Players)if(p.IsAlive)foreach(var h in p.Hands)hands.Add(h);
-            AncientRoleChoices.Offer(AncientRoleChoices.LandSeal,"大地行者 · 选择禁作加数的一只手",owner,manager,hands,false,false,hand=>RestrictHand(hand,manager));
+            foreach(var h in owner.Hands)hands.Add(h);
+            AncientRoleChoices.Offer(AncientRoleChoices.LandSeal,"大地行者 · 选择禁作加数的一只手",owner,manager,hands,true,false,hand=>RestrictHand(hand,manager));
         }
 
         public override void OnOperationResolved(PlayerState owner, Hand actedHand,

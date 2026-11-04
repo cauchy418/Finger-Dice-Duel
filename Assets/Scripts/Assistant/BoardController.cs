@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -997,6 +997,7 @@ namespace FingerDiceDuel.Assistant
 
         private void SetupFirstStep()
         {
+            if(ActivePlayer.WildSkipPending){CompleteCampaignAction("荒野形态 · 跳过回合");return;}
             _operationDisplay.Clear();
             _shieldBreakChoiceCollected = _afterShieldBreakChoice = false;
             _preTargetRangeAnswered.Clear();

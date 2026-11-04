@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -22,11 +22,20 @@ namespace FingerDiceDuel.Assistant
             if(!StatusRules.CanAct(owner))return 0;
             if(circle=="moon")
             {
-                if(owner.Health<=7)return 1;
-                bool near=false;foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&game.DistanceBetween(owner,p)<=1)near=true;
-                if(!near)return 3;
-                foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&!p.HasResistance(AttackDamageType.Poison)&&StatusRules.EffectiveDefenseBonus(p)>=2)return 4;
-                return owner.Health<owner.MaximumHealth?2:4;
+                int pick=0;double best=owner.Health>=16?18:0;
+                foreach(var option in options)
+                {
+                    int f=option.Value;if(f==0)continue;int range=f==3?3:f==5?2:1;
+                    int cost=f>=5?2:1;if(cost>owner.WildCharges)continue;
+                    double score=(DruidWildShape.Health[f]-owner.Health)*1.2+8-(cost-1)*5;
+                    bool reachable=false;foreach(var enemy in game.OpponentsOf(owner))if(enemy.IsAlive&&game.DistanceBetween(owner,enemy)<=range)
+                    {reachable=true;var type=f==4?AttackDamageType.Poison:f==3?AttackDamageType.Piercing:AttackDamageType.Slashing;score+=enemy.HasImmunity(type)?-30:enemy.HasResistance(type)?-8:5;}
+                    if(!reachable)score-=35;
+                    if(f==5)score+=10;if(f==6)score+=8;if(f==1&&(owner.LeftHand.Value==4||owner.RightHand.Value==4))score+=8;
+                    if(f==3&&(owner.LeftHand.Value==6||owner.RightHand.Value==6))score-=12;
+                    if(score>best){best=score;pick=f;}
+                }
+                return pick;
             }
             int missing=0;foreach(var p in game.Players)if(p.IsAlive&&game.IsKnownAlly(owner,p))missing=Math.Max(missing,p.MaximumHealth-p.Health);
             if(missing>=7 && game.GetLegalMoves(owner).Count>0)return 2;
@@ -36,7 +45,7 @@ namespace FingerDiceDuel.Assistant
         }
         public bool ExitForm(PlayerState owner,IDruidForm form,GameManager game)
         {
-            if(owner.LeftHand.Value!=owner.RightHand.Value)return false;
+            if(owner.IsWildShaped&&owner.Health<=3&&owner.WildOriginalHealth>owner.Health+5)return true;
             if(form.CircleKey=="moon"&&form.FormValue==3)
             {foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&game.DistanceBetween(owner,p)<=1&&owner.LeftHand.Value==6)return true;}
             return false;

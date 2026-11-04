@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -75,6 +75,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.CircleOfTheMoon] = () => new CircleOfTheMoonLogic();
             _registry[SpecialLogicType.CircleOfTheStars] = () => new CircleOfTheStarsLogic();
             _registry[SpecialLogicType.CircleOfTheLand] = () => new CircleOfTheLandLogic();
+            _registry[SpecialLogicType.CircleOfSpores] = () => new CircleOfSporesLogic();
             _registry[SpecialLogicType.OathOfTheAncients] = () => new OathOfTheAncientsLogic();
             _registry[SpecialLogicType.TheFiend] = () => new TheFiendLogic();
             _registry[SpecialLogicType.CollegeOfLore] = () => new CollegeOfLoreLogic();

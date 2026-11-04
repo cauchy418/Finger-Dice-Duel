@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -49,9 +49,9 @@ namespace FingerDiceDuel.Tests
             "hunter_marksman|ranger_hunter|游侠·猎人|ranger|Hunter|0|-1|20|3",
             "open_hand|monk_way_of_the_open_hand|武僧·散打宗|monk|Way of the Open Hand|0|0|20|1",
             "four_elements|monk_way_of_the_four_elements|武僧·四象宗|monk|Way of the Four Elements|0|0|20|1",
-            "moon|druid_circle_of_the_moon|德鲁伊·月亮结社|druid|Circle of the Moon|0|0|20|1",
-            "stars|druid_circle_of_the_stars|德鲁伊·星辰结社|druid|Circle of the Stars|0|0|20|3",
-            "land|druid_circle_of_the_land|德鲁伊·大地结社|druid|Circle of the Land|0|1|20|1",
+            "moon|druid_circle_of_the_moon|德鲁伊·月光结社|druid|Circle of the Moon|0|0|20|1",
+            "stars|druid_circle_of_the_stars|德鲁伊·星辰结社|druid|Circle of the Stars|0|0|20|1",
+            "land|druid_circle_of_the_land|德鲁伊·大地结社|druid|Circle of the Land|0|0|20|1",
             "ancients|paladin_oath_of_the_ancients|圣武士·古贤之誓|paladin|Oath of the Ancients|-1|1|20|1",
             "fiend|warlock_the_fiend|邪术师·妖魔|warlock|The Fiend|0|-1|20|2147483647",
             "lore|bard_college_of_lore|吟游诗人·逸闻学院|bard|College of Lore|0|-1|20|1",
@@ -61,7 +61,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(56, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(57, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 7, 6, 5, 9, 4, 4, 2, 5, 2, 5, 4, 3 };
+            int[] counts = { 7, 6, 5, 9, 4, 4, 2, 5, 2, 5, 4, 4 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -8,6 +8,7 @@ namespace FingerDiceDuel.Assistant
     {
         public override int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
         {
+            if(key=="druid_symbiosis")return owner.SporeLife==0&&owner.WildCharges>0?1:0;
             int best=options[0].Value;double bestScore=double.NegativeInfinity;
             foreach(var option in options)
             {

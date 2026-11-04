@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -348,17 +348,13 @@ namespace FingerDiceDuel.Characters
                 counter: "以物理或其它魔法绕开四象法门；气不足时无法改元素或获抗性。",
                 interactions: new[] { "与龙族血脉：元素抗性可叠加保存。" });
 
-            Add(CharacterDefinition.CircleOfTheMoonId, "Circle of the Moon", Alignment.ChaoticGood,
-                shortSkill: "双手和10进入荒野：熊4合盾、狼吸血、鹰射程3穿刺、蛇毒伤。",
-                playGuide: "回合开始凑10再选形态；熊守、狼攻、鹰远程、蛇上毒。",
-                counter: "不让他保持10；熊形态避免浪费攻击打盾；鹰形态留意其6无法攻击。",
-                interactions: new[] { "与月亮结社分属不同阵营，当前不能组成双将。" });
+            Add(CharacterDefinition.CircleOfSporesId,"Circle of Spores",Alignment.TrueNeutral,
+                shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；保持体力高于邻居，施加腐朽。",counter:"避开相邻腐朽，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
+            Add(CharacterDefinition.CircleOfTheMoonId,"Circle of the Moon",Alignment.ChaoticGood,
+                shortSkill:"3点充能；荒野独立体力，枭熊与黑豹耗2点。",playGuide:"回合开始双手和10可变形并跳过；熊4合盾，回合末可解除。",counter:"留意充能，破形态后的溢伤会扣原体力。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
-            Add(CharacterDefinition.CircleOfTheStarsId, "Circle of the Stars", Alignment.LawfulNeutral,
-                shortSkill: "双手和10进入星耀：射手光耀、圣杯额外治疗、巨龙两次加手。",
-                playGuide: "根据队形选射手/圣杯/巨龙；巨龙需要两次选被加数。",
-                counter: "射手防御偏低；圣杯优先保护伤员；巨龙只在第二次加手后结算一次效果。",
-                interactions: new[] { "与月亮结社分属不同阵营，当前不能组成双将。" });
+            Add(CharacterDefinition.CircleOfTheStarsId,"Circle of the Stars",Alignment.LawfulNeutral,
+                shortSkill:"荒野叠星耀：射手光耀、圣杯治疗、巨龙纯运算。",playGuide:"先选荒野再选星耀；攻防相加、距离取高，一起解除。",counter:"打破独立血池；巨龙未在开局纯运算，回合末必须进行。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
             Add(CharacterDefinition.CollegeOfLoreId,"College of Lore",Alignment.LawfulNeutral,
                 shortSkill:"记录1～9；集齐可成长，消耗对应记录可减伤。",
@@ -381,11 +377,8 @@ namespace FingerDiceDuel.Characters
                 counter:"借其手前比较两种运算结果；对方可主动改算。拆开其持2或差2条件，削弱防守。",
                 interactions:new[]{"替换手也须是合法加数；隐藏或被封锁的另一手不会被强行借用。"});
 
-            Add(CharacterDefinition.CircleOfTheLandId, "Circle of the Land", Alignment.NeutralGood,
-                shortSkill: "结束封一手禁作加数至下回合；3可束缚2回合。",
-                playGuide: "3后先选束缚对象或不发动；回合结束再选一只手封锁，可选自己。封锁不影响该手主动运算。",
-                counter: "封锁只禁加数，可用该手主动运算；束缚则随机限制运算手。",
-                interactions: new[] { "多人封锁同手：各自持续，直到各来源下回合开始解除。" });
+            Add(CharacterDefinition.CircleOfTheLandId,"Circle of the Land",Alignment.NeutralGood,
+                shortSkill:"3可束缚；回合末无3可封锁自己的加数手。",playGuide:"双手和10可荒野；原形打3可束缚，双手无3时可保护自己的加数。",counter:"封锁不妨碍主动运算；荒野期间暂停大地技能。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
             Add(CharacterDefinition.OathOfTheAncientsId, "Oath of the Ancients", Alignment.NeutralGood,
                 shortSkill: "盾碎可束缚射程内角色；受伤后按血量分支回复2。",
@@ -400,7 +393,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣光移除。" });
 
             Add(CharacterDefinition.SchoolOfTransmutationId,"School of Transmutation",Alignment.ChaoticNeutral,
-                shortSkill:"结束可将同数角色变羊；独立10生命、距离1、无原技能。",playGuide:"回合结束选无序匹配双手的角色或不发动，可选自己；变羊两回合，形态血池被击破也解除。",counter:"改变自己的手值避开匹配；打破羊形态时溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
+                shortSkill:"结束可将同数角色变羊；独立5生命、距离1、无原技能。",playGuide:"回合结束选无序匹配双手的角色或不发动，可选自己；变羊两回合，形态血池被击破也解除。",counter:"改变自己的手值避开匹配；打破羊形态时溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
             Add(CharacterDefinition.SchoolOfEnchantmentId,"School of Enchantment",Alignment.NeutralEvil,
                 shortSkill:"伤害后可施加失能或魅惑；之后受伤解除。",playGuide:"整次攻击结算后选失能、魅惑或不发动；造成伤害选受伤者，受到伤害选来源。",counter:"后续实际掉血能解除惑控；虚假生命吸收不算实际掉血。",interactions:new[]{"只清除惑控来源效果；其他来源的同名状态仍保留。"});
             Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulGood,

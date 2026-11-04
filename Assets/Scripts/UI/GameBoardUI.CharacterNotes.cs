@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -8,6 +8,7 @@ namespace FingerDiceDuel.UI
     {
         private static string CharacterNotes(PlayerState player,string display)
         {
+            if(player.IsWildShaped&&!player.IsPolymorphed)return DruidForms.Name("moon",player.WildForm)+"\n"+DruidForms.MoonDescriptions[player.WildForm]+(player.WildStar>0?"\n"+DruidForms.Name("stars",player.WildStar)+"："+DruidForms.StarDescriptions[player.WildStar]:"")+"\n原形体力"+player.WildOriginalHealth+"；原角色技能暂停，形态归零恢复原形并承受溢伤。";
             if(player.PersistentCharacter is CampaignNpcLogic npc)
             {
                 string notes=display+"\n"+AttackDamageTypes.NameOf(npc.Weapon)+"伤害，距离"+(npc.Range==int.MaxValue?"∞":npc.Range.ToString())+"。\n"+npc.AbilitySummary;

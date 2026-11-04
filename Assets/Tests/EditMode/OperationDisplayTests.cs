@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
@@ -31,9 +31,6 @@ namespace FingerDiceDuel.Tests
    Assert.True(board.PreviewHandValue(g.PlayerA.LeftHand)==null);board.ChooseSkillOption(1);board.ChooseSkillOption(0);
    Assert.AreEqual(4,board.PreviewHandValue(g.PlayerA.LeftHand).Value);Assert.AreEqual(6,board.PreviewHandValue(g.PlayerB.LeftHand).Value);Assert.AreEqual(4,g.PlayerB.LeftHand.Value);
    board.ClickHand(g.PlayerB.LeftHand);Assert.AreEqual(4,g.PlayerA.LeftHand.Value);Assert.AreEqual(6,g.PlayerB.LeftHand.Value);}
-  [Test] public void Dragon_waits_for_second_addend_then_projects_final_result()
-  {var board=Make(CharacterDefinition.CircleOfTheStars,CharacterDefinition.Blank,out var g);var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(4);a.RightHand.SetValue(6);b.LeftHand.SetValue(1);b.RightHand.SetValue(3);
-   ((FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic)a.Character).TryEnter(FingerDiceDuel.Characters.SpecialLogics.CircleOfTheStarsLogic.StarryForm.Dragon,a,g);board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);Assert.True(board.PreviewHandValue(a.LeftHand)==null);board.ClickHand(b.RightHand);
-   Assert.AreEqual(8,board.PreviewHandValue(a.LeftHand).Value);board.ClickHand(b.LeftHand);Assert.AreEqual(8,a.LeftHand.Value);}
+
  }
 }

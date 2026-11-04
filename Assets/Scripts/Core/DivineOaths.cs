@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -50,6 +50,7 @@ namespace FingerDiceDuel.Core
             int before=source.Value,add=target.Value;bool shield=source.IsShield;
             int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));
             ApplyTrickery(actor,source,target,value,out value);source.SetValue(value);
+            if(skill=="巨龙座"&&actor.Character is WildShapeBehavior wild)wild.MarkDragonOperation();
             if(shield)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
             NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）",actor,new SkillVisualData(source:source,value:value,previous:before));ClearPreparedOperationAddend();return true;
         }

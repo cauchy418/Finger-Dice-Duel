@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Core
             // 吟游诗人·勇气学院的加成与"角色自身加成"**同层相加**（可正可负）
             if (p != null) bonus += p.CollegeOfValorAttackOffset;
             if (p != null) bonus += p.IdentityAttackBonus;
-            if (p != null) bonus += p.DynamicAttackBonus;
+            if (p != null&&!p.IsWildShaped) bonus += p.DynamicAttackBonus;
             if (p != null) bonus += p.LordAttackBonus;
             return bonus;
         }
@@ -50,7 +50,7 @@ namespace FingerDiceDuel.Core
             // 吟游诗人·勇气学院的加成（与强酸同层相加）
             if (p != null) bonus += p.CollegeOfValorDefenseOffset;
             if (p != null) bonus += p.IdentityDefenseBonus;
-            if (p != null) bonus += p.DynamicDefenseBonus;
+            if (p != null&&!p.IsWildShaped) bonus += p.DynamicDefenseBonus;
             if (p != null) bonus += p.LordDefenseBonus;
             return bonus;
         }

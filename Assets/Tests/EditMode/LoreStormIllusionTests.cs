@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
@@ -202,18 +202,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(3,players[0].LeftHand.Value);Assert.AreEqual(1,g.TurnCount);
             }
         }
-        [Test] public void Illusion_dragon_asks_each_addend_once_and_applies_only_the_final_result()
-        {
-            var board=Board(CharacterDefinition.CircleOfTheStars,CharacterDefinition.SchoolOfIllusion,out var g);
-            var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(4);a.RightHand.SetValue(6);b.LeftHand.SetValue(2);b.RightHand.SetValue(7);
-            Assert.True(((CircleOfTheStarsLogic)a.Character).TryEnter(CircleOfTheStarsLogic.StarryForm.Dragon,a,g));
-            board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.RightHand);Assert.AreEqual(b,board.Chooser);
-            Assert.True(board.ChooseSkillOption(1));Assert.AreEqual(a,board.Chooser);Assert.True(board.Hint.Contains("第二个加数"));
-            Assert.True(board.ChooseWizardHand(b.RightHand));Assert.AreEqual(b,board.Chooser);Assert.True(board.Hint.Contains("左手6"));
-            Assert.AreEqual(4,a.LeftHand.Value);Assert.True(board.ChooseSkillOption(0));
-            Assert.AreEqual(3,a.LeftHand.Value);Assert.AreEqual(7,board.LastTurn.SecondAddendValue);Assert.AreEqual(20,b.Health);Assert.AreEqual(1,g.TurnCount);
-            Assert.True(board.PendingWizardChoice==null);
-        }
+
         [Test] public void Illusion_defense_asks_owner_and_changes_only_smaller_hand_when_accepted()
         {
             foreach(bool use in new[]{true,false}){

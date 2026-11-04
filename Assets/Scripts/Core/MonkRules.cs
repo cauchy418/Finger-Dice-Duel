@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Core
     public partial class PlayerState
     {
         public int MonkKi {get;private set;}=2;
-        public void ResetMonkKi()=>MonkKi=2;
+        public void ResetMonkKi(){int count=0;foreach(var monk in CharacterBehaviors.Implementers<IMonkResource>(this))count++;MonkKi=Math.Min(6,Math.Max(1,count)*2);}
         public void GainMonkKi(int amount=1){if(amount>0)MonkKi=Math.Min(6,MonkKi+amount);}
         public bool TrySpendMonkKi(int amount){if(amount<0||MonkKi<amount)return false;MonkKi-=amount;return true;}
         public PlayerState HiddenForceSource {get;private set;}
