@@ -12,15 +12,17 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class RevisionBalanceTests
     {
-        private static readonly string Root="Tools/Statistics/2026-10-30";
+        private static readonly string Root=Environment.GetEnvironmentVariable("FDD_REVISION_ROOT")??"Tools/Statistics/2026-11-05";
         private static readonly CharacterDefinition[] Roster=CharacterDefinition.BuiltIn;
         private static void Row(StreamWriter w,int seed,string first,string second,int winner,int turns)
-        {w.WriteLine(seed+","+first+","+second+","+winner+","+turns);}
+        {w.WriteLine(seed+","+first+","+second+","+winner+","+turns);if(++_written%1000==0){w.Flush();Console.WriteLine("progress "+_written+" games");}}
+        private static int _written;
         private static GreedyChoiceProvider Ai()=>new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true};
         [Test] public void Revision_all_modes_win_rates()
         {
             string mode=Environment.GetEnvironmentVariable("FDD_REVISION_MODE")??"1v1";
-            Directory.CreateDirectory(Root);int games=0;
+            Directory.CreateDirectory(Root);int games=0;_written=0;
+            if(mode=="1v1")File.WriteAllLines(Root+"/roster.tsv",new[]{"id\tname\taxis"}.Concat(Roster.Select(d=>d.Id+"\t"+d.DisplayName+"\t"+Alignments.LawAxisOf(CharacterCodex.For(d).Alignment))),new System.Text.UTF8Encoding(false));
             using var writer=new StreamWriter(Root+"/"+mode+".csv",false,new System.Text.UTF8Encoding(false));
             writer.WriteLine("seed,first,second,winner,turns");
             if(mode=="1v1")
@@ -28,7 +30,7 @@ namespace FingerDiceDuel.Tests
                 {
                     int seed=500000+i*20000+j*100+n;
                     var r=CharacterBalanceTests.RunOne(Roster[i],Roster[j],n%2==0,seed,out string error);
-                    Assert.IsTrue(error==null,error);Assert.IsFalse(r.HitTurnLimit);
+                    Assert.IsTrue(error==null,"seed="+seed+" "+error);Assert.IsFalse(r.HitTurnLimit);
                     int winner=r.Winner==null?-1:r.Winner.Definition.Id==Roster[i].Id?0:1;
                     Row(writer,seed,Roster[i].Id,Roster[j].Id,winner,r.Turns);games++;
                 }
@@ -39,7 +41,7 @@ namespace FingerDiceDuel.Tests
                 {
                     var a=teams[i];var b=teams[(i+teams.Count/2)%teams.Count];int seed=3000000+i*100+n;
                     var r=TwoVersusTwoHarness.Play(Roster[a[0]],Roster[b[0]],Roster[b[1]],Roster[a[1]],seed,50,out int actions);
-                    Assert.IsTrue(r.Error==null,r.Error);Assert.IsFalse(r.HitLimit);
+                    Assert.IsTrue(r.Error==null,"seed="+seed+" "+r.Error);Assert.IsFalse(r.HitLimit);
                     Row(writer,seed,Roster[a[0]].Id+"+"+Roster[a[1]].Id,Roster[b[0]].Id+"+"+Roster[b[1]].Id,r.Seat14Won?0:r.Seat23Won?1:-1,actions);games++;
                 }
             }
@@ -49,7 +51,7 @@ namespace FingerDiceDuel.Tests
                 for(int i=0;i<pairs.Count;i++)for(int n=0;n<8;n++)
                 {
                     var a=pairs[i];var b=pairs[(i+pairs.Count/2)%pairs.Count];int seed=4000000+i*100+n;
-                    var r=DualVersusDualHarness.Play(a,b,n%2==0,seed);Assert.IsTrue(r.Error==null,r.Error);Assert.IsFalse(r.HitLimit);
+                    var r=DualVersusDualHarness.Play(a,b,n%2==0,seed);Assert.IsTrue(r.Error==null,"seed="+seed+" "+r.Error);Assert.IsFalse(r.HitLimit);
                     Row(writer,seed,a.Primary.Id+"+"+a.Secondary.Id,b.Primary.Id+"+"+b.Secondary.Id,r.FirstWon.HasValue?(r.FirstWon.Value?0:1):-1,r.Turns);games++;
                 }
             }
