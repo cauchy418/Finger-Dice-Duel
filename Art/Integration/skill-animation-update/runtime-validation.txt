@@ -1,0 +1,31 @@
+PASS owlbear enter
+PASS real rule cue shape overflow
+PASS break -> base health -> overflow
+PASS input locked shape overflow
+PASS queue finished and input restored shape overflow
+PASS no stale effect shape overflow
+PASS real rule cue hunter shield
+PASS block -> shield break -> true damage
+PASS input locked hunter shield
+PASS queue finished and input restored hunter shield
+PASS no stale effect hunter shield
+PASS real rule cue spore overflow
+PASS spore -> ordinary health
+PASS input locked spore overflow
+PASS queue finished and input restored spore overflow
+PASS no stale effect spore overflow
+PASS real rule cue grave strength
+PASS zero -> grave restore
+PASS input locked grave strength
+PASS queue finished and input restored grave strength
+PASS no stale effect grave strength
+PASS sheep enter
+PASS real rule cue sheep skip
+PASS input locked sheep skip
+PASS queue finished and input restored sheep skip
+PASS no stale effect sheep skip
+PASS real rule cue fatal reroll
+PASS fatal payment has no roll
+PASS input locked fatal reroll
+PASS queue finished and input restored fatal reroll
+PASS no stale effect fatal reroll

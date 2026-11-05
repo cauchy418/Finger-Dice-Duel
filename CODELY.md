@@ -17,6 +17,8 @@
 
 配乐由`MusicPolicy`只读选择菜单／战斗／剧情终战，`MusicPlayer`用DSP同钟播放intro→loop及等长鼓层。半血检查所有非召唤参战者，触发后锁定到本局结束；新局重置。设置只控制音乐源mute，不写AudioListener音量或音效源；偏好键`FingerDiceDuel.Audio.MusicEnabled`。十份OGG按立体声流式导入；新增配乐先保留无损源、采样边界与SHA256，再验证循环和同步。见[音乐说明](Docs/music-and-audio.md)及[验收](Art/Integration/music-v1/README.md)。
 
+新版技能动画覆盖荒野与星耀进退、孢子吸收、猎人附伤、恶之强运和幽影等。明确改变显示状态的事件携带前后快照，普通提示仍只播放效果。攻击在首次阶段切换前更新血条，之后依次播放破形、恢复原面板及溢伤。共63个变体，截图与真实队列验收见[动画更新](Art/Integration/skill-animation-update/README.md)。
+
 P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作，107种定稿变体及两阶段截图见[范围与验收](Docs/animation-p2-p3-progress.md)。`SkillVisualData.Element/Status`传真实类型与附加状态；0回合、拒绝附加不发成功表现。`CombatVisualEvent.Power/Unsteady`仅控制本段载体；不参与伤害计算。资源图标保存只读Value和TargetHand，气／逸闻／回路按实际数量，双手锁定按手分开。持续效果每人同时最多3层、按组轮换，退出立即停用再销毁。后续最终稿继续保存关键帧，可用PNG或逐像素核对的无损WebP；记录源版本、进度及SHA256。
 
 动画P1专属细化：`SkillVisualData`保存实际左右手引用、捕获数字、屏障点数和形态／反应变体；不可在播放中重新读取可变数字来推断旧结果。门户起终点只捕获一次。53种变体的两阶段原生渲染截图、复现与报告见[定稿索引](Art/Integration/skill-animation-finals/README.md)。以后每个动画最终稿必须保存效果截图并更新索引；动画修改后重拍。规则与异步播放分开验收。
@@ -51,7 +53,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1620项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职62,768局五模式采样见Tools/Statistics/2026-11-05-ranger，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
+| 测试 | 1627项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职62,768局五模式采样见Tools/Statistics/2026-11-05-ranger，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 主动幻术默发改动前的52子职统计快照：1v1 **106,080** 局、2v2 **169,728** 局、425双将 **2,162,400** 局、集火 **187,200** 局；八人阵营 **2,000** 局；

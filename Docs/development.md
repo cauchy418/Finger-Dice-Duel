@@ -25,7 +25,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-最新结果：**1620 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成9,747次选点审计及57子职62,768局五模式采样，见[最新胜率](../Tools/Statistics/2026-11-05-ranger/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
+最新结果：**1627 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成9,747次选点审计及57子职62,768局五模式采样，见[最新胜率](../Tools/Statistics/2026-11-05-ranger/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
 
 ## 文档
 

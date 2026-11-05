@@ -1,0 +1,596 @@
+PASS true form entry wild-bear-enter
+PASS cue wild-bear-enter
+PASS sprite wild-bear-enter
+PASS sprite wild-bear-enter
+PASS sprite wild-bear-enter
+PASS sprite wild-bear-enter
+PASS sprite wild-bear-enter
+PASS visible effect wild-bear-enter
+PASS cleanup wild-bear-enter
+PASS true form preparation wild-bear-exit
+PASS cue wild-bear-exit
+PASS sprite wild-bear-exit
+PASS sprite wild-bear-exit
+PASS sprite wild-bear-exit
+PASS sprite wild-bear-exit
+PASS sprite wild-bear-exit
+PASS visible effect wild-bear-exit
+PASS cleanup wild-bear-exit
+PASS true form preparation wild-bear-break
+PASS cue wild-bear-break
+PASS sprite wild-bear-break
+PASS sprite wild-bear-break
+PASS sprite wild-bear-break
+PASS sprite wild-bear-break
+PASS sprite wild-bear-break
+PASS visible effect wild-bear-break
+PASS cleanup wild-bear-break
+PASS true form entry wild-wolf-enter
+PASS cue wild-wolf-enter
+PASS sprite wild-wolf-enter
+PASS sprite wild-wolf-enter
+PASS sprite wild-wolf-enter
+PASS sprite wild-wolf-enter
+PASS sprite wild-wolf-enter
+PASS visible effect wild-wolf-enter
+PASS cleanup wild-wolf-enter
+PASS true form preparation wild-wolf-exit
+PASS cue wild-wolf-exit
+PASS sprite wild-wolf-exit
+PASS sprite wild-wolf-exit
+PASS sprite wild-wolf-exit
+PASS sprite wild-wolf-exit
+PASS sprite wild-wolf-exit
+PASS visible effect wild-wolf-exit
+PASS cleanup wild-wolf-exit
+PASS true form preparation wild-wolf-break
+PASS cue wild-wolf-break
+PASS sprite wild-wolf-break
+PASS sprite wild-wolf-break
+PASS sprite wild-wolf-break
+PASS sprite wild-wolf-break
+PASS sprite wild-wolf-break
+PASS visible effect wild-wolf-break
+PASS cleanup wild-wolf-break
+PASS true form entry wild-eagle-enter
+PASS cue wild-eagle-enter
+PASS sprite wild-eagle-enter
+PASS sprite wild-eagle-enter
+PASS sprite wild-eagle-enter
+PASS sprite wild-eagle-enter
+PASS sprite wild-eagle-enter
+PASS visible effect wild-eagle-enter
+PASS cleanup wild-eagle-enter
+PASS true form preparation wild-eagle-exit
+PASS cue wild-eagle-exit
+PASS sprite wild-eagle-exit
+PASS sprite wild-eagle-exit
+PASS sprite wild-eagle-exit
+PASS sprite wild-eagle-exit
+PASS sprite wild-eagle-exit
+PASS visible effect wild-eagle-exit
+PASS cleanup wild-eagle-exit
+PASS true form preparation wild-eagle-break
+PASS cue wild-eagle-break
+PASS sprite wild-eagle-break
+PASS sprite wild-eagle-break
+PASS sprite wild-eagle-break
+PASS sprite wild-eagle-break
+PASS sprite wild-eagle-break
+PASS visible effect wild-eagle-break
+PASS cleanup wild-eagle-break
+PASS true form entry wild-snake-enter
+PASS cue wild-snake-enter
+PASS sprite wild-snake-enter
+PASS sprite wild-snake-enter
+PASS sprite wild-snake-enter
+PASS sprite wild-snake-enter
+PASS sprite wild-snake-enter
+PASS visible effect wild-snake-enter
+PASS cleanup wild-snake-enter
+PASS true form preparation wild-snake-exit
+PASS cue wild-snake-exit
+PASS sprite wild-snake-exit
+PASS sprite wild-snake-exit
+PASS sprite wild-snake-exit
+PASS sprite wild-snake-exit
+PASS sprite wild-snake-exit
+PASS visible effect wild-snake-exit
+PASS cleanup wild-snake-exit
+PASS true form preparation wild-snake-break
+PASS cue wild-snake-break
+PASS sprite wild-snake-break
+PASS sprite wild-snake-break
+PASS sprite wild-snake-break
+PASS sprite wild-snake-break
+PASS sprite wild-snake-break
+PASS visible effect wild-snake-break
+PASS cleanup wild-snake-break
+PASS true form entry wild-owlbear-enter
+PASS cue wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS sprite wild-owlbear-enter
+PASS visible effect wild-owlbear-enter
+PASS cleanup wild-owlbear-enter
+PASS true form preparation wild-owlbear-exit
+PASS cue wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS sprite wild-owlbear-exit
+PASS visible effect wild-owlbear-exit
+PASS cleanup wild-owlbear-exit
+PASS true form preparation wild-owlbear-break
+PASS cue wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS sprite wild-owlbear-break
+PASS visible effect wild-owlbear-break
+PASS cleanup wild-owlbear-break
+PASS true form entry wild-panther-enter
+PASS cue wild-panther-enter
+PASS sprite wild-panther-enter
+PASS sprite wild-panther-enter
+PASS sprite wild-panther-enter
+PASS sprite wild-panther-enter
+PASS sprite wild-panther-enter
+PASS visible effect wild-panther-enter
+PASS cleanup wild-panther-enter
+PASS true form preparation wild-panther-exit
+PASS cue wild-panther-exit
+PASS sprite wild-panther-exit
+PASS sprite wild-panther-exit
+PASS sprite wild-panther-exit
+PASS sprite wild-panther-exit
+PASS sprite wild-panther-exit
+PASS visible effect wild-panther-exit
+PASS cleanup wild-panther-exit
+PASS true form preparation wild-panther-break
+PASS cue wild-panther-break
+PASS sprite wild-panther-break
+PASS sprite wild-panther-break
+PASS sprite wild-panther-break
+PASS sprite wild-panther-break
+PASS sprite wild-panther-break
+PASS visible effect wild-panther-break
+PASS cleanup wild-panther-break
+PASS true form entry stars-archer-enter
+PASS cue stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS sprite stars-archer-enter
+PASS visible effect stars-archer-enter
+PASS cleanup stars-archer-enter
+PASS true form preparation stars-archer-exit
+PASS cue stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS sprite stars-archer-exit
+PASS visible effect stars-archer-exit
+PASS cleanup stars-archer-exit
+PASS true form preparation stars-archer-break
+PASS cue stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS sprite stars-archer-break
+PASS visible effect stars-archer-break
+PASS cleanup stars-archer-break
+PASS true form entry stars-chalice-enter
+PASS cue stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS sprite stars-chalice-enter
+PASS visible effect stars-chalice-enter
+PASS cleanup stars-chalice-enter
+PASS true form preparation stars-chalice-exit
+PASS cue stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS sprite stars-chalice-exit
+PASS visible effect stars-chalice-exit
+PASS cleanup stars-chalice-exit
+PASS true form preparation stars-chalice-break
+PASS cue stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS sprite stars-chalice-break
+PASS visible effect stars-chalice-break
+PASS cleanup stars-chalice-break
+PASS true form entry stars-dragon-enter
+PASS cue stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS sprite stars-dragon-enter
+PASS visible effect stars-dragon-enter
+PASS cleanup stars-dragon-enter
+PASS true form preparation stars-dragon-exit
+PASS cue stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS sprite stars-dragon-exit
+PASS visible effect stars-dragon-exit
+PASS cleanup stars-dragon-exit
+PASS true form preparation stars-dragon-break
+PASS cue stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS sprite stars-dragon-break
+PASS visible effect stars-dragon-break
+PASS cleanup stars-dragon-break
+PASS cue stars-dragon-operation
+PASS sprite stars-dragon-operation
+PASS sprite stars-dragon-operation
+PASS visible effect stars-dragon-operation
+PASS cleanup stars-dragon-operation
+PASS cue stars-chalice-heal
+PASS sprite stars-chalice-heal
+PASS sprite stars-chalice-heal
+PASS visible effect stars-chalice-heal
+PASS cleanup stars-chalice-heal
+PASS initial choice spore-apply
+PASS cue spore-apply
+PASS sprite spore-apply
+PASS sprite spore-apply
+PASS sprite spore-apply
+PASS sprite spore-apply
+PASS sprite spore-apply
+PASS sprite spore-apply
+PASS visible effect spore-apply
+PASS cleanup spore-apply
+PASS initial choice spore-gain
+PASS cue spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS sprite spore-gain
+PASS visible effect spore-gain
+PASS cleanup spore-gain
+PASS initial choice spore-absorb
+PASS cue spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS sprite spore-absorb
+PASS visible effect spore-absorb
+PASS cleanup spore-absorb
+PASS initial choice spore-break
+PASS cue spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS sprite spore-break
+PASS visible effect spore-break
+PASS cleanup spore-break
+PASS initial choice spore-restore
+PASS cue spore-restore
+PASS sprite spore-restore
+PASS sprite spore-restore
+PASS sprite spore-restore
+PASS sprite spore-restore
+PASS sprite spore-restore
+PASS sprite spore-restore
+PASS visible effect spore-restore
+PASS cleanup spore-restore
+PASS cue overflow
+PASS sprite overflow
+PASS visible effect overflow
+PASS cleanup overflow
+PASS cue hunter-consume
+PASS sprite hunter-consume
+PASS sprite hunter-consume
+PASS visible effect hunter-consume
+PASS cleanup hunter-consume
+PASS cue hunter-guard
+PASS sprite hunter-guard
+PASS sprite hunter-guard
+PASS visible effect hunter-guard
+PASS cleanup hunter-guard
+PASS cue gambler-reroll
+PASS sprite gambler-reroll
+PASS sprite gambler-reroll
+PASS visible effect gambler-reroll
+PASS cleanup gambler-reroll
+PASS cue gambler-fatal
+PASS sprite gambler-fatal
+PASS sprite gambler-fatal
+PASS visible effect gambler-fatal
+PASS cleanup gambler-fatal
+PASS cue shadow-darkness
+PASS sprite shadow-darkness
+PASS sprite shadow-darkness
+PASS visible effect shadow-darkness
+PASS cleanup shadow-darkness
+PASS cue shadow-grave
+PASS sprite shadow-grave
+PASS sprite shadow-grave
+PASS visible effect shadow-grave
+PASS cleanup shadow-grave
+PASS cue shadow-eyes
+PASS sprite shadow-eyes
+PASS sprite shadow-eyes
+PASS visible effect shadow-eyes
+PASS cleanup shadow-eyes
+PASS cue blessed-healing
+PASS sprite blessed-healing
+PASS sprite blessed-healing
+PASS sprite blessed-healing
+PASS sprite blessed-healing
+PASS sprite blessed-healing
+PASS sprite blessed-healing
+PASS visible effect blessed-healing
+PASS cleanup blessed-healing
+PASS initial choice dragon-extend-fire
+PASS cue dragon-extend-fire
+PASS sprite dragon-extend-fire
+PASS sprite dragon-extend-fire
+PASS sprite dragon-extend-fire
+PASS sprite dragon-extend-fire
+PASS sprite dragon-extend-fire
+PASS visible effect dragon-extend-fire
+PASS cleanup dragon-extend-fire
+PASS initial choice dragon-extend-cold
+PASS cue dragon-extend-cold
+PASS sprite dragon-extend-cold
+PASS sprite dragon-extend-cold
+PASS sprite dragon-extend-cold
+PASS sprite dragon-extend-cold
+PASS sprite dragon-extend-cold
+PASS visible effect dragon-extend-cold
+PASS cleanup dragon-extend-cold
+PASS initial choice dragon-extend-lightning
+PASS cue dragon-extend-lightning
+PASS sprite dragon-extend-lightning
+PASS sprite dragon-extend-lightning
+PASS sprite dragon-extend-lightning
+PASS sprite dragon-extend-lightning
+PASS sprite dragon-extend-lightning
+PASS visible effect dragon-extend-lightning
+PASS cleanup dragon-extend-lightning
+PASS initial choice dragon-extend-poison
+PASS cue dragon-extend-poison
+PASS sprite dragon-extend-poison
+PASS sprite dragon-extend-poison
+PASS sprite dragon-extend-poison
+PASS sprite dragon-extend-poison
+PASS sprite dragon-extend-poison
+PASS visible effect dragon-extend-poison
+PASS cleanup dragon-extend-poison
+PASS initial choice dragon-extend-acid
+PASS cue dragon-extend-acid
+PASS sprite dragon-extend-acid
+PASS sprite dragon-extend-acid
+PASS sprite dragon-extend-acid
+PASS sprite dragon-extend-acid
+PASS sprite dragon-extend-acid
+PASS visible effect dragon-extend-acid
+PASS cleanup dragon-extend-acid
+PASS initial choice storm-pierce-lightning
+PASS cue storm-pierce-lightning
+PASS sprite storm-pierce-lightning
+PASS sprite storm-pierce-lightning
+PASS sprite storm-pierce-lightning
+PASS sprite storm-pierce-lightning
+PASS sprite storm-pierce-lightning
+PASS visible effect storm-pierce-lightning
+PASS cleanup storm-pierce-lightning
+PASS initial choice storm-pierce-thunder
+PASS cue storm-pierce-thunder
+PASS sprite storm-pierce-thunder
+PASS sprite storm-pierce-thunder
+PASS sprite storm-pierce-thunder
+PASS sprite storm-pierce-thunder
+PASS sprite storm-pierce-thunder
+PASS visible effect storm-pierce-thunder
+PASS cleanup storm-pierce-thunder
+PASS cue gloom-enter
+PASS sprite gloom-enter
+PASS sprite gloom-enter
+PASS sprite gloom-enter
+PASS sprite gloom-enter
+PASS sprite gloom-enter
+PASS visible effect gloom-enter
+PASS cleanup gloom-enter
+PASS cue gloom-reveal
+PASS sprite gloom-reveal
+PASS sprite gloom-reveal
+PASS sprite gloom-reveal
+PASS sprite gloom-reveal
+PASS sprite gloom-reveal
+PASS visible effect gloom-reveal
+PASS cleanup gloom-reveal
+PASS cue land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS sprite land-hand
+PASS visible effect land-hand
+PASS cleanup land-hand
+PASS cue monk-ki-fire
+PASS sprite monk-ki-fire
+PASS sprite monk-ki-fire
+PASS visible effect monk-ki-fire
+PASS cleanup monk-ki-fire
+PASS cue monk-ki-cold
+PASS sprite monk-ki-cold
+PASS sprite monk-ki-cold
+PASS visible effect monk-ki-cold
+PASS cleanup monk-ki-cold
+PASS cue monk-ki-lightning
+PASS sprite monk-ki-lightning
+PASS sprite monk-ki-lightning
+PASS visible effect monk-ki-lightning
+PASS cleanup monk-ki-lightning
+PASS cue monk-ki-thunder
+PASS sprite monk-ki-thunder
+PASS sprite monk-ki-thunder
+PASS visible effect monk-ki-thunder
+PASS cleanup monk-ki-thunder
+PASS cue monk-ki-acid
+PASS sprite monk-ki-acid
+PASS sprite monk-ki-acid
+PASS visible effect monk-ki-acid
+PASS cleanup monk-ki-acid
+PASS cue illusion-guard
+PASS sprite illusion-guard
+PASS sprite illusion-guard
+PASS visible effect illusion-guard
+PASS cleanup illusion-guard
+PASS cue sheep-enter
+PASS sprite sheep-enter
+PASS sprite sheep-enter
+PASS sprite sheep-enter
+PASS visible effect sheep-enter
+PASS cleanup sheep-enter
+PASS cue sheep-expire
+PASS sprite sheep-expire
+PASS sprite sheep-expire
+PASS sprite sheep-expire
+PASS visible effect sheep-expire
+PASS cleanup sheep-expire
+PASS cue sheep-break
+PASS sprite sheep-break
+PASS sprite sheep-break
+PASS sprite sheep-break
+PASS visible effect sheep-break
+PASS cleanup sheep-break
+PASS cue specter-dismiss
+PASS sprite specter-dismiss
+PASS sprite specter-dismiss
+PASS sprite specter-dismiss
+PASS visible effect specter-dismiss
+PASS cleanup specter-dismiss
