@@ -22,6 +22,11 @@ namespace FingerDiceDuel.Tests
         {
             string mode=Environment.GetEnvironmentVariable("FDD_REVISION_MODE")??"1v1";
             Directory.CreateDirectory(Root);int games=0;_written=0;
+            if (mode == "tune-1v1" || mode == "tune-2v2")
+            {
+                RunTuning(mode);
+                return;
+            }
             if(mode=="1v1")File.WriteAllLines(Root+"/roster.tsv",new[]{"id\tname\taxis"}.Concat(Roster.Select(d=>d.Id+"\t"+d.DisplayName+"\t"+Alignments.LawAxisOf(CharacterCodex.For(d).Alignment))),new System.Text.UTF8Encoding(false));
             using var writer=new StreamWriter(Root+"/"+mode+".csv",false,new System.Text.UTF8Encoding(false));
             writer.WriteLine("seed,first,second,winner,turns");
@@ -91,5 +96,80 @@ namespace FingerDiceDuel.Tests
         }
         private static bool WinningSide(IdentityRole winner,IdentityRole role)
             =>winner==IdentityRole.Lord||winner==IdentityRole.Loyalist?role==IdentityRole.Lord||role==IdentityRole.Loyalist:winner!=IdentityRole.None&&winner==role;
+
+        private static void RunTuning(string mode)
+        {
+            bool teams = mode == "tune-2v2";
+            var roles = new[]{CharacterDefinition.CircleOfTheMoon,CharacterDefinition.CircleOfTheStars,
+                CharacterDefinition.CircleOfTheLand,CharacterDefinition.CircleOfSpores,CharacterDefinition.ShadowMagic};
+            string[] variants = {"current","L67","P67","L100"};
+            using var writer = new StreamWriter(Path.Combine(Root, mode + ".csv"), false, new System.Text.UTF8Encoding(false));
+            writer.WriteLine("role,phase,trial,variant,seed,won");
+            int games = 0;
+            for (int roleIndex = 0; roleIndex < roles.Length; roleIndex++)
+            {
+                var role = roles[roleIndex];
+                var pool = Roster.Where(r => r.Id != role.Id).ToArray();
+                for (int phase = 0; phase <= 1; phase++)
+                {
+                    int trials = (teams ? 320 : pool.Length * 4) * (phase + 1);
+                    for (int trial = 0; trial < trials; trial++)
+                    {
+                        int seed = 8100000 + (teams ? 100000 : 0) + roleIndex * 10000 + phase * 2000 + trial;
+                        int seat = trial % 4;
+                        var roster = new CharacterDefinition[4];
+                        if (teams)
+                        {
+                            var rng = new Random(seed);
+                            int[] picks = Enumerable.Range(0, pool.Length).ToArray();
+                            for (int index = 0; index < 3; index++)
+                            {
+                                int swap = rng.Next(index, picks.Length);
+                                int pick = picks[swap]; picks[swap] = picks[index]; picks[index] = pick;
+                            }
+                            for (int index = 0, next = 0; index < roster.Length; index++)
+                                roster[index] = index == seat ? role : pool[picks[next++]];
+                        }
+                        foreach (var variant in variants)
+                        {
+                            bool won;
+                            if (teams)
+                            {
+                                var providers = new GreedyChoiceProvider[4];
+                                for (int index = 0; index < providers.Length; index++)
+                                {
+                                    providers[index] = Ai();
+                                    providers[index].UseLearnedFocus = true;
+                                }
+                                ConfigureTrial(providers[seat], variant);
+                                var result = TwoVersusTwoHarness.PlayWith(roster[0], roster[1], roster[2], roster[3], seed,
+                                    50, providers, null, out _);
+                                Assert.IsTrue(result.Error == null && !result.HitLimit, $"seed={seed} {result.Error}");
+                                won = seat == 0 || seat == 3 ? result.Seat14Won : result.Seat23Won;
+                            }
+                            else
+                            {
+                                var result = CharacterBalanceTests.RunOne(role, pool[trial % pool.Length],
+                                    (trial / pool.Length) % 2 == 0, seed, out string error, ai => ConfigureTrial(ai, variant));
+                                Assert.IsTrue(error == null && !result.HitTurnLimit, $"seed={seed} {error}");
+                                won = result.Winner?.Definition.Id == role.Id;
+                            }
+                            writer.WriteLine($"{role.Id},{phase},{trial},{variant},{seed},{(won ? 1 : 0)}");
+                            if (++games % 1000 == 0) { writer.Flush(); Console.WriteLine("progress " + games + " games"); }
+                        }
+                    }
+                }
+            }
+            Console.WriteLine(mode + " completed " + games + " games; zero errors / forced aborts");
+        }
+
+        private static void ConfigureTrial(GreedyChoiceProvider ai, string variant)
+        {
+            if (variant == "current") return;
+            ai.UseValidatedTuning = false;
+            ai.HandValueWeight = 12;
+            ai.DenyRatioPercent = variant == "L100" ? 100 : 67;
+            ai.UseProjectedCounterplay = variant == "P67";
+        }
     }
 }

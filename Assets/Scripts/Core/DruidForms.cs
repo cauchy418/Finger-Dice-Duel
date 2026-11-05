@@ -10,7 +10,7 @@ namespace FingerDiceDuel.Core
     }
     public interface IDruidChoicePolicy
     {
-        int ChooseForm(PlayerState owner,string circle,IReadOnlyList<SkillChoiceOption> options,GameManager game);
+        int ChooseForm(PlayerState owner,string circle,IReadOnlyList<SkillChoiceOption> options,GameManager game,int wildForm=0);
         bool ExitForm(PlayerState owner,IDruidForm form,GameManager game);
         PlayerState ChaliceTarget(PlayerState owner,IReadOnlyList<PlayerState> targets,GameManager game);
         Hand SecondAddend(PlayerState owner,Hand acted,Hand first,IReadOnlyList<Hand> candidates,GameManager game);
@@ -32,11 +32,11 @@ namespace FingerDiceDuel.Core
         public static bool IsDragon(PlayerState player)
         {foreach(var form in CharacterBehaviors.Implementers<IDruidForm>(player))if(form.NeedsSecondAddend)return true;return false;}
         public static string Name(string circle,int value)=>(circle=="moon"?MoonNames:StarNames)[value];
-        public static void OfferEntry(PlayerState owner,GameManager game,string circle,System.Action<int> apply)
+        public static void OfferEntry(PlayerState owner,GameManager game,string circle,System.Action<int> apply,int wildForm=0)
         {
             var options=Options(circle);var request=new WizardChoice(owner,(circle=="moon"?"荒野形态":"星耀形态")+" · 选择形态",options,apply);
             if(game.DeferWizardChoice?.Invoke(request)==true)return;
-            int pick=game.GetDruidPolicy(owner)?.ChooseForm(owner,circle,options,game)??1;
+            int pick=game.GetDruidPolicy(owner)?.ChooseForm(owner,circle,options,game,wildForm)??1;
             if(!request.ChooseOption(pick)) request.ChooseOption(0);
         }
         public static void OfferExit(PlayerState owner,GameManager game,IDruidForm form,System.Action exit)

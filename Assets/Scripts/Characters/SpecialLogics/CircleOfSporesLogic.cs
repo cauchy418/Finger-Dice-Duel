@@ -20,6 +20,5 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
         public void OnNearbyDeath(PlayerState owner,GameManager game)
         {int before=owner.WildCharges;owner.RestoreWildCharge();if(before!=owner.WildCharges)game.NoteSkill(owner,"真菌感染","荒野充能+1",owner);}
-        public override int ScoreMoveBonus(MoveValueContext ctx)=>ctx.ActedValueAfter==ctx.OtherHandValue?65:ctx.ActedValueAfter+ctx.OtherHandValue==10?45:0;
     }
 }

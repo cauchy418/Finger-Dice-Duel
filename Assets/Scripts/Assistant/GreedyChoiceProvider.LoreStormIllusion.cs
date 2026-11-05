@@ -45,9 +45,11 @@ namespace FingerDiceDuel.Assistant
         private static int StormPreparation(PlayerState owner,Hand source,Hand target,GameManager game)
         {
             int value=StatusRules.ApplyResultModifiers(owner,Hand.ComputeSum(source.Value,target.Value));
-            var profile=HandValueProfiles.For(owner.Definition);var other=ReferenceEquals(source,owner.LeftHand)?owner.RightHand:owner.LeftHand;
+            var profile=ActiveHandValueProfile(owner);
             int score=profile.WeightOf(value)-profile.WeightOf(source.Value);
             if(source.IsShield)score-=60;
+            if (owner.IsWildShaped && owner.WildStar == 3)
+                return score + DragonPreparation(owner, source, value, game) - DragonPreparation(owner, source, source.Value, game);
             foreach(var book in CharacterBehaviors.Implementers<ILoreRecord>(owner))if(!book.HasRecord(value))score+=4;
             foreach(var enemy in game.Players)
             {
@@ -63,11 +65,18 @@ namespace FingerDiceDuel.Assistant
         }
         public Hand ChooseNewSubclassHand(string key,PlayerState owner,IReadOnlyList<Hand> hands,GameManager game)
         {
-            Hand best=null;int score=0;
-            if(key==NewSubclassChoices.StormSource)
+            bool required = key == NewSubclassChoices.DragonRequiredSource || key == NewSubclassChoices.DragonRequiredAddend;
+            Hand best=null;int score=required ? int.MinValue : 0;
+            if(key==NewSubclassChoices.StormSource || key==NewSubclassChoices.DragonRequiredSource)
             {
                 foreach(var move in game.GetLegalMoves(owner))
-                {int v=StormPreparation(owner,move.ActedHand,move.TargetHand,game);if(v>score){score=v;best=move.ActedHand;}}
+                {
+                    bool offered = false;
+                    foreach (var hand in hands) if (hand == move.ActedHand) { offered = true; break; }
+                    if (!offered) continue;
+                    int v=StormPreparation(owner,move.ActedHand,move.TargetHand,game);
+                    if(v>score){score=v;best=move.ActedHand;}
+                }
                 _stormPlannedSource=best;return best;
             }
             var source=_stormPlannedSource;if(source==null||!owner.Owns(source))return null;

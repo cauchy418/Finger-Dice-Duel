@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Assistant
                     {
                         int result=StatusRules.ApplyResultModifiers(foe,Hand.ComputeSum(hand.Value,addend));
                         var effect=CharacterBehaviors.DisplayedEffectOf(foe,result);
-                        var profile=HandValueProfiles.For(foe.Definition);
+                        var profile=ActiveHandValueProfile(foe);
                         int value=profile.WeightOf(result)/4;
                         switch(effect)
                         {

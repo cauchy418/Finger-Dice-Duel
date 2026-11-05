@@ -8,13 +8,13 @@ namespace FingerDiceDuel.Assistant
     {
         public override int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
         {
-            if(key=="druid_symbiosis")return owner.SporeLife==0&&owner.WildCharges>0?1:0;
+            if(key=="druid_symbiosis")return WantsSymbiosis(owner,game)?1:0;
+            if(key==ShadowRules.Darkness)return DarknessValue(owner,game)>0?1:0;
             int best=options[0].Value;double bestScore=double.NegativeInfinity;
             foreach(var option in options)
             {
                 double score;
-                if(key==ShadowRules.Darkness){if(game==null||owner==null)return 0;int enemies=0,friends=0;foreach(var p in game.Players)if(p.IsAlive&&!ReferenceEquals(p,owner)&&game.DistanceBetween(owner,p)<=1&&!p.HasStatus(StatusEffect.HolyLight)&&CharacterBehaviors.FirstImplementer<IShadowEyes>(p)==null){if(game.IsTeammate(owner,p))friends++;else enemies++;}score=option.Value==1?enemies*12-friends*8-0.1:0;}
-                else if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
+                if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
                 else if(key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
                 else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==NewSubclassChoices.LoreGrowth) score=option.Value==1?20:0;

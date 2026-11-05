@@ -15,6 +15,20 @@ namespace FingerDiceDuel.Tests
             =>CharacterFactory.CreateMatch(role??CharacterDefinition.CircleOfTheMoon,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());
         private static void Enter(GameManager g,int form,int star=0)
         {g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);Assert.IsTrue(g.PlayerA.EnterWild(form,star,g));g.SkipTurnAlreadyValidated();g.ForceActivePlayerForTest(g.PlayerA);}
+        [Test] public void Ai_distinguishes_breaking_shape_from_defeating_original()
+        {
+            var game=Match();var target=game.PlayerA;var attacker=game.PlayerB;
+            Enter(game,2);
+            target.SetHealthExact(2);
+            target.LeftHand.SetValue(3);
+            var move=new LegalMove(attacker,attacker.LeftHand,target.LeftHand);
+            var ai=new GreedyChoiceProvider{Game=game};
+            Assert.AreEqual(22,target.HealthAcrossForms);
+            Assert.IsTrue(ai.ScoreMoveForTest(move,attacker,game)<ai.LethalBonus);
+            target.EndWild();
+            target.SetHealthExact(2);
+            Assert.IsTrue(ai.ScoreMoveForTest(move,attacker,game)>=ai.LethalBonus);
+        }
         [Test] public void All_forms_replace_stats_health_type_and_restore_original()
         {
             int[] hp={0,12,10,8,8,16,10},atk={0,-1,0,1,0,0,2},def={0,1,-1,-1,0,2,0};

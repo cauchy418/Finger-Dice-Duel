@@ -282,7 +282,7 @@ namespace FingerDiceDuel.Tests
         /// 这样一次就能看到**所有**角色的所有问题。
         /// </summary>
         internal static TestSetup.SamplingResult RunOne(CharacterDefinition defA, CharacterDefinition defB,
-                                          bool aFirst, int seed, out string anomaly)
+                                          bool aFirst, int seed, out string anomaly, System.Action<GreedyChoiceProvider> configureA = null)
         {
             anomaly = null;
 
@@ -293,6 +293,7 @@ namespace FingerDiceDuel.Tests
 
                 var game=new GameManager(pA,pB,new SimpleChoiceProvider(),new SimpleChoiceProvider());
                 var ais=new[]{new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true},new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true}};
+                configureA?.Invoke(ais[aFirst ? 0 : 1]);
 
                 // 1v1 经典：先掷 1d20 决定初始手值（见 PrepareClassicStart）
                 PrepareClassicStart(game, seed);

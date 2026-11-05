@@ -755,6 +755,12 @@ namespace FingerDiceDuel.Assistant
             // 反转依赖：不是"AI 认识野蛮人·野兽道途"，而是"角色告诉 AI 这一手值多少"。
             // 这样 Assistant 层不必引用 Characters 层（项目约定）。
             Hand other = GetOtherHand(actor, move.ActedHand);
+            if (game != null)
+            {
+                int projectedResult = Math.Max(1, StatusRules.ApplyResultModifiers(actor, result));
+                score += SpecialistMoveBonus(move, actor, projectedResult, other.Value, game);
+                score += SpecialistCounterplayScore(move, actor, projectedResult, game) * DenyRatioPercent / 67;
+            }
 
             if (actor.Character is IAiMoveAdvisor advisor)
             {
@@ -852,8 +858,9 @@ namespace FingerDiceDuel.Assistant
             //    预测挨打对象：结果是攻击时 = 默认攻击目标 = 第一位对手
             //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
             int resultForPriority = result;
-            bool priorityIsAttack =
-                Hand.GetEffectType(resultForPriority) == HandEffectType.Attack4
+            bool priorityIsAttack = actor.IsWildShaped
+                ? IsAttackEffect(DivineScoredEffect(actor, resultForPriority, game))
+                : Hand.GetEffectType(resultForPriority) == HandEffectType.Attack4
                 || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack6
                 || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack8
                 || (actor?.Character is IHandEffectDisplay dsp
@@ -906,7 +913,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 必须放在最后、且量级**远大于**其他所有项 ——
             //    能一击带走时，前面那些"目标优先级""屯牌价值"全都不重要了。
             if (IsLethal(move, actor, game, result))
-                score += LethalBonus;
+                score += LethalBonus - EnemySporeRefillCost(actor, ResolveIntendedVictim(move, actor, game), game);
 
             return score;
         }
@@ -930,7 +937,8 @@ namespace FingerDiceDuel.Assistant
         {
             if (game == null || actor == null) return false;
 
-            HandEffectType effect = Hand.GetEffectType(result);
+            HandEffectType effect = actor.IsWildShaped
+                ? DivineScoredEffect(actor, result, game) : Hand.GetEffectType(result);
             bool isAttack = effect == HandEffectType.Attack4
                             || effect == HandEffectType.Attack6
                             || effect == HandEffectType.Attack8;
@@ -938,13 +946,17 @@ namespace FingerDiceDuel.Assistant
 
             PlayerState victim = ResolveIntendedVictim(move,actor,game);
             if (victim == null || !victim.IsAlive) return false;
+            if (CharacterBehaviors.FirstImplementer<IDruidForm>(actor) != null
+                && (!game.CanReach(actor, victim) || !StatusRules.CanAttackTarget(actor, victim, game))) return false;
 
             // ⚠️ 打队友不算"斩杀"（那是负收益，另有惩罚）
             if (game.IsKnownAlly(actor, victim)) return false;
 
             // 角色特有的增伤 / 额外段数（游荡者·风流剑客强化、战士·剑士追加、游荡者·刺客潜行、野蛮人·巨人道途两段…）
             // 由 TotalLethalDamage 统一处理（传**原始值**给角色自算）。
-            return TotalLethalDamage(move, actor, victim, result) >= victim.Health;
+            foreach (var part in DruidWildShape.Parts(victim.PersistentCharacter))
+                if (part is IGraveStrength grave && !grave.GraveSpent) return false;
+            return TotalLethalDamage(move, actor, victim, result, game) >= victim.HealthAcrossForms;
         }
 
         /// <summary>
@@ -954,12 +966,15 @@ namespace FingerDiceDuel.Assistant
         /// 否则测试验证的是一份逻辑、实际用的是另一份。
         /// </summary>
         public int TotalLethalDamage(LegalMove move, PlayerState actor, PlayerState victim,
-                                     int result)
+                                     int result, GameManager game = null)
         {
             if (actor == null || victim == null) return 0;
             if (actor.HasStatus(StatusEffect.Disabled)
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor) == null) return 0;
 
+            game = game ?? Game;
+            if (actor.IsWildShaped && !actor.IsPolymorphed && actor.WildForm == 5 && game != null)
+                result += game.DistanceBetween(actor, victim);
             int atkBonus = StatusRules.EffectiveAttackBonus(actor);
             int defBonus = StatusRules.EffectiveDefenseBonus(victim);
 
@@ -974,7 +989,7 @@ namespace FingerDiceDuel.Assistant
             }
             else total=AttackContext.ApplyStatBonuses(result,atkBonus,defBonus,ignorePositiveDefense:false);
             total+=ArcaneChoices.BonusAgainst(actor,victim)*CharacterFactory.MaxAttackHits(actor);
-            var preview=new AttackContext(actor,victim,move.ActedHand,result,Game);
+            var preview=new AttackContext(actor,victim,move.ActedHand,result,game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
             var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
             if(fixedRule!=null) {total=fixedRule.NormalAttackDamage;type=fixedRule.NormalAttackType;}
@@ -986,10 +1001,10 @@ namespace FingerDiceDuel.Assistant
                 total=StatusRules.ApplyIncomingDamage(victim,total);
             }
             total=StatusRules.ApplyDamageAffinities(victim,total,type);
-            if(Game!=null) foreach(var p in Game.Players)
+            if(game!=null) foreach(var p in game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
-            return System.Math.Max(0,total-victim.FalseLife);
+            return System.Math.Max(0,total-victim.SporeLife-victim.FalseLife);
         }
 
         /// <summary>
@@ -1015,7 +1030,7 @@ namespace FingerDiceDuel.Assistant
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
                     if(defense.CanReduceAttack(victim,result))damage=(damage+1)/2;
             // 原有估算保持不变，只补齐新增易伤/免疫；抗性仍由既有评分路径处理。
-            return System.Math.Max(0,StatusRules.ApplyDamageAffinities(victim, damage, type, false)-victim.FalseLife);
+            return System.Math.Max(0,StatusRules.ApplyDamageAffinities(victim, damage, type, false)-victim.SporeLife-victim.FalseLife);
         }
 
         // ============================================================
@@ -1320,7 +1335,9 @@ namespace FingerDiceDuel.Assistant
                 score += TargetPriorityBase;
 
             // ② 血量更低（血越少分越高）
-            score += (100 - HealthPercentOf(target)) * (TargetPriorityBase / 100);
+            int exposedHealth = target.HealthAcrossForms + target.SporeLife;
+            int exposedPercent = Clamp(exposedHealth * 100 / target.MaximumHealth, 0, 100);
+            score += (100 - exposedPercent) * (TargetPriorityBase / 100);
 
             // ③ 没有防御
             bool defended = HasDefense(target.LeftHand) || HasDefense(target.RightHand);
@@ -1405,7 +1422,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private int HandValueScore(PlayerState actor, int actedAfter, int otherHandValue)
         {
-            HandValueProfile profile = HandValueProfiles.For(actor.Definition);
+            HandValueProfile profile = ActiveHandValueProfile(actor);
             if (profile == null) return 0;
 
             // ① 屯手值的偏好（次要，缩放）

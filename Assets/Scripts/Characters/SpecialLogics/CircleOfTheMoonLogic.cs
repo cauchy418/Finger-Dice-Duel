@@ -10,7 +10,6 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public int FormValue=>(int)Form;
         public bool NeedsSecondAddend=>false;
         public HandEffectType DisplayedEffectOf(int value)=>_owner?.Character is WildShapeBehavior wild?wild.DisplayedEffectOf(value):Hand.GetEffectType(value);
-        public override int ScoreMoveBonus(MoveValueContext ctx)=>ctx.ActedValueAfter+ctx.OtherHandValue==10?80:0;
         public override string DisplayName=>"德鲁伊·月光结社";
         public override void OnMatchReset(PlayerState owner,GameManager game){_owner=owner;}
         public bool TryEnter(WildShape form,PlayerState owner,GameManager game)=>owner.EnterWild((int)form,0,game);

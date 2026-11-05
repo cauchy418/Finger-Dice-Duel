@@ -20,6 +20,7 @@ namespace FingerDiceDuel.Core
             var sources=new List<Hand>();foreach(var m in game.GetLegalMoves(owner))
                 if((fixedSource==null||ReferenceEquals(m.ActedHand,fixedSource))&&!sources.Contains(m.ActedHand))sources.Add(m.ActedHand);
             if(sources.Count==0){completed?.Invoke();return;}
+            bool requiredDragon = skill == "巨龙座" && !optional;
             Action<Hand> choose=source=>{
                 if(source==null){completed?.Invoke();return;}
                 var targets=new List<Hand>();foreach(var m in game.GetLegalMoves(owner))if(ReferenceEquals(m.ActedHand,source))targets.Add(m.TargetHand);
@@ -29,7 +30,7 @@ namespace FingerDiceDuel.Core
                     game.RequestOperationAddend(owner,source,target,actual=>game.RequestTrickeryOperation(owner,source,actual,()=>{
                         game.ApplyEffectlessOperation(owner,source,actual,skill);completed?.Invoke();},true),effectless:true);
                 };
-                if(fixedSource==null)NewSubclassChoices.OfferHand(NewSubclassChoices.StormAddend,skill+" · 点击加数（只改手值）",owner,game,targets,optional,apply);
+                if(fixedSource==null)NewSubclassChoices.OfferHand(requiredDragon ? NewSubclassChoices.DragonRequiredAddend : NewSubclassChoices.StormAddend,skill+" · 点击加数（只改手值）",owner,game,targets,optional,apply);
                 else{
                     var request=new WizardChoice(owner,skill+" · 点击加数（只改手值）",targets,false,apply);
                     if(game.DeferWizardChoice?.Invoke(request)!=true){
@@ -39,7 +40,8 @@ namespace FingerDiceDuel.Core
                 }
             };
             if(fixedSource!=null)choose(fixedSource);
-            else NewSubclassChoices.OfferHand(NewSubclassChoices.StormSource,skill+" · 点击运算手，或不发动",owner,game,sources,optional,choose);
+            else NewSubclassChoices.OfferHand(requiredDragon ? NewSubclassChoices.DragonRequiredSource : NewSubclassChoices.StormSource,
+                skill+(optional ? " · 点击运算手，或不发动" : " · 点击运算手"),owner,game,sources,optional,choose);
         }
     }
     public partial class GameManager

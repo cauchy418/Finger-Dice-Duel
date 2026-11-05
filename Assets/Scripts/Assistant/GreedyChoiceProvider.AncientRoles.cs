@@ -23,20 +23,25 @@ namespace FingerDiceDuel.Assistant
                 }
                 else if(key==AncientRoleChoices.LandSeal)
                 {
-                    score=hand.IsTargetRestricted?-100:0;
+                    if (hand.IsTargetRestricted || hand.IsConcealed) continue;
+                    score = 0;
                     foreach(var other in game.Players)
                     {
-                        if(!other.IsAlive)continue;
+                        if(!other.IsAlive || !StatusRules.CanAct(other)
+                            || !StatusRules.CanUseHandAsAddend(other, hand, game)) continue;
+                        int opportunity = 0;
                         foreach(var source in other.Hands)
                         {
                             if(!source.CanBeOperated||ReferenceEquals(source,hand)||ReferenceEquals(other,target)&&!(other.Character is ISelfAddendProvider self&&self.AllowsSelfAddend))continue;
                             int result=StatusRules.ApplyResultModifiers(other,Hand.ComputeSum(source.Value,hand.Value));
                             var effect=CharacterBehaviors.DisplayedEffectOf(other,result);
-                            int value=effect==HandEffectType.Heal?Math.Min(9,other.MaximumHealth-other.Health)*3
+                            int value=effect==HandEffectType.Heal?HealingGain(other,9)*3
                                 :effect==HandEffectType.Shield?8
-                                :effect==HandEffectType.Attack4||effect==HandEffectType.Attack6||effect==HandEffectType.Attack8?result*2:1;
-                            score+=AncientAlly(game,owner,other)?-value:value;
+                                :IsAttackEffect(effect)&&game.CanReach(other,owner)&&!other.HasStatus(StatusEffect.Disabled)?result*2:0;
+                            value += SpecialistSetupValue(other, result, other.GetOtherHand(source).Value, game) / 2;
+                            opportunity = Math.Max(opportunity, value);
                         }
+                        score += AncientAlly(game,owner,other) ? -opportunity : opportunity;
                     }
                 }
                 else
@@ -49,7 +54,7 @@ namespace FingerDiceDuel.Assistant
                 }
                 if(score>bestScore){bestScore=score;best=hand;}
             }
-            return best;
+            return key==AncientRoleChoices.LandSeal && bestScore<=0 ? null : best;
         }
         private static double FiendPactScore(int value,PlayerState owner,PlayerState target,GameManager game)
         {

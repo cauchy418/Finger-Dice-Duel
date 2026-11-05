@@ -28,6 +28,7 @@ namespace FingerDiceDuel.Core
     public static class NewSubclassChoices
     {
         public const string LoreGrowth="lore_growth",LoreDefense="lore_defense",IllusionDefense="illusion_defense",StormResistance="storm_resistance",StormSource="storm_source",StormAddend="storm_addend";
+        public const string DragonRequiredSource = "dragon_required_source", DragonRequiredAddend = "dragon_required_addend";
         public static List<SkillChoiceOption> YesNo(string yes,string icon,string no="不发动")=>new List<SkillChoiceOption>{
             new SkillChoiceOption(1,yes,icon,"发动本次技能。"),new SkillChoiceOption(0,no,icon,"本次保留。")};
         public static List<SkillChoiceOption> StormResistances()=>new List<SkillChoiceOption>{

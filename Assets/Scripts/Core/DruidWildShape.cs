@@ -46,6 +46,17 @@ namespace FingerDiceDuel.Core
     public static class DruidWildShape
     {
         public static readonly int[] Health={0,12,10,8,8,16,10};
+        private static readonly int[] Attack = {0,-1,0,1,0,0,2};
+        private static readonly int[] Defense = {0,1,-1,-1,0,2,0};
+        private static readonly int[] Range = {1,1,1,3,1,2,1};
+        public static int AttackOf(int form,int star) => Attack[form] + (star==1 ? 2 : star==3 ? 1 : 0);
+        public static int DefenseOf(int form,int star) => Defense[form] + (star==1 ? -1 : star==3 ? 1 : 0);
+        public static int RangeOf(int form,int star) => Math.Max(Range[form],star==1||star==3 ? 3 : 1);
+        public static AttackDamageType TypeOf(int form,int star)
+            => star==1 ? AttackDamageType.Radiant : form==3 ? AttackDamageType.Piercing
+                : form==4 ? AttackDamageType.Poison : AttackDamageType.Slashing;
+        public static HandEffectType EffectOf(int form,int value)
+            => form==1&&value==4 ? HandEffectType.Shield : form==3&&value==6 ? HandEffectType.None : Hand.GetEffectType(value);
         public static IEnumerable<ICharacterBehavior> Parts(ICharacterBehavior root)
         {if(root is ICharacterBehaviorContainer container){foreach(var part in container.Parts)yield return part;}else if(root!=null)yield return root;}
         public static bool Has<T>(ICharacterBehavior root){foreach(var part in Parts(root))if(part is T)return true;return false;}
@@ -57,7 +68,7 @@ namespace FingerDiceDuel.Core
             options.RemoveAll(o=>o.Value>=5&&(!moon||owner.WildCharges<2));
             var request=new WizardChoice(owner,"荒野形态 · 消耗充能并跳过回合",options,value=>{
                 if(value==0)return;
-                if(Has<Characters.SpecialLogics.CircleOfTheStarsLogic>(owner.Character))DruidForms.OfferEntry(owner,game,"stars",star=>{if(star!=0)owner.EnterWild(value,star,game);});
+                if(Has<Characters.SpecialLogics.CircleOfTheStarsLogic>(owner.Character))DruidForms.OfferEntry(owner,game,"stars",star=>{if(star!=0)owner.EnterWild(value,star,game);},value);
                 else owner.EnterWild(value,0,game);
             });
             if(game.DeferWizardChoice?.Invoke(request)!=true)
@@ -71,12 +82,12 @@ namespace FingerDiceDuel.Core
         private int F=>_owner.WildForm;private int S=>_owner.WildStar;
         public string CircleKey=>"moon";public int FormValue=>F;public bool NeedsSecondAddend=>false;
         public override string DisplayName=>DruidForms.Name("moon",F);
-        public override int AttackBonus=>(F==1?-1:F==3?1:F==6?2:0)+(S==1?2:S==3?1:0);
-        public override int DefenseBonus=>(F==1?1:F==2||F==3?-1:F==5?2:0)+(S==1?-1:S==3?1:0);
-        public override int BaseAttackRange=>Math.Max(F==3?3:F==5?2:1,S==1||S==3?3:1);
-        public override AttackDamageType AttackTypeOf(AttackContext ctx)=>S==1?AttackDamageType.Radiant:F==3?AttackDamageType.Piercing:F==4?AttackDamageType.Poison:AttackDamageType.Slashing;
+        public override int AttackBonus=>DruidWildShape.AttackOf(F,S);
+        public override int DefenseBonus=>DruidWildShape.DefenseOf(F,S);
+        public override int BaseAttackRange=>DruidWildShape.RangeOf(F,S);
+        public override AttackDamageType AttackTypeOf(AttackContext ctx)=>DruidWildShape.TypeOf(F,S);
         public bool HandlesResult(int value)=>F==3&&value==6||F==1&&value==4;
-        public HandEffectType DisplayedEffectOf(int value)=>F==1&&value==4?HandEffectType.Shield:F==3&&value==6?HandEffectType.None:Hand.GetEffectType(value);
+        public HandEffectType DisplayedEffectOf(int value)=>DruidWildShape.EffectOf(F,value);
         public HandEffectType RewriteEffect(PlayerState actor,Hand hand,int add,GameManager game)=>DisplayedEffectOf(hand.Value);
         public override void OnResolveAttack(AttackContext ctx)
         {if(ctx.IsStatusDamage||ctx.IsReflected)return;if(F==5)ctx.FinalDamage+=ctx.Manager.DistanceBetween(ctx.Attacker,ctx.Defender);if(F==6)ctx.InflictsBleed=true;}
@@ -106,6 +117,5 @@ namespace FingerDiceDuel.Core
             var request=new WizardChoice(owner,"圣杯座 · 额外回复9",hands,true,h=>{var target=game.OwnerOfHand(h);if(target!=null){int hp=target.Health;target.Heal(9);game.NoteSkill(owner,"圣杯座","回复"+target.Name+" "+(target.Health-hp),target);}},targetsPlayer:true);
             if(game.DeferWizardChoice?.Invoke(request)!=true)request.Choose(game.GetDruidPolicy(owner)?.ChaliceTarget(owner,targets,game)?.LeftHand);
         }
-        public override int ScoreMoveBonus(MoveValueContext ctx)=>F==3&&ctx.ActedValueAfter==6?-120:S==2&&ctx.ActedValueAfter==9?40:0;
     }
 }

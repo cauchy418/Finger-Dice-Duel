@@ -14,6 +14,18 @@ namespace FingerDiceDuel.Tests
   {var g=Match();var b=new BoardController(g,(IPlayerChoiceSink)g.ChoiceProviderA,(IPlayerChoiceSink)g.ChoiceProviderB);b.BeginTurn();Assert.IsTrue(b.Hint.Contains("一体共生"));b.ChooseSkillOption(0);Assert.AreEqual(0,g.PlayerA.SporeLife);Assert.AreEqual(2,g.PlayerA.WildCharges);g.ForceActivePlayerForTest(g.PlayerA);b.BeginTurn();b.ChooseSkillOption(1);Assert.AreEqual(10,g.PlayerA.SporeLife);Assert.AreEqual(1,g.PlayerA.WildCharges);Assert.AreEqual(0,g.TurnCount);}
   [Test] public void Spore_buffer_precedes_false_life_and_transfers_overflow()
   {var g=Match();var p=g.PlayerA;p.GainSporeLife();p.GainFalseLife(4);Assert.AreEqual(0,p.TakeDamageResolved(12));Assert.AreEqual(0,p.SporeLife);Assert.AreEqual(2,p.FalseLife);Assert.AreEqual(20,p.Health);Assert.AreEqual(3,p.TakeDamageResolved(5));Assert.AreEqual(17,p.Health);}
+  [Test] public void Ai_drops_finishing_bonus_when_spore_life_absorbs_the_blow()
+  {
+      var g=Match();var target=g.PlayerA;var attacker=g.PlayerB;
+      target.SetHealthExact(3);target.LeftHand.SetValue(3);
+      var move=new LegalMove(attacker,attacker.LeftHand,target.LeftHand);
+      var ai=new GreedyChoiceProvider{Game=g};
+      int exposed=ai.ScoreMoveForTest(move,attacker,g);
+      target.GainSporeLife();
+      Assert.AreEqual(0,ai.TotalLethalDamage(move,attacker,target,4));
+      Assert.IsTrue(exposed-ai.ScoreMoveForTest(move,attacker,g)>ai.LethalBonus/2);
+      Assert.AreEqual(10,target.SporeLife);
+  }
   [Test] public void Halo_checks_actual_health_and_only_at_own_turn_start()
   {var g=Match();g.PlayerB.SetHealthExact(19);g.PlayerA.LeftHand.SetValue(1);g.PlayerA.RightHand.SetValue(2);g.BeginTurn();Assert.AreEqual(2,g.PlayerB.StatusTurnsLeft(StatusEffect.Decay));g.PlayerB.RemoveStatus(StatusEffect.Decay);g.ForceActivePlayerForTest(g.PlayerB);g.BeginTurn();Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Decay));}
   [Test] public void Death_restores_charge_once_even_at_match_end_but_sheep_break_does_not()

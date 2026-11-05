@@ -10,6 +10,16 @@ namespace FingerDiceDuel.Tests
     [TestFixture] public class ShadowMagicTests
     {
         private static GameManager Match()=>CharacterFactory.CreateMatch(CharacterDefinition.ShadowMagic,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+        [Test] public void Ai_counts_unspent_grave_strength_before_marking_a_finish()
+        {
+            var game=Match();var target=game.PlayerA;var attacker=game.PlayerB;
+            target.SetHealthExact(1);target.LeftHand.SetValue(3);
+            var move=new LegalMove(attacker,attacker.LeftHand,target.LeftHand);
+            var ai=new GreedyChoiceProvider{Game=game};
+            Assert.IsTrue(ai.ScoreMoveForTest(move,attacker,game)<ai.LethalBonus);
+            target.TakeDamage(4);
+            Assert.IsTrue(ai.ScoreMoveForTest(move,attacker,game)>=ai.LethalBonus);
+        }
         [Test] public void Grave_strength_survives_once_even_with_decay_and_resets_each_match()
         {var g=Match();var p=g.PlayerA;p.ApplyStatus(StatusEffect.Decay);p.TakeDamage(100);Assert.AreEqual(1,p.Health);Assert.IsTrue(((ShadowMagicLogic)p.Character).GraveSpent);p.TakeDamage(1);Assert.AreEqual(0,p.Health);g.ResetMatch();p.TakeDamage(100);Assert.AreEqual(1,p.Health);}
         [Test] public void Immunity_is_only_darkness_blind_and_status_is_negative_and_expires()

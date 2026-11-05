@@ -67,6 +67,9 @@ namespace FingerDiceDuel.Core
         private ICharacterBehavior _untransformedCharacter;
         private int _untransformedHealth,_untransformedMaximum;
         public bool IsPolymorphed=>_untransformedCharacter!=null;
+        public int HealthAcrossForms => Health
+            + (IsPolymorphed ? _untransformedHealth : 0)
+            + (IsWildShaped ? WildOriginalHealth : 0);
         public int PolymorphTurns {get;private set;}
         public bool BeganAttackThisTurn {get;internal set;}
         public bool FormedShieldThisTurn {get;internal set;}

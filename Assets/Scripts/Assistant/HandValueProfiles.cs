@@ -419,8 +419,7 @@ namespace FingerDiceDuel.Assistant
                 .Set(3, 86).Set(8, 74).Set(6, 68).Set(4, 62).Set(5, 64).Set(9, 58)
                 .AddCombo(ComboRule.ContainsAll(60, "3可束缚", 3));
             Own[CharacterDefinition.CircleOfSporesId]=new HandValueProfile()
-                .Set(9,80).Set(5,72).Set(8,74).Set(6,70).Set(4,66).Set(1,60).Set(2,60).Set(3,56).Set(7,54)
-                .AddCombo(ComboRule.DoublesOf(65,"双手相同可获得孢子生命",1,2,3,4,5,6,7,8,9));
+                .Set(9,80).Set(5,72).Set(8,74).Set(6,70).Set(4,66).Set(1,60).Set(2,60).Set(3,56).Set(7,54);
 
             Own[CharacterDefinition.OathOfTheAncientsId] = new HandValueProfile()
                 .Set(5, 76).Set(8, 70).Set(6, 66).Set(4, 60).Set(9, 58)
@@ -436,7 +435,7 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.BladesingingId]=new HandValueProfile().Set(8,78).Set(6,75).Set(4,70).Set(5,70).Set(9,73);
             Own[CharacterDefinition.TheHexbladeId]=new HandValueProfile().Set(7,100).Set(8,78).Set(6,72).Set(4,67).Set(5,68).Set(9,70);
             Own[CharacterDefinition.CollegeOfLoreId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,64).Set(5,66).Set(9,70);
-            Own[CharacterDefinition.ShadowMagicId]=new HandValueProfile().Set(8,78).Set(6,74).Set(4,70).Set(5,67).Set(9,72).AddCombo(ComboRule.ContainsAll(35,"黑暗术",1,9)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",2,8)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",3,7)).AddCombo(ComboRule.ContainsAll(35,"黑暗术",4,6)).AddCombo(ComboRule.DoublesOf(35,"黑暗术",5));
+            Own[CharacterDefinition.ShadowMagicId]=new HandValueProfile().Set(8,78).Set(6,74).Set(4,70).Set(5,67).Set(9,72);
             Own[CharacterDefinition.StormSorceryId]=new HandValueProfile().Set(8,76).Set(6,70).Set(4,64).Set(5,65).Set(9,70);
             Own[CharacterDefinition.SchoolOfIllusionId]=new HandValueProfile().Set(2,90).Set(4,75).Set(8,70).Set(6,68).Set(5,65).Set(9,65)
                 .AddCombo(ComboRule.ContainsAll(70,"差2且持2的幻术防守",2,4));
