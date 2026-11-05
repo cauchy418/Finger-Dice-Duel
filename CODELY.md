@@ -25,7 +25,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 
 当前奉献之誓的守护之誓在收集与结算时均要求自身完整盾，AI同样遵守；确认代挡后才收集卫护斩目标。第三章四战首段已改成无盾不能援护。1542项功能回归通过，UI程序集编译通过；详见[本轮验收](Art/Integration/devotion-shield-animation/README.md)。
 
-战斗动画已按[基础设计](Docs/combat-animation-design.md)接入21张透明素材与播放控制器。Core仅对可视对局启用事件快照，AttackContext按段预留槽位，盾碎与反击按嵌套发生顺序记录；UI播放独立队列，不重跑规则、不使用动画随机数影响AI。目标选择阶段保持起手，命中时更新生命／手牌状态，最后同步其余状态；AI、胜负与试炼结束等待队列，支持倍速／跳过及退出清理。待做的55子职与持续状态见[清单](Docs/skill-and-status-animation-list.md)。完整盾／碎盾／太极三张常驻标记已替换。资源复现使用`Tools/Art/export_combat_animation.py`，清单保留原图和完整生成提示词。
+战斗动画已按[基础设计](Docs/combat-animation-design.md)接入21张透明素材与播放控制器。Core仅对可视对局启用事件快照，AttackContext按段预留槽位，盾碎与反击按嵌套发生顺序记录；UI播放独立队列，不重跑规则、不使用动画随机数影响AI。目标选择阶段保持起手，命中时更新生命／手牌状态，最后同步其余状态；AI、胜负与试炼结束等待队列，支持倍速／跳过及退出清理。待做的57子职与持续状态见[清单](Docs/skill-and-status-animation-list.md)。完整盾／碎盾／太极三张常驻标记已替换。资源复现使用`Tools/Art/export_combat_animation.py`，清单保留原图和完整生成提示词。
 
 > 工程结构与开发约定。**规则权威文档是 [`RULES.md`](RULES.md)** ——
 > 代码、测试、UI 都必须与它一致，改动规则先改那里。
@@ -36,7 +36,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 
 技能选择UI按语义统一：选手直接点击战场合法手牌，不创建逐手按钮或全屏遮罩；选角色按主人去重后列出角色按钮；元素、抗性、招式、形态与是否发动保留命名选项。`WizardChoice.TargetsPlayer`覆盖回合边界请求，普通`HandEffect`分类覆盖攻击前／防守请求，均经原控制器回读与放弃出口。
 
-阵营以CharacterCodex为唯一来源。战术家绝对中立、大地结社中立善良、战争领域守序邪恶、幻术学派混乱邪恶、魔术师混乱善良；当前守序18／中立18／混乱19，477种无序双将。
+阵营以CharacterCodex为唯一来源。战术家绝对中立、大地结社中立善良、战争领域守序邪恶、幻术学派混乱邪恶、魔术师混乱善良；当前守序18／中立20／混乱19，514种无序双将。
 
 **Finger Dice Duel**（指骰对决）：2D 回合制对战。每人两只手（初始 1），
 每回合用自己的一只手与**另一名玩家**的一只手相加、取个位（和为 10 → 1），
@@ -44,7 +44,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 
 支持 **1v1**、**2v2**（环形四座、1&4 一队 / 2&3 一队、攻击距离、先攻掷骰）
 与 **双将对决（娱乐模式，1v1）**、**8 人身份对局**（随机身份，主公固定 1 号位）。
-**55 名子职**，每个都有独立技能。
+**57 名子职**，每个都有独立技能。
 
 | 项 | 值 |
 |---|---|
@@ -59,7 +59,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 
 ## 职业与子职
 
-当前 55 个子职，12 个职业大类；德鲁伊已接入月亮/星辰/大地结社。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
+当前 57 个子职，12 个职业大类；德鲁伊已接入月亮/星辰/大地/孢子结社。唯一命名与归属表在 `Core/CharacterIdentity.cs`，职业中英文和大类图标在 `Core/CharacterProfession.cs`。正式 ID 为 `职业_子职`；旧 ID 通过 `CharacterDefinition.Find`、`CharacterCodex.For` 兼容，旧 `Classes/旧ID` 美术键也会归一化。新增角色应先登记身份，再登记定义、逻辑与图鉴。
 
 大类图标在 `Assets/Resources/Art/Battle/v1/Professions/`，子职在 `Subclasses/`。代码与测试类型同步使用新子职名，枚举数值顺序不变；原有 `.meta` 原样移动，新元数据由编辑器生成。职业重构阶段的图标由 `Tools/ArtPipeline/import-selected-profession-icons.cjs` 导入；旧图集导入后须保留该覆盖步骤。
 
@@ -95,7 +95,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 
 ## 法师三学派（2026-10-23）
 
-三所学派正式徽记已接入；新增塑能徽记，旧书杖划归法师大类；13类抗性与奥术守御共有19项导出资源（18张新绘、1张复用），见 [制作记录](Art/Production/wizard-schools-v1/README.md)。当前55子职，守序18／中立18／混乱19，共477种双将；历史迁移记录保留当时人数。
+三所学派正式徽记已接入；新增塑能徽记，旧书杖划归法师大类；13类抗性与奥术守御共有19项导出资源（18张新绘、1张复用），见 [制作记录](Art/Production/wizard-schools-v1/README.md)。当前57子职，守序18／中立20／混乱19，共514种双将；历史迁移记录保留当时人数。
 
 `WizardChoice` 将回合开始免费攻击及死亡换手排队，在控制器安全边界暂停/恢复，不重复开始回合或结算状态。死灵有可用1自动进入角色目标选择并提供「放弃攻击」；2→1逐段由人类选择，AI自动；死亡时交换0～2对手值，可提前结束。`DeferWizardAttack` 在免费/偷窃攻击前收集防守抉择。回合开始、死亡通知、预兆替换等钩子遍历双将部件。
 
@@ -174,7 +174,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版当时包含18种，圣光阶段曾为19种，加束缚／油腻后曾为21种；当前21种负面与圣光／剑歌／战争祝福3种角色状态，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，此后增强酸／中毒互刷与火焰／油腻至九条，现增加雷电互刷共十一条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版当时包含18种，圣光阶段曾为19种，加束缚／油腻后曾为21种；当前22种负面（新增失明）与圣光／剑歌／战争祝福3种角色状态，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，此后增强酸／中毒互刷与火焰／油腻至九条，现增加雷电互刷共十一条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -674,7 +674,7 @@ IOperationAddendIllusion改为持2的资格查询，不再有随机数。GameMan
 
 ## 诡术／风暴领域与耳鸣（2026-10-28）
 
-当前55子职、12职业，守序18／中立18／混乱19，共477种双将；职业／子职正式美术清单66项。两名牧师均0/−1、∞、近钝击远穿刺、混乱中立。`Core/ClericDomains.cs`统一换位预备答案、实际交换、反击与纯运算入口；`ClericDomainLogics.cs`登记角色能力。控制器先等待幻术加数选择，再询问诡诈换位与独立魅惑，随后按换入数字收集攻击／回复等选择；实际提交之前不改手值。战报保留原算式并标注换位结果。
+当前57子职、12职业，守序18／中立20／混乱19，共514种双将；职业／子职正式美术清单66项。两名牧师均0/−1、∞、近钝击远穿刺、混乱中立。`Core/ClericDomains.cs`统一换位预备答案、实际交换、反击与纯运算入口；`ClericDomainLogics.cs`登记角色能力。控制器先等待幻术加数选择，再询问诡诈换位与独立魅惑，随后按换入数字收集攻击／回复等选择；实际提交之前不改手值。战报保留原算式并标注换位结果。
 
 `AttackContext.PrepareResolution`只执行一次取消、攻击钩子与转移。普通攻击遇风暴领域时，延迟伤害及整回合收尾；先在战场点4、选雷电类型，完成反击与同手强制纯运算，再恢复原攻击。反击子流程优先于排队中的父攻击，反击击杀来袭者取消原剩余攻击；剑士追加攻击也接入该队列。原有无反击对局的公共结算保持同步。无头策略走相同规则，人类通过WizardChoice暂停，所有手选项点击战场手牌。
 
@@ -692,7 +692,7 @@ AI专属决策见`GreedyChoiceProvider.ClericDomains.cs`：换位比较双方数
 
 ## 规范技能文案与猎人／狂野魔法补齐（2026-10-29）
 
-55个子职全部采用职业基础、子职固定修正、中文技能名与主动／被动分类；被动标签不加“需选择目标”等括注，要求放入正文。魔射手合并为奥术射击，包含魔能齐射／强力射击／穿透箭；奥法骑士采用最新指定的奥法武器。名称在图鉴、提示、技能日志和章节指引中同步，职业与子职的中英文身份行保留，技能不展示英文。Docs/character-skill-copy-draft.md为规范正文，Tools/generate-skill-descriptions.py生成CharacterSkillText；旧短摘要、操作指导与针对字段继续遵守原长度限制，图鉴详情不再重复旧技能长描述。五个武僧与其职业资源也使用规范正文。
+57个子职全部采用职业基础、子职固定修正、中文技能名与主动／被动分类；被动标签不加“需选择目标”等括注，要求放入正文。魔射手合并为奥术射击，包含魔能齐射／强力射击／穿透箭；奥法骑士采用最新指定的奥法武器。名称在图鉴、提示、技能日志和章节指引中同步，职业与子职的中英文身份行保留，技能不展示英文。Docs/character-skill-copy-draft.md为规范正文，Tools/generate-skill-descriptions.py生成CharacterSkillText；旧短摘要、操作指导与针对字段继续遵守原长度限制，图鉴详情不再重复旧技能长描述。五个武僧与其职业资源也使用规范正文。
 
 猎人灭族者在普通攻击结束后排入WizardChoice，列出可达、尚未攻击的标记角色，允许结束并保留未选标记；追加攻击通过DeferWizardAttack收集完整防守，不递归发动灭族者，不增加回合／运算次数。巨像屠夫仍在发起该目标的攻击时消费印记并施加缺血加伤／无视正防御。IHunterVolleyPolicy供AI选目标，过滤已知队友；按缺血×3−体力（恐慌另+3）排序。
 
@@ -706,7 +706,7 @@ HunterWildIntegrationTests新增22项：真实控制器、人类放弃与防守�
 
 `SustainedResistance`按来源区分防护学派赋予的持续保护、塑能待用类型自带保护和一次攻击后消耗的普通临时抗性。防护重施仅撤销本来源旧目标／类型，施法者死亡立即失效；圣光清除并阻止非永久保护。持续伤害不消费塑能的待用类型或误触发元素状态。
 
-第一章三、四战统一破阵强袭；第二章次战增加reserve_ward，四战增加持续／重施样本，七战全换预兆改写。全部实际教学样本通过真实BoardController逐步驱动，指定按钮高亮并只允许点该项，其他选项正常显示；末拍仍由右侧试炼结束按钮进入完成页。当前五模式采样为58,476局，原52子职七份大规模快照留作历史，不与本轮分母混算。
+第一章三、四战统一破阵强袭；第二章次战增加reserve_ward，四战增加持续／重施样本，七战全换预兆改写。全部实际教学样本通过真实BoardController逐步驱动，指定按钮高亮并只允许点该项，其他选项正常显示；末拍仍由右侧试炼结束按钮进入完成页。当前五模式采样为62,768局，原52子职七份大规模快照留作历史，不与本轮分母混算。
 
 醉拳已激活时，数字改写优先于双将主副将顺序，避免巨人副职把9重新改回回复；其他独立技能仍按公共结算触发。该双序回归计入19项专项。
 
