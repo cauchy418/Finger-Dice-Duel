@@ -4,10 +4,12 @@ import argparse, collections, csv, hashlib, json, subprocess
 
 parser = argparse.ArgumentParser(__doc__)
 parser.add_argument('--date', default='2026-11-05')
+parser.add_argument('--directory', help='Snapshot directory name, relative to Tools/Statistics')
 parser.add_argument('--log-prefix', default='Tools/HeadlessTests/bin/druid-57-')
+parser.add_argument('--optimized-ai', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
-out = root / 'Tools/Statistics' / args.date
+out = root / 'Tools/Statistics' / (args.directory or args.date)
 roles = list(csv.DictReader((out / 'roster.tsv').read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
 ids = {r['id'] for r in roles}
 assert len(ids) == len(roles) and len(roles) > 1
@@ -67,11 +69,13 @@ report = {'date': args.date, 'roster_count': n, 'law_axis_counts': [axes[a] for 
           'limitations': ['固定AI策略采样，不代表真人胜率或最优权重。',
                           f'2v2为固定队伍偏移配桌；双将为{duals}组合固定偏移抽样，并非全部组合两两循环。',
                           '八人两表各600局，角色出场不均衡，不宜比较小差异。',
-                          '本轮只重新测量现有AI，没有调整角色数值或进行自身／针对权重的独立留出寻优。']}
+                          '权重采用独立留出验证，五模式结果反映最终配置。' if args.optimized_ai
+                          else '本轮只重新测量现有AI，没有调整角色数值或进行自身／针对权重的独立留出寻优。']}
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 total = sum(expected.values())
+description = '采用德鲁伊和幽影魔法新版专属策略、对策及通过留出验证的权重' if args.optimized_ai else '采用德鲁伊重构和孢子结社接入后的角色规则'
 lines = [f'# {n}子职胜率重新采样（{args.date}）', '',
-         f'采用当前德鲁伊独立形态血池、孢子结社、幽影魔法、双德鲁伊充能相加、双武僧初始4气及羊5体力规则，重新采样 **{total:,}局**。异常／模拟器强停均为0；按正式轮数上限结算，真正平局计入分母。', '',
+         f'{description}，重新采样 **{total:,}局**。完整样本中的对局异常和模拟器强停均为0。正式轮数上限内的平局计入分母。', '',
          '| 模式 | 局数 | 抽样方法 |', '|---|---:|---|',
          f'| 1v1 | {expected["1v1"]:,} | {pairs:,}个不同子职配对各20局，双方各占一半物理先手；每角色{(n-1)*20:,}次出场 |',
          f'| 2v2 | {expected["2v2"]:,} | {pairs:,}支双角色队伍，与固定偏移{pairs//2}的队伍配16局；每角色{(n-1)*32:,}次出场 |',
@@ -89,12 +93,15 @@ for role in roles:
 lines += ['', '## 复现与证据', '',
           '所有模式使用真实BoardController驱动，复用已校正胜者归属的测试台。固定起手、技能及AI随机源，每个CSV保存逐局种子、角色、胜者和行动数。roster.tsv由运行时角色表直接导出；results.json保存所有五模式逐角色胜／负／平与分母、源码及CSV指纹；五份日志均须通过才能汇总。', '',
           '```powershell', "$env:DOTNET_PROCESSOR_COUNT='1'", "$env:DOTNET_TieredCompilation='0'", "$env:COMPlus_TieredCompilation='0'",
-          f"$env:FDD_REVISION_ROOT='Tools/Statistics/{args.date}'",
+          f"$env:FDD_REVISION_ROOT='Tools/Statistics/{out.name}'",
           "$env:FDD_REVISION_MODE='1v1'  # 依次换为2v2、dual、eight、identity",
           'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only RevisionBalanceTests -OutputDirectory Tools/HeadlessTests/bin/druid-57-sample',
           '# 各模式日志保存到 Tools/HeadlessTests/bin/druid-57-<mode>.log',
-          f'python Tools/Statistics/summarize-current.py --date {args.date} --log-prefix Tools/HeadlessTests/bin/druid-57-', '```', '',
-          '本轮只测量生产AI，不改角色平衡、权重或技能。未运行全部双将交叉赛、身份偏好选角或集火寻优；旧报告作为历史快照保留。']
-lines += ['', '执行记录：首次2v2测试进程发生原生中断；其不完整CSV已整体丢弃，随后从首局完整重跑25,536局并通过。表中的零异常／强停指最终完整样本中的对局结果，不包含该次进程中断；没有拼接中断前后的局数。', '', '完整功能回归1611项通过、0失败；Unity/NUnit条件编译通过，回归日志见regression.log。']
+          f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --log-prefix {args.log_prefix}'
+          + (' --optimized-ai' if args.optimized_ai else ''), '```']
+if args.optimized_ai:
+    lines += ['', '策略、配对权重实验与前后对照见[优化记录](ai-tuning.md)。']
+else:
+    lines += ['', '执行记录：首次2v2测试进程发生原生中断，随后从首局完整重跑25,536局并通过。完整功能回归1611项通过、0失败，日志见regression.log。']
 (out / 'README.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 print(f'PASS: {total:,} outcomes; {n} complete role rows; no errors or forced aborts.')

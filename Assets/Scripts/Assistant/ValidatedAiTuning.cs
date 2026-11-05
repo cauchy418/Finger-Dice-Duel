@@ -8,6 +8,14 @@ namespace FingerDiceDuel.Assistant
         {
             ai.HandValueWeight=12;ai.DenyRatioPercent=43;ai.UseProjectedCounterplay=false;
             if(game==null||actor==null||actor.Character is ICharacterBehaviorContainer||actor.IsSummon)return;
+            string id = actor.Definition.Id;
+            int seats = game.Players.Count;
+            if (seats == 4 && (id == "druid_circle_of_the_moon" || id == "sorcerer_shadow_magic"))
+            {
+                ai.DenyRatioPercent = 67;
+                ai.UseProjectedCounterplay = true;
+                return;
+            }
             if(game.Players.Count==2)switch(actor.Definition.Id)
             {
                 case "fighter_champion":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
@@ -27,6 +35,7 @@ namespace FingerDiceDuel.Assistant
                 case "monk_way_of_the_four_elements":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "druid_circle_of_the_moon":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "druid_circle_of_the_stars":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
+                case "sorcerer_shadow_magic":ai.DenyRatioPercent=67;ai.UseProjectedCounterplay=true;break;
                 case "paladin_oath_of_the_ancients":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "warlock_the_fiend":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "bard_college_of_lore":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
