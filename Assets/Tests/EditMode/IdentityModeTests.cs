@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Tests
             MatchWith(CharacterDefinition.OathOfDevotion, out GameManager lawful, out List<PlayerState> lp);
             Assert.AreEqual("明主", lawful.IdentityLordTitle);
             Assert.AreEqual(25, lp[0].MaximumHealth);
-            Assert.AreEqual(10, StatusRules.EffectiveDefenseBonus(lp[0]), "圣武士·奉献之誓基础防御 +1、主公 +1、明主 8 人 +8。");
+            Assert.AreEqual(9, StatusRules.EffectiveDefenseBonus(lp[0]), "奉献基础防御0，主公+1，明主+8。");
             Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(lp[0]));
 
             MatchWith(CharacterDefinition.PathOfTheWarden, out GameManager chaotic, out List<PlayerState> cp);

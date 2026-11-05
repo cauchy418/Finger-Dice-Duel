@@ -139,7 +139,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 allowDecline: true,                 // 放弃 = 当攻击打（默认）
                 declineResult: null,
                 decider: context.Actor,
-                acceptLabel: $"回复 {heal}"));
+                acceptLabel: $"回复 {heal}", resultValue: heal, relatedTarget: context.Defender));
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 allowDecline: false,
                 declineResult: null,
                 decider: context.Actor,
-                skipWhen: skipWhen);
+                skipWhen: skipWhen, resultValue: effect == HandEffect.LifeDomainExtraHealTarget ? 9 : context.EffectiveResult);
         }
 
         private static void AddOwnerHands(List<Hand> into, PlayerState owner)
@@ -343,10 +343,19 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public static void CleanseAndHeal(PlayerState owner, PlayerState target, int amount, GameManager manager,string visualSkill="生命门徒")
         {
             if (target == null) return;
-              int removed = target.Statuses.Count + target.Vulnerabilities.Count;
+            int removed = target.Vulnerabilities.Count;
+            foreach (var status in target.Statuses)
+                if (status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing) removed++;
             target.ClearNegativeStatuses();
-            if (removed > 0) manager?.NoteSkill(owner, "净化", $"{target.Name} 清除 {removed} 种负面状态",target,new SkillVisualData(value:removed));
+            if (removed > 0) manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 清除 {removed} 种状态",target,new SkillVisualData(value:removed));
+            bool overflow = amount > target.MaximumHealth - target.Health;
             int before=target.Health;target.Heal(amount);
+            if (overflow && target.IsAlive)
+            {
+                target.ApplyStatus(StatusEffect.BlessedHealing, 2, owner);
+                manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 攻防+1，持续2回合", target,
+                    new SkillVisualData(value:2, status:StatusEffect.BlessedHealing, variant:"blessing"));
+            }
             manager?.RecordSkillVisual(owner,visualSkill,target,new SkillVisualData(value:target.Health-before));
         }
 
@@ -467,11 +476,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         /// ⚠️ 为什么不是"挑血最少的那个"（连敌人也算）—— 敌人血少是**好事**，
         ///    给他回血是自伤。玩家明确说的是"**一队**血量最低的人"。
         /// </summary>
-        public static PlayerState BestHealTargetFor(PlayerState owner, GameManager manager)
+        public static PlayerState BestHealTargetFor(PlayerState owner, GameManager manager, int amount = 9)
         {
             if (owner == null || manager == null) return owner;
 
             PlayerState best = null;
+            int bestNeed = int.MinValue;
             IReadOnlyList<PlayerState> all = manager.Players;
 
             for (int i = 0; i < all.Count; i++)
@@ -482,12 +492,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 // 只看"自己这一队"（自己也算）
                 if (!ReferenceEquals(p, owner) && !manager.IsKnownAlly(owner, p)) continue;
 
-                int need=(p.MaximumHealth-p.Health)*2;
+                int missing = p.MaximumHealth - p.Health;
+                int need = System.Math.Min(missing, amount) * 3;
+                if (amount > missing && p.StatusTurnsLeft(StatusEffect.BlessedHealing) < 2)
+                    need += 10 + System.Math.Max(0, StatusRules.EffectiveAttackBonus(p)) * 2;
                 if(p.Health*4<=p.MaximumHealth)need+=30;
                 foreach(var status in p.Statuses)need+=status==StatusEffect.Frozen?35:status==StatusEffect.Charm||status==StatusEffect.Disabled?25:status==StatusEffect.Decay?20:5;
-                int bestNeed=best==null?-1:(best.MaximumHealth-best.Health)*2+(best.Health*4<=best.MaximumHealth?30:0);
-                if(best!=null)foreach(var status in best.Statuses)bestNeed+=status==StatusEffect.Frozen?35:status==StatusEffect.Charm||status==StatusEffect.Disabled?25:status==StatusEffect.Decay?20:5;
-                if (best == null || need>bestNeed) best = p;
+                if (need > bestNeed) { best = p; bestNeed = need; }
             }
 
             return best ?? owner;

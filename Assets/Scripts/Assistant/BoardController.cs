@@ -535,9 +535,39 @@ namespace FingerDiceDuel.Assistant
 
             _pendingGambleRoll = GamblerLogic.Roll(GambleRng);
             LastGambleRoll = _pendingGambleRoll;
+            if (_game.WillSuppressOperationEffects(ActivePlayer))
+            {
+                ContinueGambleAfterRoll();
+                return true;
+            }
 
-            if(TryOfferWarBlessingNine(_pendingGambleRoll,ContinueGambleAfterRoll))return true;
-            ContinueGambleAfterRoll();return true;
+            var actor = ActivePlayer;
+            int first = _pendingGambleRoll;
+            var options = GamblerLogic.RerollOptions(first);
+            var request = new WizardChoice(actor, $"恶之强运 · 已掷出 {first}，是否重掷？", options, value =>
+            {
+                if (value == 0) return;
+                _pendingGambleRoll = _game.PayForGambleReroll(actor, first, GambleRng);
+                LastGambleRoll = _pendingGambleRoll;
+            });
+            if (QueueWizardChoice(request)) TryStartWizardBoundary(FinishGambleChoice);
+            else
+            {
+                request.ChooseOption(SkillChoicePolicy.Choose(GamblerLogic.RerollChoice, options, actor, null, _game));
+                FinishGambleChoice();
+            }
+            return true;
+
+            void FinishGambleChoice()
+            {
+                if (!actor.IsAlive)
+                {
+                    FlushSkillLog();
+                    CompleteCampaignAction("恶之强运");
+                    return;
+                }
+                if (!TryOfferWarBlessingNine(_pendingGambleRoll, ContinueGambleAfterRoll)) ContinueGambleAfterRoll();
+            }
         }
 
         /// <summary>赌博没有合法攻击目标时的收尾（战报要说清是赌博）。</summary>
@@ -3821,8 +3851,9 @@ namespace FingerDiceDuel.Assistant
                 LegalMove m = moves[i];
                 if (m.ActedHand == null || m.TargetHand == null) continue;
 
-                int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
+                int result = _game.PreviewOperationResult(actor, m.ActedHand, m.TargetHand);
                 if (IsHighValueResult(result)) return false;   // 能打出高价值 -> 不赌
+                if (result == 9 && actor.Health <= actor.MaximumHealth / 2 && StatusRules.CanHeal(actor)) return false;
             }
 
             return true;                            // 打不出高价值 -> 开赌

@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Assistant
             if(n<=12)
             {
                 var s=GalleryBase(n,CharacterDefinition.StormSorcery,26);
-                int roll=n==11?30:0;
+                int roll=n==11?40:0;
                 s.Npcs[1].Type=n==11?AttackDamageType.Thunder:AttackDamageType.Lightning;
                 if(n==11){s.Npcs[1].Range=3;s.Opening=l=>l.Game.ConfigureSeatObstacles(1,1);}
                 var hit=s.Op(0,0,1,0,"暴风狂怒");hit.Option=(int)(n==11?AttackDamageType.Thunder:AttackDamageType.Lightning);hit.ForcedRoll=roll;

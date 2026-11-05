@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -216,7 +216,10 @@ namespace FingerDiceDuel.Tests
             game.PlayerA.LeftHand.SetValue(8); AllStatuses(game.PlayerB, game.PlayerA);
             game.PlayerB.RightHand.SetValue(5); game.PlayerB.RightHand.SetShieldState(ShieldState.Formed);
             sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerB.LeftHand); Attack(game);
-            Assert.AreEqual(20, game.PlayerB.Health); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
+            Assert.AreEqual(20, game.PlayerB.Health); Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.BlessedHealing));
+            Assert.AreEqual(2, game.PlayerB.StatusTurnsLeft(StatusEffect.BlessedHealing));
+            Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(game.PlayerB));
+            Assert.AreEqual(1, StatusRules.EffectiveDefenseBonus(game.PlayerB));
             Assert.AreEqual(ShieldState.Formed, game.PlayerB.RightHand.State);
         }
 

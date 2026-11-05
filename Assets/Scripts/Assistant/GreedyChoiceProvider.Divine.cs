@@ -54,7 +54,7 @@ namespace FingerDiceDuel.Assistant
             var effect=CharacterBehaviors.DisplayedEffectOf(actor,value);
             if(game!=null&&value==9&&effect==HandEffectType.Heal&&actor.HasStatus(StatusEffect.WarBlessing)
                 &&DivineOptionScore(DivineChoices.Nine,1,actor,null,game)>DivineOptionScore(DivineChoices.Nine,0,actor,null,game))return HandEffectType.Attack8;
-            return CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null?effect:Hand.GetEffectType(value);
+            return effect;
         }
     }
 }

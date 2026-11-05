@@ -78,7 +78,10 @@ namespace FingerDiceDuel.Core
         public void ClearNegativeStatuses()
         {
             int turns=StatusTurnsLeft(StatusEffect.WarBlessing);var source=StatusSourceOf(StatusEffect.WarBlessing);
+            int blessedTurns=StatusTurnsLeft(StatusEffect.BlessedHealing);
+            var healer=StatusSourceOf(StatusEffect.BlessedHealing);
             ClearStatuses();if(turns>0)ApplyStatus(StatusEffect.WarBlessing,turns,source);
+            if(blessedTurns>0)ApplyStatus(StatusEffect.BlessedHealing,blessedTurns,healer);
         }
     }
 }

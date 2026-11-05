@@ -395,9 +395,8 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 54).Set(2, 54).Set(3, 54).Set(7, 50);
 
             Own[CharacterDefinition.RangerHunterId] = new HandValueProfile()
-                .Set(7, 90).Set(8, 78).Set(6, 70).Set(4, 62).Set(5, 60).Set(9, 56)
-                .Set(1, 52).Set(2, 52).Set(3, 52)
-                .AddCombo(ComboRule.ContainsAll(70, "有7可挂猎人标记", 7));
+                .Set(7, 56).Set(8, 78).Set(6, 70).Set(4, 62).Set(5, 65).Set(9, 65)
+                .Set(1, 56).Set(2, 56).Set(3, 56);
 
             Own[CharacterDefinition.WayOfTheOpenHandId] = new HandValueProfile()
                 .Set(4, 78).Set(2, 76).Set(1, 70).Set(8, 74).Set(6, 68)
@@ -433,7 +432,7 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.SchoolOfEnchantmentId]=new HandValueProfile().Set(8,84).Set(6,78).Set(4,74).Set(5,66).Set(9,70);
             Own[CharacterDefinition.EldritchKnightId]=new HandValueProfile().Set(5,82).Set(8,78).Set(6,73).Set(4,68).Set(9,65);
             Own[CharacterDefinition.BladesingingId]=new HandValueProfile().Set(8,78).Set(6,75).Set(4,70).Set(5,70).Set(9,73);
-            Own[CharacterDefinition.TheHexbladeId]=new HandValueProfile().Set(7,100).Set(8,78).Set(6,72).Set(4,67).Set(5,68).Set(9,70);
+            Own[CharacterDefinition.TheHexbladeId]=new HandValueProfile().Set(7,64).Set(8,78).Set(6,72).Set(4,67).Set(5,68).Set(9,70);
             Own[CharacterDefinition.CollegeOfLoreId]=new HandValueProfile().Set(8,72).Set(6,68).Set(4,64).Set(5,66).Set(9,70);
             Own[CharacterDefinition.ShadowMagicId]=new HandValueProfile().Set(8,78).Set(6,74).Set(4,70).Set(5,67).Set(9,72);
             Own[CharacterDefinition.StormSorceryId]=new HandValueProfile().Set(8,76).Set(6,70).Set(4,64).Set(5,65).Set(9,70);

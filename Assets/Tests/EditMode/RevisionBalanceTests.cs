@@ -22,6 +22,11 @@ namespace FingerDiceDuel.Tests
         {
             string mode=Environment.GetEnvironmentVariable("FDD_REVISION_MODE")??"1v1";
             Directory.CreateDirectory(Root);int games=0;_written=0;
+            if (mode == "audit")
+            {
+                RunAiAudit();
+                return;
+            }
             if (mode == "tune-1v1" || mode == "tune-2v2")
             {
                 RunTuning(mode);
@@ -96,6 +101,53 @@ namespace FingerDiceDuel.Tests
         }
         private static bool WinningSide(IdentityRole winner,IdentityRole role)
             =>winner==IdentityRole.Lord||winner==IdentityRole.Loyalist?role==IdentityRole.Lord||role==IdentityRole.Loyalist:winner!=IdentityRole.None&&winner==role;
+
+        private static void RunAiAudit()
+        {
+            using var writer = new StreamWriter(Path.Combine(Root, "ai-audit.tsv"), false, new System.Text.UTF8Encoding(false));
+            writer.WriteLine("id\tname\tattack\tdefense\tweights_0_to_9\tcombos\t1v1\t2v2\topening_counter_adjustments");
+            var split = new DiceSplitAdvisor();
+            int checks = 0;
+            foreach (var role in Roster)
+            {
+                Assert.True(HandValueProfiles.HasExplicitProfile(role), role.Id);
+                var ai = new GreedyChoiceProvider();
+                var actor = CharacterFactory.CreatePlayer("A", role);
+                var blank = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
+                var providers = new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()};
+                var duel = new GameManager(actor, blank, providers[0], providers[1]);
+                string solo = TuningOf(ai, duel, actor);
+                var team = GameManager.Create2v2(new[]{actor,blank,CharacterFactory.CreatePlayer("C", CharacterDefinition.Blank),
+                    CharacterFactory.CreatePlayer("D", CharacterDefinition.Blank)},providers);
+                string pair = TuningOf(ai, team, actor);
+                var own = HandValueProfiles.For(role);
+                var counters = new List<string>();
+                foreach (var opponent in Roster)
+                {
+                    var against = HandValueProfiles.For(role, opponent);
+                    var differences = Enumerable.Range(1, 9).Where(i => against.WeightOf(i) != own.WeightOf(i))
+                        .Select(i => $"{i}:{against.WeightOf(i)-own.WeightOf(i):+0;-0}");
+                    string delta = string.Join(",", differences);
+                    if (delta.Length > 0) counters.Add(opponent.Id + "=" + delta);
+                    foreach (int roll in new[]{4,10,17})
+                    {
+                        var legal = DiceRollSetup.DistinctSplits(roll);
+                        var picked = split.Choose(role, opponent, legal);
+                        Assert.True(legal.Any(s => s.Left == picked.Left && s.Right == picked.Right), role.Id + " vs " + opponent.Id);
+                        checks++;
+                    }
+                }
+                writer.WriteLine(string.Join("\t",role.Id,role.DisplayName,role.AttackBonus,role.DefenseBonus,
+                    string.Join(",",own.Weights),string.Join(" / ",own.Combos),solo,pair,string.Join(" / ",counters)));
+            }
+            Console.WriteLine($"{Roster.Length} roles, {checks} legal opening decisions, runtime profiles exported");
+        }
+
+        private static string TuningOf(GreedyChoiceProvider ai, GameManager game, PlayerState actor)
+        {
+            ValidatedAiTuning.Apply(ai,game,actor);
+            return $"{(ai.UseProjectedCounterplay ? "P" : "L")}/{ai.HandValueWeight}/{ai.DenyRatioPercent}";
+        }
 
         private static void RunTuning(string mode)
         {

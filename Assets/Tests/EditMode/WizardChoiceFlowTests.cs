@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Tests
             game.PlayerB.LeftHand.SetValue(7);game.PlayerB.RightHand.SetValue(7);
             ((AssassinLogic)game.PlayerB.Character).EnterStealthForTest();
             board.GambleRng=new AttackRoll();board.BeginTurn();
-            Assert.IsTrue(board.ClickHand(game.PlayerA.LeftHand));Assert.IsTrue(board.Gamble());
+            Assert.IsTrue(board.ClickHand(game.PlayerA.LeftHand));Assert.IsTrue(board.Gamble());Assert.IsTrue(board.ChooseSkillOption(0));
             Assert.AreEqual(4,game.PlayerA.LeftHand.Value);Assert.AreEqual(20,game.PlayerB.Health);
             Assert.AreEqual(1,game.TurnCount);Assert.IsTrue(board.LastTurn.AttackSuppressed);
             Assert.IsTrue(board.LastIllegalOperation==null);

@@ -167,7 +167,8 @@ namespace FingerDiceDuel.Tests
             g.PlayerB.AddImmunity(AttackDamageType.Slashing); Assert.AreEqual(0, ai.TotalLethalDamage(move,g.PlayerA,g.PlayerB,6));
             g.PlayerB.ApplyStatus(StatusEffect.Frost); g.PlayerB.AddImmunity(AttackDamageType.Cold);
             var options = new[] { new SkillChoiceOption((int)AttackDamageType.Cold, "寒冷", "Damage/cold"), new SkillChoiceOption((int)AttackDamageType.Fire, "火焰", "Damage/fire") };
-            Assert.AreEqual((int)AttackDamageType.Fire, ai.ChooseSkillOption(MartialSkillChoices.FourElements, options, g.PlayerA, g.PlayerB, g),
+            var monk = CharacterFactory.CreatePlayer("四象", CharacterDefinition.WayOfTheFourElements);
+            Assert.AreEqual((int)AttackDamageType.Fire, ai.ChooseSkillOption(MartialSkillChoices.FourElements, options, monk, g.PlayerB, g),
                 "不能为冻结联动奖励选择已免疫的元素");
         }
     }

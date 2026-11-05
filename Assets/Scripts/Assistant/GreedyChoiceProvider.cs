@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -858,13 +859,7 @@ namespace FingerDiceDuel.Assistant
             //    预测挨打对象：结果是攻击时 = 默认攻击目标 = 第一位对手
             //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
             int resultForPriority = result;
-            bool priorityIsAttack = actor.IsWildShaped
-                ? IsAttackEffect(DivineScoredEffect(actor, resultForPriority, game))
-                : Hand.GetEffectType(resultForPriority) == HandEffectType.Attack4
-                || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack6
-                || Hand.GetEffectType(resultForPriority) == HandEffectType.Attack8
-                || (actor?.Character is IHandEffectDisplay dsp
-                    && IsAttackEffect(dsp.DisplayedEffectOf(resultForPriority)));
+            bool priorityIsAttack = IsAttackEffect(DivineScoredEffect(actor, resultForPriority, game));
 
             if (priorityIsAttack && actor != null && game != null
                 && game.OwnerOfHand(move.TargetHand) != null
@@ -937,8 +932,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (game == null || actor == null) return false;
 
-            HandEffectType effect = actor.IsWildShaped
-                ? DivineScoredEffect(actor, result, game) : Hand.GetEffectType(result);
+            HandEffectType effect = DivineScoredEffect(actor, result, game);
             bool isAttack = effect == HandEffectType.Attack4
                             || effect == HandEffectType.Attack6
                             || effect == HandEffectType.Attack8;
@@ -987,7 +981,14 @@ namespace FingerDiceDuel.Assistant
                     new LethalContext(move.ActedHand, move.TargetHand, result, other),
                     result, atkBonus, defBonus);
             }
-            else total=AttackContext.ApplyStatBonuses(result,atkBonus,defBonus,ignorePositiveDefense:false);
+            else
+            {
+                bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(actor)?.IsMarked(victim) == true;
+                if (marked) result += Math.Max(0, victim.MaximumHealth - victim.Health) / 5;
+                total = AttackContext.ApplyStatBonuses(result, atkBonus, defBonus, ignorePositiveDefense: marked);
+                if (marked && (victim.LeftHand.IsShield || victim.RightHand.IsShield) && CharacterFactory.MaxAttackHits(actor) == 1)
+                    return Math.Max(0, atkBonus - victim.SporeLife - victim.FalseLife);
+            }
             total+=ArcaneChoices.BonusAgainst(actor,victim)*CharacterFactory.MaxAttackHits(actor);
             var preview=new AttackContext(actor,victim,move.ActedHand,result,game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
@@ -1000,7 +1001,15 @@ namespace FingerDiceDuel.Assistant
                 total=ShadowRules.Outgoing(actor,victim,total);
                 total=StatusRules.ApplyIncomingDamage(victim,total);
             }
-            total=StatusRules.ApplyDamageAffinities(victim,total,type);
+            if (actor.Character is Characters.SpecialLogics.StormSorceryLogic)
+            {
+                // A lethal bonus requires the weakest of the three possible outcomes to be enough.
+                total = Math.Min(StatusRules.ApplyDamageAffinities(victim, total, type),
+                    Math.Min(StatusRules.ApplyDamageAffinities(victim, total, AttackDamageType.Lightning, ignoreImmunity: true),
+                             StatusRules.ApplyDamageAffinities(victim, total, AttackDamageType.Thunder, ignoreImmunity: true)));
+            }
+            else total=StatusRules.ApplyDamageAffinities(victim,total,type,ignoreImmunity:
+                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(actor,type));
             if(game!=null) foreach(var p in game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
@@ -1013,24 +1022,29 @@ namespace FingerDiceDuel.Assistant
         /// 只算**单段**；多段的合计由角色的
         /// <see cref="ILethalThresholdAdvisor"/> 负责。
         /// </summary>
-        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim,
-                                                int result)
+        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim, int result, GameManager game)
         {
             if (attacker.HasStatus(StatusEffect.Disabled)
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker) == null) return 0;
-            int damage = AttackContext.ApplyStatBonuses(result,
-                                                  attacker.Character?.AttackBonus ?? 0,
-                                                  victim.Character?.DefenseBonus ?? 0,
-                                                  ignorePositiveDefense: false);
+            var fixedRule = CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker);
+            bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(attacker)?.IsMarked(victim) == true;
+            int damage = AttackContext.ApplyStatBonuses(result + (marked ? Math.Max(0, victim.MaximumHealth-victim.Health)/5 : 0),
+                StatusRules.EffectiveAttackBonus(attacker), StatusRules.EffectiveDefenseBonus(victim), ignorePositiveDefense: marked);
             damage+=ArcaneChoices.BonusAgainst(attacker,victim);
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
-            var context = new AttackContext(attacker, victim, attacker.LeftHand, result);
+            var context = new AttackContext(attacker, victim, attacker.LeftHand, result, game);
             var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
                     if(defense.CanReduceAttack(victim,result))damage=(damage+1)/2;
-            // 原有估算保持不变，只补齐新增易伤/免疫；抗性仍由既有评分路径处理。
-            return System.Math.Max(0,StatusRules.ApplyDamageAffinities(victim, damage, type, false)-victim.SporeLife-victim.FalseLife);
+            if (fixedRule != null) { damage = fixedRule.NormalAttackDamage; type = fixedRule.NormalAttackType; }
+            else damage = StatusRules.ApplyIncomingDamage(victim, damage);
+            int projected = StatusRules.ApplyDamageAffinities(victim, damage, type, ignoreImmunity:
+                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(attacker, type));
+            if (attacker.Character is Characters.SpecialLogics.StormSorceryLogic)
+                projected = (projected + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Lightning, ignoreImmunity: true)
+                    + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Thunder, ignoreImmunity: true) + 2) / 5;
+            return Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
         }
 
         // ============================================================
@@ -1078,7 +1092,7 @@ namespace FingerDiceDuel.Assistant
             if (game == null || actor == null) return 0;
 
             PlayerState victim = game.OwnerOfHand(move.TargetHand);
-            if (victim == null || !victim.IsAlive) return 0;
+            if (victim == null || !victim.IsAlive || victim.MustGamble && victim.Character is GamblerLogic) return 0;
 
             // 借用队友数字也可攻击敌人，按实际预期攻击对象判断。
             if (ReferenceEquals(victim, actor) || game.IsTeammate(actor, victim)) return 0;
@@ -1094,7 +1108,7 @@ namespace FingerDiceDuel.Assistant
             int actedAfter = DruidScoredResult(move,actor,game);
 
             // 用**对手自己的价值表**衡量：他看重什么，我就少留什么
-            HandValueProfile foeProfile = HandValueProfiles.For(victim.Definition);
+            HandValueProfile foeProfile = ActiveHandValueProfile(victim);
             if (foeProfile == null) return 0;
 
             bool foeDanger = IsLowHealth(victim);
@@ -1107,13 +1121,14 @@ namespace FingerDiceDuel.Assistant
 
             int denyWeight = 0;
 
-            if (meDanger)
+            if (meDanger && StatusRules.CanAct(victim) && (game.CanReach(victim, actor)
+                || CharacterBehaviors.FirstImplementer<IRangeBreakEffect>(victim) != null))
             {
                 // 我快死了 -> 最怕他凑出**攻击**（用我留下的数字当被加数）
                 denyWeight += exposure;
             }
 
-            if (foeDanger)
+            if (foeDanger && StatusRules.CanAct(victim))
             {
                 // 他快死了 -> 最怕他凑出**盾 / 闪避 / 太极 / 回复**
                 // 这些在他的价值表里同样是高值（盾 = 5、回复 = 9）
@@ -1726,8 +1741,10 @@ namespace FingerDiceDuel.Assistant
                         //
                         // 依赖方向：AI（Assistant 层）不能引用 Characters 层，
                         // 所以由角色通过 IHealTargetAdvisor 自报该给谁。
-                        var advisor = decider?.Character as IHealTargetAdvisor;
-                        PlayerState want = advisor?.BestHealTarget(decider, Game);
+                        var advisor = CharacterBehaviors.FirstImplementer<IHealTargetAdvisor>(decider);
+                        PlayerState want = advisor is LifeDomainLogic
+                            ? LifeDomainLogic.BestHealTargetFor(decider, Game, request.ResultValue > 0 ? request.ResultValue : 9)
+                            : advisor?.BestHealTarget(decider, Game);
 
                         if (want != null)
                         {
@@ -1760,11 +1777,19 @@ namespace FingerDiceDuel.Assistant
                     if(Game!=null)foreach(var ally in Game.Players)
                         if(ally.IsAlive&&Game.IsKnownAlly(decider,ally)&&(ally.Health*100<=ally.MaximumHealth*LifeDomainHealHealthPercent
                             ||ally.HasStatus(StatusEffect.Frozen)||ally.HasStatus(StatusEffect.Disabled)||ally.HasStatus(StatusEffect.Charm)||ally.HasStatus(StatusEffect.Decay)))danger=true;
-                    if (!danger) return null;      // 无需紧急救助或净化时保留进攻。
+                    if (!danger && Game != null && request.RelatedTarget != null
+                        && !decider.HasStatus(StatusEffect.BlessedHealing)
+                        && decider.MaximumHealth - decider.Health < request.ResultValue)
+                        danger = EstimateAttackDamage(decider, request.RelatedTarget, request.ResultValue, Game) <= 1
+                            || ((request.RelatedTarget.LeftHand.IsShield || request.RelatedTarget.RightHand.IsShield)
+                                && CharacterFactory.MaxAttackHits(decider) == 1);
+                    if (!danger) return null;
 
                     // 危险 -> 优先回血，且回给"自己这一队血最低的人"
-                    var healAdvisor = decider.Character as IHealTargetAdvisor;
-                    PlayerState healWant = healAdvisor?.BestHealTarget(decider, Game);
+                    var healAdvisor = CharacterBehaviors.FirstImplementer<IHealTargetAdvisor>(decider);
+                    PlayerState healWant = healAdvisor is LifeDomainLogic
+                        ? LifeDomainLogic.BestHealTargetFor(decider, Game, request.ResultValue > 0 ? request.ResultValue : 9)
+                        : healAdvisor?.BestHealTarget(decider, Game);
 
                     if (healWant != null && Game != null)
                     {

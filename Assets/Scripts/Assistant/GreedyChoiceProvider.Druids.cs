@@ -183,6 +183,21 @@ namespace FingerDiceDuel.Assistant
         private static int SpecialistSetupValue(PlayerState owner, int result, int other, GameManager game)
         {
             int score = 0;
+            if (CharacterBehaviors.DisplayedEffectOf(owner, result) == HandEffectType.None)
+            {
+                var mark = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(owner);
+                var curse = CharacterBehaviors.FirstImplementer<IHexbladeCurse>(owner);
+                if (mark != null || curse != null)
+                    foreach (var foe in game.OpponentsOf(owner))
+                    {
+                        if (!foe.IsAlive || !game.CanReach(owner, foe)) continue;
+                        if (mark != null && !mark.IsMarked(foe) && game.DistanceBetween(owner, foe) <= 3)
+                            score = Math.Max(score, 48 + Math.Max(0, foe.MaximumHealth - foe.Health));
+                        if (curse != null && !foe.HasStatus(StatusEffect.HolyLight)
+                            && (curse.CurseTarget != foe || result > curse.CurseTurns))
+                            score = Math.Max(score, 16 + Math.Min(result, 4) * 8);
+                    }
+            }
             if (CharacterBehaviors.FirstImplementer<IShadowEyes>(owner) != null && result + other == 10)
                 score += Math.Min(52, Math.Max(0, DarknessValue(owner, game) * 2));
             if (CharacterBehaviors.FirstImplementer<IDruidCaster>(owner) == null) return score;
@@ -199,7 +214,28 @@ namespace FingerDiceDuel.Assistant
         private int SpecialistMoveBonus(LegalMove move, PlayerState actor, int result, int other, GameManager game)
         {
             int score = SpecialistSetupValue(actor, result, other, game);
-            if (actor.IsPolymorphed || !actor.IsWildShaped) return score;
+            if (actor.IsPolymorphed) return score;
+            if (!actor.IsWildShaped)
+            {
+                if (!IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor, result))) return score;
+                var bloodline = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(actor);
+                var hunter = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(actor);
+                var curse = CharacterBehaviors.FirstImplementer<IHexbladeCurse>(actor);
+                bool storm = actor.Character is Characters.SpecialLogics.StormSorceryLogic;
+                if (bloodline == null && hunter == null && curse == null && !storm) return score;
+                var target = ResolveIntendedVictim(move, actor, game);
+                if (target == null || game.IsKnownAlly(actor, target) || !game.CanReach(actor, target)) return score;
+                if (bloodline != null)
+                {
+                    var status = StatusNames.StatusOf(AttackDamageTypes.ToDamageType(bloodline.Element));
+                    if (target.HasImmunity(bloodline.Element)) score -= 40;
+                    else if (target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight)) score += 14;
+                }
+                if (hunter?.IsMarked(target) == true) score += 28;
+                if (curse?.CurseTarget == target) score += 24;
+                if (storm) score += (EstimateAttackDamage(actor, target, result, game) - result) * 5;
+                return score;
+            }
             if (actor.WildForm == 3 && result == 6) return score - 70;
             if (actor.WildStar == 2 && result == 9)
             {
@@ -238,7 +274,9 @@ namespace FingerDiceDuel.Assistant
                 if (hand.IsConcealed || hand.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(foe, hand, game)) continue;
                 bool wild = foe.IsWildShaped && !foe.IsPolymorphed;
                 if (!wild && CharacterBehaviors.FirstImplementer<IDruidCaster>(foe) == null
-                    && CharacterBehaviors.FirstImplementer<IShadowEyes>(foe) == null) continue;
+                    && CharacterBehaviors.FirstImplementer<IShadowEyes>(foe) == null
+                    && CharacterBehaviors.FirstImplementer<IHunterMarkSource>(foe) == null
+                    && CharacterBehaviors.FirstImplementer<IHexbladeCurse>(foe) == null) continue;
                 int before = 0, after = 0;
                 foreach (var source in foe.Hands)
                 {

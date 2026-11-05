@@ -25,11 +25,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(context.AttackType!=AttackDamageType.None)return;
             int roll=ForcedRoll>=0?ForcedRoll%100:(Rng??(Rng=new Random())).Next(100);
-            context.AttackType=roll<30?AttackDamageType.Lightning:roll<60?AttackDamageType.Thunder:AttackTypeOf(context);
+            context.AttackType=roll<40?AttackDamageType.Lightning:roll<80?AttackDamageType.Thunder:AttackTypeOf(context);
             context.Manager?.NoteSkill(context.Attacker,"暴风狂怒",AttackDamageTypes.NameOf(context.AttackType),context.Defender,new SkillVisualData(source:context.SourceHand,element:context.AttackType));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>(context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
         public StatusEffect StatusToApplyOnHit(AttackContext context)=>StatusNames.StatusOf(AttackDamageTypes.ToDamageType(context.AttackType));
+        public static bool PiercesImmunity(PlayerState owner, AttackDamageType type)
+            => (type == AttackDamageType.Lightning || type == AttackDamageType.Thunder)
+                && CharacterBehaviors.FirstImplementer<StormSorceryLogic>(owner) != null;
         public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)=>_operated=true;
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {

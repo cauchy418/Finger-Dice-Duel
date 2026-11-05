@@ -59,13 +59,13 @@ namespace FingerDiceDuel.Tests
             var board=Board(CharacterDefinition.Blank,CharacterDefinition.StormSorcery,out var g);board.BeginTurn();Assert.AreEqual(g.PlayerB,board.Chooser);board.ChooseSkillOption((int)AttackDamageType.Lightning);
             Assert.True(g.PlayerB.HasResistance(AttackDamageType.Lightning));g.ResetMatch();Assert.False(g.PlayerB.HasResistance(AttackDamageType.Lightning));
         }
-        [Test] public void Storm_random_boundaries_are_thirty_thirty_forty_and_preview_does_not_roll()
+        [Test] public void Storm_random_boundaries_are_forty_forty_twenty_and_preview_does_not_roll()
         {
-            foreach(int roll in new[]{0,29,30,59,60,99}){
+            foreach(int roll in new[]{0,39,40,79,80,99}){
                 Board(CharacterDefinition.StormSorcery,CharacterDefinition.Blank,out var g);var storm=(StormSorceryLogic)g.PlayerA.Character;storm.ForcedRoll=roll;
                 var c=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);Assert.AreEqual(AttackDamageType.Bludgeoning,storm.AttackTypeOf(c));c.Resolve(new SimpleChoiceProvider(),g);
-                Assert.AreEqual(roll<30?AttackDamageType.Lightning:roll<60?AttackDamageType.Thunder:AttackDamageType.Bludgeoning,c.AttackType);
-                if(roll<60)Assert.True(g.PlayerB.HasStatus(StatusNames.StatusOf(AttackDamageTypes.ToDamageType(c.AttackType))));
+                Assert.AreEqual(roll<40?AttackDamageType.Lightning:roll<80?AttackDamageType.Thunder:AttackDamageType.Bludgeoning,c.AttackType);
+                if(roll<80)Assert.True(g.PlayerB.HasStatus(StatusNames.StatusOf(AttackDamageTypes.ToDamageType(c.AttackType))));
             }
         }
         [Test] public void Storm_extra_operation_is_optional_and_changes_only_hand_without_healing()
@@ -73,6 +73,22 @@ namespace FingerDiceDuel.Tests
             var board=Board(CharacterDefinition.StormSorcery,CharacterDefinition.Blank,out var g);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Thunder);g.PlayerA.SetHealthExact(12);
             board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.True(board.Hint.Contains("风暴导向"));Assert.AreEqual(g.PlayerA,board.Chooser);Assert.AreEqual(1,g.TurnCount);
             board.ChooseWizardHand(g.PlayerA.LeftHand);g.PlayerB.LeftHand.SetValue(7);board.ChooseWizardHand(g.PlayerB.LeftHand);Assert.AreEqual(9,g.PlayerA.LeftHand.Value);Assert.AreEqual(12,g.PlayerA.Health);Assert.AreEqual(20,g.PlayerB.Health);Assert.AreEqual(1,g.TurnCount);Assert.True(board.PendingWizardChoice==null);
+        }
+        [Test] public void Storm_pierces_electric_and_thunder_immunity_without_applying_effects()
+        {
+            foreach (var type in new[]{AttackDamageType.Lightning,AttackDamageType.Thunder})
+            {
+                Board(CharacterDefinition.StormSorcery, CharacterDefinition.Blank, out var g);
+                var storm = (StormSorceryLogic)g.PlayerA.Character;
+                storm.ForcedRoll = type == AttackDamageType.Lightning ? 0 : 40;
+                g.PlayerB.AddImmunity(type);
+                g.PlayerB.ApplyStatus(StatusEffect.Wet);
+                var hit = new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);
+                hit.Resolve(new SimpleChoiceProvider(),g);
+                Assert.AreEqual(4,hit.ActualHealthDamage);
+                Assert.IsFalse(g.PlayerB.HasStatus(StatusNames.StatusOf(AttackDamageTypes.ToDamageType(type))));
+                Assert.IsTrue(g.PlayerB.HasStatus(StatusEffect.Wet));
+            }
         }
         [Test] public void Storm_extra_operation_can_be_declined_at_each_step()
         {

@@ -320,7 +320,8 @@ namespace FingerDiceDuel.Core
             foreach(var status in StatusNames.AllStatuses)
             {
                 string text=StatusNames.Of(status)+"："+StatusNames.Describe(status);lines.Add(text);
-                var entry=new GuideEntry(StatusNames.IconKeyOf(status),StatusNames.StatusColorOf(status),text,status);
+                var entry=new GuideEntry(StatusNames.IconKeyOf(status),StatusNames.StatusColorOf(status),text,status,
+                    resourceKey:StatusNames.ResourceKeyOf(status));
                 if(StatusNames.IsNegativeStatus(status))negative.Add(entry);else character.Add(entry);
             }
             string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣光立即清除并阻止重新进入。";
@@ -329,7 +330,7 @@ namespace FingerDiceDuel.Core
             character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "22种负面状态；圣光、剑歌、战争祝福、醉拳为角色状态。\n攻击附加的负面效果（含流血、技能控制与元素反应）的基础时长，逐段受格挡−1、对应抗性−1，最低0。\n计时状态通常持续目标自己的2个回合；重复施加刷新、不叠加。\n圣光清除并阻止其他状态；独立资源不受影响。覆霜到期附潮湿。\n油腻触发的倒伏保留两个后续自身回合。");
+                "22种负面状态。圣光、剑歌、战争祝福、醉拳、神佑医者为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣光清除并阻止其他状态。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

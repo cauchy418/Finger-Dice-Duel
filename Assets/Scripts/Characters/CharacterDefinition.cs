@@ -197,7 +197,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static CharacterDefinition OathOfDevotion { get; } = new CharacterDefinition(
             OathOfDevotionId, "圣武士·奉献之誓", SpecialLogicType.OathOfDevotion,
-            attackBonus: 0, defenseBonus: 1,
+            attackBonus: 0, defenseBonus: 0,
             description: "4 与 6 不再攻击，改为合成盾牌；合出盾、主动碎盾、被打碎盾时，" +
                          "对攻击范围内一名角色造成 2 点真实伤害（强制发动，目标自选）；" +
                          "自己持有完整盾牌时，攻击范围内的其他角色被攻击，可以把目标改成自己；代挡碎盾照常触发卫护斩。攻防 0 / +1。");
@@ -462,7 +462,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
             DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,
             defenseBonus: -1, englishName: "Draconic Bloodline",
-            description: "首次自身回合选择寒冷／火焰／闪电／毒素／强酸，攻击改为该类型并获得永久抗性；龙族体魄使对应负面效果基础时长+1。");
+            description: "首次自身回合选择寒冷／火焰／闪电／毒素／强酸，攻击改为该类型并获得永久抗性；命中附对应效果，已有时延长1回合。");
 
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
@@ -477,7 +477,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition WayOfTheFourElements { get; } = new CharacterDefinition(
             WayOfTheFourElementsId, "武僧·四象宗", SpecialLogicType.WayOfTheFourElements,
             englishName: "Way of the Four Elements",
-            description: "共用气初始2、上限6。四象门徒1气选择五元素攻击；受到五元素攻击时，四象法门可选耗1气获得对应抗性。");
+            description: "共用气初始2、上限6。四象门徒2气选择五元素攻击；受到五元素攻击时，四象法门可选耗1气获得对应抗性。");
 
         public static CharacterDefinition CircleOfTheMoon { get; } = new CharacterDefinition(
             CircleOfTheMoonId, "德鲁伊·月亮结社", SpecialLogicType.CircleOfTheMoon,
@@ -510,7 +510,7 @@ namespace FingerDiceDuel.Core
             description:"记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半。攻0／防−1，距离1，钝击。");
         public static CharacterDefinition StormSorcery { get; } = new CharacterDefinition(
             StormSorceryId,"术士·风暴术法",SpecialLogicType.StormSorcery,defenseBonus:-1,englishName:"Storm Sorcery",
-            description:"开局选择永久闪电或雷鸣抗性；攻击30%闪电、30%雷鸣，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
+            description:"开局选择永久闪电或雷鸣抗性；攻击40%闪电、40%雷鸣，均穿透伤害免疫，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
         public static CharacterDefinition SchoolOfIllusion { get; } = new CharacterDefinition(
             SchoolOfIllusionId,"法师·幻术学派",SpecialLogicType.SchoolOfIllusion,defenseBonus:-1,englishName:"School of Illusion",
             description:"持有2时，他人选你的任意手作加数，你可查看其运算手与原加数，再选择是否改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
@@ -524,7 +524,7 @@ namespace FingerDiceDuel.Core
         public const string BladesingingId = "wizard_bladesinging";
         public static CharacterDefinition Bladesinging {get;} = new CharacterDefinition(BladesingingId,"法师·剑咏者",SpecialLogicType.Bladesinging,attackBonus:0,defenseBonus:-1,englishName:"Bladesinging",description:"回合结束双手和等于体力，可进入剑歌并选一种五元素攻击，攻防+1；从下个自身回合起，未发起未取消的攻击、合盾或实际回复则结束剑歌。距离2，挥砍。");
         public const string TheHexbladeId = "warlock_the_hexblade";
-        public static CharacterDefinition TheHexblade {get;} = new CharacterDefinition(TheHexbladeId,"邪术师·咒剑",SpecialLogicType.TheHexblade,attackBonus:1,defenseBonus:-1,englishName:"The Hexblade",description:"回合开始持7可施加或移动2回合诅咒，对其每段攻击+2；本人击杀诅咒目标召唤10生命咒缚幽灵，继承死者手值与座位，下一轮行动，占位计距但不计胜负人数。距离2，挥砍。");
+        public static CharacterDefinition TheHexblade {get;} = new CharacterDefinition(TheHexbladeId,"邪术师·咒剑",SpecialLogicType.TheHexblade,attackBonus:1,defenseBonus:-1,englishName:"The Hexblade",description:"无效果运算后可施加等于结果点数的诅咒，对其每段攻击+2；本人击杀诅咒目标召唤10生命咒缚幽灵，继承死者手值与座位，下一轮行动，占位计距但不计胜负人数。距离2，挥砍。");
 
         public const string OathOfConquestId="paladin_oath_of_conquest";
         public static CharacterDefinition OathOfConquest {get;}=new CharacterDefinition(OathOfConquestId,"圣武士·征服之誓",SpecialLogicType.OathOfConquest,attackBonus:0,defenseBonus:0,englishName:"Oath of Conquest",description:"攻击开始持5则整次攻击后攻击+1；被攻击开始持5则结算后防御+1。回合结束未发起攻击则技能攻击加成−1，未持5则技能防御加成−1，最低0。按攻击开始时实际数值，攻击加成高于受击者或被防御加成低于自己的角色攻击，结算后令对方恐慌2回合。距离1，钝击，攻防0/0。");

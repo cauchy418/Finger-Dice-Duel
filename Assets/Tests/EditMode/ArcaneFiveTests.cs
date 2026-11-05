@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Tests
             return GameManager.Create2v2(new[]{a,b,c,d},new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});
         }
         private static HexbladeLogic Curse(GameManager game,PlayerState owner,PlayerState target)
-        {var list=Capture(game);owner.LeftHand.SetValue(7);game.ForceActivePlayerForTest(owner);var hex=(HexbladeLogic)owner.Character;hex.OnTurnStarted(owner,game);Assert.AreEqual(1,list.Count);list[0].Choose(target.LeftHand);return hex;}
+        {var list=Capture(game);owner.LeftHand.SetValue(2);var hex=(HexbladeLogic)owner.Character;hex.OnOperationResolved(owner,owner.LeftHand,1,1,HandEffectType.None,game,null);Assert.AreEqual(1,list.Count);list[0].Choose(target.LeftHand);return hex;}
         private static BoardController SongBoard(out GameManager game,out BladesingingLogic song)
         {
             var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();
@@ -165,8 +165,8 @@ namespace FingerDiceDuel.Tests
         {var g=Match(CharacterDefinition.TheHexblade,CharacterDefinition.Blank);Curse(g,g.PlayerA,g.PlayerB);g.PlayerB.SetHealthExact(1);Hit(g,g.PlayerA,g.PlayerB);g.RefreshGameOver();Assert.True(g.IsGameOver);Assert.AreEqual(g.PlayerA,g.Winner);Assert.False(g.PlayerB.IsSummon);}
         [Test] public void New_choice_ai_prefers_enemy_and_never_controls_healthy_ally()
         {var g=Four(CharacterDefinition.SchoolOfTransmutation,out var a,out var b,out var c,out var d);var ai=new GreedyChoiceProvider();Assert.AreEqual(b,ai.ChooseArcaneTarget(ArcaneChoices.Transmute,a,new[]{d,b},g));Assert.AreEqual(null,ai.ChooseArcaneTarget(ArcaneChoices.Transmute,a,new[]{d},g));Assert.AreEqual(b,ai.ChooseArcaneTarget(ArcaneChoices.Hex,a,new[]{d,b},g));}
-        [Test] public void Real_board_shows_start_curse_and_end_polymorph_choices_to_human_owner()
-        {var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();var g=CharacterFactory.CreateMatch(CharacterDefinition.TheHexblade,CharacterDefinition.Blank,ca,cb);var board=new BoardController(g,ca,cb);g.PlayerA.LeftHand.SetValue(7);board.BeginTurn();Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.AreEqual(g.PlayerA,board.Chooser);Assert.True(board.PendingWizardChoice.TargetsPlayer);Assert.True(board.ChooseWizardHand(g.PlayerB.LeftHand));Assert.AreEqual(g.PlayerB,((HexbladeLogic)g.PlayerA.Character).CurseTarget);}
+        [Test] public void Real_board_offers_curse_after_effectless_operation()
+        {var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();var g=CharacterFactory.CreateMatch(CharacterDefinition.TheHexblade,CharacterDefinition.Blank,ca,cb);var board=new BoardController(g,ca,cb);g.PlayerB.LeftHand.SetValue(2);board.BeginTurn();Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);board.ClickHand(g.PlayerA.LeftHand);board.ClickHand(g.PlayerB.LeftHand);Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);Assert.AreEqual(g.PlayerA,board.Chooser);Assert.True(board.PendingWizardChoice.TargetsPlayer);Assert.True(board.ChooseWizardHand(g.PlayerB.LeftHand));Assert.AreEqual(g.PlayerB,((HexbladeLogic)g.PlayerA.Character).CurseTarget);Assert.AreEqual(3,((HexbladeLogic)g.PlayerA.Character).CurseTurns);}
         [Test] public void Enchantment_normal_status_expiry_does_not_erase_newer_enchanted_overlay()
         {var g=Match(CharacterDefinition.Blank,CharacterDefinition.Blank);g.PlayerA.ApplyStatus(StatusEffect.Disabled,1);g.PlayerA.ApplyEnchantment(StatusEffect.Disabled,g.PlayerB,2);g.PlayerA.TickStatuses();Assert.True(g.PlayerA.HasStatus(StatusEffect.Disabled));Assert.AreEqual(1,g.PlayerA.StatusTurnsLeft(StatusEffect.Disabled));}
         [Test] public void Poison_and_burning_notify_new_schools_using_the_real_status_source()

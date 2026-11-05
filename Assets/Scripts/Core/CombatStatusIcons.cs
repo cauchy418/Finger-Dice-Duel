@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Core
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
                 "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；直坠噩梦可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
-                result.Add(new CombatStatusIcon("Status/"+StatusNames.IconKeyOf(status),
+                result.Add(new CombatStatusIcon(StatusNames.ResourceKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),
                     player.StatusTurnsLeft(status).ToString(),status));
             foreach(var type in ResistanceNames.All)

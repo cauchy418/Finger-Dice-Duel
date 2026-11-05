@@ -15,7 +15,8 @@ namespace FingerDiceDuel.Assistant
             int worst=0;
             foreach(var foe in game.Players)
             {
-                if(foe==actor||!foe.IsAlive||game.IsKnownAlly(actor,foe)||!StatusRules.CanAct(foe))continue;
+                if(foe==actor||!foe.IsAlive||game.IsKnownAlly(actor,foe)||!StatusRules.CanAct(foe)
+                    || foe.MustGamble && foe.Character is GamblerLogic)continue;
                 int best=0;
                 foreach(var hand in foe.Hands)
                 {
@@ -29,7 +30,11 @@ namespace FingerDiceDuel.Assistant
                         switch(effect)
                         {
                             case HandEffectType.Attack4:case HandEffectType.Attack6:case HandEffectType.Attack8:
-                                if(game.CanReach(foe,actor)&&!foe.HasStatus(StatusEffect.Disabled))value+=IsLowHealth(actor)?60:24;
+                                if (game.CanReach(foe, actor) && StatusRules.CanAttackTarget(foe, actor, game))
+                                {
+                                    int damage = EstimateAttackDamage(foe, actor, result, game);
+                                    if (damage > 0) value += Math.Min(IsLowHealth(actor) ? 60 : 32, damage * (IsLowHealth(actor) ? 8 : 4));
+                                }
                                 break;
                             case HandEffectType.Shield:value+=IsLowHealth(foe)?45:15;break;
                             case HandEffectType.Heal:

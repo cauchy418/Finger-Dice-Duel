@@ -2321,7 +2321,37 @@ namespace FingerDiceDuel.Core
                                         Hand targetHand = null)
         {
             if (rng == null) rng = new Random();
-            return ExecuteGambleWithRoll(actor, actedHand, GamblerLogic.Roll(rng), targetHand);
+            ValidateGamble(actor, actedHand);
+            int roll = GamblerLogic.Roll(rng);
+            if (!WillSuppressOperationEffects(actor)
+                && SkillChoicePolicy.Choose(GamblerLogic.RerollChoice, GamblerLogic.RerollOptions(roll), actor, null, this) != 0)
+            {
+                roll = PayForGambleReroll(actor, roll, rng);
+                if (!actor.IsAlive)
+                {
+                    if (!IsGameOver) GiveUpTurn();
+                    return new TurnResult { Actor = actor, ActedHand = actedHand, WasGamble = true,
+                        GambleRoll = roll, GameOver = IsGameOver, Winner = Winner };
+                }
+            }
+            return ExecuteGambleWithRoll(actor, actedHand, roll, targetHand);
+        }
+
+        public int PayForGambleReroll(PlayerState actor, int first, Random rng)
+        {
+            if (actor?.IsAlive != true || IsGameOver || !(actor.Character is GamblerLogic)) return first;
+            int cost = rng.Next(1, GamblerLogic.RerollHealthDie + 1);
+            int before = actor.Health;
+            actor.SetHealthExact(before - cost);
+            if (!actor.IsAlive)
+            {
+                NoteSkill(actor, "恶之强运", $"失去{before}生命，阵亡", actor);
+                CheckGameOver();
+                return first;
+            }
+            int roll = GamblerLogic.Roll(rng);
+            NoteSkill(actor, "恶之强运", $"失去{cost}生命，{first}重掷为{roll}", actor);
+            return roll;
         }
 
         /// <summary>
@@ -2339,6 +2369,15 @@ namespace FingerDiceDuel.Core
                                                 int roll, Hand targetHand = null,
                                                 bool extraAction = false)
         {
+            ValidateGamble(actor, actedHand);
+            RecordSkillVisual(actor,"命运赌博",actor,new SkillVisualData(source:actedHand,value:roll));
+            try{return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
+                               gambleResult: roll, extraAction: extraAction);}
+            finally{WarBlessingNineAttack=null;}
+        }
+
+        private void ValidateGamble(PlayerState actor, Hand actedHand)
+        {
             if (IsGameOver)
                 throw new InvalidOperationException("非法赌博：比赛已结束。");
             if (actor == null)
@@ -2351,10 +2390,6 @@ namespace FingerDiceDuel.Core
             if (actedHand.IsLocked || actedHand.IsRestrained)
                 throw new InvalidOperationException("非法赌博：被锁定的手不能作为运算源。");
 
-            RecordSkillVisual(actor,"命运赌博",actor,new SkillVisualData(source:actedHand,value:roll));
-            try{return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
-                               gambleResult: roll, extraAction: extraAction);}
-            finally{WarBlessingNineAttack=null;}
         }
 
         /// <summary>已通过校验的实际结算流程。</summary>

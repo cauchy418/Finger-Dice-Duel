@@ -28,6 +28,16 @@ namespace FingerDiceDuel.Core
 
         /// <summary>赌博骰子的面数（1d9）。</summary>
         public const int GambleDie = 9;
+        public const int RerollHealthDie = 5;
+        public const string RerollChoice = "gambler_reroll";
+
+        public static SkillChoiceOption[] RerollOptions(int first)
+            => new[]
+            {
+                new SkillChoiceOption(0, $"保留 {first}", "Subclasses/rogue_gambler"),
+                new SkillChoiceOption(first, "恶之强运 · 失去1d5生命", "Subclasses/rogue_gambler",
+                    "再掷一次并采用新结果，支付生命可能阵亡。")
+            };
 
         /// <summary>
         /// 掷一次赌博骰。返回 1..9。

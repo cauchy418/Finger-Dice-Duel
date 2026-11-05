@@ -26,6 +26,7 @@ namespace FingerDiceDuel.Core
             if(p?.IsSummon==true)return 0;
             int bonus = p?.Character?.AttackBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.WarBlessing)) bonus++;
+            if (p != null && p.HasStatus(StatusEffect.BlessedHealing)) bonus++;
             if (p != null && p.HasStatus(StatusEffect.Panic)) bonus -= PanicAttackPenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
@@ -44,6 +45,7 @@ namespace FingerDiceDuel.Core
             if(p?.IsSummon==true)return -1;
             int bonus = p?.Character?.DefenseBonus ?? 0;
             if (p != null && p.HasStatus(StatusEffect.WarBlessing)) bonus++;
+            if (p != null && p.HasStatus(StatusEffect.BlessedHealing)) bonus++;
             if (p != null && p.HasStatus(StatusEffect.Acid)) bonus -= AcidDefensePenalty;
             if (p != null && p.HasStatus(StatusEffect.Bleed)) bonus -= BleedPenalty;
 
@@ -362,10 +364,10 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>免疫优先；易伤向上取整×1.5，再计算抗性。不可抵挡的状态扣血不经抗性。</summary>
-        public static int ApplyDamageAffinities(PlayerState defender, int damage, AttackDamageType type, bool includeResistance = true)
+        public static int ApplyDamageAffinities(PlayerState defender, int damage, AttackDamageType type, bool includeResistance = true, bool ignoreImmunity = false)
         {
             if (defender == null || damage <= 0 || type == AttackDamageType.None) return damage;
-            if (defender.HasImmunity(type)) return 0;
+            if (!ignoreImmunity && defender.HasImmunity(type)) return 0;
             if (defender.HasVulnerability(type)) damage = (damage * 3 + 1) / 2;
             return includeResistance ? ApplyResistance(defender, damage, type) : damage;
         }

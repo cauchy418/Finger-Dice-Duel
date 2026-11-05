@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(HandEffect.FourElementsTechnique,board.PendingEffect);Assert.AreEqual(6,board.PendingSkillOptions.Count);
             Assert.IsTrue(board.ChooseSkillOption((int)AttackDamageType.Cold));
             Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.Frost));Assert.IsFalse(game.PlayerB.HasStatus(StatusEffect.Burn));
-            Assert.AreEqual(1,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
+            Assert.AreEqual(0,((IKiResource)game.PlayerA.Character).Ki);Assert.AreEqual(1,game.TurnCount);
         }
         [Test] public void Four_elements_can_save_ki_and_keep_physical_attack()
         {
@@ -145,7 +145,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(HandEffect.OpenHandTechnique,board.PendingEffect);board.ChooseSkillOption((int)StatusEffect.Stunned);
             Assert.AreEqual(HandEffect.FourElementsTechnique,board.PendingEffect);board.ChooseSkillOption((int)AttackDamageType.Cold);
             Assert.IsTrue(b.HasStatus(StatusEffect.Stunned));Assert.IsTrue(b.HasStatus(StatusEffect.Frost));
-            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a)) Assert.AreEqual(2,ki.Ki);
+            foreach(var ki in CharacterBehaviors.Implementers<IKiResource>(a)) Assert.AreEqual(1,ki.Ki);
             Assert.AreEqual(1,game.TurnCount);
         }
         [Test] public void Four_elements_all_five_player_choices_use_matching_damage_and_status()
@@ -157,7 +157,7 @@ namespace FingerDiceDuel.Tests
                 Assert.IsTrue(game.PlayerB.HasStatus(StatusNames.StatusOf(AttackDamageTypes.ToDamageType(type))),type.ToString());
             }
         }
-        [Test] public void Draconic_chosen_element_applies_its_three_turn_status_on_real_attack()
+        [Test] public void Draconic_chosen_element_applies_status_on_real_attack()
         {
             var board=Board(CharacterDefinition.DraconicBloodline,out var game);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Acid);
             game.PlayerB.LeftHand.SetValue(3);board.ClickHand(game.PlayerA.LeftHand);board.ClickHand(game.PlayerB.LeftHand);
@@ -172,7 +172,7 @@ namespace FingerDiceDuel.Tests
                 var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();var game=new GameManager(a,b,ca,cb);
                 var board=new BoardController(game,ca,cb,new GreedyChoiceProvider(),null);Attack(board,game);
                 Assert.AreEqual(1,game.TurnCount);Assert.AreEqual(0,board.PendingSkillOptions.Count);
-                Assert.AreEqual(1,((IKiResource)a.Character).Ki);
+                Assert.AreEqual(def==CharacterDefinition.WayOfTheOpenHand?1:(board.LastTurn.AttackType==AttackDamageType.Bludgeoning?2:0),((IKiResource)a.Character).Ki);
             }
         }
     }

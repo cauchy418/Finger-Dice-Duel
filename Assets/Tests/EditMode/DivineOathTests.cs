@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FingerDiceDuel.Core;
@@ -118,8 +118,8 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Vengeance_dead_mark_offers_optional_new_living_target()
         {var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();qs[0].Choose(g.PlayerB.LeftHand);qs.Clear();g.PlayerB.SetHealthExact(0);g.RefreshGameOver();Assert.AreEqual(1,qs.Count);Assert.True(qs[0].AllowDecline);Assert.False(qs[0].Candidates.Contains(g.PlayerB.LeftHand));qs[0].Choose(g.PlayerD.LeftHand);Assert.AreEqual(g.PlayerD,((IVowOfEnmity)g.PlayerA.Character).VowTarget);}
-        [Test] public void State_guide_separates_three_character_states_and_marker_page_has_no_song_duplicate()
-        {var sheet=GuideSheets.Statuses();Assert.AreEqual(2,sheet.Groups.Count);Assert.AreEqual(22,sheet.Groups[0].Entries.Count);Assert.AreEqual(4,sheet.Groups[1].Entries.Count);Assert.True(sheet.Groups[1].Entries.Any(e=>e.ResourceKey=="Effects/bladesong"));Assert.False(GuideSheets.CharacterMarks().Lines.Any(line=>line.StartsWith("剑歌：")));}
+        [Test] public void State_guide_separates_character_states_and_marker_page_has_no_song_duplicate()
+        {var sheet=GuideSheets.Statuses();Assert.AreEqual(2,sheet.Groups.Count);Assert.AreEqual(22,sheet.Groups[0].Entries.Count);Assert.AreEqual(5,sheet.Groups[1].Entries.Count);Assert.True(sheet.Groups[1].Entries.Any(e=>e.ResourceKey=="Effects/bladesong"));Assert.False(GuideSheets.CharacterMarks().Lines.Any(line=>line.StartsWith("剑歌：")));}
         [Test] public void New_oath_states_and_vow_are_present_in_combat_icon_list()
         {var g=Match(CharacterDefinition.OathOfVengeance,CharacterDefinition.Blank);g.BeginTurn();g.PlayerA.ApplyStatus(StatusEffect.WarBlessing,2);Assert.True(CombatStatusIcons.For(g.PlayerA,g).Any(i=>i.ResourceKey=="Status/war_blessing"));Assert.True(CombatStatusIcons.For(g.PlayerB,g).Any(i=>i.ResourceKey=="Effects/vow_of_enmity"));}
         [Test] public void Ai_blesses_known_teammates_and_marks_enemies()
@@ -137,7 +137,7 @@ namespace FingerDiceDuel.Tests
             var g=Match(CharacterDefinition.Gambler,CharacterDefinition.Blank);var a=g.PlayerA;var b=g.PlayerB;a.ApplyStatus(StatusEffect.WarBlessing,2);
             var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider());
             for(int seed=0;seed<200;seed++)if(GamblerLogic.Roll(new Random(seed))==9){board.GambleRng=new Random(seed);break;}
-            board.BeginTurn();Assert.True(board.ClickHand(a.LeftHand));Assert.True(board.Gamble(),"gamble entry");Assert.True(board.PendingWizardChoice!=null,"gamble nine prompt roll="+board.LastGambleRoll);Assert.True(board.ChooseSkillOption(1),"gamble nine choose");
+            board.BeginTurn();Assert.True(board.ClickHand(a.LeftHand));Assert.True(board.Gamble(),"gamble entry");Assert.True(board.ChooseSkillOption(0));Assert.True(board.PendingWizardChoice!=null,"gamble nine prompt roll="+board.LastGambleRoll);Assert.True(board.ChooseSkillOption(1),"gamble nine choose");
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer,board.Phase);Assert.True(board.ClickHand(b.LeftHand),"confirm "+board.Phase+" "+board.Hint);Assert.AreEqual(9,a.LeftHand.Value);Assert.True(board.LastTurn.DamageDealt>=9,"gamble damage="+board.LastTurn.DamageDealt);
         }
         [Test] public void Blessing_nine_effective_theft_asks_human_and_defers_attack_normally()

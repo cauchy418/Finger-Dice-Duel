@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
@@ -62,19 +62,21 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Draconic_bloodline_keeps_permanent_resistance_and_three_turn_status()
+        public void Draconic_bloodline_keeps_permanent_resistance_and_extends_existing_status()
         {
             GameManager game = Game(CharacterDefinition.DraconicBloodline,
                                     CharacterDefinition.Champion,
                                     out PlayerState p, out _);
             var logic = (DraconicBloodlineLogic)p.Character;
-            logic.ChooseElement(AttackDamageType.Cold);
+            logic.ChooseElement(AttackDamageType.Fire);
             p.AddPermanentResistance(AttackDamageType.Cold);
 
             Assert.IsTrue(p.HasResistance(AttackDamageType.Cold));
             var ctx = new AttackContext(p, game.PlayerB, p.LeftHand, 4);
-            logic.OnResolveAttack(ctx);
-            Assert.AreEqual(3, ctx.StatusDuration, "龙族血脉的该元素状态持续 3 回合。");
+            ctx.Resolve(game.GetChoiceProvider(game.PlayerB), game);
+            Assert.AreEqual(2, game.PlayerB.StatusTurnsLeft(StatusEffect.Burn));
+            new AttackContext(p, game.PlayerB, p.LeftHand, 4).Resolve(game.GetChoiceProvider(game.PlayerB), game);
+            Assert.AreEqual(3, game.PlayerB.StatusTurnsLeft(StatusEffect.Burn));
         }
 
         [Test]
@@ -126,7 +128,7 @@ namespace FingerDiceDuel.Tests
             var ctx = new AttackContext(monk, attacker, monk.LeftHand, 4);
             logic.OnResolveAttack(ctx);
             Assert.AreEqual(AttackDamageType.Lightning, ctx.AttackType);
-            Assert.AreEqual(1, logic.Ki);
+            Assert.AreEqual(0, logic.Ki);
 
             GameManager game2 = Game(CharacterDefinition.WayOfTheFourElements,
                                      CharacterDefinition.Champion,

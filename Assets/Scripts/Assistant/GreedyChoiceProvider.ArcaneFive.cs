@@ -9,6 +9,9 @@ namespace FingerDiceDuel.Assistant
         public PlayerState ChooseArcaneTarget(string key,PlayerState owner,IReadOnlyList<PlayerState> targets,GameManager game)
         {
             PlayerState best=null;double bestScore=0;
+            int curseTurns = 2;
+            if (key.StartsWith(ArcaneChoices.Hex + ":", StringComparison.Ordinal))
+                int.TryParse(key.Substring(ArcaneChoices.Hex.Length + 1), out curseTurns);
             foreach(var target in targets)
             {
                 bool ally=AncientAlly(game,owner,target);double score;
@@ -26,7 +29,13 @@ namespace FingerDiceDuel.Assistant
                     if(ally||target.HasStatus(StatusEffect.HolyLight)||!StatusRules.CanAttackTarget(owner,target,game))continue;
                     score=20+Math.Max(0,20-target.Health)*2+(game.CanReach(owner,target)?15:0);
                     var curse=CharacterBehaviors.FirstImplementer<IHexbladeCurse>(owner);
-                    if(ReferenceEquals(curse?.CurseTarget,target))score+=curse.CurseTurns<2?8:-15;
+                    if (ReferenceEquals(curse?.CurseTarget, target))
+                    {
+                        if (curse.CurseTurns >= curseTurns) continue;
+                        score += 8;
+                    }
+                    else if (curse?.CurseTarget?.IsAlive == true && game.CanReach(owner, curse.CurseTarget))
+                        score -= curse.CurseTurns >= curseTurns ? 26 : 10;
                 }
                 if(score>bestScore){bestScore=score;best=target;}
             }

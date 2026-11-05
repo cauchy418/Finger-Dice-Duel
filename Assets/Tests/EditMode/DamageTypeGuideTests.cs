@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_all_twenty_one_statuses()
         {
-            Assert.AreEqual(24, StatusNames.AllStatuses.Length,
+            Assert.AreEqual(25, StatusNames.AllStatuses.Length,
                 "包含圣光、战争祝福等24种计时状态；剑歌按独立技能维持。");
         }
 

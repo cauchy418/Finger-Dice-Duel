@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Core
             var list=new List<SkillChoiceOption>();
             var types=draconic?new[]{AttackDamageType.Cold,AttackDamageType.Fire,AttackDamageType.Lightning,AttackDamageType.Poison,AttackDamageType.Acid}
                 :new[]{AttackDamageType.Fire,AttackDamageType.Cold,AttackDamageType.Lightning,AttackDamageType.Thunder,AttackDamageType.Acid};
-            foreach(var type in types) list.Add(new SkillChoiceOption((int)type,AttackDamageTypes.NameOf(type)+(draconic?"":" · 1气"),"Damage/"+AttackDamageTypes.IconKeyOf(type),draconic?"永久抗性；攻击改为此元素。":"本次攻击改为此元素。"));
+            foreach(var type in types) list.Add(new SkillChoiceOption((int)type,AttackDamageTypes.NameOf(type)+(draconic?"":" · 2气"),"Damage/"+AttackDamageTypes.IconKeyOf(type),draconic?"永久抗性；攻击改为此元素。":"本次攻击改为此元素。"));
             if(!draconic&&includeDecline) list.Add(new SkillChoiceOption(0,"保留气点","Effects/ki","本次保持原攻击类型。"));return list;
         }
     }

@@ -43,8 +43,7 @@ namespace FingerDiceDuel.Tests
             PlayerState p = Make("圣", CharacterDefinition.OathOfDevotion);
 
             Assert.AreEqual(0, p.Character.AttackBonus);
-            Assert.AreEqual(1, p.Character.DefenseBonus,
-                "圣武士·奉献之誓恢复为 0 / +1（玩家要求）。");
+            Assert.AreEqual(0, p.Character.DefenseBonus);
             Assert.AreEqual(1, GameManager.BaseRangeOf(p), "圣武士·奉献之誓攻击距离 1。");
         }
 

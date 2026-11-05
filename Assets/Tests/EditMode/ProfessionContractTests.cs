@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Tests
             "fighter|fighter_breaker|战士·破阵者|fighter|Breaker|1|0|20|1",
             "arcane_archer|fighter_arcane_archer|战士·魔射手|fighter|Arcane Archer|0|-1|20|3",
             "knight|paladin_oath_of_the_crown|圣武士·王冠之誓|paladin|Oath of the Crown|1|-1|20|1",
-            "paladin|paladin_oath_of_devotion|圣武士·奉献之誓|paladin|Oath of Devotion|0|1|20|1",
+            "paladin|paladin_oath_of_devotion|圣武士·奉献之誓|paladin|Oath of Devotion|0|0|20|1",
             "oathbreaker|paladin_oathbreaker|圣武士·破誓者|paladin|Oathbreaker|2|0|20|1",
             "cleric|cleric_life_domain|牧师·生命领域|cleric|Life Domain|-1|-1|20|2147483647",
             "curseweaver|wizard_school_of_conjuration|法师·咒法学派|wizard|School of Conjuration|-1|0|20|2147483647",

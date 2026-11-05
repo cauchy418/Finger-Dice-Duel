@@ -26,7 +26,7 @@ namespace FingerDiceDuel.Core
             list["神圣誓忠"]=new SecondarySkillProfile("神圣誓忠",SecondarySkillStyle.Growth,"Professions/paladin",3,"crown");
             list["生命门徒"]=new SecondarySkillProfile("生命门徒",SecondarySkillStyle.Heal,"Professions/cleric",2,"");
             list["维持生命"]=new SecondarySkillProfile("维持生命",SecondarySkillStyle.Heal,"Professions/cleric",2,"");
-            list["净化"]=new SecondarySkillProfile("净化",SecondarySkillStyle.Cleanse,"Professions/cleric",2,"");
+            list["神佑医者"]=new SecondarySkillProfile("神佑医者",SecondarySkillStyle.Cleanse,"Professions/cleric",2,"");
             list["思维之盾"]=new SecondarySkillProfile("思维之盾",SecondarySkillStyle.Eye,"Subclasses/warlock_the_great_old_one",2,"");
             list["法术塑形"]=new SecondarySkillProfile("法术塑形",SecondarySkillStyle.Enchant,"fx_force",2,"orb");
             list["狂野魔法浪涌"]=new SecondarySkillProfile("狂野魔法浪涌",SecondarySkillStyle.Surge,"fx_psychic",2,"");

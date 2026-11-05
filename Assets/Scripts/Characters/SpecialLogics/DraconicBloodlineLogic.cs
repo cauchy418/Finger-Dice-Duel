@@ -38,11 +38,6 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             request.ChooseOption(SkillChoicePolicy.Choose(MartialSkillChoices.Draconic,options,owner,null,manager));
         }
 
-        public override void OnResolveAttack(AttackContext context)
-        {
-            if (context != null && !context.IsStatusDamage && (context.AttackType==AttackDamageType.None||context.AttackType==Element)){context.StatusDuration++;context.Manager?.RecordSkillVisual(context.Attacker,"龙族体魄",context.Defender,new SkillVisualData(source:context.SourceHand,element:Element));}
-        }
-
         public override AttackDamageType AttackTypeOf(AttackContext context) => Element;
 
         public StatusEffect StatusToApplyOnHit(AttackContext context)

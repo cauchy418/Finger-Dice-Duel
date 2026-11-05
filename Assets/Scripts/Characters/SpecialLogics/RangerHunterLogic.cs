@@ -3,7 +3,7 @@ using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>游侠·猎人：7 标记、标记目标无视正防御并追加已损体力/5。</summary>
+    /// <summary>游侠·猎人：无效果运算可标记，追猎标记目标时穿透正防御与格挡。</summary>
     public sealed class RangerHunterLogic : CharacterTemplate, IAttackTypeProvider, IHunterMarkSource, IAttackFinishedHook
     {
         private readonly HashSet<PlayerState> _marked = new HashSet<PlayerState>();
@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                   HandEffectType effect, GameManager manager,
                                                   IPreTurnChoiceSink choiceSink)
         {
-            if (owner == null || actedHand == null || actedHand.Value != 7) return;
+            if (owner?.IsAlive != true || actedHand == null || effect != HandEffectType.None) return;
             var targets=new List<PlayerState>();var hands=new List<Hand>();
             foreach(var p in manager.Players)
                 if(p.IsAlive && !ReferenceEquals(p,owner) && manager.DistanceBetween(owner,p)<=3)
@@ -51,10 +51,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
         public override void OnResolveAttack(AttackContext context)
         {
-            if (context?.Defender == null || !_marked.Contains(context.Defender)) return;
+            if (context?.Defender == null || context.IsStatusDamage || context.IsReflected || !_marked.Contains(context.Defender)) return;
             context.IgnorePositiveDefense = true;
             int lost = context.Defender.MaximumHealth - context.Defender.Health;
             if (lost > 0) context.FinalDamage += lost / 5;
+            context.GuardedTrueDamage = System.Math.Max(0, StatusRules.EffectiveAttackBonus(context.Attacker));
             _marked.Remove(context.Defender);
             context.Manager?.NoteSkill(context.Attacker, "巨像屠夫", $"消耗 {context.Defender.Name} 的标记，已损体力/5 加伤");
         }

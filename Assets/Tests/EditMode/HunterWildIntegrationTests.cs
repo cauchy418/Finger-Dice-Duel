@@ -14,6 +14,22 @@ namespace FingerDiceDuel.Tests
   private sealed class Rolls : Random
   {private readonly Queue<int> values; public int Calls; public Rolls(params int[] sequence){values=new Queue<int>(sequence);}public override int Next(int max){Calls++;return values.Count==0?99:values.Dequeue();}}
   private static void Shield(Hand h){h.SetValue(5);h.SetShieldState(ShieldState.Formed);}
+  [Test] public void Hunter_effectless_result_three_marks_and_two_blocked_segments_pay_true_damage_once()
+  {
+      var g=CharacterFactory.CreateMatch(CharacterDefinition.RangerHunter,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+      var owner=g.PlayerA;var target=g.PlayerB;
+      target.LeftHand.SetValue(2);
+      g.ExecuteTurn(owner,owner.LeftHand,target.LeftHand);
+      var hunter=(RangerHunterLogic)owner.Character;
+      Assert.IsTrue(hunter.IsMarked(target));
+      owner.ApplyStatus(StatusEffect.WarBlessing,2);
+      Shield(target.LeftHand);Shield(target.RightHand);
+      var hit=new AttackContext(owner,target,owner.LeftHand,4,g){HitCount=2};
+      hit.Resolve(g.GetChoiceProvider(target),g);
+      Assert.AreEqual(2,hit.BlockedHits);
+      Assert.AreEqual(1,hit.ActualHealthDamage);
+      Assert.IsFalse(hunter.IsMarked(target));
+  }
   private static GameManager Wild(out Rolls rng,params int[] rolls)
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.WildMagic,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());rng=new Rolls(rolls);((WildMagicLogic)g.PlayerA.Character).Rng=rng;g.PlayerB.SetMaxHealth(100);g.PlayerB.SetHealthExact(100);return g;}
   private static AttackContext Hit(GameManager g,int count=2)

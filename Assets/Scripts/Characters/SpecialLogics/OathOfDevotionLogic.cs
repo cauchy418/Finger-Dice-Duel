@@ -3,7 +3,7 @@
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **圣武士·奉献之誓**（攻 0 / 防 +1，攻击距离 1）。
+    /// **圣武士·奉献之誓**（攻 0 / 防 0，攻击距离 1）。
     ///
     /// 玩家确认的规则：
     ///   · **4 与 6 不再攻击**，改为**合出护盾**
@@ -80,7 +80,7 @@ namespace FingerDiceDuel.Core
         }
 
         public override int DefaultAttackBonus => 0;
-        public override int DefaultDefenseBonus => 1;
+        public override int DefaultDefenseBonus => 0;
 
         /// <summary>攻击距离 1（与白板相同）。</summary>
         public override int BaseAttackRange => 1;

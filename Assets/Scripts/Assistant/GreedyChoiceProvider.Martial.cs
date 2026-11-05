@@ -10,6 +10,12 @@ namespace FingerDiceDuel.Assistant
         {
             if(key=="druid_symbiosis")return WantsSymbiosis(owner,game)?1:0;
             if(key==ShadowRules.Darkness)return DarknessValue(owner,game)>0?1:0;
+            if (key == GamblerLogic.RerollChoice)
+            {
+                foreach (var option in options)
+                    if (option.Value > 0 && WantsGambleReroll(owner, option.Value, game)) return option.Value;
+                return 0;
+            }
             int best=options[0].Value;double bestScore=double.NegativeInfinity;
             foreach(var option in options)
             {
@@ -26,7 +32,7 @@ namespace FingerDiceDuel.Assistant
                 else if(key==MonkRules.Ninja||key==MonkRules.Taichi||key==MonkRules.Defense||key==MonkRules.Harmony||key==MonkRules.Drunken)score=MonkOptionScore(key,option.Value,owner,target,game);
                 else if(key==DivinationRules.Key)score=DivinationRules.AiScore(option.Value,owner,target,game);
                 else if(key==MartialSkillChoices.OpenHand) score=OpenHandScore(option.Value,owner,target);
-                else if(key==MartialSkillChoices.FourElements) score=ElementScore(option.Value,owner,target,game);
+                else if(key==MartialSkillChoices.FourElements) score=FourElementsScore(option.Value,owner,target,game);
                 else score=0;
                 if(score>bestScore) {bestScore=score;best=option.Value;}
             }
@@ -70,6 +76,49 @@ namespace FingerDiceDuel.Assistant
             return score;
         }
 
+        private static double FourElementsScore(int value, PlayerState owner, PlayerState target, GameManager game)
+        {
+            if (value == 0) return target == null ? 1 : ElementDamageScore(AttackDamageType.Bludgeoning, owner, target);
+            int ki = CharacterBehaviors.FirstImplementer<IKiResource>(owner)?.Ki ?? 0;
+            if (ki < 2) return -100;
+            double cost = ki == 2 ? 4 : 2;
+            if (owner.Health <= 8 && ki == 2) cost += 3;
+            return ElementScore(value, owner, target, game) - cost;
+        }
+
+        private static bool WantsGambleReroll(PlayerState owner, int first, GameManager game)
+        {
+            if (owner == null || game == null || owner.Health <= GamblerLogic.RerollHealthDie
+                || game.WillSuppressOperationEffects(owner)) return false;
+            double replacement = 0;
+            for (int face = 1; face <= GamblerLogic.GambleDie; face++)
+                replacement += GambleOutcomeValue(owner, face, owner.Health - 3, game);
+            double current = GambleOutcomeValue(owner, first, owner.Health, game);
+            return replacement / GamblerLogic.GambleDie > current + (owner.Health <= 8 ? 4 : 3);
+        }
+
+        private static double GambleOutcomeValue(PlayerState owner, int roll, int health, GameManager game)
+        {
+            int value = StatusRules.ApplyResultModifiers(owner, roll);
+            var effect = CharacterBehaviors.DisplayedEffectOf(owner, value);
+            if (effect == HandEffectType.Heal)
+                return StatusRules.CanHeal(owner) ? Math.Min(owner.MaximumHealth - health, owner.HasStatus(StatusEffect.HolyLight) ? 5 : 9) : 0;
+            if (effect == HandEffectType.Shield)
+                return owner.HasStatus(StatusEffect.Tinnitus) ? 0 : 4;
+            if (!IsAttackEffect(effect) || owner.HasStatus(StatusEffect.Disabled)) return 0;
+            double best = 0;
+            foreach (var foe in game.OpponentsOf(owner))
+            {
+                if (!foe.IsAlive || !game.CanReach(owner, foe) || !StatusRules.CanAttackTarget(owner, foe, game)) continue;
+                int damage = AttackContext.ApplyStatBonuses(value, StatusRules.EffectiveAttackBonus(owner),
+                    StatusRules.EffectiveDefenseBonus(foe), ignorePositiveDefense: false);
+                damage = StatusRules.ApplyDamageAffinities(foe, damage, AttackDamageType.Slashing);
+                bool shielded = foe.LeftHand.IsShield || foe.RightHand.IsShield;
+                best = Math.Max(best, shielded ? 2 : damage * 1.25 + (damage >= foe.HealthAcrossForms + foe.SporeLife + foe.FalseLife ? 8 : 0));
+            }
+            return best;
+        }
+
         private static double BloodlineScore(AttackDamageType type,PlayerState owner,GameManager game)
         {
             double score=0;if(game==null) return 0;
@@ -80,6 +129,9 @@ namespace FingerDiceDuel.Assistant
                 var attack=new AttackContext(enemy,owner,enemy.LeftHand,6,game);
                 var incoming=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(attack)??AttackDamageType.None;
                 if(incoming==type) score+=18+(game.CanReach(enemy,owner)?8:0);
+                else if ((type == AttackDamageType.Lightning || type == AttackDamageType.Thunder)
+                    && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.StormSorceryLogic>(enemy) != null)
+                    score += game.CanReach(enemy, owner) ? 10 : 4;
             }
             return score;
         }
@@ -88,14 +140,16 @@ namespace FingerDiceDuel.Assistant
         {
             int damage=Math.Max(0,6+StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(target));
             var magic=AttackDamageTypes.ToDamageType(type);
-            damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out var ignored,out var clear);
-            damage=StatusRules.ApplyDamageAffinities(target,damage,type);
-            if(target.HasImmunity(type)) return 0;
+            bool immune = target.HasImmunity(type);
+            if (!immune) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
+            damage=StatusRules.ApplyDamageAffinities(target,damage,type,ignoreImmunity:
+                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(owner, type));
+            if(immune) return damage;
             double score=damage;
             var status=StatusNames.StatusOf(magic);
             if(status!=StatusEffect.None && !target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight))
                 score+=type==AttackDamageType.Cold?5:type==AttackDamageType.Thunder?4:3;
-            if(target.Health<=damage) score+=15;
+            if (target.HealthAcrossForms + target.SporeLife + target.FalseLife <= damage) score += 15;
             if(type==AttackDamageType.Acid && target.HasStatus(StatusEffect.Poison)
                 || type==AttackDamageType.Poison && target.HasStatus(StatusEffect.Acid)) score+=2;
             return score;
@@ -116,15 +170,16 @@ namespace FingerDiceDuel.Assistant
 
         public override PlayerState HunterMarkTarget(PlayerState owner,IReadOnlyList<PlayerState> candidates,GameManager game)
         {
-            PlayerState best=null;int bestScore=int.MinValue;
+            PlayerState best=null;int bestScore=0;
             foreach(var target in candidates)
             {
-                if(!target.IsAlive || ReferenceEquals(target,owner) || game.IsTeammate(owner,target)) continue;
+                if(!target.IsAlive || ReferenceEquals(target,owner) || game.IsKnownAlly(owner,target)) continue;
                 bool marked=false;foreach(var source in CharacterBehaviors.Implementers<IHunterMarkSource>(owner)) if(source.IsMarked(target)) marked=true;
                 int score=20+(target.MaximumHealth-target.Health)*3+Math.Max(0,StatusRules.EffectiveDefenseBonus(target))*4;
                 if(game.CanReach(owner,target)) score+=15;
                 score-=game.DistanceBetween(owner,target)*2;
-                if(marked) score-=100;
+                if(marked) continue;
+                if ((target.LeftHand.IsShield || target.RightHand.IsShield) && StatusRules.EffectiveAttackBonus(owner) > 0) score += 6;
                 if(score>bestScore) {bestScore=score;best=target;}
             }
             return best;

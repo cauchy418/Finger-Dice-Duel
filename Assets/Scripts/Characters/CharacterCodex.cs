@@ -75,13 +75,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.LifeDomainId, "Life Domain", Alignment.LawfulGood,
-                shortSkill: "4/6/8 可转回复；回复先净化再回血；9 可给别人，双9再回一次。",
-                playGuide: "4/6/8 是二选一，所以它们比别的角色更灵活。"
-                         + "危险时才回血，否则全部进攻 —— 只顾回血会打成僵局。"
-                         + "2v2 里优先给一队血量最低的人回复。",
-                counter: "尽量阻止他合双 9（双 9 = 9 + 9 = 回 18 血）。"
-                       + "9 的原料（4+5、3+6、2+7、1+8）都值得压一点。",
-                interactions: new string[0]);
+                shortSkill: "4/6/8可转治疗，双9两次治疗。净化，溢出攻防+1。",
+                playGuide: "缺血时治疗，溢出时可为满血队友加攻防。",
+                counter: "限制9与双9。净化能清除腐朽，攻击可消耗其治疗机会。",
+                interactions: new[] { "神佑医者与战争祝福可共存。圣光清除已有角色状态。" });
 
             Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.ChaoticGood,
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
@@ -127,11 +124,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与咒法学派：潜行不能被选为攻击目标；次级咒术不能绕过目标选择。" });
 
             Add(CharacterDefinition.OathOfDevotionId, "Oath of Devotion", Alignment.LawfulGood,
-                shortSkill: "4/5/6 都合盾，且合盾 / 碎盾时额外打出 2 点冲击。",
-                playGuide: "选自己的手与加数后，4/5/6 直接合盾，只提示选择冲击目标。"
-                         + "用完整盾再合盾，会分别触发碎盾和合盾两次冲击。",
-                counter: "别让他合成 5，4/6 也要压 —— "
-                       + "他每合一次盾就白赚一次冲击。",
+                shortSkill: "4/5/6合盾，合盾或碎盾触发2点冲击。",
+                playGuide: "用完整盾再合盾可触发两次冲击。持完整盾可替人代挡。",
+                counter: "限制4/5/6，预留攻击处理其盾。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
@@ -152,12 +147,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.GamblerId, "Gambler", Alignment.ChaoticNeutral,
-                shortSkill: "放弃运算，掷 1d9 直接作为本次行动结果。",
-                playGuide: "算不出高价值就赌（4/6/8 才算）。"
-                         + "赌博不需要点他人的手，打谁等结果出来再选；"
-                         + "正常运算过一回合后强制赌博。",
-                counter: "基本不需要针对（与你的手值无关）；"
-                       + "他赌博后的下一回合别让他凑出高价值。",
+                shortSkill: "掷1d9代替运算，见点后可失去1d5生命重掷。",
+                playGuide: "先选自己的手再开赌。首掷出来后决定是否重掷。",
+                counter: "正常运算后下一次必须赌博。低血重掷可能阵亡。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.OathOfTheCrownId, "Oath of the Crown", Alignment.LawfulGood,
@@ -325,16 +317,16 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
 
             Add(CharacterDefinition.DraconicBloodlineId, "Draconic Bloodline", Alignment.ChaoticNeutral,
-                shortSkill: "首次回合选寒冷/火焰/闪电/毒素/强酸；攻击改该元素，永久抗性，对应负面效果基础时长+1。",
-                playGuide: "根据对手常见元素/队伍构成选择；选定后攻击和抗性都锁定该元素。",
-                counter: "用非该元素攻击；或用高防御/护盾处理其元素攻击。",
-                interactions: new[] { "与防护学派：不同来源抗性可共存，同型不重复减半。" });
+                shortSkill: "选一种元素成为本局攻击与永久抗性，重复附加同一状态可延长。",
+                playGuide: "按敌方抗性选元素，持续压同一目标以延长状态。",
+                counter: "用其他元素攻击，或以净化和免疫截断持续附加。",
+                interactions: new[] { "对应状态首次正常附加。抗性和格挡同时生效时无法延长。" });
 
             Add(CharacterDefinition.RangerHunterId, "Hunter", Alignment.NeutralGood,
-                shortSkill: "7 在射程内标记；攻击标记目标无视正防御并加已损体力/5，消耗标记。",
-                playGuide: "合出7后选择距离3内的一名其他角色，也可不标记；优先标记受伤或高防御的敌人。",
-                counter: "被标记后尽快离开其射程或逼他先消耗标记。",
-                interactions: new[] { "与多目标：同一次攻击可同时结算原目标与一个标记目标。" });
+                shortSkill: "无效果运算标记。攻击可追猎标记目标，格挡后仍可能受真实伤害。",
+                playGuide: "距离3内优先标记受伤、持盾或高防御的敌人。",
+                counter: "被标记后避开射程，或以闪避避开该次攻击。",
+                interactions: new[] { "正攻击加成越高，标记攻击被格挡时的真实伤害越高。" });
 
             Add(CharacterDefinition.WayOfTheOpenHandId, "Way of the Open Hand", Alignment.TrueNeutral,
                 shortSkill: "1气倒伏／震慑；3气暗劲；回合初混元体。",
@@ -343,10 +335,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "暗劲不叠加；盾挡算命中，闪避／取消不引爆。" });
 
             Add(CharacterDefinition.WayOfTheFourElementsId, "Way of the Four Elements", Alignment.TrueNeutral,
-                shortSkill: "1气改元素；受五元素攻击可选耗1气抗性。",
-                playGuide: "攻击前选元素或保留气；受五元素攻击可选抗性。行动后双手相同回1气。",
-                counter: "以物理或其它魔法绕开四象法门；气不足时无法改元素或获抗性。",
-                interactions: new[] { "与龙族血脉：元素抗性可叠加保存。" });
+                shortSkill: "2气改元素攻击，1气取得对应元素抗性。",
+                playGuide: "保留防守所需的气。行动后双手同值回1气。",
+                counter: "1气可防守，2气才可改元素。物理攻击可绕开四象法门。",
+                interactions: new string[0]);
 
             Add(CharacterDefinition.CircleOfSporesId,"Circle of Spores",Alignment.TrueNeutral,
                 shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；保持体力高于邻居，施加腐朽。",counter:"避开相邻腐朽，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
@@ -367,10 +359,10 @@ namespace FingerDiceDuel.Characters
                 counter:"拉开距离避免失明；首次致命伤只能迫使其恢复至1，继续追击。",
                 interactions:new[]{"暗蚀攻击命中按普通规则附加腐朽。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
-                shortSkill:"选永久雷抗；攻击30%闪电、30%雷鸣，行动后可无效果运算。",
-                playGuide:"开局选闪电或雷鸣抗性；行动后可选运算手和加数，也可放弃；额外运算只改手值。",
-                counter:"额外运算不能直接打伤害或回血；根据其永久抗性调整元素。",
-                interactions:new[]{"额外运算不触发数字效果、碎盾或运算后技能，不额外推进回合与状态。"});
+                shortSkill: "闪电、雷鸣各40%，穿透对应免疫。行动后可纯运算。",
+                playGuide: "开局选永久抗性。纯运算可调整下一回合的手值。",
+                counter: "对应抗性与格挡仍能减伤，免疫仍阻止元素效果。",
+                interactions: new[] { "对免疫目标能造成闪电或雷鸣伤害，但不触发对应状态与反应。" });
             Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticEvil,
                 shortSkill:"持2可选择改用另一只合法手作加数；差2可变小手为2减伤。",
                 playGuide:"持2时，先看对方的运算手和原加数，再选是否改用另一只合法手；受击差2可将小手变2减半。",
@@ -415,7 +407,10 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
                 shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含破阵强袭。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,
-                shortSkill:"持7可诅咒；每段+2，亲自击杀召唤咒缚幽灵。",playGuide:"回合开始选诅咒对象或不发动。击杀诅咒者后，幽灵占死者座位、继承手值，由AI从下轮行动。",counter:"避开诅咒伤害；击杀召唤者可使幽灵消失。",interactions:new[]{"幽灵占位计距，不计原玩家胜负人数；状态扣血与幽灵击杀不触发召唤。"});
+                shortSkill: "无效果运算可诅咒，时长等于结果。亲自击杀召唤幽灵。",
+                playGuide: "优先诅咒能接近并击杀的敌人。",
+                counter: "减少给他留下能合出长诅咒的加数。击杀召唤者会驱散幽灵。",
+                interactions: new[] { "幽灵占位计距，从下一轮行动，不计入原玩家胜负人数。" });
         }
 
         private static void Add(string id, string englishName, Alignment alignment,

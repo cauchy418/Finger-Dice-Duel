@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -18,6 +18,13 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class GamblerTests
     {
+        private static bool GambleAndKeep(BoardController board)
+        {
+            if (!board.Gamble()) return false;
+            if (board.PendingWizardChoice?.Prompt.Contains("恶之强运") == true) board.ChooseSkillOption(0);
+            return true;
+        }
+
         private static PlayerState Make(string name, CharacterDefinition def)
             => CharacterFactory.CreatePlayer(name, def);
 
@@ -41,6 +48,55 @@ namespace FingerDiceDuel.Tests
             protected override double Sample() => 0.5;
 
             public override int Next(int minValue, int maxValue) => _value;
+        }
+
+        private sealed class RerollDice : System.Random
+        {
+            private readonly Queue<int> _results;
+            public readonly List<int> Sides = new List<int>();
+            public RerollDice(params int[] results) { _results = new Queue<int>(results); }
+            public override int Next(int minValue, int maxValue)
+            {
+                Sides.Add(maxValue - minValue);
+                return _results.Dequeue();
+            }
+        }
+
+        [Test]
+        public void Evil_luck_reveals_first_roll_and_pays_one_d5_for_the_replacement()
+        {
+            var game = Match(CharacterDefinition.Blank, out var a, out var b);
+            var rng = new RerollDice(2, 3, 9);
+            var board = new BoardController(game, a, b) { GambleRng = rng };
+            game.PlayerA.SetHealthExact(10);
+            board.BeginTurn();
+            Assert.True(board.ClickHand(game.PlayerA.LeftHand));
+            Assert.True(board.Gamble());
+            Assert.AreEqual(2, board.LastGambleRoll);
+            Assert.AreEqual(1, rng.Sides.Count);
+            Assert.AreEqual(0, game.TurnCount);
+            Assert.True(board.ChooseSkillOption(2));
+            Assert.AreEqual(9, board.LastTurn.GambleRoll);
+            Assert.AreEqual(16, game.PlayerA.Health);
+            Assert.AreEqual(5, rng.Sides[1]);
+            Assert.AreEqual(9, rng.Sides[2]);
+            Assert.AreEqual(1, game.TurnCount);
+        }
+
+        [Test]
+        public void Evil_luck_can_end_the_match_before_a_replacement_is_rolled()
+        {
+            var game = Match(CharacterDefinition.Blank, out var a, out var b);
+            var rng = new RerollDice(2, 3);
+            var board = new BoardController(game, a, b) { GambleRng = rng };
+            game.PlayerA.SetHealthExact(2);
+            board.BeginTurn();
+            board.ClickHand(game.PlayerA.LeftHand);
+            Assert.True(board.Gamble());
+            Assert.True(board.ChooseSkillOption(2));
+            Assert.AreEqual(BoardPhase.GameOver, board.Phase);
+            Assert.AreEqual(game.PlayerB, game.Winner);
+            Assert.AreEqual(2, rng.Sides.Count);
         }
 
         [Test]
@@ -265,7 +321,7 @@ namespace FingerDiceDuel.Tests
             // 掷点之后、结算之前读"待结算点数"
             board.GambleRng = new FixedRandom(3);
             Assert.True(board.CanGamble);
-            board.Gamble();
+            GambleAndKeep(board);
 
             Assert.AreEqual(3, board.LastGambleRoll, "应记录掷出的点数。");
 
@@ -325,7 +381,7 @@ namespace FingerDiceDuel.Tests
             board.ClickHand(game.PlayerA.LeftHand);
             Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase,
                 "强制赌博状态下点自己的手应进入赌博阶段。");
-            Assert.True(board.Gamble(), "应能开赌。");
+            Assert.True(GambleAndKeep(board), "应能开赌。");
 
             Assert.False(game.PlayerA.MustGamble,
                 "赌完就解除，下一回合可以正常运算。");
@@ -353,7 +409,7 @@ namespace FingerDiceDuel.Tests
             board.BeginTurn();
 
             board.ClickHand(game.PlayerA.LeftHand);
-            Assert.True(board.Gamble(), "开赌应成功。");
+            Assert.True(GambleAndKeep(board), "开赌应成功。");
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase,
                 "掷出攻击应停在选打谁。");
 
@@ -417,7 +473,7 @@ namespace FingerDiceDuel.Tests
             // 先调到"开赌必掷出 4"（4 = 攻击，会停下来选目标）
             board.BeginTurn();
             board.ClickHand(game.PlayerA.LeftHand);
-            board.Gamble();
+            GambleAndKeep(board);
 
             int firstRoll = board.LastGambleRoll;
             int callsAfterGamble = rng.Calls;
@@ -522,7 +578,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase);
 
             // ② 开赌 -> 掷出 6 -> 停在选打谁
-            Assert.True(board.Gamble());
+            Assert.True(GambleAndKeep(board));
             Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
 
             // ③ 强制赌博状态下，**选打谁仍然必须能点他人的手**

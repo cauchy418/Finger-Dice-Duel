@@ -111,7 +111,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>Singing?ArcaneChoices.ElementStatus(ctx.AttackType):StatusEffect.None;
     }
 
-    public sealed class HexbladeLogic:CharacterTemplate,ITurnStartHook,IHexbladeCurse,ITargetDamageBonus,IOnDamageDealt
+    public sealed class HexbladeLogic:CharacterTemplate,IHexbladeCurse,ITargetDamageBonus,IOnDamageDealt
     {
         public override string DisplayName=>"邪术师·咒剑";
         public override int DefaultAttackBonus=>1;
@@ -120,12 +120,14 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public PlayerState CurseTarget {get;private set;}
         public int CurseTurns {get;private set;}
         public override void OnMatchReset(PlayerState owner,GameManager game){CurseTarget=null;CurseTurns=0;}
-        public void OnTurnStarted(PlayerState owner,GameManager game)
+        public override void OnOperationResolved(PlayerState owner, Hand hand, int before, int add,
+            HandEffectType effect, GameManager game, IPreTurnChoiceSink sink)
         {
-            if(!ReferenceEquals(owner,game.CurrentPlayer)||!owner.IsAlive||(owner.LeftHand.Value!=7&&owner.RightHand.Value!=7))return;
+            if (owner?.IsAlive != true || hand == null || effect != HandEffectType.None) return;
+            int turns = hand.Value;
             var targets=new List<PlayerState>();foreach(var p in game.Players)if(p.IsAlive&&!ReferenceEquals(p,owner)&&!p.HasStatus(StatusEffect.HolyLight))targets.Add(p);
-            ArcaneChoices.Target(ArcaneChoices.Hex,"咒剑诅咒 · 选择目标、移动诅咒，或不发动",owner,game,targets,target=>{
-                CurseTarget=target;CurseTurns=2;game.NoteSkill(owner,"咒剑诅咒",$"{target.Name} 2回合，对其每段攻击+2",target);});
+            ArcaneChoices.Target(ArcaneChoices.Hex + ":" + turns,$"咒剑诅咒 · 选择目标，持续{turns}回合，或不发动",owner,game,targets,target=>{
+                CurseTarget=target;CurseTurns=turns;game.NoteSkill(owner,"咒剑诅咒",$"{target.Name} {turns}回合，对其每段攻击+2",target);});
         }
         public void TickCurse(PlayerState ended)
         {if(CurseTarget==null)return;if(!CurseTarget.IsAlive||ReferenceEquals(ended,CurseTarget)&&--CurseTurns<=0){CurseTarget=null;CurseTurns=0;}}
@@ -135,6 +137,5 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(ctx.IsStatusDamage||ctx.IsReflected||ctx.ActualHealthDamage<=0||ctx.Defender.IsAlive||ctx.Defender.IsSummon||!ReferenceEquals(ctx.Defender,CurseTarget))return;
             game.QueueHexSpecter(ctx.Attacker,ctx.Defender);CurseTarget=null;CurseTurns=0;
         }
-        public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==7||context.OtherHandValue==7?30:0;
     }
 }
