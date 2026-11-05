@@ -96,7 +96,7 @@ lines += ['', '## 复现与证据', '',
           f"$env:FDD_REVISION_ROOT='Tools/Statistics/{out.name}'",
           "$env:FDD_REVISION_MODE='1v1'  # 依次换为2v2、dual、eight、identity",
           'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only RevisionBalanceTests -OutputDirectory Tools/HeadlessTests/bin/druid-57-sample',
-          '# 各模式日志保存到 Tools/HeadlessTests/bin/druid-57-<mode>.log',
+          f'# 各模式日志保存到 {args.log_prefix}<mode>.log',
           f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --log-prefix {args.log_prefix}'
           + (' --optimized-ai' if args.optimized_ai else ''), '```']
 if args.optimized_ai:

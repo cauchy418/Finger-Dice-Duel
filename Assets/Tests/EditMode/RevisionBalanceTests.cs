@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class RevisionBalanceTests
     {
-        private static readonly string Root=Environment.GetEnvironmentVariable("FDD_REVISION_ROOT")??"Tools/Statistics/2026-11-05";
+        private static readonly string Root=Environment.GetEnvironmentVariable("FDD_REVISION_ROOT")??"Tools/HeadlessTests/bin/revision-sample-data";
         private static readonly CharacterDefinition[] Roster=CharacterDefinition.BuiltIn;
         private static void Row(StreamWriter w,int seed,string first,string second,int winner,int turns)
         {w.WriteLine(seed+","+first+","+second+","+winner+","+turns);if(++_written%1000==0){w.Flush();Console.WriteLine("progress "+_written+" games");}}

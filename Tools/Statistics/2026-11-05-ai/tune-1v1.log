@@ -1,0 +1,19 @@
+── RevisionBalanceTests  (1 项)
+progress 1000 games
+progress 2000 games
+progress 3000 games
+progress 4000 games
+progress 5000 games
+progress 6000 games
+progress 7000 games
+progress 8000 games
+progress 9000 games
+progress 10000 games
+progress 11000 games
+progress 12000 games
+progress 13000 games
+tune-1v1 completed 13440 games; zero errors / forced aborts
+   PASS  Revision_all_modes_win_rates
+
+────────────────────────────────────────────────────────────
+通过 1 / 失败 0

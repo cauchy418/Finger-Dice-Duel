@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1611_passed-success)
+![tests](https://img.shields.io/badge/regression-1614_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1611 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1614 项。
 
 ## 现在有什么
 
@@ -87,14 +87,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 3（圣光 / 剑歌 / 战争祝福） |
 | 元素反应 | 11 条 |
 | 双将组合 | 514 种无序组合 |
-| 回归测试 | 1611 项通过、0 失败 |
+| 回归测试 | 1614 项通过、0 失败 |
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- **平衡还没收敛。** 2026-11-05 重采57子职共62,768局，1v1胜率从15.6%到94.5%。数据反映固定AI下的结果，不等于真人排名；[完整胜率与分母](Tools/Statistics/2026-11-05/README.md)已保存。
+- **平衡还没收敛。** 2026-11-05 优化德鲁伊和幽影魔法AI后重采57子职共62,768局，1v1胜率从15.2%到93.9%。数据反映固定AI下的结果，不等于真人排名；[完整胜率与分母](Tools/Statistics/2026-11-05-ai/README.md)已保存。
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
