@@ -1,6 +1,6 @@
 # CODELY.md
 
-最新57子职胜率采样为2026-11-05的62,768局，涵盖1v1、2v2、514种双将组合抽样及两种八人模式；逐局记录、分母和源码指纹见[报告](Tools/Statistics/2026-11-05-balance/README.md)。本轮八子职规则、策略与对策见[平衡复测记录](Tools/Statistics/2026-11-05-balance/balance-review.md)。早期统计属于历史快照。
+最新57子职胜率采样为2026-11-05的62,768局，涵盖1v1、2v2、514种双将组合抽样及两种八人模式；逐局记录、分母和源码指纹见[报告](Tools/Statistics/2026-11-05-ranger/README.md)。游侠职业基础攻防为+1/−1，幽域追踪者伏击另加2攻。巨像屠夫用目标当前与已损体力的较大值除以5并向下取整，战斗结算和AI预估共用公式。相关对策见[AI策略清单](Docs/ai-strategy-reference.md)。
 
 德鲁伊现行规则见[重构与孢子结社](Docs/druid-rework-2026-11-05.md)。`DruidWildShape`在PlayerState保存原体力／行为、充能与星耀，替换为WildShapeBehavior；羊可套在荒野外，溢伤逐层传递。公共回合开始选择完成后通过WildSkipPending正常消耗回合，回合末允许解除；巨龙改用纯运算，不再连续加手。双武僧初始4气、上限6；双德鲁伊初始充能相加。孢子生命独立于虚假生命，死亡回充在CollectNewDeaths内按死亡前物理座位和占位物去重结算，包括最终击杀。旧德鲁伊与双将技能共存、巨龙第二加数描述均为历史。
 
@@ -51,7 +51,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1618项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职62,768局五模式采样见Tools/Statistics/2026-11-05-balance，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
+| 测试 | 1620项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职62,768局五模式采样见Tools/Statistics/2026-11-05-ranger，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 主动幻术默发改动前的52子职统计快照：1v1 **106,080** 局、2v2 **169,728** 局、425双将 **2,162,400** 局、集火 **187,200** 局；八人阵营 **2,000** 局；

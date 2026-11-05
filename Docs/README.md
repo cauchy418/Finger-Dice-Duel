@@ -48,5 +48,5 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样报告](../Tools/Statistics/2026-11-05-balance/README.md) | 2026-11-05，八子职调整后57子职62,768局的完整分母、种子与复现命令 |
-| [机器数据](../Tools/Statistics/2026-11-05-balance/results.json) | 可复核的原始结果 |
+| [胜率采样报告](../Tools/Statistics/2026-11-05-ranger/README.md) | 2026-11-05，游侠调整后57子职62,768局的完整分母、种子与复现命令 |
+| [机器数据](../Tools/Statistics/2026-11-05-ranger/results.json) | 可复核的原始结果 |

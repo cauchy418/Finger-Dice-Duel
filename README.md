@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1618_passed-success)
+![tests](https://img.shields.io/badge/regression-1620_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1618 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1620 项。
 
 ## 现在有什么
 
@@ -87,14 +87,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 5（圣光 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者） |
 | 元素反应 | 11 条 |
 | 双将组合 | 514 种无序组合 |
-| 回归测试 | 1618 项通过、0 失败 |
+| 回归测试 | 1620 项通过、0 失败 |
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- **平衡还没收敛。** 2026-11-05 调整八个子职并复查全角色AI后重采57子职共62,768局，1v1胜率从14.8%到90.7%。数据反映固定AI下的结果，不等于真人排名；[完整胜率与分母](Tools/Statistics/2026-11-05-balance/README.md)已保存。
+- 2026-11-05 更新游侠的职业面板、技能及 AI 后，五种模式共重采 57 子职 62,768 局。固定 AI 的 1v1 胜率介于 23.2% 至 90.7%。[完整胜率与分母](Tools/Statistics/2026-11-05-ranger/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 

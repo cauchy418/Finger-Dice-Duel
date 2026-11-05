@@ -1,4 +1,4 @@
-> 当前57子职策略见[逐角色清单](../Docs/ai-strategy-reference.md)，2026-11-05平衡调整后重采62,768局见[当前报告](Statistics/2026-11-05-balance/README.md)。以下为历史检查记录。
+> 当前57子职策略见[逐角色清单](../Docs/ai-strategy-reference.md)，2026-11-05游侠调整后重采62,768局见[当前报告](Statistics/2026-11-05-ranger/README.md)。以下为历史检查记录。
 
 > 前期检查保留历史口径；当前54角色的配置、形态选择与流程验证见文末。
 
