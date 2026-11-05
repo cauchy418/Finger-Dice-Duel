@@ -302,22 +302,22 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1。");
 
         /// <summary>
-        /// 游侠·幽域追踪者：攻 0 / 防 −1，攻击距离 1。
+        /// 游侠·幽域追踪者：攻 +1 / 防 −1，攻击距离 1。
         ///
         /// 运算后若两只手同时是 1/2/3 且数字相同，
         /// 可以（主动选择）把参与运算的那只手暗置，进入伏击。
         /// </summary>
         public static CharacterDefinition GloomStalker { get; } = new CharacterDefinition(
             GloomStalkerId, "游侠·幽域追踪者", SpecialLogicType.GloomStalker,
-            attackBonus: 0, defenseBonus: -1,
+            attackBonus: 1, defenseBonus: -1,
             description: "运算后若两只手同时是 1/2/3 且数字相同，" +
                          "可以把参与运算的那只手暗置（不能发起运算、" +
                          "也不能被当成运算数字，但数值可见），进入伏击状态。" +
-                         "伏击时攻击 +1、攻击距离 3；" +
+                         "伏击时额外攻击 +2、攻击距离 3；" +
                          "即将受到伤害时若在伏击，则恢复被暗置的手并抵挡此次伤害" +
                          "（触发时机在武僧·太极宗太极之后）。" +
                          "法师·咒法学派可以穿透伏击打出伤害，咒术攻击也不会解除伏击。" +
-                         "攻 0 / 防 −1。");
+                         "攻 +1 / 防 −1。");
 
         /// <summary>
         /// 游荡者·魔术师：攻 0 / 防 −1，攻击距离 2。
@@ -464,8 +464,8 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
-            defenseBonus: -1, englishName: "Hunter",
-            description: "距离3穿刺。无效果运算可标记，攻击可追加射程内的标记目标。标记攻击穿透正防御并按已损体力加伤，遭格挡时附正攻击加成的真实伤害。");
+            attackBonus: 1, defenseBonus: -1, englishName: "Hunter",
+            description: "距离3穿刺。无效果运算可标记，攻击可追加射程内的标记目标。标记攻击穿透正防御并按目标当前与已损体力的较大值÷5加伤（向下取整），遭格挡时附正攻击加成的真实伤害。");
 
         public static CharacterDefinition WayOfTheOpenHand { get; } = new CharacterDefinition(
             WayOfTheOpenHandId, "武僧·散打宗", SpecialLogicType.WayOfTheOpenHand,

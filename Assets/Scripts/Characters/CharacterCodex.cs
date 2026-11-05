@@ -190,7 +190,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "恐惧伏击：运算后两手同为 1/2/3 时，可暗置那只手进入伏击。",
                 playGuide: "点【伏击】把参与运算的那只手暗置：它不能再运算、"
                          + "对手也点不到，但数值可见。"
-                         + "伏击期间另一只手照常行动，攻击 +1、距离 3；"
+                         + "伏击期间另一只手照常行动，额外攻击 +2、距离 3；"
                          + "挨打时恢复那只手并挡下伤害。",
                 counter: "数值可见，能预判他的伏击回合；"
                        + "伏击只有一次，逼他提早用掉即可。",
@@ -324,8 +324,8 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.RangerHunterId, "Hunter", Alignment.NeutralGood,
                 shortSkill: "无效果运算标记。攻击可追猎标记目标，格挡后仍可能受真实伤害。",
-                playGuide: "距离3内优先标记受伤、持盾或高防御的敌人。",
-                counter: "被标记后避开射程，或以闪避避开该次攻击。",
+                playGuide: "标记距离3内便于追击的敌人。满血或重伤时，巨像屠夫的加伤更高。",
+                counter: "被标记后避开射程；闪避或取消可避开伤害，格挡仍会受到附伤。",
                 interactions: new[] { "正攻击加成越高，标记攻击被格挡时的真实伤害越高。" });
 
             Add(CharacterDefinition.WayOfTheOpenHandId, "Way of the Open Hand", Alignment.TrueNeutral,

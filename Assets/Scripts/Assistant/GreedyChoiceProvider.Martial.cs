@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
+using FingerDiceDuel.Characters.SpecialLogics;
 
 namespace FingerDiceDuel.Assistant
 {
@@ -161,7 +162,8 @@ namespace FingerDiceDuel.Assistant
             foreach (var target in candidates)
             {
                 if (!target.IsAlive || game.IsKnownAlly(owner, target)) continue;
-                double score = (target.MaximumHealth - target.Health) * 3 - target.Health;
+                int score = RangerHunterLogic.ColossusBonus(target) * 3 - target.HealthAcrossForms;
+                if (target.LeftHand.IsShield || target.RightHand.IsShield) score -= 8;
                 if (target.HasStatus(StatusEffect.Panic)) score += 3;
                 if (score > bestScore) { bestScore = score; best = target; }
             }
@@ -175,7 +177,7 @@ namespace FingerDiceDuel.Assistant
             {
                 if(!target.IsAlive || ReferenceEquals(target,owner) || game.IsKnownAlly(owner,target)) continue;
                 bool marked=false;foreach(var source in CharacterBehaviors.Implementers<IHunterMarkSource>(owner)) if(source.IsMarked(target)) marked=true;
-                int score=20+(target.MaximumHealth-target.Health)*3+Math.Max(0,StatusRules.EffectiveDefenseBonus(target))*4;
+                int score = 20 + HunterMarkValue(target);
                 if(game.CanReach(owner,target)) score+=15;
                 score-=game.DistanceBetween(owner,target)*2;
                 if(marked) continue;
@@ -183,6 +185,53 @@ namespace FingerDiceDuel.Assistant
                 if(score>bestScore) {bestScore=score;best=target;}
             }
             return best;
+        }
+
+        private static int HunterMarkValue(PlayerState target)
+            => RangerHunterLogic.ColossusBonus(target) * 6
+                + Math.Max(0, 20 - target.HealthAcrossForms)
+                + Math.Max(0, StatusRules.EffectiveDefenseBonus(target)) * 4;
+
+        private static bool WantsAmbush(PlayerState owner, Hand hidden, GameManager game)
+        {
+            if (owner == null || game == null) return false;
+            Hand exposed = owner.GetOtherHand(hidden);
+            foreach (var foe in game.Players)
+            {
+                if (!foe.IsAlive || foe == owner || game.IsKnownAlly(owner, foe)) continue;
+                if (StatusRules.CanAct(foe) && game.CanReach(foe, owner)
+                    && StatusRules.CanAttackTarget(foe, owner, game) && !foe.HasStatus(StatusEffect.Disabled)
+                    && CharacterBehaviors.FirstImplementer<SchoolOfConjurationLogic>(foe) == null
+                    && CanAttackWith(foe, null, exposed, game)) return true;
+            }
+
+            if (!exposed.CanBeOperated || owner.HasStatus(StatusEffect.Disabled)) return false;
+            foreach (var foe in game.OpponentsOf(owner))
+            {
+                if (game.IsKnownAlly(owner, foe) || !game.CanReach(owner, foe, GloomStalkerLogic.AmbushRange)
+                    || foe.LeftHand.IsShield || foe.RightHand.IsShield) continue;
+                foreach (var player in game.Players)
+                {
+                    if (!player.IsAlive || player == owner) continue;
+                    foreach (var addend in player.Hands)
+                        if (CanAttackWith(owner, exposed, addend, game)) return true;
+                }
+                break;
+            }
+            return false;
+        }
+
+        private static bool CanAttackWith(PlayerState attacker, Hand onlySource, Hand addend, GameManager game)
+        {
+            if (addend.IsConcealed || addend.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(attacker, addend, game))
+                return false;
+            foreach (var source in attacker.Hands)
+            {
+                if (!source.CanBeOperated || (onlySource != null && onlySource != source)) continue;
+                int result = StatusRules.ApplyResultModifiers(attacker, Hand.ComputeSum(source.Value, addend.Value));
+                if (IsAttackEffect(DivineScoredEffect(attacker, result, game))) return true;
+            }
+            return false;
         }
     }
 }

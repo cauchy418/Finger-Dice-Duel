@@ -124,7 +124,7 @@ namespace FingerDiceDuel.Tests
             var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.RangerHunter);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Champion);
             var c=CharacterFactory.CreatePlayer("C",CharacterDefinition.Champion);var d=CharacterFactory.CreatePlayer("D",CharacterDefinition.Champion);
             var ai=new GreedyChoiceProvider();var game=GameManager.Create2v2(new[]{a,b,c,d},new IChoiceProvider[]{ai,ai,ai,ai});
-            c.TakeDamage(10);d.TakeDamage(15);var candidates=new[]{b,c,d};
+            c.TakeDamage(15);d.TakeDamage(18);var candidates=new[]{b,c,d};
             Assert.AreEqual(c,ai.HunterMarkTarget(a,candidates,game));((RangerHunterLogic)a.Character).Mark(c);
             Assert.AreEqual(b,ai.HunterMarkTarget(a,candidates,game));
         }

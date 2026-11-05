@@ -1,4 +1,5 @@
 using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 
@@ -80,23 +81,36 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Hunter_mark_adds_lost_health_damage_and_is_consumed()
+        public void Hunter_mark_uses_the_larger_health_pool_and_is_consumed()
         {
-            GameManager game = Game(CharacterDefinition.RangerHunter,
-                                    CharacterDefinition.Champion,
-                                    out PlayerState hunter, out PlayerState target);
+            Game(CharacterDefinition.RangerHunter, CharacterDefinition.Champion,
+                 out PlayerState hunter, out PlayerState target);
             var logic = (RangerHunterLogic)hunter.Character;
-            logic.Mark(target);
-            target.SetHealthExact(15); // 已损 5 -> +1
-            var ctx = new AttackContext(hunter, target, hunter.LeftHand, 4)
+            foreach (var sample in new[] { (health: 20, bonus: 4), (health: 13, bonus: 2), (health: 5, bonus: 3) })
             {
-                AttackType = AttackDamageType.Piercing,
-                IgnoreStatBonuses = true,
-            };
-            logic.OnResolveAttack(ctx);
-            Assert.AreEqual(5, ctx.FinalDamage);
-            Assert.IsTrue(ctx.IgnorePositiveDefense);
-            Assert.IsFalse(logic.IsMarked(target));
+                logic.Mark(target);
+                target.SetHealthExact(sample.health);
+                var ctx = new AttackContext(hunter, target, hunter.LeftHand, 4);
+                logic.OnResolveAttack(ctx);
+                Assert.AreEqual(4 + sample.bonus, ctx.FinalDamage);
+                Assert.IsTrue(ctx.IgnorePositiveDefense);
+                Assert.IsFalse(logic.IsMarked(target));
+            }
+        }
+
+        [Test]
+        public void Hunter_dual_ai_uses_mark_damage_with_no_other_lethal_advisor()
+        {
+            var hunter = new PlayerState("游侠", new DualGeneralBehavior(
+                CharacterFactory.CreateBehavior(CharacterDefinition.RangerHunter),
+                CharacterFactory.CreateBehavior(CharacterDefinition.OathOfTheAncients)));
+            var target = CharacterFactory.CreatePlayer("对手", CharacterDefinition.Blank);
+            var ai = new GreedyChoiceProvider();
+            var game = new GameManager(hunter, target, ai, new SimpleChoiceProvider());
+            CharacterBehaviors.FirstImplementer<RangerHunterLogic>(hunter).Mark(target);
+            var move = new LegalMove(hunter, hunter.LeftHand, target.LeftHand);
+
+            Assert.AreEqual(8, ai.TotalLethalDamage(move, hunter, target, 4, game));
         }
 
         [Test]

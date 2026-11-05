@@ -8,6 +8,7 @@ parser.add_argument('--directory', help='Snapshot directory name, relative to To
 parser.add_argument('--log-prefix', default='Tools/HeadlessTests/bin/druid-57-')
 parser.add_argument('--optimized-ai', action='store_true')
 parser.add_argument('--balance', action='store_true')
+parser.add_argument('--ranger', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 out = root / 'Tools/Statistics' / (args.directory or args.date)
@@ -70,12 +71,14 @@ report = {'date': args.date, 'roster_count': n, 'law_axis_counts': [axes[a] for 
           'limitations': ['固定AI策略采样，不代表真人胜率或最优权重。',
                           f'2v2为固定队伍偏移配桌；双将为{duals}组合固定偏移抽样，并非全部组合两两循环。',
                           '八人两表各600局，角色出场不均衡，不宜比较小差异。',
-                          '五模式反映八子职调整和全角色策略复查后的配置。' if args.balance
+                          '五模式反映游侠职业调整及相关策略和对策更新后的配置。' if args.ranger
+                          else '五模式反映八子职调整和全角色策略复查后的配置。' if args.balance
                           else '权重采用独立留出验证，五模式结果反映最终配置。' if args.optimized_ai
                           else '本轮只重新测量现有AI，没有调整角色数值或进行自身／针对权重的独立留出寻优。']}
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 total = sum(expected.values())
-description = ('采用八子职平衡调整和全角色AI复查后的配置' if args.balance else
+description = ('采用新版游侠面板、技能和相关AI策略' if args.ranger else
+               '采用八子职平衡调整和全角色AI复查后的配置' if args.balance else
                '采用德鲁伊和幽影魔法新版专属策略、对策及通过留出验证的权重' if args.optimized_ai
                else '采用德鲁伊重构和孢子结社接入后的角色规则')
 lines = [f'# {n}子职胜率重新采样（{args.date}）', '',
@@ -102,8 +105,10 @@ lines += ['', '## 复现与证据', '',
           'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only RevisionBalanceTests -OutputDirectory Tools/HeadlessTests/bin/druid-57-sample',
           f'# 各模式日志保存到 {args.log_prefix}<mode>.log',
           f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --log-prefix {args.log_prefix}'
-          + (' --balance' if args.balance else ' --optimized-ai' if args.optimized_ai else ''), '```']
-if args.balance:
+          + (' --ranger' if args.ranger else ' --balance' if args.balance else ' --optimized-ai' if args.optimized_ai else ''), '```']
+if args.ranger:
+    lines += ['', '游侠的策略和对策见[AI策略清单](../../../Docs/ai-strategy-reference.md)。功能回归见[测试日志](regression.log)。']
+elif args.balance:
     lines += ['', '八子职的胜率前后对照和57子职的策略复查见[平衡复测记录](balance-review.md)。']
 elif args.optimized_ai:
     lines += ['', '策略、配对权重实验与前后对照见[优化记录](ai-tuning.md)。']

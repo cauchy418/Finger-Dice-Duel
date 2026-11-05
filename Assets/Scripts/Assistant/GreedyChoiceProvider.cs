@@ -972,20 +972,21 @@ namespace FingerDiceDuel.Assistant
             int atkBonus = StatusRules.EffectiveAttackBonus(actor);
             int defBonus = StatusRules.EffectiveDefenseBonus(victim);
 
-            var advisor = actor.Character as ILethalThresholdAdvisor;
+            bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(actor)?.IsMarked(victim) == true;
+            int markBonus = marked ? RangerHunterLogic.ColossusBonus(victim) : 0;
+            var advisor = marked ? CharacterBehaviors.FirstImplementer<ILethalThresholdAdvisor>(actor)
+                                 : actor.Character as ILethalThresholdAdvisor;
             int total;
             if (advisor != null)
             {
                 int other = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
                 total=advisor.EstimateLethalDamage(
                     new LethalContext(move.ActedHand, move.TargetHand, result, other),
-                    result, atkBonus, defBonus);
+                    result, atkBonus, marked ? Math.Min(0, defBonus) : defBonus) + markBonus;
             }
             else
             {
-                bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(actor)?.IsMarked(victim) == true;
-                if (marked) result += Math.Max(0, victim.MaximumHealth - victim.Health) / 5;
-                total = AttackContext.ApplyStatBonuses(result, atkBonus, defBonus, ignorePositiveDefense: marked);
+                total = AttackContext.ApplyStatBonuses(result + markBonus, atkBonus, defBonus, ignorePositiveDefense: marked);
                 if (marked && (victim.LeftHand.IsShield || victim.RightHand.IsShield) && CharacterFactory.MaxAttackHits(actor) == 1)
                     return Math.Max(0, atkBonus - victim.SporeLife - victim.FalseLife);
             }
@@ -1028,7 +1029,7 @@ namespace FingerDiceDuel.Assistant
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker) == null) return 0;
             var fixedRule = CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker);
             bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(attacker)?.IsMarked(victim) == true;
-            int damage = AttackContext.ApplyStatBonuses(result + (marked ? Math.Max(0, victim.MaximumHealth-victim.Health)/5 : 0),
+            int damage = AttackContext.ApplyStatBonuses(result + (marked ? RangerHunterLogic.ColossusBonus(victim) : 0),
                 StatusRules.EffectiveAttackBonus(attacker), StatusRules.EffectiveDefenseBonus(victim), ignorePositiveDefense: marked);
             damage+=ArcaneChoices.BonusAgainst(attacker,victim);
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
@@ -1044,6 +1045,8 @@ namespace FingerDiceDuel.Assistant
             if (attacker.Character is Characters.SpecialLogics.StormSorceryLogic)
                 projected = (projected + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Lightning, ignoreImmunity: true)
                     + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Thunder, ignoreImmunity: true) + 2) / 5;
+            if (marked && projected > 0 && (victim.LeftHand.IsShield || victim.RightHand.IsShield))
+                projected = Math.Max(0, StatusRules.EffectiveAttackBonus(attacker));
             return Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
         }
 
@@ -1712,18 +1715,8 @@ namespace FingerDiceDuel.Assistant
                 case HandEffect.SwashbucklerDuelistThrust:
                     return c[0];       // 每次都给强化，白赚
 
-                // ⚠️ 游侠·幽域追踪者**伏击**：条件已满足（两手同为 1/2/3）。
-                //
-                //    但不能**无条件**接受 —— 伏击**只有一次**（抵伤即消耗），
-                //    无脑用掉会把自己一只手封住、却没换来任何东西。
-                //    实测：无条件接受时游侠·幽域追踪者 1v1 胜率 49.6% -> 41.8%、
-                //    平局率 3.7% -> **19.3%**（大量僵局）。
-                //
-                //    所以只在"**对手这一手可能打出攻击**"时才埋伏 ——
-                //    这时伏击能**截掉他一次攻击**，才是真的赚。
-                //    （判据：他两只手里有一只能与我的某个手值凑出 4/6/8。）
                 case HandEffect.GloomStalkerAmbush:
-                    return OpponentLikelyCanAttack(request) ? c[0] : request.DeclineResult;
+                    return WantsAmbush(decider, c[0], Game) ? c[0] : request.DeclineResult;
 
                 case HandEffect.SwashbucklerDodge:
                     return c[0];       // 被攻击时换掉一整次攻击，永远划算
@@ -1868,54 +1861,6 @@ namespace FingerDiceDuel.Assistant
                 default:
                     return request.DeclineResult;
             }
-        }
-
-        /// <summary>
-        /// **对手这一手是否可能打出攻击**（供游侠·幽域追踪者决定要不要伏击）。
-        ///
-        /// 判据：他两只手里有任意一只，能与**我的某个手值**凑出 4/6/8 ——
-        /// 那就说明他下一手有能力攻击，伏击才值得用来**截掉他一次攻击**。
-        ///
-        /// ⚠️ 为什么必须加这个限制：伏击**只有一次**（抵伤即消耗）。
-        ///    无条件接受会把自己一只手封住、却什么都没换来 ——
-        ///    实测：游侠·幽域追踪者 1v1 胜率 49.6% -> 41.8%、平局率 3.7% -> 19.3%。
-        /// </summary>
-        private bool OpponentLikelyCanAttack(ChoiceRequest request)
-        {
-            GameManager game = Game;
-            PlayerState decider = request.Decider;
-            if (game == null || decider == null) return false;
-
-            // 我的两只手值（他会拿它们当被加数）
-            int[] mine = { decider.LeftHand?.Value ?? 0, decider.RightHand?.Value ?? 0 };
-
-            for (int p = 0; p < game.Players.Count; p++)
-            {
-                PlayerState foe = game.Players[p];
-                if (foe == null || !foe.IsAlive) continue;
-                if (ReferenceEquals(foe, decider) || game.IsTeammate(decider, foe)) continue;
-
-                int[] theirs = { foe.LeftHand?.Value ?? 0, foe.RightHand?.Value ?? 0 };
-
-                for (int a = 0; a < theirs.Length; a++)
-                {
-                    if (theirs[a] <= 0) continue;
-                    for (int b = 0; b < mine.Length; b++)
-                    {
-                        if (mine[b] <= 0) continue;
-
-                        HandEffectType eff = Hand.GetEffectType(
-                            Hand.ComputeSum(theirs[a], mine[b]));
-
-                        if (eff == HandEffectType.Attack4
-                            || eff == HandEffectType.Attack6
-                            || eff == HandEffectType.Attack8)
-                            return true;
-                    }
-                }
-            }
-
-            return false;
         }
 
         /// <summary>

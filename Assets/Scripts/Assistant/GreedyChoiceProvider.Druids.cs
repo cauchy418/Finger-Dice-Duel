@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
+using FingerDiceDuel.Characters.SpecialLogics;
 
 namespace FingerDiceDuel.Assistant
 {
@@ -192,7 +193,7 @@ namespace FingerDiceDuel.Assistant
                     {
                         if (!foe.IsAlive || !game.CanReach(owner, foe)) continue;
                         if (mark != null && !mark.IsMarked(foe) && game.DistanceBetween(owner, foe) <= 3)
-                            score = Math.Max(score, 48 + Math.Max(0, foe.MaximumHealth - foe.Health));
+                            score = Math.Max(score, 28 + HunterMarkValue(foe));
                         if (curse != null && !foe.HasStatus(StatusEffect.HolyLight)
                             && (curse.CurseTarget != foe || result > curse.CurseTurns))
                             score = Math.Max(score, 16 + Math.Min(result, 4) * 8);
@@ -231,7 +232,8 @@ namespace FingerDiceDuel.Assistant
                     if (target.HasImmunity(bloodline.Element)) score -= 40;
                     else if (target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight)) score += 14;
                 }
-                if (hunter?.IsMarked(target) == true) score += 28;
+                if (hunter?.IsMarked(target) == true)
+                    score += 10 + 4 * EstimateAttackDamage(actor, target, result, game);
                 if (curse?.CurseTarget == target) score += 24;
                 if (storm) score += (EstimateAttackDamage(actor, target, result, game) - result) * 5;
                 return score;
@@ -275,6 +277,7 @@ namespace FingerDiceDuel.Assistant
                 bool wild = foe.IsWildShaped && !foe.IsPolymorphed;
                 if (!wild && CharacterBehaviors.FirstImplementer<IDruidCaster>(foe) == null
                     && CharacterBehaviors.FirstImplementer<IShadowEyes>(foe) == null
+                    && CharacterBehaviors.FirstImplementer<GloomStalkerLogic>(foe) == null
                     && CharacterBehaviors.FirstImplementer<IHunterMarkSource>(foe) == null
                     && CharacterBehaviors.FirstImplementer<IHexbladeCurse>(foe) == null) continue;
                 int before = 0, after = 0;
@@ -294,7 +297,20 @@ namespace FingerDiceDuel.Assistant
 
         private static int SpecialistThreat(PlayerState foe, PlayerState actor, int result, int other, GameManager game, bool wild)
         {
-            if (!wild) return SpecialistSetupValue(foe, result, other, game);
+            if (!wild)
+            {
+                int setup = SpecialistSetupValue(foe, result, other, game);
+                var ambush = CharacterBehaviors.FirstImplementer<GloomStalkerLogic>(foe);
+                bool ambushing = ambush?.IsAmbushing == true;
+                if (ambush != null && !ambushing && result == other && result >= 1 && result <= GloomStalkerLogic.AmbushMaxValue)
+                    setup = Math.Max(setup, 32);
+
+                bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(foe)?.IsMarked(actor) == true;
+                if ((marked || ambushing) && IsAttackEffect(DivineScoredEffect(foe, result, game))
+                    && game.CanReach(foe, actor) && StatusRules.CanAttackTarget(foe, actor, game))
+                    setup = Math.Max(setup, EstimateAttackDamage(foe, actor, result, game) * 5);
+                return setup;
+            }
             var effect = DruidWildShape.EffectOf(foe.WildForm, result);
             if (effect == HandEffectType.Shield && foe.WildForm == 1 && result == 4) return 24;
             if (effect == HandEffectType.Heal && foe.WildStar == 2)

@@ -3,14 +3,14 @@
 namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// **游侠·幽域追踪者**（攻 0 / 防 −1，攻击距离 1）。
+    /// **游侠·幽域追踪者**（攻 +1 / 防 −1，攻击距离 1）。
     ///
     /// 玩家给出的规则：
     ///   · **运算后**，若两只手**同时是 1/2/3 且数字相同**，
     ///     可以（**主动选择**）把**参与运算的那只手**暗置，进入**伏击**状态。
     ///   · 暗置的手：不能发起运算（类似被锁），
     ///     也**不能被当成运算数字**（对手点不到它）—— 但**数值可见**。
-    ///   · 伏击状态：**攻击 +1**、**攻击距离 3**。
+    ///   · 伏击状态：**额外攻击 +2**、**攻击距离 3**。
     ///   · 即将受到伤害时若处于伏击，则**恢复暗置的手**（解除伏击）并**抵挡此次伤害**；
     ///     触发时机在**武僧·太极宗太极之后**。
     ///   · **法师·咒法学派可以穿透伏击**：伏击挡不住咒术攻击，咒术攻击也**不会解除**伏击。
@@ -29,7 +29,7 @@ namespace FingerDiceDuel.Core
         public const int AmbushMaxValue = 3;
 
         /// <summary>伏击状态下的攻击加成。</summary>
-        public const int AmbushAttackBonus = 1;
+        public const int AmbushAttackBonus = 2;
 
         /// <summary>伏击状态下的攻击距离。</summary>
         public const int AmbushRange = 3;
@@ -38,8 +38,7 @@ namespace FingerDiceDuel.Core
 
         public override string DisplayName => "游侠·幽域追踪者";
 
-        // ⚠️ `DefaultAttackBonus` 在下面重写为"基础 0 + 伏击加成"（见伏击加成一节），
-        //    所以这里**不能**再声明一次，否则重复定义。
+        public override int DefaultAttackBonus => 1;
         public override int DefaultDefenseBonus => -1;
 
         public override int BaseAttackRange => 1;
@@ -154,30 +153,8 @@ namespace FingerDiceDuel.Core
         // 伏击带来的加成
         // ---------------------------------------------------------------
 
-        /// <summary>
-        /// 伏击状态下**攻击加成 +1**（玩家确认）。
-        ///
-        /// ⚠️ 用 <c>DefaultAttackBonus</c> 而不是 <c>AdjustAttackBonus</c>：
-        ///    后者只在“数据层没注入过攻防”时才生效
-        ///    （实际对局里 <c>CharacterFactory</c> 一定会注入），
-        ///    于是伏击的 +1 永远生效不了。
-        ///    写成 <c>DefaultAttackBonus</c> 就能让注入的基础值上再加伏击加成。
-        /// </summary>
-        // ⚠️ 必须走 `AdjustAttackBonus`，**不能**走 `DefaultAttackBonus`。
-        //
-        //    `AttackBonus` 的读法是
-        //      AdjustAttackBonus(_statsApplied ? _attackBonus : DefaultAttackBonus)
-        //    而实际对局里 `CharacterFactory` **一定会注入**攻防（于是 `_statsApplied == true`），
-        //    这时读到的是注入值 `_attackBonus` —— 我第一版把 +1 写在
-        //    `DefaultAttackBonus` 上，**在注入路径上根本不会被读到**，
-        //    伏击的 +1 等于没加（测试当场抓到：期望 1、实际 0）。
-        //
-        //    写在 `AdjustAttackBonus` 里就能让"注入的基础值 + 伏击加成"。
         protected override int AdjustAttackBonus(int baseBonus)
             => IsAmbushing ? baseBonus + AmbushAttackBonus : baseBonus;
-
-        /// <summary>未注入时的默认值仍是 0（伏击加成由上一条统一叠加）。</summary>
-        public override int DefaultAttackBonus => 0;
 
         /// <summary>伏击状态下攻击距离 3；否则 1。</summary>
         public int BaseAttackRangeEffective => IsAmbushing ? AmbushRange : BaseAttackRange;
@@ -370,7 +347,7 @@ namespace FingerDiceDuel.Core
         ///
         /// ⚠️ **分值比游荡者·刺客低**（玩家明确要求："值要低一点"）：
         ///    游荡者·刺客是 90 / 15，这里用 60 / 10。
-        ///    理由：伏击的收益是"一次免伤 + 攻击 +1 / 距离 3"，
+        ///    理由：伏击的收益是"一次格挡、额外攻击 +2、距离 3"，
         ///    比游荡者·刺客的潜行（完全闪避）轻；而且它对**手值范围**有要求
         ///    （必须都 <= 3），硬凑的代价比凑 7 更大 ——
         ///    分值给太高会让 AI 为了伏击放弃明显更好的进攻。

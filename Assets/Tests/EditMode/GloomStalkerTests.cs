@@ -16,7 +16,7 @@ namespace FingerDiceDuel.Tests
     ///   · 运算后若**两只手同时是 1/2/3 且数字相同**，可以（主动选择）
     ///     把**参与运算的那只手**暗置，进入伏击；
     ///   · 暗置的手不能发起运算、也不能被当成运算数字，但**数值可见**；
-    ///   · 伏击时**攻击 +1**、**攻击距离 3**；
+    ///   · 伏击时**额外攻击 +2**、**攻击距离 3**；
     ///   · 即将受到伤害时若在伏击，**恢复暗置的手并抵挡此次伤害**，
     ///     触发时机在**武僧·太极宗太极之后**；
     ///   · **法师·咒法学派穿透伏击**：既挡不住，也**不会解除**伏击。
@@ -112,15 +112,14 @@ namespace FingerDiceDuel.Tests
             PlayerState gloomStalker = Make("猎", CharacterDefinition.GloomStalker);
             var logic = GloomStalkerOf(gloomStalker);
 
-            Assert.AreEqual(0, gloomStalker.Character.AttackBonus, "未伏击时攻击加成为 0。");
+            Assert.AreEqual(1, gloomStalker.Character.AttackBonus, "未伏击时攻击加成为 +1。");
             Assert.AreEqual(1, GameManager.BaseRangeOf(gloomStalker), "未伏击时距离 1。");
 
             gloomStalker.LeftHand.SetValue(2);
             gloomStalker.RightHand.SetValue(2);
             logic.EnterAmbush(gloomStalker.LeftHand);
 
-            Assert.AreEqual(GloomStalkerLogic.AmbushAttackBonus, gloomStalker.Character.AttackBonus,
-                "伏击时攻击 +1。");
+            Assert.AreEqual(3, gloomStalker.Character.AttackBonus, "伏击时在基础攻击上增加2点。");
             Assert.AreEqual(GloomStalkerLogic.AmbushRange, GameManager.BaseRangeOf(gloomStalker),
                 "伏击时攻击距离 3。");
         }
@@ -154,6 +153,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(0, dealt, "伏击应完全挡下这次伤害。");
             Assert.AreEqual(before, gloomStalker.Health, "生命不应减少。");
             Assert.False(logic.IsAmbushing, "抵挡后伏击应被消耗。");
+            Assert.AreEqual(1, gloomStalker.Character.AttackBonus);
             Assert.False(gloomStalker.LeftHand.IsConcealed, "被暗置的手应恢复。");
             Assert.True(gloomStalker.LeftHand.CanBeOperated, "恢复后应能再次发起运算。");
         }

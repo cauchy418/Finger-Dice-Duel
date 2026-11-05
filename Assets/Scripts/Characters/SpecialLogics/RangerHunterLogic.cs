@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -10,6 +11,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         private PlayerState _owner;
 
         public override string DisplayName => "游侠·猎人";
+        public override int DefaultAttackBonus => 1;
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => 3;
 
@@ -20,6 +22,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
 
         public bool IsMarked(PlayerState target) => target != null && _marked.Contains(target);
+
+        public static int ColossusBonus(PlayerState target)
+            => Math.Max(target.Health, target.MaximumHealth - target.Health) / 5;
 
         public void Mark(PlayerState target)
         {
@@ -53,11 +58,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if (context?.Defender == null || context.IsStatusDamage || context.IsReflected || !_marked.Contains(context.Defender)) return;
             context.IgnorePositiveDefense = true;
-            int lost = context.Defender.MaximumHealth - context.Defender.Health;
-            if (lost > 0) context.FinalDamage += lost / 5;
+            int bonus = ColossusBonus(context.Defender);
+            context.FinalDamage += bonus;
             context.GuardedTrueDamage = System.Math.Max(0, StatusRules.EffectiveAttackBonus(context.Attacker));
             _marked.Remove(context.Defender);
-            context.Manager?.NoteSkill(context.Attacker, "巨像屠夫", $"消耗 {context.Defender.Name} 的标记，已损体力/5 加伤");
+            context.Manager?.NoteSkill(context.Attacker, "巨像屠夫", $"消耗 {context.Defender.Name} 的标记，伤害 +{bonus}");
         }
 
         public void OnAttackFinished(PlayerState owner, AttackContext attack, bool initiated, GameManager game)

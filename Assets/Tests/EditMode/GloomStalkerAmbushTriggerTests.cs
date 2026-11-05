@@ -118,6 +118,26 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Ai_ambushes_for_a_reachable_attack_even_without_incoming_damage()
+        {
+            var scout = Make("游侠", CharacterDefinition.GloomStalker);
+            var foe = Make("对手", CharacterDefinition.Champion);
+            var ai = new GreedyChoiceProvider();
+            var game = new GameManager(scout, foe, ai, new SimpleChoiceProvider());
+            ai.SetGameForChoices(game);
+            foe.ApplyStatus(StatusEffect.Disabled, 2);
+            foe.LeftHand.SetValue(3);
+            var request = new ChoiceRequest(HandEffect.GloomStalkerAmbush, "伏击",
+                new List<Hand> { scout.LeftHand }, allowDecline: true, declineResult: null, decider: scout);
+
+            Assert.AreEqual(scout.LeftHand, ai.ChooseHandFor(request, scout));
+
+            foe.LeftHand.SetValue(5);
+            foe.LeftHand.SetShieldState(ShieldState.Formed);
+            Assert.AreEqual(null, ai.ChooseHandFor(request, scout));
+        }
+
+        [Test]
         public void No_ambush_choice_when_the_result_is_not_two_to_three()
         {
             PlayerState gloomStalker = Make("猎", CharacterDefinition.GloomStalker);
