@@ -2115,7 +2115,7 @@ namespace FingerDiceDuel.Core
                 string statusName = statusNames.Count > 0 ? string.Join("／", statusNames) : "状态";
                 int healthBeforeStatus=actor.Health;
                 int falseLifeBeforeStatus=actor.FalseLife;
-                int actualStatus=actor.TakeDamageResolved(statusDamage);
+                int actualStatus=actor.TakeDamageResolved(statusDamage,this);
                 int originalStatus=actor.LastDamageToOriginalForm;
                 if(falseLifeBeforeStatus>actor.FalseLife)NoteSkill(actor,"虚假生命",$"吸收{falseLifeBeforeStatus-actor.FalseLife}，剩余{actor.FalseLife}");
                 if(originalStatus>0)
@@ -2228,7 +2228,7 @@ namespace FingerDiceDuel.Core
             }
 
             // ---- 状态计数递减（归零即移除）----
-            actor.TickStatuses();
+            actor.TickStatuses(this);
 
             // ---- 距离修正递减（邪术师·旧日支配者）：记在**目标**身上，用的也是他自己的回合 ----
             TickDistancePenalties(actor);
@@ -2342,15 +2342,18 @@ namespace FingerDiceDuel.Core
             if (actor?.IsAlive != true || IsGameOver || !(actor.Character is GamblerLogic)) return first;
             int cost = rng.Next(1, GamblerLogic.RerollHealthDie + 1);
             int before = actor.Health;
+            var visualBefore=CaptureVisualFrame();
             actor.SetHealthExact(before - cost);
             if (!actor.IsAlive)
             {
-                NoteSkill(actor, "恶之强运", $"失去{before}生命，阵亡", actor);
+                NoteSkill(actor, "恶之强运", $"失去{before}生命，阵亡", actor,
+                    new SkillVisualData(value:-1,previous:first,variant:"fatal",amount:before),visualBefore);
                 CheckGameOver();
                 return first;
             }
             int roll = GamblerLogic.Roll(rng);
-            NoteSkill(actor, "恶之强运", $"失去{cost}生命，{first}重掷为{roll}", actor);
+            NoteSkill(actor, "恶之强运", $"失去{cost}生命，{first}重掷为{roll}", actor,
+                new SkillVisualData(value:roll,previous:first,variant:"reroll",amount:cost),visualBefore);
             return roll;
         }
 
@@ -3596,7 +3599,7 @@ namespace FingerDiceDuel.Core
                     {
                         int gap=Math.Abs(positions[listener]-positions[corpse]);
                         if(Math.Min(gap,circumference-gap)!=1)continue;
-                        foreach(var hook in CharacterBehaviors.Implementers<ISporeDruid>(listener))hook.OnNearbyDeath(listener,this);
+                        foreach(var hook in CharacterBehaviors.Implementers<ISporeDruid>(listener))hook.OnNearbyDeath(listener,corpse,this);
                     }
             }
             return list;

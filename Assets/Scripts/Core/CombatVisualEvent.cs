@@ -28,7 +28,7 @@ namespace FingerDiceDuel.Core
         }
         private static string Signed(int n)=>n>0?"+"+n:n.ToString();
         private static Hand Copy(Hand hand)
-        {var h=new Hand(hand.Value);h.SetShieldState(hand.State);if(hand.IsLocked)h.Lock();h.IsRestrained=hand.IsRestrained;return h;}
+        {var h=new Hand(hand.Value);h.SetShieldState(hand.State);if(hand.IsLocked)h.Lock();h.IsRestrained=hand.IsRestrained;h.SetTargetRestricted(hand.IsTargetRestricted);return h;}
     }
     public sealed class CombatVisualFrame
     {
@@ -57,9 +57,10 @@ namespace FingerDiceDuel.Core
         public float Power {get;}public bool Unsteady {get;}
         public CombatVisualFrame Before { get; }
         public CombatVisualFrame After { get; }
+        public bool SynchronizeFrame { get; }
         internal CombatVisualEvent(CombatVisualKind kind,CombatVisualOutcome outcome,PlayerState actor,PlayerState target,PlayerState intended,
-            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null,SkillVisualData skillData=null,float power=1f,bool unsteady=false)
-        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;SkillData=skillData;Power=power;Unsteady=unsteady;}
+            Hand hand,AttackDamageType type,string weapon,int distance,int segment,int damage,bool reflected,bool mitigated,CombatVisualFrame before,CombatVisualFrame after,string redirect=null,PlayerState evasionActor=null,SkillVisualData skillData=null,float power=1f,bool unsteady=false,bool synchronizeFrame=false)
+        {Kind=kind;Outcome=outcome;Actor=actor;Target=target;IntendedTarget=intended;SourceHand=hand;Type=type;Weapon=weapon;Distance=distance;Segment=segment;Damage=damage;Reflected=reflected;Mitigated=mitigated;Before=before;After=after;RedirectKind=redirect;EvasionActor=evasionActor;SkillData=skillData;Power=power;Unsteady=unsteady;SynchronizeFrame=synchronizeFrame;}
     }
     public sealed class CombatVisualToken
     {
@@ -82,16 +83,44 @@ namespace FingerDiceDuel.Core
                 Distance=DistanceBetween(attack.Attacker,attack.Defender),Weapon=CombatVisualRouting.Weapon(attack,this),Before=CaptureVisualFrame(),Power=attack.VisualPower,Unsteady=!attack.IsStatusDamage&&MonkRules.DrunkenOf(attack.Attacker)!=null};
             _combatVisuals.Add(null);return token;
         }
-        public void FinishVisualAttack(CombatVisualToken token,CombatVisualOutcome outcome,int damage=0)
+        public void FinishVisualAttack(CombatVisualToken token,CombatVisualOutcome outcome,int damage=0,CombatVisualFrame impactFrame=null)
         {
             if(token==null||token.Finished)return;token.Finished=true;var a=token.Attack;
+            if(impactFrame!=null)damage=VisualHealthLoss(token.Before,impactFrame,a.Defender);
             _combatVisuals[token.Index]=new CombatVisualEvent(CombatVisualKind.Attack,outcome,a.Attacker,a.Defender,a.VisualIntendedTarget??a.Defender,
-                a.SourceHand,a.AttackType,token.Weapon,token.Distance,token.Segment,damage,a.IsReflected,a.WasMitigated,token.Before,CaptureVisualFrame(),a.VisualRedirectKind,a.VisualEvasionActor,null,token.Power,token.Unsteady);
+                a.SourceHand,a.AttackType,token.Weapon,token.Distance,token.Segment,damage,a.IsReflected,a.WasMitigated,token.Before,impactFrame??CaptureVisualFrame(),a.VisualRedirectKind,a.VisualEvasionActor,null,token.Power,token.Unsteady);
         }
         public void RecordVowTransfer(PlayerState owner,PlayerState previous,PlayerState target,CombatVisualFrame before)
         {if(RecordCombatVisuals)_combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.VowTransfer,CombatVisualOutcome.Hit,owner,target,previous,owner.LeftHand,AttackDamageType.None,"Effects/vow_of_enmity",0,0,0,false,false,before,CaptureVisualFrame()));}
-        public void RecordVisualTrueDamage(AttackContext attack,int damage,CombatVisualFrame before)
-        {if(RecordCombatVisuals)_combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Attack,CombatVisualOutcome.Hit,attack.Attacker,attack.Defender,attack.Defender,attack.SourceHand,AttackDamageType.None,"fx_impact",0,0,damage,false,false,before,CaptureVisualFrame()));}
+        internal int VisualPosition => RecordCombatVisuals ? _combatVisuals.Count : -1;
+        internal CombatVisualFrame BeforeDamageTransition(int start,PlayerState target)
+        {
+            if(start<0)return null;
+            for(int i=start;i<_combatVisuals.Count;i++)
+            {
+                var cue=_combatVisuals[i];
+                if(cue?.SynchronizeFrame==true&&ReferenceEquals(cue.Target,target))return cue.Before;
+            }
+            return null;
+        }
+        internal void RecordVisualTrueDamage(AttackContext attack,int damage,CombatVisualFrame before,int position,bool hunter)
+        {
+            if(position<0)return;
+            var transition=BeforeDamageTransition(position,attack.Defender);
+            if(transition!=null)damage=VisualHealthLoss(before,transition,attack.Defender);
+            var after=transition??CaptureVisualFrame();
+            var data=hunter?new SkillVisualData(value:damage,variant:"guard"):null;
+            _combatVisuals.Insert(position,new CombatVisualEvent(hunter?CombatVisualKind.Skill:CombatVisualKind.Attack,CombatVisualOutcome.Hit,
+                attack.Attacker,attack.Defender,attack.Defender,attack.SourceHand,AttackDamageType.None,"fx_impact",0,0,damage,false,false,
+                before,after,hunter?"巨像屠夫":null,skillData:data,synchronizeFrame:hunter));
+        }
+        private static int VisualHealthLoss(CombatVisualFrame before,CombatVisualFrame after,PlayerState target)
+        {
+            for(int i=0;i<before.Players.Count;i++)
+                if(ReferenceEquals(before.Players[i].Player,target))
+                    return Math.Max(0,before.Players[i].Health-after.Players[i].Health);
+            return 0;
+        }
         public void RecordVisualState(CombatVisualKind kind,PlayerState owner,Hand hand,CombatVisualFrame before=null)
         {
             if(!RecordCombatVisuals)return;

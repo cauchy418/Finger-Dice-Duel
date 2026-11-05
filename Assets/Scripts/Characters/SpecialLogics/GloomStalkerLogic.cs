@@ -212,8 +212,9 @@ namespace FingerDiceDuel.Core
             totalReduced = segmentDamage;
             totalReflect = 0;
 
-            ReleaseAmbush();
-            context.Manager?.NoteSkill(owner, "阴影闪避", $"抵消本段 {segmentDamage} 伤害，解除伏击");
+            var revealed=ReleaseAmbush();
+            context.Manager?.NoteSkill(owner, "阴影闪避", $"抵消本段 {segmentDamage} 伤害，解除伏击",owner,
+                new SkillVisualData(source:revealed,value:segmentDamage,variant:"reveal"));
             return true;
         }
 
@@ -300,8 +301,10 @@ namespace FingerDiceDuel.Core
                                                    request, owner);
             if (chosen == null) return;
 
+            var frame=manager.CaptureVisualFrame();
             EnterAmbush(candidate);
-            manager.NoteSkill(owner, "伏击", $"暗置{CombatText.HandName(owner, candidate)}，进入伏击");
+            manager.NoteSkill(owner, "伏击", $"暗置{CombatText.HandName(owner, candidate)}，进入伏击",owner,
+                new SkillVisualData(source:candidate,value:AmbushAttackBonus,variant:"conceal"),frame);
 
             // 记到战报里 —— 否则玩家会看到"（无效果）"，而实际上他进了伏击。
             if (manager.LastTurnResult != null) manager.LastTurnResult.EnteredAmbush = true;

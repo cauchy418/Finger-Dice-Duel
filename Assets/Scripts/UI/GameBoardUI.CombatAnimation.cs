@@ -102,7 +102,14 @@ namespace FingerDiceDuel.UI
         private void CombatImpact(CombatVisualEvent e)
         {
             _statusMotion?.Flash(e.Target,e.Kind==CombatVisualKind.Skill?.6f:.35f);
-            if(e.Kind==CombatVisualKind.Skill){var profile=SecondarySkillAnimation.Find(e.RedirectKind);if(profile==null||profile.Style==SecondarySkillStyle.Repair||profile.Style==SecondarySkillStyle.ElementGuard)_presentation?.PlaySfx(SfxKind.ShieldUp);else if(profile.Style==SecondarySkillStyle.Heal||profile.Style==SecondarySkillStyle.Cleanse)_presentation?.PlaySfx(SfxKind.Heal);return;}
+            if(e.Kind==CombatVisualKind.Skill)
+            {
+                var profile=SecondarySkillAnimation.Find(e.RedirectKind);
+                if(e.RedirectKind=="余伤"||e.RedirectKind=="巨像屠夫"&&e.SkillData?.Variant=="guard")_presentation?.PlaySfx(SfxKind.HitLight);
+                else if(e.RedirectKind=="圣杯座"||e.RedirectKind=="坟冢之力"||profile?.Style==SecondarySkillStyle.Heal||profile?.Style==SecondarySkillStyle.Cleanse)_presentation?.PlaySfx(SfxKind.Heal);
+                else if(profile==null||profile.Style==SecondarySkillStyle.Repair||profile.Style==SecondarySkillStyle.ElementGuard)_presentation?.PlaySfx(SfxKind.ShieldUp);
+                return;
+            }
             if(e.Kind!=CombatVisualKind.Attack){_presentation?.PlaySfx(SfxKind.ShieldUp);return;}
             bool hit=e.Outcome==CombatVisualOutcome.Hit,blocked=e.Outcome==CombatVisualOutcome.Blocked;
             string text=hit?"−"+e.Damage:blocked?"格挡":e.Outcome==CombatVisualOutcome.Dodged?"闪避":e.EvasionActor!=null?"妖精步伐 · 取消":"攻击中止";

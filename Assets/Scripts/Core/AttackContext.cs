@@ -554,7 +554,8 @@ namespace FingerDiceDuel.Core
                 bool wasPolymorphed=Defender.IsPolymorphed;
                 int healthBefore = Defender.Health;
                 int falseLifeBefore = Defender.FalseLife;
-                int actualDamage=Defender.TakeDamageResolved(dealt);
+                int damageVisualPosition=manager?.VisualPosition??-1;
+                int actualDamage=Defender.TakeDamageResolved(dealt,manager);
                 ActualHealthDamage+=actualDamage;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
                 int absorbedFalseLife=falseLifeBefore-Defender.FalseLife;
                 if(absorbedFalseLife>0)manager?.NoteSkill(Defender,"虚假生命",$"吸收{absorbedFalseLife}，剩余{Defender.FalseLife}");
@@ -565,7 +566,8 @@ namespace FingerDiceDuel.Core
                 AppliedDamage += dealt;
                 LandedHits++;
                 ApplyIndependentHitStatus(manager);
-                manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Hit,actualDamage);
+                manager?.FinishVisualAttack(_visualHit,CombatVisualOutcome.Hit,actualDamage,
+                    manager.BeforeDamageTransition(damageVisualPosition,Defender));
 
                 if (Defender.LastDamageToOriginalForm > 0)
                     foreach(var postDamage in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
@@ -575,13 +577,16 @@ namespace FingerDiceDuel.Core
             if(detonateHidden && ElementHits.Count>0 && !WasCancelled)
             {Defender.SetResonance(false);ExtraTrueDamage+=hiddenExpected/2;manager?.NoteSkill(Attacker,"渗透劲","暗劲引爆，真实伤害"+(hiddenExpected/2),Defender,new SkillVisualData(value:hiddenExpected/2,variant:"detonate"));}
 
+            int guardedBonus=0;
             if (!damageDisabled && !WasCancelled && GuardedTrueDamage > 0 && Defender.IsAlive)
             {
                 foreach (var hit in ElementHits)
                 {
                     if (hit.Guard == AttackGuard.None) continue;
+                    guardedBonus=GuardedTrueDamage;
                     ExtraTrueDamage += GuardedTrueDamage;
-                    manager?.NoteSkill(Attacker, "巨像屠夫", $"格挡后追加{GuardedTrueDamage}点真实伤害", Defender);
+                    manager?.NoteSkill(Attacker, "巨像屠夫", $"格挡后追加{GuardedTrueDamage}点真实伤害", Defender,
+                        new SkillVisualData(variant:"log-only"));
                     break;
                 }
             }
@@ -589,11 +594,11 @@ namespace FingerDiceDuel.Core
             // 散打宗：暗劲引爆的额外真实伤害，不经过护盾/抗性/防御。
             if (!damageDisabled && ExtraTrueDamage > 0 && Defender != null && Defender.IsAlive)
             {
-                var trueFrame=manager?.CaptureVisualFrame();
+                var trueFrame=manager?.CaptureVisualFrame();int truePosition=manager?.VisualPosition??-1;
                 int healthBeforeTrue=Defender.Health;
                 int falseLifeBeforeTrue=Defender.FalseLife;
-                int actualTrue=Defender.TakeDamageResolved(ExtraTrueDamage);ActualHealthDamage+=actualTrue;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
-                manager?.RecordVisualTrueDamage(this,actualTrue,trueFrame);
+                int actualTrue=Defender.TakeDamageResolved(ExtraTrueDamage,manager);ActualHealthDamage+=actualTrue;OriginalFormHealthDamage+=Defender.LastDamageToOriginalForm;
+                manager?.RecordVisualTrueDamage(this,actualTrue,trueFrame,truePosition,guardedBonus==ExtraTrueDamage);
                 if(falseLifeBeforeTrue>Defender.FalseLife)manager?.NoteSkill(Defender,"虚假生命",$"吸收{falseLifeBeforeTrue-Defender.FalseLife}，剩余{Defender.FalseLife}");
                 if(Defender.LastDamageToOriginalForm>0)
                     foreach(var hook in CharacterBehaviors.Implementers<IPostDamageTaken>(Defender))
@@ -607,7 +612,8 @@ namespace FingerDiceDuel.Core
                 if (WasTypeImmune)
                 {
                     if (!IsStatusDamage && !IsReflected && Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(Attacker, AttackType))
-                        manager?.NoteSkill(Attacker, "暴风狂怒", "穿透伤害免疫，未附加元素效果", Defender);
+                        manager?.NoteSkill(Attacker, "暴风狂怒", "穿透伤害免疫，未附加元素效果", Defender,
+                            new SkillVisualData(source:SourceHand,variant:"pierce",element:AttackType));
                     else manager?.NoteSkill(Defender, "伤害免疫", AttackDamageTypes.NameOf(AttackType));
                 }
                 else if (Defender.HasVulnerability(AttackType)) manager?.NoteSkill(Defender, "伤害易伤", AttackDamageTypes.NameOf(AttackType) + "×1.5");
@@ -777,6 +783,7 @@ namespace FingerDiceDuel.Core
                 if(_sonicCrossReaction&&reactionTurns>0)StatusRules.ApplySonicCrossReaction(victim,AttackType,Attacker,manager,reactionTurns,true);
                 string penalty=(hit.Guard!=AttackGuard.None?"格挡−1":"")+(hit.Resisted?(hit.Guard!=AttackGuard.None?"，抗性−1":"抗性−1"):"");
                 if(turns<=0){manager?.NoteSkill(Attacker,"附加抵挡",$"第{hit.Index+1}段：{penalty}，附加0回合，不施加或刷新状态");continue;}
+                int extendedFrom=0;
                 var bloodline = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(Attacker);
                 if (!IsReflected && bloodline?.Element == hit.AttackType
                     && status == StatusNames.StatusOf(AttackDamageTypes.ToDamageType(hit.AttackType)))
@@ -784,11 +791,13 @@ namespace FingerDiceDuel.Core
                     int remaining = victim.StatusTurnsLeft(status);
                     if (remaining > 0)
                     {
-                        turns = remaining + 1;
-                        manager?.RecordSkillVisual(Attacker, "龙族体魄", victim, new SkillVisualData(value: turns, status: status, element: hit.AttackType));
+                        turns = remaining + 1;extendedFrom=remaining;
                     }
                 }
                 victim.ApplyStatus(status,turns,Attacker);
+                if(extendedFrom>0)manager?.RecordSkillVisual(Attacker,"龙族体魄",victim,
+                    new SkillVisualData(source:SourceHand,value:victim.StatusTurnsLeft(status),previous:extendedFrom,
+                        variant:"extend",status:status,element:hit.AttackType));
                 if(status==StatusEffect.HolyLight&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"守御闪光",victim,new SkillVisualData(value:turns,status:status));
                 manager?.NoteSkill(Attacker,"施加状态",$"第{hit.Index+1}段 {victim.Name}：{StatusNames.Of(status)} {turns}回合"+(penalty.Length>0?"（"+penalty+"）":""));
             }

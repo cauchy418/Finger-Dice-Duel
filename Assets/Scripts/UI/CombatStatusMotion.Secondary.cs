@@ -29,6 +29,12 @@ namespace FingerDiceDuel.UI
             }
             if(aura.Key=="Effects/drunken_fist")
             {aura.Image.rectTransform.localRotation=Quaternion.Euler(0,0,Mathf.Sin(time*2)*14);aura.Image.color=new Color(.95f,.7f,.35f,.2f*fade);}
+            if(aura.Key=="Status/darkness_blind"||aura.Key=="Subclasses/cleric_life_domain"||aura.Key=="Effects/spore_life")
+            {
+                var tint=aura.Key=="Status/darkness_blind"?new Color(.55f,.45f,.9f):
+                    aura.Key=="Effects/spore_life"?new Color(.52f,.84f,.42f):new Color(.91f,.89f,.53f);
+                tint.a=aura.Image.color.a;aura.Image.color=tint;
+            }
         }
         private void SyncStatAccents(CombatVisualFrame frame)
         {

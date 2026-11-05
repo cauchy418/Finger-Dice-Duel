@@ -61,8 +61,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             int bonus = ColossusBonus(context.Defender);
             context.FinalDamage += bonus;
             context.GuardedTrueDamage = System.Math.Max(0, StatusRules.EffectiveAttackBonus(context.Attacker));
+            var frame=context.Manager?.CaptureVisualFrame();
             _marked.Remove(context.Defender);
-            context.Manager?.NoteSkill(context.Attacker, "巨像屠夫", $"消耗 {context.Defender.Name} 的标记，伤害 +{bonus}");
+            context.Manager?.NoteSkill(context.Attacker, "巨像屠夫", $"消耗 {context.Defender.Name} 的标记，伤害 +{bonus}",
+                context.Defender,new SkillVisualData(source:context.SourceHand,value:bonus,variant:"consume"),frame);
         }
 
         public void OnAttackFinished(PlayerState owner, AttackContext attack, bool initiated, GameManager game)

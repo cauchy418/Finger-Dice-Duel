@@ -87,7 +87,14 @@ namespace FingerDiceDuel.Core
             Character=_untransformedCharacter;Health=_untransformedHealth;MaximumHealth=_untransformedMaximum;
             _untransformedCharacter=null;PolymorphTurns=0;
         }
-        private void TickPolymorph(){if(IsPolymorphed&&--PolymorphTurns<=0)EndPolymorph();}
+        private void TickPolymorph(GameManager game)
+        {
+            if(!IsPolymorphed)return;
+            var frame=PolymorphTurns==1?game?.CaptureVisualFrame():null;
+            if(--PolymorphTurns>0)return;
+            EndPolymorph();
+            if(frame!=null)game.RecordSkillVisual(this,"变形术",this,new SkillVisualData(variant:"expire"),frame);
+        }
         private readonly Dictionary<StatusEffect,int> _enchantments=new Dictionary<StatusEffect,int>();
         private readonly Dictionary<StatusEffect,PlayerState> _enchantmentSources=new Dictionary<StatusEffect,PlayerState>();
         public void ApplyEnchantment(StatusEffect status,PlayerState source,int turns=2)
@@ -110,22 +117,35 @@ namespace FingerDiceDuel.Core
             if(!TrainingProtected || damage<Health || Health<=0)return damage;
             TrainingProtectionTriggered?.Invoke();return Math.Max(0,Health-1);
         }
-        public int TakeDamageResolved(int amount)
+        public int TakeDamageResolved(int amount,GameManager visuals=null)
         {
             LastDamageToOriginalForm=0;
             if(amount<=0)return 0;
-            int spores=Math.Min(SporeLife,amount);SporeLife-=spores;amount-=spores;
+            int spores=Math.Min(SporeLife,amount);
+            var sporeFrame=spores>0?visuals?.CaptureVisualFrame():null;
+            SporeLife-=spores;amount-=spores;
+            if(sporeFrame!=null)visuals.RecordSkillVisual(this,"孢子生命",this,
+                new SkillVisualData(value:spores,previous:SporeLife,variant:SporeLife==0?"break":"absorb"),sporeFrame);
             int absorbed=Math.Min(FalseLife,amount);FalseLife-=absorbed;amount-=absorbed;
             bool wasSheep=IsPolymorphed||IsWildShaped;
             if(!wasSheep)amount=ProtectOriginalHealth(amount);
-            int actual=Math.Min(Health,amount);Health-=actual;int overflow=amount-actual;
+            int actual=Math.Min(Health,amount);
+            var afterSpores=sporeFrame!=null&&actual>0?visuals.CaptureVisualFrame():null;
+            Health-=actual;int overflow=amount-actual;
+            if(afterSpores!=null)visuals.RecordSkillVisual(this,"余伤",this,new SkillVisualData(value:actual),afterSpores);
             if(!wasSheep)LastDamageToOriginalForm=actual;
             if(actual>0)ClearEnchantments();
             while(Health<=0&&(IsPolymorphed||IsWildShaped))
             {
-                if(IsPolymorphed)EndPolymorph();else EndWild();
+                var breakFrame=visuals?.CaptureVisualFrame();
+                bool sheep=IsPolymorphed;int form=WildForm,star=WildStar;
+                if(sheep)EndPolymorph();else EndWild();
+                if(breakFrame!=null)visuals.RecordSkillVisual(this,sheep?"变形术":"解除荒野",this,
+                    new SkillVisualData(value:form,previous:star,variant:"break"),breakFrame);
                 int loss=Math.Min(Health,IsPolymorphed||IsWildShaped?overflow:ProtectOriginalHealth(overflow));
+                var spillFrame=loss>0&&breakFrame!=null?visuals.CaptureVisualFrame():null;
                 Health-=loss;overflow-=loss;actual+=loss;
+                if(spillFrame!=null)visuals.RecordSkillVisual(this,"余伤",this,new SkillVisualData(value:loss),spillFrame);
                 if(!IsPolymorphed&&!IsWildShaped)LastDamageToOriginalForm=loss;
             }
             if(Health<=0&&!IsPolymorphed)foreach(var grave in CharacterBehaviors.Implementers<IGraveStrength>(this))grave.SurviveDeath(this);
@@ -175,15 +195,23 @@ namespace FingerDiceDuel.Core
         public void QueueHexSpecter(PlayerState owner,PlayerState victim)
         {if(owner?.IsOriginalAlive==true&&victim!=null&&!victim.IsAlive&&!victim.IsSummon)_pendingSpecters[victim]=owner;}
         private void RemoveInvalidSpecters()
-        {foreach(var p in _players)if(p.IsSummon&&(!p.IsAlive||p.SummonOwner?.IsOriginalAlive!=true)){p.RestoreDeadSeat();SeatRevision++;}}
+        {foreach(var p in _players)if(p.IsSummon&&(!p.IsAlive||p.SummonOwner?.IsOriginalAlive!=true))DismissSpecter(p,p.IsAlive?"owner-death":"death");}
+        private void DismissSpecter(PlayerState specter,string reason)
+        {
+            var frame=CaptureVisualFrame();
+            specter.RestoreDeadSeat();SeatRevision++;
+            if(frame!=null)RecordSkillVisual(specter,"咒缚幽灵",specter,new SkillVisualData(variant:reason),frame);
+        }
         private void CreatePendingSpecters()
         {
             foreach(var pair in _pendingSpecters)
             {
                 var dead=pair.Key;var owner=pair.Value;
                 if(!owner.IsOriginalAlive||dead.IsAlive||dead.IsSummon||IsGameOver)continue;
-                foreach(var existing in _players)if(existing.IsSummon&&ReferenceEquals(existing.SummonOwner,owner)){existing.RestoreDeadSeat();SeatRevision++;}
-                dead.BecomeSpecter(owner,RoundCount+1);SeatRevision++;NoteSkill(owner,"咒缚幽灵",$"在死者座位召唤，下一轮行动",dead);
+                foreach(var existing in _players)if(existing.IsSummon&&ReferenceEquals(existing.SummonOwner,owner))DismissSpecter(existing,"replace");
+                var frame=CaptureVisualFrame();
+                dead.BecomeSpecter(owner,RoundCount+1);SeatRevision++;NoteSkill(owner,"咒缚幽灵","在死者座位召唤，下一轮行动",dead,
+                    new SkillVisualData(variant:"summon"),frame);
             }
             _pendingSpecters.Clear();
         }

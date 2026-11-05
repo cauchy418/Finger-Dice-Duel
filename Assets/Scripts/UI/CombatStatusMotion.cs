@@ -26,7 +26,8 @@ namespace FingerDiceDuel.UI
         {
             if(key=="Overlay/locked")return "chain_link";
             if(key.Contains("restrain"))return "vine_tendril";
-            if(key.Contains("stealth"))return "fx_necrotic";
+            if(key.Contains("stealth")||key=="Status/darkness_blind")return "fx_necrotic";
+            if(key=="Subclasses/cleric_life_domain")return "fx_radiant";
             if(key.Contains("cold")||key.Contains("frost")||key.Contains("frozen")||key.Contains("freeze"))return "fx_cold";
             if(key.Contains("burn")||key.Contains("fire"))return "fx_fire";
             if(key.Contains("poison")||key.Contains("false_life")||key.Contains("spore"))return "fx_poison";

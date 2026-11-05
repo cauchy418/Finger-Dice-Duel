@@ -24,8 +24,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             if(context.IsStatusDamage||context.IsReflected||Ki<TechniqueCost)return;
             int choice=_elementChoice??(context.Manager?.GetSkillPolicy(context.Attacker)!=null?SkillChoicePolicy.Choose(MartialSkillChoices.FourElements,MartialSkillChoices.Elements(false),context.Attacker,context.Defender,context.Manager):(int)ChosenElement);
-            _elementChoice=null;if(choice==0||!IsElement((AttackDamageType)choice)||!Spend(TechniqueCost))return;
-            context.AttackType=(AttackDamageType)choice;context.VisualWeapon="weapon_fist";context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗2气，改为"+AttackDamageTypes.NameOf(context.AttackType),context.Defender,new SkillVisualData(source:context.SourceHand,element:context.AttackType));
+            _elementChoice=null;if(choice==0||!IsElement((AttackDamageType)choice))return;
+            var frame=context.Manager?.CaptureVisualFrame();
+            if(!Spend(TechniqueCost))return;
+            context.AttackType=(AttackDamageType)choice;context.VisualWeapon="weapon_fist";
+            context.Manager?.NoteSkill(context.Attacker,"四象门徒","消耗2气，改为"+AttackDamageTypes.NameOf(context.AttackType),context.Defender,
+                new SkillVisualData(source:context.SourceHand,element:context.AttackType,amount:TechniqueCost),frame);
         }
         public void OnIncomingElementAttack(AttackContext context,GameManager game)
         {

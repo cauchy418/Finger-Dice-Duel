@@ -6,7 +6,7 @@
         {
             switch(skill)
             {
-                case "王车易位":case "幻术默发":case "诡诈换位":case "不死奴仆":return "fx_psychic";
+                case "王车易位":case "幻术默发":case "幻影实体":case "诡诈换位":case "不死奴仆":return "fx_psychic";
                 case "预兆":case "预知未来":return "Effects/portent";
                 case "奥术守御":case "法术抗性":case "不死适应":return "Effects/arcane_barrier";
                 case "变形术":return "Status/polymorph";
@@ -14,7 +14,7 @@
                 case "影分身":case "渗透劲":return "Effects/hidden_force";
                 case "荒野形态":case "解除荒野":return "fx_cold";
                 case "星耀形态":case "解除星耀":case "巨龙座":case "圣杯座":return "fx_radiant";
-                case "猎人印记":case "猎人标记":return "Effects/hunters_mark";
+                case "猎人印记":case "猎人标记":case "巨像屠夫":return "Effects/hunters_mark";
                 case "咒剑诅咒":case "咒缚幽灵":return "Effects/hexblades_curse";
                 case "剑歌":return "Effects/bladesong";
                 case "战争祭司":return "Status/war_blessing";
@@ -25,6 +25,11 @@
                 case "黑暗术":return "Status/darkness_blind";
                 case "坟冢之力":return "fx_necrotic";
                 case "幽暗之瞳":return "fx_necrotic";
+                case "孢子环绕":return "Status/decay";
+                case "一体共生":case "孢子生命":return "Effects/spore_life";
+                case "真菌感染":return "Professions/druid";
+                case "恶之强运":return "fate_die";
+                case "余伤":return "fx_impact";
                 case "燃烧":return "fx_fire";
                 case "中毒":return "fx_poison";
                 case "流血":return "fx_impact";
@@ -37,13 +42,13 @@
     }
     public partial class GameManager
     {
-        public void RecordSkillVisual(PlayerState owner,string skill,PlayerState target=null,SkillVisualData data=null)
+        public void RecordSkillVisual(PlayerState owner,string skill,PlayerState target=null,SkillVisualData data=null,CombatVisualFrame before=null)
         {
-            if(!RecordCombatVisuals||owner==null||data?.Variant=="blocked")return;
+            if(!RecordCombatVisuals||owner==null||data?.Variant=="blocked"||data?.Variant=="log-only")return;
             if(data!=null&&data.Status!=StatusEffect.None&&data.Variant!="prepare"&&target!=null&&!target.HasStatus(data.Status))return;
             var key=SkillVisualProfiles.Key(skill);if(key==null)return;
             var frame=CaptureVisualFrame();
-            _combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Skill,CombatVisualOutcome.Hit,owner,target??owner,owner,data?.Source??owner.LeftHand,AttackDamageType.None,key,0,0,0,false,false,frame,frame,skill,null,data));
+            _combatVisuals.Add(new CombatVisualEvent(CombatVisualKind.Skill,CombatVisualOutcome.Hit,owner,target??owner,owner,data?.Source??owner.LeftHand,AttackDamageType.None,key,0,0,0,false,false,before??frame,frame,skill,null,data,synchronizeFrame:before!=null));
         }
     }
 }

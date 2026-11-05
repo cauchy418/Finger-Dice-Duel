@@ -38,6 +38,12 @@ namespace FingerDiceDuel.UI
                     Orbit(4,target,"fx_radiant",45+20*(1-move),65,4,-100*t,pulse*.5f,green);
                     if(value.Length>0)Digit(0,"+"+value,target+Vector2.up*65,pulse,green);break;
                 case SecondarySkillStyle.Cleanse:
+                    if(variant=="blessing")
+                    {
+                        Picture(0,"Subclasses/cleric_life_domain",Arc(origin,target,move,50),94,pulse);
+                        Orbit(1,target,"fx_radiant",83-23*move,62,5,125*t,pulse*.65f,green);
+                        Digit(0,"攻 +1  防 +1",target+Vector2.up*64,pulse,gold);break;
+                    }
                     for(int i=0;i<4;i++){float a=(i*90+30)*Mathf.Deg2Rad;Picture(i,"fx_psychic",target+new Vector2(Mathf.Cos(a),Mathf.Sin(a))*(25+100*move),65,pulse*(1-move),i*90,null,Color.gray);}
                     Picture(4,"fx_radiant",target+new Vector2(0,90-180*move),150,pulse,0,new Vector2(1.4f,.35f),green);break;
                 case SecondarySkillStyle.Eye:
@@ -50,6 +56,13 @@ namespace FingerDiceDuel.UI
                     Orbit(2,enchanted,fx,65*(1-outward),45,4,180*t,pulse*.65f,element);
                     if(variant=="consume")Picture(6,fx,Arc(from,target,move,30),90,pulse,0,null,element);break;
                 case SecondarySkillStyle.Surge:
+                    if(variant=="pierce"||variant=="extend")
+                    {
+                        Picture(0,variant=="pierce"?"fx_force":"Status/"+StatusNames.IconKeyOf(d.Status),target,125,pulse*.8f);
+                        Orbit(1,target,fx,55+43*move,75,4,-145*t,pulse*.7f,element);
+                        Digit(0,variant=="pierce"?"穿透免疫":old+" → "+value+" 回合",target+Vector2.up*69,pulse,element);
+                        break;
+                    }
                     Picture(0,fx,from,150,pulse,45*t,null,element);
                     Orbit(1,from,fx,35+50*move,60,4,-160*t,pulse*.5f,element);break;
                 case SecondarySkillStyle.Music:
@@ -104,7 +117,9 @@ namespace FingerDiceDuel.UI
                 case SecondarySkillStyle.Dragon:
                     Picture(0,p.Sprite,origin+Vector2.up*25,200,pulse*.65f,0,new Vector2(1,1+.2f*move));Orbit(1,origin,fx,85,60,5,90*t,pulse*.65f,element);break;
                 case SecondarySkillStyle.ElementFist:
-                    Picture(0,"weapon_fist",from,175,pulse,-30+60*move);Picture(1,fx,from+Vector2.right*45,130,pulse,60*t,null,element);break;
+                    Picture(0,"weapon_fist",from,175,pulse,-30+60*move);Picture(1,fx,from+Vector2.right*45,130,pulse,60*t,null,element);
+                    if(d?.Amount>0)Digit(0,"气 −"+d.Amount,from+Vector2.up*63,pulse,element);
+                    break;
                 case SecondarySkillStyle.ElementGuard:
                     Orbit(0,origin,fx,55+25*(1-move),70,6,120*t,pulse*.6f,element);Picture(6,"UI/badge_ring",origin,145,pulse,0,null,element);break;
                 case SecondarySkillStyle.Repair:

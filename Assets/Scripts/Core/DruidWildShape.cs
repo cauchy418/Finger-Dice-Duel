@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     public interface IDruidCaster { }
-    public interface ISporeDruid {void OnNearbyDeath(PlayerState owner,GameManager game);}
+    public interface ISporeDruid {void OnNearbyDeath(PlayerState owner,PlayerState dead,GameManager game);}
     public sealed class DruidFormView:IDruidForm
     {public string CircleKey{get;}public int FormValue{get;}public bool NeedsSecondAddend=>false;public DruidFormView(string key,int value){CircleKey=key;FormValue=value;}}
     public partial class PlayerState
@@ -31,9 +31,11 @@ namespace FingerDiceDuel.Core
             bool stars=DruidWildShape.Has<Characters.SpecialLogics.CircleOfTheStarsLogic>(DruidOriginal);
             int cost=form>=5?2:1;
             if(!IsAlive||IsPolymorphed||IsWildShaped||!StatusRules.CanAct(this)||form<1||form>(moon?6:4)||WildCharges<cost||LeftHand.Value+RightHand.Value!=10||stars&&(star<1||star>3)||!stars&&star!=0)return false;
+            var frame=game?.CaptureVisualFrame();
             _wildCharges-=cost;_wildOriginal=Character;_wildHealth=Health;_wildMaximum=MaximumHealth;WildForm=form;WildStar=star;
             Character=new WildShapeBehavior(this);MaximumHealth=DruidWildShape.Health[form]+(star==2?4:0);Health=MaximumHealth;WildSkipPending=true;
-            game?.NoteSkill(this,"荒野形态",DruidForms.Name("moon",form)+(star==0?"":" · "+DruidForms.Name("stars",star))+"，消耗"+cost+"充能",this,new SkillVisualData(value:form,variant:DruidForms.MoonKeys[form]));return true;
+            game?.NoteSkill(this,"荒野形态",DruidForms.Name("moon",form)+(star==0?"":" · "+DruidForms.Name("stars",star))+"，消耗"+cost+"充能",
+                this,new SkillVisualData(value:form,previous:star,variant:"enter",amount:cost),frame);return true;
         }
         public void EndWild()
         {
@@ -106,7 +108,11 @@ namespace FingerDiceDuel.Core
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {
             if(!owner.IsAlive||!owner.IsWildShaped)return;
-            Action finish=()=>DruidForms.OfferExit(owner,game,this,()=>{owner.EndWild();game.NoteSkill(owner,"解除荒野","恢复原形",owner);});
+            Action finish=()=>DruidForms.OfferExit(owner,game,this,()=>{
+                var frame=game.CaptureVisualFrame();int form=F,star=S;
+                owner.EndWild();game.NoteSkill(owner,"解除荒野","恢复原形",owner,
+                    new SkillVisualData(value:form,previous:star,variant:"exit"),frame);
+            });
             if(S==3&&!_dragonUsed&&!_fresh)ClericChoices.FreeOperation(owner,game,null,false,"巨龙座",finish);else finish();
             _fresh=false;
         }
@@ -114,7 +120,13 @@ namespace FingerDiceDuel.Core
         {
             if(S!=2||hand.Value!=9||effect!=HandEffectType.Heal)return;
             var hands=new List<Hand>();var targets=new List<PlayerState>();foreach(var p in game.Players)if(p.IsAlive){hands.Add(p.LeftHand);targets.Add(p);}
-            var request=new WizardChoice(owner,"圣杯座 · 额外回复9",hands,true,h=>{var target=game.OwnerOfHand(h);if(target!=null){int hp=target.Health;target.Heal(9);game.NoteSkill(owner,"圣杯座","回复"+target.Name+" "+(target.Health-hp),target);}},targetsPlayer:true);
+            var request=new WizardChoice(owner,"圣杯座 · 额外回复9",hands,true,h=>{
+                var target=game.OwnerOfHand(h);if(target==null)return;
+                var frame=game.CaptureVisualFrame();int hp=target.Health;
+                target.Heal(9);int healed=target.Health-hp;
+                game.NoteSkill(owner,"圣杯座","回复"+target.Name+" "+healed,target,
+                    new SkillVisualData(source:hand,value:healed,variant:"heal"),frame);
+            },targetsPlayer:true);
             if(game.DeferWizardChoice?.Invoke(request)!=true)request.Choose(game.GetDruidPolicy(owner)?.ChaliceTarget(owner,targets,game)?.LeftHand);
         }
     }

@@ -1,12 +1,13 @@
 ﻿namespace FingerDiceDuel.Core
 {
-    public enum FinalSkillStyle { Portal, Number, Exchange, Ward, Sheep, Specter, Stealth, Clones, HiddenForce, BladeSong, Blessing, Curse, Hunt, Moon, Stars, Counter, Chain, Reaction, Status }
+    public enum FinalSkillStyle { Portal, Number, Exchange, Ward, Sheep, Specter, Stealth, Clones, HiddenForce, BladeSong, Blessing, Curse, Hunt, Moon, Stars, Counter, Chain, Reaction, Status, Spore, Shadow, Reroll, Overflow, IllusionGuard }
     public sealed class SkillVisualData
     {
         public AttackDamageType Element {get;}public StatusEffect Status {get;}
         public Hand Source {get;}public Hand Destination {get;}public int Value {get;}public int Previous {get;}public string Variant {get;}public PlayerState DestinationOwner {get;}
-        public SkillVisualData(Hand source=null,Hand destination=null,int value=-1,int previous=-1,string variant=null,PlayerState destinationOwner=null,AttackDamageType element=AttackDamageType.None,StatusEffect status=StatusEffect.None)
-        {Element=element;Status=status;Source=source;Destination=destination;Value=value;Previous=previous;Variant=variant;DestinationOwner=destinationOwner;}
+        public int Amount {get;}
+        public SkillVisualData(Hand source=null,Hand destination=null,int value=-1,int previous=-1,string variant=null,PlayerState destinationOwner=null,AttackDamageType element=AttackDamageType.None,StatusEffect status=StatusEffect.None,int amount=0)
+        {Element=element;Status=status;Source=source;Destination=destination;Value=value;Previous=previous;Variant=variant;DestinationOwner=destinationOwner;Amount=amount;}
     }
     public static class FinalSkillAnimation
     {
@@ -26,12 +27,17 @@
                 case "剑歌":return FinalSkillStyle.BladeSong;
                 case "战争祭司":return FinalSkillStyle.Blessing;
                 case "咒剑诅咒":return FinalSkillStyle.Curse;
-                case "猎人印记":case "猎人标记":case "灭族者":return FinalSkillStyle.Hunt;
+                case "猎人印记":case "猎人标记":case "巨像屠夫":return FinalSkillStyle.Hunt;
                 case "荒野形态":case "解除荒野":return FinalSkillStyle.Moon;
                 case "星耀形态":case "解除星耀":case "巨龙座":case "圣杯座":return FinalSkillStyle.Stars;
                 case "风暴之怒":return FinalSkillStyle.Counter;
                 case "破阵强袭":return FinalSkillStyle.Chain;
                 case "元素反应":return FinalSkillStyle.Reaction;
+                case "孢子环绕":case "一体共生":case "真菌感染":case "孢子生命":return FinalSkillStyle.Spore;
+                case "黑暗术":case "坟冢之力":case "幽暗之瞳":return FinalSkillStyle.Shadow;
+                case "恶之强运":return FinalSkillStyle.Reroll;
+                case "余伤":return FinalSkillStyle.Overflow;
+                case "幻影实体":return FinalSkillStyle.IllusionGuard;
                 default:return FinalSkillStyle.Status;
             }
         }

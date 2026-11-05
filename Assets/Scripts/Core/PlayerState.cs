@@ -144,7 +144,7 @@ namespace FingerDiceDuel.Core
         ///
         /// 返回**本次过期的状态**（供战报 / 测试）。
         /// </summary>
-        public System.Collections.Generic.List<StatusEffect> TickStatuses()
+        public System.Collections.Generic.List<StatusEffect> TickStatuses(GameManager visuals=null)
         {
             var expired = new System.Collections.Generic.List<StatusEffect>();
             var keys = new System.Collections.Generic.List<StatusEffect>(_statuses.Keys);
@@ -168,7 +168,7 @@ namespace FingerDiceDuel.Core
                 }
             }
 
-            TickEnchantments(); TickPolymorph();
+            TickEnchantments(); TickPolymorph(visuals);
             return expired;
         }
 

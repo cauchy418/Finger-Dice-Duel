@@ -38,5 +38,114 @@ namespace FingerDiceDuel.Tests
         {foreach(var d in new[]{CharacterDefinition.LifeDomain,CharacterDefinition.SchoolOfEvocation,CharacterDefinition.OathOfDevotion,CharacterDefinition.WayOfTheTaiChi}){var g=Match(a:d);var a=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){AttackType=AttackDamageType.Bludgeoning};Assert.AreEqual(d==CharacterDefinition.WayOfTheTaiChi?"weapon_fist":d==CharacterDefinition.OathOfDevotion?"weapon_hammer":"weapon_staff",CombatVisualRouting.Weapon(a,g));a.AttackType=AttackDamageType.Fire;Assert.AreEqual("fx_fire",CombatVisualRouting.Weapon(a,g));a.VisualWeapon="weapon_sword";Assert.AreEqual("weapon_sword",CombatVisualRouting.Weapon(a,g));}}
         [Test] public void Vow_movement_is_a_mark_event_instead_of_an_attack_redirect()
         {var g=Match();g.RecordVowTransfer(g.PlayerA,g.PlayerA,g.PlayerB,g.CaptureVisualFrame());var e=g.DrainCombatVisuals()[0];Assert.AreEqual(CombatVisualKind.VowTransfer,e.Kind);Assert.AreEqual("Effects/vow_of_enmity",e.Weapon);Assert.AreEqual(0,e.Damage);Assert.AreEqual(20,g.PlayerB.Health);}
+
+        [Test] public void Wild_shape_break_shows_form_then_original_then_overflow()
+        {
+            var g=Match(b:CharacterDefinition.CircleOfTheMoon);
+            var target=g.PlayerB;target.LeftHand.SetValue(4);target.RightHand.SetValue(6);
+            Assert.True(target.EnterWild(5,0,g));
+            var enter=g.DrainCombatVisuals().Single();
+            Assert.AreEqual(2,enter.SkillData.Amount);
+            Assert.AreEqual("Forms/moon_owlbear",enter.After.Players[1].Emblem);
+            new AttackContext(g.PlayerA,target,g.PlayerA.LeftHand,20,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(target),g);
+            var cues=g.DrainCombatVisuals();
+            Assert.AreEqual(16,cues[0].Damage);
+            Assert.AreEqual("Forms/moon_owlbear",cues[0].After.Players[1].Emblem);
+            Assert.AreEqual(0,cues[0].After.Players[1].Health);
+            Assert.AreEqual("解除荒野",cues[1].RedirectKind);
+            Assert.AreEqual(5,cues[1].SkillData.Value);
+            Assert.AreEqual(20,cues[1].After.Players[1].Health);
+            Assert.AreEqual(4,cues[2].SkillData.Value);
+            Assert.AreEqual(16,cues[2].After.Players[1].Health);
+        }
+
+        [Test] public void Stars_enter_with_actual_form_and_dragon_uses_actual_hand()
+        {
+            var g=Match(a:CharacterDefinition.CircleOfTheStars);
+            var druid=g.PlayerA;druid.LeftHand.SetValue(4);druid.RightHand.SetValue(6);
+            Assert.True(druid.EnterWild(3,3,g));
+            var shape=g.DrainCombatVisuals().Single();
+            Assert.AreEqual(3,shape.SkillData.Value);
+            Assert.AreEqual(3,shape.SkillData.Previous);
+            Assert.True(shape.After.Players[0].Icons.Any(i=>i.ResourceKey=="Forms/stars_dragon"));
+            g.PlayerB.LeftHand.SetValue(3);
+            Assert.True(g.ApplyEffectlessOperation(druid,druid.RightHand,g.PlayerB.LeftHand,"巨龙座"));
+            var cue=g.DrainCombatVisuals().Single();
+            Assert.AreEqual("operation",cue.SkillData.Variant);
+            Assert.AreEqual(druid.RightHand,cue.SourceHand);
+            Assert.AreEqual(3,cue.SkillData.Amount);
+            Assert.AreEqual(9,cue.After.Players[0].Right.Value);
+        }
+
+        [Test] public void Spore_layer_break_precedes_ordinary_health_loss()
+        {
+            var g=Match(b:CharacterDefinition.CircleOfSpores);
+            g.PlayerB.GainSporeLife();
+            new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,14,g).Resolve(g.GetChoiceProvider(g.PlayerB),g);
+            var cues=g.DrainCombatVisuals();
+            Assert.AreEqual(0,cues[0].Damage);
+            Assert.AreEqual("孢子生命",cues[1].RedirectKind);
+            Assert.AreEqual("break",cues[1].SkillData.Variant);
+            Assert.AreEqual(10,cues[1].SkillData.Value);
+            Assert.AreEqual(20,cues[1].After.Players[1].Health);
+            Assert.AreEqual("余伤",cues[2].RedirectKind);
+            Assert.AreEqual(16,cues[2].After.Players[1].Health);
+        }
+
+        [Test] public void Hunter_guard_damage_follows_shield_break_and_does_not_launch_a_second_attack()
+        {
+            var g=Match(a:CharacterDefinition.RangerHunter);
+            var target=g.PlayerB;
+            CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.RangerHunterLogic>(g.PlayerA).Mark(target);
+            target.LeftHand.SetShieldState(ShieldState.Formed);
+            new AttackContext(g.PlayerA,target,g.PlayerA.RightHand,4,g).Resolve(g.GetChoiceProvider(target),g);
+            var cues=g.DrainCombatVisuals();
+            Assert.AreEqual("consume",cues[0].SkillData.Variant);
+            Assert.AreEqual(target,cues[0].Target);
+            Assert.AreEqual(CombatVisualOutcome.Blocked,cues[1].Outcome);
+            Assert.AreEqual(CombatVisualKind.ShieldBreak,cues[2].Kind);
+            Assert.AreEqual(CombatVisualKind.Skill,cues[3].Kind);
+            Assert.AreEqual("guard",cues[3].SkillData.Variant);
+            Assert.AreEqual(19,cues[3].After.Players[1].Health);
+        }
+
+        [Test] public void Grave_strength_restores_one_after_the_lethal_hit_frame()
+        {
+            var g=Match(b:CharacterDefinition.ShadowMagic);
+            g.PlayerB.SetHealthExact(2);
+            new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g).Resolve(g.GetChoiceProvider(g.PlayerB),g);
+            var cues=g.DrainCombatVisuals();
+            Assert.AreEqual(0,cues[0].After.Players[1].Health);
+            Assert.AreEqual("坟冢之力",cues[1].RedirectKind);
+            Assert.AreEqual(1,cues[1].After.Players[1].Health);
+        }
+
+        [Test] public void Healing_blessing_comes_after_cleanse_and_real_heal()
+        {
+            var g=Match(a:CharacterDefinition.LifeDomain);
+            g.PlayerB.SetHealthExact(18);g.PlayerB.ApplyStatus(StatusEffect.Bleed,2);
+            Characters.SpecialLogics.LifeDomainLogic.CleanseAndHeal(g.PlayerA,g.PlayerB,9,g);
+            var cues=g.DrainCombatVisuals();
+            Assert.AreEqual(3,cues.Count);
+            Assert.AreEqual("神佑医者",cues[0].RedirectKind);
+            Assert.AreEqual("生命门徒",cues[1].RedirectKind);
+            Assert.AreEqual(2,cues[1].SkillData.Value);
+            Assert.AreEqual("blessing",cues[2].SkillData.Variant);
+            Assert.AreEqual(StatusEffect.BlessedHealing,cues[2].SkillData.Status);
+        }
+
+        [Test] public void Sheep_expiry_restores_original_bar_and_addend_locks_survive_capture()
+        {
+            var g=Match();
+            var target=g.PlayerB;
+            target.RightHand.SetTargetRestricted(true);
+            target.TryPolymorph(1);target.TickStatuses(g);
+            var cue=g.DrainCombatVisuals().Single();
+            Assert.AreEqual("expire",cue.SkillData.Variant);
+            Assert.AreEqual(5,cue.Before.Players[1].MaximumHealth);
+            Assert.AreEqual(20,cue.After.Players[1].MaximumHealth);
+            Assert.True(cue.After.Players[1].Right.IsTargetRestricted);
+            Assert.True(cue.After.Players[1].Right.CanBeOperated);
+        }
     }
 }

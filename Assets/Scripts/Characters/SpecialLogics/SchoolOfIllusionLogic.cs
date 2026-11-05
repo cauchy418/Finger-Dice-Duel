@@ -29,8 +29,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             var smaller=Smaller(context.Defender);if(smaller==null||context.IgnoreIncomingModifiers||context.IsStatusDamage)return;
             bool use=_defend==true;if(game?.AnsweredLookupFor==null)use=SkillChoicePolicy.Choose(NewSubclassChoices.IllusionDefense,NewSubclassChoices.YesNo("减伤","Subclasses/wizard_school_of_illusion"),context.Defender,context.Attacker,game)==1;
-            _defend=null;if(!use)return;int before=smaller.Value;smaller.SetValue(2);context.HalveWholeAttackDamage();
-            game?.NoteSkill(context.Defender,"幻影实体",$"{CombatText.HandName(context.Defender,smaller)}{before}→2，本次伤害减半");
+            _defend=null;if(!use)return;
+            var frame=game?.CaptureVisualFrame();int before=smaller.Value;
+            smaller.SetValue(2);context.HalveWholeAttackDamage();
+            game?.NoteSkill(context.Defender,"幻影实体",$"{CombatText.HandName(context.Defender,smaller)}{before}→2，本次伤害减半",context.Defender,
+                new SkillVisualData(source:smaller,value:2,previous:before),frame);
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>(context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
     }

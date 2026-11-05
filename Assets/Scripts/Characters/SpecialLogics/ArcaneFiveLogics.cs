@@ -15,8 +15,11 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             var targets=new List<PlayerState>();foreach(var p in game.Players)
                 if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&ArcaneChoices.MatchingHands(owner,p))targets.Add(p);
             ArcaneChoices.Target(ArcaneChoices.Transmute,"变形术 · 选择双手数字相同的角色变羊2回合",owner,game,targets,target=>{
-                if(!ArcaneChoices.MatchingHands(owner,target)||!target.TryPolymorph())return;
-                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（10/10，−2/−2，距离1）",target);});
+                if(!ArcaneChoices.MatchingHands(owner,target))return;
+                var frame=game.CaptureVisualFrame();
+                if(!target.TryPolymorph())return;
+                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（5/5，−2/−2，距离1）",target,
+                    new SkillVisualData(value:target.Health,variant:"enter"),frame);});
         }
         public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==context.OtherHandValue?8:0;
     }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -66,6 +67,7 @@ namespace FingerDiceDuel.Tests
         public void Evil_luck_reveals_first_roll_and_pays_one_d5_for_the_replacement()
         {
             var game = Match(CharacterDefinition.Blank, out var a, out var b);
+            game.RecordCombatVisuals=true;
             var rng = new RerollDice(2, 3, 9);
             var board = new BoardController(game, a, b) { GambleRng = rng };
             game.PlayerA.SetHealthExact(10);
@@ -81,12 +83,18 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(5, rng.Sides[1]);
             Assert.AreEqual(9, rng.Sides[2]);
             Assert.AreEqual(1, game.TurnCount);
+            var cue=game.DrainCombatVisuals().Single(e=>e.RedirectKind=="恶之强运");
+            Assert.AreEqual(2,cue.SkillData.Previous);
+            Assert.AreEqual(3,cue.SkillData.Amount);
+            Assert.AreEqual(9,cue.SkillData.Value);
+            Assert.AreEqual(7,cue.After.Players[0].Health);
         }
 
         [Test]
         public void Evil_luck_can_end_the_match_before_a_replacement_is_rolled()
         {
             var game = Match(CharacterDefinition.Blank, out var a, out var b);
+            game.RecordCombatVisuals=true;
             var rng = new RerollDice(2, 3);
             var board = new BoardController(game, a, b) { GambleRng = rng };
             game.PlayerA.SetHealthExact(2);
@@ -97,6 +105,10 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(BoardPhase.GameOver, board.Phase);
             Assert.AreEqual(game.PlayerB, game.Winner);
             Assert.AreEqual(2, rng.Sides.Count);
+            var cue=game.DrainCombatVisuals().Single(e=>e.RedirectKind=="恶之强运");
+            Assert.AreEqual("fatal",cue.SkillData.Variant);
+            Assert.AreEqual(-1,cue.SkillData.Value);
+            Assert.AreEqual(0,cue.After.Players[0].Health);
         }
 
         [Test]

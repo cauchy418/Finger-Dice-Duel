@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -79,6 +80,7 @@ namespace FingerDiceDuel.Tests
             foreach (var type in new[]{AttackDamageType.Lightning,AttackDamageType.Thunder})
             {
                 Board(CharacterDefinition.StormSorcery, CharacterDefinition.Blank, out var g);
+                g.RecordCombatVisuals=true;
                 var storm = (StormSorceryLogic)g.PlayerA.Character;
                 storm.ForcedRoll = type == AttackDamageType.Lightning ? 0 : 40;
                 g.PlayerB.AddImmunity(type);
@@ -88,6 +90,9 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(4,hit.ActualHealthDamage);
                 Assert.IsFalse(g.PlayerB.HasStatus(StatusNames.StatusOf(AttackDamageTypes.ToDamageType(type))));
                 Assert.IsTrue(g.PlayerB.HasStatus(StatusEffect.Wet));
+                var cue=g.DrainCombatVisuals().Single(e=>e.SkillData?.Variant=="pierce");
+                Assert.AreEqual(type,cue.SkillData.Element);
+                Assert.AreEqual(g.PlayerB,cue.Target);
             }
         }
         [Test] public void Storm_extra_operation_can_be_declined_at_each_step()

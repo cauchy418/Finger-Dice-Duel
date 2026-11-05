@@ -346,17 +346,21 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             int removed = target.Vulnerabilities.Count;
             foreach (var status in target.Statuses)
                 if (status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing) removed++;
+            var cleanseFrame=removed>0?manager?.CaptureVisualFrame():null;
             target.ClearNegativeStatuses();
-            if (removed > 0) manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 清除 {removed} 种状态",target,new SkillVisualData(value:removed));
+            if (removed > 0) manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 清除 {removed} 种状态",target,
+                new SkillVisualData(value:removed),cleanseFrame);
             bool overflow = amount > target.MaximumHealth - target.Health;
+            var healFrame=manager?.CaptureVisualFrame();
             int before=target.Health;target.Heal(amount);
+            manager?.RecordSkillVisual(owner,visualSkill,target,new SkillVisualData(value:target.Health-before),healFrame);
             if (overflow && target.IsAlive)
             {
+                var blessingFrame=manager?.CaptureVisualFrame();
                 target.ApplyStatus(StatusEffect.BlessedHealing, 2, owner);
                 manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 攻防+1，持续2回合", target,
-                    new SkillVisualData(value:2, status:StatusEffect.BlessedHealing, variant:"blessing"));
+                    new SkillVisualData(value:2, status:StatusEffect.BlessedHealing, variant:"blessing"),blessingFrame);
             }
-            manager?.RecordSkillVisual(owner,visualSkill,target,new SkillVisualData(value:target.Health-before));
         }
 
         // ============================================================
