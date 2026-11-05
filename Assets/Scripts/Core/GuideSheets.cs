@@ -251,7 +251,7 @@ namespace FingerDiceDuel.Core
                 new GuideEntry("spore_life",0x69D59A,"孢子生命：一体共生消耗1充能获得10点；先于虚假生命吸伤，溢伤继续扣后续防护与体力，无回合期限，不叠加。存在时攻击改为毒素。",resourceKey:"Effects/spore_life"),
                 new GuideEntry("false_life",0x69D59A,"虚假生命：邪术师·妖魔将治疗溢出转为额外防护，上限10。先于真实生命扣除，可全部消耗发动失能／恐慌。绿色标记的角标为剩余点数，不是回合。",resourceKey:"Effects/false_life"),
                 new GuideEntry("vow_of_enmity",0xC34D50,"仇敌誓言：复仇之誓的单一目标标记；本人对其每段伤害+1，对其他角色−1。仇敌每破一盾，可额外纯运算一次。无固定回合数，受攻击或仇敌死亡时可选择转移。",resourceKey:"Effects/vow_of_enmity"),
-                new GuideEntry("hexblades_curse",0xA05FDD,"咒剑诅咒：咒剑持7时可选择或移动一个目标，持续该目标2回合；来源每段攻击+2，亲自击杀后召唤幽灵。",resourceKey:"Effects/hexblades_curse"),
+                new GuideEntry("hexblades_curse",0xA05FDD,"咒剑诅咒：无效果运算后可诅咒一名其他角色，时长等于结果。来源每段攻击+2，亲自击杀召唤幽灵。",resourceKey:"Effects/hexblades_curse"),
                 new GuideEntry("polymorph",0x58BEAD,"变羊：变化学派的2回合形态；独立5生命、攻防−2/−2、距离1，无原技能。解除恢复原生命，击破的溢伤扣原生命。",resourceKey:"Status/polymorph"),
                 new GuideEntry("hexbound_specter",0x58BEAD,"咒缚幽灵：10生命，继承死者手值与座位、占位计距，从下轮开始AI行动；不计胜负人数。暗蚀/毒素永久免疫，五元素永久抗性。",resourceKey:"Units/hexbound_specter") };
             var lines = new List<string>(); foreach(var entry in entries) lines.Add(entry.Text);

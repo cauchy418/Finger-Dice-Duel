@@ -153,7 +153,7 @@ namespace FingerDiceDuel.Core
             LifeDomainId, "牧师·生命领域", SpecialLogicType.LifeDomain,
             attackBonus: -1, defenseBonus: -1,
             englishName: "Life Domain",
-            description: "攻击可改为回复；回复可给任何人，先清除全部负面状态再回血；双 9 额外回复。");
+            description: "4/6/8可转治疗，双9额外治疗。神佑医者先净化，治疗溢出时目标攻防+1两回合。");
 
         /// <summary>兼容旧名。</summary>
         public static CharacterDefinition Priest => LifeDomain;
@@ -246,9 +246,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Gambler { get; } = new CharacterDefinition(
             GamblerId, "游荡者·赌徒", SpecialLogicType.Gambler,
             attackBonus: 0, defenseBonus: 0,
-            description: "运算时可以选择赌博：点自己一只手后开赌，1d9 的结果直接作为本次行动结果" +
-                         "（4/6/8 攻击、9 回血、5 合盾）。上一回合做过正常运算的话，本回合必须赌博。" +
-                         "攻防 0 / 0，攻击距离 1。");
+            description: "掷1d9代替运算。得知首掷后可失去1d5生命重掷一次。正常运算后，下次必须赌博。");
 
         /// <summary>
         /// 圣武士·王冠之誓：攻 0 / 防 −1，攻击距离 1。
@@ -467,7 +465,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
             defenseBonus: -1, englishName: "Hunter",
-            description: "距离3穿刺。打出7可在攻击范围内标记一名角色；攻击可额外指定射程内的标记角色，伤害分开计算。攻击标记目标时无视正防御并加已损体力/5，随后消耗标记。");
+            description: "距离3穿刺。无效果运算可标记，攻击可追加射程内的标记目标。标记攻击穿透正防御并按已损体力加伤，遭格挡时附正攻击加成的真实伤害。");
 
         public static CharacterDefinition WayOfTheOpenHand { get; } = new CharacterDefinition(
             WayOfTheOpenHandId, "武僧·散打宗", SpecialLogicType.WayOfTheOpenHand,
