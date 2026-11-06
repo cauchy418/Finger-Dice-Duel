@@ -42,6 +42,7 @@ namespace FingerDiceDuel.UI
         private Button _previousGuide, _nextGuide, _currentGuide;
         private Text _guidePage;
         private bool _compact;
+        private bool _reviewFromLatest;
 
         /// <summary>模态层是否可见（开场 / 胜利 —— 挡住桌面输入）。</summary>
         public bool IsModalVisible => _modalRoot != null && _modalRoot.gameObject.activeSelf;
@@ -73,7 +74,6 @@ namespace FingerDiceDuel.UI
             _modalGuideName.text = guideName;   // 头像下方的署名
             SetAvatar(_modalAvatar, avatarKey);
 
-            _history.Clear();
             _confirmLabel.text = beginLabel;
             _secondLabel.text = "稍后再来";
             _skipTutorialButton.GetComponentInChildren<Text>().text = "已通关 · 自由练习";
@@ -146,15 +146,28 @@ namespace FingerDiceDuel.UI
         // ============================================================
 
         /// <summary>更新过程引导旁白；文案为空时隐藏。</summary>
-        public void ShowNarration(string guideName, string narration, string avatarKey)
+        public void ShowNarration(string guideName, string narration, string avatarKey, bool isTrialNarration = false)
         {
             if (_guideRoot == null) return;
             if (string.IsNullOrEmpty(narration)) { _guideRoot.gameObject.SetActive(false); return; }
 
-            _history.Update(guideName, guideName, narration);
+            _reviewFromLatest = isTrialNarration;
+            _history.Update(isTrialNarration ? "trial" : guideName, guideName, narration);
             RefreshGuidePage();
             SetAvatar(_guideAvatar, avatarKey);
             _guideRoot.gameObject.SetActive(true);
+        }
+
+        public void ClearHistory() => _history.Clear();
+
+        public void SeedReviewPages(string guideName, System.Collections.Generic.IReadOnlyList<string> pages)
+        {
+            if (_history.Count > 0) return;
+            for (int i = 0; i < pages.Count; i++)
+            {
+                string title = $"{guideName} · 引导{i + 1}/{pages.Count}";
+                _history.Update(title, title, pages[i]);
+            }
         }
 
         private bool _eight;
@@ -206,6 +219,8 @@ namespace FingerDiceDuel.UI
             }
             else FrontEndArt.SetNarrationText(_guideText,page.Text,278f,19,reflow:true);
             _previousGuide.interactable = _history.CanPrevious;
+            _previousGuide.GetComponentInChildren<Text>().text =
+                _reviewFromLatest && _history.CanPrevious && !_history.CanNext ? "回看指引" : "上一页";
             _nextGuide.interactable = _history.CanNext;
             _currentGuide.interactable = _history.CanNext;
             _guidePage.text = "指引 " + (_history.Index + 1) + "/" + _history.Count;

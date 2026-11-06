@@ -121,8 +121,8 @@ namespace FingerDiceDuel.EditorTools
             Directory.CreateDirectory(path);
             return Path.Combine(path, file);
         }
-        private static Button Button(string name) => _root.GetComponentsInChildren<Button>()
-            .Single(b => b.gameObject.activeInHierarchy && b.name == name);
+        private static Button Button(string name) => name.Contains("/") ? _root.Find(name).GetComponent<Button>()
+            : _root.GetComponentsInChildren<Button>().Single(b => b.gameObject.activeInHierarchy && b.name == name);
         private static void Click(string name) { Click(Button(name)); }
         private static void Click(Button button)
         {
@@ -210,8 +210,8 @@ namespace FingerDiceDuel.EditorTools
             Add(() => { Click("AdvPve"); Screen(GameScreen.StoryChapterSelect); }); Shot("StoryChapter");
             Add(() => { Click("StoryChapter01"); Screen(GameScreen.StoryBattleSelect); }); Shot("StoryBattles");
             foreach (GameScreen screen in new[] { GameScreen.Competition, GameScreen.Casual, GameScreen.OneOnOneMenu,
-                GameScreen.TwoOnTwoMenu, GameScreen.ModeMenu, GameScreen.DifficultyMenu, GameScreen.DualGeneral,
-                GameScreen.DualGeneralMenu, GameScreen.DualFactionMenu, GameScreen.EightPlayerMenu,
+                GameScreen.TwoOnTwoMenu, GameScreen.ModeMenu, GameScreen.ClassicMenu, GameScreen.DualGeneral,
+                GameScreen.DualGeneralMenu, GameScreen.DualDuelStyle, GameScreen.DualFactionMenu, GameScreen.EightPlayerMenu,
                 GameScreen.FactionBattleMenu, GameScreen.IdentityBattleMenu })
             {
                 GameScreen target = screen;
@@ -223,8 +223,7 @@ namespace FingerDiceDuel.EditorTools
             Add(() => { Click("ModeCompetition"); Screen(GameScreen.Competition); });
             Add(() => { Click("Comp1v1"); Screen(GameScreen.OneOnOneMenu); });
             Add(() => { Click("ModeAi"); Screen(GameScreen.ModeMenu); });
-            Add(() => { Click("ModeIntro"); Screen(GameScreen.DifficultyMenu); });
-            Add(() => { Click("DiffEasy"); Screen(GameScreen.CharacterSelect); });
+            Add(() => { Click("ModeIntro"); Screen(GameScreen.CharacterSelect); });
             Shot("CharacterSelectInitial");
             Add(() =>
             {
@@ -238,8 +237,8 @@ namespace FingerDiceDuel.EditorTools
             });
             Shot("CharacterSelect");
             Add(() => Click("SelectBack"));
-            Add(() => Click("ModeAi"));
             Add(() => Click("ModeClassic"));
+            Add(() => Click("ClassicStylePractice"));
             Add(() => { Click("Start"); Screen(GameScreen.DiceRoll); });
             Shot("DiceRoll");
             Add(() => Click("RollButton"));
@@ -297,6 +296,7 @@ namespace FingerDiceDuel.EditorTools
             Shot("TwoOnTwoCharacterIntro");
             Add(() => Click("TtCharBack"));
             Add(() => Click("ModeClassic"));
+            Add(() => Click("ClassicStylePractice"));
             Add(() => Check(!Field<GameObject>(_bootstrap, "_seatPickerRoot").activeInHierarchy, "classic hides manual seat picker"));
             Shot("TwoOnTwoCharacterClassic");
             Add(() => { Click("TtStart"); Screen(GameScreen.TwoOnTwoInitiative); });
@@ -327,16 +327,31 @@ namespace FingerDiceDuel.EditorTools
             Add(() => Click("Split0"));
             Add(() => Screen(GameScreen.InMatch));
             Add(() => { _bootstrap.ShowScreen(GameScreen.FactionBattleMenu); Click("FactionAi"); });
-            Add(() => { Screen(GameScreen.FactionSelect); Roster("_fbRoster", 24); }); Shot("FactionSelect");
-            Add(() => { _bootstrap.ShowScreen(GameScreen.IdentityBattleMenu); Click("IdentityAi"); });
+            Add(() => { Screen(GameScreen.FactionDraw); Click("SeatDrawCards/Card1"); });
             Add(() =>
             {
+                if (!Button("SeatDrawContinue").interactable) throw new AwaitCanvasFrame("faction draw still running");
+                Click("SeatDrawContinue"); Screen(GameScreen.FactionSelect);
+            }); Add(() =>
+            {
+                if (!Button("FactionDraftCards/Card1").interactable) throw new AwaitCanvasFrame("faction candidates still flipping");
+                Check(!Button("FactionDraftCards/Card6").interactable, "faction reveals five candidates");
+            }); Shot("FactionSelect");
+            Add(() => { _bootstrap.ShowScreen(GameScreen.IdentityBattleMenu); Click("IdentityAi"); });
+            Add(() => { Screen(GameScreen.IdentityDraw); Click("SeatDrawCards/Card1"); });
+            Add(() =>
+            {
+                if (!Button("SeatDrawContinue").interactable) throw new AwaitCanvasFrame("identity draw still running");
+                Click("SeatDrawContinue");
                 Screen(GameScreen.IdentitySelect);
-                var roster = Field<CharacterRosterView>(_bootstrap, "_idRoster");
-                Check(roster.Count >= 23 && roster.Count <= 24, "identity excludes reserved lord character");
-                Click(roster.Root.Find("Content/Card4").GetComponent<Button>());
+            }); Add(() =>
+            {
+                if (!Button("IdentityDraftCards/Card1").interactable) throw new AwaitCanvasFrame("identity candidates still flipping");
+                int seat = Field<int>(_bootstrap, "_idHumanSeat");
+                Check(Button("IdentityDraftCards/Card8").interactable == (seat == 0), "identity reveals seat-specific candidate count");
+                Click("IdentityDraftCards/Card4");
             }); Shot("IdentitySelect");
-            Add(() => { _bootstrap.ShowScreen(GameScreen.DualGeneralMenu); Click("DualAi"); });
+            Add(() => { _bootstrap.ShowScreen(GameScreen.DualGeneralMenu); Click("DualAi"); Click("DualStylePractice"); });
             Shot("DualGeneralSelect");
             Add(() =>
             {
@@ -349,7 +364,16 @@ namespace FingerDiceDuel.EditorTools
             Add(() => Check(Button("DgStart").interactable, "dual start enabled after two choices"));
             Shot("DualReady");
             Add(() => { Click("DgReset"); Check(Field<CharacterRosterView>(_bootstrap, "_dgRoster").Count == 24, "dual reset restores full roster"); });
-            Add(() => { _bootstrap.ShowScreen(GameScreen.DualFactionMenu); Click("DualFactionAi"); }); Shot("DualFactionSelect");
+            Add(() => { _bootstrap.ShowScreen(GameScreen.DualFactionMenu); Click("DualFactionAi"); });
+            Add(() => { Screen(GameScreen.FactionDraw); Click("SeatDrawCards/Card1"); });
+            Add(() =>
+            {
+                if (!Button("SeatDrawContinue").interactable) throw new AwaitCanvasFrame("dual faction draw still running");
+                Click("SeatDrawContinue"); Screen(GameScreen.DualGeneralSelect);
+            }); Add(() =>
+            {
+                if (!Button("DualDraftCards/Card1").interactable) throw new AwaitCanvasFrame("dual faction candidates still flipping");
+            }); Shot("DualFactionSelect");
             Add(() => { _bootstrap.ShowScreen(GameScreen.MainMenu); Click("Codex"); });
             Add(() =>
             {

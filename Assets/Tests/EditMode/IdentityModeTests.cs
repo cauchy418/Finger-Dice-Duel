@@ -13,11 +13,12 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class IdentityModeTests
     {
-        private static GameManager Match(out List<PlayerState> p, out List<IdentityRole> roles)
+        private static GameManager Match(out List<PlayerState> p, out List<IdentityRole> roles,
+                                         CharacterDefinition traitor = null)
         {
             p = new List<PlayerState>(8);
             for (int i = 0; i < 8; i++)
-                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), CharacterDefinition.Blank));
+                p.Add(CharacterFactory.CreatePlayer("P" + (i + 1), i == 7 && traitor != null ? traitor : CharacterDefinition.Blank));
 
             roles = new List<IdentityRole>
             {
@@ -100,6 +101,9 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(IdentityRole.Rebel, game.WinningIdentity,
                 "主公死时有忠臣存活 -> 反贼胜，即使反贼全灭。");
             Assert.True(game.Winner == null);
+            var winners = game.WinningOriginalSeats();
+            Assert.AreEqual(4, winners.Count, "无存活反贼时也列出原胜方。");
+            for (int i = 0; i < winners.Count; i++) Assert.AreEqual(p[3 + i], winners[i]);
         }
 
         [Test]
@@ -277,6 +281,42 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(p[7]));
             Assert.AreEqual(1, StatusRules.EffectiveDefenseBonus(p[7]));
             Assert.IsTrue(game.IsIdentityPublic(p[7]));
+        }
+
+        [Test]
+        public void Traitor_health_cap_follows_original_body_through_temporary_forms()
+        {
+            foreach (int forms in new[] { 1, 2, 3 })
+            {
+                GameManager game = Match(out var p, out _, CharacterDefinition.CircleOfTheMoon);
+                var traitor = p[7];
+                traitor.SetMaxHealth(31);
+                traitor.SetHealthExact(14);
+                traitor.LeftHand.SetValue(4);
+                traitor.RightHand.SetValue(6);
+                bool wild = (forms & 1) != 0;
+                bool sheep = (forms & 2) != 0;
+                if (wild) Assert.True(traitor.EnterWild(1, 0, game));
+                if (sheep) Assert.True(traitor.TryPolymorph());
+
+                p[3].SetHealthExact(0);
+                p[4].SetHealthExact(0);
+                p[5].SetHealthExact(0);
+                game.RefreshGameOver();
+                game.RefreshGameOver();
+
+                Assert.True(game.TraitorRevealed);
+                Assert.AreEqual(sheep ? 5 : 12, traitor.MaximumHealth);
+                Assert.AreEqual(36, traitor.OriginalMaximumHealth);
+                if (sheep) traitor.EndPolymorph();
+                if (wild)
+                {
+                    Assert.AreEqual(12, traitor.MaximumHealth);
+                    traitor.EndWild();
+                }
+                Assert.AreEqual(36, traitor.MaximumHealth);
+                Assert.AreEqual(14, traitor.Health);
+            }
         }
 
         [Test]

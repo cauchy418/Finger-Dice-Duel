@@ -59,9 +59,11 @@ namespace FingerDiceDuel.Core
             if(actor==null||source==null||add==null||WillSuppressOperationEffects(actor)){completed();return false;}
             ClearPreparedTrickery();_trickActor=actor;_trickSource=source;_trickAddend=add;_trickTurn=TurnCount;
             int epoch=_trickEpoch,before=source.Value;var addends=new List<Hand>{add};
-            int result=Hand.ComputeSum(before,add.Value);
-            if(!effectless&&DruidForms.IsDragon(actor)&&DruidSecondAddend!=null){result=Hand.ComputeSum(result,DruidSecondAddend.Value);if(!ReferenceEquals(add,DruidSecondAddend))addends.Add(DruidSecondAddend);}
-            _trickResult=Math.Max(1,StatusRules.ApplyResultModifiers(actor,result));bool deferred=false;
+            int result = OperationSum(actor, add, before, add.Value, !effectless, !effectless);
+            if (!effectless && DruidForms.IsDragon(actor) && DruidSecondAddend != null && !ReferenceEquals(add, DruidSecondAddend))
+                addends.Add(DruidSecondAddend);
+            _trickResult = ModifiedOperationValue(actor, result);
+            bool deferred=false;
             Action<int> next=null;next=index=>{
                 if(epoch!=_trickEpoch||_trickTurn!=TurnCount)return;
                 if(index>=addends.Count){_trickReady=true;completed();return;}
@@ -84,12 +86,28 @@ namespace FingerDiceDuel.Core
             };
             next(0);return deferred;
         }
-        public int TrickeryPreview(PlayerState actor,Hand source,Hand add,int fallback)
-            =>SameTrick(actor,source,add)&&_trickReady&&_trickSteps.Exists(s=>s.Swap)?_trickResult:fallback;
+        private static bool CanApplyTrickerySwap(TrickeryStep step)
+            => step.Swap && step.Touch.Owner.IsAlive && !step.Touch.Owner.IsPolymorphed;
+
+        private bool HasPreparedTrickerySwap(PlayerState actor, Hand source, Hand add)
+            => SameTrick(actor, source, add) && _trickReady && _trickSteps.Exists(CanApplyTrickerySwap);
+
+        private int TrickeryPreview(PlayerState actor, Hand source, Hand add, int value,
+                                    List<KeyValuePair<Hand, int>> shown)
+        {
+            if (!SameTrick(actor, source, add) || !_trickReady) return value;
+            foreach (var step in _trickSteps)
+            {
+                if (!CanApplyTrickerySwap(step)) continue;
+                shown?.Add(new KeyValuePair<Hand, int>(step.Touch.Addend, value));
+                value = step.Touch.AddendValue;
+            }
+            return value;
+        }
         public bool ApplyTrickery(PlayerState actor,Hand source,Hand add,int calculated,out int final)
         {
             final=calculated;if(!SameTrick(actor,source,add)||!_trickReady)return false;bool changed=false;
-            foreach(var step in _trickSteps){var t=step.Touch;if(!step.Swap||!t.Owner.IsAlive||t.Owner.IsPolymorphed)continue;
+            foreach(var step in _trickSteps){var t=step.Touch;if(!CanApplyTrickerySwap(step))continue;
                 bool shield=t.Addend.IsShield;t.Addend.SetValue(final);final=t.AddendValue;source.SetValue(final);changed=true;
                 if(shield)foreach(var w in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(t.Owner))w.OnOwnShieldBroken(t.Owner,t.Addend,this);
                 if(step.Charm)actor.ApplyStatus(StatusEffect.Charm,2,t.Owner);

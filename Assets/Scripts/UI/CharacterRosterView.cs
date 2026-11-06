@@ -19,6 +19,7 @@ namespace FingerDiceDuel.UI
         private readonly List<int> _visibleIndices = new List<int>();
         private readonly List<GameObject> _halos = new List<GameObject>();
         private string _professionId;
+        private bool _flat;
         private int _selectedIndex = -1;
         private int _columns = 4;
         private int _visibleColumns;
@@ -30,7 +31,7 @@ namespace FingerDiceDuel.UI
         public int SelectedIndex => _selectedIndex;
         public RectTransform Root => _view;
         public int Count => _roster.Count;
-        public bool IsChoosingProfession => _professionId == null;
+        public bool IsChoosingProfession => !_flat && _professionId == null;
         public string ProfessionId => _professionId;
         public IReadOnlyList<CharacterProfession> Professions => _professions;
         public IReadOnlyList<int> VisibleIndices => _visibleIndices;
@@ -74,7 +75,7 @@ namespace FingerDiceDuel.UI
             _heading.rectTransform.sizeDelta = new Vector2(_size.x - (IsChoosingProfession ? 36 : 250), 48);
         }
 
-        public void SetRoster(IReadOnlyList<CharacterDefinition> roster, int selectIndex = 0)
+        public void SetRoster(IReadOnlyList<CharacterDefinition> roster, int selectIndex = 0, bool flat = false)
         {
             if (_content == null || roster == null) return;
             bool same = _roster.Count == roster.Count;
@@ -87,7 +88,8 @@ namespace FingerDiceDuel.UI
             _professions.Clear();
             foreach (var profession in CharacterProfession.All)
                 if (CountFor(profession.Id) > 0) _professions.Add(profession);
-            if (!same || CountFor(_professionId) == 0) _professionId = null;
+            if (!same || _flat != flat || CountFor(_professionId) == 0) _professionId = null;
+            _flat = flat;
             RebuildCards();
         }
 
@@ -101,6 +103,7 @@ namespace FingerDiceDuel.UI
 
         public void ShowProfessions()
         {
+            if (_flat) return;
             _professionId = null;
             RebuildCards();
         }
@@ -124,7 +127,7 @@ namespace FingerDiceDuel.UI
             _cards.Clear(); _halos.Clear(); _visibleIndices.Clear();
             bool professions = IsChoosingProfession;
             for (int i = 0; i < _roster.Count; i++)
-                if (!professions && _roster[i].Profession?.Id == _professionId) _visibleIndices.Add(i);
+                if (!professions && (_flat || _roster[i].Profession?.Id == _professionId)) _visibleIndices.Add(i);
             int count = professions ? _professions.Count : _visibleIndices.Count;
             int columns = professions ? Mathf.Min(4, Mathf.Max(1, count)) : _columns;
             _visibleColumns = columns;
@@ -158,7 +161,7 @@ namespace FingerDiceDuel.UI
                 {
                     int index = _visibleIndices[i];
                     var def = _roster[index];
-                    FrontEndArt.RoleTile(button, def.Id, def.SubclassNameZh, 26);
+                    FrontEndArt.RoleTile(button, def.Id, _flat ? def.DisplayName : def.SubclassNameZh, _flat ? 19 : 26);
                     string hint = _skillText != null ? _skillText(def) : Shorten(def.Description);
                     BattleTooltip.Set(button.GetComponent<Image>(), def.DisplayName + "　" + DescribeStats(def) + "\n" + hint);
                     // 显式点击始终确认，包含身份模式尚未确认的默认首项。
@@ -167,8 +170,9 @@ namespace FingerDiceDuel.UI
                 _halos.Add(rect.Find("SelectionHalo").gameObject);
                 _cards.Add(button);
             }
-            _professionBack.gameObject.SetActive(!professions);
-            _heading.text = count == 0 ? "当前没有可选子职" : professions ? "选择职业大类" : CharacterProfession.Find(_professionId).NameZh + " · 选择子职";
+            _professionBack.gameObject.SetActive(!professions && !_flat);
+            _heading.text = count == 0 ? "当前没有可选子职" : _flat ? $"本局候选 · {count} 名"
+                : professions ? "选择职业大类" : CharacterProfession.Find(_professionId).NameZh + " · 选择子职";
             LayoutFrame();
             ApplySelection();
             ScrollToSelected();

@@ -25,7 +25,8 @@ namespace FingerDiceDuel.UI
         private void ApplyFrontEndScreen(GameScreen screen)
         {
             bool select = screen == GameScreen.AdventureFinaleSelect || screen == GameScreen.CharacterSelect || screen == GameScreen.TwoOnTwoCharacter ||
-                screen == GameScreen.FactionSelect || screen == GameScreen.IdentitySelect || screen == GameScreen.DualGeneralSelect;
+                screen == GameScreen.FactionSelect || screen == GameScreen.IdentitySelect || screen == GameScreen.DualGeneralSelect ||
+                screen == GameScreen.FactionDraw || screen == GameScreen.IdentityDraw;
             bool dice = screen == GameScreen.DiceRoll || screen == GameScreen.TwoOnTwoInitiative;
             bool submenu = !select && !dice && screen != GameScreen.MainMenu && screen != GameScreen.Codex && screen != GameScreen.InMatch;
             _frontMenuPanel.SetActive(submenu);
@@ -134,18 +135,15 @@ namespace FingerDiceDuel.UI
             Place("TtFoes", 0, -404, 1600, 34);
             Place("TtStart", 230, -465); Place("TtCharBack", -230, -465);
 
-            ConfigureSingle(_fbRoster, "FbTitle", "FbStatus", _fbDetail, "FbPicked", "FbStart", "FbBack");
+            Place("FbTitle", 0, 460); Place("FbStatus", 0, 370, 1600, 48);
+            ConfigureCardSelection(_fbDetail, "FbPicked", "FbStart", "FbBack");
             ConfigureSingle(_dgRoster, "DgTitle", "DgStatus", _dgDetail, "DgPicked", "DgStart", "DgBack");
             Place("DgReset", 270, -452, 220, 68);
             Place("IdTitle", 0, 460); Place("IdStatus", 0, 378, 1600, 48);
             Place("IdSeats", 0, 324, 1660, 48);
-            _idRoster.ConfigureGrid(new Vector2(-260, -40), new Vector2(1100, 650));
-            _identityDetail = MakeDetailPanel("IdentityDetail", new Vector2(600, -160));
-            DetailLayout(_identityDetail, 600, -160, 430, 235, true);
+            _identityDetail = MakeDetailPanel("IdentityDetail", new Vector2(0, -28));
             _screenIdentitySelect.Add(_identityDetail.transform.parent.gameObject);
-            Place("IdPicked", 600, -345, 450, 44);
-            Place("IdStart", 600, -452); Place("IdBack", -650, -452);
-            _idRoster.SelectionChanged += index => RefreshIdentityArt();
+            ConfigureCardSelection(_identityDetail, "IdPicked", "IdStart", "IdBack");
             RefreshDetail(_detailA, _roster[_indexA]);
             RefreshDetail(_detailB, _roster[_indexB]);
             RefreshFactionSelect();
@@ -165,16 +163,44 @@ namespace FingerDiceDuel.UI
 
         private void RefreshIdentityArt()
         {
-            if (_identityDetail != null && _idHumanPick != null) RefreshDetail(_identityDetail, _idHumanPick);
+            if (_identityDetail == null) return;
+            if (_idHumanPick != null) RefreshDetail(_identityDetail, _idHumanPick);
+            else _identityDetail.text = "选择一张角色牌查看技能";
+        }
+
+        private void ConfigureCardSelection(Text detail, string picked, string start, string back)
+        {
+            DetailLayout(detail, 0, -32, 1200, 140);
+            Place(picked, 0, -145, 1080, 46);
+            Place(start, 210, -255); Place(back, -210, -255);
+        }
+
+        private void SetDualFactionCardLayout()
+        {
+            _dgRoster.Root.gameObject.SetActive(!_dualFactionMode);
+            _dualDraftCards.Root.gameObject.SetActive(_dualFactionMode);
+            var detail = _dgDetail.transform.parent;
+            detail.Find("SelectedEmblem").gameObject.SetActive(!_dualFactionMode);
+            detail.Find("SelectedDivider").gameObject.SetActive(!_dualFactionMode);
+            if (_dualFactionMode)
+            {
+                ConfigureCardSelection(_dgDetail, "DgPicked", "DgStart", "DgBack");
+                Place("DgReset", 0, -350, 220, 68);
+            }
+            else
+            {
+                DetailLayout(_dgDetail, 600, -160, 430, 235);
+                Place("DgPicked", 600, -345, 450, 48);
+                Place("DgStart", 600, -452); Place("DgBack", -650, -452);
+                Place("DgReset", 270, -452, 220, 68);
+            }
         }
 
         private void ResetProfessionNavigation(GameScreen screen)
         {
             if (screen == GameScreen.CharacterSelect) { _rosterViewA?.ShowProfessions(); _rosterViewB?.ShowProfessions(); }
             else if (screen == GameScreen.TwoOnTwoCharacter) { _rosterView2Me?.ShowProfessions(); _rosterView2Mate?.ShowProfessions(); }
-            else if (screen == GameScreen.FactionSelect) _fbRoster?.ShowProfessions();
-            else if (screen == GameScreen.IdentitySelect) _idRoster?.ShowProfessions();
-            else if (screen == GameScreen.DualGeneralSelect) _dgRoster?.ShowProfessions();
+            else if (screen == GameScreen.DualGeneralSelect && !_dualFactionMode) _dgRoster?.ShowProfessions();
             else if (screen == GameScreen.AdventureFinaleSelect) _finaleRoster?.ShowProfessions();
         }
     }

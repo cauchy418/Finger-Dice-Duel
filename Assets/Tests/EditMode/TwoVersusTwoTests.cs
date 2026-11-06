@@ -39,6 +39,39 @@ namespace FingerDiceDuel.Tests
             return game;
         }
 
+        [Test]
+        public void Winning_seats_list_original_teammates_regardless_of_specter_occupancy()
+        {
+            foreach (bool summonOnWinningSeat in new[] { true, false })
+            {
+                var game = Match2v2();
+                var a = game.PlayerA;
+                var b = game.PlayerB;
+                var c = game.PlayerC;
+                var d = game.PlayerD;
+                var occupied = summonOnWinningSeat ? d : b;
+                d.SetHealthExact(0);
+                occupied.SetHealthExact(0);
+                game.QueueHexSpecter(a, occupied);
+                game.RefreshGameOver();
+                Assert.True(occupied.IsSummon);
+
+                if (summonOnWinningSeat) b.SetHealthExact(0);
+                c.SetHealthExact(0);
+                game.RefreshGameOver();
+
+                Assert.True(game.IsGameOver);
+                Assert.True(occupied.IsSummon);
+                var winners = game.WinningOriginalSeats();
+                Assert.AreEqual(2, winners.Count);
+                Assert.AreEqual(a, winners[0]);
+                Assert.AreEqual(d, winners[1]);
+                Assert.AreEqual("D", d.OriginalName);
+                Assert.AreEqual(CharacterDefinition.Blank, d.OriginalDefinition);
+                Assert.False(d.IsOriginalAlive);
+            }
+        }
+
         // ============================================================
         // 名单与队伍
         // ============================================================

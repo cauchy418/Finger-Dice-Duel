@@ -557,7 +557,9 @@ namespace FingerDiceDuel.Core
         /// <see cref="TargetHandValueBefore"/>）—— 运算源在结算钩子里已经是结果值，
         /// 直接用当前手值会把效果算错（曾经算成 None，导致游荡者·风流剑客闪避被整个跳过）。
         /// </summary>
-        public HandEffectType Effect => Manager?.OperationEffect(Actor, EffectiveResult) ?? CharacterBehaviors.DisplayedEffectOf(Actor, EffectiveResult);
+        public HandEffectType Effect => !IsResolvingAttack && Manager?.OperationEffectsSuppressed(Actor, ActedHand, TargetHand) == true
+            ? HandEffectType.None
+            : Manager?.OperationEffect(Actor, EffectiveResult) ?? CharacterBehaviors.DisplayedEffectOf(Actor, EffectiveResult);
 
         /// <summary>运算结果的权威值（优先用快照重算）。</summary>
         public int EffectiveResult
@@ -567,9 +569,7 @@ namespace FingerDiceDuel.Core
                 if(IsResolvingAttack) return ResultValue;
                 int a = ActedHandValueBefore ?? (ActedHand?.Value ?? 0);
                 int b = TargetHandValueBefore ?? (TargetHand?.Value ?? 0);
-                int value=Hand.ComputeSum(a,b);
-                if(Manager!=null&&DruidForms.IsDragon(Actor)&&Manager.DruidSecondAddend!=null)value=Hand.ComputeSum(value,Manager.DruidSecondAddend.Value);
-                return Manager?.PortentPreview(Actor,ActedHand,TargetHand,Manager.TrickeryPreview(Actor,ActedHand,TargetHand,value))??value;
+                return Manager?.PreviewOperationResult(Actor, ActedHand, TargetHand, a, b) ?? Hand.ComputeSum(a, b);
             }
         }
 

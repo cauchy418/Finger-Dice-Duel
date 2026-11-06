@@ -1098,6 +1098,19 @@ namespace FingerDiceDuel.Core
         {
             if (!IsIdentityMode || _identityLord == null || !_identityLord.IsOriginalAlive) return;
 
+            int count = IdentityLordFactionCount();
+            int attack = _identityLordAxis == "中立" ? count : 0;
+            int defense = _identityLordAxis == "守序" ? count : 0;
+            _identityLord.SetLordBonuses(attack, defense);
+
+            int maxHealth = _identityLordBaseMaxHealth + 5
+                          + (_identityLordAxis == "混乱" ? count * 5 : 0);
+            if (_identityLord.OriginalMaximumHealth != maxHealth)
+                _identityLord.SetOriginalMaxHealth(maxHealth);
+        }
+
+        public int IdentityLordFactionCount()
+        {
             int count = 0;
             for (int i = 0; i < _players.Count; i++)
             {
@@ -1106,14 +1119,7 @@ namespace FingerDiceDuel.Core
                 if (LawAxisOfDefinition(p.Definition) == _identityLordAxis) count++;
             }
 
-            int attack = _identityLordAxis == "中立" ? count : 0;
-            int defense = _identityLordAxis == "守序" ? count : 0;
-            _identityLord.SetLordBonuses(attack, defense);
-
-            int maxHealth = _identityLordBaseMaxHealth + 5
-                          + (_identityLordAxis == "混乱" ? count * 5 : 0);
-            if (_identityLord.MaximumHealth != maxHealth)
-                _identityLord.SetMaxHealth(maxHealth);
+            return count;
         }
 
         /// <summary>靠"环形座位"取名次：座位号 1..4（1 起算，便于与玩家沟通）。</summary>
@@ -1212,13 +1218,6 @@ namespace FingerDiceDuel.Core
         public System.Func<PlayerState,IDruidChoicePolicy> DruidPolicyFor { get; set; }
         public IDruidChoicePolicy GetDruidPolicy(PlayerState owner)=>DruidPolicyFor?.Invoke(owner)??GetChoiceProvider(owner) as IDruidChoicePolicy;
         public Hand DruidSecondAddend { get; set; }
-        public int PreviewOperationResult(PlayerState owner,Hand acted,Hand first)
-        {
-            int result=Hand.ComputeSum(acted.Value,first.Value);
-            if(DruidForms.IsDragon(owner)&&DruidSecondAddend!=null)result=Hand.ComputeSum(result,DruidSecondAddend.Value);
-            return PortentPreview(owner,acted,first,TrickeryPreview(owner,acted,first,result));
-        }
-
         public System.Func<PlayerState,ISkillChoicePolicy> SkillPolicyFor { get; set; }
         public ISkillChoicePolicy GetSkillPolicy(PlayerState player)
             => SkillPolicyFor?.Invoke(player) ?? GetChoiceProvider(player) as ISkillChoicePolicy;
@@ -2472,7 +2471,7 @@ namespace FingerDiceDuel.Core
             result.ActedHandValueBefore = actedHand.Value;
             result.TargetHandValue = targetValue;
             int raw = gambleResult > 0 ? gambleResult : Hand.ComputeSum(actedHand.Value, targetValue);
-            int value = Math.Max(1, StatusRules.ApplyResultModifiers(actor, raw));
+            int value = ModifiedOperationValue(actor, raw);
             bool wasShield = actedHand.IsShield;
             actedHand.SetValue(value); // 5 也是普通数字；不合盾、不触发原盾破碎奖励。
             // 维持旧盾的锁手约束随盾态消失而到期，不能留下永久锁；不通知其它碎盾技能。
@@ -2541,22 +2540,11 @@ namespace FingerDiceDuel.Core
             //    而不是结算后（那样本次运算的结果就不对了）。
             //
             //    注意"别人"：自己用自己的 0 不算触碰。
-            if (targetHand != null
-                && addendOwner != null
-                && !ReferenceEquals(addendOwner, actor)
-                && addendOwner.Character is WayOfTheTaiChiLogic)
+            if (targetHand != null && IsTouchedTaiChiZero(actor, targetHand, targetValue))
             {
-                int before = targetHand.Value;
                 WayOfTheTaiChiLogic.OnTouchedAsAddend(targetHand);
-
-                if (targetHand.Value != before)
-                {
-                    // 手值变了 -> 参与运算的数字也要跟着变
-                    targetValue = targetHand.Value;
-                    result.TargetHandValue = targetValue;
-                    WayOfTheTaiChiZeroTouchNote = $"{addendOwner.Name}（武僧·太极宗）的手被触碰，" +
-                                        $"{before} 变成 {targetHand.Value}";
-                }
+                targetValue = targetHand.Value;
+                WayOfTheTaiChiZeroTouchNote = $"{addendOwner.Name}（武僧·太极宗）的手被触碰，0 变成 {targetValue}";
             }
 
             IChoiceProvider oppChoice = GetChoiceProvider(opponent);
@@ -2604,17 +2592,29 @@ namespace FingerDiceDuel.Core
                 }
             }
 
-            int calculated=StatusRules.ApplyResultModifiers(actor,actedHand.Value);
-            bool trickery=gambleResult==0&&ApplyTrickery(actor,actedHand,targetHand,Math.Max(1,calculated),out _);
-            if(trickery){effect=Hand.GetEffectType(actedHand.Value);actedHand.SetShieldState(effect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);result.TrickeryCalculated=calculated;}
-            if(HasPreparedPortent(actor,actedHand,targetHand))
-            {actedHand.SetValue(PortentPreview(actor,actedHand,targetHand,actedHand.Value));effect=Hand.GetEffectType(actedHand.Value);actedHand.SetShieldState(effect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);trickery=true;}
+            int raw = actedHand.Value;
+            int calculated = ModifiedOperationValue(actor, raw);
+            int finalValue = calculated;
+            bool trickery = gambleResult == 0 && ApplyTrickery(actor, actedHand, targetHand, calculated, out finalValue);
+            if (trickery) result.TrickeryCalculated = calculated;
+            bool portent = HasPreparedPortent(actor, actedHand, targetHand);
+            finalValue = PortentPreview(actor, actedHand, targetHand, finalValue);
+            if (!trickery && !portent && calculated != raw) result.FreezeHalvedFrom = raw;
+
+            // 先定最终手值，再按职业和状态判定该数字的效果。
+            if (trickery || finalValue != raw)
+            {
+                actedHand.SetValue(finalValue);
+                effect = Hand.GetEffectType(finalValue);
+                actedHand.SetShieldState(effect == HandEffectType.Shield ? ShieldState.Formed : ShieldState.None);
+            }
             // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
             //
             //     必须在这里做：手值已经变成结果值（盾就是 5），
             //     但护盾状态还没设 —— 改写后要由我们补上状态，
             //     否则会出现"看起来是盾、实际不是盾"。
-            if (CharacterBehaviors.EffectRewriterFor(actor, actedHand.Value) is IHandEffectRewriter rewriter)
+            if ((!actor.HasStatus(StatusEffect.Dizzy) || trickery || portent)
+                && CharacterBehaviors.EffectRewriterFor(actor, actedHand.Value) is IHandEffectRewriter rewriter)
             {
                 HandEffectType rewritten = rewriter.RewriteEffect(
                     actor, actedHand, targetValue, this);
@@ -2632,37 +2632,6 @@ namespace FingerDiceDuel.Core
                     actedHand.SetShieldState(effect == HandEffectType.Shield
                         ? ShieldState.Formed
                         : ShieldState.None);
-                }
-            }
-
-            // 2c. **冰冻**（法师·塑能学派的寒冷）：运算得到的结果**减半（向下取整）**。
-            //
-            //     玩家原话："运算后得到的结果减半（向下取整）。如算出 9 变成 4，
-            //     算出 5 变成 2。"
-            //
-            //     ⚠️ 必须放在**改写之后、效果分派之前**：
-            //       · 放太早会被 RewriteEffect 用旧值覆盖；
-            //       · 放太晚（效果分派后）就已经先按 9 回过血了。
-            //     归一化后的 9 是"回复"，减半成 4 就是"攻击" —— 效果类型要跟着重算。
-            if (!trickery && actor != null
-                && (actor.HasStatus(StatusEffect.Frost)
-                    || actor.HasStatus(StatusEffect.Wet)
-                    || actor.HasStatus(StatusEffect.Dizzy)))
-            {
-                int before = actedHand.Value;
-                int halved = StatusRules.ApplyResultModifiers(actor, before);
-
-                if (halved != before)
-                {
-                    actedHand.SetValue(halved < 1 ? 1 : halved);
-                    effect = Hand.GetEffectType(halved < 1 ? 1 : halved);
-
-                    // 手牌状态跟随新效果（与 PerformOperation 同一约定）
-                    actedHand.SetShieldState(effect == HandEffectType.Shield
-                        ? ShieldState.Formed
-                        : ShieldState.None);
-
-                    result.FreezeHalvedFrom = before;
                 }
             }
 
@@ -3798,7 +3767,7 @@ namespace FingerDiceDuel.Core
             if (alive > 5 || traitor == null) return;
 
             TraitorRevealed = true;
-            traitor.SetMaxHealth(traitor.MaximumHealth + 5);
+            traitor.SetOriginalMaxHealth(traitor.OriginalMaximumHealth + 5);
             traitor.Heal(5);
             traitor.AddIdentityBonus(1, 1);
         }
@@ -3841,5 +3810,24 @@ namespace FingerDiceDuel.Core
 
         /// <summary>赢下这一局的是哪一队（无赢家时为 -1）。</summary>
         public int WinningTeam => Winner == null ? -1 : TeamOf(Winner);
+
+        /// <summary>按初始阵营列出获胜座位。召唤占位时应读取座位的原角色资料。</summary>
+        public IReadOnlyList<PlayerState> WinningOriginalSeats()
+        {
+            var winners = new List<PlayerState>();
+            if (!IsGameOver) return winners;
+
+            int team = WinningTeam;
+            foreach (var seat in _players)
+            {
+                var role = IdentityOf(seat);
+                bool wins = IsIdentityMode
+                    ? WinningIdentity != IdentityRole.None && (role == WinningIdentity
+                        || (IdentityRoleInfo.IsLordSide(WinningIdentity) && IdentityRoleInfo.IsLordSide(role)))
+                    : team >= 0 && OriginalTeamOf(seat) == team;
+                if (wins) winners.Add(seat);
+            }
+            return winners;
+        }
     }
 }

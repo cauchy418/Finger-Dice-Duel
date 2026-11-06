@@ -43,6 +43,7 @@ namespace FingerDiceDuel.UI
             if(!CampaignUnlocked(_storyChapter)){OpenStoryChapter(_storyChapter);return;}
             CleanupMatch();
             if(level%10==0&&!launchFinale){ConfigureFinaleScreen();ShowScreen(GameScreen.AdventureFinaleSelect);return;}
+            _board.ClearAdventureGuideHistory();
             var role=level%10==0?SelectedFinaleRoster[Mathf.Clamp(_finaleIndex,0,SelectedFinaleRoster.Count-1)]:null;
             var lesson=CampaignLesson.CreateV3(level,role);
             AttachCampaign(lesson);

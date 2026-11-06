@@ -566,7 +566,9 @@ namespace FingerDiceDuel.Assistant
                     CompleteCampaignAction("恶之强运");
                     return;
                 }
-                if (!TryOfferWarBlessingNine(_pendingGambleRoll, ContinueGambleAfterRoll)) ContinueGambleAfterRoll();
+                int result = GameManager.ModifiedOperationValue(actor, _pendingGambleRoll);
+                _operationDisplay[SelectedHand] = result;
+                if (!TryOfferWarBlessingNine(result, ContinueGambleAfterRoll)) ContinueGambleAfterRoll();
             }
         }
 
@@ -1994,13 +1996,7 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>
-        /// 这次运算的结果是否会产生**指向某人的效果**（攻击 / 回复 / 牧师·生命领域把 4/6/8 当回复……），
-        /// 从而需要玩家"再点一次手牌确认目标"。
-        ///
-        /// 判断交给角色自己（<see cref="IResultTargetProvider"/>），
-        /// 控制器不认识任何具体角色 —— 与"角色抉择"用的是同一套思路。
-        ///
-        /// 无效果（1/2/3/7）与护盾（5，作用于自己）都不需要，避免无意义询问。
+        /// 确认加数后，先处理改写运算结果的技能。
         /// </summary>
         private void CompleteChosenAddend(Hand hand)
         {
@@ -2009,40 +2005,18 @@ namespace FingerDiceDuel.Assistant
             _selectedTarget=hand;TargetPlayer=OwnerOf(hand)??Defender;
             _pendingActedHand=_turnActedHand=SelectedHand;
             _pendingTargetHand=_turnTargetHand=hand;
-            Action proceed=()=>{_pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,hand).IsAttack;};
-            if(_game.RequestTrickeryOperation(ActivePlayer,SelectedHand,hand,proceed))
+            if(_game.RequestTrickeryOperation(ActivePlayer,SelectedHand,hand,()=>{}))
             {TryStartWizardBoundary(ContinueSelectedOperation);return;}
             ContinueSelectedOperation();
         }
 
         private bool NeedsTargetAfterOperation()
         {
-            if (SelectedHand == null || _selectedTarget == null) return false;
+            if (SelectedHand == null || _selectedTarget == null || ChoseHealInAttackOrHeal()) return false;
             if(CharacterBehaviors.FirstImplementer<IAbjurationSkill>(ActivePlayer)!=null
                 && GetAnsweredChoiceFor(ActivePlayer,HandEffect.SchoolOfAbjurationBarrier,0)!=null) return false;
 
-            // 用"运算前的快照"构造上下文：此时运算还没执行，
-            // 直接读手值会把效果算错（这一点在 PreTurnChoiceContext 里有专门说明）。
-            var context = DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender,
-                                                   SelectedHand, _selectedTarget);
-
-            var provider = ActivePlayer?.Character as IResultTargetProvider;
-            if (provider != null) return provider.ResultNeedsTarget(context);
-
-            // 没有角色逻辑时（极少数直连场景）用**基础规则**兜底：
-            // 攻击指向对手 -> 需要确认目标；9 的回复默认回自己 -> 不需要。
-            //
-            // ⚠️ 兜底的方向很重要。曾经这里写的是 `return false`，
-            //    结果在没有 Character 的场景下攻击**被静默跳过确认步骤**。
-            switch (context.Effect)
-            {
-                case HandEffectType.Attack4:
-                case HandEffectType.Attack6:
-                case HandEffectType.Attack8:
-                    return true;
-                default:
-                    return false;
-            }
+            return DruidChoiceContext(ActivePlayer, TargetPlayer ?? Defender, SelectedHand, _selectedTarget).IsAttack;
         }
 
         /// <summary>
@@ -2690,11 +2664,11 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public int PredictedAttackValue()
         {
+            if (_pendingGambleRoll > 0) return _pendingIsAttack ? GameManager.ModifiedOperationValue(ActivePlayer, _pendingGambleRoll) : 0;
             if (SelectedHand == null || _selectedTarget == null) return 0;
 
-            int sum = _game.PreviewOperationResult(ActivePlayer,SelectedHand,_selectedTarget);
-
-            return DruidChoiceContext(ActivePlayer, Defender, SelectedHand, _selectedTarget).IsAttack ? sum : 0;
+            var context = DruidChoiceContext(ActivePlayer, Defender, SelectedHand, _selectedTarget);
+            return context.IsAttack ? context.ResultValue : 0;
         }
 
         /// <summary>
@@ -2769,8 +2743,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>
         /// 当前这次运算的结果值（仅用于提示文案）。
         ///
-        /// 运算还没执行，所以用手值直接算 —— 与结算用的是同一个
-        /// <see cref="Hand.ComputeSum"/>，口径一致。
+        /// 使用已确定的运算结果，包括状态和技能改写。
         /// </summary>
         private int LastResultValueForHint()
         {
@@ -4352,7 +4325,6 @@ namespace FingerDiceDuel.Assistant
 
             if (acted == null || target == null) return false;
 
-            int value = _game.PreviewOperationResult(ActivePlayer,acted,target);
             if (!DruidChoiceContext(ActivePlayer, Defender, acted, target).IsAttack) return false;
 
             PlayerState defender = Defender;

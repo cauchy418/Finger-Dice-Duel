@@ -16,6 +16,7 @@ namespace FingerDiceDuel.UI
             if(!BannersUnlocked){OpenStoryChapter(3);return;}
             CleanupMatch();_storyChapter=3;
             if(level==30&&!launchFinale){ConfigureFinaleScreen();ShowScreen(GameScreen.AdventureFinaleSelect);return;}
+            _board.ClearAdventureGuideHistory();
             if(sampleIndex<0)
             {
                 sampleIndex=0;var samples=TatteredBannersChapter.Samples(level);

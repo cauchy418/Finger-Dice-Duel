@@ -105,8 +105,13 @@ namespace FingerDiceDuel.UI
             => _adventurePanel?.ShowVictory(title, victoryText, avatarKey, onReplay, onReturn, onNext, nextLabel, replayLabel, guideName);
 
         /// <summary>更新冒险关卡的引导旁白（空文案隐藏）。</summary>
-        public void ShowAdventureNarration(string guideName, string narration, string avatarKey)
-            => _adventurePanel?.ShowNarration(guideName, narration, avatarKey);
+        public void ShowAdventureNarration(string guideName, string narration, string avatarKey, bool isTrialNarration = false)
+            => _adventurePanel?.ShowNarration(guideName, narration, avatarKey, isTrialNarration);
+
+        public void SeedAdventureGuideReview(string guideName, IReadOnlyList<string> pages)
+            => _adventurePanel?.SeedReviewPages(guideName, pages);
+
+        public void ClearAdventureGuideHistory() => _adventurePanel?.ClearHistory();
 
         /// <summary>隐藏冒险关卡的引导旁白。</summary>
         public void HideAdventureNarration() => _adventurePanel?.HideNarration();
@@ -128,6 +133,9 @@ namespace FingerDiceDuel.UI
         private RectTransform _areaA, _areaB;
         private HandCard[] _cardsA, _cardsB;
         private GameObject _gameOverPanel;
+        private Button _gameOverRestart;
+        private readonly Image[] _winnerEmblems = new Image[8];
+        private readonly Text[] _winnerNames = new Text[8];
         private Text _gameOverText;
         private Button _skipButton;
 
@@ -329,7 +337,8 @@ namespace FingerDiceDuel.UI
             public Text NameText;
             public Text SeatText;
             public Text StatusText;
-            public Text IdentityText;
+            public Button IdentityBadge;
+            public Text IdentityTag;
             public Image HpFill;
             public Image Emblem;
             public Text HpText;
@@ -560,9 +569,18 @@ namespace FingerDiceDuel.UI
                                        TextAnchor.MiddleCenter, Color.white);
             UiFont.ApplyBold(_gameOverText);
 
-            Button restart = CreateButton(_gameOverPanel.GetComponent<RectTransform>(), "Restart",
+            _gameOverRestart = CreateButton(_gameOverPanel.GetComponent<RectTransform>(), "Restart",
                                           new Vector2(0, -74), new Vector2(300, 68), "再来一局");
-            restart.onClick.AddListener(() => { if (RestartClicked != null) RestartClicked(); });
+            _gameOverRestart.onClick.AddListener(() => RestartClicked?.Invoke());
+            var panel = _gameOverPanel.transform;
+            for (int i = 0; i < _winnerEmblems.Length; i++)
+            {
+                _winnerEmblems[i] = FrontEndArt.Emblem(panel, "WinnerEmblem" + (i + 1), "fighter_champion", Vector2.zero, Vector2.one * 86);
+                var label = _winnerNames[i] = FrontEndArt.Text(panel, "WinnerName" + (i + 1), "", Vector2.zero, new Vector2(246, 82), 21);
+                label.resizeTextForBestFit = true;
+                label.resizeTextMinSize = 16;
+                label.resizeTextMaxSize = 21;
+            }
         }
 
         // ============================================================
@@ -659,7 +677,7 @@ namespace FingerDiceDuel.UI
                 panel.Owner = null;
                 panel.Relation = RingRelation.Self;
                 panel.Root.gameObject.SetActive(false);
-                panel.IdentityText.gameObject.SetActive(false);
+                panel.IdentityBadge.gameObject.SetActive(false);
             }
 
             for (int i = 0; i < slots.Count; i++)
@@ -736,15 +754,6 @@ namespace FingerDiceDuel.UI
             // 用他自己的面板名字行作为飘字锚点
             RingPanel panel = FindPanelOf(active);
             if (panel != null) _presentation.RegisterNameRow(active, panel.NameText);
-        }
-
-        /// <summary>设置某块面板左上角的身份标签（主公/反贼/已阵亡公开）。</summary>
-        public void SetRingIdentity(PlayerState owner, string label, bool visible)
-        {
-            RingPanel panel = FindPanelOf(owner);
-            if (panel == null || panel.IdentityText == null) return;
-            panel.IdentityText.text = label;
-            panel.IdentityText.gameObject.SetActive(visible);
         }
 
         public void SetRingRelation(PlayerState owner, RingRelation relation)
@@ -899,11 +908,11 @@ namespace FingerDiceDuel.UI
         /// <summary>让手牌所在的容器不可点（例如点 B 区域时 B 自己不该响应）。</summary>
         private void BuildTopRightButtons()
         {
-            // 右上角：返回标题。
+            // 右上角：返回进入对局前的页面。
             // 按钮文案与行为必须一致 —— 原来写"退出游戏"，实际只是回标题，
             // 玩家会以为点了会结束进程（实测反馈："按退出游戏直接关闭游戏了"）。
             _exitButton = CreateButton(_canvasRoot, "ExitButton",
-                                       new Vector2(-100f, -40f), new Vector2(190f, 56f), "返回标题",
+                                       new Vector2(-100f, -40f), new Vector2(190f, 56f), "返回",
                                        anchorTopRight: true);
             _exitButton.GetComponent<Image>().color = new Color(0.55f, 0.28f, 0.28f);
             _exitButton.onClick.AddListener(() => { ExitClicked?.Invoke(); });
@@ -914,7 +923,7 @@ namespace FingerDiceDuel.UI
         /// **左上角**：回合数。
         ///
         /// 玩家先要求放右上，实机后要求**改回左上（与 1v1 一致）** ——
-        /// 右上角与"返回标题"按钮抢位置，而且 1v1 与 2v2 不一致会让玩家找不到。
+        /// 右上角与返回按钮抢位置，而且 1v1 与 2v2 不一致会让玩家找不到。
         ///
         /// 显示的回合号**从 1 开始**
         /// （玩家操作的第一个回合就是第 1 回合，见 `BoardController.DisplayTurn`）。
@@ -1715,10 +1724,35 @@ namespace FingerDiceDuel.UI
             }
         }
 
-        public void ShowGameOver(string message)
+        public void ShowGameOver(string message, IReadOnlyList<PlayerState> winners = null)
         {
             if (_gameOverPanel == null) return;
             _gameOverText.text = message ?? "";
+            int count = winners?.Count ?? 0;
+            bool twoRows = count > 4;
+            ((RectTransform)_gameOverPanel.transform).sizeDelta = count == 0 ? new Vector2(680, 300)
+                : new Vector2(Mathf.Max(680, Mathf.Min(4, count) * 256 + 70), twoRows ? 580 : 420);
+            _gameOverText.rectTransform.anchoredPosition = new Vector2(0, count == 0 ? 46 : twoRows ? 221 : 146);
+            ((RectTransform)_gameOverRestart.transform).anchoredPosition = new Vector2(0, count == 0 ? -74 : twoRows ? -225 : -145);
+            for (int i = 0; i < _winnerEmblems.Length; i++)
+            {
+                var emblem = _winnerEmblems[i];
+                var label = _winnerNames[i];
+                emblem.gameObject.SetActive(i < count);
+                label.gameObject.SetActive(i < count);
+                if (i >= count) continue;
+
+                var winner = winners[i];
+                string id = winner.OriginalDefinition?.Id ?? "blank";
+                emblem.sprite = BattleArt.Get("Subclasses/" + (id == "blank" ? "fighter_champion" : id));
+                int columns = i < 4 ? Mathf.Min(4, count) : count - 4;
+                float x = (i % 4 - (columns - 1) / 2f) * 256;
+                float y = twoRows ? (i < 4 ? 126 : -32) : 55;
+                emblem.rectTransform.anchoredPosition = new Vector2(x, y);
+                label.rectTransform.anchoredPosition = new Vector2(x, y - 80);
+                label.text = winner.OriginalDisplayName + "\n" + winner.OriginalName
+                    + (winner.IsOriginalAlive ? "" : " · 已阵亡");
+            }
             _gameOverPanel.SetActive(true);
             _gameOverPanel.transform.SetAsLastSibling();
         }
@@ -1730,6 +1764,7 @@ namespace FingerDiceDuel.UI
 
         public void SetVisible(bool visible)
         {
+            if (!visible) CloseIdentityGuess();
             if (_canvasRoot != null) _canvasRoot.gameObject.SetActive(visible);
         }
 

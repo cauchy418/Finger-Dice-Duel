@@ -39,7 +39,6 @@ namespace FingerDiceDuel.Core
             ClearPreparedPortent();_portentActor=actor;_portentSource=source;_portentAddend=add;_portentTurn=TurnCount;
             int epoch=_portentEpoch;
             int original=PreviewOperationResult(actor,source,add);
-            original=TrickeryPreview(actor,source,add,Math.Max(1,StatusRules.ApplyResultModifiers(actor,original)));
             bool deferred=false;
             Action<int> next=null;next=index=>{
                 if(epoch!=_portentEpoch||_portentTurn!=TurnCount)return;

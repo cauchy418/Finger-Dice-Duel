@@ -364,6 +364,21 @@ namespace FingerDiceDuel.Core
             if (Health > MaximumHealth) Health = MaximumHealth;
         }
 
+        public int OriginalMaximumHealth => IsWildShaped ? _wildMaximum
+            : IsPolymorphed ? _untransformedMaximum : MaximumHealth;
+
+        public void SetOriginalMaxHealth(int value)
+        {
+            if (!IsWildShaped)
+            {
+                SetMaxHealth(value);
+                return;
+            }
+
+            _wildMaximum = SanitizeMaxHealth(value);
+            _wildHealth = Math.Min(_wildHealth, _wildMaximum);
+        }
+
         private static int SanitizeMaxHealth(int value)
             => value < 1 ? DefaultMaxHealth : value;
 

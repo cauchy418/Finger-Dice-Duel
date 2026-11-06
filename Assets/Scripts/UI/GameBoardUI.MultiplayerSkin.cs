@@ -31,15 +31,28 @@ namespace FingerDiceDuel.UI
             var health = CreateText(track.rectTransform, "Health", Vector2.zero, new Vector2(160, 26), 18, TextAnchor.MiddleCenter, Color.white);
             health.font = UiFont.Bold;
             var stats = CreateText(root, "Stats", Vector2.zero, new Vector2(260, 22), 16, TextAnchor.MiddleCenter, BattleArt.Ink);
-            var identity = CreateText(root, "Identity", Vector2.zero, new Vector2(70, 22), 16, TextAnchor.MiddleCenter, BattleArt.Gold);
-            identity.font = UiFont.Bold; identity.gameObject.SetActive(false);
+            var badge = FrontEndArt.Rect(root, "IdentityBadge", Vector2.zero, Vector2.one * 48);
+            var badgeImage = badge.gameObject.AddComponent<Image>();
+            var identity = badge.gameObject.AddComponent<Button>();
+            identity.targetGraphic = badgeImage;
+            identity.transition = Selectable.Transition.None;
+            var identityTag = FrontEndArt.Text(badge, "IdentityTag", "", Vector2.zero, Vector2.one * 46, 25, title: true);
+            identityTag.font = UiFont.Bold;
+            identityTag.color = new Color(1f, .92f, .70f);
+            identityTag.verticalOverflow = VerticalWrapMode.Overflow;
+            var outline = identityTag.gameObject.AddComponent<Outline>();
+            outline.effectColor = Color.black;
+            outline.effectDistance = new Vector2(2, -2);
+            badge.gameObject.SetActive(false);
             var panel = new RingPanel
             {
                 Position = position, Root = root, NameText = name, SeatText = seat, HpFill = fill,
-                HpText = health, Emblem = emblem, StatusText = stats, IdentityText = identity,
+                HpText = health, Emblem = emblem, StatusText = stats, IdentityBadge = identity, IdentityTag = identityTag,
                 StatusIcons = new StatusIconBar(root, _font, true, "NegativeStatuses"),
                 Cards = new[] { CreatePaintedHandCard(root, Vector2.zero), CreatePaintedHandCard(root, Vector2.zero) }
             };
+            identity.onClick.AddListener(() => OpenIdentityBadge(panel.Owner));
+            badge.SetAsLastSibling();
             _ringPanels.Add(panel);
             root.gameObject.SetActive(false);
         }
@@ -73,7 +86,7 @@ namespace FingerDiceDuel.UI
             Position(panel.HpFill.rectTransform, Vector2.zero, new Vector2(size.x - 186, 15));
             Position(panel.HpText.rectTransform, Vector2.zero, new Vector2(size.x - 190, 26));
             Position(panel.StatusText.rectTransform, new Vector2(38, top - 104), new Vector2(size.x - 110, 22));
-            Position(panel.IdentityText.rectTransform, new Vector2(-size.x / 2 + 40, top - 104), new Vector2(70, 22));
+            Position((RectTransform)panel.IdentityBadge.transform, new Vector2(-size.x / 2 + 40, top - 96), Vector2.one * 48);
             panel.StatusIcons.SetGridLayout(new Vector2(size.x / 2 - 74, top - 28), 22, 1, 3);
             float scale = eight ? (self ? 0.51f : 0.47f) : 0.65f;
             float x = eight ? 60 : 85;

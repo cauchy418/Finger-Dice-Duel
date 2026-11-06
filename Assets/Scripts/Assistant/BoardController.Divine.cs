@@ -10,9 +10,9 @@ namespace FingerDiceDuel.Assistant
         }
         private bool TryOfferWarBlessingNine(int value,System.Action resume)
         {
-            if(_game.WarBlessingNineAttack.HasValue||_game.WillSuppressOperationEffects(ActivePlayer)
+            if(value!=9||_game.WarBlessingNineAttack.HasValue||_game.WillSuppressOperationEffects(ActivePlayer)
                 ||!ActivePlayer.HasStatus(StatusEffect.WarBlessing)||ActivePlayer.IsPolymorphed
-                ||value!=9||CharacterBehaviors.DisplayedEffectOf(ActivePlayer,value)!=HandEffectType.Heal)return false;
+                ||CharacterBehaviors.DisplayedEffectOf(ActivePlayer,value)!=HandEffectType.Heal)return false;
             var actor=ActivePlayer;
             var request=new WizardChoice(actor,"战争祝福 · 9选择照常回复，或放弃回复改为攻击",DivineChoices.NineOptions(),v=>_game.WarBlessingNineAttack=v==1);
             if(!QueueWizardChoice(request))
@@ -21,21 +21,26 @@ namespace FingerDiceDuel.Assistant
         }
         private void ContinueGambleAfterRoll()
         {
-            var effect=_game.OperationEffect(ActivePlayer,_pendingGambleRoll);
+            int value = GameManager.ModifiedOperationValue(ActivePlayer, _pendingGambleRoll);
+            var effect=_game.OperationEffect(ActivePlayer,value);
             bool attack=DivineChoices.IsAttack(effect);
             _pendingIsAttack=attack;
             if(!attack||_game.WillSuppressOperationEffects(ActivePlayer))
             {_pendingIsAttack=false;_selectedTarget=SelectedHand;ExecuteResolvedTurn();return;}
             Phase=BoardPhase.ChoosingTargetPlayer;
             if(!BeginTargetPlayerChoice()){NoteGambleGaveUp();GiveUpAttack();}
-            else Hint=$"掷出{_pendingGambleRoll}，请点击攻击目标的手牌。";
+            else Hint=$"赌博结果为 {value}。请点击攻击目标的手牌。";
         }
         private void ContinueSelectedOperation()
         {
+            bool waitingForPortent = _game.RequestPortentOperation(ActivePlayer, SelectedHand, _selectedTarget, () => {});
+            _operationDisplay.Clear();
             PrepareOperationDisplay();
-            if(_game.RequestPortentOperation(ActivePlayer,SelectedHand,_selectedTarget,()=>{}))
-            {TryStartWizardBoundary(ContinueSelectedOperation);return;}
-            _operationDisplay.Clear();PrepareOperationDisplay();
+            if (waitingForPortent)
+            {
+                TryStartWizardBoundary(ContinueSelectedOperation);
+                return;
+            }
             _pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,_selectedTarget).IsAttack;
             if(BeginPreTargetChoicesIfAny())return;
             if(TryEnterHealTargetChoice())return;

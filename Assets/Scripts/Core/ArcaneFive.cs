@@ -158,6 +158,10 @@ namespace FingerDiceDuel.Core
         private int _deadMaximum;
         public bool IsSummon {get;private set;}
         public bool IsOriginalAlive=>IsAlive&&!IsSummon;
+        public CharacterDefinition OriginalDefinition => IsSummon ? _deadDefinition : Definition;
+        public string OriginalName => IsSummon ? _deadName : Name;
+        public string OriginalDisplayName => (IsSummon ? _deadDisplayName : DisplayNameOverride)
+            ?? OriginalDefinition?.DisplayName ?? OriginalName;
         public PlayerState SummonOwner {get;private set;}
         public int SummonActiveRound {get;private set;}
         internal void BecomeSpecter(PlayerState owner,int nextRound)

@@ -25,6 +25,7 @@ namespace FingerDiceDuel.UI
             if(!TowerUnlocked){OpenStoryChapter(2);return;}
             CleanupMatch();_storyChapter=2;
             if(level==20&&!launchFinale){ConfigureFinaleScreen();ShowScreen(GameScreen.AdventureFinaleSelect);return;}
+            _board.ClearAdventureGuideHistory();
             if(sampleIndex<0)
             {
                 sampleIndex=0;

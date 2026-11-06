@@ -65,7 +65,6 @@ namespace FingerDiceDuel.UI
         ///
         /// 经典玩法保持不变：AI 始终按当前最优评分走。
         /// </summary>
-        public AiDifficulty Difficulty = AiDifficulty.Normal;
 
         [Header("调试")]
         [Tooltip("勾选后打印每回合的结算日志")]
@@ -149,7 +148,6 @@ namespace FingerDiceDuel.UI
         private bool _isIdentity;
         private PlayerState _eightHumanPlayer;
         private bool _humanSacrificeArmed;
-        private CharacterRosterView _idRoster;
         private Text _idStatus;
         private Text _idSeats;
         private Text _idPicked;
@@ -172,7 +170,6 @@ namespace FingerDiceDuel.UI
         private ScreenGroup _screenFactionSelect;
 
         // ---- 8 人阵营混战的状态 ----
-        private CharacterRosterView _fbRoster;
         private Text _fbDetail;
         private Text _fbPicked;
         private Button _fbStart;
@@ -202,7 +199,6 @@ namespace FingerDiceDuel.UI
         private bool _dualFactionMode;
 
         /// <summary>8 人双将选将的返回目标。</summary>
-        private GameScreen _dualFactionReturnScreen = GameScreen.DualGeneral;
 
         /// <summary>本局是不是**双将对局**。</summary>
         private bool _isDualGeneral;
@@ -307,7 +303,6 @@ namespace FingerDiceDuel.UI
         /// <summary>座位选择整块（经典玩法下隐藏）。</summary>
         private GameObject _seatPickerRoot;
         private ScreenGroup _screenMode;
-        private ScreenGroup _screenDifficulty;
         private ScreenGroup _screenCharacter;
         private DiceRollScreen _diceRoll;
         private ModalPanel _modal;
@@ -318,6 +313,7 @@ namespace FingerDiceDuel.UI
 
         /// <summary>当前所在界面。</summary>
         private GameScreen _screen = GameScreen.MainMenu;
+        private GameScreen _matchReturnScreen = GameScreen.CharacterSelect;
 
         /// <summary>两位玩家当前选中的角色索引（对应 <see cref="_roster"/>）。</summary>
         private int _indexA;
@@ -480,7 +476,7 @@ namespace FingerDiceDuel.UI
             BuildDualSelectScreen();
             BuildFactionSelectScreen();
             BuildModeScreen();
-            BuildDifficultyScreen();
+            BuildDraftMenus();
             // 双将的"同阵营副将" 过滤：由本类注入（UI 层不能引用 Characters）。
             _dgPartnersOf = DualGeneralFactory.PartnersFor;
 
@@ -853,13 +849,7 @@ namespace FingerDiceDuel.UI
 
             Button ai = MakeSubModeButton(_selectRoot, "DualFactionAi", new Vector2(0f, 60f),
                                           "AI 练习", "1 名人类 + 7 名 AI，8 人双将",
-                                          () =>
-                                          {
-                                              _dualFactionMode = true;
-                                              _dualFactionReturnScreen = GameScreen.DualFactionMenu;
-                                              ResetDualSelection();
-                                              ShowScreen(GameScreen.DualGeneralSelect);
-                                          });
+                                          () => BeginFactionDraw(true));
             Button pvp = MakeSubModeButton(_selectRoot, "DualFactionPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家（待开放）",
                                            () => ShowComingSoon("双将阵营混战（真人）"));
@@ -877,11 +867,7 @@ namespace FingerDiceDuel.UI
 
             Button ai = MakeSubModeButton(_selectRoot, "DualAi", new Vector2(0f, 60f),
                                           "人机对战", "与 AI 对战",
-                                          () =>
-                                          {
-                                              _dualFactionMode = false;
-                                              ShowScreen(GameScreen.DualGeneralSelect);
-                                          });
+                                          () => ShowScreen(GameScreen.DualDuelStyle));
             Button pvp = MakeSubModeButton(_selectRoot, "DualPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家",
                                            () => ShowComingSoon("双将对决（真人）"));
@@ -894,8 +880,6 @@ namespace FingerDiceDuel.UI
         // ============================================================
         // 8 人阵营混战（单将）
         // ============================================================
-
-        private void OnFactionBattleClicked() => ShowScreen(GameScreen.FactionSelect);
 
         private void BuildFactionSelectScreen()
         {
@@ -911,14 +895,11 @@ namespace FingerDiceDuel.UI
             Text status = MakeText(_selectRoot, "FbStatus", new Vector2(0f, 208f),
                                    new Vector2(1120f, 36f), 24, TextAnchor.MiddleCenter,
                                    new Color(0.86f, 0.90f, 0.96f));
-            status.text = "选一名角色；AI 补齐 8 个不重复角色，三个阵营按 3 / 3 / 2 分队";
+            status.text = "从抽中的阵营选一名角色，8 人按 3 / 3 / 2 分队";
             _screenFactionSelect.Add(status.gameObject);
 
-            _fbRoster = new CharacterRosterView();
-            _fbRoster.Build(_selectRoot, "FbRoster", new Vector2(0f, 132f),
-                            _roster, UiFont.Regular, 0, SkillHintText);
-            _fbRoster.SelectionChanged += OnFactionSelectionChanged;
-            _screenFactionSelect.Add(_fbRoster.Root.gameObject);
+            _factionDraftCards = new MatchDrawCards(_selectRoot, "FactionDraftCards", new Vector2(0, 175), OnFactionSelectionChanged);
+            _screenFactionSelect.Add(_factionDraftCards.Root.gameObject);
 
             _fbDetail = MakeDetailPanel("FbDetail", new Vector2(0f, 62f));
             _screenFactionSelect.Add(_fbDetail.transform.parent.gameObject);
@@ -935,7 +916,7 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "FbBack", new Vector2(-460f, -52f),
                                      new Vector2(220f, 68f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.Competition));
+            back.onClick.AddListener(() => ShowScreen(GameScreen.FactionDraw));
             _screenFactionSelect.Add(back.gameObject);
 
             _screenFactionSelect.Add(MakeHelpButton(_selectRoot).gameObject);
@@ -945,20 +926,26 @@ namespace FingerDiceDuel.UI
 
         private void OnFactionSelectionChanged(int index)
         {
+            if (_factionDeals == null || index >= _factionDeals[0].Count) return;
             _fbIndex = index;
             RefreshFactionSelect();
         }
 
         private void RefreshFactionSelect()
         {
-            if (_roster == null || _roster.Count == 0) return;
-            _fbIndex = Mathf.Clamp(_fbIndex, 0, _roster.Count - 1);
-            CharacterDefinition def = _roster[_fbIndex];
-
-            if (_fbDetail != null) RefreshDetail(_fbDetail, def);
-            if (_fbPicked != null)
-                _fbPicked.text = $"已选：{def.DisplayName}（{FactionNameOf(def)}）";
-            if (_fbStart != null) _fbStart.interactable = true;
+            var candidates = _factionDeals?[0];
+            RenderCharacterCards(_factionDraftCards, candidates, _fbIndex);
+            if (candidates == null || _fbIndex < 0 || _fbIndex >= candidates.Count)
+            {
+                _fbDetail.text = "尚未选择角色";
+                _fbPicked.text = "请从候选中选择一名角色";
+                _fbStart.interactable = false;
+                return;
+            }
+            var def = candidates[_fbIndex];
+            RefreshDetail(_fbDetail, def);
+            _fbPicked.text = $"已选：{def.DisplayName}（{FactionNameOf(def)}）";
+            _fbStart.interactable = true;
         }
 
         private static int FactionOf(CharacterDefinition def)
@@ -970,11 +957,7 @@ namespace FingerDiceDuel.UI
             return 1;
         }
 
-        private static string FactionNameOf(CharacterDefinition def)
-        {
-            int f = FactionOf(def);
-            return f == 0 ? "守序" : f == 2 ? "混乱" : "中立";
-        }
+        private static string FactionNameOf(CharacterDefinition def) => FactionNames[FactionOf(def)];
 
         private static void Shuffle<T>(List<T> list, System.Random rng)
         {
@@ -999,33 +982,16 @@ namespace FingerDiceDuel.UI
 
         private void OnFactionStartClicked()
         {
-            if (_roster == null || _roster.Count == 0) return;
-            CharacterDefinition human = _roster[Mathf.Clamp(_fbIndex, 0, _roster.Count - 1)];
-            var rng = new System.Random();
-
+            if (_factionDeals == null || _fbIndex < 0 || _fbIndex >= _factionDeals[0].Count) return;
+            CharacterDefinition human = _factionDeals[0][_fbIndex];
             int humanFaction = FactionOf(human);
-            int weak = rng.Next(3);                 // 2 人的阵营
-            int[] counts = { 3, 3, 3 };
-            counts[weak] = 2;
-
-            var pools = new List<CharacterDefinition>[3];
-            for (int f = 0; f < 3; f++) pools[f] = new List<CharacterDefinition>();
-            foreach (CharacterDefinition d in _roster)
-            {
-                int f = FactionOf(d);
-                if (ReferenceEquals(d, human)) continue;
-                pools[f].Add(d);
-            }
-
+            var rng = new System.Random();
             var aiDefs = new List<CharacterDefinition>(7);
-            for (int f = 0; f < 3; f++)
+            for (int seat = 1; seat < _factionDeals.Length; seat++)
             {
-                Shuffle(pools[f], rng);
-                int need = counts[f] - (f == humanFaction ? 1 : 0);
-                for (int k = 0; k < need && k < pools[f].Count; k++)
-                    aiDefs.Add(pools[f][k]);
+                var candidates = _factionDeals[seat];
+                aiDefs.Add(candidates[rng.Next(candidates.Count)]);
             }
-            Shuffle(aiDefs, rng);
 
             var seated = new List<PlayerState>(8);
             var providers = new List<IChoiceProvider>(8);
@@ -1102,11 +1068,7 @@ namespace FingerDiceDuel.UI
 
             Button ai = MakeSubModeButton(_selectRoot, "FactionAi", new Vector2(0f, 60f),
                                           "AI 练习", "1 名人类 + 7 名 AI，8 人单将",
-                                          () =>
-                                          {
-                                              _dualFactionMode = false;
-                                              ShowScreen(GameScreen.FactionSelect);
-                                          });
+                                          () => BeginFactionDraw(false));
             Button pvp = MakeSubModeButton(_selectRoot, "FactionPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家（待开放）",
                                            () => ShowComingSoon("阵营混战（真人）"));
@@ -1128,11 +1090,7 @@ namespace FingerDiceDuel.UI
 
             Button ai = MakeSubModeButton(_selectRoot, "IdentityAi", new Vector2(0f, 60f),
                                           "AI 练习", "随机身份 · 1 名人类 + 7 名 AI",
-                                          () =>
-                                          {
-                                              StartIdentityLobby();
-                                              ShowScreen(GameScreen.IdentitySelect);
-                                          });
+                                          BeginIdentityDraw);
             Button pvp = MakeSubModeButton(_selectRoot, "IdentityPvp", new Vector2(0f, -96f),
                                            "真人对战", "联网对战玩家（待开放）",
                                            () => ShowComingSoon("8 人身份对局（真人）"));
@@ -1163,18 +1121,15 @@ namespace FingerDiceDuel.UI
                                 new Color(0.78f, 0.84f, 0.92f));
             _screenIdentitySelect.Add(_idSeats.gameObject);
 
-            _idRoster = new CharacterRosterView();
-            _idRoster.Build(_selectRoot, "IdRoster", new Vector2(0f, 52f),
-                            _roster, UiFont.Regular, 0, SkillHintText);
-            _idRoster.SelectionChanged += index =>
+            _identityDraftCards = new MatchDrawCards(_selectRoot, "IdentityDraftCards", new Vector2(0, 175), index =>
             {
                 IReadOnlyList<CharacterDefinition> list = CurrentIdentityList();
                 if (index < 0 || index >= list.Count) return;
                 _idIndex = index;
                 _idHumanPick = list[index];
                 RefreshIdentitySelect();
-            };
-            _screenIdentitySelect.Add(_idRoster.Root.gameObject);
+            });
+            _screenIdentitySelect.Add(_identityDraftCards.Root.gameObject);
 
             _idPicked = MakeText(_selectRoot, "IdPicked", new Vector2(0f, -118f),
                                  new Vector2(1200f, 32f), 21, TextAnchor.MiddleCenter,
@@ -1188,21 +1143,12 @@ namespace FingerDiceDuel.UI
 
             Button back = MakeButton(_selectRoot, "IdBack", new Vector2(-460f, -176f),
                                      new Vector2(220f, 64f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.IdentityBattleMenu));
+            back.onClick.AddListener(() => ShowScreen(GameScreen.IdentityDraw));
             _screenIdentitySelect.Add(back.gameObject);
             _screenIdentitySelect.Add(MakeHelpButton(_selectRoot).gameObject);
         }
 
-        private static void ShuffleRoles(List<IdentityRole> roles, System.Random rng)
-        {
-            for (int i = roles.Count - 1; i > 0; i--)
-            {
-                int j = rng.Next(i + 1);
-                IdentityRole t = roles[i]; roles[i] = roles[j]; roles[j] = t;
-            }
-        }
-
-        private void StartIdentityLobby()
+        private void BeginIdentityDraw()
         {
             _idRng = new System.Random();
             _idRoles = new IdentityRole[8];
@@ -1214,52 +1160,47 @@ namespace FingerDiceDuel.UI
                 IdentityRole.Rebel, IdentityRole.Rebel,
                 IdentityRole.Traitor,
             };
-            ShuffleRoles(rest, _idRng);
+            Shuffle(rest, _idRng);
             for (int i = 0; i < 7; i++) _idRoles[i + 1] = rest[i];
+            _identityDeals = null;
+            _identityDrawSeats = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
+            Shuffle(_identityDrawSeats, _idRng);
+            ShowSeatDraw(GameScreen.IdentityDraw, "抽取身份");
+        }
 
-            _idHumanSeat = _idRng.Next(8);
+        private void PrepareIdentityCandidates()
+        {
+            if (_identityDeals != null) return;
             _idNames = new string[8];
             for (int i = 0; i < 8; i++)
                 _idNames[i] = i == _idHumanSeat ? "我" : "AI" + (i + 1);
 
-            _idLordPick = null;
+            var pool = ShuffledRoster(_idRng);
+            _identityDeals = new List<CharacterDefinition>[8];
+            for (int seat = 0; seat < _identityDeals.Length; seat++)
+                _identityDeals[seat] = Deal(pool, seat == 0 ? 8 : 6);
+
+            _idLordPick = _idHumanSeat == 0 ? null : _identityDeals[0][_idRng.Next(8)];
             _idHumanPick = null;
-            _idIndex = 0;
-
-            if (_idHumanSeat != 0)
-            {
-                var pool = new List<CharacterDefinition>(_roster);
-                _idLordPick = pool[_idRng.Next(pool.Count)];
-            }
-
+            _idIndex = -1;
             RefreshIdentitySelect();
         }
 
-        private IReadOnlyList<CharacterDefinition> CurrentIdentityList()
-        {
-            var list = new List<CharacterDefinition>(8);
-            if (_idRng == null) return list;
-            foreach (CharacterDefinition d in _roster)
-            {
-                if (_idHumanSeat != 0 && ReferenceEquals(d, _idLordPick)) continue;
-                list.Add(d);
-            }
-            return list;
-        }
+        private IReadOnlyList<CharacterDefinition> CurrentIdentityList() => _identityDeals[_idHumanSeat];
 
         private void RefreshIdentitySelect()
         {
-            if (_idRoster == null || _idRoles == null) return;
+            if (_identityDeals == null) return;
             IReadOnlyList<CharacterDefinition> list = CurrentIdentityList();
-            _idRoster.SetRoster(list, list.Count > 0 ? Mathf.Clamp(_idIndex, 0, list.Count - 1) : -1);
-            _idRoster.ScrollToSelected();
+            RenderCharacterCards(_identityDraftCards, list, _idIndex);
+            RefreshIdentityArt();
 
             bool humanLord = _idHumanSeat == 0;
             IdentityRole myRole = _idRoles[_idHumanSeat];
             _idStatus.text = humanLord
-                ? "你是主公（1 号位），请先选将。基础体力上限 +5、攻防 +1/+1；守序/中立/混乱分别触发 明主/霸王/暴君。"
+                ? "你是主公（1 号位），从 8 名候选中选将。基础体力上限 +5、攻防 +1/+1；守序/中立/混乱分别触发 明主/霸王/暴君。"
                 : $"你是{IdentityRoleInfo.DisplayName(myRole)}（{_idHumanSeat + 1} 号位）；" +
-                  $"主公 AI 已选 {_idLordPick.DisplayName}，请选择你的角色。";
+                  $"主公 AI 已选 {_idLordPick.DisplayName}，请从 6 名候选中选将。";
 
             var sb = new System.Text.StringBuilder();
             for (int i = 0; i < 8; i++)
@@ -1282,23 +1223,12 @@ namespace FingerDiceDuel.UI
         {
             if (_idHumanPick == null || _idRoles == null) return;
 
-            var used = new HashSet<CharacterDefinition>();
-            used.Add(_idHumanPick);
-            if (_idHumanSeat != 0 && _idLordPick != null) used.Add(_idLordPick);
-
             var defs = new CharacterDefinition[8];
-            defs[_idHumanSeat] = _idHumanPick;
-            defs[0] = _idHumanSeat == 0 ? _idHumanPick : _idLordPick;
-
-            var pool = new List<CharacterDefinition>(_roster.Count);
-            foreach (CharacterDefinition d in _roster)
-                if (!used.Contains(d)) pool.Add(d);
-            Shuffle(pool, _idRng);
-            int cursor = 0;
-            for (int i = 1; i < 8; i++)
+            for (int seat = 0; seat < defs.Length; seat++)
             {
-                if (i == _idHumanSeat) continue;
-                defs[i] = pool[cursor++];
+                var candidates = _identityDeals[seat];
+                defs[seat] = seat == _idHumanSeat ? _idHumanPick
+                    : seat == 0 ? _idLordPick : candidates[_idRng.Next(candidates.Count)];
             }
 
             var seated = new List<PlayerState>(8);
@@ -1381,6 +1311,11 @@ namespace FingerDiceDuel.UI
                             _roster, UiFont.Regular, 0, SkillHintText);
             _dgRoster.SelectionChanged += OnDualSelectionChanged;
             _screenDualSelect.Add(_dgRoster.Root.gameObject);
+            _dualDraftCards = new MatchDrawCards(_selectRoot, "DualDraftCards", new Vector2(0, 175), index =>
+            {
+                if (_dualCandidates != null && index < _dualCandidates.Count) SelectDualCandidate(_dualCandidates[index]);
+            });
+            _screenDualSelect.Add(_dualDraftCards.Root.gameObject);
 
             // 详情（显示当前选中的角色）
             _dgDetail = MakeDetailPanel("DgDetail", new Vector2(0f, 62f));
@@ -1406,7 +1341,7 @@ namespace FingerDiceDuel.UI
             Button back = MakeButton(_selectRoot, "DgBack", new Vector2(-460f, -52f),
                                      new Vector2(220f, 68f), "返回");
             back.onClick.AddListener(() => ShowScreen(_dualFactionMode
-                ? _dualFactionReturnScreen : GameScreen.DualGeneralMenu));
+                ? GameScreen.FactionDraw : GameScreen.DualDuelStyle));
             _screenDualSelect.Add(back.gameObject);
 
             _screenDualSelect.Add(MakeHelpButton(_selectRoot).gameObject);
@@ -1437,24 +1372,22 @@ namespace FingerDiceDuel.UI
         {
             if (_dgRoster == null) return;
 
-            bool pickingSecondary = _dgPrimary != null && _dgSecondary == null;
-
-            IReadOnlyList<CharacterDefinition> list = _roster;
-            if (pickingSecondary)
+            IReadOnlyList<CharacterDefinition> list = CurrentDualList();
+            if (_dualFactionMode)
+                RenderCharacterCards(_dualDraftCards, _dualCandidates, -1, primary: _dgPrimary, secondary: _dgSecondary);
+            else
             {
-                list = _dgPartnersOf != null
-                    ? _dgPartnersOf(_dgPrimary)
-                    : (IReadOnlyList<CharacterDefinition>)new List<CharacterDefinition>();
+                _dgRoster.SetRoster(list, -1, flat: _dualCandidates != null);
+                _dgRoster.ScrollToSelected();
             }
 
-            _dgRoster.SetRoster(list, -1);
-            _dgRoster.ScrollToSelected();
-
-            if (list.Count > 0) RefreshDetail(_dgDetail, list[0]);
+            if (_dualFactionMode && (_dgSecondary ?? _dgPrimary) is CharacterDefinition picked)
+                RefreshDetail(_dgDetail, picked);
+            else if (list.Count > 0) RefreshDetail(_dgDetail, list[0]);
             else if (_dgDetail != null) _dgDetail.text = "没有可选的副将。";
 
             if (_dgTitle != null)
-                _dgTitle.text = _dualFactionMode ? "双将阵营混战 · 选将" : "双将选将";
+                _dgTitle.text = _dualFactionMode ? "双将阵营混战 · 选将" : _dualCandidates != null ? "双将挑战 · 选将" : "双将演练 · 选将";
             if (_dgStart != null)
             {
                 Text label = _dgStart.GetComponentInChildren<Text>();
@@ -1465,7 +1398,7 @@ namespace FingerDiceDuel.UI
             if (_dgStatus != null)
             {
                 if (_dgPrimary == null)
-                    _dgStatus.text = "第一步：选择主将";
+                    _dgStatus.text = _dualCandidates != null ? $"第一步：从 {_dualCandidates.Count} 名候选中选主将" : "第一步：选择主将";
                 else if (_dgSecondary == null)
                     _dgStatus.text = "第二步：选择副将"
                                    + "（只能选与主将同阵营的角色）";
@@ -1495,11 +1428,20 @@ namespace FingerDiceDuel.UI
         {
             IReadOnlyList<CharacterDefinition> list = CurrentDualList();
             if (index < 0 || index >= list.Count) return;
+            SelectDualCandidate(list[index]);
+        }
 
-            CharacterDefinition def = list[index];
-
+        private void SelectDualCandidate(CharacterDefinition def)
+        {
             // 玩家点了哪张卡，详情面板就要跟着变（RefreshDualSelect 只在重建列表时刷新详情）
             RefreshDetail(_dgDetail, def);
+
+            if (_dualCandidates != null && (_dgPrimary == null || _dgSecondary != null) && DualCandidatePartners(def).Count == 0)
+            {
+                _dgRoster.SetRoster(CurrentDualList(), -1, flat: true);
+                _dgStatus.text = "该候选没有同阵营搭档，请选择另一名主将";
+                return;
+            }
 
             if (_dgPrimary == null)
             {
@@ -1511,7 +1453,7 @@ namespace FingerDiceDuel.UI
             if (_dgSecondary == null)
             {
                 // 同一个人不能当自己的副将（列表已过滤，这里再保一层）
-                if (ReferenceEquals(def, _dgPrimary)) return;
+                if (ReferenceEquals(def, _dgPrimary) || !DualGeneralFactory.SameAxis(_dgPrimary, def)) return;
 
                 _dgSecondary = def;
                 RefreshDualSelect();
@@ -1527,10 +1469,17 @@ namespace FingerDiceDuel.UI
         /// <summary>当前列表对应的角色集合（与界面上看到的一致）。</summary>
         private IReadOnlyList<CharacterDefinition> CurrentDualList()
         {
-            if (_dgPrimary != null && _dgSecondary == null && _dgPartnersOf != null)
-                return _dgPartnersOf(_dgPrimary);
-            return _roster;
+            if (_dgPrimary != null && _dgSecondary == null)
+            {
+                if (_dualCandidates != null) return DualCandidatePartners(_dgPrimary);
+                return _dgPartnersOf?.Invoke(_dgPrimary) ?? new List<CharacterDefinition>();
+            }
+            return _dualCandidates ?? _roster;
         }
+
+        private List<CharacterDefinition> DualCandidatePartners(CharacterDefinition primary)
+            => _dualCandidates.FindAll(candidate => !ReferenceEquals(candidate, primary)
+                && DualGeneralFactory.SameAxis(candidate, primary));
 
         /// <summary>
         /// 点“开始对局”。
@@ -1551,44 +1500,16 @@ namespace FingerDiceDuel.UI
             var rng = new System.Random();
             int humanFaction = FactionOf(primary);
 
-            int weak = rng.Next(3);
-            int[] counts = { 3, 3, 3 };
-            counts[weak] = 2;
-
-            // 按阵营分池；先把人类选的两名从池里拿走，保证不重复。
-            var pools = new List<CharacterDefinition>[3];
-            for (int f = 0; f < 3; f++) pools[f] = new List<CharacterDefinition>();
-            foreach (CharacterDefinition d in _roster)
-            {
-                if (ReferenceEquals(d, primary) || ReferenceEquals(d, secondary)) continue;
-                pools[FactionOf(d)].Add(d);
-            }
-
+            if (_factionDeals == null || !_factionDeals[0].Contains(primary) || !_factionDeals[0].Contains(secondary)) return;
             var aiPairs = new List<CharacterDefinition[]>(7);
-            for (int f = 0; f < 3; f++)
+            for (int seat = 1; seat < _factionDeals.Length; seat++)
             {
-                Shuffle(pools[f], rng);
-                int need = counts[f] - (f == humanFaction ? 1 : 0);
-                for (int i = 0; i < need; i++)
-                {
-                    if (pools[f].Count < 2)
-                    {
-                        ShowComingSoon("双将阵营混战：可用角色不足，无法补齐 8 人。");
-                        return;
-                    }
-
-                    aiPairs.Add(new[] { pools[f][0], pools[f][1] });
-                    pools[f].RemoveRange(0, 2);
-                }
+                var candidates = _factionDeals[seat];
+                int first = rng.Next(candidates.Count);
+                int second = rng.Next(candidates.Count - 1);
+                if (second >= first) second++;
+                aiPairs.Add(new[] { candidates[first], candidates[second] });
             }
-
-            if (aiPairs.Count != 7)
-            {
-                ShowComingSoon("双将阵营混战：可用角色不足，无法补齐 8 人。");
-                return;
-            }
-
-            Shuffle(aiPairs, rng);
 
             var seated = new List<PlayerState>(8);
             var providers = new List<IChoiceProvider>(8);
@@ -1652,7 +1573,12 @@ namespace FingerDiceDuel.UI
 
             // 玩家确认：**只有玩家自己选**，
             // 人机对手**随机搭配**，不给人机选角色。
-            if (!DualGeneralFactory.TryRandomPair(out _dgFoePrimary, out _dgFoeSecondary))
+            if (_dualChallengeFoes != null)
+            {
+                _dgFoePrimary = _dualChallengeFoes[0];
+                _dgFoeSecondary = _dualChallengeFoes[1];
+            }
+            else if (!DualGeneralFactory.TryRandomPair(out _dgFoePrimary, out _dgFoeSecondary))
             {
                 ShowComingSoon("双将对局（无法为人机搭配角色）");
                 return;
@@ -2017,22 +1943,13 @@ namespace FingerDiceDuel.UI
                 {
                     Mode = PlayMode.Intro;
 
-                    // 玩家要求：**2v2 的入门没有难度选择** ——
-                    // 2v2 涉及队友与四人配合，AI 太"笨"会让整局没法验证，
-                    // 所以一律按困难（不调难度 = 完全确定性），直接进角色选择。
-                    if (_isTwoOnTwo)
-                    {
-                        Difficulty = AiDifficulty.Hard;
-                        GoToCharacterSelect();
-                        return;
-                    }
-
-                    ShowScreen(GameScreen.DifficultyMenu);
+                    _classicCandidates = null;
+                    GoToCharacterSelect();
                 });
 
             Button classic = MakeModeButton(_selectRoot, "ModeClassic", new Vector2(0f, -60f),
                 "经典", "掷 1d20 决定初始手值与先手",
-                () => { Mode = PlayMode.Classic; GoToCharacterSelect(); });
+                () => ShowScreen(GameScreen.ClassicMenu));
 
             _screenMode.Add(intro.gameObject);
             _screenMode.Add(classic.gameObject);
@@ -2050,48 +1967,11 @@ namespace FingerDiceDuel.UI
             _screenMode.Add(help.gameObject);
         }
 
-        /// <summary>
-        /// 难度选择界面：**只出现在人机对战的入门玩法里**。
-        ///
-        /// 经典玩法保持不变（没有难度选择）—— 按玩家要求。
-        /// </summary>
-        private void BuildDifficultyScreen()
+        private void OnStartAiClicked()
         {
-            _screenDifficulty = new ScreenGroup();
-
-            Text title = MakeText(_selectRoot, "DiffTitle", new Vector2(0f, 300f),
-                                  new Vector2(1000f, 70f), 52, TextAnchor.MiddleCenter,
-                                  new Color(0.98f, 0.90f, 0.62f));
-            UiFont.ApplyBold(title);
-            title.text = "选择难度";
-            _screenDifficulty.Add(title.gameObject);
-
-            Button easy = MakeModeButton(_selectRoot, "DiffEasy", new Vector2(0f, 140f),
-                "简单", "AI 会偶尔失误",
-                () => { Difficulty = AiDifficulty.Easy; GoToCharacterSelect(); });
-
-            Button normal = MakeModeButton(_selectRoot, "DiffNormal", new Vector2(0f, -10f),
-                "普通", "AI 大方向稳定，细节有变化",
-                () => { Difficulty = AiDifficulty.Normal; GoToCharacterSelect(); });
-
-            Button hard = MakeModeButton(_selectRoot, "DiffHard", new Vector2(0f, -160f),
-                "困难", "AI 始终选择最优解",
-                () => { Difficulty = AiDifficulty.Hard; GoToCharacterSelect(); });
-
-            _screenDifficulty.Add(easy.gameObject);
-            _screenDifficulty.Add(normal.gameObject);
-            _screenDifficulty.Add(hard.gameObject);
-
-            Button back = MakeButton(_selectRoot, "DiffBack", new Vector2(0f, -300f),
-                                     new Vector2(240f, 64f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.ModeMenu));
-            _screenDifficulty.Add(back.gameObject);
-
-            Button help = MakeHelpButton(_selectRoot);
-            _screenDifficulty.Add(help.gameObject);
+            _isTwoOnTwo = false;
+            ShowScreen(GameScreen.ModeMenu);
         }
-
-        private void OnStartAiClicked() => ShowScreen(GameScreen.ModeMenu);
 
         /// <summary>
         /// 选完玩法与难度后进入角色选择。
@@ -2101,6 +1981,7 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void GoToCharacterSelect()
         {
+            ConfigureClassicCandidates();
             if (_isTwoOnTwo)
             {
                 // 经典：座位由先攻决定 -> 不选座位
@@ -2140,7 +2021,7 @@ namespace FingerDiceDuel.UI
         private void ShowClassicTwoOnTwoCharacterScreen()
         {
             _classicSeatByInitiative = true;
-            RollOpponents();
+            if (_classicCandidates == null) RollOpponents();
 
             // 同 GoToCharacterSelect：**先切屏再刷新摘要**，
             // 否则 ShowScreen 的 SetActive(true) 会重新显示座位选择。
@@ -2182,6 +2063,13 @@ namespace FingerDiceDuel.UI
                 _roster[Mathf.Clamp(_indexFoe1, 0, _roster.Count - 1)];
             CharacterDefinition defFoe2 =
                 _roster[Mathf.Clamp(_indexFoe2, 0, _roster.Count - 1)];
+
+            if (_classicCandidates != null)
+            {
+                if (_classicSelf == null || _classicMate == null) return;
+                defMe = _classicSelf; defMate = _classicMate;
+                defFoe1 = _classicFoe; defFoe2 = _classicFoe2;
+            }
 
             _pendingTwoOnTwo = new TwoOnTwoSetup
             {
@@ -2437,6 +2325,9 @@ namespace FingerDiceDuel.UI
         /// </summary>
         public void ShowScreen(GameScreen screen)
         {
+            if (IsMatchFlowScreen(screen) && !IsMatchFlowScreen(_screen))
+                _matchReturnScreen = IsMatchEntryScreen(_screen) ? _screen : GameScreen.CharacterSelect;
+            if (_screen != screen) StopDraftAnimations();
             _screen = screen;
             _screenSettings?.SetVisible(screen == GameScreen.Settings);
             UpdateMusic();
@@ -2467,13 +2358,18 @@ namespace FingerDiceDuel.UI
             _screenIdentityBattleMenu?.SetVisible(screen == GameScreen.IdentityBattleMenu);
             _screenIdentitySelect?.SetVisible(screen == GameScreen.IdentitySelect);
             _screenDualSelect?.SetVisible(screen == GameScreen.DualGeneralSelect);
+            if (screen == GameScreen.DualGeneralSelect) SetDualFactionCardLayout();
             _screenEightPlayerMenu?.SetVisible(screen == GameScreen.EightPlayerMenu);
             _screenFactionSelect?.SetVisible(screen == GameScreen.FactionSelect);
             _screenOneOnOne?.SetVisible(screen == GameScreen.OneOnOneMenu);
             _screenTwoOnTwo?.SetVisible(screen == GameScreen.TwoOnTwoMenu);
             _screenMode?.SetVisible(screen == GameScreen.ModeMenu);
-            _screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu);
-            _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
+            _screenClassic?.SetVisible(screen == GameScreen.ClassicMenu);
+            _screenDualDuelStyle?.SetVisible(screen == GameScreen.DualDuelStyle);
+            _screenSeatDraw?.SetVisible(screen == GameScreen.FactionDraw || screen == GameScreen.IdentityDraw);
+            _screenCharacter?.SetVisible(screen == GameScreen.CharacterSelect);
+            _screenTwoOnTwoCharacter?.SetVisible(screen == GameScreen.TwoOnTwoCharacter);
+            if (screen == GameScreen.TwoOnTwoCharacter) RefreshDraftSlots();
             _screenTwoOnTwoInitiative?.SetVisible(screen == GameScreen.TwoOnTwoInitiative);
             _diceRoll?.SetVisible(screen == GameScreen.DiceRoll);
             ResetProfessionNavigation(screen);
@@ -2489,7 +2385,7 @@ namespace FingerDiceDuel.UI
 
             if (screen == GameScreen.MainMenu || screen == GameScreen.OneOnOneMenu
                 || screen == GameScreen.TwoOnTwoMenu
-                || screen == GameScreen.ModeMenu || screen == GameScreen.DifficultyMenu
+                || screen == GameScreen.ModeMenu || screen == GameScreen.ClassicMenu
                 || screen == GameScreen.CharacterSelect
                 || screen == GameScreen.TwoOnTwoCharacter || screen == GameScreen.DiceRoll
                 || screen == GameScreen.TwoOnTwoInitiative
@@ -2500,6 +2396,15 @@ namespace FingerDiceDuel.UI
                 if (_modal?.Root != null) _modal.Root.transform.SetAsLastSibling();
             }
         }
+
+        private static bool IsMatchFlowScreen(GameScreen screen)
+            => screen == GameScreen.InMatch || screen == GameScreen.DiceRoll || screen == GameScreen.TwoOnTwoInitiative;
+
+        private static bool IsMatchEntryScreen(GameScreen screen)
+            => screen == GameScreen.CharacterSelect || screen == GameScreen.TwoOnTwoCharacter
+            || screen == GameScreen.FactionSelect || screen == GameScreen.IdentitySelect
+            || screen == GameScreen.DualGeneralSelect || screen == GameScreen.StoryBattleSelect
+            || screen == GameScreen.AdventureFinaleSelect;
 
         /// <summary>
         /// 诊断用：当前界面的显隐快照。
@@ -2534,6 +2439,7 @@ namespace FingerDiceDuel.UI
             _rosterViewA = BuildRosterRow("RosterA", new Vector2(0f, 327f), initialIndex: _indexA);
             _rosterViewA.SelectionChanged += index =>
             {
+                if (SelectClassicCandidate(index, mate: false)) return;
                 _indexA = index;
                 _rosterViewA.ScrollToSelected();
                 RefreshDetail(_detailA, _roster[_indexA]);
@@ -2547,6 +2453,7 @@ namespace FingerDiceDuel.UI
             _rosterViewB = BuildRosterRow("RosterB", new Vector2(0f, 26f), initialIndex: _indexB);
             _rosterViewB.SelectionChanged += index =>
             {
+                if (_classicCandidates != null) return;
                 _indexB = index;
                 _rosterViewB.ScrollToSelected();
                 RefreshDetail(_detailB, _roster[_indexB]);
@@ -2560,12 +2467,13 @@ namespace FingerDiceDuel.UI
 
             Button start = MakeButton(_selectRoot, "Start", new Vector2(0f, -256f),
                                       new Vector2(340f, 76f), "开始对局");
+            _soloStart = start;
             start.onClick.AddListener(OnStartClicked);
             _screenCharacter.Add(start.gameObject);
 
             Button back = MakeButton(_selectRoot, "SelectBack", new Vector2(-420f, -256f),
                                      new Vector2(220f, 76f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.OneOnOneMenu));
+            back.onClick.AddListener(() => ShowScreen(Mode == PlayMode.Classic ? GameScreen.ClassicMenu : GameScreen.ModeMenu));
             _screenCharacter.Add(back.gameObject);
 
             Button help = MakeHelpButton(_selectRoot);
@@ -2714,7 +2622,7 @@ namespace FingerDiceDuel.UI
             //
             // `_selectRoot` 是**所有界面共用的那个画布**（主菜单 / 1v1 / 角色选择都在它下面）。
             // 曾经这里 `SetActive(false)`，而 `ShowScreen()` 只切分组显隐、不会重新激活画布，
-            // 于是"返回标题 / 再来一局"之后整个 UI 都不见了 ——
+            // 于是返回或再来一局之后整个 UI 都不见了 ——
             // 实机表现是一片纯色（相机背景），玩家以为游戏崩了。
             //
             // 隐藏界面是 `ShowScreen` 的职责（切分组显隐），这里不需要也不应该插手。
@@ -2725,6 +2633,12 @@ namespace FingerDiceDuel.UI
 
             CharacterDefinition defA = _roster[Mathf.Clamp(_indexA, 0, _roster.Count - 1)];
             CharacterDefinition defB = _roster[Mathf.Clamp(_indexB, 0, _roster.Count - 1)];
+
+            if (_classicCandidates != null)
+            {
+                if (_classicSelf == null) return;
+                defA = _classicSelf; defB = _classicFoe;
+            }
 
             // 经典模式先进"掷骰分配初始手值"，分配完才真正开始对局；
             // 入门模式不掷骰先攻，双方用默认初始手值直接开局。
@@ -2821,13 +2735,9 @@ namespace FingerDiceDuel.UI
             {
                 PlayerState p = _eightSeated[i];
                 if (p == null) continue;
-                IdentityRole role = _game.IdentityOf(p);
                 bool reveal = _game.IsIdentityPublic(p)
                               || ReferenceEquals(p, _eightHumanPlayer);
-                string label = p.IsSummon ? "召唤物" : !reveal ? "？"
-                    : role == IdentityRole.Lord ? _game.IdentityLordTitle
-                    : IdentityRoleInfo.DisplayName(role);
-                _board.SetRingIdentity(p, label, true);
+                _board.SetRingIdentity(p, reveal ? _game.IdentityOf(p) : IdentityRole.None, _game.IdentityLordTitle);
                 _board.SetRingRelation(p, IdentityPresentation.Relation(_game, _eightHumanPlayer, p));
             }
             IdentityPresentation.Counts(_game, _eightHumanPlayer, out int mates, out int foes);
@@ -2839,6 +2749,7 @@ namespace FingerDiceDuel.UI
         /// </summary>
         private void StartPreparedMatch(bool beginTurn = true)
         {
+            _board.ClearIdentityGuesses();
             ShowScreen(GameScreen.InMatch);
 
             // ⚠️ **武僧·太极宗初始的 5 也进入太极形态**（玩家要求）。
@@ -2944,7 +2855,7 @@ namespace FingerDiceDuel.UI
 
                 // 难度**只在入门玩法**生效（玩家要求：经典保持不变）。
                 // 经典模式走贪心 AI 的默认行为（不抖动 = 始终最优）。
-                if (Mode == PlayMode.Intro) ai.ApplyDifficulty(Difficulty);
+                if (Mode == PlayMode.Intro) ai.ApplyDifficulty(AiDifficulty.Hard);
 
                 return ai;
             }
@@ -2955,19 +2866,18 @@ namespace FingerDiceDuel.UI
         private void OnRestartClicked()
         {
             if (_adventure != null) { StartAdventureLevel(_adventure.LevelNumber, true); return; }
-            CleanupMatch();
-            ShowScreen(GameScreen.CharacterSelect);
+            ReturnToSelection();
         }
 
-        /// <summary>对局中的"返回标题"：回到主菜单。</summary>
+        /// <summary>对局中的返回按钮：回到开局所在的页面。</summary>
         private void OnExitClicked()
         {
-            ReturnToSelection();
+            ReturnToSelection(exitMatch: true);
         }
 
         /// <summary>
         /// 结束进程。**只在主菜单提供** ——
-        /// 对局中的按钮一律是"返回标题"，避免误触直接关掉游戏。
+        /// 对局中的返回按钮只结束当前对局。
         /// </summary>
         private void QuitGame()
         {
@@ -2978,17 +2888,35 @@ namespace FingerDiceDuel.UI
 #endif
         }
 
-        /// <summary>回到开始界面并清掉当前对局。</summary>
-        private void ReturnToSelection()
+        /// <summary>清掉当前对局，返回选角或关卡入口。</summary>
+        private void ReturnToSelection(bool exitMatch = false)
         {
+            var entry = _matchReturnScreen;
+            var destination = exitMatch ? MatchExitScreen(entry) : entry;
             CleanupMatch();
-            ShowScreen(GameScreen.MainMenu);
+            _isTwoOnTwo = entry == GameScreen.TwoOnTwoCharacter;
+            ShowScreen(destination);
+            if (destination == GameScreen.TwoOnTwoCharacter) RefreshTwoOnTwoSummary();
+        }
+
+        private GameScreen MatchExitScreen(GameScreen entry)
+        {
+            switch (entry)
+            {
+                case GameScreen.IdentitySelect: return GameScreen.IdentityBattleMenu;
+                case GameScreen.FactionSelect: return GameScreen.FactionBattleMenu;
+                case GameScreen.DualGeneralSelect: return _dualFactionMode ? GameScreen.DualFactionMenu : GameScreen.DualDuelStyle;
+                case GameScreen.CharacterSelect:
+                case GameScreen.TwoOnTwoCharacter: return Mode == PlayMode.Classic ? GameScreen.ClassicMenu : GameScreen.ModeMenu;
+                case GameScreen.AdventureFinaleSelect: return GameScreen.StoryBattleSelect;
+                default: return entry;
+            }
         }
 
         /// <summary>
         /// 丢弃当前对局与表现层状态。
         ///
-        /// 单独抽出来是因为**退出**（回主菜单）与**重开**（回角色选择）
+        /// 单独抽出来是因为**退出**与**重开**
         /// 都要做这套清理，只是最后去的界面不同。
         /// </summary>
         private void CleanupMatch()
@@ -3512,23 +3440,27 @@ namespace FingerDiceDuel.UI
             // —— 冒险教学：导演推进 / 引导旁白 / 胜利要点卡 ——
             if (_adventure != null)
             {
+                bool awaitingTrial = false;
                 if(_adventure is CampaignLesson campaign)
                 {
                     SetCampaignPresentation(campaign);
                     if(campaign.Version3)
                     {
                         if(campaign.TeachingComplete)campaign.CaptureTrial();
+                        if(campaign.Started && campaign.TeachingComplete)
+                            _board.SeedAdventureGuideReview(campaign.GuideName, CampaignGuideText.For(campaign.LevelNumber));
+                        awaitingTrial = campaign.Stage == CampaignPhase.AwaitingHorn;
                         if(campaign.TrialConfirmationPending)ShowCampaignTrial(campaign);
                     }
                 }
                 if(_adventure is TatteredBannersLesson banners)SetBannersPresentation(banners);
                 _board.ConfigureAdventureGuide(_isTwoOnTwo||_isEightPlayer);
                 if(_adventure.Started&&_adventure.IsFinished&&!_adventureVictoryShown)
-                    _board.ShowAdventureNarration(_adventure.GuideName+" · 观察结果","本次试炼的最后一回合已结束。可查看战场与战斗记录，点击右侧【试炼结束】查看总结。",_adventure.GuideAvatarKey);
-                else if (_adventure.Started && !_adventure.IsFinished)
+                    _board.ShowAdventureNarration(_adventure.GuideName+" · 观察结果","本次试炼的最后一回合已结束。可查看战场与战斗记录，点击右侧【试炼结束】查看总结。",_adventure.GuideAvatarKey,isTrialNarration:true);
+                else if (_adventure.Started && !_adventure.IsFinished && !awaitingTrial)
                     _board.ShowAdventureNarration((_adventure.IsFreeStage?"自主战斗":$"{_adventure.GuideName} · 引导{_adventure.StepNumber}/{_adventure.StepCount}"), _adventure.Narration,
-                                                  _adventure.GuideAvatarKey);
-                else
+                                                  _adventure.GuideAvatarKey,isTrialNarration:_adventure.IsFreeStage);
+                else if (!awaitingTrial)
                     _board.HideAdventureNarration();
 
                 if(_adventure.IsFinished&&!_adventureVictoryShown){PrepareAdventureResult();_board.SetHint("试炼已结束 · "+DescribeLastTurn(),"");}
@@ -3536,7 +3468,7 @@ namespace FingerDiceDuel.UI
 
             if (_controller.Phase == BoardPhase.GameOver && _adventure == null)
             {
-                _board.ShowGameOver(WinMessage());
+                _board.ShowGameOver(WinMessage(), _game.Players.Count > 2 ? _game.WinningOriginalSeats() : null);
                 _board.SetSkipButtonVisible(false);
                 _board.SetDamageTypePanelVisible(false);
                 _board.HideCollegeOfValorChoicePanel();
@@ -3738,7 +3670,7 @@ namespace FingerDiceDuel.UI
         {
             string hint = _controller.Hint;
 
-            if (_controller.Phase == BoardPhase.GameOver) return hint;
+            if (_controller.Phase == BoardPhase.GameOver) return _adventure == null ? WinMessage() : hint;
 
             // 兜底：任何情况下都不要让提示条空着，否则玩家不知道能做什么
             if (string.IsNullOrEmpty(hint))
@@ -3849,30 +3781,9 @@ namespace FingerDiceDuel.UI
         private string WinMessage()
         {
             if (_game == null || !_game.IsGameOver) return "";
+            if (_game.IsIdentityMode) return _game.IdentityResultText;
             if (_game.Winner == null) return "平局！";
-
-            // ⚠️ 玩家要求：**2v2 要把一整队的人全列出来**。
-            //    原来只写 `_game.Winner.Name` —— 那是"最终活着的那个玩家"，
-            //    队友（哪怕一起打赢了、只是先倒下了）完全没被提到。
-            System.Collections.Generic.IReadOnlyList<PlayerState> all = _game.Players;
-            if (all == null || all.Count <= 2) return $"{_game.Winner.Name} 获胜！";
-
-            var names = new System.Text.StringBuilder();
-            for (int i = 0; i < all.Count; i++)
-            {
-                PlayerState p = all[i];
-                if (p == null) continue;
-                if (!_game.IsTeammate(_game.Winner, p) && !ReferenceEquals(p, _game.Winner))
-                    continue;
-
-                if (names.Length > 0) names.Append("、");
-                names.Append(p.Name);
-
-                // 先倒下的队友标出来，玩家看得出"是谁扛下来的"
-                if (!p.IsAlive) names.Append("（已倒下）");
-            }
-
-            return $"{names} 的队伍获胜！";
+            return _game.Players.Count > 2 ? "队伍获胜！" : $"{_game.Winner.Name} 获胜！";
         }
 
         // ============================================================
@@ -3980,6 +3891,7 @@ namespace FingerDiceDuel.UI
             _rosterView2Me = BuildRosterRow("Roster2Me", new Vector2(0f, 208f), initialIndex: _indexA);
             _rosterView2Me.SelectionChanged += index =>
             {
+                if (SelectClassicCandidate(index, _pickingDraftMate)) return;
                 _indexA = index;
                 _rosterView2Me.ScrollToSelected();
                 RefreshDetail(_detail2Me, _roster[_indexA]);
@@ -4013,17 +3925,19 @@ namespace FingerDiceDuel.UI
 
             Button start = MakeButton(_selectRoot, "TtStart", new Vector2(0f, -196f),
                                       new Vector2(340f, 76f), "开始对局");
+            _teamStart = start;
             start.onClick.AddListener(OnTwoOnTwoStartClicked);
             _screenTwoOnTwoCharacter.Add(start.gameObject);
 
             Button back = MakeButton(_selectRoot, "TtCharBack", new Vector2(-420f, -196f),
                                      new Vector2(220f, 76f), "返回");
-            back.onClick.AddListener(() => ShowScreen(GameScreen.ModeMenu));
+            back.onClick.AddListener(() => ShowScreen(Mode == PlayMode.Classic ? GameScreen.ClassicMenu : GameScreen.ModeMenu));
             _screenTwoOnTwoCharacter.Add(back.gameObject);
 
             Button help = MakeHelpButton(_selectRoot);
             _screenTwoOnTwoCharacter.Add(help.gameObject);
 
+            BuildDraftSlots();
             SelectSeat(1);
         }
 
@@ -4091,7 +4005,11 @@ namespace FingerDiceDuel.UI
         private void RefreshFoeSummary()
         {
             if (_foeSummary == null || _roster.Count == 0) return;
-
+            if (_classicCandidates != null && _classicFoe2 != null)
+            {
+                _foeSummary.text = $"AI 队伍（从 8 名候选随机选出）　{_classicFoe.DisplayName}、{_classicFoe2.DisplayName}";
+                return;
+            }
             CharacterDefinition f1 = _roster[Mathf.Clamp(_indexFoe1, 0, _roster.Count - 1)];
             CharacterDefinition f2 = _roster[Mathf.Clamp(_indexFoe2, 0, _roster.Count - 1)];
             _foeSummary.text = $"对手（随机角色）：{f1.DisplayName}　{f2.DisplayName}";

@@ -400,6 +400,32 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Gamble_uses_the_status_adjusted_digit_to_choose_an_attack_target()
+        {
+            foreach (int roll in new[] { 4, 5 })
+            {
+                var game = Match(CharacterDefinition.Blank, out var a, out var b);
+                var board = new BoardController(game, a, b) { GambleRng = new FixedRandom(roll) };
+                var actor = game.PlayerA;
+                actor.ApplyStatus(StatusEffect.Wet, 2);
+                board.BeginTurn();
+
+                Assert.True(board.ClickHand(actor.LeftHand));
+                Assert.True(GambleAndKeep(board));
+
+                if (roll == 5)
+                {
+                    Assert.AreEqual(BoardPhase.ChoosingTargetPlayer, board.Phase);
+                    Assert.AreEqual(4, board.PreviewHandValue(actor.LeftHand).Value);
+                    Assert.True(board.ClickHand(game.PlayerB.LeftHand));
+                }
+                Assert.AreEqual(1, game.TurnCount);
+                Assert.AreEqual(roll - 1, actor.LeftHand.Value);
+                Assert.AreEqual(roll == 4 ? HandEffectType.None : HandEffectType.Attack4, board.LastTurn.Effect);
+            }
+        }
+
+        [Test]
         public void Gamble_attack_waits_for_a_target_then_resolves()
         {
             // 玩家实测："赌完之后卡住"（掷出 8 = 攻击）。

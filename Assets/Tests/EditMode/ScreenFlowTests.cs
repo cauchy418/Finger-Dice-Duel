@@ -101,13 +101,13 @@ namespace FingerDiceDuel.Tests
         }
 
         /// <summary>
-        /// 新增的两个选择界面（玩法 / 难度）也必须接进切屏开关。
+        /// 经典和双将的演练／挑战选择需要参与切屏。
         ///
         /// 漏掉 `SetVisible` 的后果很直观：界面**永不显示**或**永不隐藏**
         /// （后者会几张界面叠在一起）。
         /// </summary>
         [Test]
-        public void Mode_and_difficulty_screens_are_wired_into_the_screen_switch()
+        public void Mode_and_play_style_screens_are_wired_into_the_screen_switch()
         {
             string path = FindSource("GameBootstrap.cs");
             Assert.NotNull(path);
@@ -115,27 +115,25 @@ namespace FingerDiceDuel.Tests
 
             Assert.True(source.Contains("_screenMode?.SetVisible(screen == GameScreen.ModeMenu)"),
                 "玩法选择界面必须参与显隐。");
-            Assert.True(source.Contains("_screenDifficulty?.SetVisible(screen == GameScreen.DifficultyMenu)"),
-                "难度选择界面必须参与显隐。");
+            Assert.True(source.Contains("_screenClassic?.SetVisible(screen == GameScreen.ClassicMenu)"));
+            Assert.True(source.Contains("_screenDualDuelStyle?.SetVisible(screen == GameScreen.DualDuelStyle)"));
+            Assert.True(source.Contains("_screenSeatDraw?.SetVisible(screen == GameScreen.FactionDraw || screen == GameScreen.IdentityDraw)"));
 
-            // 流程：1v1 -> 玩法 -> 难度 -> 角色选择
             Assert.True(source.Contains("ShowScreen(GameScreen.ModeMenu)"),
                 "人机对战应先进入玩法选择。");
-            Assert.True(source.Contains("ShowScreen(GameScreen.DifficultyMenu)"),
-                "入门玩法应先进入难度选择。");
+            Assert.False(source.Contains("ShowScreen(GameScreen.DifficultyMenu)"));
         }
 
         /// <summary>
         /// 难度**只**在入门玩法生效 —— 玩家要求经典保持不变。
         /// </summary>        [Test]
-        public void Difficulty_only_applies_in_intro_mode()
+        public void Intro_uses_fixed_hard_ai()
         {
             string path = FindSource("GameBootstrap.cs");
             Assert.NotNull(path);
             string source = File.ReadAllText(path);
 
-            Assert.True(source.Contains("Mode == PlayMode.Intro") && source.Contains("ApplyDifficulty"),
-                "难度应只在入门玩法里配置 AI。");
+            Assert.True(source.Contains("if (Mode == PlayMode.Intro) ai.ApplyDifficulty(AiDifficulty.Hard)"));
         }
 
         /// <summary>
