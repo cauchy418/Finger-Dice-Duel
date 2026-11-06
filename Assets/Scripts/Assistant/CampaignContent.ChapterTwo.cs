@@ -29,14 +29,12 @@ namespace FingerDiceDuel.Assistant
                     s.Wait(1,"换位后到甲距离变2；本轮仍按旧名单行动。");s.Wait(2,"本轮继续按换位前的顺序行动。");s.Wait(3,"观察同袍保留自己的轮次，下轮按新座位顺序；留意新的攻击距离。");break;
                 case 14:AbjurationCourse(s);break;
                 case 15:
-                    s.Npcs[1].Attack=1;
-                    Cast(s,0,4,"普通4命中后选择失能，附加在这次伤害之后。").Enchant=StatusEffect.Disabled;
-                    s.Op(1,1,0,0,"护卫算6，原应8伤，失能使本击全部伤害归0。",0,6);
-                    Cast(s,1,8,"普通8实际掉血，选不发动；旧失能因此被清除。");
-                    s.Op(1,1,0,1,"护卫算4造成6伤；受伤后给来源魅惑。",0,4).Enchant=StatusEffect.Charm;
-                    s.Wait(0,"观摩一次，保留魅惑等待实际随机行动。");
-                    s.Op(1,1,0,0,"魅惑按随机执行一次合法行动；留意它选中了谁。",0);
-                    Cast(s,0,8,"继续攻击直到实际掉血，清除魅惑，选择不再附加。继续观察对手，寻找进攻机会。").Verify=l=>!l.Seats[1].HasStatus(StatusEffect.Charm);break;
+                    s.First=1;s.Npcs[1].Attack=1;
+                    s.Op(1,0,0,0,"护卫先算4，实际伤你后，对它附加失能。",0,4).Enchant=StatusEffect.Disabled;
+                    s.Op(0,0,1,1,"先算3，保留护卫身上的失能。",1,3);
+                    s.Op(1,0,0,1,"护卫算6，失能使本次攻击伤害归零。",0,6);
+                    s.Op(0,1,1,0,"算8实际伤到护卫，附加魅惑。",1,8).Enchant=StatusEffect.Charm;
+                    s.Op(1,1,0,0,"观察护卫魅惑后的随机行动。",0);break;
                 case 16:
                     s=new CampaignSpec(n,CharacterDefinition.SchoolOfNecromancy,new[]{2,3,3,8,8,2,1,1}){First=1,Guardian=2};s.Npcs[1].Maximum=24;s.Npcs[1].Health=1;s.Npcs[2].Maximum=32;s.Npcs[2].Range=2;s.Npcs[2].Force=true;s.Opening=l=>l.Player.SetHealthExact(14);
                     s.Op(1,0,0,1,"侍从3＋3＝6，点自己的2抵挡，2变1、生命仍14。",0);
@@ -90,22 +88,7 @@ namespace FingerDiceDuel.Assistant
             s.Op(1,1,0,0,"普通6：7→抗性4→屏障0，屏障整池清空、抗性保留。",0,6);
             var re=Cast(s,1,2,"重新算2，将持续火抗给护卫；自己的旧物理抗性撤销。");re.TargetSeat=1;re.Resistance=AttackDamageType.Fire;
             s.Op(1,1,0,1,"普通6不再被自己的旧物抗减半。",0,6);
-            Cast(s,0,9,"算9回复，再观察接下来的伤害。");
-            for(int mode=0;mode<4;mode++)
-            {
-                int copy=mode;var t=s.Op(1,1,0,1,new[]{"一次火易伤：原5伤→8。","一次火抗：原5伤→3，状态时长减1。","易伤＋火抗：5→8→4。","火免疫：0伤且不附燃烧。"}[mode],0,4);
-                t.Prepare=(l,p)=>{
-                    l.Equip(p,AttackDamageType.Fire);
-                    if(copy==1||copy==2){l.Player.RemoveStatus(StatusEffect.Burn);CampaignNpcLogic.Heal(l.Game,p,l.Player,8,"稳息术");}
-                    if(copy==0||copy==2)l.Player.AddVulnerability(AttackDamageType.Fire);
-                    if(copy==1||copy==2)l.Player.AddResistance(AttackDamageType.Fire);
-                    if(copy==3)l.Player.AddImmunity(AttackDamageType.Fire);
-                    l.Game.NoteSkill(p,"试验铭刻","配置本次火焰修正",l.Player);
-                };
-                s.Wait(0,"观摩一次，按回合末观察燃烧和临时效果消耗。");
-            }
-            Cast(s,0,6,"算6存6点屏障，准备验证余量不保留。").StoreWard=true;
-            var last=s.Op(1,1,0,1,"普通4原5伤，被屏障6吸收后，整份6归0，不留1。",0,4);last.Prepare=(l,p)=>l.Equip(p,AttackDamageType.Slashing);
+            Cast(s,0,9,"算9回复，火焰抗性继续保留。");
         }
         private static void DivinationCourse(CampaignSpec s)
         {
@@ -131,10 +114,10 @@ namespace FingerDiceDuel.Assistant
             s.Op(0,1,1,0,"6＋羊1＝7，保留形态观察计时。");
             s.Op(1,1,0,0,"羊4＋4＝8，实际7钝击；第二个自身回合后恢复原形与当前数字。",0);
             s.Wait(0,"观摩保留4／7，让恢复的护卫在自己的回合调律。");
-            s.Wait(1,"护卫调为7／1，并给自己一次钝击易伤，为完整羊血池溢伤作对照。").Prepare=(l,p)=>{l.Tune(p,p.LeftHand,7);l.Tune(p,p.RightHand,1);p.AddVulnerability(AttackDamageType.Bludgeoning);l.Game.NoteSkill(p,"试验铭刻","一次钝击易伤",p);};
+            s.Wait(1,"护卫把双手调为7／1。").Prepare=(l,p)=>{l.Tune(p,p.LeftHand,7);l.Tune(p,p.RightHand,1);};
             s.Op(0,0,1,0,"4＋7＝1，与护卫7／1匹配；再次选择变形。").TargetSeat=1;
-            s.Op(1,1,0,0,"羊1＋己1＝2，无伤，仍是完整5血池。",0);
-            s.Op(0,0,1,0,"1＋羊7＝8，10×1.5＝15：先打空羊5，再把溢出10扣原形，不二次算防御。").Verify=l=>!l.Seats[1].IsPolymorphed;
+            s.Op(1,1,0,0,"羊1＋己1＝2，无伤，仍是完整8血池。",0);
+            s.Op(0,0,1,0,"1＋羊7＝8，经防御修正为10：羊承受8，剩余2由原形承受。").Verify=l=>!l.Seats[1].IsPolymorphed;
         }
     }
 }

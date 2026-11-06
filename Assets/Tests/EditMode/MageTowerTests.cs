@@ -172,7 +172,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(1,lesson.Sample.Turns[3].Actor);Drive(lesson);
                 Assert.IsTrue(ReferenceEquals(lesson.Board.ActivePlayer,lesson.Player));
                 if(i==0)Assert.AreEqual(11,lesson.Soldier.Health);
-                if(i==2)Assert.AreEqual(13,lesson.Soldier.Health);
+                if(i==2)Assert.AreEqual(12,lesson.Soldier.Health);
                 if(i==5)Assert.AreEqual(12,lesson.Soldier.Health);
                 if(i==7)Assert.AreEqual(14,lesson.Soldier.Health);
                 if(lesson.Sample.Key=="freeze")Assert.AreEqual(1,lesson.Soldier.StatusTurnsLeft(StatusEffect.Frozen));

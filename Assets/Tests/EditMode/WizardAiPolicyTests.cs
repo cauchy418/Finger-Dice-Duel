@@ -56,6 +56,7 @@ namespace FingerDiceDuel.Tests
             var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.SchoolOfAbjuration);
             var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,ai);ai.SetGameForChoices(g);
             b.AddResistance(AttackDamageType.Slashing);((IAbjurationSkill)b.Character).StoreBarrier(2);
+            a.LeftHand.SetValue(2);
             var move=new LegalMove(a,a.LeftHand,b.LeftHand);
             Assert.AreEqual(3,ai.TotalLethalDamage(move,a,b,8),"(8+1-(-1))/2-2=3");
             Assert.IsTrue(b.HasResistance(AttackDamageType.Slashing));Assert.AreEqual(2,((IAbjurationSkill)b.Character).BarrierPoints);

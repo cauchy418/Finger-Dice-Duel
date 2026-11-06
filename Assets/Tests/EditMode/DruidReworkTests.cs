@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Sheep_and_wild_nested_pools_transfer_overflow_once()
         {
-            var g=Match();var p=g.PlayerA;p.SetHealthExact(18);Enter(g,1);p.TryPolymorph();Assert.AreEqual(5,p.Health);Assert.AreEqual(22,p.TakeDamageResolved(22));Assert.IsFalse(p.IsPolymorphed);Assert.IsFalse(p.IsWildShaped);Assert.AreEqual(13,p.Health);
+            var g=Match();var p=g.PlayerA;p.SetHealthExact(18);Enter(g,1);p.TryPolymorph();Assert.AreEqual(8,p.Health);Assert.AreEqual(22,p.TakeDamageResolved(22));Assert.IsFalse(p.IsPolymorphed);Assert.IsFalse(p.IsWildShaped);Assert.AreEqual(16,p.Health);
         }
         [Test] public void Bear_four_is_shield_and_eagle_six_has_no_effect()
         {var g=Match();Enter(g,1);Assert.AreEqual(HandEffectType.Shield,CharacterBehaviors.DisplayedEffectOf(g.PlayerA,4));g.PlayerA.EndWild();Enter(g,3);Assert.AreEqual(HandEffectType.None,CharacterBehaviors.DisplayedEffectOf(g.PlayerA,6));}

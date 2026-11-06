@@ -29,17 +29,20 @@ namespace FingerDiceDuel.Assistant
             switch(spec.Level)
             {
                 case 1:map=new[]{0,3,4,5,6,7};break;
+                case 2:map=new[]{0,1,2,3,4,5,6};break;
+                case 9:map=new[]{0,1,2,3,4,5,6};break;
                 case 11:map=new[]{0,4,5};break;
                 case 12:map=new[]{0,4,4};break;
                 case 13:map=new[]{0,2,2,4,4};break;
                 case 14:map=new[]{0,0,1,2,3};break;
                 case 15:map=new[]{0,1,2,3,3};break;
-                case 16:map=new[]{0,0,1,2,3,4,4};break;
+                case 16:map=new[]{0,1,2,3,4};break;
                 case 17:map=new[]{0,2,3,4,5,5};break;
                 case 19:map=new[]{0,2,3,3,4,4,4,4,5,5,5,6};break;
                 case 21:map=new[]{0,1,2,3,4};break;
                 case 22:map=new[]{0,1,2,3,4,5};break;
                 case 23:map=new[]{0,1,2,3,4,5,5,6};break;
+                case 24:map=new[]{0,1,2,3,4};break;
                 case 25:map=new[]{0,2,5,5,6};break;
                 case 26:map=new[]{0,1,2,2,2,3,4,4,4,4,5,5};break;
                 case 27:map=new[]{0,1,2,3,4};break;

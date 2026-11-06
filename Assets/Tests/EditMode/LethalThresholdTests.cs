@@ -44,13 +44,14 @@ namespace FingerDiceDuel.Tests
         public void Base_lethal_is_result_plus_attack_minus_defense()
         {
             // 玩家原话："斩杀线即为最大伤害加上攻防加成之后的值"
-            // 战士·勇士 攻+1 防0；未凑10时打战士·勇士 8 点 -> 8 + 1 - 0 = 9
+            // 战士·勇士 攻+1 防0；用非1的手发起普通攻击。
             var me = CharacterFactory.CreatePlayer("我", CharacterDefinition.Champion);
             var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(me, foe, out GameManager game);
 
             SetHealth(foe, 8);
+            me.LeftHand.SetValue(2);
             var move = new LegalMove(me, me.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(9, ai.TotalLethalDamage(move, me, foe, 8),

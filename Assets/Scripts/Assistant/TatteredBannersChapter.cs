@@ -66,10 +66,10 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Devotion(List<BannersSample> list)
         {
-            var s=Make("echoes","盾锋与回响",CharacterDefinition.OathOfDevotion,new[]{1,2,2,3,2,4,3,1},"4／6改为同数字的完整盾，卫护斩冲击邻近角色固定2点。旧盾换新盾触发破盾与合盾两次冲击。");
+            var s=Make("echoes","盾锋与回响",CharacterDefinition.OathOfDevotion,new[]{1,2,2,3,2,4,3,1},"4改为同数字的完整盾，6正常攻击，卫护斩冲击邻近角色固定2点。旧盾换新盾触发破盾与合盾两次冲击。");
             s.Turn(0,0,3,0,-1,"左1＋同袍左3＝4合盾，只选卫护斩的目标教官甲；无需再确认普通攻击。").RestOthers()
-                .Turn(0,0,1,0,-1,"完整4盾＋教官甲左2＝6，分别为旧盾破碎、新盾形成选择教官甲，两次冲击。");
-            s.Verify=l=>l.Player.LeftHand.Value==6&&l.Player.LeftHand.IsShield&&l.Seats[1].Health==14
+                .Turn(0,0,3,1,-1,"完整4盾＋同袍右1＝5，分别为旧盾破碎、新盾形成选择教官甲，两次冲击。");
+            s.Verify=l=>l.Player.LeftHand.Value==5&&l.Player.LeftHand.IsShield&&l.Seats[1].Health==14
                 &&((OathOfDevotionLogic)l.Player.Character).ShieldFormCount==2;list.Add(s);
         }
         private static void Protection(List<BannersSample> list)

@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>(context?.Manager?.DistanceBetween(context.Attacker,context.Defender)??1)<=1?AttackDamageType.Bludgeoning:AttackDamageType.Piercing;
         public StatusEffect StatusToApplyOnHit(AttackContext context)=>StatusNames.StatusOf(AttackDamageTypes.ToDamageType(context.AttackType));
-        public static bool PiercesImmunity(PlayerState owner, AttackDamageType type)
+        public static bool PiercesAffinities(PlayerState owner, AttackDamageType type)
             => (type == AttackDamageType.Lightning || type == AttackDamageType.Thunder)
                 && CharacterBehaviors.FirstImplementer<StormSorceryLogic>(owner) != null;
         public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)=>_operated=true;

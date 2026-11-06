@@ -284,6 +284,27 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
+        public void Identity_ai_selects_only_dealt_roles_with_role_specific_bias()
+        {
+            var a = CharacterDefinition.Champion;
+            var b = CharacterDefinition.Tactician;
+            var c = CharacterDefinition.SchoolOfAbjuration;
+            var data = $"Lord\t{a.Id}\t90\t100\nLord\t{b.Id}\t10\t100\nLord\t{c.Id}\t100\t100\n"
+                + $"Rebel\t{a.Id}\t10\t100\nRebel\t{b.Id}\t90\t100\n";
+            var preference = new IdentityDraftPreference(data);
+            var candidates = new[] { a, b };
+            var rng = new System.Random(15);
+            int lord = 0, rebel = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                if (preference.Choose(IdentityRole.Lord, candidates, rng) == a) lord++;
+                if (preference.Choose(IdentityRole.Rebel, candidates, rng) == b) rebel++;
+            }
+            Assert.True(lord > 80);
+            Assert.True(rebel > 80);
+        }
+
+        [Test]
         public void Traitor_health_cap_follows_original_body_through_temporary_forms()
         {
             foreach (int forms in new[] { 1, 2, 3 })
@@ -306,7 +327,7 @@ namespace FingerDiceDuel.Tests
                 game.RefreshGameOver();
 
                 Assert.True(game.TraitorRevealed);
-                Assert.AreEqual(sheep ? 5 : 12, traitor.MaximumHealth);
+                Assert.AreEqual(sheep ? 8 : 12, traitor.MaximumHealth);
                 Assert.AreEqual(36, traitor.OriginalMaximumHealth);
                 if (sheep) traitor.EndPolymorph();
                 if (wild)

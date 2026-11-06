@@ -8,6 +8,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public IReadOnlyCollection<int> Portents=>_portents;
         public override string DisplayName=>"法师·预言学派";
         public override int DefaultDefenseBonus=>-1;
+        public override int AttackBonus => base.AttackBonus + _portents.Count / 3;
+        public override int DefenseBonus => base.DefenseBonus + _portents.Count / 3;
         public override int BaseAttackRange=>InfiniteAttackRange;
         public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==7?35:0;
         public void RecordPortent(int value){if(value>=0&&value<=9)_portents.Add(value);}

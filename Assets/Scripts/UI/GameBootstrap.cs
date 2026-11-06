@@ -1168,6 +1168,14 @@ namespace FingerDiceDuel.UI
             ShowSeatDraw(GameScreen.IdentityDraw, "抽取身份");
         }
 
+        private IdentityDraftPreference _identityDraftPreference;
+        private CharacterDefinition PickIdentityAi(int seat)
+        {
+            if (_identityDraftPreference == null)
+                _identityDraftPreference = new IdentityDraftPreference(Resources.Load<TextAsset>("Art/Battle/v1/Adventure/identity-role-rates")?.text);
+            return _identityDraftPreference.Choose(_idRoles[seat], _identityDeals[seat], _idRng);
+        }
+
         private void PrepareIdentityCandidates()
         {
             if (_identityDeals != null) return;
@@ -1180,7 +1188,7 @@ namespace FingerDiceDuel.UI
             for (int seat = 0; seat < _identityDeals.Length; seat++)
                 _identityDeals[seat] = Deal(pool, seat == 0 ? 8 : 6);
 
-            _idLordPick = _idHumanSeat == 0 ? null : _identityDeals[0][_idRng.Next(8)];
+            _idLordPick = _idHumanSeat == 0 ? null : PickIdentityAi(0);
             _idHumanPick = null;
             _idIndex = -1;
             RefreshIdentitySelect();
@@ -1226,9 +1234,8 @@ namespace FingerDiceDuel.UI
             var defs = new CharacterDefinition[8];
             for (int seat = 0; seat < defs.Length; seat++)
             {
-                var candidates = _identityDeals[seat];
                 defs[seat] = seat == _idHumanSeat ? _idHumanPick
-                    : seat == 0 ? _idLordPick : candidates[_idRng.Next(candidates.Count)];
+                    : seat == 0 ? _idLordPick : PickIdentityAi(seat);
             }
 
             var seated = new List<PlayerState>(8);

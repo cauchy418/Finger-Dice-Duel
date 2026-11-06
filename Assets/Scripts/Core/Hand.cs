@@ -103,6 +103,12 @@ namespace FingerDiceDuel.Core
             return result;
         }
 
+        public static int ComputeDifference(int a, int b)
+        {
+            int result = ((a - b) % 10 + 10) % 10;
+            return result == 0 ? 1 : result;
+        }
+
         public static HandEffectType GetEffectType(int value)
         {
             switch (value)
@@ -132,9 +138,9 @@ namespace FingerDiceDuel.Core
         /// 注意：<paramref name="otherHandValue"/> 是**对手**参与运算那只手的数值，
         /// 本方法**不会**修改对手的手。
         /// </summary>
-        public HandEffectType PerformOperation(int otherHandValue)
+        public HandEffectType PerformOperation(int otherHandValue, bool subtract = false)
         {
-            int result = ComputeSum(Value, otherHandValue);
+            int result = subtract ? ComputeDifference(Value, otherHandValue) : ComputeSum(Value, otherHandValue);
             Value = Clamp(result);
 
             HandEffectType effect = GetEffectType(Value);

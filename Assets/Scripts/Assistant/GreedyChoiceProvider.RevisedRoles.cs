@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Assistant
             var book=CharacterBehaviors.FirstImplementer<IPortentBook>(actor);
             if(book!=null)
             {
-                if(result==7&&!book.Portents.ContainsValue(other))score+=35;
+                if(result==7&&!book.Portents.ContainsValue(other))score+=book.Portents.Count % 3 == 2 ? 60 : 40;
                 if(book.Portents.Count>0&&(result==7||other==7))score+=25;
                 if(book.Portents.Count>0&&move.ActedHand.Value==7&&other!=7&&result!=7)score-=25;
             }

@@ -32,7 +32,7 @@
     /// | 状态 | 时机 | 伤害 |
     /// |---|---|---|
     /// | <see cref="Poison"/> 中毒 | 目标**回合开始** | 2 点，**不可被抵挡** |
-    /// | <see cref="Shock"/> 感电 | 目标**回合开始** | 1 点（自己 + 环上相邻），可被抵挡/闪避/减免 |
+    /// | <see cref="Shock"/> 感电 | 目标**回合开始** | 自己 2 点，环上相邻各 1 点，可被抵挡/闪避/减免 |
     /// | <see cref="Burn"/> 燃烧 | 目标**回合结束** | 3 点，可被盾抵挡 / 游荡者·风流剑客闪避 / 太极减免 |
     ///
     /// ⚠️ **这三种"每回合掉血"不会再挂回状态**（玩家明确要求），
@@ -68,7 +68,7 @@
         /// <summary>兼容旧名：旧版“冰冻”现在叫覆霜。</summary>
         Freeze = Frost,
 
-        /// <summary>闪电：回合开始时自己与相邻玩家各受 **1** 点闪电伤害。</summary>
+        /// <summary>闪电：回合开始时自己受2点，相邻玩家各受1点闪电伤害。</summary>
         Shock = 8,
 
         /// <summary>心灵（恐慌）：攻击加成 −2，且施加者不能成为其合法攻击目标。</summary>
@@ -117,6 +117,7 @@
         Tinnitus = 23,
         DarknessBlind = 24,
         BlessedHealing = 25,
+        PhysicalVulnerability = 26,
     }
 
     /// <summary>
@@ -194,6 +195,7 @@
                 case StatusEffect.Greased: return "greased";
                 case StatusEffect.WarBlessing: return "war_blessing";
                 case StatusEffect.BlessedHealing: return "blessed_healing";
+                case StatusEffect.PhysicalVulnerability: return "physical_vulnerability";
                 case StatusEffect.Tinnitus: return "tinnitus";
                 case StatusEffect.DarknessBlind: return "darkness_blind";
                 default: return null;
@@ -247,6 +249,7 @@
                 case StatusEffect.Greased: return "油腻";
                 case StatusEffect.WarBlessing: return "战争祝福";
                 case StatusEffect.BlessedHealing: return "神佑医者";
+                case StatusEffect.PhysicalVulnerability: return "物理易伤";
                 case StatusEffect.Tinnitus: return "耳鸣";
                 case StatusEffect.DarknessBlind: return "失明";
                 default: return "无";
@@ -274,7 +277,7 @@
                 case StatusEffect.Frost:
                     return "运算结果减半（至少为 1）；结束后附加 2 回合潮湿";
                 case StatusEffect.Shock:
-                    return "回合开始时自己与相邻玩家各受 1 点闪电伤害";
+                    return "回合开始时自己受2点闪电伤害，相邻玩家各受1点";
                 case StatusEffect.Panic:
                     return "攻击加成 −2，且施加者不能成为其合法攻击目标";
                 case StatusEffect.Bleed:
@@ -305,6 +308,8 @@
                     return "攻防+1；算出9可选择放弃回复，改为9点基础伤害攻击；重复施加刷新2回合，不叠加";
                 case StatusEffect.BlessedHealing:
                     return "治疗溢出获得攻防+1，持续2回合。重复获得刷新时长";
+                case StatusEffect.PhysicalVulnerability:
+                    return "受到挥砍、钝击和穿刺伤害×1.5，向上取整。持续期间每次命中均生效，重复施加刷新。";
                 case StatusEffect.Greased:
                     return "每次运算完成后50%概率倒伏2回合；火焰命中清除油腻、伤害×1.5，照常附燃烧";
                 default:
@@ -350,9 +355,11 @@
                 && status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing;
 
         public static string ResourceKeyOf(StatusEffect status)
-            => status == StatusEffect.BlessedHealing ? "Subclasses/cleric_life_domain" : "Status/" + IconKeyOf(status);
+            => status == StatusEffect.BlessedHealing ? "Subclasses/cleric_life_domain"
+                : status == StatusEffect.PhysicalVulnerability ? DamageAffinityNames.Key(DamageAffinity.Vulnerability, AttackDamageType.Slashing)
+                : "Status/" + IconKeyOf(status);
 
-        /// <summary>全部24种计时状态（排除兼容别名，顺序固定）。</summary>
+        /// <summary>计时状态（排除兼容别名，顺序固定）。</summary>
         public static readonly StatusEffect[] AllStatuses =
         {
             StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
@@ -363,7 +370,7 @@
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
             StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
-            StatusEffect.BlessedHealing,
+            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability,
         };
 
         /// <summary>
@@ -426,6 +433,7 @@
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 case StatusEffect.WarBlessing: return 0xDBB662;
                 case StatusEffect.BlessedHealing: return 0xE7CA89;
+                case StatusEffect.PhysicalVulnerability: return 0xCC6852;
                 case StatusEffect.DarknessBlind: return 0x67558D;
                 case StatusEffect.Tinnitus: return 0xB99DCD;
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）

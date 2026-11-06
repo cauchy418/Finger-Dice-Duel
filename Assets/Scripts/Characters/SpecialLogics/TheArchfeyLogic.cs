@@ -6,8 +6,8 @@ namespace FingerDiceDuel.Core
     /// **邪术师·至高妖精**（攻 0 / 防 −1，**攻击距离无限**）。
     ///
     /// 玩家确认的规则：
-    ///   · 有人**发起攻击**时，若**攻击数字**与自己某只手的数字相同，
-    ///     可以**把那只手 +1**（永久，参考游荡者·风流剑客 1 变 2）来**取消这次攻击**
+    ///   · **受到攻击**时，若**攻击数字**与自己某只手的数字相同，
+    ///     可以**把那只手 +1**（永久，参考游荡者·风流剑客 1 变 2）来**取消这次攻击并令攻击者魅惑两回合**
     ///   · 取消是**最早结算**的 —— 能取消掉法师·咒法学派那种"在钩子里改写伤害"的攻击
     ///   · 战士·剑士的追加攻击与圣武士·奉献之誓的冲击**攻击数字视为 0**（因此无法被取消）
     ///   · **不消耗行动**（双方都能继续）
@@ -56,6 +56,7 @@ namespace FingerDiceDuel.Core
         {
             if (canceller == null || attackValue <= 0) return false;
 
+            if (!ReferenceEquals(canceller, target) || ReferenceEquals(canceller, attacker)) return false;
             // 找到数字相同的那只手（左右都可以）
             Hand matched = null;
             if (canceller.LeftHand != null && canceller.LeftHand.Value == attackValue)
@@ -66,6 +67,7 @@ namespace FingerDiceDuel.Core
             if (matched == null) return false;
 
             CancelWith(canceller, matched);
+            attacker?.ApplyStatus(StatusEffect.Charm, PlayerState.StatusDurationTurns, canceller);
             return true;
         }
 

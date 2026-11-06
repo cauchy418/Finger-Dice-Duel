@@ -64,23 +64,23 @@ namespace FingerDiceDuel.Tests
             Assert.IsFalse(level.Soldier.LeftHand.IsShield, "起手5不是完整盾（遵循初始5的碎盾口径）");
             Human(level, level.Player.LeftHand, level.Soldier.LeftHand);
             Assert.AreEqual(11, level.Soldier.Health, "普通6+1=7伤");
-            Assert.AreEqual(12, level.Player.LeftHand.Value + level.Player.RightHand.Value);
+            Assert.AreEqual(7, level.Player.LeftHand.Value + level.Player.RightHand.Value);
             Assert.AreEqual(0, Uses(level));
             Instructor(level);
-            Assert.AreEqual(1, level.Soldier.LeftHand.Value);
-            Human(level, level.Player.LeftHand, level.Soldier.RightHand);
+            Assert.AreEqual(4, level.Soldier.LeftHand.Value);
+            Human(level, level.Player.RightHand, level.Soldier.RightHand);
             Assert.AreEqual(4, level.Soldier.Health, "重击4×1.5+1=7伤");
-            Assert.AreEqual(4, level.Player.LeftHand.Value);
-            Assert.AreEqual(6, level.Player.RightHand.Value);
+            Assert.AreEqual(6, level.Player.LeftHand.Value);
+            Assert.AreEqual(4, level.Player.RightHand.Value);
             Assert.AreEqual(1, Uses(level));
             Assert.IsTrue(string.Join("", board.Log).Contains("精通重击"), "真实控制器战报记录技能");
             Instructor(level);
-            Assert.AreEqual(2, level.Soldier.RightHand.Value);
+            Assert.AreEqual(7, level.Soldier.RightHand.Value);
             Assert.AreEqual(5, level.StepNumber);
             Assert.IsTrue(level.IsFreeStage);
-            Human(level, level.Player.RightHand, level.Soldier.RightHand);
+            Human(level, level.Player.RightHand, level.Soldier.LeftHand);
             Assert.IsTrue(level.IsComplete);
-            Assert.AreEqual(20, level.Player.Health);
+            Assert.AreEqual(16, level.Player.Health);
             Assert.AreEqual(1, Uses(level), "终结时4/8不再重击");
             Assert.Null(level.CurrentBeat);
         }
@@ -90,9 +90,9 @@ namespace FingerDiceDuel.Tests
         {
             var level = Setup(out var board);
             ReachHeavyStrike(level);
-            Assert.AreSame(level.Player.LeftHand, level.SuggestedHand);
-            Assert.IsFalse(level.AllowClick(level.Player.RightHand));
-            Assert.IsTrue(board.ClickHand(level.Player.LeftHand));
+            Assert.AreSame(level.Player.RightHand, level.SuggestedHand);
+            Assert.IsFalse(level.AllowClick(level.Player.LeftHand));
+            Assert.IsTrue(board.ClickHand(level.Player.RightHand));
             Assert.AreSame(level.Soldier.RightHand, level.SuggestedHand);
             Assert.IsFalse(level.AllowClick(level.Soldier.LeftHand));
             Assert.IsTrue(board.ClickHand(level.Soldier.RightHand));
@@ -156,7 +156,7 @@ namespace FingerDiceDuel.Tests
         {
             var level = Setup(out var board);
             level.SkipTutorial();
-            Human(level, level.Player.LeftHand, level.Soldier.RightHand); // 9，回复，交给教官
+            Human(level, level.Player.LeftHand, level.Soldier.RightHand); // 6，攻击，交给教官
             level.Player.LeftHand.SetValue(2);
             level.Player.RightHand.SetValue(2);
             level.Soldier.LeftHand.SetValue(3);
@@ -174,16 +174,16 @@ namespace FingerDiceDuel.Tests
         {
             var old = Setup(out var board);
             ReachHeavyStrike(old);
-            Human(old, old.Player.LeftHand, old.Soldier.RightHand);
+            Human(old, old.Player.RightHand, old.Soldier.RightHand);
             Assert.AreEqual(1, Uses(old));
             var fresh = Setup(out var next);
             Assert.IsFalse(fresh.Started);
             Assert.AreEqual(20, fresh.Player.Health);
             Assert.AreEqual(18, fresh.Soldier.Health);
-            Assert.AreEqual(1, fresh.Player.LeftHand.Value);
-            Assert.AreEqual(6, fresh.Player.RightHand.Value);
-            Assert.AreEqual(5, fresh.Soldier.LeftHand.Value);
-            Assert.AreEqual(8, fresh.Soldier.RightHand.Value);
+            Assert.AreEqual(3, fresh.Player.LeftHand.Value);
+            Assert.AreEqual(1, fresh.Player.RightHand.Value);
+            Assert.AreEqual(3, fresh.Soldier.LeftHand.Value);
+            Assert.AreEqual(3, fresh.Soldier.RightHand.Value);
             Assert.AreEqual(0, Uses(fresh));
             fresh.BeginTutorial();
             Assert.AreEqual(1, fresh.StepNumber);
@@ -197,7 +197,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(5, level.StepNumber);
             Assert.IsTrue(level.AllowClick(level.Player.RightHand));
             Assert.IsTrue(level.AllowClick(level.Soldier.RightHand));
-            Human(level, level.Player.RightHand, level.Soldier.LeftHand); // 6+5=1
+            level.Player.RightHand.SetValue(8);
+            Human(level, level.Player.RightHand, level.Soldier.LeftHand); // 8+3=1
             Instructor(level);
             Assert.AreEqual(20, level.Player.Health);
             Assert.AreEqual(18, level.Soldier.Health);

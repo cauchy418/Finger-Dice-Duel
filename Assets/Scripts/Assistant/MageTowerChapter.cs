@@ -34,7 +34,7 @@ namespace FingerDiceDuel.Assistant
             }
         }
         public static string Hint(int level)=>new[]{"奥法骑士 · 碎盾附魔 / 法术回响","塑能 · 十种法术 / 元素反应",
-            "咒法 · 力场 / 王车易位","防护 · 持续抗性 / 屏障 / 易伤与免疫","惑控 · 失能 / 魅惑 / 受伤解除",
+            "咒法 · 力场 / 王车易位","防护 · 持续抗性 / 屏障","惑控 · 失能 / 魅惑 / 受伤解除",
             "死灵 · 抵挡 / 免费暗蚀 / 不死奴仆","预言 · 预兆记录 / 预知未来","幻术 · 幻术默发 / 伤害减半",
             "变化 · 无序匹配 / 变羊 / 溢伤","法师选角 · 经典先攻 / 幻影试炼"}[level-11];
         public static string SampleKey(int level,string key)=>"FingerDiceDuel.Adventure.Chapter2.Level"+level+".Sample."+key+".Completed";
@@ -77,7 +77,7 @@ namespace FingerDiceDuel.Assistant
             var types=new[]{DamageType.Fire,DamageType.Cold,DamageType.Lightning,DamageType.Thunder,DamageType.Acid,
                 DamageType.Poison,DamageType.Radiant,DamageType.Necrotic,DamageType.Psychic,DamageType.Force};
             var explains=new[]{"燃烧：目标回合结束失去3生命。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
-                "感电：目标回合开始，自身及相邻角色各受1点闪电。","残响：限制攻击距离，不限制借用加数。",
+                "感电：目标回合开始，自身受2点闪电，相邻角色各受1点。","残响：限制攻击距离，不限制借用加数。",
                 "强酸命中后防−2，首次命中不提前享受这次降防。","中毒：目标回合开始失去2生命。",
                 "光耀附目盲，只能借用距离1的角色手牌；与圣光不同。","腐朽：无法回复生命。",
                 "心灵随机附恐慌或震慑。恐慌降攻且不能攻击来源；震慑不能发起攻击。","力场无附加负面状态；下一课展示其穿盾能力。"};
@@ -130,7 +130,7 @@ namespace FingerDiceDuel.Assistant
             s.CastingType=type;
             s.Turn(1,key=="freeze"?0:1,0,0,
                 key=="freeze"?"护卫冻结，两只手都不能行动，本回合按普通规则跳过；查看冻结剩余1回合。":
-                key=="conduct"?"护卫回合开始感电：自身与相邻角色各受1点闪电。右2＋己左6＝8，潮湿−1变7，无效果；原潮湿随后自然到期。":
+                key=="conduct"?"护卫回合开始感电：自身受2点闪电，相邻角色各受1点。右2＋己左6＝8，潮湿−1变7，无效果；原潮湿随后自然到期。":
                 "护卫右2＋己左6＝8，正常攻击；潮湿已清除，也没有燃烧，所以回合结束不受燃烧伤害。");
             s.Prepare=g=>g.PlayerB.ApplyStatus(initial,2);
             s.Introduction="训练配置：护卫预置"+StatusNames.Of(initial)+"2回合，准备期休整后剩1回合。"+text;
@@ -183,28 +183,19 @@ namespace FingerDiceDuel.Assistant
                 .Turn(0,0,1,0,"己左5＋护卫左1＝6，存6点屏障。")
                 .Turn(1,1,0,1,"护卫右2＋己右2＝4，原伤5全部吸收；6点屏障归0，不剩1。");
             d.Verify=l=>l.Player.Health==20&&Barrier(l)==0;list.Add(d);
-            for(int mode=0;mode<4;mode++)
-            {
-                int m=mode;var labels=new[]{"易伤","抗性","易伤与抗性","免疫"};
-                var s=new MageTowerSample("affinity_"+m,labels[m],new[]{1,2,3,1},"开场训练属性为火焰"+labels[m]+"，并非法师的新技能。护卫先攻4，防−1使待承伤为5。")
-                    .Turn(1,0,0,0,"护卫左3＋己左1＝4，火焰待承伤5。"+new[]{"易伤5→8，生命12。","抗性5→3，生命17。","先易伤5→8，再抗性8→4，生命16。","免疫归0，也不附燃烧；生命20。"}[m]);
-                s.FirstSeat=1;s.GuardType=AttackDamageType.Fire;s.Prepare=g=>{if(m==0||m==2)g.PlayerA.AddVulnerability(AttackDamageType.Fire);if(m==1||m==2)g.PlayerA.AddResistance(AttackDamageType.Fire);if(m==3)g.PlayerA.AddImmunity(AttackDamageType.Fire);};
-                s.Verify=l=>l.Player.Health==new[]{12,17,16,20}[m];list.Add(s);
-            }
         }
         private static int Barrier(MageTowerLesson l)=>CharacterBehaviors.FirstImplementer<IAbjurationSkill>(l.Player)?.BarrierPoints??0;
         private static void Enchantment(List<MageTowerSample> list)
         {
-            var s=new MageTowerSample("control","失能、受伤解除与魅惑",new[]{1,2,3,2},"护卫攻+2。失能使全部攻击伤害归0；之后实际受伤才清除新控制。魅惑强制随机合法行动。")
-                .Turn(0,0,1,0,"己左1＋护卫左3＝4，护卫20→16。惑控选【失能】。")
-                .Turn(1,1,0,0,"护卫右2＋己左4＝6。即使攻+2、你防−1，失能仍令伤害0。")
-                .Turn(0,1,1,1,"己右2＋护卫右6＝8，护卫16→8，旧失能被实际掉血解除；本次选【不发动】。")
-                .Turn(1,1,0,1,"护卫右6＋己右8＝4，造成7伤，你20→13；受到伤害后选【魅惑】给来源护卫。")
-                .Turn(0,0,1,0,"己左4＋护卫左3＝7，无效果，保留护卫魅惑。")
-                .Rest(1,"护卫受魅惑，随机执行合法行动。观察随机源与加数；此后暂停，不继续追打。");
-            s.GuardAttack=2;s.Verify=l=>l.Player.IsAlive&&string.Join("|",l.Board.Log).Contains("失能")&&string.Join("|",l.Board.Log).Contains("魅惑");
-            // 魅惑由内核重写AI选择，最后一拍必须真的行动，不能以教学休整绕开。
-            s.Turns[s.Turns.Count-1]=new MageTowerTurn(1,0,0,0,"护卫受魅惑，随机执行一次合法行动，随后试验结束。若再次出现惑控选择，选不发动。");list.Add(s);
+            var s=new MageTowerSample("control","失能与魅惑",new[]{1,2,3,2},"受伤后可使伤害来源失能，实际伤到对手后可使其魅惑。")
+                .Turn(1,0,0,0,"护卫左3＋你的左1＝4，实际受伤后选择【失能】。")
+                .Turn(0,0,1,1,"己左1＋护卫右2＝3，保留护卫身上的失能。")
+                .Turn(1,0,0,1,"护卫左4＋己右2＝6。失能使本次攻击伤害为零。")
+                .Turn(0,1,1,0,"己右2＋护卫左6＝8，实际伤害后选择【魅惑】。")
+                .Turn(1,0,0,0,"护卫受魅惑，随机执行一次合法行动。若再次询问，选不发动。");
+            s.FirstSeat=1;s.GuardAttack=2;
+            s.Verify=l=>l.Player.IsAlive&&string.Join("|",l.Board.Log).Contains("失能")&&string.Join("|",l.Board.Log).Contains("魅惑");
+            list.Add(s);
         }
         private static void Necromancy(List<MageTowerSample> list)
         {
@@ -254,13 +245,13 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Transmutation(List<MageTowerSample> list)
         {
-            var a=new MageTowerSample("sheep","变形与自然恢复",new[]{8,6,6,4},"护卫原为火焰攻击。4/6与6/4无序匹配；变羊后10生命、攻防−2/−2、距离1、无原技能。")
-                .Turn(0,0,1,0,"己左8＋护卫左6＝4，护卫20→16。回合结束【变形术】选择护卫，独立羊生命10/10，保存原生命16。")
+            var a=new MageTowerSample("sheep","变形与自然恢复",new[]{8,6,6,4},"护卫原为火焰攻击。4/6与6/4无序匹配；变羊后8生命、攻防−2/−2、距离1、无原技能。")
+                .Turn(0,0,1,0,"己左8＋护卫左6＝4，护卫20→16。回合结束【变形术】选择护卫，独立羊生命8/8，保存原生命16。")
                 .Turn(1,0,0,0,"羊左6＋己左4＝1，无效果；第一次自身回合结束，剩1回合。")
                 .Turn(0,1,1,0,"己右6＋羊左1＝7，无效果；本次变形术选不发动，别刷新持续时间。")
                 .Turn(1,1,0,0,"羊右4＋己左4＝8，攻−2、防−1后7钝击，你20→13；不附燃烧。第二次自身回合结束解除，恢复原16生命，手值保留1/8。");
             a.GuardType=AttackDamageType.Fire;a.Verify=l=>!l.Soldier.IsPolymorphed&&l.Soldier.Health==16&&l.Player.Health==13;list.Add(a);
-            var b=new MageTowerSample("overflow","击破羊身与溢伤",new[]{6,3,1,2},"开场样本：护卫原生命16/20，已变羊且羊身受伤至4/10。此为明确训练配置。")
+            var b=new MageTowerSample("overflow","击破羊身与溢伤",new[]{6,3,1,2},"开场样本：护卫原生命16/20，已变羊且羊身受伤至4/8。此为明确训练配置。")
                 .Turn(0,0,1,1,"己左6＋羊右2＝8，羊防−2，造成10。羊身抵4，溢出6扣原生命16→10，不再叠一次攻防。回合结束变形术选不发动。");
             b.Prepare=g=>{g.PlayerB.SetHealthExact(16);g.PlayerB.TryPolymorph();g.PlayerB.SetHealthExact(4);};
             b.Verify=l=>!l.Soldier.IsPolymorphed&&l.Soldier.Health==10;list.Add(b);

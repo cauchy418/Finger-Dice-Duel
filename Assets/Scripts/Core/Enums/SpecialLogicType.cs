@@ -42,7 +42,7 @@ namespace FingerDiceDuel.Core
         Assassin = 9,
 
         /// <summary>
-        /// 圣武士·奉献之誓：4/6 改为合盾；合盾与碎盾时对范围内一人造成 2 点真实伤害；
+        /// 圣武士·奉献之誓：4 改为合盾；合盾与碎盾时对范围内一人造成 2 点真实伤害；
         /// 范围内有人被打时可以把目标改成自己。
         /// </summary>
         OathOfDevotion = 10,
@@ -139,7 +139,7 @@ namespace FingerDiceDuel.Core
         /// <summary>野蛮人·狂战士道途：9 改为攻击；失血越多攻防越高；造成伤害回复一半。</summary>
         PathOfTheBerserker = 26,
 
-        /// <summary>战士·战术家：按场上最高与最低体力差获得动态攻防。</summary>
+        /// <summary>战士·战术家：普通运算可选择加法或减法。</summary>
         Tactician = 27,
 
         /// <summary>法师·预言学派：7 后的窗口内，符合手值条件的运算仅改数字、无其它效果。</summary>

@@ -9,6 +9,7 @@ parser.add_argument('--log-prefix', default='Tools/HeadlessTests/bin/druid-57-')
 parser.add_argument('--optimized-ai', action='store_true')
 parser.add_argument('--balance', action='store_true')
 parser.add_argument('--ranger', action='store_true')
+parser.add_argument('--arcane', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
 out = root / 'Tools/Statistics' / (args.directory or args.date)
@@ -20,6 +21,8 @@ n = len(roles)
 pairs = n * (n - 1) // 2
 duals = sum(k * (k - 1) // 2 for k in axes.values())
 expected = {'1v1': pairs * 20, '2v2': pairs * 16, 'dual': duals * 8, 'eight': 600, 'identity': 600}
+if args.arcane:
+    expected.update({'identity': 2000, 'identity-preferred': 600})
 totals, counts = {}, {}
 for mode, size in expected.items():
     path = out / (mode + '.csv')
@@ -47,6 +50,20 @@ for mode, size in expected.items():
         first_counts = collections.Counter(r['first'] for r in rows)
         assert len(first_counts) == (pairs if mode == '2v2' else duals)
         assert set(first_counts.values()) == {16 if mode == '2v2' else 8}
+    if args.arcane and mode.startswith('identity'):
+        by_role_path = out / (mode + '-roles.tsv')
+        role_rows = list(csv.DictReader(by_role_path.read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
+        seat_totals = {'Lord': 1, 'Loyalist': 2, 'Rebel': 4, 'Traitor': 1}
+        assert len({(r['role'], r['id']) for r in role_rows}) == len(role_rows)
+        for role, seats in seat_totals.items():
+            entries = [r for r in role_rows if r['role'] == role]
+            assert sum(int(r['games']) for r in entries) == size * seats
+            assert all(r['id'] in ids and 0 <= int(r['wins']) <= int(r['games']) for r in entries)
+        if mode == 'identity':
+            assert by_role_path.read_bytes() == (root / 'Assets/Resources/Art/Battle/v1/Adventure/identity-role-rates.txt').read_bytes()
+        for row in rows:
+            picks = [i for col in ('first', 'second') for i in row[col].split('+') if i]
+            assert len(picks) == len(set(picks)) == 8
     for stat in stats.values():
         stat['losses'] = stat['games'] - stat['wins'] - stat['draws']
         stat['win_percent'] = round(100 * stat['wins'] / stat['games'], 3) if stat['games'] else None
@@ -70,14 +87,17 @@ report = {'date': args.date, 'roster_count': n, 'law_axis_counts': [axes[a] for 
           'roles': [{**r, 'modes': {m: counts[m][r['id']] for m in counts}} for r in roles],
           'limitations': ['固定AI策略采样，不代表真人胜率或最优权重。',
                           f'2v2为固定队伍偏移配桌；双将为{duals}组合固定偏移抽样，并非全部组合两两循环。',
-                          '八人两表各600局，角色出场不均衡，不宜比较小差异。',
-                          '五模式反映游侠职业调整及相关策略和对策更新后的配置。' if args.ranger
+                          '八人身份偏好以独立的2,000局随机身份样本拟合，另用600局验证实际候选偏好。角色出场不均衡。' if args.arcane
+                          else '八人两表各600局，角色出场不均衡，不宜比较小差异。',
+                          '反映本轮九个子职的规则和AI更新，并复查57子职策略和开局对策。' if args.arcane
+                          else '五模式反映游侠职业调整及相关策略和对策更新后的配置。' if args.ranger
                           else '五模式反映八子职调整和全角色策略复查后的配置。' if args.balance
                           else '权重采用独立留出验证，五模式结果反映最终配置。' if args.optimized_ai
                           else '本轮只重新测量现有AI，没有调整角色数值或进行自身／针对权重的独立留出寻优。']}
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 total = sum(expected.values())
-description = ('采用新版游侠面板、技能和相关AI策略' if args.ranger else
+description = ('采用新版龙族、风暴、奉献、战争及法师技能，并更新防护学派和相关AI' if args.arcane
+               else '采用新版游侠面板、技能和相关AI策略' if args.ranger else
                '采用八子职平衡调整和全角色AI复查后的配置' if args.balance else
                '采用德鲁伊和幽影魔法新版专属策略、对策及通过留出验证的权重' if args.optimized_ai
                else '采用德鲁伊重构和孢子结社接入后的角色规则')
@@ -88,7 +108,9 @@ lines = [f'# {n}子职胜率重新采样（{args.date}）', '',
          f'| 2v2 | {expected["2v2"]:,} | {pairs:,}支双角色队伍，与固定偏移{pairs//2}的队伍配16局；每角色{(n-1)*32:,}次出场 |',
          f'| 双将 | {expected["dual"]:,} | {duals}种合法组合，与固定偏移{duals//2}的组合配8局；每组合16次出场，双方先手均衡 |',
          '| 八人阵营 | 600 | 单将3/3/2，角色与阵营轴一致；每类阵营各担任2人方200次 |',
-         '| 八人身份 | 600 | 随机8个不同子职与隐藏身份，按身份阵线记录胜者 |', '',
+         *(['| 八人身份（随机） | 2,000 | 主公随机8候选，其余各6；从各自候选均匀选一名 |',
+            '| 八人身份（偏好） | 600 | 独立种子，同样随机发牌，再按身份内的平滑胜率加权 |']
+           if args.arcane else ['| 八人身份 | 600 | 随机8个不同子职与隐藏身份，按身份阵线记录胜者 |']), '',
          '胜率均为胜场／全部出场，平局不算胜。双将子职按其组合共同计胜；八人角色阵亡仍按所属阵线计分。固定配桌和随机选角限制了泛化；旧数据与本次角色池及规则不同，百分点差不能直接归因于某次技能修改。', '',
          '## 平局与异常', '', '| 模式 | 平局 | 异常 | 模拟器强停 |', '|---|---:|---:|---:|']
 for mode, stat in totals.items():
@@ -98,15 +120,21 @@ for role in roles:
     values = [f'{counts[m][role["id"]]["win_percent"]:.1f}%' for m in ('1v1', '2v2', 'dual')]
     lines.append('| ' + role['name'] + ' | ' + ' | '.join(values) + ' |')
 lines += ['', '## 复现与证据', '',
-          '所有模式使用真实BoardController驱动，复用已校正胜者归属的测试台。固定起手、技能及AI随机源，每个CSV保存逐局种子、角色、胜者和行动数。roster.tsv由运行时角色表直接导出；results.json保存所有五模式逐角色胜／负／平与分母、源码及CSV指纹；五份日志均须通过才能汇总。', '',
+          '所有模式使用真实BoardController驱动，复用已校正胜者归属的测试台。固定起手、技能及AI随机源，每个CSV保存逐局种子、角色、胜者和行动数。roster.tsv由运行时角色表直接导出；results.json保存所有五模式逐角色胜／负／平与分母、源码及CSV指纹；各模式日志均须通过才能汇总。', '',
           '```powershell', "$env:DOTNET_PROCESSOR_COUNT='1'", "$env:DOTNET_TieredCompilation='0'", "$env:COMPlus_TieredCompilation='0'",
           f"$env:FDD_REVISION_ROOT='Tools/Statistics/{out.name}'",
           "$env:FDD_REVISION_MODE='1v1'  # 依次换为2v2、dual、eight、identity",
           'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only RevisionBalanceTests -OutputDirectory Tools/HeadlessTests/bin/druid-57-sample',
+          *([f"Copy-Item 'Tools/Statistics/{out.name}/identity-roles.tsv' 'Assets/Resources/Art/Battle/v1/Adventure/identity-role-rates.txt'",
+             "$env:FDD_REVISION_MODE='identity-preferred'",
+             'dotnet Tools/HeadlessTests/bin/druid-57-sample/HeadlessTests.dll RevisionBalanceTests'] if args.arcane else []),
           f'# 各模式日志保存到 {args.log_prefix}<mode>.log',
           f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --log-prefix {args.log_prefix}'
-          + (' --ranger' if args.ranger else ' --balance' if args.balance else ' --optimized-ai' if args.optimized_ai else ''), '```']
-if args.ranger:
+          + (' --arcane' if args.arcane else ' --ranger' if args.ranger else ' --balance' if args.balance else ' --optimized-ai' if args.optimized_ai else ''), '```']
+if args.arcane:
+    lines += ['', '身份偏好表按主公、忠臣、反贼、内奸分别计胜／出场，并用同身份总体胜率和24局先验平滑；只对随机分发到该席的候选加权。原始数据见[随机身份分角色](identity-roles.tsv)及[偏好验证分角色](identity-preferred-roles.tsv)。',
+              '', '57子职均检查了自身权重、已有对策以及双方57×57配对的三档起手，共9,747个合法起手检查。逐角色运行时导出见[AI审计](ai-audit.tsv)，功能回归见[测试日志](regression.log)。']
+elif args.ranger:
     lines += ['', '游侠的策略和对策见[AI策略清单](../../../Docs/ai-strategy-reference.md)。功能回归见[测试日志](regression.log)。']
 elif args.balance:
     lines += ['', '八子职的胜率前后对照和57子职的策略复查见[平衡复测记录](balance-review.md)。']

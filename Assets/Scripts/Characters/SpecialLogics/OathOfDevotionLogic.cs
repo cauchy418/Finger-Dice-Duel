@@ -6,7 +6,7 @@ namespace FingerDiceDuel.Core
     /// **圣武士·奉献之誓**（攻 0 / 防 0，攻击距离 1）。
     ///
     /// 玩家确认的规则：
-    ///   · **4 与 6 不再攻击**，改为**合出护盾**
+    ///   · **4 改为合出护盾**，6 正常攻击
     ///   · **合出盾、主动碎盾、被动被打碎盾**时，
     ///     对**攻击范围内一名角色**（**含队友**）造成固定 **2 点伤害**
     ///     —— **强制发动**（不能放弃），但**目标由玩家选**
@@ -21,12 +21,12 @@ namespace FingerDiceDuel.Core
                                        FingerDiceDuel.Core.IAiMoveAdvisor,
                                        FingerDiceDuel.Core.ISkillUseCounter
     {
-        public bool HandlesResult(int value) => value == 4 || value == 6;
+        public bool HandlesResult(int value) => value == 4;
 
         public override string DisplayName => "圣武士·奉献之誓";
 
         /// <summary>
-        /// 本局**合出盾牌**几次（4/5/6 都会走到这里）。
+        /// 本局**合出盾牌**几次（4/5）。
         ///
         /// ⚠️ 为什么需要它：<c>ShockLog</c> 只在**真正打出冲击**时才写，
         ///    而没有候选目标时会静默跳过（见 TriggerShock 的 early return）——
@@ -38,45 +38,12 @@ namespace FingerDiceDuel.Core
         /// <summary>本局发动招牌技能（合盾触发冲击）几次 —— <see cref="ISkillUseCounter"/>。</summary>
         public int SkillUseCount => ShieldFormCount;
 
-        /// <summary>
-        /// 让 AI **主动去合盾**（玩家指出："圣武士·奉献之誓类似 [武僧·太极宗与战士·破阵者]，都是 5 高价值"）。
-        ///
-        /// 依据：圣武士·奉献之誓的 4 / 5 / 6 都通向"合盾 + 2 点冲击"，
-        /// 而冲击是**白赚的额外伤害**。价值表已经把 4/5/6 抬到 80，
-        /// 但那只影响"屯牌偏好"；这里再给一层**直接奖励**，
-        /// 让它真的把这一手打出去。
-        ///
-        /// ⚠️ 为什么不只靠价值表：价值表的权重会被缩放（除以 10 再乘 12），
-        ///    与一次攻击档位（44~88）相比太小，
-        ///    所以"屯着 5"和"打出 5 合盾"可能分不出高下。
-        /// </summary>
+        /// <summary>一次运算同时破盾与合盾，可分别触发卫护斩。</summary>
         public override int ScoreMoveBonus(MoveValueContext context)
         {
             int after = context.ActedValueAfter;
-
-            // 4 / 5 / 6 都能合盾（4 与 6 由 RewriteEffect 改写而来）
-            if (after != 4 && after != 5 && after != 6) return 0;
-
-            // ⚠️ **玩家特别要求的一条**：
-            //    "当可以从一面完整的盾牌合成另一面完整盾牌
-            //      （如完整的 4 主动去碰 2 合成 6）要**大幅度**去做"
-            //
-            //    理由：圣武士·奉献之誓的冲击是**每次合盾白赚的固定伤害**。
-            //    已经有一面完整的盾时，拿它当运算源去碰出 4/5/6，
-            //    等于"用一次运算换一次免费伤害" —— 比单纯屯盾强得多。
-            //
-            //    所以给这一手**远大于**普通合盾的奖励（400 而不是 30）——
-            //    量级足以压过一次攻击档位（44~88），
-            //    因为这确实是更好的选择。
-            //
-            //    判据：运算源本身就是一面**完整的盾**。
-            if (context.ActedHand != null
-                && context.ActedHand.State == ShieldState.Formed)
-            {
-                return 400;
-            }
-
-            return 30;
+            if (after != 4 && after != 5) return 0;
+            return context.ActedHand?.IsShield == true ? 400 : 30;
         }
 
         public override int DefaultAttackBonus => 0;
@@ -86,27 +53,26 @@ namespace FingerDiceDuel.Core
         public override int BaseAttackRange => 1;
 
         public HandEffectType DisplayedEffectOf(int resultValue)
-            => resultValue == 4 || resultValue == 6 ? HandEffectType.Shield : Hand.GetEffectType(resultValue);
+            => resultValue == 4 ? HandEffectType.Shield : Hand.GetEffectType(resultValue);
 
-        /// <summary>4 / 6 合盾只询问冲击目标，不再额外确认一次普通攻击目标。</summary>
+        /// <summary>4 合盾只询问冲击目标，不再额外确认一次普通攻击目标。</summary>
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
             if (context == null) return false;
-            if (context.ResultValue == 4 || context.ResultValue == 6) return false;
+            if (context.ResultValue == 4) return false;
             return base.ResultNeedsTarget(context);
         }
 
         /// <summary>冲击造成的真实伤害。</summary>
         public const int ShockDamage = 2;
 
-        /// <summary>把 4 / 6 改写成护盾。</summary>
+        /// <summary>把 4 改写成护盾。</summary>
         public HandEffectType RewriteEffect(PlayerState actor, Hand actedHand,
                                             int targetValue, GameManager manager)
         {
-            // 4 与 6 的结果值：PerformOperation 已经把 actedHand 写成结果值
             int result = actedHand?.Value ?? 0;
 
-            if (result == 4 || result == 6) return HandEffectType.Shield;
+            if (result == 4) return HandEffectType.Shield;
 
             return Hand.GetEffectType(result);
         }
@@ -441,7 +407,7 @@ namespace FingerDiceDuel.Core
             int result = Hand.ComputeSum(context.ActedHand.Value, context.TargetHand.Value);
 
             // 4 / 6：圣武士·奉献之誓的改写规则；5：手值本身就是护盾
-            return result == 4 || result == 5 || result == 6;
+            return result == 4 || result == 5;
         }
 
         /// <summary>

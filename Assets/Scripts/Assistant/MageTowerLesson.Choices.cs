@@ -13,7 +13,8 @@ namespace FingerDiceDuel.Assistant
             {
                 if(!Guided||_board.PendingSkillOptions.Count==0)return null;
                 if(_level==11)return SampleIndex==0?(int)AttackDamageType.Fire:1;
-                if(_level==15)return _game.TurnCount<=1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
+                if(_level==15)return _game.TurnCount==1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
+                if(_level==19 && _board.PendingWizardChoice?.Prompt.Contains("变化莫测")==true)return 0;
                 if(_level==17)return SampleIndex==0?4:SampleIndex==1?5:_game.TurnCount==1?-1:9;
                 if(_level==18)return _board.PendingWizardChoice?.Prompt.Contains("幻术默发")==true?(SampleIndex==0?1:0):SampleIndex==2?1:0;
                 return null;

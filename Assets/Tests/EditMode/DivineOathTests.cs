@@ -92,7 +92,7 @@ namespace FingerDiceDuel.Tests
             var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider());board.BeginTurn();board.ClickHand(b.LeftHand);board.ClickHand(a.LeftHand);board.ConfirmTargetPlayer();
             Assert.AreEqual(HandEffect.VengeanceRetarget,board.PendingEffect);Assert.True(board.ChooseSkillOption(1));Assert.AreEqual(b,((IVowOfEnmity)a.Character).VowTarget);
         }
-        [Test] public void Vengeance_prepared_transfer_does_not_apply_when_attack_is_cancelled()
+        [Test] public void Archfey_cannot_cancel_an_attack_against_their_vengeance_teammate()
         {
             var players=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.OathOfVengeance),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("D",CharacterDefinition.TheArchfey)};
             var g=GameManager.Create2v2(players,players.Select(p=>(IChoiceProvider)new SimpleChoiceProvider()).ToArray());
@@ -101,7 +101,7 @@ namespace FingerDiceDuel.Tests
             var context=new PreTurnChoiceContext(players[1],players[0],players[1].LeftHand,players[0].LeftHand){Manager=g};
             var requests=new List<ChoiceRequest>();skill.CollectPreTurnChoices(context,requests);Assert.AreEqual(1,requests.Count);
             Assert.True(requests[0].ChooseOption(1));Assert.AreEqual(players[2],skill.VowTarget,"预选不应提前转移");
-            var attack=Hit(g,players[1],players[0]);Assert.True(attack.WasCancelled);Assert.AreEqual(players[2],skill.VowTarget,"取消的攻击不转移仇敌");
+            var attack=Hit(g,players[1],players[0]);Assert.False(attack.WasCancelled);Assert.AreEqual(players[1],skill.VowTarget);Assert.False(players[1].HasStatus(StatusEffect.Charm));
         }
         [Test] public void Vengeance_marked_enemy_break_gives_optional_pure_operation_without_turn_advance()
         {
@@ -119,7 +119,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Vengeance_dead_mark_offers_optional_new_living_target()
         {var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();qs[0].Choose(g.PlayerB.LeftHand);qs.Clear();g.PlayerB.SetHealthExact(0);g.RefreshGameOver();Assert.AreEqual(1,qs.Count);Assert.True(qs[0].AllowDecline);Assert.False(qs[0].Candidates.Contains(g.PlayerB.LeftHand));qs[0].Choose(g.PlayerD.LeftHand);Assert.AreEqual(g.PlayerD,((IVowOfEnmity)g.PlayerA.Character).VowTarget);}
         [Test] public void State_guide_separates_character_states_and_marker_page_has_no_song_duplicate()
-        {var sheet=GuideSheets.Statuses();Assert.AreEqual(2,sheet.Groups.Count);Assert.AreEqual(22,sheet.Groups[0].Entries.Count);Assert.AreEqual(5,sheet.Groups[1].Entries.Count);Assert.True(sheet.Groups[1].Entries.Any(e=>e.ResourceKey=="Effects/bladesong"));Assert.False(GuideSheets.CharacterMarks().Lines.Any(line=>line.StartsWith("剑歌：")));}
+        {var sheet=GuideSheets.Statuses();Assert.AreEqual(2,sheet.Groups.Count);Assert.AreEqual(23,sheet.Groups[0].Entries.Count);Assert.AreEqual(5,sheet.Groups[1].Entries.Count);Assert.True(sheet.Groups[1].Entries.Any(e=>e.ResourceKey=="Effects/bladesong"));Assert.False(GuideSheets.CharacterMarks().Lines.Any(line=>line.StartsWith("剑歌：")));}
         [Test] public void New_oath_states_and_vow_are_present_in_combat_icon_list()
         {var g=Match(CharacterDefinition.OathOfVengeance,CharacterDefinition.Blank);g.BeginTurn();g.PlayerA.ApplyStatus(StatusEffect.WarBlessing,2);Assert.True(CombatStatusIcons.For(g.PlayerA,g).Any(i=>i.ResourceKey=="Status/war_blessing"));Assert.True(CombatStatusIcons.For(g.PlayerB,g).Any(i=>i.ResourceKey=="Effects/vow_of_enmity"));}
         [Test] public void Ai_blesses_known_teammates_and_marks_enemies()

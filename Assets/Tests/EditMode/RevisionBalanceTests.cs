@@ -65,11 +65,16 @@ namespace FingerDiceDuel.Tests
                     Row(writer,seed,a.Primary.Id+"+"+a.Secondary.Id,b.Primary.Id+"+"+b.Secondary.Id,r.FirstWon.HasValue?(r.FirstWon.Value?0:1):-1,r.Turns);games++;
                 }
             }
-            else if(mode=="eight"||mode=="identity")
+            else if(mode=="eight"||mode=="identity"||mode=="identity-preferred")
             {
-                for(int n=0;n<600;n++)
+                var identityRates = new Dictionary<(IdentityRole Role, string Id), (int Wins, int Games)>();
+                var preference = mode == "identity-preferred"
+                    ? new IdentityDraftPreference(File.ReadAllText("Assets/Resources/Art/Battle/v1/Adventure/identity-role-rates.txt"))
+                    : new IdentityDraftPreference(null);
+                int sampleSize = mode == "identity" ? 2000 : 600;
+                for(int n=0;n<sampleSize;n++)
                 {
-                    int seed=5000000+n;var rng=new Random(seed);var pool=new List<CharacterDefinition>(Roster);
+                    int seed=(mode=="identity-preferred" ? 5100000 : 5000000)+n;var rng=new Random(seed);var pool=new List<CharacterDefinition>(Roster);
                     for(int i=pool.Count-1;i>0;i--){int j=rng.Next(i+1);var d=pool[i];pool[i]=pool[j];pool[j]=d;}
                     var players=new List<PlayerState>();var sinks=new List<IChoiceProvider>();var ais=new List<IMoveSelector>();
                     var teams=new List<int>{0,0,0,1,1,1,2,2};int weak=n%3;for(int i=0;i<teams.Count;i++)teams[i]=(teams[i]+weak)%3;
@@ -82,18 +87,40 @@ namespace FingerDiceDuel.Tests
                     }
                     var roles=new[]{IdentityRole.Lord,IdentityRole.Loyalist,IdentityRole.Loyalist,IdentityRole.Rebel,IdentityRole.Rebel,IdentityRole.Rebel,IdentityRole.Rebel,IdentityRole.Traitor};
                     for(int i=7;i>1;i--){int j=1+rng.Next(i);var r=roles[i];roles[i]=roles[j];roles[j]=r;}
-                    for(int i=0;i<8;i++){players.Add(CharacterFactory.CreatePlayer("P"+i,pool[i]));sinks.Add(new SimpleChoiceProvider());ais.Add(Ai());}
-                    var game=mode=="identity"?GameManager.CreateIdentityEight(players,sinks,roles):GameManager.CreateEight(players,sinks,teams);
+                    var picks = new CharacterDefinition[8];
+                    int offset = 0;
+                    for (int i=0;i<8;i++)
+                    {
+                        int count = i == 0 ? 8 : 6;
+                        picks[i] = mode == "eight" ? pool[i] : preference.Choose(roles[i], pool.GetRange(offset, count), rng);
+                        offset += count;
+                        players.Add(CharacterFactory.CreatePlayer("P"+i,picks[i]));
+                        sinks.Add(new SimpleChoiceProvider());ais.Add(Ai());
+                    }
+                    var game=mode!="eight"?GameManager.CreateIdentityEight(players,sinks,roles):GameManager.CreateEight(players,sinks,teams);
                     foreach(var p in players)TwoVersusTwoHarness.ApplyClassicHands(p,seed+players.IndexOf(p)*31);
                     var result=TestSetup.RunSampling(game,ais,seed);Assert.IsFalse(result.HitTurnLimit);
                     string first="",second="";
                     for(int i=0;i<8;i++)
                     {
-                        bool wins=mode=="identity"?WinningSide(game.WinningIdentity,roles[i]):game.WinningTeam==teams[i];
-                        if(wins)first+=(first.Length==0?"":"+")+pool[i].Id;
-                        else second+=(second.Length==0?"":"+")+pool[i].Id;
+                        bool wins=mode!="eight"?WinningSide(game.WinningIdentity,roles[i]):game.WinningTeam==teams[i];
+                        if(wins)first+=(first.Length==0?"":"+")+picks[i].Id;
+                        else second+=(second.Length==0?"":"+")+picks[i].Id;
+                        if (mode != "eight")
+                        {
+                            var key = (roles[i], picks[i].Id);
+                            identityRates.TryGetValue(key, out var prior);
+                            identityRates[key] = (prior.Wins + (wins ? 1 : 0), prior.Games + 1);
+                        }
                     }
                     Row(writer,seed,first,second,first.Length==0?-1:0,result.Turns);games++;
+                }
+                if (mode != "eight")
+                {
+                    var rates = identityRates.OrderBy(x => x.Key.Role).ThenBy(x => x.Key.Id, StringComparer.Ordinal)
+                        .Select(x => $"{x.Key.Role}\t{x.Key.Id}\t{x.Value.Wins}\t{x.Value.Games}");
+                    File.WriteAllLines(Path.Combine(Root, mode + "-roles.tsv"),
+                        new[] { "role\tid\twins\tgames" }.Concat(rates), new System.Text.UTF8Encoding(false));
                 }
             }
             else throw new ArgumentException("Unknown sampling mode "+mode);

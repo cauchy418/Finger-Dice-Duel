@@ -94,7 +94,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 2026-11-05 更新游侠的职业面板、技能及 AI 后，五种模式共重采 57 子职 62,768 局。固定 AI 的 1v1 胜率介于 23.2% 至 90.7%。[完整胜率与分母](Tools/Statistics/2026-11-05-ranger/README.md)
+- 2026-11-06 完成本轮技能和 AI 更新后，57 个子职共采样 64,768 局。固定 AI 的 1v1 胜率介于 21.8% 至 86.3%。[完整胜率与分母](Tools/Statistics/2026-11-06-arcane/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
@@ -102,7 +102,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、22 种负面状态、11 条元素反应 |
+| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、23 种负面状态、11 条元素反应 |
 | [角色图鉴](./Docs/roster.md) | 57 名子职的数值与关键机制、阵营分类、全角色胜率 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |

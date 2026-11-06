@@ -222,20 +222,20 @@ namespace FingerDiceDuel.Assistant
                 var bloodline = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(actor);
                 var hunter = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(actor);
                 var curse = CharacterBehaviors.FirstImplementer<IHexbladeCurse>(actor);
-                bool storm = actor.Character is Characters.SpecialLogics.StormSorceryLogic;
+                bool storm = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.StormSorceryLogic>(actor) != null;
                 if (bloodline == null && hunter == null && curse == null && !storm) return score;
                 var target = ResolveIntendedVictim(move, actor, game);
                 if (target == null || game.IsKnownAlly(actor, target) || !game.CanReach(actor, target)) return score;
                 if (bloodline != null)
                 {
                     var status = StatusNames.StatusOf(AttackDamageTypes.ToDamageType(bloodline.Element));
-                    if (target.HasImmunity(bloodline.Element)) score -= 40;
+                    if (target.HasImmunity(bloodline.Element)) score -= 8;
                     else if (target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight)) score += 14;
                 }
                 if (hunter?.IsMarked(target) == true)
                     score += 10 + 4 * EstimateAttackDamage(actor, target, result, game);
                 if (curse?.CurseTarget == target) score += 24;
-                if (storm) score += (EstimateAttackDamage(actor, target, result, game) - result) * 5;
+                if (storm || bloodline != null) score += (EstimateAttackDamage(actor, target, result, game) - result) * 5;
                 return score;
             }
             if (actor.WildForm == 3 && result == 6) return score - 70;
@@ -275,11 +275,13 @@ namespace FingerDiceDuel.Assistant
                     && actor.Health + HealingGain(actor, 9) >= foe.Health) decayAvoidance = 22;
                 if (hand.IsConcealed || hand.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(foe, hand, game)) continue;
                 bool wild = foe.IsWildShaped && !foe.IsPolymorphed;
+                bool tactician = game.CanChooseTacticianOperation(foe);
+                bool champion = CharacterBehaviors.FirstImplementer<ChampionLogic>(foe) != null;
                 if (!wild && CharacterBehaviors.FirstImplementer<IDruidCaster>(foe) == null
                     && CharacterBehaviors.FirstImplementer<IShadowEyes>(foe) == null
                     && CharacterBehaviors.FirstImplementer<GloomStalkerLogic>(foe) == null
                     && CharacterBehaviors.FirstImplementer<IHunterMarkSource>(foe) == null
-                    && CharacterBehaviors.FirstImplementer<IHexbladeCurse>(foe) == null) continue;
+                    && CharacterBehaviors.FirstImplementer<IHexbladeCurse>(foe) == null && !tactician && !champion) continue;
                 int before = 0, after = 0;
                 foreach (var source in foe.Hands)
                 {
@@ -289,6 +291,21 @@ namespace FingerDiceDuel.Assistant
                     int newResult = StatusRules.ApplyResultModifiers(foe, Hand.ComputeSum(source.Value, result));
                     before = Math.Max(before, SpecialistThreat(foe, actor, oldResult, other, game, wild));
                     after = Math.Max(after, SpecialistThreat(foe, actor, newResult, other, game, wild));
+                    if ((tactician || champion && source.Value == 1) && game.CanReach(foe, actor) && StatusRules.CanAttackTarget(foe, actor, game))
+                    {
+                        before = Math.Max(before, FighterThreat(hand.Value, oldResult));
+                        after = Math.Max(after, FighterThreat(result, newResult));
+                    }
+
+                    int FighterThreat(int operand, int plus)
+                    {
+                        int value = IsAttackEffect(DivineScoredEffect(foe, plus, game)) ? EstimateAttackDamage(foe, actor, plus, game, source.Value) : 0;
+                        if (!tactician) return value * 5;
+                        int minus = GameManager.ModifiedOperationValue(foe, Hand.ComputeDifference(source.Value, operand));
+                        if (IsAttackEffect(DivineScoredEffect(foe, minus, game)))
+                            value = Math.Max(value, EstimateAttackDamage(foe, actor, minus, game, source.Value));
+                        return value * 5;
+                    }
                 }
                 risk += after - before;
             }

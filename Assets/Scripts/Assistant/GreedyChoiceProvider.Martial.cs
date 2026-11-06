@@ -22,7 +22,7 @@ namespace FingerDiceDuel.Assistant
             {
                 double score;
                 if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
-                else if(key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
+                else if(key==ArcaneChoices.TransmutationOperation||key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
                 else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==NewSubclassChoices.LoreGrowth) score=option.Value==1?20:0;
                 else if(key==NewSubclassChoices.LoreDefense)
@@ -126,30 +126,32 @@ namespace FingerDiceDuel.Assistant
             foreach(var enemy in game.OpponentsOf(owner))
             {
                 if(!enemy.IsAlive) continue;
-                score+=ElementDamageScore(type,owner,enemy);
+                score+=ElementDamageScore(type,owner,enemy, true);
                 var attack=new AttackContext(enemy,owner,enemy.LeftHand,6,game);
-                var incoming=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(attack)??AttackDamageType.None;
-                if(incoming==type) score+=18+(game.CanReach(enemy,owner)?8:0);
+                var incoming = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(enemy)?.Element
+                    ?? (enemy.Character as IAttackTypeProvider)?.AttackTypeOf(attack) ?? AttackDamageType.None;
+                if(incoming==type && !DamageAffinityNames.AttackPiercesAffinities(enemy, type)) score+=18+(game.CanReach(enemy,owner)?8:0);
                 else if ((type == AttackDamageType.Lightning || type == AttackDamageType.Thunder)
-                    && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.StormSorceryLogic>(enemy) != null)
+                    && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.StormSorceryLogic>(enemy) != null
+                    && !DamageAffinityNames.AttackPiercesAffinities(enemy, type))
                     score += game.CanReach(enemy, owner) ? 10 : 4;
             }
             return score;
         }
 
-        private static double ElementDamageScore(AttackDamageType type,PlayerState owner,PlayerState target)
+        private static double ElementDamageScore(AttackDamageType type,PlayerState owner,PlayerState target,bool ignoreAffinity = false)
         {
             int damage=Math.Max(0,6+StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(target));
             var magic=AttackDamageTypes.ToDamageType(type);
             bool immune = target.HasImmunity(type);
             if (!immune) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
-            damage=StatusRules.ApplyDamageAffinities(target,damage,type,ignoreImmunity:
-                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(owner, type));
+            ignoreAffinity |= DamageAffinityNames.AttackPiercesAffinities(owner, type);
+            damage=StatusRules.ApplyDamageAffinities(target,damage,type,!ignoreAffinity,ignoreAffinity);
             if(immune) return damage;
             double score=damage;
             var status=StatusNames.StatusOf(magic);
             if(status!=StatusEffect.None && !target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight))
-                score+=type==AttackDamageType.Cold?5:type==AttackDamageType.Thunder?4:3;
+                score+=(type==AttackDamageType.Cold?5:type==AttackDamageType.Thunder?4:3)*(target.HasResistance(type)?.5:1);
             if (target.HealthAcrossForms + target.SporeLife + target.FalseLife <= damage) score += 15;
             if(type==AttackDamageType.Acid && target.HasStatus(StatusEffect.Poison)
                 || type==AttackDamageType.Poison && target.HasStatus(StatusEffect.Acid)) score+=2;

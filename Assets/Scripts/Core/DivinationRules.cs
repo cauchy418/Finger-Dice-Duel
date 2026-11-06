@@ -17,7 +17,9 @@ namespace FingerDiceDuel.Core
             int original=game.CurrentPortentResult;
             Func<int,double> worth=n=>n==9?Math.Min(9,actor.MaximumHealth-actor.Health):n==5?5:n==8?8:n==6?6:n==4?4:0;
             double difference=worth(value)-worth(original);
-            return (ally?difference:-difference)-1;
+            var book = CharacterBehaviors.FirstImplementer<IPortentBook>(owner);
+            int growthCost = book?.Portents.Count > 0 && book.Portents.Count % 3 == 0 ? 2 : 0;
+            return (ally?difference:-difference)-1-growthCost;
         }
     }
     public partial class GameManager

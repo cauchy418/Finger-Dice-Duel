@@ -38,6 +38,7 @@ namespace FingerDiceDuel.Tests
                 {
                     int value=unchecked(seed+i*97);
                     if(part is StormSorceryLogic storm)storm.Rng=new System.Random(unchecked(value+79));
+                    if(part is DraconicBloodlineLogic dragon)dragon.Rng=new System.Random(unchecked(value+101));
                     if(part is WildMagicLogic wild)wild.Rng=new System.Random(unchecked(value+89));
                     if(part is WayOfTheDrunkenMasterLogic drunk)drunk.Rng=new System.Random(unchecked(value+91));
                 }

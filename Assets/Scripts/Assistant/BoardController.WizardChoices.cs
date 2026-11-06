@@ -162,7 +162,8 @@ namespace FingerDiceDuel.Assistant
                 if(p.IsAlive && !ReferenceEquals(p,attack.Attacker) && p.Character is IPreTurnChoiceProvider provider)
                     provider.CollectPreTurnChoices(context,_pendingRequests);
             CollectDevotionProtection(context);
-            CollectTheArchfeyCancelChoices(attack.AttackValue,attack.Attacker);
+            _askedTheArchfeyCancel.Clear();
+            CollectTheArchfeyCancelChoices(attack.Defender, attack.AttackValue, attack.Attacker);
             var shields=new List<Hand>();foreach(var hand in attack.Defender.Hands) if(hand.IsShield) shields.Add(hand);
             if(shields.Count>1) _pendingRequests.Add(new ChoiceRequest(HandEffect.ShieldBlock,
                 "选择一面盾抵挡。",shields,allowDecline:false,decider:attack.Defender));

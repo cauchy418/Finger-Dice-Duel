@@ -190,7 +190,7 @@ namespace FingerDiceDuel.Core
                          "从潜行发起的攻击伤害 +7，命中附流血2回合。攻防 +2 / -1。");
 
         /// <summary>
-        /// 圣武士·奉献之誓：4/6 不再攻击，改为合盾；合盾与碎盾时对范围内一名角色
+        /// 圣武士·奉献之誓：4 改为合盾，6 正常攻击；合盾与碎盾时对范围内一名角色
         /// 造成 2 点真实伤害（强制发动、玩家选目标）；
         /// 范围内有人被攻击时可以把目标改成自己。
         /// 攻防 0 / +1。
@@ -198,12 +198,12 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition OathOfDevotion { get; } = new CharacterDefinition(
             OathOfDevotionId, "圣武士·奉献之誓", SpecialLogicType.OathOfDevotion,
             attackBonus: 0, defenseBonus: 0,
-            description: "4 与 6 不再攻击，改为合成盾牌；合出盾、主动碎盾、被打碎盾时，" +
-                         "对攻击范围内一名角色造成 2 点真实伤害（强制发动，目标自选）；" +
-                         "自己持有完整盾牌时，攻击范围内的其他角色被攻击，可以把目标改成自己；代挡碎盾照常触发卫护斩。攻防 0 / +1。");
+            description: "4 改为合盾，6 正常攻击；合出盾、主动碎盾、被打碎盾时，" +
+                         "对攻击范围内一名角色造成固定 2 点冲击（强制发动，目标自选）；" +
+                         "自己持有完整盾牌时，攻击范围内的其他角色被攻击，可以把目标改成自己；代挡碎盾照常触发卫护斩。攻防 0 / 0。");
 
         /// <summary>
-        /// 邪术师·至高妖精：有人发起攻击时，若攻击数字与自己某只手相同，
+        /// 邪术师·至高妖精：成为攻击目标时，若攻击数字与自己某只手相同，
         /// 可把那只手 +1（永久）来取消这次攻击 —— 取消最早结算，能取消法师·咒法学派。
         /// 战士·剑士追加攻击与圣武士·奉献之誓冲击的"攻击数字视为 0"，无法被取消。
         /// 体力不满时可跳过回合，把场上一人的体力改成与自己一致。
@@ -212,8 +212,8 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition TheArchfey { get; } = new CharacterDefinition(
             TheArchfeyId, "邪术师·至高妖精", SpecialLogicType.TheArchfey,
             attackBonus: 0, defenseBonus: -1,
-            description: "有人发起攻击时，若该攻击数字与自己某只手相同，可把那只手 +1（永久）" +
-                         "以取消这次攻击（最早结算，可取消法师·咒法学派）；追加攻击与冲击不可被取消。" +
+            description: "成为攻击目标时，若攻击数字与自己某只手相同，可把那只手 +1（永久）" +
+                         "取消这次攻击并使攻击者魅惑2回合；追加攻击与冲击不可被取消。" +
                          "体力不满时可跳过回合，把场上一人的体力改成与自己一致。攻防 0 / -1，攻击距离∞。");
 
         /// <summary>
@@ -235,7 +235,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Champion { get; } = new CharacterDefinition(
             ChampionId, "战士·勇士", SpecialLogicType.Champion,
             attackBonus: 1, defenseBonus: 0,
-            description: "精通重击：运算后双手和为10时，发起攻击的基础伤害×1.5，再计算攻防。攻+1 / 防0，距离1。");
+            description: "精通重击：用1发起攻击时，基础伤害×1.5，命中附物理易伤2回合。攻+1 / 防0，距离1。");
 
         /// <summary>
         /// 游荡者·赌徒：攻 0 / 防 0，攻击距离 1。
@@ -408,15 +408,15 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition Tactician { get; } = new CharacterDefinition(
             TacticianId, "战士·战术家", SpecialLogicType.Tactician,
-            attackBonus: 1, defenseBonus: -1,
+            attackBonus: 0, defenseBonus: 0,
             englishName: "Tactician",
-            description: "额外获得 +X/+X，X = 场上最高与最低体力差 ÷ 3（向下取整）；挥砍伤害，攻防 +1/-1，攻击距离 1。");
+            description: "战术眼光：运算前选择加法或减法。减法用自己的数字减去对方数字，对10取模，0记作1。挥砍伤害，攻防0/0，距离1。");
 
         public static CharacterDefinition SchoolOfDivination { get; } = new CharacterDefinition(
             SchoolOfDivinationId, "法师·预言学派", SpecialLogicType.SchoolOfDivination,
             attackBonus: 0, defenseBonus: -1,
             englishName: "School of Divination",
-            description: "预兆：打出7记录另一手点数，每个数字最多一份。预知未来：持有7时，可消耗一份记录替换任意角色的运算结果，再按新数字结算效果，可不发动。");
+            description: "预兆：打出7记录另一手点数，每个数字最多一份。每保有三个预兆，攻防各+1。预知未来：持有7时，可消耗一份记录替换任意角色的运算结果，再按新数字结算效果，可不发动。");
 
         public static CharacterDefinition SchoolOfNecromancy { get; } = new CharacterDefinition(
             SchoolOfNecromancyId, "法师·死灵学派", SpecialLogicType.SchoolOfNecromancy,
@@ -443,8 +443,8 @@ namespace FingerDiceDuel.Core
 
         /// <summary>战争领域：回合开始按攻击手数赋予战争祝福，基础−1/−1。</summary>
         public static CharacterDefinition WarDomain { get; } = new CharacterDefinition(
-            WarDomainId,"牧师·战争领域",SpecialLogicType.WarDomain,attackBonus:-1,defenseBonus:-1,englishName:"War Domain",
-            description:"回合开始每有一只手为攻击数字，可选择一名角色获得战争祝福2回合；至多两名不同目标，可选自己、少选或不发动。战争祝福攻防+1，9可放弃回复改为9点基础伤害攻击；不叠加，重复施加刷新。战争祝福下9也计作攻击数字。距离∞，1内钝击、1外穿刺，攻防−1/−1。");
+            WarDomainId,"牧师·战争领域",SpecialLogicType.WarDomain,attackBonus:0,defenseBonus:-1,englishName:"War Domain",
+            description:"回合开始每有一只手为攻击数字，可选择一名角色获得战争祝福2回合；至多两名不同目标，可选自己、少选或不发动。战争祝福攻防+1，9可放弃回复改为9点基础伤害攻击；不叠加，重复施加刷新。战争祝福下9也计作攻击数字。距离∞，1内钝击、1外穿刺，攻防0/−1。");
 
         /// <summary>
         /// 战士·战斗大师（2026-10-23）：攻 0 / 防 0，攻击距离 2，守序中立。
@@ -460,7 +460,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
             DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,
             defenseBonus: -1, englishName: "Draconic Bloodline",
-            description: "首次自身回合选择寒冷／火焰／闪电／毒素／强酸，攻击改为该类型并获得永久抗性；命中附对应效果，已有时延长1回合。");
+            description: "首次自身回合选择寒冷／火焰／闪电／毒素／强酸，获得永久抗性，攻击有80%改为所选类型且该类型伤害穿透抗性与免疫；免疫仍阻止状态和反应。命中附对应效果，已有时尝试延长1回合。");
 
         public static CharacterDefinition RangerHunter { get; } = new CharacterDefinition(
             RangerHunterId, "游侠·猎人", SpecialLogicType.RangerHunter,
@@ -508,15 +508,15 @@ namespace FingerDiceDuel.Core
             description:"记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半。攻0／防−1，距离1，钝击。");
         public static CharacterDefinition StormSorcery { get; } = new CharacterDefinition(
             StormSorceryId,"术士·风暴术法",SpecialLogicType.StormSorcery,defenseBonus:-1,englishName:"Storm Sorcery",
-            description:"开局选择永久闪电或雷鸣抗性；攻击40%闪电、40%雷鸣，均穿透伤害免疫，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
+            description:"开局选择永久闪电或雷鸣抗性；攻击40%闪电、40%雷鸣，均穿透对应伤害抗性和免疫，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");
         public static CharacterDefinition SchoolOfIllusion { get; } = new CharacterDefinition(
             SchoolOfIllusionId,"法师·幻术学派",SpecialLogicType.SchoolOfIllusion,defenseBonus:-1,englishName:"School of Illusion",
             description:"持有2时，他人选你的任意手作加数，你可查看其运算手与原加数，再选择是否改用你的另一只合法手；受攻击时若双手差2，可将较小手变2，使本次伤害减半。攻0／防−1，距离∞，近钝击远穿刺。");
 
         public const string SchoolOfTransmutationId = "wizard_school_of_transmutation";
-        public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立5生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。距离∞，近钝击远穿刺。");
+        public static CharacterDefinition SchoolOfTransmutation {get;} = new CharacterDefinition(SchoolOfTransmutationId,"法师·变化学派",SpecialLogicType.SchoolOfTransmutation,attackBonus:0,defenseBonus:-1,englishName:"School of Transmutation",description:"回合结束可令双手数字无序匹配的角色变羊2回合，可选自己。羊独立8生命、攻防−2/−2、距离1，无原技能；解除恢复原生命，击破溢伤扣原生命。场上角色变羊或恢复原形时，可立即额外运算一次；自身羊形态期间无法发动。距离∞，近钝击远穿刺。");
         public const string SchoolOfEnchantmentId = "wizard_school_of_enchantment";
-        public static CharacterDefinition SchoolOfEnchantment {get;} = new CharacterDefinition(SchoolOfEnchantmentId,"法师·惑控学派",SpecialLogicType.SchoolOfEnchantment,attackBonus:0,defenseBonus:-1,englishName:"School of Enchantment",description:"造成或受到实际伤害后，可令受伤者或伤害来源失能或魅惑2回合，后续实际掉血解除本技能的效果。整次攻击结算后选择。距离∞，近钝击远穿刺。");
+        public static CharacterDefinition SchoolOfEnchantment {get;} = new CharacterDefinition(SchoolOfEnchantmentId,"法师·惑控学派",SpecialLogicType.SchoolOfEnchantment,attackBonus:0,defenseBonus:-1,englishName:"School of Enchantment",description:"造成实际伤害可对受伤者附加魅惑，受到实际伤害可对伤害来源附加失能，均为2回合，后续实际掉血解除本技能的效果。整次攻击结算后选择。距离∞，近钝击远穿刺。");
         public const string EldritchKnightId = "fighter_eldritch_knight";
         public static CharacterDefinition EldritchKnight {get;} = new CharacterDefinition(EldritchKnightId,"战士·奥法骑士",SpecialLogicType.EldritchKnight,attackBonus:0,defenseBonus:0,englishName:"Eldritch Knight",description:"盾碎后可选火焰/寒冷/闪电/雷鸣/强酸附魔，主动用盾运算形成的本次攻击立即生效；受非物理伤害后可选记录该类型。新选择覆盖旧附魔，下一次攻击发起时消耗，闪避或盾挡也消耗。距离2，挥砍。");
         public const string BladesingingId = "wizard_bladesinging";

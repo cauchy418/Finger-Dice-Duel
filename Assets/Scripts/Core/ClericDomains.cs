@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Core
             if(actor==null||source==null||add==null||WillSuppressOperationEffects(actor)){completed();return false;}
             ClearPreparedTrickery();_trickActor=actor;_trickSource=source;_trickAddend=add;_trickTurn=TurnCount;
             int epoch=_trickEpoch,before=source.Value;var addends=new List<Hand>{add};
-            int result = OperationSum(actor, add, before, add.Value, !effectless, !effectless);
+            int result = OperationSum(actor, add, before, add.Value, !effectless, !effectless, !effectless && ShouldSubtract(actor));
             if (!effectless && DruidForms.IsDragon(actor) && DruidSecondAddend != null && !ReferenceEquals(add, DruidSecondAddend))
                 addends.Add(DruidSecondAddend);
             _trickResult = ModifiedOperationValue(actor, result);

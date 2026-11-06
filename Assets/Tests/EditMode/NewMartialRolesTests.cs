@@ -70,6 +70,7 @@ namespace FingerDiceDuel.Tests
                                     out PlayerState p, out _);
             var logic = (DraconicBloodlineLogic)p.Character;
             logic.ChooseElement(AttackDamageType.Fire);
+            logic.ForcedRoll = 0;
             p.AddPermanentResistance(AttackDamageType.Cold);
 
             Assert.IsTrue(p.HasResistance(AttackDamageType.Cold));
@@ -78,6 +79,38 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(2, game.PlayerB.StatusTurnsLeft(StatusEffect.Burn));
             new AttackContext(p, game.PlayerB, p.LeftHand, 4).Resolve(game.GetChoiceProvider(game.PlayerB), game);
             Assert.AreEqual(3, game.PlayerB.StatusTurnsLeft(StatusEffect.Burn));
+        }
+
+        [Test]
+        public void Draconic_eighty_percent_roll_pierces_damage_and_preserves_affinity_status_rules()
+        {
+            var game = Game(CharacterDefinition.DraconicBloodline, CharacterDefinition.Blank, out var dragon, out var target);
+            var bloodline = (DraconicBloodlineLogic)dragon.Character;
+            bloodline.ChooseElement(AttackDamageType.Fire);
+            Assert.True(dragon.HasPermanentResistance(AttackDamageType.Fire));
+
+            bloodline.ForcedRoll = 79;
+            target.AddPermanentResistance(AttackDamageType.Fire);
+            var resisted = new AttackContext(dragon, target, dragon.LeftHand, 4);
+            resisted.Resolve(game.GetChoiceProvider(target), game);
+            Assert.AreEqual(4, resisted.AppliedDamage);
+            Assert.AreEqual(1, target.StatusTurnsLeft(StatusEffect.Burn));
+            new AttackContext(dragon, target, dragon.LeftHand, 4).Resolve(game.GetChoiceProvider(target), game);
+            Assert.AreEqual(1, target.StatusTurnsLeft(StatusEffect.Burn));
+
+            target.RemoveStatus(StatusEffect.Burn);
+            target.AddPermanentImmunity(AttackDamageType.Fire);
+            target.ApplyStatus(StatusEffect.Wet);
+            var immune = new AttackContext(dragon, target, dragon.LeftHand, 4);
+            immune.Resolve(game.GetChoiceProvider(target), game);
+            Assert.AreEqual(4, immune.AppliedDamage);
+            Assert.False(target.HasStatus(StatusEffect.Burn));
+            Assert.True(target.HasStatus(StatusEffect.Wet));
+
+            bloodline.ForcedRoll = 80;
+            var physical = new AttackContext(dragon, target, dragon.LeftHand, 4);
+            physical.Resolve(game.GetChoiceProvider(target), game);
+            Assert.AreEqual(AttackDamageType.Bludgeoning, physical.AttackType);
         }
 
         [Test]

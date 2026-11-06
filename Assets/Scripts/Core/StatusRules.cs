@@ -78,8 +78,9 @@ namespace FingerDiceDuel.Core
         /// <summary>燃烧：每回合结束时受到 3 点火焰伤害。</summary>
         public const int BurnDamagePerTurn = 3;
 
-        /// <summary>感电：每回合开始时自己与相邻玩家各受 1 点闪电伤害。</summary>
-        public const int ShockDamagePerTurn = 1;
+        /// <summary>感电：每回合开始时自己受2点闪电伤害，相邻玩家各受1点。</summary>
+        public const int ShockDamagePerTurn = 2;
+        public const int ShockAdjacentDamagePerTurn = 1;
 
         /// <summary>圣光：每回合开始时受 1 点伤害，**不可被抵挡**（牧师·光明领域）。</summary>
         public const int HolyLightDamagePerTurn = 1;
@@ -383,7 +384,7 @@ namespace FingerDiceDuel.Core
             return refresh;
         }
 
-        /// <summary>**感电**：自己与环上相邻的玩家都要吃 1 点闪电伤害。</summary>
+        /// <summary>**感电**：自己受2点，环上相邻玩家受1点闪电伤害。</summary>
         public static List<PlayerState> ShockVictims(PlayerState p, GameManager game)
         {
             var list = new List<PlayerState>();

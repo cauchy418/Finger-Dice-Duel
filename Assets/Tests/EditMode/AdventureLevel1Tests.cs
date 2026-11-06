@@ -10,11 +10,11 @@ namespace FingerDiceDuel.Tests
     /// <summary>
     /// 冒险模式 · 剧情模式 · 第一关「第一章：边境哨站·初战」的剧本回归。
     ///
-    /// 玩家 = 战士·勇士（攻+1/防0/生命20），士兵 = 白板（攻0/防0/生命12）。
+    /// 玩家 = 重甲战士（攻+2/防+2/生命20），士兵 = 白板（攻0/防0/生命12）。
     /// 逐回合数值与 Docs/Adventure/level-01.md 的演算一一对应：
-    ///   1+3=4→5 伤（12→7）；士兵 3+1=4→4 伤（20→16）；1+4=5 合盾；
+    ///   1+3=4→6 伤（12→6）；士兵 3+1=4→2 伤（20→18）；1+4=5 合盾；
     ///   士兵 1+5=6 被盾挡、盾碎；5+4=9 回血；
-    ///   士兵 6+4=10→1 满十归一；回血（16→20，上限截断）；4+4=8→9 伤终结（7−9 阵亡）。
+    ///   士兵 6+4=10→1 满十归一；回血（18→20，上限截断）；4+4=8→10 伤终结。
     /// </summary>
     [TestFixture]
     public class AdventureLevel1Tests
@@ -23,7 +23,7 @@ namespace FingerDiceDuel.Tests
         {
             var ca = new SimpleChoiceProvider();
             var cb = new SimpleChoiceProvider();
-            var game = CharacterFactory.CreateMatch(CharacterDefinition.Champion,
+            var game = CharacterFactory.CreateMatch(CampaignContent.HeavyFighter,
                                                      CharacterDefinition.Blank, ca, cb);
             board = new BoardController(game, ca, cb);
             var level = AdventureLevel1.Attach(game, board);
@@ -101,13 +101,13 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(level.Narration != null && level.Narration.Contains("1+3=4"),
                 "拍 1 旁白就绪");
             PlayGuided(board, level, player.LeftHand, soldier.LeftHand);
-            Assert.AreEqual(7, soldier.Health, "12 − 5 = 7");
+            Assert.AreEqual(6, soldier.Health, "12 − 6 = 6");
             Assert.AreEqual(4, player.LeftHand.Value);
 
             // 拍 2：士兵还手 3+1=4 → 4 伤
             level.Tick();
             PlaySoldier(board, level);
-            Assert.AreEqual(16, player.Health, "20 − 4 = 16");
+            Assert.AreEqual(18, player.Health, "20 − 2 = 18");
             Assert.AreEqual(4, soldier.LeftHand.Value, "士兵的运算源变成 4");
 
             // 拍 3：合盾 1+4=5
@@ -119,7 +119,7 @@ namespace FingerDiceDuel.Tests
             level.Tick();
             PlaySoldier(board, level);
             Assert.AreEqual(ShieldState.Broken, player.RightHand.State, "盾挡一次后碎裂");
-            Assert.AreEqual(16, player.Health, "盾挡下，不掉血");
+            Assert.AreEqual(18, player.Health, "盾挡下，不掉血");
             Assert.AreEqual(6, soldier.RightHand.Value);
 
             // 拍 5：回血 5+4=9 → 16+9=20（上限截断）

@@ -28,14 +28,16 @@ namespace FingerDiceDuel.Tests
             if (begin) { board.BeginTurn(); lesson.BeginTutorial(); }
             return lesson;
         }
-        private static void Human(AdventureLesson l)
+        private static void Human(AdventureLesson l, int? operation = null)
         {
             var b = l.Board; var beat = l.CurrentBeat;
             Assert.IsTrue(l.AllowClick(beat.ActedHand)); Assert.IsFalse(l.AllowClick(l.Player.GetOtherHand(beat.ActedHand)));
             Assert.IsTrue(b.ClickHand(beat.ActedHand)); Assert.IsTrue(l.AllowClick(beat.AddendHand)); Assert.IsTrue(b.ClickHand(beat.AddendHand));
             for (int i = 0; i < 15 && b.IsHumanChooser && ReferenceEquals(b.ActivePlayer, l.Player); i++)
             {
-                if (b.PendingEffect == HandEffect.BattleMasterManeuver)
+                if (operation.HasValue && b.PendingWizardChoice?.Prompt.Contains("战术眼光") == true)
+                    Assert.IsTrue(b.ChooseSkillOption(operation.Value));
+                else if (b.PendingEffect == HandEffect.BattleMasterManeuver)
                 {
                     Assert.IsTrue(beat.Maneuver.HasValue);
                     Assert.IsTrue(beat.Maneuver.Value == StatusEffect.None ? b.DeclineBattleMasterManeuver() : b.ChooseBattleMasterManeuver(beat.Maneuver.Value));
@@ -114,14 +116,12 @@ namespace FingerDiceDuel.Tests
             string log = string.Join(" | ", l.Board.Log); Assert.IsTrue(log.Contains("追加") && log.Contains("流血"), log);
         }
         [Test]
-        public void Ninth_health_gaps_zero_five_thirteen_produce_five_eight_thirteen_damage()
+        public void Ninth_demonstrates_addition_and_modular_subtraction()
         {
-            var l = Setup(9); Assert.AreEqual(1, StatusRules.EffectiveAttackBonus(l.Player)); Assert.AreEqual(-1, StatusRules.EffectiveDefenseBonus(l.Player));
-            Human(l); Assert.AreEqual(5, l.Board.LastTurn.DamageDealt); Assert.AreEqual(15, l.Soldier.Health);
-            Assert.AreEqual(2, StatusRules.EffectiveAttackBonus(l.Player)); Assert.AreEqual(0, StatusRules.EffectiveDefenseBonus(l.Player)); Npc(l);
-            Human(l); Assert.AreEqual(8, l.Board.LastTurn.DamageDealt); Assert.AreEqual(7, l.Soldier.Health);
-            Assert.AreEqual(5, StatusRules.EffectiveAttackBonus(l.Player)); Assert.AreEqual(3, StatusRules.EffectiveDefenseBonus(l.Player)); Npc(l);
-            Human(l); Assert.AreEqual(13, l.Board.LastTurn.DamageDealt); Assert.IsTrue(l.IsComplete);
+            var l = Setup(9); Assert.AreEqual(0, StatusRules.EffectiveAttackBonus(l.Player)); Assert.AreEqual(0, StatusRules.EffectiveDefenseBonus(l.Player));
+            Human(l, 0); Assert.AreEqual(4, l.Board.LastTurn.DamageDealt); Assert.AreEqual(12, l.Soldier.Health); Npc(l);
+            Human(l, 1); Assert.AreEqual(8, l.Board.LastTurn.DamageDealt); Assert.AreEqual(4, l.Soldier.Health); Npc(l);
+            Human(l, 0); Assert.AreEqual(4, l.Board.LastTurn.DamageDealt); Assert.IsTrue(l.IsComplete);
         }
         [Test]
         public void Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster()

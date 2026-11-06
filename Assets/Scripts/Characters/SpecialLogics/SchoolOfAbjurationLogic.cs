@@ -8,7 +8,6 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     {
         public override string DisplayName => "法师·防护学派";
         public override int DefaultAttackBonus => 0;
-        public override int ScoreMoveBonus(MoveValueContext context) => context.ActedValueAfter==2?32:0;
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
         private PlayerState _owner,_resistanceTarget;

@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Core
 
     public static class ArcaneChoices
     {
-        public const string Transmute="transmute",Enchantment="enchantment",KnightElement="knight_element",KnightCopy="knight_copy",Bladesong="bladesong",Hex="hex_curse";
+        public const string Transmute="transmute",TransmutationOperation="transmutation_operation",Enchantment="enchantment",KnightElement="knight_element",KnightCopy="knight_copy",Bladesong="bladesong",Hex="hex_curse";
         public static void Option(string key,string prompt,PlayerState owner,PlayerState target,GameManager game,List<SkillChoiceOption> options,Action<int> apply)
         {
             if(owner==null||!owner.IsAlive||game==null)return;
@@ -62,6 +62,30 @@ namespace FingerDiceDuel.Core
         {int total=0;foreach(var part in CharacterBehaviors.Implementers<ITargetDamageBonus>(actor))total+=part.BonusAgainst(actor,target);return total;}
     }
 
+    public partial class GameManager
+    {
+        internal Action<PlayerState> QueueTransmutationOperation { get; set; }
+
+        internal bool CanUseTransmutationOperation(PlayerState owner)
+            => owner?.IsAlive == true && StatusRules.CanAct(owner)
+                && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfTransmutationLogic>(owner) != null
+                && HasAnyLegalOperation(owner);
+
+        internal void OfferTransmutationOperation(PlayerState changed, bool entered)
+        {
+            if (QueueTransmutationOperation == null || IsGameOver) return;
+            foreach (var owner in Players)
+            {
+                if (!CanUseTransmutationOperation(owner)) continue;
+                string transition = entered ? "变形" : "解除变形";
+                var options = NewSubclassChoices.YesNo("立即运算", "Subclasses/wizard_school_of_transmutation", "不发动");
+                ArcaneChoices.Option(ArcaneChoices.TransmutationOperation,
+                    $"变化莫测 · {changed.Name}{transition}，可额外进行一次有效运算", owner, changed, this, options,
+                    value => { if (value == 1 && CanUseTransmutationOperation(owner)) QueueTransmutationOperation(owner); });
+            }
+        }
+    }
+
     public partial class PlayerState
     {
         private ICharacterBehavior _untransformedCharacter;
@@ -75,10 +99,11 @@ namespace FingerDiceDuel.Core
         public bool FormedShieldThisTurn {get;internal set;}
         public string BattleEmblemKey=>!IsPolymorphed&&IsWildShaped?"Forms/"+DruidForms.MoonKeys[WildForm]:IsPolymorphed?"Units/polymorphed_sheep":IsSummon?"Units/hexbound_specter":Definition?.Id=="campaign_elemental_spirit"?"Adventure/npc_elemental_spirit":Definition?.Id=="campaign_elemental_echo"?"Adventure/npc_elemental_echo":Definition?.Id=="story_heavy_fighter"?"Adventure/knight_original":Definition?.Id=="campaign_drillmaster"?"Adventure/npc_outpost_drillmaster":Definition?.Id=="campaign_arcane_tuner"?"Adventure/npc_arcane_guard":Definition?.Id=="campaign_banner_warden"?"Adventure/knight_original":Definition?.Id=="campaign_banner_crossbowman"?"Subclasses/fighter_arcane_archer":Definition?.Id=="mage_tower_guard"?"Adventure/npc_arcane_guard":Definition?.Id=="mage_tower_phantom"?"Adventure/npc_mage_phantom":Definition?.Id=="border_outpost_knight"?"Adventure/knight_original":"Subclasses/"+(Definition?.Id=="blank"?"fighter_champion":Definition?.Id??"fighter_champion");
         public ICharacterBehavior PersistentCharacter=>_wildOriginal??_untransformedCharacter??Character;
+        public const int PolymorphHealth = 8;
         public bool TryPolymorph(int turns=2)
         {
             if(!IsAlive||turns<=0||HasStatus(StatusEffect.HolyLight))return false;
-            if(!IsPolymorphed){_untransformedCharacter=Character??new SheepBehavior();_untransformedHealth=Health;_untransformedMaximum=MaximumHealth;Character=new SheepBehavior();MaximumHealth=5;Health=5;}
+            if(!IsPolymorphed){_untransformedCharacter=Character??new SheepBehavior();_untransformedHealth=Health;_untransformedMaximum=MaximumHealth;Character=new SheepBehavior();MaximumHealth=PolymorphHealth;Health=PolymorphHealth;}
             PolymorphTurns=turns;return true;
         }
         public void EndPolymorph()
@@ -94,6 +119,7 @@ namespace FingerDiceDuel.Core
             if(--PolymorphTurns>0)return;
             EndPolymorph();
             if(frame!=null)game.RecordSkillVisual(this,"变形术",this,new SkillVisualData(variant:"expire"),frame);
+            game?.OfferTransmutationOperation(this, entered: false);
         }
         private readonly Dictionary<StatusEffect,int> _enchantments=new Dictionary<StatusEffect,int>();
         private readonly Dictionary<StatusEffect,PlayerState> _enchantmentSources=new Dictionary<StatusEffect,PlayerState>();
@@ -135,11 +161,12 @@ namespace FingerDiceDuel.Core
             if(afterSpores!=null)visuals.RecordSkillVisual(this,"余伤",this,new SkillVisualData(value:actual),afterSpores);
             if(!wasSheep)LastDamageToOriginalForm=actual;
             if(actual>0)ClearEnchantments();
+            bool polymorphBroken = false;
             while(Health<=0&&(IsPolymorphed||IsWildShaped))
             {
                 var breakFrame=visuals?.CaptureVisualFrame();
                 bool sheep=IsPolymorphed;int form=WildForm,star=WildStar;
-                if(sheep)EndPolymorph();else EndWild();
+                if(sheep){EndPolymorph();polymorphBroken=true;}else EndWild();
                 if(breakFrame!=null)visuals.RecordSkillVisual(this,sheep?"变形术":"解除荒野",this,
                     new SkillVisualData(value:form,previous:star,variant:"break"),breakFrame);
                 int loss=Math.Min(Health,IsPolymorphed||IsWildShaped?overflow:ProtectOriginalHealth(overflow));
@@ -149,6 +176,7 @@ namespace FingerDiceDuel.Core
                 if(!IsPolymorphed&&!IsWildShaped)LastDamageToOriginalForm=loss;
             }
             if(Health<=0&&!IsPolymorphed)foreach(var grave in CharacterBehaviors.Implementers<IGraveStrength>(this))grave.SurviveDeath(this);
+            if(polymorphBroken)visuals?.OfferTransmutationOperation(this, entered: false);
             TookDamageThisTurn=true;return actual;
         }
 

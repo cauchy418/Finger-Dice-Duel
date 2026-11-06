@@ -42,15 +42,6 @@ namespace FingerDiceDuel.Assistant
             dragon.Op(1,1,0,0,"反击",0,6).Prepare=(l,p)=>{l.Equip(p,AttackDamageType.Bludgeoning);l.Tune(p,p.LeftHand,2);};
             dragon.Op(0,0,1,0,"龙族体魄");
             dragon.Op(1,1,0,1,"观察对应负面",0,n==14?4:8).Prepare=(l,p)=>l.Tune(p,p.LeftHand,n==16?8:7);
-            if(n==16)
-            {
-                // Vulnerability is visible before the second acid hit, after the first
-                // one has already demonstrated the persistent defense penalty.
-                var hit=dragon.Op(0,0,1,0,"酸蚀易伤");
-                var previous=dragon.Steps[dragon.Steps.Count-2];var prepare=previous.Prepare;
-                previous.Prepare=(l,p)=>{prepare(l,p);p.AddVulnerability(AttackDamageType.Acid);l.Game.NoteSkill(p,"试验铭刻","一次强酸易伤",p);};
-                dragon.Op(1,1,0,0,"保留回复加数",0).Prepare=(l,p)=>l.Tune(p,p.LeftHand,7);
-            }
             dragon.Op(0,1,1,0,"回复");return dragon;
         }
         private static CampaignSpec ShadowCourse()

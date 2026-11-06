@@ -16,10 +16,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if(p.IsAlive&&!p.HasStatus(StatusEffect.HolyLight)&&ArcaneChoices.MatchingHands(owner,p))targets.Add(p);
             ArcaneChoices.Target(ArcaneChoices.Transmute,"变形术 · 选择双手数字相同的角色变羊2回合",owner,game,targets,target=>{
                 if(!ArcaneChoices.MatchingHands(owner,target))return;
+                bool alreadyTransformed = target.IsPolymorphed;
                 var frame=game.CaptureVisualFrame();
                 if(!target.TryPolymorph())return;
-                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（5/5，−2/−2，距离1）",target,
-                    new SkillVisualData(value:target.Health,variant:"enter"),frame);});
+                game.NoteSkill(owner,"变形术",$"{target.Name} 变羊2回合（{target.Health}/{target.MaximumHealth}，−2/−2，距离1）",target,
+                    new SkillVisualData(value:target.Health,variant:"enter"),frame);
+                if(!alreadyTransformed)game.OfferTransmutationOperation(target, entered: true);
+            });
         }
         public override int ScoreMoveBonus(MoveValueContext context)=>context.ActedValueAfter==context.OtherHandValue?8:0;
     }
@@ -30,16 +33,34 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override int DefaultDefenseBonus=>-1;
         public override int BaseAttackRange=>InfiniteAttackRange;
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>ArcaneChoices.NearFar(ctx);
-        public void OnCompletedDamage(AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(attack.ActualDamageSource,attack.Defender,game,attack);}
-        public void OnAttackDamageTaken(PlayerState owner,AttackContext attack,GameManager game){if(attack.ActualHealthDamage>0)Offer(owner,attack.ActualDamageSource,game,attack);}
-        private static void Offer(PlayerState owner,PlayerState target,GameManager game,AttackContext attack)
+        public void OnCompletedDamage(AttackContext attack, GameManager game)
         {
-            if(owner==null||target==null||!owner.IsAlive||!target.IsAlive||target.HasStatus(StatusEffect.HolyLight))return;
-            var options=new List<SkillChoiceOption>();foreach(var status in new[]{StatusEffect.Disabled,StatusEffect.Charm})
-                options.Add(new SkillChoiceOption((int)status,StatusNames.Of(status),"Status/"+StatusNames.IconKeyOf(status),"基础2回合，格挡／对应抗性各−1；之后实际掉血解除。"));
-            options.Add(new SkillChoiceOption(0,"不发动","Subclasses/wizard_school_of_enchantment"));
-            ArcaneChoices.Option(ArcaneChoices.Enchantment,"催眠凝视 · 对"+target.Name+"施加失能或魅惑",owner,target,game,options,value=>{
-                if(value==0||!target.IsAlive)return;attack.ApplyAttachedStatus(target,(StatusEffect)value,2,owner,game,"催眠凝视",enchantment:true,requireHealthDamage:true);});
+            if (attack.ActualHealthDamage > 0)
+                Offer(attack.ActualDamageSource, attack.Defender, game, attack, StatusEffect.Charm);
+        }
+
+        public void OnAttackDamageTaken(PlayerState owner, AttackContext attack, GameManager game)
+        {
+            if (attack.ActualHealthDamage > 0)
+                Offer(owner, attack.ActualDamageSource, game, attack, StatusEffect.Disabled);
+        }
+
+        private static void Offer(PlayerState owner, PlayerState target, GameManager game, AttackContext attack, StatusEffect status)
+        {
+            if (owner?.IsAlive != true || target?.IsAlive != true || ReferenceEquals(owner, target)
+                || target.HasStatus(StatusEffect.HolyLight)) return;
+            var options = new List<SkillChoiceOption>
+            {
+                new SkillChoiceOption((int)status, StatusNames.Of(status), StatusNames.ResourceKeyOf(status),
+                    "基础2回合，格挡／对应抗性各−1；之后实际掉血解除。"),
+                new SkillChoiceOption(0, "不发动", "Subclasses/wizard_school_of_enchantment")
+            };
+            ArcaneChoices.Option(ArcaneChoices.Enchantment, $"催眠凝视 · 是否对{target.Name}附加{StatusNames.Of(status)}",
+                owner, target, game, options, value =>
+                {
+                    if (value != 0 && target.IsAlive)
+                        attack.ApplyAttachedStatus(target, status, 2, owner, game, "催眠凝视", enchantment: true, requireHealthDamage: true);
+                });
         }
     }
 

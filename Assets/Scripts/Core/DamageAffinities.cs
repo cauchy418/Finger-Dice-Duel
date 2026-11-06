@@ -10,6 +10,9 @@ namespace FingerDiceDuel.Core
         public static string Name(DamageAffinity affinity) => affinity == DamageAffinity.Immunity ? "免疫"
             : affinity == DamageAffinity.Vulnerability ? "易伤" : "抗性";
         public static string Name(DamageAffinity affinity, AttackDamageType type) => AttackDamageTypes.NameOf(type) + Name(affinity);
+        public static bool AttackPiercesAffinities(PlayerState attacker, AttackDamageType type)
+            => Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(attacker, type)
+                || CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(attacker)?.Element == type;
         public static string Key(DamageAffinity affinity, AttackDamageType type)
         {
             if (affinity == DamageAffinity.Resistance) return ResistanceNames.Key(type);
@@ -27,7 +30,9 @@ namespace FingerDiceDuel.Core
         private readonly HashSet<AttackDamageType> _immunities = new HashSet<AttackDamageType>();
         public IReadOnlyCollection<AttackDamageType> Vulnerabilities => _vulnerabilities;
         public IReadOnlyCollection<AttackDamageType> Immunities => _immunities;
-        public bool HasVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
+        public bool HasVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type)
+            || AttackDamageTypes.IsPhysical(type) && HasStatus(StatusEffect.PhysicalVulnerability);
+        public bool HasTemporaryVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
         public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus));
         public void AddVulnerability(AttackDamageType type)
         {

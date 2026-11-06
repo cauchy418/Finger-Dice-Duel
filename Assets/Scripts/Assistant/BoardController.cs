@@ -165,6 +165,9 @@ namespace FingerDiceDuel.Assistant
         /// <summary>击杀奖励/惩罚待执行的额外行动（队首优先）。</summary>
         private readonly List<PlayerState> _extraQueue = new List<PlayerState>();
         private bool _extraActionActive;
+        private readonly Queue<PlayerState> _transmutationOperations = new Queue<PlayerState>();
+        private Action _resumeAfterTransmutation;
+        private bool TransmutationOperationActive => _resumeAfterTransmutation != null;
         private PlayerState _resumePlayer;
 
         // ---- 通用"运算前抉择"流水线 ----
@@ -265,6 +268,7 @@ namespace FingerDiceDuel.Assistant
             _game.IllusionPolicyFor = p=>GetChoice(p) as IIllusionChoicePolicy;
             _game.ClericPolicyFor=p=>GetChoice(p) as IClericDomainPolicy;
             _game.DeferClericAttack=QueueClericAttack;
+            _game.QueueTransmutationOperation=_transmutationOperations.Enqueue;
             _game.ArcanePolicyFor=p=>GetChoice(p) as IArcaneChoicePolicy;
             _game.SummonProviderFor=p=>{_specterAi.Game=_game;return _specterAi;};
             _game.AutomaticChoicesFor=p=>GetAi(p)!=null;
@@ -331,7 +335,7 @@ namespace FingerDiceDuel.Assistant
         public IReadOnlyList<string> Log => _log;
 
         /// <summary>当前是否正在执行击杀奖惩的额外行动。</summary>
-        public bool IsExtraAction => _extraActionActive;
+        public bool IsExtraAction => _extraActionActive || TransmutationOperationActive;
 
         /// <summary>额外行动队列中还剩几次。</summary>
         public int ExtraActionsRemaining => _extraQueue.Count;
@@ -480,7 +484,7 @@ namespace FingerDiceDuel.Assistant
         ///     也可以直接点「开赌」改走赌博（玩家确认"当然也可以继续赌"）
         /// </summary>
         public bool CanGamble
-            => !_game.IsGameOver
+            => !TransmutationOperationActive && !_game.IsGameOver
                && (Phase == BoardPhase.ChoosingGamble
                    || Phase == BoardPhase.ChoosingTargetHand)
                && SelectedHand != null
@@ -590,7 +594,7 @@ namespace FingerDiceDuel.Assistant
         /// UI 用它决定是否显示"跳过回合"按钮，不能用来越过攻击或防守抉择。
         /// </summary>
         public bool CanSkipTurn
-            => !_game.IsGameOver
+            => TransmutationOperationActive && Phase == BoardPhase.ChoosingAttackerHand || !_game.IsGameOver
                && ActivePlayer != null
                && !CollegeOfValorChoicePending
                && (Phase == BoardPhase.ChoosingAttackerHand
@@ -614,6 +618,7 @@ namespace FingerDiceDuel.Assistant
         {
             if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsSkip)return false;
             if (!CanSkipTurn) return false;
+            if (TransmutationOperationActive) { FinishTransmutationOperation(); return true; }
 
             // 邪术师·至高妖精：先选目标，不立刻结束回合
             var theArchfey = CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(ActivePlayer);
@@ -944,6 +949,8 @@ namespace FingerDiceDuel.Assistant
                 return;
             }
 
+            if (TryStartTransmutationOperation(BeginTurn)) return;
+
             // ⚠️⚠️ **必须调一次 Core 的 `BeginTurn()`。**
             //
             //    它是"只属于本回合的标记"的**唯一复位点**：
@@ -981,7 +988,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             // 回合结束技能须读完有效行动标记，并完成玩家抉择，才能清标记并进入下一回合。
-            if(TryStartWizardBoundary(BeginTurn)) return;
+            if(TryStartWizardBoundary(BeginTurn) || TryStartTransmutationOperation(BeginTurn)) return;
             SettleCampaignAction();
             _game.BeginTurn();
 
@@ -1012,8 +1019,49 @@ namespace FingerDiceDuel.Assistant
             // 注意：这里**不**清空 LastTurn。它的语义是"最近一次已结算的回合"，
             // 要一直保留到下一次结算为止 —— 界面需要在玩家为新回合做选择时，
             // 仍然显示上一回合打出了什么。
-            if(TryStartWizardBoundary(SetupFirstStep)) return;
-            SetupFirstStep();
+            if(TryStartWizardBoundary(FinishTurnStart)) return;
+            FinishTurnStart();
+        }
+
+        private void FinishTurnStart()
+        {
+            if (!TryStartTransmutationOperation(FinishTurnStart)) SetupFirstStep();
+        }
+
+        private bool TryStartTransmutationOperation(Action resume)
+        {
+            while (_transmutationOperations.Count > 0)
+            {
+                var caster = _transmutationOperations.Dequeue();
+                if (!_game.CanUseTransmutationOperation(caster)) continue;
+                var interruptedPlayer = _game.CurrentPlayer;
+                _resumeAfterTransmutation = () =>
+                {
+                    _game.ForceActivePlayerForTest(interruptedPlayer?.IsAlive == true
+                        ? interruptedPlayer : _game.NextPlayerAfter(interruptedPlayer));
+                    ActivePlayer = _game.CurrentPlayer;
+                    if (!_extraActionActive && _extraQueue.Count > 0)
+                    {
+                        _resumePlayer = _game.CurrentPlayer;
+                        BeginNextExtraActionOrResume();
+                    }
+                    else resume();
+                };
+                _game.ForceActivePlayerForTest(caster);
+                ActivePlayer = caster;
+                _game.NoteSkill(caster, "变化莫测", "额外运算");
+                FlushSkillLog();
+                SetupFirstStep();
+                return true;
+            }
+            return false;
+        }
+
+        private void FinishTransmutationOperation()
+        {
+            var resume = _resumeAfterTransmutation;
+            _resumeAfterTransmutation = null;
+            if (!TryStartWizardBoundary(resume)) resume?.Invoke();
         }
 
         /// <summary>
@@ -1030,6 +1078,7 @@ namespace FingerDiceDuel.Assistant
         private void SetupFirstStep()
         {
             if(ActivePlayer.WildSkipPending){CompleteCampaignAction("荒野形态 · 跳过回合");return;}
+            _game.TacticianSubtraction = null;
             _operationDisplay.Clear();
             _shieldBreakChoiceCollected = _afterShieldBreakChoice = false;
             _preTargetRangeAnswered.Clear();
@@ -1491,7 +1540,7 @@ namespace FingerDiceDuel.Assistant
         /// 两个阶段都允许，同时也保留了"再点自己的手可取消"这个既有手势。
         /// </summary>
         public bool CanSteal
-            => (Phase == BoardPhase.ChoosingAttackerHand
+            => !TransmutationOperationActive && (Phase == BoardPhase.ChoosingAttackerHand
                 || Phase == BoardPhase.ChoosingTargetHand)
                && ActivePlayer?.Character is ThiefLogic
                && SelectedHand != null
@@ -2005,6 +2054,25 @@ namespace FingerDiceDuel.Assistant
             _selectedTarget=hand;TargetPlayer=OwnerOf(hand)??Defender;
             _pendingActedHand=_turnActedHand=SelectedHand;
             _pendingTargetHand=_turnTargetHand=hand;
+            if (_game.CanChooseTacticianOperation(ActivePlayer) && !_game.TacticianSubtraction.HasValue)
+            {
+                var options = new[] { new SkillChoiceOption(0, "加法", "Subclasses/fighter_tactician"),
+                    new SkillChoiceOption(1, "减法", "Subclasses/fighter_tactician") };
+                var choice = new WizardChoice(ActivePlayer,
+                    $"【战术眼光】自己的{SelectedHand.Value}与对方的{hand.Value}，选择加法或减法。", options,
+                    value => _game.TacticianSubtraction = value == 1);
+                if (QueueWizardChoice(choice))
+                {
+                    TryStartWizardBoundary(() => ResolveChosenOperation(hand));
+                    return;
+                }
+                _game.TacticianSubtraction = _game.ChooseTacticianSubtraction(ActivePlayer, SelectedHand, hand);
+            }
+            ResolveChosenOperation(hand);
+        }
+
+        private void ResolveChosenOperation(Hand hand)
+        {
             if(_game.RequestTrickeryOperation(ActivePlayer,SelectedHand,hand,()=>{}))
             {TryStartWizardBoundary(ContinueSelectedOperation);return;}
             ContinueSelectedOperation();
@@ -2577,10 +2645,9 @@ namespace FingerDiceDuel.Assistant
             CollectFrom(context.Defender, context);
             _pendingRequests.RemoveAll(r => _preTargetRangeAnswered.Contains(r.Effect));
 
-            // 邪术师·至高妖精的"是否取消这次攻击"：取消者是**场上的第三方**，
-            // 不属于上面的行动方/防守方，所以单独收集。
+            // 至高妖精只在自己被选为攻击目标时收集妖精步伐。
             CollectDevotionProtection(context);
-            CollectTheArchfeyCancelChoices();
+            CollectTheArchfeyCancelChoices(context.Defender);
 
             // 记录"这次收集到了什么"以及"AI 怎么答的"。
             // 注意：不能用会被回合边界清空的容器 —— 上一个回合的作答
@@ -2687,50 +2754,24 @@ namespace FingerDiceDuel.Assistant
         ///    · 多人模式里不能取消**队友**发起的攻击
         ///    · 特殊攻击（追加攻击 / 冲击）没有攻击数字，天然不会被收集
         /// </summary>
-        private void CollectTheArchfeyCancelChoices(int explicitAttackValue=0,PlayerState explicitActor=null)
+        private void CollectTheArchfeyCancelChoices(PlayerState defender, int explicitAttackValue=0, PlayerState explicitActor=null)
         {
-            var attackActor=explicitActor??ActivePlayer;
-            int attackValue = explicitAttackValue>0?explicitAttackValue:PredictedAttackValue();
-            if (attackValue <= 0) return;
-            if (ActivePlayer == null || _game == null) return;
+            var attacker = explicitActor ?? ActivePlayer;
+            int value = explicitAttackValue > 0 ? explicitAttackValue : PredictedAttackValue();
+            if (value <= 0 || attacker == null || defender?.IsAlive != true || ReferenceEquals(defender, attacker)
+                || _game.IsTeammate(defender, attacker) || GetAi(defender) != null
+                || CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(defender) == null) return;
 
-            IReadOnlyList<PlayerState> all = _game.Players;
-            for (int i = 0; i < all.Count; i++)
-            {
-                PlayerState p = all[i];
-                if (p == null || !p.IsAlive) continue;
+            var candidates = new List<Hand>(2);
+            foreach (var hand in defender.Hands)
+                if (hand.Value == value) candidates.Add(hand);
+            if (candidates.Count == 0) return;
 
-                // 只有人类邪术师·至高妖精才问 —— AI 在结算时自动取消
-                if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) == null) continue;
-                if (GetAi(p) != null) continue;
-
-                if (ReferenceEquals(p, attackActor)) continue;              // 自己不算
-                if (_game.IsTeammate(p, attackActor)) continue;             // 队友不算
-
-                // 候选 = 与攻击数字相同的那只手
-                var candidates = new List<Hand>(2);
-                if (p.LeftHand != null && p.LeftHand.Value == attackValue)
-                    candidates.Add(p.LeftHand);
-                if (p.RightHand != null && p.RightHand.Value == attackValue)
-                    candidates.Add(p.RightHand);
-
-                if (candidates.Count == 0) continue;
-
-                // 先登记"**问过这个人**"（值为 null 表示"还没答/答了不发动"）——
-                // 结算时靠它区分"问过但选了不发动"与"根本没问过（AI）"。
-                _askedTheArchfeyCancel[p] = null;
-
-                _pendingRequests.Add(new ChoiceRequest(
-                    HandEffect.TheArchfeyCancel,
-                    $"{ActivePlayer.Name} 发起 {attackValue} 的攻击：" +
-                    $"要用手上那个 {attackValue}（+1，永久）取消它吗？",
-                    candidates,
-                    allowDecline: true,          // 点「不发动」= 放行
-                    declineResult: null,
-                    decider: p));
-
-                _lastCollectInfo += $" +邪术师·至高妖精取消({p.Name}, 攻击值{attackValue})";
-            }
+            _askedTheArchfeyCancel[defender] = null;
+            _pendingRequests.Add(new ChoiceRequest(HandEffect.TheArchfeyCancel,
+                $"{attacker.Name} 对你发起 {value} 的攻击。可将同值手永久＋1，取消攻击并魅惑对方2回合。",
+                candidates, allowDecline: true, decider: defender));
+            _lastCollectInfo += $" +邪术师·至高妖精取消({defender.Name}, 攻击值{value})";
         }
 
         /// <summary>
@@ -3505,8 +3546,8 @@ namespace FingerDiceDuel.Assistant
             if (_game.IsGameOver || Phase != BoardPhase.ChoosingAttackerHand) return false;
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
-            BeforeAutomaticAction?.Invoke(ActivePlayer);
-            if(StatusRules.CanAct(ActivePlayer)&&TryAutomaticCampaignAction?.Invoke(ActivePlayer)==true)
+            if (!TransmutationOperationActive) BeforeAutomaticAction?.Invoke(ActivePlayer);
+            if(!TransmutationOperationActive&&StatusRules.CanAct(ActivePlayer)&&TryAutomaticCampaignAction?.Invoke(ActivePlayer)==true)
                 return CompleteCampaignAction("战术行动");
             // 冻结、双锁、暗置与距离限制导致无运算时，AI 使用同一个跳过出口。
             if (CanScriptedRest) return SkipTurn();
@@ -3518,8 +3559,7 @@ namespace FingerDiceDuel.Assistant
             // 所以要在这里自己走完 —— 否则 AI 永远不用这个技能。
             //
             // 选目标策略：**体力最高的对手**（把他拉低到自己的血量 = 收益最大）。
-            if (TryAiTheArchfeySkip()) return true;
-            if (TryAiCastling()) return true;
+            if (!TransmutationOperationActive && (TryAiTheArchfeySkip() || TryAiCastling())) return true;
 
             // ---- 游荡者·盗贼：AI 自己偷（玩家要求"AI 也要会用这个技能"）----
             //
@@ -4150,7 +4190,8 @@ namespace FingerDiceDuel.Assistant
                 PlayerState p = _game.Players[i];
                 if (p != null) healthBefore[p] = p.Health;
             }
-            bool wasExtra = _extraActionActive;
+            bool wasTransmutationOperation = TransmutationOperationActive;
+            bool wasExtra = IsExtraAction;
 
             _operationDisplay.Clear();
             TurnResult result=null;
@@ -4233,8 +4274,11 @@ namespace FingerDiceDuel.Assistant
             CompletedActions++;
 
             // 法师·塑能学派的状态体系：记下"这一位的回合该在换人时结算结束"
-            _statusTurnEndFor = result.Actor;
-            _settlingCampaignAction=result.Actor;
+            if (!wasTransmutationOperation)
+            {
+                _statusTurnEndFor = result.Actor;
+                _settlingCampaignAction = result.Actor;
+            }
 
             // ⚠️ **游荡者·赌徒的强制赌博状态**（玩家确认的规则）：
             //    "若游荡者·赌徒上一个自己的回合进行了正常的运算（非赌博），
@@ -4268,6 +4312,8 @@ namespace FingerDiceDuel.Assistant
             if (_game.IsGameOver)
             {
                 _extraQueue.Clear();
+                _transmutationOperations.Clear();
+                _resumeAfterTransmutation = null;
                 _extraActionActive = false;
                 Phase = BoardPhase.GameOver;
                 Hint = WinMessage();
@@ -4277,6 +4323,11 @@ namespace FingerDiceDuel.Assistant
 
             // 击杀奖惩：只有直接攻击击杀会进队列。
             QueueKillRewards(result, healthBefore);
+            if (wasTransmutationOperation)
+            {
+                FinishTransmutationOperation();
+                return;
+            }
 
             if (wasExtra)
             {

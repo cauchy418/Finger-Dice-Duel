@@ -104,16 +104,16 @@ namespace FingerDiceDuel.UI
                 case SecondarySkillStyle.Measure:
                     Line(0,from+new Vector2(-65,-60),from+new Vector2(-65,40),pulse);Line(1,from+new Vector2(65,-60),from+new Vector2(65,90),pulse);
                     for(int i=0;i<4;i++)Line(i+2,from+new Vector2(-55,i*25-45),from+new Vector2(55,i*25-45),pulse*.35f);
-                    Digit(0,value.Length>0?"差 "+value:"战术优势",from,pulse,gold);break;
+                    Digit(0,value.Length>0?"减法 · "+value:"战术眼光",from,pulse,gold);break;
                 case SecondarySkillStyle.Sun:
                     Picture(0,"fx_radiant",p.Flavor=="brand"?target:from,p.Flavor=="brand"?150:210,pulse,90*t);
                     Orbit(1,p.Flavor=="brand"?target:from,"fx_radiant",55+30*move,65,6,-90*t,pulse*.5f);break;
                 case SecondarySkillStyle.Maneuver:
-                    string status=d!=null&&d.Status!=StatusEffect.None?StatusNames.IconKeyOf(d.Status):"bleed";
-                    Picture(0,"Status/"+status,target,100,pulse,0,Vector2.one*(.6f+move*.6f));
-                    if(status=="bleed")for(int i=0;i<3;i++)Picture(i+1,"fx_slash",target+new Vector2((i-1)*25,0),110,pulse,-40,null,red);
-                    else if(status=="limp")for(int i=0;i<3;i++)Line(i+1,target+new Vector2(-50+i*35,-45),target+new Vector2(-30+i*35,-20),pulse);
-                    else Orbit(1,target,"fx_impact",45+30*move,80,4,90*t,pulse*.5f,status=="knocked_down"?new Color(.7f,.6f,.5f):gold);break;
+                    var status=d!=null&&d.Status!=StatusEffect.None?d.Status:StatusEffect.Bleed;
+                    Picture(0,StatusNames.ResourceKeyOf(status),target,100,pulse,0,Vector2.one*(.6f+move*.6f));
+                    if(status==StatusEffect.Bleed||status==StatusEffect.PhysicalVulnerability)for(int i=0;i<3;i++)Picture(i+1,"fx_slash",target+new Vector2((i-1)*25,0),110,pulse,-40,null,red);
+                    else if(status==StatusEffect.Limp)for(int i=0;i<3;i++)Line(i+1,target+new Vector2(-50+i*35,-45),target+new Vector2(-30+i*35,-20),pulse);
+                    else Orbit(1,target,"fx_impact",45+30*move,80,4,90*t,pulse*.5f,status==StatusEffect.KnockedDown?new Color(.7f,.6f,.5f):gold);break;
                 case SecondarySkillStyle.Dragon:
                     Picture(0,p.Sprite,origin+Vector2.up*25,200,pulse*.65f,0,new Vector2(1,1+.2f*move));Orbit(1,origin,fx,85,60,5,90*t,pulse*.65f,element);break;
                 case SecondarySkillStyle.ElementFist:

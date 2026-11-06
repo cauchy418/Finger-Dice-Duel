@@ -8,6 +8,33 @@ namespace FingerDiceDuel.Tests
 {
  [TestFixture] public class OperationDisplayTests
  {
+  [Test] public void Tactician_chooses_before_preview_and_uses_status_adjusted_difference()
+  {
+   var board=Make(CharacterDefinition.Tactician,CharacterDefinition.Blank,out var g);
+   var actor=g.PlayerA;var defender=g.PlayerB;
+   actor.LeftHand.SetValue(4);defender.LeftHand.SetValue(6);actor.ApplyStatus(StatusEffect.Frost,2);board.BeginTurn();
+   Assert.True(board.ClickHand(actor.LeftHand));Assert.True(board.ClickHand(defender.LeftHand));
+   Assert.IsTrue(board.PendingWizardChoice.Prompt.Contains("战术眼光"));
+   Assert.True(board.PreviewHandValue(actor.LeftHand)==null);
+   Assert.True(board.ChooseSkillOption(1));
+   Assert.AreEqual(BoardPhase.ChoosingTargetPlayer,board.Phase);
+   Assert.AreEqual(4,board.PreviewHandValue(actor.LeftHand).Value);
+   Assert.True(board.ConfirmTargetPlayer());Assert.True(board.LastTurn.WasSubtraction);
+   Assert.AreEqual(4,board.LastTurn.DamageDealt);
+   Assert.IsTrue(BattleTurnText.Describe(board.LastTurn).Contains("4 − 6 = 8"));
+  }
+
+  [Test] public void Tactician_ai_can_choose_the_only_attack_available_by_subtraction()
+  {
+   var a=CharacterFactory.CreatePlayer("战术家",CharacterDefinition.Tactician);
+   var b=CharacterFactory.CreatePlayer("对手",CharacterDefinition.Blank);
+   var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,new SimpleChoiceProvider());
+   a.LeftHand.SetValue(4);a.RightHand.SetValue(4);b.LeftHand.SetValue(6);b.RightHand.SetValue(6);
+   var move=ai.ChooseMove(g,a);
+   var result=g.ExecuteTurn(a,move.ActedHand,move.TargetHand);
+   Assert.True(result.WasSubtraction);Assert.AreEqual(8,result.DamageDealt);
+   Assert.AreEqual(1,Hand.ComputeDifference(4,4));Assert.AreEqual(9,Hand.ComputeDifference(1,2));
+  }
   private static BoardController Make(CharacterDefinition a,CharacterDefinition b,out GameManager g)
   {var ca=new SimpleChoiceProvider();var cb=new SimpleChoiceProvider();g=CharacterFactory.CreateMatch(a,b,ca,cb);return new BoardController(g,ca,cb);}
   [Test] public void Number_changes_visually_before_target_without_premature_damage_or_double_addition()

@@ -18,6 +18,7 @@ namespace FingerDiceDuel.Core
         {
             var list=new Dictionary<string,SecondarySkillProfile>();
             list["精通重击"]=new SecondarySkillProfile("精通重击",SecondarySkillStyle.Strike,"weapon_sword",3,"critical");
+            list["物理易伤"]=new SecondarySkillProfile("物理易伤",SecondarySkillStyle.Maneuver,"weapon_sword",2,"");
             list["无畏冲锋"]=new SecondarySkillProfile("无畏冲锋",SecondarySkillStyle.Strike,"weapon_sword",2,"charge");
             list["盾阵重整"]=new SecondarySkillProfile("盾阵重整",SecondarySkillStyle.Repair,"Overlay/shield",2,"");
             list["奥术射击·魔能齐射"]=new SecondarySkillProfile("奥术射击·魔能齐射",SecondarySkillStyle.Arrows,"projectile_arrow",2,"volley");
@@ -47,7 +48,7 @@ namespace FingerDiceDuel.Core
             list["野兽形态"]=new SecondarySkillProfile("野兽形态",SecondarySkillStyle.Growth,"Subclasses/barbarian_path_of_the_beast",3,"claw");
             list["命运赌博"]=new SecondarySkillProfile("命运赌博",SecondarySkillStyle.Dice,"fate_die",2,"");
             list["赌徒之运"]=new SecondarySkillProfile("赌徒之运",SecondarySkillStyle.Dice,"fate_die",2,"forced");
-            list["战术优势"]=new SecondarySkillProfile("战术优势",SecondarySkillStyle.Measure,"Professions/fighter",3,"");
+            list["战术眼光"]=new SecondarySkillProfile("战术眼光",SecondarySkillStyle.Measure,"Professions/fighter",3,"");
             list["黎明曙光"]=new SecondarySkillProfile("黎明曙光",SecondarySkillStyle.Sun,"fx_radiant",2,"dawn");
             list["守御闪光"]=new SecondarySkillProfile("守御闪光",SecondarySkillStyle.Sun,"Status/holy_light",2,"brand");
             list["卓越战技"]=new SecondarySkillProfile("卓越战技",SecondarySkillStyle.Maneuver,"weapon_sword",2,"");

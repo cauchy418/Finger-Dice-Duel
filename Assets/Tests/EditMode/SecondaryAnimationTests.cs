@@ -28,9 +28,17 @@ namespace FingerDiceDuel.Tests
         [Test] public void Wild_magic_visuals_do_not_roll_again_or_change_per_hit_results()
         {int calls=0,hp=0;AttackDamageType[] expected=null;foreach(bool visuals in new[]{false,true}){var g=Match(CharacterDefinition.WildMagic,visuals:visuals);var random=new CountRandom();CharacterBehaviors.FirstImplementer<WildMagicLogic>(g.PlayerA).Rng=random;var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,8,g){HitCount=2};attack.Resolve(g.GetChoiceProvider(g.PlayerB),g);if(!visuals){calls=random.Calls;hp=g.PlayerB.Health;expected=attack.SegmentTypes.ToArray();}else{Assert.AreEqual(calls,random.Calls);Assert.AreEqual(hp,g.PlayerB.Health);Assert.AreEqual(expected[0],attack.SegmentTypes[0]);Assert.AreEqual(expected[1],attack.SegmentTypes[1]);var cues=g.DrainCombatVisuals().Where(e=>e.RedirectKind=="狂野魔法浪涌").ToList();Assert.AreEqual(2,cues.Count);Assert.AreEqual(expected[0],cues[0].SkillData.Element);Assert.AreEqual(expected[1],cues[1].SkillData.Element);}}}
         [Test] public void Critical_visual_power_is_captured_without_becoming_a_damage_multiplier()
-        {var g=Match(CharacterDefinition.Champion);g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);attack.Resolve(g.GetChoiceProvider(g.PlayerB),g);var e=g.DrainCombatVisuals().First(x=>x.Kind==CombatVisualKind.Attack);Assert.AreEqual(1.35f,e.Power);Assert.AreEqual(7,attack.AppliedDamage);}
-        [Test] public void Tactician_captures_real_health_spread_before_the_attack()
-        {var g=Match(CharacterDefinition.Tactician);g.PlayerB.SetHealthExact(8);var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);attack.Resolve(g.GetChoiceProvider(g.PlayerB),g);var e=g.DrainCombatVisuals().First(x=>x.RedirectKind=="战术优势");Assert.AreEqual(12,e.SkillData.Value);Assert.AreEqual(4,e.SkillData.Previous);}
+        {var g=Match(CharacterDefinition.Champion);g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){SourceHandValueBefore=1};attack.Resolve(g.GetChoiceProvider(g.PlayerB),g);var e=g.DrainCombatVisuals().First(x=>x.Kind==CombatVisualKind.Attack);Assert.AreEqual(1.35f,e.Power);Assert.AreEqual(7,attack.AppliedDamage);}
+        [Test] public void Tactician_visual_records_the_subtraction_result()
+        {
+            var g=Match(CharacterDefinition.Tactician);var a=g.PlayerA;var b=g.PlayerB;
+            var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+            a.LeftHand.SetValue(4);b.LeftHand.SetValue(6);board.BeginTurn();
+            Assert.True(board.ClickHand(a.LeftHand));Assert.True(board.ClickHand(b.LeftHand));
+            Assert.True(board.ChooseSkillOption(1));Assert.True(board.ConfirmTargetPlayer());
+            var e=g.DrainCombatVisuals().First(x=>x.RedirectKind=="战术眼光");
+            Assert.AreEqual(8,e.SkillData.Value);Assert.AreEqual(4,e.SkillData.Previous);
+        }
         [Test] public void Right_hand_taichi_formation_keeps_the_real_source_hand()
         {var g=Match(CharacterDefinition.WayOfTheTaiChi);var logic=CharacterBehaviors.FirstImplementer<WayOfTheTaiChiLogic>(g.PlayerA);g.PlayerA.RightHand.SetValue(5);logic.OnShieldFormed(g.PlayerA,g.PlayerA.RightHand,g);var e=g.DrainCombatVisuals().First(x=>x.RedirectKind=="阴阳流转");Assert.AreEqual(g.PlayerA.RightHand,e.SourceHand);Assert.AreEqual(g.PlayerA.RightHand,e.SkillData.Source);Assert.AreEqual(ShieldState.Taichi,g.PlayerA.RightHand.State);}
         [Test] public void War_blessing_nine_conversion_uses_the_operating_right_hand()

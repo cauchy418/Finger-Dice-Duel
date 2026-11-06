@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Tests
         {
             Assert.AreEqual(0, CharacterDefinition.LightDomain.AttackBonus);
             Assert.AreEqual(-1, CharacterDefinition.LightDomain.DefenseBonus);
-            Assert.AreEqual(-1, CharacterDefinition.WarDomain.AttackBonus);
+            Assert.AreEqual(0, CharacterDefinition.WarDomain.AttackBonus);
             Assert.AreEqual(-1, CharacterDefinition.WarDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.AttackBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.DefenseBonus);
@@ -239,7 +239,7 @@ namespace FingerDiceDuel.Tests
         {
             var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out var foe,out _,out _);
             var attack=new AttackContext(war,foe,war.LeftHand,4,g);attack.Resolve(g.ChoiceProviderB,g);
-            Assert.AreEqual(3,attack.AppliedDamage);Assert.AreEqual(-1,StatusRules.EffectiveAttackBonus(war));
+            Assert.AreEqual(4,attack.AppliedDamage);Assert.AreEqual(0,StatusRules.EffectiveAttackBonus(war));
             var back=new AttackContext(foe,war,foe.LeftHand,4,g){HitCount=2};back.Resolve(g.ChoiceProviderA,g);
             Assert.AreEqual(-1,StatusRules.EffectiveDefenseBonus(war));
         }
@@ -268,9 +268,9 @@ namespace FingerDiceDuel.Tests
         [Test] public void War_blessing_expires_after_two_owner_turns_even_without_attack()
         {
             var g=Game(CharacterDefinition.WarDomain,CharacterDefinition.Blank,out var war,out _,out _,out _);
-            war.ApplyStatus(StatusEffect.WarBlessing,2,war);Assert.AreEqual(0,StatusRules.EffectiveAttackBonus(war));
+            war.ApplyStatus(StatusEffect.WarBlessing,2,war);Assert.AreEqual(1,StatusRules.EffectiveAttackBonus(war));
             g.ResolveStatusTurnEnd(war);Assert.AreEqual(1,war.StatusTurnsLeft(StatusEffect.WarBlessing));
-            g.ResolveStatusTurnEnd(war);Assert.False(war.HasStatus(StatusEffect.WarBlessing));Assert.AreEqual(-1,StatusRules.EffectiveAttackBonus(war));
+            g.ResolveStatusTurnEnd(war);Assert.False(war.HasStatus(StatusEffect.WarBlessing));Assert.AreEqual(0,StatusRules.EffectiveAttackBonus(war));
         }
 
         [Test]

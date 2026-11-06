@@ -48,11 +48,8 @@ namespace FingerDiceDuel.Assistant
             if(level==5||level%10==0)return "";
             string text="演练调律：行动前可调整自己可用且无完整盾的手值。";
             if(seat!=1)return text+(level==16&&seat==2?"符文换装：切换武装的伤害类型。":"");
-            if(level==9)text+="训练整备：净化自身负面并回复16，限一次。";
             if(level==12)text+="训练整备：净化自身负面并回复16，限四次。注水铭刻：使自身潮湿2回合。";
             if(level==11||level==12||level==14||level==16)text+="符文换装：切换武装的伤害类型。";
-            if(level==14)text+="稳息术：清除你的燃烧并回复8，限两次。试验铭刻：施加一次伤害类型的易伤、抗性或免疫。";
-            if(level==19)text+="试验铭刻：使自身获得一次钝击易伤。";
             return text;
         }
     }

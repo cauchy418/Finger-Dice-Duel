@@ -68,6 +68,7 @@ namespace FingerDiceDuel.Assistant
                 if(prompt.Contains("幻术默发"))return Step.IllusionTouch??0;
                 if(prompt.Contains("幻影实体"))return Step.IllusionDefense??0;
                 if(prompt.Contains("预知未来"))return Step.Portent??-1;
+                if(prompt.Contains("变化莫测"))return 0;
                 if(prompt.Contains("催眠凝视"))return Step.Enchant.HasValue?(int)Step.Enchant.Value:0;
                 if(_board.PendingEffect==HandEffect.VengeanceRetarget)return Step.Option??0;
                 if(_board.PendingEffect==HandEffect.SchoolOfIllusionDefense)return Step.IllusionDefense??0;

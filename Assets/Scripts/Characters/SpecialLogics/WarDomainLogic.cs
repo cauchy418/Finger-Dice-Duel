@@ -7,7 +7,6 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     {
         public int SkillUseCount {get;private set;}
         public override string DisplayName=>"牧师·战争领域";
-        public override int DefaultAttackBonus=>-1;
         public override int DefaultDefenseBonus=>-1;
         public override int BaseAttackRange=>InfiniteAttackRange;
         public override AttackDamageType AttackTypeOf(AttackContext context)=>ArcaneChoices.NearFar(context);

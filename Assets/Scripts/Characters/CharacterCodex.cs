@@ -45,9 +45,9 @@ namespace FingerDiceDuel.Characters
                 counter:"消耗其气，等醉拳解除；持续伤害与固定伤害保持原规则。",
                 interactions:new[]{"与其它武僧双将共用2/6气；圣光清除并阻止醉拳。"});
             Add(CharacterDefinition.ChampionId, "Champion", Alignment.NeutralGood,
-                shortSkill: "精通重击：运算后双手和10，发起攻击的基础伤害×1.5。",
-                playGuide: "运算后凑4+6或8+2，再发起攻击，基础4/6/8变6/9/12后计算攻防。自动触发，无额外按钮。",
-                counter: "留意他另一只手的点数，避免给出能在攻击后凑10的加数；盾、闪避与取消仍能应对重击。",
+                shortSkill: "精通重击：用1发起攻击，基础伤害×1.5，命中附物理易伤2回合。",
+                playGuide: "保留一只1，借3、5或7打出重击。趁目标的物理易伤仍在，用挥砍、钝击或穿刺追击。",
+                counter: "留意他手上的1。闪避或取消可阻止易伤，格挡或对应抗性会缩短时长。",
                 interactions: new[] { "与忍宗双将：精通重击先乘基础伤害，再分段计算攻防。" });
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulEvil,
@@ -124,18 +124,17 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与咒法学派：潜行不能被选为攻击目标；次级咒术不能绕过目标选择。" });
 
             Add(CharacterDefinition.OathOfDevotionId, "Oath of Devotion", Alignment.LawfulGood,
-                shortSkill: "4/5/6合盾，合盾或碎盾触发2点冲击。",
+                shortSkill: "4/5合盾，6正常攻击。合盾或碎盾触发2点冲击。",
                 playGuide: "用完整盾再合盾可触发两次冲击。持完整盾可替人代挡。",
-                counter: "限制4/5/6，预留攻击处理其盾。",
+                counter: "限制4/5合盾，留意6和8的普通攻击。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TheArchfeyId, "The Archfey", Alignment.ChaoticEvil,
-                shortSkill: "妖精步伐：手上留着与对手攻击数字相同的牌即可取消该攻击。",
+                shortSkill: "妖精步伐：被攻击时，可用同值手取消攻击并魅惑攻击者。",
                 playGuide: "核心是\"手上留着什么\"：能取消就取消。"
                          + "跳过回合能把一人血量改成与自己一致 —— "
                          + "比对方少 8 以上才值得。",
-                counter: "别给他 1/2/7（能凑出最多的攻击数字）；"
-                       + "或改用盾 / 回复推进局面。",
+                counter: "攻击至高妖精时避开他当前持有的数字；多人战可改选其他攻击目标。",
                 interactions: new[] { "与剑士、太极宗：追加与反弹没有攻击数字，不能取消。" });
 
             Add(CharacterDefinition.ArcaneArcherId, "Arcane Archer", Alignment.LawfulNeutral,
@@ -269,13 +268,13 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TacticianId, "Tactician", Alignment.TrueNeutral,
-                shortSkill: "战局推演：按场上最高与最低体力差 ÷3 获得额外攻防；挥砍伤害。",
-                playGuide: "场上血量差越大越强，适合在残局或有人被集火时发力。",
-                counter: "尽量把双方血量拉平，削弱他的动态加成。",
+                shortSkill: "战术眼光：运算前选择加法或减法。",
+                playGuide: "同一组手值可算出不同结果。用4借6可相加得到1，也可相减得到8。",
+                counter: "评估他可借用的数字时，要同时考虑和与差。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.SchoolOfDivinationId,"School of Divination",Alignment.TrueNeutral,
-                shortSkill:"7记录另一手；持有7可消耗预兆替换角色运算结果。",
+                shortSkill:"7记录另一手，每三个预兆攻防+1；持7可消耗预兆替换运算结果。",
                 playGuide:"打出7积累不同数字。持有7时，运算完成后选择替换值或不发动；新数字决定攻击、回复或合盾。",
                 counter:"留意其持有的7与已存预兆，逼其消耗记录；没有7时无法改写。",
                 interactions:new[]{"替换发生在数字变化后、效果结算前；纯运算不发动预知未来，也不记录。"});
@@ -317,9 +316,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
 
             Add(CharacterDefinition.DraconicBloodlineId, "Draconic Bloodline", Alignment.ChaoticNeutral,
-                shortSkill: "选一种元素成为本局攻击与永久抗性，重复附加同一状态可延长。",
-                playGuide: "按敌方抗性选元素，持续压同一目标以延长状态。",
-                counter: "用其他元素攻击，或以净化和免疫截断持续附加。",
+                shortSkill: "选一种永久抗性，攻击80%改为所选类型，伤害穿透同型抗性和免疫。",
+                playGuide: "按敌方攻击类型和状态弱点选元素，持续命中可延长同型状态。",
+                counter: "用其他元素攻击。对应免疫仍阻止状态与反应，抗性可缩短状态。",
                 interactions: new[] { "对应状态首次正常附加。抗性和格挡同时生效时无法延长。" });
 
             Add(CharacterDefinition.RangerHunterId, "Hunter", Alignment.NeutralGood,
@@ -359,9 +358,9 @@ namespace FingerDiceDuel.Characters
                 counter:"拉开距离避免失明；首次致命伤只能迫使其恢复至1，继续追击。",
                 interactions:new[]{"暗蚀攻击命中按普通规则附加腐朽。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
-                shortSkill: "闪电、雷鸣各40%，穿透对应免疫。行动后可纯运算。",
+                shortSkill: "闪电、雷鸣各40%，伤害穿透对应抗性和免疫。行动后可纯运算。",
                 playGuide: "开局选永久抗性。纯运算可调整下一回合的手值。",
-                counter: "对应抗性与格挡仍能减伤，免疫仍阻止元素效果。",
+                counter: "格挡仍能减伤，抗性仍缩短状态，免疫仍阻止元素效果。",
                 interactions: new[] { "对免疫目标能造成闪电或雷鸣伤害，但不触发对应状态与反应。" });
             Add(CharacterDefinition.SchoolOfIllusionId,"School of Illusion",Alignment.ChaoticEvil,
                 shortSkill:"持2可选择改用另一只合法手作加数；差2可变小手为2减伤。",
@@ -385,9 +384,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣光移除。" });
 
             Add(CharacterDefinition.SchoolOfTransmutationId,"School of Transmutation",Alignment.ChaoticNeutral,
-                shortSkill:"结束可将同数角色变羊；独立5生命、距离1、无原技能。",playGuide:"回合结束选无序匹配双手的角色或不发动，可选自己；变羊两回合，形态血池被击破也解除。",counter:"改变自己的手值避开匹配；打破羊形态时溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
+                shortSkill:"结束可将同数角色变羊；羊有独立8生命。形态进出时可额外运算。",playGuide:"回合结束可选自己或双手无序匹配的角色。变羊或解除后，可用变化莫测再做一次有效运算。",counter:"避免双手匹配。打破羊形态时留意施术者可能再出手，溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
             Add(CharacterDefinition.SchoolOfEnchantmentId,"School of Enchantment",Alignment.NeutralEvil,
-                shortSkill:"伤害后可施加失能或魅惑；之后受伤解除。",playGuide:"整次攻击结算后选失能、魅惑或不发动；造成伤害选受伤者，受到伤害选来源。",counter:"后续实际掉血能解除惑控；虚假生命吸收不算实际掉血。",interactions:new[]{"只清除惑控来源效果；其他来源的同名状态仍保留。"});
+                shortSkill:"实际伤人可附魅惑；实际受伤可对伤害来源附失能。",playGuide:"实际伤到对方后可附魅惑，实际受伤后可对来源附失能。可放弃，附加后目标再次失去体力会解除。",counter:"后续实际掉血能解除惑控；虚假生命吸收不算实际掉血。",interactions:new[]{"只清除惑控来源效果；其他来源的同名状态仍保留。"});
             Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulGood,
                 shortSkill:"碎盾选五元素，受魔法伤可记录该类型，附魔下次攻击。",playGuide:"主动用完整盾运算先选元素，本次算出攻击立即生效；受非物理伤害可记录。附魔覆盖，攻击发起即消耗。",counter:"用盾挡或闪避消耗附魔；留意其记录的伤害类型。",interactions:new[]{"只被虚假生命吸收不触发记录；免疫或零伤不触发。"});
             Add(CharacterDefinition.BladesingingId,"Bladesinging",Alignment.ChaoticGood,

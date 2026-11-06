@@ -503,7 +503,9 @@ namespace FingerDiceDuel.Assistant
                 // ⚠️ 集火奖励已经放进 ScoreMove 的目标优先级里（只对攻击生效），
                 //    这里不再重复加分 —— 否则"用集火目标的手合盾 / 回血"
                 //    也会被当成集火，AI 会为了贪分去做防守动作。
-                IntendedVictim = ResolveIntendedVictim(best, actor, game);
+                IntendedVictim = ResolveIntendedVictim(best, actor, game,
+                    game.CanChooseTacticianOperation(actor) ? (int?)game.PreviewTacticianResult(actor, best.ActedHand, best.TargetHand,
+                        ChooseSubtraction(game, actor, best.ActedHand, best.TargetHand)) : null);
                 return best;
             }
             finally
@@ -521,12 +523,12 @@ namespace FingerDiceDuel.Assistant
         /// 所以这个值必须显式传给结算层，不能靠"手主"猜。
         /// </summary>
         private PlayerState ResolveIntendedVictim(LegalMove move, PlayerState actor,
-                                                  GameManager game)
+                                                  GameManager game, int? operationResult = null)
         {
             if (game == null || actor == null) return null;
             if (move.Actor == null || move.TargetHand == null) return null;
 
-            bool isAttack = IsAttackResult(move, actor,game);
+            bool isAttack = IsAttackResult(move, actor, game, operationResult);
 
             // ① 被加数是**敌人的手**：这一手本来就打在TA身上（也是评分时的目标）。
             //
@@ -552,11 +554,11 @@ namespace FingerDiceDuel.Assistant
         }
 
         /// <summary>这一手的结果在 AI 眼里是不是攻击（含游荡者·魔术师借来的攻击）。</summary>
-        private static bool IsAttackResult(LegalMove move, PlayerState actor,GameManager game)
+        private static bool IsAttackResult(LegalMove move, PlayerState actor, GameManager game, int? operationResult = null)
         {
             if (move.ActedHand == null || move.TargetHand == null || game?.WillSuppressOperationEffects(actor) == true) return false;
 
-            int result = DruidScoredResult(move,actor,game);
+            int result = operationResult ?? DruidScoredResult(move,actor,game);
             if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null&&!(result==9&&actor.HasStatus(StatusEffect.WarBlessing)))return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
             HandEffectType effect = DivineScoredEffect(actor,result,game);
 
@@ -676,7 +678,10 @@ namespace FingerDiceDuel.Assistant
                 LegalMove m = moves[i];
                 if (m.Actor == null || m.ActedHand == null || m.TargetHand == null) continue;
                 int result = Hand.ComputeSum(m.ActedHand.Value, m.TargetHand.Value);
-                if (!IsAttackResult(m, actor,game)) continue;
+                if (game.CanChooseTacticianOperation(actor))
+                    result = game.PreviewTacticianResult(actor, m.ActedHand, m.TargetHand,
+                        ChooseSubtraction(game, actor, m.ActedHand, m.TargetHand));
+                if (!IsAttackResult(m, actor, game, result)) continue;
 
                 PlayerState victim = game.OwnerOfHand(m.TargetHand);
                 if (victim == null) continue;
@@ -688,7 +693,8 @@ namespace FingerDiceDuel.Assistant
             return true;
         }
 
-        private int ScoreMove(LegalMove move, PlayerState actor, GameManager game)        {
+        private int ScoreMove(LegalMove move, PlayerState actor, GameManager game, int? operationResult = null)
+        {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
             if (game != null && game.WillSuppressOperationEffects(actor))
@@ -697,7 +703,13 @@ namespace FingerDiceDuel.Assistant
                 int otherValue = actor.GetOtherHand(move.ActedHand).Value;
                 return HandValueScore(actor, value, otherValue) + DenyScore(actor, game, value, otherValue);
             }
-            int result = DruidScoredResult(move,actor,game);
+            if (!operationResult.HasValue && game?.CanChooseTacticianOperation(actor) == true)
+            {
+                int plus = game.PreviewTacticianResult(actor, move.ActedHand, move.TargetHand, false);
+                int minus = game.PreviewTacticianResult(actor, move.ActedHand, move.TargetHand, true);
+                return Math.Max(ScoreMove(move, actor, game, plus), ScoreMove(move, actor, game, minus));
+            }
+            int result = operationResult ?? DruidScoredResult(move,actor,game);
 
             int score;
             switch (DivineScoredEffect(actor,result,game))
@@ -758,8 +770,9 @@ namespace FingerDiceDuel.Assistant
             Hand other = GetOtherHand(actor, move.ActedHand);
             if (game != null)
             {
-                int projectedResult = Math.Max(1, StatusRules.ApplyResultModifiers(actor, result));
+                int projectedResult = operationResult ?? Math.Max(1, StatusRules.ApplyResultModifiers(actor, result));
                 score += SpecialistMoveBonus(move, actor, projectedResult, other.Value, game);
+                score += AbjurationMoveBonus(actor, projectedResult, game);
                 score += SpecialistCounterplayScore(move, actor, projectedResult, game) * DenyRatioPercent / 67;
             }
 
@@ -810,7 +823,7 @@ namespace FingerDiceDuel.Assistant
             //    不能用"是不是 PlayerA/PlayerB"那种两人假设。
             if (game != null && actor != null && move.TargetHand != null)
             {
-                PlayerState owner = ResolveIntendedVictim(move,actor,game);
+                PlayerState owner = ResolveIntendedVictim(move, actor, game, operationResult);
 
                 // ⚠️⚠️ **必须排除"被加数就是自己的手"**（游荡者·魔术师的自加）。
                 //
@@ -841,7 +854,7 @@ namespace FingerDiceDuel.Assistant
             //  在自己血量低时，要大幅增加阻止对方合成攻击数字的意愿。
             //  但阻止对方的减值数值**不能比让自己合成高价值的数值多**，
             //  比率要调整到合适的值如 3：7 左右。"
-            score += UseProjectedCounterplay ? ProjectedCounterplayScore(move,actor,game) : SituationalDenyScore(move, actor, game);
+            score += UseProjectedCounterplay ? ProjectedCounterplayScore(move,actor,game,operationResult) : SituationalDenyScore(move, actor, game, operationResult);
 
             // ---- 2v2 的攻击目标优先级（玩家给的 6 级顺序）----
             //
@@ -860,6 +873,20 @@ namespace FingerDiceDuel.Assistant
             //    （自加不改变"打谁"；范围之外的极端情况由结算侧兜底）。
             int resultForPriority = result;
             bool priorityIsAttack = IsAttackEffect(DivineScoredEffect(actor, resultForPriority, game));
+
+            if (priorityIsAttack && ResolveIntendedVictim(move, actor, game, result) is PlayerState opponent)
+            {
+                if (FeyCanCancel(opponent, result)) score -= actor.HasStatus(StatusEffect.HolyLight) ? 95 : 145;
+                if (CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEnchantmentLogic>(opponent) != null
+                    && !actor.HasStatus(StatusEffect.Disabled) && !actor.HasStatus(StatusEffect.HolyLight)
+                    && EstimateAttackDamage(actor, opponent, result, game, acted) < opponent.HealthAcrossForms)
+                    score -= 14;
+            }
+
+            if (priorityIsAttack && acted == 1 && CharacterBehaviors.FirstImplementer<ChampionLogic>(actor) != null
+                && ResolveIntendedVictim(move, actor, game, result) is PlayerState strikeTarget
+                && game.CanReach(actor, strikeTarget) && StatusRules.CanAttackTarget(actor, strikeTarget, game))
+                score += (result + 1) / 2 * 9 + (strikeTarget.HasStatus(StatusEffect.PhysicalVulnerability) ? 0 : 8);
 
             if (priorityIsAttack && actor != null && game != null
                 && game.OwnerOfHand(move.TargetHand) != null
@@ -886,7 +913,7 @@ namespace FingerDiceDuel.Assistant
             // 1v1 里 `ResolveFocusTarget` 直接返回 null（只有一位对手），
             // 所以 baseline 行为与旧版完全一致。
             if (priorityIsAttack && actor != null && game != null
-                && IsAttackResult(move, actor,game))
+                && IsAttackResult(move, actor, game, operationResult))
             {
                 PlayerState victim = ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor)
                     ? (game.OpponentsOf(actor).Count > 0 ? game.OpponentsOf(actor)[0] : null)
@@ -908,7 +935,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ 必须放在最后、且量级**远大于**其他所有项 ——
             //    能一击带走时，前面那些"目标优先级""屯牌价值"全都不重要了。
             if (IsLethal(move, actor, game, result))
-                score += LethalBonus - EnemySporeRefillCost(actor, ResolveIntendedVictim(move, actor, game), game);
+                score += LethalBonus - EnemySporeRefillCost(actor, ResolveIntendedVictim(move, actor, game, operationResult), game);
 
             return score;
         }
@@ -938,13 +965,13 @@ namespace FingerDiceDuel.Assistant
                             || effect == HandEffectType.Attack8;
             if (!isAttack) return false;
 
-            PlayerState victim = ResolveIntendedVictim(move,actor,game);
+            PlayerState victim = ResolveIntendedVictim(move,actor,game,result);
             if (victim == null || !victim.IsAlive) return false;
             if (CharacterBehaviors.FirstImplementer<IDruidForm>(actor) != null
                 && (!game.CanReach(actor, victim) || !StatusRules.CanAttackTarget(actor, victim, game))) return false;
 
             // ⚠️ 打队友不算"斩杀"（那是负收益，另有惩罚）
-            if (game.IsKnownAlly(actor, victim)) return false;
+            if (game.IsKnownAlly(actor, victim) || FeyCanCancel(victim, result)) return false;
 
             // 角色特有的增伤 / 额外段数（游荡者·风流剑客强化、战士·剑士追加、游荡者·刺客潜行、野蛮人·巨人道途两段…）
             // 由 TotalLethalDamage 统一处理（传**原始值**给角色自算）。
@@ -1002,15 +1029,8 @@ namespace FingerDiceDuel.Assistant
                 total=ShadowRules.Outgoing(actor,victim,total);
                 total=StatusRules.ApplyIncomingDamage(victim,total);
             }
-            if (actor.Character is Characters.SpecialLogics.StormSorceryLogic)
-            {
-                // A lethal bonus requires the weakest of the three possible outcomes to be enough.
-                total = Math.Min(StatusRules.ApplyDamageAffinities(victim, total, type),
-                    Math.Min(StatusRules.ApplyDamageAffinities(victim, total, AttackDamageType.Lightning, ignoreImmunity: true),
-                             StatusRules.ApplyDamageAffinities(victim, total, AttackDamageType.Thunder, ignoreImmunity: true)));
-            }
-            else total=StatusRules.ApplyDamageAffinities(victim,total,type,ignoreImmunity:
-                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(actor,type));
+            total = fixedRule != null ? ProjectedAffinityDamage(actor, victim, total, type)
+                : ExpectedAffinityDamage(actor, victim, total, type, conservative: true);
             if(game!=null) foreach(var p in game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
@@ -1023,13 +1043,15 @@ namespace FingerDiceDuel.Assistant
         /// 只算**单段**；多段的合计由角色的
         /// <see cref="ILethalThresholdAdvisor"/> 负责。
         /// </summary>
-        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim, int result, GameManager game)
+        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim, int result, GameManager game, int sourceValue = 0)
         {
             if (attacker.HasStatus(StatusEffect.Disabled)
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker) == null) return 0;
             var fixedRule = CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker);
             bool marked = CharacterBehaviors.FirstImplementer<IHunterMarkSource>(attacker)?.IsMarked(victim) == true;
-            int damage = AttackContext.ApplyStatBonuses(result + (marked ? RangerHunterLogic.ColossusBonus(victim) : 0),
+            int baseDamage = sourceValue == 1 && CharacterBehaviors.FirstImplementer<ChampionLogic>(attacker) != null
+                ? (result * 3 + 1) / 2 : result;
+            int damage = AttackContext.ApplyStatBonuses(baseDamage + (marked ? RangerHunterLogic.ColossusBonus(victim) : 0),
                 StatusRules.EffectiveAttackBonus(attacker), StatusRules.EffectiveDefenseBonus(victim), ignorePositiveDefense: marked);
             damage+=ArcaneChoices.BonusAgainst(attacker,victim);
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
@@ -1040,14 +1062,36 @@ namespace FingerDiceDuel.Assistant
                     if(defense.CanReduceAttack(victim,result))damage=(damage+1)/2;
             if (fixedRule != null) { damage = fixedRule.NormalAttackDamage; type = fixedRule.NormalAttackType; }
             else damage = StatusRules.ApplyIncomingDamage(victim, damage);
-            int projected = StatusRules.ApplyDamageAffinities(victim, damage, type, ignoreImmunity:
-                Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(attacker, type));
-            if (attacker.Character is Characters.SpecialLogics.StormSorceryLogic)
-                projected = (projected + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Lightning, ignoreImmunity: true)
-                    + 2 * StatusRules.ApplyDamageAffinities(victim, damage, AttackDamageType.Thunder, ignoreImmunity: true) + 2) / 5;
+            int projected = fixedRule != null ? ProjectedAffinityDamage(attacker, victim, damage, type)
+                : ExpectedAffinityDamage(attacker, victim, damage, type, conservative: false);
             if (marked && projected > 0 && (victim.LeftHand.IsShield || victim.RightHand.IsShield))
                 projected = Math.Max(0, StatusRules.EffectiveAttackBonus(attacker));
             return Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
+        }
+
+        private static bool FeyCanCancel(PlayerState target, int value)
+            => CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(target) != null
+                && (target.LeftHand.Value == value || target.RightHand.Value == value);
+
+        private static int ProjectedAffinityDamage(PlayerState attacker, PlayerState target, int damage, AttackDamageType type)
+        {
+            bool pierces = DamageAffinityNames.AttackPiercesAffinities(attacker, type);
+            return StatusRules.ApplyDamageAffinities(target, damage, type, !pierces, pierces);
+        }
+
+        private static int ExpectedAffinityDamage(PlayerState attacker, PlayerState target, int damage, AttackDamageType physical, bool conservative)
+        {
+            int normal = ProjectedAffinityDamage(attacker, target, damage, physical);
+            if (CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.StormSorceryLogic>(attacker) != null)
+            {
+                int lightning = ProjectedAffinityDamage(attacker, target, damage, AttackDamageType.Lightning);
+                int thunder = ProjectedAffinityDamage(attacker, target, damage, AttackDamageType.Thunder);
+                return conservative ? Math.Min(normal, Math.Min(lightning, thunder)) : (normal + 2 * lightning + 2 * thunder + 2) / 5;
+            }
+            var dragon = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(attacker);
+            if (dragon == null) return normal;
+            int elemental = ProjectedAffinityDamage(attacker, target, damage, dragon.Element);
+            return conservative ? Math.Min(normal, elemental) : (normal + 4 * elemental + 2) / 5;
         }
 
         // ============================================================
@@ -1090,7 +1134,7 @@ namespace FingerDiceDuel.Assistant
         /// 只有**情境触发**时才生效（自己或对方血量低），
         /// 否则返回 0 —— 平时不需要多算这一项。
         /// </summary>
-        private int SituationalDenyScore(LegalMove move, PlayerState actor, GameManager game)
+        private int SituationalDenyScore(LegalMove move, PlayerState actor, GameManager game, int? operationResult = null)
         {
             if (game == null || actor == null) return 0;
 
@@ -1108,7 +1152,7 @@ namespace FingerDiceDuel.Assistant
             //    因为**对手下一手可以拿它当被加数**。
             //    运算源会变成结果值，另一只手不变 —— 两只都要算。
             int otherValue = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
-            int actedAfter = DruidScoredResult(move,actor,game);
+            int actedAfter = operationResult ?? DruidScoredResult(move,actor,game);
 
             // 用**对手自己的价值表**衡量：他看重什么，我就少留什么
             HandValueProfile foeProfile = ActiveHandValueProfile(victim);

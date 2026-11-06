@@ -99,6 +99,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>本次行动是不是**赌博**（游荡者·赌徒）。</summary>
         public bool WasGamble;
+        public bool WasSubtraction;
 
         // ---------- 游荡者·盗贼的偷窃 ----------
 
@@ -190,7 +191,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>便于日志：例如 "A: 3 + 6 = 9 (Heal)"。</summary>
         public override string ToString()
-            => $"{Actor?.Name}: {ActedHandValueBefore} + {TargetHandValue} = {ResultValue} ({Effect})";
+            => $"{Actor?.Name}: {ActedHandValueBefore} {(WasSubtraction ? "−" : "+")} {TargetHandValue} = {ResultValue} ({Effect})";
     }
 
     /// <summary>
@@ -950,7 +951,7 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        private PlayerState NextPlayerAfter(PlayerState current)
+        internal PlayerState NextPlayerAfter(PlayerState current)
         {
             int count = ActionOrder.Count;
             if (count == 0) return null;
@@ -1575,9 +1576,18 @@ namespace FingerDiceDuel.Core
                 if(!candidates.Contains(DruidSecondAddend))throw new InvalidOperationException("巨龙座第二个加数不合法");
                 DruidSecondAddend=PrepareOperationAddend(actor,actedHand,DruidSecondAddend,step:1,sourceValue:Hand.ComputeSum(actedHand.Value,targetHand.Value));
             }
-            if(!suppressed){RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});RequestPortentOperation(actor,actedHand,targetHand,()=>{});}
-            try{return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);}
-            finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;}
+            try
+            {
+                if (!suppressed)
+                {
+                    if (!TacticianSubtraction.HasValue && CanChooseTacticianOperation(actor))
+                        TacticianSubtraction = ChooseTacticianSubtraction(actor, actedHand, targetHand);
+                    RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});
+                    RequestPortentOperation(actor,actedHand,targetHand,()=>{});
+                }
+                return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);
+            }
+            finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;TacticianSubtraction=null;}
         }
 
         /// <summary>
@@ -2150,17 +2160,18 @@ namespace FingerDiceDuel.Core
                 if (victim == null || !victim.IsAlive) continue;
 
                 // 走普通伤害流程（可被盾 / 太极抵挡；游荡者·风流剑客若满足条件也能闪避）
-                var ctx = new AttackContext(actor, victim, actor.LeftHand,
-                                            StatusRules.ShockDamagePerTurn)
+                int damage = ReferenceEquals(victim, actor) ? StatusRules.ShockDamagePerTurn : StatusRules.ShockAdjacentDamagePerTurn;
+                var ctx = new AttackContext(actor, victim, actor.LeftHand, damage)
                 {
                     IsStatusDamage = true,DamageOrigin=actor.StatusSourceOf(StatusEffect.Shock),
-                    IgnoreStatBonuses = true,      // 闪电伤害是固定 1 点
+                    IgnoreStatBonuses = true,
+                    AttackType = AttackDamageType.Lightning,
                 };
                 ctx.Resolve(GetChoiceProvider(victim), this);
                 NoteSkill(victim, "感电", $"实际伤害 {ctx.AppliedDamage}");
 
                 if (string.IsNullOrEmpty(LastStatusNote))
-                    LastStatusNote = $"{victim.Name} 感电，受到 {StatusRules.ShockDamagePerTurn} 点闪电伤害";
+                    LastStatusNote = $"{victim.Name} 感电，受到 {damage} 点闪电伤害";
 
                 CheckGameOver();
                 if (IsGameOver) { SkipIfStatusKilled(actor); return; }
@@ -2583,7 +2594,14 @@ namespace FingerDiceDuel.Core
             }
             else
             {
-                effect = actedHand.PerformOperation(targetValue);
+                bool subtract = ShouldSubtract(actor);
+                effect = actedHand.PerformOperation(targetValue, subtract);
+                if (subtract)
+                {
+                    result.WasSubtraction = true;
+                    NoteSkill(actor, "战术眼光", $"{result.ActedHandValueBefore}−{targetValue}→{actedHand.Value}", actor,
+                        new SkillVisualData(source:actedHand,value:actedHand.Value,previous:result.ActedHandValueBefore));
+                }
                 if(DruidForms.IsDragon(actor)&&DruidSecondAddend!=null)
                 {
                     result.SecondAddendValue=DruidSecondAddend.Value;
@@ -2608,7 +2626,7 @@ namespace FingerDiceDuel.Core
                 effect = Hand.GetEffectType(finalValue);
                 actedHand.SetShieldState(effect == HandEffectType.Shield ? ShieldState.Formed : ShieldState.None);
             }
-            // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4/6 改为合出护盾）。
+            // 2b. 角色可以**改写效果类型**（圣武士·奉献之誓的 4 改为合出护盾）。
             //
             //     必须在这里做：手值已经变成结果值（盾就是 5），
             //     但护盾状态还没设 —— 改写后要由我们补上状态，
@@ -2845,7 +2863,8 @@ namespace FingerDiceDuel.Core
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.SecondAddendValueBefore=result.SecondAddendValue;
-                        if(trickery||MonkRules.DrunkenOf(actor)!=null)ctx.AttackValueOverride=result.ResultValue;
+                        if (trickery || portent || result.WasSubtraction || result.FreezeHalvedFrom > 0 || MonkRules.DrunkenOf(actor)!=null)
+                            ctx.AttackValueOverride = result.ResultValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);
 
@@ -3437,7 +3456,7 @@ namespace FingerDiceDuel.Core
             DruidWildShape.Offer(CurrentPlayer,this);
         }
 
-        /// <summary>刷新野蛮人·狂战士道途 / 战士·战术家等角色的动态攻防。</summary>
+        /// <summary>刷新角色的动态攻防。</summary>
         public void RefreshDynamicStats()
         {
             for (int i = 0; i < _players.Count; i++)

@@ -6,50 +6,90 @@ namespace FingerDiceDuel.Assistant
     {
         public PlayerState ResistanceTarget(PlayerState owner, GameManager game)
         {
-            PlayerState best=owner;int bestScore=int.MinValue;
-            foreach(var target in game.Players)
+            PlayerState best = owner;
+            int bestScore = -1;
+            foreach (var target in game.Players)
             {
-                if(!target.IsAlive||!ReferenceEquals(target,owner)&&!game.IsKnownAlly(owner,target))continue;
-                int score=(target.MaximumHealth-target.Health)*2;
-                foreach(var enemy in game.OpponentsOf(owner))
-                {
-                    if(!enemy.IsAlive||!StatusRules.CanAct(enemy)||!game.CanReach(enemy,target))continue;
-                    var hit=new AttackContext(enemy,target,enemy.LeftHand,6,game);
-                    var type=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(hit)??AttackDamageType.Slashing;
-                    if(!AttackDamageTypes.IsMagic(type)||ResistanceNames.CanGrant(type))
-                        score+=12+System.Math.Max(0,StatusRules.EffectiveAttackBonus(enemy))*2+(target.Health<=8?8:0);
-                }
-                if(score>bestScore){best=target;bestScore=score;}
+                if (!target.IsAlive || !AncientAlly(game, owner, target)) continue;
+                var type = ResistanceType(owner, target, game);
+                int score = ResistanceThreat(owner, target, type, game);
+                score += (target.MaximumHealth - target.Health) / 2;
+                if (score > 0 && target.Health <= 8) score += 14;
+                if (score > bestScore) { best = target; bestScore = score; }
             }
             return best;
         }
+
         public AttackDamageType ResistanceType(PlayerState owner, PlayerState target, GameManager game)
         {
-            var weights=new System.Collections.Generic.Dictionary<AttackDamageType,int>();
-            foreach(var enemy in game.OpponentsOf(owner))
+            var best = AttackDamageType.Bludgeoning;
+            int bestScore = -1;
+            foreach (var type in ResistanceNames.Choices)
             {
-                if(!enemy.IsAlive || !StatusRules.CanAct(enemy) || !game.CanReach(enemy,target)) continue;
-                var context=new AttackContext(enemy,target,enemy.LeftHand,4,game);
-                var type=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(context)??AttackDamageType.Slashing;
-                if(type==AttackDamageType.None) type=AttackDamageType.Slashing;
-                if(!AttackDamageTypes.IsMagic(type)) type=AttackDamageType.Bludgeoning;
-                int weight=10+System.Math.Max(0,StatusRules.EffectiveAttackBonus(enemy))*2;
-                if(target.HasPermanentResistance(type)) weight=0;
-                weights.TryGetValue(type,out int old);weights[type]=old+weight;
+                int score = ResistanceThreat(owner, target, type, game);
+                if (score > bestScore) { best = type; bestScore = score; }
             }
-            var best=AttackDamageType.Bludgeoning;int score=-1;
-            foreach(var type in ResistanceNames.Choices)
-                if(weights.TryGetValue(type,out int value) && value>score) {best=type;score=value;}
             return best;
         }
+
+        private static int ResistanceThreat(PlayerState owner, PlayerState target, AttackDamageType group, GameManager game)
+        {
+            int score = 0;
+            foreach (var enemy in game.Players)
+            {
+                if (!enemy.IsAlive || AncientAlly(game, owner, enemy) || !StatusRules.CanAct(enemy)
+                    || !game.CanReach(enemy, target) || !StatusRules.CanAttackTarget(enemy, target, game)) continue;
+                var context = new AttackContext(enemy, target, enemy.LeftHand, 6, game);
+                var type = CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(enemy)?.NormalAttackType
+                    ?? (enemy.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
+                if (type == AttackDamageType.None) type = AttackDamageType.Slashing;
+                if (DamageAffinityNames.AttackPiercesAffinities(enemy, type) || target.HasPermanentResistance(type)
+                    || target.HasPermanentImmunity(type)) continue;
+                if (AttackDamageTypes.IsPhysical(type)) type = AttackDamageType.Bludgeoning;
+                if (type == group) score += 10 + System.Math.Max(0, StatusRules.EffectiveAttackBonus(enemy)) * 2;
+            }
+            return score;
+        }
+
+        private int AbjurationMoveBonus(PlayerState owner, int result, GameManager game)
+        {
+            if (result != 2 || CharacterBehaviors.FirstImplementer<IAbjurationSkill>(owner) == null) return 0;
+            var target = ResistanceTarget(owner, game);
+            var type = ResistanceType(owner, target, game);
+            if (target.HasSustainedResistance(type) || ResistanceThreat(owner, target, type, game) == 0) return -44;
+            return 25;
+        }
+
         public bool ShouldStoreBarrier(PlayerState owner, int points, GameManager game)
         {
-            var state=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(owner);
-            if(state==null || state.BarrierPoints>=12) return false;
-            foreach(var enemy in game.OpponentsOf(owner))
-                if(enemy.IsAlive && game.CanReach(owner,enemy)
-                    && enemy.Health<=System.Math.Max(0,points+StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(enemy))) return false;
-            return owner.Health<=10 && state.BarrierPoints<8 || points==4 && state.BarrierPoints<4;
+            var state = CharacterBehaviors.FirstImplementer<IAbjurationSkill>(owner);
+            if (state == null || state.BarrierPoints >= points) return false;
+            int outgoing = 0;
+            int incoming = 0;
+            foreach (var enemy in game.Players)
+            {
+                if (!enemy.IsAlive || AncientAlly(game, owner, enemy)) continue;
+                if (game.CanReach(owner, enemy) && StatusRules.CanAttackTarget(owner, enemy, game))
+                {
+                    bool shielded = enemy.LeftHand.IsShield || enemy.RightHand.IsShield;
+                    int damage = shielded ? 0 : EstimateAttackDamage(owner, enemy, points, game);
+                    if (damage >= enemy.HealthAcrossForms) return false;
+                    outgoing = System.Math.Max(outgoing, damage);
+                }
+                if (!game.CanReach(enemy, owner) || !StatusRules.CanAct(enemy)
+                    || !StatusRules.CanAttackTarget(enemy, owner, game)
+                    || owner.LeftHand.IsShield || owner.RightHand.IsShield) continue;
+                foreach (var move in game.GetLegalMoves(enemy))
+                {
+                    int result = StatusRules.ApplyResultModifiers(enemy, Hand.ComputeSum(move.ActedHand.Value, move.TargetHand.Value));
+                    if (IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(enemy, result)))
+                        incoming = System.Math.Max(incoming, EstimateAttackDamage(enemy, owner, result, game, move.ActedHand.Value));
+                }
+            }
+            int prevented = System.Math.Min(incoming, points + state.BarrierPoints) - System.Math.Min(incoming, state.BarrierPoints);
+            bool avoidsDeath = incoming - state.BarrierPoints >= owner.HealthAcrossForms
+                && incoming - state.BarrierPoints - points < owner.HealthAcrossForms;
+            return avoidsDeath || (prevented > 0 && prevented > outgoing && (owner.Health <= 12 || outgoing == 0));
         }
         public PlayerState NecroticTarget(PlayerState owner, GameManager game)
         {

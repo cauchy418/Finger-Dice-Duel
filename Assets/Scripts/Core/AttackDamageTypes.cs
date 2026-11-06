@@ -56,6 +56,9 @@ namespace FingerDiceDuel.Core
         /// <summary>是否属于魔法那一类。</summary>
         public static bool IsMagic(AttackDamageType t) => (int)t >= 11;
 
+        public static bool IsPhysical(AttackDamageType t)
+            => t == AttackDamageType.Slashing || t == AttackDamageType.Bludgeoning || t == AttackDamageType.Piercing;
+
         /// <summary>中文名。</summary>
         public static string NameOf(AttackDamageType t)
         {

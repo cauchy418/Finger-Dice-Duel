@@ -8,13 +8,13 @@ namespace FingerDiceDuel.Assistant
     /// **冒险模式 · 剧情模式 · 第一关「第一章：边境哨站·初战」**（用户已确认，2026-10-24）。
     ///
     /// 定位：一场 7 回合、**绝对不可失败**的剧本化新手教学。
-    /// 玩家 = 战士·勇士（攻+1/防0/生命20）；对手 = 老兵（白板，攻0/防0，
+    /// 玩家 = 重甲战士（攻+2/防+2/生命20）；对手 = 老兵（白板，攻0/防0，
     /// **生命 12** —— 剧情口径"身负旧伤的老兵"）。
     ///
     /// 教学序列（逐回合数值已演算核对，见 Docs/Adventure/level-01.md）：
-    ///   1. 攻击（1+3=4 → 5 伤，老兵 12→7）；2. 老兵还手 4 伤（玩家 20→16）；
+    ///   1. 攻击（1+3=4 → 6 伤，老兵 12→6）；2. 老兵还手 2 伤（玩家 20→18）；
     ///   3. 合盾（1+4=5）；4. 老兵攻击（1+5=6）被盾挡下、盾碎；
-    ///   5. 回血（5+4=9，16→20 上限截断）；
+    ///   5. 回血（5+4=9，18→20 上限截断）；
     ///   6. 满十归一（老兵 6+4=10 → 1，无效果）；
     ///   7. 半自由决胜（提示 4+4=8，放开全部点击；老兵进入收官保护）。
     ///
@@ -96,26 +96,26 @@ namespace FingerDiceDuel.Assistant
 
         private void BuildBeats()
         {
-            // —— 拍 1：攻击教学（1+3=4 → 4+1攻=5 伤；老兵 12→7）——
+            // —— 拍 1：攻击教学（1+3=4 → 4+2攻=6 伤；老兵 12→6）——
             _beats.Add(new Beat
             {
                 Narration = "先点自己的左手1，再点老兵左手3。\n" +
                             "1+3=4，发动攻击。\n" +
                             "4/6/8是攻击数字，基础伤害等于点数。\n" +
-                            "勇士攻击+1，本次造成5伤。\n" +
+                            "重甲战士攻击+2，本次造成6伤。\n" +
                             "最后点老兵，确认攻击目标。",
                 ActedHand = _player.LeftHand,
                 AddendHand = _soldier.LeftHand,
-                Complete = l => l.Soldier.Health == SoldierMaxHealth - 5
+                Complete = l => l.Soldier.Health == SoldierMaxHealth - 6
                                 && l.Player.LeftHand.Value == 4,
             });
 
-            // —— 拍 2：老兵还手（老兵 3+1=4 → 4 伤；玩家 20→16）——
+            // —— 拍 2：老兵还手（老兵 3+1=4 → 2 伤；玩家 20→18）——
             _beats.Add(new Beat
             {
                 Narration = "老兵用同样的方式还手了——注意你的生命条，被攻击就会掉血。" +
                             "别慌，老兵这就教你防御。",
-                Complete = l => l.Player.Health == 16,
+                Complete = l => l.Player.Health == 18,
             });
 
             // —— 拍 3：合盾教学（1+4=5 → 盾）——
@@ -138,7 +138,7 @@ namespace FingerDiceDuel.Assistant
                                 && l.Soldier.RightHand.Value == 6,
             });
 
-            // —— 拍 5：回血教学（5+4=9 → 回 9；16→20 上限截断；玩家的回合）——
+            // —— 拍 5：回血教学（5+4=9 → 回 9；18→20 上限截断；玩家的回合）——
             _beats.Add(new Beat
             {
                 Narration = "该你出招了：结果是【9】就是回复！点你的碎盾手（5），" +
@@ -160,7 +160,7 @@ namespace FingerDiceDuel.Assistant
             // —— 拍 7：半自由决胜（提示 4+4=8；放开全部点击）——
             _beats.Add(new Beat
             {
-                Narration = "老兵还剩7点生命，试着赢下切磋！提示：左手 4 + 老兵左手 4 = 8。" +
+                Narration = "老兵还剩6点生命，试着赢下切磋！提示：左手 4 + 老兵左手 4 = 8。" +
                             "这一步由你决定。老兵停止进攻，你可以放心尝试。",
                 FreeClicks = true,
                 Complete = l => l.IsComplete,

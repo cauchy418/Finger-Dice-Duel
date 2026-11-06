@@ -26,12 +26,12 @@ namespace FingerDiceDuel.Tests
     {
         private sealed class ZeroRandom:Random
         {public override int Next(int maxValue)=>0;public override double NextDouble()=>0;}
-        [Test] public void Biased_character_pick_preserves_the_shuffled_identity_seat()
+        [Test] public void Biased_character_pick_uses_the_candidates_dealt_to_each_seat()
         {
             var roles=new[]{IdentityRole.Lord,IdentityRole.Loyalist,IdentityRole.Rebel,IdentityRole.Traitor,IdentityRole.Rebel,IdentityRole.Loyalist,IdentityRole.Rebel,IdentityRole.Rebel};
-            var picked=PickCharactersForRoles(new ZeroRandom(),roles);
-            // 零随机把选角座位洗成1,2,3,4,5,6,7,0；每次抽取剩余池首项。
-            Assert.AreEqual(CharacterDefinition.BuiltIn[0],picked[1]);Assert.AreEqual(CharacterDefinition.BuiltIn[7],picked[0]);
+            var picked=PickCharactersForRoles(new ZeroRandom(),roles,new IdentityDraftPreference(null));
+            // 零随机让牌组首张移至末尾，主公的八张发完再发第二席。
+            Assert.AreEqual(CharacterDefinition.BuiltIn[1],picked[0]);Assert.AreEqual(CharacterDefinition.BuiltIn[9],picked[1]);
             Assert.AreEqual(8,new HashSet<CharacterDefinition>(picked).Count);
         }
         private const int Games = 2000;
@@ -91,11 +91,13 @@ namespace FingerDiceDuel.Tests
             var stallReasons = new Dictionary<string, int>();
             int lordSurvived = 0;
 
+            var preference = biased ? new IdentityDraftPreference(
+                System.IO.File.ReadAllText("Assets/Resources/Art/Battle/v1/Adventure/identity-role-rates.txt")) : null;
             for (int g = 0; g < Games; g++)
             {
                 IdentityRole[] roles = PickRoles(rng);
                 List<CharacterDefinition> defs = biased
-                    ? PickCharactersForRoles(rng, roles)
+                    ? PickCharactersForRoles(rng, roles, preference)
                     : PickCharacters(rng);
 
                 var seated = new List<PlayerState>(8);
@@ -267,77 +269,25 @@ namespace FingerDiceDuel.Tests
             Assert.True(errors == 0, "身份局抽样不应出现异常：" + firstError);
         }
 
-        /// <summary>
-        /// 各身份的高胜角色偏好（来自上一轮 2,000 局身份内胜率排序）。
-        /// 玩家不是必选第一，而是按名次权重加权选择；角色仍要求 8 人不重复。
-        /// </summary>
-        private static readonly Dictionary<IdentityRole, string[]> RoleRankings =
-            new Dictionary<IdentityRole, string[]>
-            {
-                [IdentityRole.Lord] = new[]
-                {
-                    "野蛮人·巨人道途", "圣武士·奉献之誓", "战士·勇士", "邪术师·旧日支配者", "野蛮人·野兽道途",
-                    "游侠·幽域追踪者", "野蛮人·守望者道途", "圣武士·王冠之誓", "战士·剑士", "术士·狂野魔法",
-                },
-                [IdentityRole.Loyalist] = new[]
-                {
-                    "吟游诗人·勇气学院", "法师·咒法学派", "邪术师·旧日支配者", "术士·狂野魔法", "战士·魔射手",
-                    "牧师·生命领域", "邪术师·至高妖精", "游荡者·刺客", "武僧·太极宗", "游荡者·风流剑客",
-                },
-                [IdentityRole.Rebel] = new[]
-                {
-                    "术士·狂野魔法", "战士·魔射手", "圣武士·奉献之誓", "邪术师·旧日支配者", "法师·咒法学派",
-                    "法师·塑能学派", "野蛮人·巨人道途", "邪术师·至高妖精", "战士·破阵者", "野蛮人·野兽道途",
-                },
-                [IdentityRole.Traitor] = new[]
-                {
-                    "圣武士·奉献之誓", "战士·剑士", "战士·魔射手", "法师·咒法学派", "牧师·生命领域",
-                    "邪术师·旧日支配者", "野蛮人·野兽道途", "术士·狂野魔法", "野蛮人·巨人道途", "战士·勇士",
-                },
-            };
-
-        private static double RolePickWeight(IdentityRole role, string name)
+        private static List<CharacterDefinition> PickCharactersForRoles(Random rng, IdentityRole[] roles, IdentityDraftPreference preference)
         {
-            if (!RoleRankings.TryGetValue(role, out string[] ranking)) return 1.0;
-            for (int i = 0; i < ranking.Length; i++)
-                if (ranking[i] == name)
-                    return new[] { 12.0, 9.0, 7.0, 5.0, 4.0, 3.0, 2.5, 2.0, 1.5, 1.2 }[i];
-            return 1.0;
-        }
-
-        private static List<CharacterDefinition> PickCharactersForRoles(Random rng,
-                                                                      IdentityRole[] roles)
-        {
-            var pool = new List<CharacterDefinition>();
-            foreach (CharacterDefinition d in CharacterDefinition.BuiltIn)
-                if (CharacterFactory.IsRegistered(d.Logic)) pool.Add(d);
-
-            var picked = new List<CharacterDefinition>(new CharacterDefinition[8]);
-            var seatOrder = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7 };
-            for (int i = 7; i > 0; i--)
+            var pool = new List<CharacterDefinition>(CharacterDefinition.BuiltIn);
+            for (int i = pool.Count - 1; i > 0; i--)
             {
                 int j = rng.Next(i + 1);
-                int t = seatOrder[i]; seatOrder[i] = seatOrder[j]; seatOrder[j] = t;
+                var candidate = pool[i];
+                pool[i] = pool[j];
+                pool[j] = candidate;
             }
 
-            foreach (int seat in seatOrder)
+            var picked = new List<CharacterDefinition>(8);
+            int offset = 0;
+            for (int i = 0; i < 8; i++)
             {
-                double total = 0;
-                for (int i = 0; i < pool.Count; i++)
-                    total += RolePickWeight(roles[seat], pool[i].DisplayName);
-
-                double roll = rng.NextDouble() * total;
-                int chosen = 0;
-                for (int i = 0; i < pool.Count; i++)
-                {
-                    roll -= RolePickWeight(roles[seat], pool[i].DisplayName);
-                    if (roll <= 0) { chosen = i; break; }
-                }
-
-                picked[seat]=pool[chosen];
-                pool.RemoveAt(chosen);
+                int count = i == 0 ? 8 : 6;
+                picked.Add(preference.Choose(roles[i], pool.GetRange(offset, count), rng));
+                offset += count;
             }
-
             return picked;
         }
 

@@ -67,7 +67,7 @@ namespace FingerDiceDuel.Assistant
 
         private static void BuildOwn()
         {
-            // ---- 战士·勇士（攻+1 / 防0，精通重击）：基础权重；斩杀线由 ChampionLogic 按运算后和10估算 ----
+            // ---- 战士·勇士（攻+1 / 防0，精通重击）：斩杀线按运算前为1的手估算 ----
             Own[CharacterDefinition.ChampionId] = new HandValueProfile();
             // 王冠之誓沿用既有基线，显式登记避免新增角色无意走回退。
             Own[CharacterDefinition.OathOfTheCrownId] = new HandValueProfile();
@@ -186,15 +186,12 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.DoublesOf(200, "双 7：一运算即可进入潜行", 7));
 
             // ---- 圣武士·奉献之誓（防 +1）----
-            // **4 / 5 / 6 都是"合出护盾"**（4 与 6 由改写而来），
-            // 而合盾会额外触发一次 **2 点冲击** —— 所以三者价值**等同且都高**
-            // （玩家原话："圣武士·奉献之誓 456 都是高价值"）。
-            // 反过来说 1/2/3/7/8/9 都打不出盾，价值相对低。
+            // 4／5 合盾触发卫护斩，6／8 保留普通攻击。
             Own[CharacterDefinition.OathOfDevotionId] = new HandValueProfile()
-                .Set(4, 80).Set(5, 80).Set(6, 80)      // 三条路都通向"盾 + 冲击"
-                .Set(7, 45).Set(8, 45).Set(9, 45)      // 打不出盾
+                .Set(4, 80).Set(5, 80).Set(6, 64)
+                .Set(7, 45).Set(8, 68).Set(9, 64)
                 .Set(1, 52).Set(2, 50).Set(3, 50)
-                .AddCombo(ComboRule.ContainsAll(60, "手上有一个 4/5/6 就能合盾", 4, 5, 6));
+                .AddCombo(ComboRule.ContainsAll(35, "双手持4与5，保留换盾与代挡", 4, 5));
 
             // ---- 邪术师·至高妖精（攻 0 / 防 −1）----
             // 他的核心不是"打出什么"，而是**手上留着什么**：
@@ -202,7 +199,7 @@ namespace FingerDiceDuel.Assistant
             // 所以价值**接近基线、略偏"覆盖面广"的低值**（1/2/3/7 能凑出更多种攻击数字）。
             Own[CharacterDefinition.TheArchfeyId] = new HandValueProfile()
                 .Set(1, 66).Set(2, 66).Set(3, 64).Set(7, 64)
-                .Set(4, 58).Set(6, 58).Set(8, 58).Set(9, 58)
+                .Set(4, 66).Set(6, 70).Set(8, 70).Set(9, 58)
                 .Set(5, 52);                            // 5 当盾的价值一般（防 −1）
 
             // ---- 战士·魔射手（攻 0 / 防 −1，距离 3）----
@@ -375,7 +372,7 @@ namespace FingerDiceDuel.Assistant
                 .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48)
                 .AddCombo(ComboRule.ContainsAll(70, "有 9 就能转成攻击", 9));
 
-            // ---- 战士·战术家（攻 +1 / 防 -1）----
+            // ---- 战士·战术家（攻0 / 防0，加减法）----
             // 没有固定套路，沿用基线；动态攻防由场况决定。
             Own[CharacterDefinition.TacticianId] = new HandValueProfile()
                 .Set(8, 70).Set(6, 64).Set(4, 58).Set(5, 54).Set(9, 56)
@@ -555,11 +552,11 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对圣武士·奉献之誓 ----
-            // 他的 **4 / 5 / 6** 都能合盾（并在合盾时触发 2 点冲击）——
+            // 4／5 合盾触发卫护斩，6仍按普通攻击评分。
             // 我留这些数字能挡他，但对"分配手值给他"来说要压低。
             OpponentAdjust[CharacterDefinition.OathOfDevotionId] = new List<ValueAdjust>
             {
-                new ValueAdjust(4, -20), new ValueAdjust(5, -20), new ValueAdjust(6, -20),
+                new ValueAdjust(4, -20), new ValueAdjust(5, -20), new ValueAdjust(6, -8),
             };
 
             // ---- 面对武僧·太极宗 ----
@@ -586,8 +583,7 @@ namespace FingerDiceDuel.Assistant
             // ---- 面对邪术师·至高妖精 ----
             // 他靠"手上留着的数字"取消攻击（与我的攻击数字相同的那只手会被 +1）。
             // 我打出的攻击数字若正好是他手上的数字，就会被取消 ——
-            // 所以**我自己的攻击数字**要避开他手上的值（这条在走子评分里没法表达，
-            // 因为那取决于他手上有什么）；这里只把"送他覆盖面广的低值"压一点。
+            // 实战评分会避开目标所持的同值数字；起手分配仍小幅压低低值手的组合覆盖。
             OpponentAdjust[CharacterDefinition.TheArchfeyId] = new List<ValueAdjust>
             {
                 new ValueAdjust(1, -8), new ValueAdjust(2, -8), new ValueAdjust(7, -8),

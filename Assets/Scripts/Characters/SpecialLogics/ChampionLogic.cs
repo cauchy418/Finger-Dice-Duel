@@ -1,8 +1,7 @@
 ﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
-    /// 战士·勇士：攻 +1 / 防 0，距离 1。发起攻击时双手和为 10，基础伤害 ×1.5。
-    /// 使用攻击建立时的快照，避免双将另一技能改手后影响判定；额外攻击不属于发起攻击。
+    /// 战士·勇士：用运算前为1的手发起普通攻击，基础伤害×1.5，命中附物理易伤。
     /// </summary>
     public sealed class ChampionLogic : CharacterTemplate, ILethalThresholdAdvisor, ISkillUseCounter
     {
@@ -17,18 +16,19 @@
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null || !CharacterBehaviors.ActorHas(context.Attacker, this)
-                || context.IsSpecialAttack || context.IsReflected || context.AttackerHandSumAtStart != 10) return;
+                || context.IsSpecialAttack || context.IsStatusDamage || context.IsReflected || context.SourceHandValueBefore != 1) return;
 
             // 独立倍率不改变风流剑客“是否使用潇洒无畏”的伤害类型判定，也不会被其倍率覆盖。
             context.AdditionalBaseDamageMultiplier *= HeavyStrikeMultiplier;
             SkillUseCount++;context.VisualPower=System.Math.Max(context.VisualPower,1.35f);
-            context.Manager?.NoteSkill(context.Attacker, "精通重击", "双手和10，基础伤害×1.5",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
+            context.Manager?.NoteSkill(context.Attacker, "精通重击", "用1发起攻击，基础伤害×1.5",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
+            context.ApplyAttachedStatus(context.Defender, StatusEffect.PhysicalVulnerability, 2, context.Attacker, context.Manager, "物理易伤");
         }
 
         public int EstimateLethalDamage(LethalContext context, int resultValue,
                                        int attackBonus, int defenseBonus)
         {
-            int damage = resultValue + context.OtherHandValue == 10
+            int damage = context.ActedHand?.Value == 1
                 ? (int)System.Math.Round(resultValue * HeavyStrikeMultiplier, System.MidpointRounding.AwayFromZero)
                 : resultValue;
             return AttackContext.ApplyStatBonuses(damage, attackBonus, defenseBonus, false);

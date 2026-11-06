@@ -873,7 +873,7 @@ namespace FingerDiceDuel.Core
         bool IsMarked(PlayerState target);
     }
 
-    /// <summary>角色根据战场状态刷新动态攻防（野蛮人·狂战士道途 / 战士·战术家）。</summary>
+    /// <summary>角色根据战场状态刷新动态攻防。</summary>
     public interface IDynamicStats
     {
         void RefreshDynamicStats(PlayerState owner, GameManager manager);

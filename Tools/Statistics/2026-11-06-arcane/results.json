@@ -1,0 +1,2860 @@
+{
+  "date": "2026-11-06",
+  "roster_count": 57,
+  "law_axis_counts": [
+    18,
+    20,
+    19
+  ],
+  "legal_duals": 514,
+  "source_commit": "e0ea4194df2d2074d6a73450f3557480c6f5e803",
+  "source_sha256": "5c31ab9cfbf890e3b6dee2763ce5f16dcb06de4d5d2308d996e48eb435f9e55c",
+  "test_source_sha256": "eecbe0d516f8a4fd64c1034a31ffd738ef7f94f27f73a1692eed9df7748f1806",
+  "roster_sha256": "e86942071fecc659398be568cf83ac5d0570213fcbea294440ab9caa018b139a",
+  "seeded_drunk_rng": true,
+  "totals": {
+    "1v1": {
+      "games": 31920,
+      "draws": 253,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "26ecb1e652cde1cf480ce8a666ed9680dcc2192375afe4dcdc5971904301d372"
+    },
+    "2v2": {
+      "games": 25536,
+      "draws": 109,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "1fae68f14db90b1335767dabf0ade2ddbb24e03237ae0e5da28a0e875b2fbebc"
+    },
+    "dual": {
+      "games": 4112,
+      "draws": 24,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "cee0350c515277aef12720cab432d5cf9f2f4d1c91dfa841c971027841fc4b47"
+    },
+    "eight": {
+      "games": 600,
+      "draws": 2,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "5cefa6dbaecef04836b4f74eb10a320736b393c662650295a59494ae311af11b"
+    },
+    "identity": {
+      "games": 2000,
+      "draws": 32,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "a76c53bbe1629b5e8d82550e6b1802d45c19c31101110a55039b6923d5933f14"
+    },
+    "identity-preferred": {
+      "games": 600,
+      "draws": 11,
+      "errors": 0,
+      "forced_aborts": 0,
+      "sha256": "352250da06a49ce63e64c11380422aaba763048f1faf65e30244efc1c6bdbd44"
+    }
+  },
+  "roles": [
+    {
+      "id": "fighter_champion",
+      "name": "战士·勇士",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 445,
+          "draws": 2,
+          "losses": 673,
+          "win_percent": 39.732
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 832,
+          "draws": 11,
+          "losses": 949,
+          "win_percent": 46.429
+        },
+        "dual": {
+          "games": 304,
+          "wins": 129,
+          "draws": 4,
+          "losses": 171,
+          "win_percent": 42.434
+        },
+        "eight": {
+          "games": 81,
+          "wins": 23,
+          "draws": 0,
+          "losses": 58,
+          "win_percent": 28.395
+        },
+        "identity": {
+          "games": 287,
+          "wins": 95,
+          "draws": 5,
+          "losses": 187,
+          "win_percent": 33.101
+        },
+        "identity-preferred": {
+          "games": 73,
+          "wins": 19,
+          "draws": 2,
+          "losses": 52,
+          "win_percent": 26.027
+        }
+      }
+    },
+    {
+      "id": "fighter_breaker",
+      "name": "战士·破阵者",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 581,
+          "draws": 19,
+          "losses": 520,
+          "win_percent": 51.875
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1079,
+          "draws": 15,
+          "losses": 698,
+          "win_percent": 60.212
+        },
+        "dual": {
+          "games": 272,
+          "wins": 130,
+          "draws": 3,
+          "losses": 139,
+          "win_percent": 47.794
+        },
+        "eight": {
+          "games": 92,
+          "wins": 30,
+          "draws": 1,
+          "losses": 61,
+          "win_percent": 32.609
+        },
+        "identity": {
+          "games": 281,
+          "wins": 97,
+          "draws": 2,
+          "losses": 182,
+          "win_percent": 34.52
+        },
+        "identity-preferred": {
+          "games": 59,
+          "wins": 22,
+          "draws": 2,
+          "losses": 35,
+          "win_percent": 37.288
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "name": "法师·咒法学派",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 558,
+          "draws": 9,
+          "losses": 553,
+          "win_percent": 49.821
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 921,
+          "draws": 5,
+          "losses": 866,
+          "win_percent": 51.395
+        },
+        "dual": {
+          "games": 272,
+          "wins": 185,
+          "draws": 0,
+          "losses": 87,
+          "win_percent": 68.015
+        },
+        "eight": {
+          "games": 84,
+          "wins": 36,
+          "draws": 0,
+          "losses": 48,
+          "win_percent": 42.857
+        },
+        "identity": {
+          "games": 277,
+          "wins": 120,
+          "draws": 4,
+          "losses": 153,
+          "win_percent": 43.321
+        },
+        "identity-preferred": {
+          "games": 102,
+          "wins": 45,
+          "draws": 1,
+          "losses": 56,
+          "win_percent": 44.118
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_warden",
+      "name": "野蛮人·守望者道途",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 452,
+          "draws": 23,
+          "losses": 645,
+          "win_percent": 40.357
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 736,
+          "draws": 40,
+          "losses": 1016,
+          "win_percent": 41.071
+        },
+        "dual": {
+          "games": 288,
+          "wins": 121,
+          "draws": 5,
+          "losses": 162,
+          "win_percent": 42.014
+        },
+        "eight": {
+          "games": 82,
+          "wins": 26,
+          "draws": 1,
+          "losses": 55,
+          "win_percent": 31.707
+        },
+        "identity": {
+          "games": 292,
+          "wins": 95,
+          "draws": 8,
+          "losses": 189,
+          "win_percent": 32.534
+        },
+        "identity-preferred": {
+          "games": 55,
+          "wins": 12,
+          "draws": 1,
+          "losses": 42,
+          "win_percent": 21.818
+        }
+      }
+    },
+    {
+      "id": "cleric_life_domain",
+      "name": "牧师·生命领域",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 305,
+          "draws": 30,
+          "losses": 785,
+          "win_percent": 27.232
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 711,
+          "draws": 26,
+          "losses": 1055,
+          "win_percent": 39.676
+        },
+        "dual": {
+          "games": 272,
+          "wins": 105,
+          "draws": 3,
+          "losses": 164,
+          "win_percent": 38.603
+        },
+        "eight": {
+          "games": 92,
+          "wins": 40,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 43.478
+        },
+        "identity": {
+          "games": 269,
+          "wins": 115,
+          "draws": 4,
+          "losses": 150,
+          "win_percent": 42.751
+        },
+        "identity-preferred": {
+          "games": 91,
+          "wins": 45,
+          "draws": 3,
+          "losses": 43,
+          "win_percent": 49.451
+        }
+      }
+    },
+    {
+      "id": "rogue_swashbuckler",
+      "name": "游荡者·风流剑客",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 547,
+          "draws": 56,
+          "losses": 517,
+          "win_percent": 48.839
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 610,
+          "draws": 3,
+          "losses": 1179,
+          "win_percent": 34.04
+        },
+        "dual": {
+          "games": 288,
+          "wins": 146,
+          "draws": 4,
+          "losses": 138,
+          "win_percent": 50.694
+        },
+        "eight": {
+          "games": 97,
+          "wins": 32,
+          "draws": 0,
+          "losses": 65,
+          "win_percent": 32.99
+        },
+        "identity": {
+          "games": 294,
+          "wins": 106,
+          "draws": 7,
+          "losses": 181,
+          "win_percent": 36.054
+        },
+        "identity-preferred": {
+          "games": 77,
+          "wins": 25,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 32.468
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_beast",
+      "name": "野蛮人·野兽道途",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 427,
+          "draws": 1,
+          "losses": 692,
+          "win_percent": 38.125
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 632,
+          "draws": 0,
+          "losses": 1160,
+          "win_percent": 35.268
+        },
+        "dual": {
+          "games": 288,
+          "wins": 124,
+          "draws": 1,
+          "losses": 163,
+          "win_percent": 43.056
+        },
+        "eight": {
+          "games": 71,
+          "wins": 19,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 26.761
+        },
+        "identity": {
+          "games": 274,
+          "wins": 95,
+          "draws": 3,
+          "losses": 176,
+          "win_percent": 34.672
+        },
+        "identity-preferred": {
+          "games": 57,
+          "wins": 19,
+          "draws": 3,
+          "losses": 35,
+          "win_percent": 33.333
+        }
+      }
+    },
+    {
+      "id": "fighter_swordsman",
+      "name": "战士·剑士",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 772,
+          "draws": 3,
+          "losses": 345,
+          "win_percent": 68.929
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1178,
+          "draws": 5,
+          "losses": 609,
+          "win_percent": 65.737
+        },
+        "dual": {
+          "games": 272,
+          "wins": 209,
+          "draws": 0,
+          "losses": 63,
+          "win_percent": 76.838
+        },
+        "eight": {
+          "games": 90,
+          "wins": 35,
+          "draws": 0,
+          "losses": 55,
+          "win_percent": 38.889
+        },
+        "identity": {
+          "games": 263,
+          "wins": 99,
+          "draws": 3,
+          "losses": 161,
+          "win_percent": 37.643
+        },
+        "identity-preferred": {
+          "games": 86,
+          "wins": 27,
+          "draws": 1,
+          "losses": 58,
+          "win_percent": 31.395
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_ninja",
+      "name": "武僧·忍宗",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 514,
+          "draws": 3,
+          "losses": 603,
+          "win_percent": 45.893
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1038,
+          "draws": 3,
+          "losses": 751,
+          "win_percent": 57.924
+        },
+        "dual": {
+          "games": 304,
+          "wins": 149,
+          "draws": 2,
+          "losses": 153,
+          "win_percent": 49.013
+        },
+        "eight": {
+          "games": 78,
+          "wins": 18,
+          "draws": 0,
+          "losses": 60,
+          "win_percent": 23.077
+        },
+        "identity": {
+          "games": 313,
+          "wins": 105,
+          "draws": 3,
+          "losses": 205,
+          "win_percent": 33.546
+        },
+        "identity-preferred": {
+          "games": 70,
+          "wins": 19,
+          "draws": 3,
+          "losses": 48,
+          "win_percent": 27.143
+        }
+      }
+    },
+    {
+      "id": "rogue_assassin",
+      "name": "游荡者·刺客",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 389,
+          "draws": 6,
+          "losses": 725,
+          "win_percent": 34.732
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 677,
+          "draws": 2,
+          "losses": 1113,
+          "win_percent": 37.779
+        },
+        "dual": {
+          "games": 288,
+          "wins": 145,
+          "draws": 5,
+          "losses": 138,
+          "win_percent": 50.347
+        },
+        "eight": {
+          "games": 96,
+          "wins": 21,
+          "draws": 0,
+          "losses": 75,
+          "win_percent": 21.875
+        },
+        "identity": {
+          "games": 277,
+          "wins": 85,
+          "draws": 4,
+          "losses": 188,
+          "win_percent": 30.686
+        },
+        "identity-preferred": {
+          "games": 62,
+          "wins": 18,
+          "draws": 1,
+          "losses": 43,
+          "win_percent": 29.032
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_devotion",
+      "name": "圣武士·奉献之誓",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 880,
+          "draws": 12,
+          "losses": 228,
+          "win_percent": 78.571
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 883,
+          "draws": 4,
+          "losses": 905,
+          "win_percent": 49.275
+        },
+        "dual": {
+          "games": 272,
+          "wins": 173,
+          "draws": 0,
+          "losses": 99,
+          "win_percent": 63.603
+        },
+        "eight": {
+          "games": 88,
+          "wins": 35,
+          "draws": 0,
+          "losses": 53,
+          "win_percent": 39.773
+        },
+        "identity": {
+          "games": 292,
+          "wins": 130,
+          "draws": 7,
+          "losses": 155,
+          "win_percent": 44.521
+        },
+        "identity-preferred": {
+          "games": 93,
+          "wins": 35,
+          "draws": 1,
+          "losses": 57,
+          "win_percent": 37.634
+        }
+      }
+    },
+    {
+      "id": "warlock_the_archfey",
+      "name": "邪术师·至高妖精",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 375,
+          "draws": 9,
+          "losses": 736,
+          "win_percent": 33.482
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 797,
+          "draws": 1,
+          "losses": 994,
+          "win_percent": 44.475
+        },
+        "dual": {
+          "games": 288,
+          "wins": 91,
+          "draws": 2,
+          "losses": 195,
+          "win_percent": 31.597
+        },
+        "eight": {
+          "games": 75,
+          "wins": 23,
+          "draws": 1,
+          "losses": 51,
+          "win_percent": 30.667
+        },
+        "identity": {
+          "games": 297,
+          "wins": 137,
+          "draws": 7,
+          "losses": 153,
+          "win_percent": 46.128
+        },
+        "identity-preferred": {
+          "games": 93,
+          "wins": 35,
+          "draws": 1,
+          "losses": 57,
+          "win_percent": 37.634
+        }
+      }
+    },
+    {
+      "id": "fighter_arcane_archer",
+      "name": "战士·魔射手",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 470,
+          "draws": 1,
+          "losses": 649,
+          "win_percent": 41.964
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 845,
+          "draws": 3,
+          "losses": 944,
+          "win_percent": 47.154
+        },
+        "dual": {
+          "games": 272,
+          "wins": 109,
+          "draws": 1,
+          "losses": 162,
+          "win_percent": 40.074
+        },
+        "eight": {
+          "games": 92,
+          "wins": 30,
+          "draws": 1,
+          "losses": 61,
+          "win_percent": 32.609
+        },
+        "identity": {
+          "games": 274,
+          "wins": 108,
+          "draws": 4,
+          "losses": 162,
+          "win_percent": 39.416
+        },
+        "identity-preferred": {
+          "games": 90,
+          "wins": 39,
+          "draws": 2,
+          "losses": 49,
+          "win_percent": 43.333
+        }
+      }
+    },
+    {
+      "id": "rogue_gambler",
+      "name": "游荡者·赌徒",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 257,
+          "draws": 0,
+          "losses": 863,
+          "win_percent": 22.946
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 442,
+          "draws": 4,
+          "losses": 1346,
+          "win_percent": 24.665
+        },
+        "dual": {
+          "games": 288,
+          "wins": 68,
+          "draws": 4,
+          "losses": 216,
+          "win_percent": 23.611
+        },
+        "eight": {
+          "games": 92,
+          "wins": 21,
+          "draws": 0,
+          "losses": 71,
+          "win_percent": 22.826
+        },
+        "identity": {
+          "games": 263,
+          "wins": 93,
+          "draws": 3,
+          "losses": 167,
+          "win_percent": 35.361
+        },
+        "identity-preferred": {
+          "games": 73,
+          "wins": 16,
+          "draws": 2,
+          "losses": 55,
+          "win_percent": 21.918
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_the_crown",
+      "name": "圣武士·王冠之誓",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 396,
+          "draws": 3,
+          "losses": 721,
+          "win_percent": 35.357
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 765,
+          "draws": 3,
+          "losses": 1024,
+          "win_percent": 42.69
+        },
+        "dual": {
+          "games": 272,
+          "wins": 107,
+          "draws": 0,
+          "losses": 165,
+          "win_percent": 39.338
+        },
+        "eight": {
+          "games": 88,
+          "wins": 29,
+          "draws": 0,
+          "losses": 59,
+          "win_percent": 32.955
+        },
+        "identity": {
+          "games": 309,
+          "wins": 105,
+          "draws": 5,
+          "losses": 199,
+          "win_percent": 33.981
+        },
+        "identity-preferred": {
+          "games": 64,
+          "wins": 17,
+          "draws": 2,
+          "losses": 45,
+          "win_percent": 26.562
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_tai_chi",
+      "name": "武僧·太极宗",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 572,
+          "draws": 4,
+          "losses": 544,
+          "win_percent": 51.071
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 711,
+          "draws": 2,
+          "losses": 1079,
+          "win_percent": 39.676
+        },
+        "dual": {
+          "games": 304,
+          "wins": 160,
+          "draws": 0,
+          "losses": 144,
+          "win_percent": 52.632
+        },
+        "eight": {
+          "games": 85,
+          "wins": 27,
+          "draws": 0,
+          "losses": 58,
+          "win_percent": 31.765
+        },
+        "identity": {
+          "games": 253,
+          "wins": 68,
+          "draws": 5,
+          "losses": 180,
+          "win_percent": 26.877
+        },
+        "identity-preferred": {
+          "games": 41,
+          "wins": 9,
+          "draws": 0,
+          "losses": 32,
+          "win_percent": 21.951
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_giant",
+      "name": "野蛮人·巨人道途",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 783,
+          "draws": 0,
+          "losses": 337,
+          "win_percent": 69.911
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1462,
+          "draws": 8,
+          "losses": 322,
+          "win_percent": 81.585
+        },
+        "dual": {
+          "games": 288,
+          "wins": 196,
+          "draws": 0,
+          "losses": 92,
+          "win_percent": 68.056
+        },
+        "eight": {
+          "games": 78,
+          "wins": 42,
+          "draws": 0,
+          "losses": 36,
+          "win_percent": 53.846
+        },
+        "identity": {
+          "games": 270,
+          "wins": 128,
+          "draws": 9,
+          "losses": 133,
+          "win_percent": 47.407
+        },
+        "identity-preferred": {
+          "games": 114,
+          "wins": 61,
+          "draws": 3,
+          "losses": 50,
+          "win_percent": 53.509
+        }
+      }
+    },
+    {
+      "id": "rogue_thief",
+      "name": "游荡者·盗贼",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 450,
+          "draws": 13,
+          "losses": 657,
+          "win_percent": 40.179
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 662,
+          "draws": 10,
+          "losses": 1120,
+          "win_percent": 36.942
+        },
+        "dual": {
+          "games": 304,
+          "wins": 165,
+          "draws": 4,
+          "losses": 135,
+          "win_percent": 54.276
+        },
+        "eight": {
+          "games": 84,
+          "wins": 21,
+          "draws": 0,
+          "losses": 63,
+          "win_percent": 25.0
+        },
+        "identity": {
+          "games": 292,
+          "wins": 88,
+          "draws": 5,
+          "losses": 199,
+          "win_percent": 30.137
+        },
+        "identity-preferred": {
+          "games": 80,
+          "wins": 20,
+          "draws": 1,
+          "losses": 59,
+          "win_percent": 25.0
+        }
+      }
+    },
+    {
+      "id": "ranger_gloom_stalker",
+      "name": "游侠·幽域追踪者",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 396,
+          "draws": 24,
+          "losses": 700,
+          "win_percent": 35.357
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 619,
+          "draws": 8,
+          "losses": 1165,
+          "win_percent": 34.542
+        },
+        "dual": {
+          "games": 288,
+          "wins": 145,
+          "draws": 1,
+          "losses": 142,
+          "win_percent": 50.347
+        },
+        "eight": {
+          "games": 84,
+          "wins": 21,
+          "draws": 0,
+          "losses": 63,
+          "win_percent": 25.0
+        },
+        "identity": {
+          "games": 263,
+          "wins": 79,
+          "draws": 3,
+          "losses": 181,
+          "win_percent": 30.038
+        },
+        "identity-preferred": {
+          "games": 45,
+          "wins": 18,
+          "draws": 0,
+          "losses": 27,
+          "win_percent": 40.0
+        }
+      }
+    },
+    {
+      "id": "rogue_magician",
+      "name": "游荡者·魔术师",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 526,
+          "draws": 6,
+          "losses": 588,
+          "win_percent": 46.964
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 805,
+          "draws": 13,
+          "losses": 974,
+          "win_percent": 44.922
+        },
+        "dual": {
+          "games": 288,
+          "wins": 145,
+          "draws": 3,
+          "losses": 140,
+          "win_percent": 50.347
+        },
+        "eight": {
+          "games": 91,
+          "wins": 28,
+          "draws": 0,
+          "losses": 63,
+          "win_percent": 30.769
+        },
+        "identity": {
+          "games": 299,
+          "wins": 89,
+          "draws": 4,
+          "losses": 206,
+          "win_percent": 29.766
+        },
+        "identity-preferred": {
+          "games": 38,
+          "wins": 13,
+          "draws": 0,
+          "losses": 25,
+          "win_percent": 34.211
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "name": "法师·塑能学派",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 387,
+          "draws": 10,
+          "losses": 723,
+          "win_percent": 34.554
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 692,
+          "draws": 9,
+          "losses": 1091,
+          "win_percent": 38.616
+        },
+        "dual": {
+          "games": 304,
+          "wins": 82,
+          "draws": 4,
+          "losses": 218,
+          "win_percent": 26.974
+        },
+        "eight": {
+          "games": 76,
+          "wins": 19,
+          "draws": 0,
+          "losses": 57,
+          "win_percent": 25.0
+        },
+        "identity": {
+          "games": 271,
+          "wins": 113,
+          "draws": 6,
+          "losses": 152,
+          "win_percent": 41.697
+        },
+        "identity-preferred": {
+          "games": 99,
+          "wins": 36,
+          "draws": 1,
+          "losses": 62,
+          "win_percent": 36.364
+        }
+      }
+    },
+    {
+      "id": "sorcerer_wild_magic",
+      "name": "术士·狂野魔法",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 716,
+          "draws": 3,
+          "losses": 401,
+          "win_percent": 63.929
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 981,
+          "draws": 9,
+          "losses": 802,
+          "win_percent": 54.743
+        },
+        "dual": {
+          "games": 288,
+          "wins": 156,
+          "draws": 5,
+          "losses": 127,
+          "win_percent": 54.167
+        },
+        "eight": {
+          "games": 82,
+          "wins": 31,
+          "draws": 1,
+          "losses": 50,
+          "win_percent": 37.805
+        },
+        "identity": {
+          "games": 303,
+          "wins": 137,
+          "draws": 7,
+          "losses": 159,
+          "win_percent": 45.215
+        },
+        "identity-preferred": {
+          "games": 111,
+          "wins": 49,
+          "draws": 2,
+          "losses": 60,
+          "win_percent": 44.144
+        }
+      }
+    },
+    {
+      "id": "warlock_the_great_old_one",
+      "name": "邪术师·旧日支配者",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 863,
+          "draws": 25,
+          "losses": 232,
+          "win_percent": 77.054
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1134,
+          "draws": 63,
+          "losses": 595,
+          "win_percent": 63.281
+        },
+        "dual": {
+          "games": 304,
+          "wins": 139,
+          "draws": 0,
+          "losses": 165,
+          "win_percent": 45.724
+        },
+        "eight": {
+          "games": 80,
+          "wins": 18,
+          "draws": 1,
+          "losses": 61,
+          "win_percent": 22.5
+        },
+        "identity": {
+          "games": 269,
+          "wins": 140,
+          "draws": 7,
+          "losses": 122,
+          "win_percent": 52.045
+        },
+        "identity-preferred": {
+          "games": 108,
+          "wins": 49,
+          "draws": 5,
+          "losses": 54,
+          "win_percent": 45.37
+        }
+      }
+    },
+    {
+      "id": "bard_college_of_valor",
+      "name": "吟游诗人·勇气学院",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 343,
+          "draws": 14,
+          "losses": 763,
+          "win_percent": 30.625
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 845,
+          "draws": 15,
+          "losses": 932,
+          "win_percent": 47.154
+        },
+        "dual": {
+          "games": 272,
+          "wins": 116,
+          "draws": 3,
+          "losses": 153,
+          "win_percent": 42.647
+        },
+        "eight": {
+          "games": 88,
+          "wins": 32,
+          "draws": 0,
+          "losses": 56,
+          "win_percent": 36.364
+        },
+        "identity": {
+          "games": 274,
+          "wins": 105,
+          "draws": 5,
+          "losses": 164,
+          "win_percent": 38.321
+        },
+        "identity-preferred": {
+          "games": 77,
+          "wins": 31,
+          "draws": 0,
+          "losses": 46,
+          "win_percent": 40.26
+        }
+      }
+    },
+    {
+      "id": "paladin_oathbreaker",
+      "name": "圣武士·破誓者",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 690,
+          "draws": 2,
+          "losses": 428,
+          "win_percent": 61.607
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1004,
+          "draws": 7,
+          "losses": 781,
+          "win_percent": 56.027
+        },
+        "dual": {
+          "games": 272,
+          "wins": 146,
+          "draws": 4,
+          "losses": 122,
+          "win_percent": 53.676
+        },
+        "eight": {
+          "games": 76,
+          "wins": 25,
+          "draws": 0,
+          "losses": 51,
+          "win_percent": 32.895
+        },
+        "identity": {
+          "games": 276,
+          "wins": 101,
+          "draws": 6,
+          "losses": 169,
+          "win_percent": 36.594
+        },
+        "identity-preferred": {
+          "games": 84,
+          "wins": 32,
+          "draws": 2,
+          "losses": 50,
+          "win_percent": 38.095
+        }
+      }
+    },
+    {
+      "id": "barbarian_path_of_the_berserker",
+      "name": "野蛮人·狂战士道途",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 869,
+          "draws": 3,
+          "losses": 248,
+          "win_percent": 77.589
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1305,
+          "draws": 0,
+          "losses": 487,
+          "win_percent": 72.824
+        },
+        "dual": {
+          "games": 304,
+          "wins": 127,
+          "draws": 1,
+          "losses": 176,
+          "win_percent": 41.776
+        },
+        "eight": {
+          "games": 82,
+          "wins": 29,
+          "draws": 1,
+          "losses": 52,
+          "win_percent": 35.366
+        },
+        "identity": {
+          "games": 285,
+          "wins": 101,
+          "draws": 1,
+          "losses": 183,
+          "win_percent": 35.439
+        },
+        "identity-preferred": {
+          "games": 73,
+          "wins": 31,
+          "draws": 2,
+          "losses": 40,
+          "win_percent": 42.466
+        }
+      }
+    },
+    {
+      "id": "fighter_tactician",
+      "name": "战士·战术家",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 454,
+          "draws": 19,
+          "losses": 647,
+          "win_percent": 40.536
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 988,
+          "draws": 4,
+          "losses": 800,
+          "win_percent": 55.134
+        },
+        "dual": {
+          "games": 304,
+          "wins": 148,
+          "draws": 4,
+          "losses": 152,
+          "win_percent": 48.684
+        },
+        "eight": {
+          "games": 74,
+          "wins": 22,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 29.73
+        },
+        "identity": {
+          "games": 280,
+          "wins": 89,
+          "draws": 5,
+          "losses": 186,
+          "win_percent": 31.786
+        },
+        "identity-preferred": {
+          "games": 58,
+          "wins": 15,
+          "draws": 1,
+          "losses": 42,
+          "win_percent": 25.862
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "name": "法师·预言学派",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 244,
+          "draws": 21,
+          "losses": 855,
+          "win_percent": 21.786
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 645,
+          "draws": 8,
+          "losses": 1139,
+          "win_percent": 35.993
+        },
+        "dual": {
+          "games": 304,
+          "wins": 85,
+          "draws": 0,
+          "losses": 219,
+          "win_percent": 27.961
+        },
+        "eight": {
+          "games": 86,
+          "wins": 26,
+          "draws": 0,
+          "losses": 60,
+          "win_percent": 30.233
+        },
+        "identity": {
+          "games": 289,
+          "wins": 108,
+          "draws": 6,
+          "losses": 175,
+          "win_percent": 37.37
+        },
+        "identity-preferred": {
+          "games": 83,
+          "wins": 27,
+          "draws": 2,
+          "losses": 54,
+          "win_percent": 32.53
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "name": "法师·死灵学派",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 732,
+          "draws": 5,
+          "losses": 383,
+          "win_percent": 65.357
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 794,
+          "draws": 6,
+          "losses": 992,
+          "win_percent": 44.308
+        },
+        "dual": {
+          "games": 304,
+          "wins": 173,
+          "draws": 0,
+          "losses": 131,
+          "win_percent": 56.908
+        },
+        "eight": {
+          "games": 74,
+          "wins": 29,
+          "draws": 0,
+          "losses": 45,
+          "win_percent": 39.189
+        },
+        "identity": {
+          "games": 278,
+          "wins": 117,
+          "draws": 2,
+          "losses": 159,
+          "win_percent": 42.086
+        },
+        "identity-preferred": {
+          "games": 94,
+          "wins": 41,
+          "draws": 2,
+          "losses": 51,
+          "win_percent": 43.617
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "name": "法师·防护学派",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 576,
+          "draws": 20,
+          "losses": 524,
+          "win_percent": 51.429
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 775,
+          "draws": 11,
+          "losses": 1006,
+          "win_percent": 43.248
+        },
+        "dual": {
+          "games": 272,
+          "wins": 123,
+          "draws": 4,
+          "losses": 145,
+          "win_percent": 45.221
+        },
+        "eight": {
+          "games": 104,
+          "wins": 46,
+          "draws": 2,
+          "losses": 56,
+          "win_percent": 44.231
+        },
+        "identity": {
+          "games": 262,
+          "wins": 117,
+          "draws": 8,
+          "losses": 137,
+          "win_percent": 44.656
+        },
+        "identity-preferred": {
+          "games": 115,
+          "wins": 52,
+          "draws": 0,
+          "losses": 63,
+          "win_percent": 45.217
+        }
+      }
+    },
+    {
+      "id": "cleric_light_domain",
+      "name": "牧师·光明领域",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 300,
+          "draws": 2,
+          "losses": 818,
+          "win_percent": 26.786
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 574,
+          "draws": 5,
+          "losses": 1213,
+          "win_percent": 32.031
+        },
+        "dual": {
+          "games": 304,
+          "wins": 57,
+          "draws": 0,
+          "losses": 247,
+          "win_percent": 18.75
+        },
+        "eight": {
+          "games": 73,
+          "wins": 21,
+          "draws": 1,
+          "losses": 51,
+          "win_percent": 28.767
+        },
+        "identity": {
+          "games": 290,
+          "wins": 109,
+          "draws": 5,
+          "losses": 176,
+          "win_percent": 37.586
+        },
+        "identity-preferred": {
+          "games": 85,
+          "wins": 29,
+          "draws": 2,
+          "losses": 54,
+          "win_percent": 34.118
+        }
+      }
+    },
+    {
+      "id": "cleric_war_domain",
+      "name": "牧师·战争领域",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 555,
+          "draws": 6,
+          "losses": 559,
+          "win_percent": 49.554
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1041,
+          "draws": 3,
+          "losses": 748,
+          "win_percent": 58.092
+        },
+        "dual": {
+          "games": 272,
+          "wins": 148,
+          "draws": 0,
+          "losses": 124,
+          "win_percent": 54.412
+        },
+        "eight": {
+          "games": 78,
+          "wins": 41,
+          "draws": 0,
+          "losses": 37,
+          "win_percent": 52.564
+        },
+        "identity": {
+          "games": 295,
+          "wins": 130,
+          "draws": 1,
+          "losses": 164,
+          "win_percent": 44.068
+        },
+        "identity-preferred": {
+          "games": 97,
+          "wins": 49,
+          "draws": 3,
+          "losses": 45,
+          "win_percent": 50.515
+        }
+      }
+    },
+    {
+      "id": "fighter_battle_master",
+      "name": "战士·战斗大师",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 677,
+          "draws": 12,
+          "losses": 431,
+          "win_percent": 60.446
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 985,
+          "draws": 4,
+          "losses": 803,
+          "win_percent": 54.967
+        },
+        "dual": {
+          "games": 272,
+          "wins": 101,
+          "draws": 3,
+          "losses": 168,
+          "win_percent": 37.132
+        },
+        "eight": {
+          "games": 88,
+          "wins": 29,
+          "draws": 0,
+          "losses": 59,
+          "win_percent": 32.955
+        },
+        "identity": {
+          "games": 309,
+          "wins": 121,
+          "draws": 2,
+          "losses": 186,
+          "win_percent": 39.159
+        },
+        "identity-preferred": {
+          "games": 66,
+          "wins": 25,
+          "draws": 1,
+          "losses": 40,
+          "win_percent": 37.879
+        }
+      }
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "name": "术士·龙族血脉",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 967,
+          "draws": 0,
+          "losses": 153,
+          "win_percent": 86.339
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1180,
+          "draws": 4,
+          "losses": 608,
+          "win_percent": 65.848
+        },
+        "dual": {
+          "games": 288,
+          "wins": 212,
+          "draws": 0,
+          "losses": 76,
+          "win_percent": 73.611
+        },
+        "eight": {
+          "games": 77,
+          "wins": 33,
+          "draws": 0,
+          "losses": 44,
+          "win_percent": 42.857
+        },
+        "identity": {
+          "games": 275,
+          "wins": 133,
+          "draws": 2,
+          "losses": 140,
+          "win_percent": 48.364
+        },
+        "identity-preferred": {
+          "games": 113,
+          "wins": 52,
+          "draws": 1,
+          "losses": 60,
+          "win_percent": 46.018
+        }
+      }
+    },
+    {
+      "id": "ranger_hunter",
+      "name": "游侠·猎人",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 422,
+          "draws": 1,
+          "losses": 697,
+          "win_percent": 37.679
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 827,
+          "draws": 8,
+          "losses": 957,
+          "win_percent": 46.15
+        },
+        "dual": {
+          "games": 304,
+          "wins": 154,
+          "draws": 0,
+          "losses": 150,
+          "win_percent": 50.658
+        },
+        "eight": {
+          "games": 94,
+          "wins": 32,
+          "draws": 1,
+          "losses": 61,
+          "win_percent": 34.043
+        },
+        "identity": {
+          "games": 266,
+          "wins": 107,
+          "draws": 4,
+          "losses": 155,
+          "win_percent": 40.226
+        },
+        "identity-preferred": {
+          "games": 83,
+          "wins": 33,
+          "draws": 0,
+          "losses": 50,
+          "win_percent": 39.759
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_open_hand",
+      "name": "武僧·散打宗",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 709,
+          "draws": 15,
+          "losses": 396,
+          "win_percent": 63.304
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1111,
+          "draws": 4,
+          "losses": 677,
+          "win_percent": 61.998
+        },
+        "dual": {
+          "games": 304,
+          "wins": 194,
+          "draws": 1,
+          "losses": 109,
+          "win_percent": 63.816
+        },
+        "eight": {
+          "games": 77,
+          "wins": 23,
+          "draws": 1,
+          "losses": 53,
+          "win_percent": 29.87
+        },
+        "identity": {
+          "games": 289,
+          "wins": 101,
+          "draws": 5,
+          "losses": 183,
+          "win_percent": 34.948
+        },
+        "identity-preferred": {
+          "games": 75,
+          "wins": 26,
+          "draws": 2,
+          "losses": 47,
+          "win_percent": 34.667
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_four_elements",
+      "name": "武僧·四象宗",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 777,
+          "draws": 3,
+          "losses": 340,
+          "win_percent": 69.375
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1026,
+          "draws": 7,
+          "losses": 759,
+          "win_percent": 57.254
+        },
+        "dual": {
+          "games": 304,
+          "wins": 198,
+          "draws": 0,
+          "losses": 106,
+          "win_percent": 65.132
+        },
+        "eight": {
+          "games": 73,
+          "wins": 30,
+          "draws": 0,
+          "losses": 43,
+          "win_percent": 41.096
+        },
+        "identity": {
+          "games": 265,
+          "wins": 84,
+          "draws": 2,
+          "losses": 179,
+          "win_percent": 31.698
+        },
+        "identity-preferred": {
+          "games": 66,
+          "wins": 22,
+          "draws": 0,
+          "losses": 44,
+          "win_percent": 33.333
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_moon",
+      "name": "德鲁伊·月光结社",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 631,
+          "draws": 4,
+          "losses": 485,
+          "win_percent": 56.339
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 900,
+          "draws": 3,
+          "losses": 889,
+          "win_percent": 50.223
+        },
+        "dual": {
+          "games": 288,
+          "wins": 168,
+          "draws": 0,
+          "losses": 120,
+          "win_percent": 58.333
+        },
+        "eight": {
+          "games": 83,
+          "wins": 25,
+          "draws": 0,
+          "losses": 58,
+          "win_percent": 30.12
+        },
+        "identity": {
+          "games": 288,
+          "wins": 112,
+          "draws": 5,
+          "losses": 171,
+          "win_percent": 38.889
+        },
+        "identity-preferred": {
+          "games": 103,
+          "wins": 28,
+          "draws": 1,
+          "losses": 74,
+          "win_percent": 27.184
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_stars",
+      "name": "德鲁伊·星辰结社",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 594,
+          "draws": 4,
+          "losses": 522,
+          "win_percent": 53.036
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 786,
+          "draws": 2,
+          "losses": 1004,
+          "win_percent": 43.862
+        },
+        "dual": {
+          "games": 272,
+          "wins": 162,
+          "draws": 6,
+          "losses": 104,
+          "win_percent": 59.559
+        },
+        "eight": {
+          "games": 95,
+          "wins": 36,
+          "draws": 1,
+          "losses": 58,
+          "win_percent": 37.895
+        },
+        "identity": {
+          "games": 263,
+          "wins": 92,
+          "draws": 5,
+          "losses": 166,
+          "win_percent": 34.981
+        },
+        "identity-preferred": {
+          "games": 70,
+          "wins": 24,
+          "draws": 1,
+          "losses": 45,
+          "win_percent": 34.286
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_the_land",
+      "name": "德鲁伊·大地结社",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 564,
+          "draws": 3,
+          "losses": 553,
+          "win_percent": 50.357
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1004,
+          "draws": 6,
+          "losses": 782,
+          "win_percent": 56.027
+        },
+        "dual": {
+          "games": 304,
+          "wins": 225,
+          "draws": 1,
+          "losses": 78,
+          "win_percent": 74.013
+        },
+        "eight": {
+          "games": 75,
+          "wins": 15,
+          "draws": 0,
+          "losses": 60,
+          "win_percent": 20.0
+        },
+        "identity": {
+          "games": 263,
+          "wins": 104,
+          "draws": 5,
+          "losses": 154,
+          "win_percent": 39.544
+        },
+        "identity-preferred": {
+          "games": 85,
+          "wins": 28,
+          "draws": 4,
+          "losses": 53,
+          "win_percent": 32.941
+        }
+      }
+    },
+    {
+      "id": "druid_circle_of_spores",
+      "name": "德鲁伊·孢子结社",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 752,
+          "draws": 3,
+          "losses": 365,
+          "win_percent": 67.143
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1219,
+          "draws": 1,
+          "losses": 572,
+          "win_percent": 68.025
+        },
+        "dual": {
+          "games": 304,
+          "wins": 209,
+          "draws": 0,
+          "losses": 95,
+          "win_percent": 68.75
+        },
+        "eight": {
+          "games": 86,
+          "wins": 29,
+          "draws": 0,
+          "losses": 57,
+          "win_percent": 33.721
+        },
+        "identity": {
+          "games": 272,
+          "wins": 125,
+          "draws": 2,
+          "losses": 145,
+          "win_percent": 45.956
+        },
+        "identity-preferred": {
+          "games": 100,
+          "wins": 41,
+          "draws": 1,
+          "losses": 58,
+          "win_percent": 41.0
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_the_ancients",
+      "name": "圣武士·古贤之誓",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 513,
+          "draws": 4,
+          "losses": 603,
+          "win_percent": 45.804
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1001,
+          "draws": 6,
+          "losses": 785,
+          "win_percent": 55.859
+        },
+        "dual": {
+          "games": 304,
+          "wins": 145,
+          "draws": 0,
+          "losses": 159,
+          "win_percent": 47.697
+        },
+        "eight": {
+          "games": 82,
+          "wins": 27,
+          "draws": 0,
+          "losses": 55,
+          "win_percent": 32.927
+        },
+        "identity": {
+          "games": 292,
+          "wins": 114,
+          "draws": 3,
+          "losses": 175,
+          "win_percent": 39.041
+        },
+        "identity-preferred": {
+          "games": 98,
+          "wins": 33,
+          "draws": 1,
+          "losses": 64,
+          "win_percent": 33.673
+        }
+      }
+    },
+    {
+      "id": "warlock_the_fiend",
+      "name": "邪术师·妖魔",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 527,
+          "draws": 3,
+          "losses": 590,
+          "win_percent": 47.054
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 930,
+          "draws": 5,
+          "losses": 857,
+          "win_percent": 51.897
+        },
+        "dual": {
+          "games": 272,
+          "wins": 132,
+          "draws": 3,
+          "losses": 137,
+          "win_percent": 48.529
+        },
+        "eight": {
+          "games": 90,
+          "wins": 42,
+          "draws": 0,
+          "losses": 48,
+          "win_percent": 46.667
+        },
+        "identity": {
+          "games": 255,
+          "wins": 116,
+          "draws": 5,
+          "losses": 134,
+          "win_percent": 45.49
+        },
+        "identity-preferred": {
+          "games": 117,
+          "wins": 48,
+          "draws": 3,
+          "losses": 66,
+          "win_percent": 41.026
+        }
+      }
+    },
+    {
+      "id": "bard_college_of_lore",
+      "name": "吟游诗人·逸闻学院",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 380,
+          "draws": 1,
+          "losses": 739,
+          "win_percent": 33.929
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 765,
+          "draws": 9,
+          "losses": 1018,
+          "win_percent": 42.69
+        },
+        "dual": {
+          "games": 272,
+          "wins": 129,
+          "draws": 0,
+          "losses": 143,
+          "win_percent": 47.426
+        },
+        "eight": {
+          "games": 89,
+          "wins": 20,
+          "draws": 0,
+          "losses": 69,
+          "win_percent": 22.472
+        },
+        "identity": {
+          "games": 283,
+          "wins": 99,
+          "draws": 4,
+          "losses": 180,
+          "win_percent": 34.982
+        },
+        "identity-preferred": {
+          "games": 73,
+          "wins": 20,
+          "draws": 0,
+          "losses": 53,
+          "win_percent": 27.397
+        }
+      }
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "name": "术士·风暴术法",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 390,
+          "draws": 13,
+          "losses": 717,
+          "win_percent": 34.821
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 876,
+          "draws": 2,
+          "losses": 914,
+          "win_percent": 48.884
+        },
+        "dual": {
+          "games": 288,
+          "wins": 142,
+          "draws": 4,
+          "losses": 142,
+          "win_percent": 49.306
+        },
+        "eight": {
+          "games": 94,
+          "wins": 27,
+          "draws": 2,
+          "losses": 65,
+          "win_percent": 28.723
+        },
+        "identity": {
+          "games": 286,
+          "wins": 120,
+          "draws": 6,
+          "losses": 160,
+          "win_percent": 41.958
+        },
+        "identity-preferred": {
+          "games": 97,
+          "wins": 44,
+          "draws": 2,
+          "losses": 51,
+          "win_percent": 45.361
+        }
+      }
+    },
+    {
+      "id": "sorcerer_shadow_magic",
+      "name": "术士·幽影魔法",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 660,
+          "draws": 5,
+          "losses": 455,
+          "win_percent": 58.929
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1073,
+          "draws": 3,
+          "losses": 716,
+          "win_percent": 59.877
+        },
+        "dual": {
+          "games": 304,
+          "wins": 181,
+          "draws": 3,
+          "losses": 120,
+          "win_percent": 59.539
+        },
+        "eight": {
+          "games": 78,
+          "wins": 26,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 33.333
+        },
+        "identity": {
+          "games": 252,
+          "wins": 107,
+          "draws": 4,
+          "losses": 141,
+          "win_percent": 42.46
+        },
+        "identity-preferred": {
+          "games": 108,
+          "wins": 40,
+          "draws": 1,
+          "losses": 67,
+          "win_percent": 37.037
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "name": "法师·幻术学派",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 800,
+          "draws": 12,
+          "losses": 308,
+          "win_percent": 71.429
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1121,
+          "draws": 16,
+          "losses": 655,
+          "win_percent": 62.556
+        },
+        "dual": {
+          "games": 288,
+          "wins": 158,
+          "draws": 1,
+          "losses": 129,
+          "win_percent": 54.861
+        },
+        "eight": {
+          "games": 79,
+          "wins": 30,
+          "draws": 1,
+          "losses": 48,
+          "win_percent": 37.975
+        },
+        "identity": {
+          "games": 301,
+          "wins": 162,
+          "draws": 3,
+          "losses": 136,
+          "win_percent": 53.821
+        },
+        "identity-preferred": {
+          "games": 120,
+          "wins": 48,
+          "draws": 2,
+          "losses": 70,
+          "win_percent": 40.0
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "name": "法师·变化学派",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 592,
+          "draws": 7,
+          "losses": 521,
+          "win_percent": 52.857
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 888,
+          "draws": 5,
+          "losses": 899,
+          "win_percent": 49.554
+        },
+        "dual": {
+          "games": 288,
+          "wins": 127,
+          "draws": 0,
+          "losses": 161,
+          "win_percent": 44.097
+        },
+        "eight": {
+          "games": 84,
+          "wins": 31,
+          "draws": 0,
+          "losses": 53,
+          "win_percent": 36.905
+        },
+        "identity": {
+          "games": 292,
+          "wins": 138,
+          "draws": 3,
+          "losses": 151,
+          "win_percent": 47.26
+        },
+        "identity-preferred": {
+          "games": 126,
+          "wins": 59,
+          "draws": 1,
+          "losses": 66,
+          "win_percent": 46.825
+        }
+      }
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "name": "法师·惑控学派",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 737,
+          "draws": 6,
+          "losses": 377,
+          "win_percent": 65.804
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1249,
+          "draws": 5,
+          "losses": 538,
+          "win_percent": 69.699
+        },
+        "dual": {
+          "games": 304,
+          "wins": 215,
+          "draws": 0,
+          "losses": 89,
+          "win_percent": 70.724
+        },
+        "eight": {
+          "games": 82,
+          "wins": 33,
+          "draws": 0,
+          "losses": 49,
+          "win_percent": 40.244
+        },
+        "identity": {
+          "games": 270,
+          "wins": 129,
+          "draws": 2,
+          "losses": 139,
+          "win_percent": 47.778
+        },
+        "identity-preferred": {
+          "games": 116,
+          "wins": 49,
+          "draws": 1,
+          "losses": 66,
+          "win_percent": 42.241
+        }
+      }
+    },
+    {
+      "id": "fighter_eldritch_knight",
+      "name": "战士·奥法骑士",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 683,
+          "draws": 7,
+          "losses": 430,
+          "win_percent": 60.982
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 878,
+          "draws": 4,
+          "losses": 910,
+          "win_percent": 48.996
+        },
+        "dual": {
+          "games": 272,
+          "wins": 136,
+          "draws": 0,
+          "losses": 136,
+          "win_percent": 50.0
+        },
+        "eight": {
+          "games": 85,
+          "wins": 34,
+          "draws": 0,
+          "losses": 51,
+          "win_percent": 40.0
+        },
+        "identity": {
+          "games": 277,
+          "wins": 105,
+          "draws": 2,
+          "losses": 170,
+          "win_percent": 37.906
+        },
+        "identity-preferred": {
+          "games": 84,
+          "wins": 30,
+          "draws": 2,
+          "losses": 52,
+          "win_percent": 35.714
+        }
+      }
+    },
+    {
+      "id": "wizard_bladesinging",
+      "name": "法师·剑咏者",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 446,
+          "draws": 3,
+          "losses": 671,
+          "win_percent": 39.821
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 748,
+          "draws": 6,
+          "losses": 1038,
+          "win_percent": 41.741
+        },
+        "dual": {
+          "games": 288,
+          "wins": 90,
+          "draws": 2,
+          "losses": 196,
+          "win_percent": 31.25
+        },
+        "eight": {
+          "games": 80,
+          "wins": 28,
+          "draws": 0,
+          "losses": 52,
+          "win_percent": 35.0
+        },
+        "identity": {
+          "games": 277,
+          "wins": 102,
+          "draws": 1,
+          "losses": 174,
+          "win_percent": 36.823
+        },
+        "identity-preferred": {
+          "games": 71,
+          "wins": 17,
+          "draws": 2,
+          "losses": 52,
+          "win_percent": 23.944
+        }
+      }
+    },
+    {
+      "id": "warlock_the_hexblade",
+      "name": "邪术师·咒剑",
+      "axis": "中立",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 380,
+          "draws": 5,
+          "losses": 735,
+          "win_percent": 33.929
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 832,
+          "draws": 4,
+          "losses": 956,
+          "win_percent": 46.429
+        },
+        "dual": {
+          "games": 304,
+          "wins": 155,
+          "draws": 0,
+          "losses": 149,
+          "win_percent": 50.987
+        },
+        "eight": {
+          "games": 80,
+          "wins": 24,
+          "draws": 0,
+          "losses": 56,
+          "win_percent": 30.0
+        },
+        "identity": {
+          "games": 287,
+          "wins": 95,
+          "draws": 3,
+          "losses": 189,
+          "win_percent": 33.101
+        },
+        "identity-preferred": {
+          "games": 52,
+          "wins": 20,
+          "draws": 2,
+          "losses": 30,
+          "win_percent": 38.462
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_conquest",
+      "name": "圣武士·征服之誓",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 877,
+          "draws": 12,
+          "losses": 231,
+          "win_percent": 78.304
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 1020,
+          "draws": 4,
+          "losses": 768,
+          "win_percent": 56.92
+        },
+        "dual": {
+          "games": 272,
+          "wins": 173,
+          "draws": 1,
+          "losses": 98,
+          "win_percent": 63.603
+        },
+        "eight": {
+          "games": 95,
+          "wins": 41,
+          "draws": 0,
+          "losses": 54,
+          "win_percent": 43.158
+        },
+        "identity": {
+          "games": 281,
+          "wins": 136,
+          "draws": 9,
+          "losses": 136,
+          "win_percent": 48.399
+        },
+        "identity-preferred": {
+          "games": 108,
+          "wins": 57,
+          "draws": 2,
+          "losses": 49,
+          "win_percent": 52.778
+        }
+      }
+    },
+    {
+      "id": "paladin_oath_of_vengeance",
+      "name": "圣武士·复仇之誓",
+      "axis": "守序",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 397,
+          "draws": 9,
+          "losses": 714,
+          "win_percent": 35.446
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 795,
+          "draws": 7,
+          "losses": 990,
+          "win_percent": 44.364
+        },
+        "dual": {
+          "games": 272,
+          "wins": 112,
+          "draws": 1,
+          "losses": 159,
+          "win_percent": 41.176
+        },
+        "eight": {
+          "games": 86,
+          "wins": 31,
+          "draws": 0,
+          "losses": 55,
+          "win_percent": 36.047
+        },
+        "identity": {
+          "games": 268,
+          "wins": 88,
+          "draws": 6,
+          "losses": 174,
+          "win_percent": 32.836
+        },
+        "identity-preferred": {
+          "games": 65,
+          "wins": 20,
+          "draws": 1,
+          "losses": 44,
+          "win_percent": 30.769
+        }
+      }
+    },
+    {
+      "id": "cleric_trickery_domain",
+      "name": "牧师·诡术领域",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 437,
+          "draws": 7,
+          "losses": 676,
+          "win_percent": 39.018
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 769,
+          "draws": 6,
+          "losses": 1017,
+          "win_percent": 42.913
+        },
+        "dual": {
+          "games": 288,
+          "wins": 128,
+          "draws": 1,
+          "losses": 159,
+          "win_percent": 44.444
+        },
+        "eight": {
+          "games": 88,
+          "wins": 33,
+          "draws": 0,
+          "losses": 55,
+          "win_percent": 37.5
+        },
+        "identity": {
+          "games": 284,
+          "wins": 118,
+          "draws": 8,
+          "losses": 158,
+          "win_percent": 41.549
+        },
+        "identity-preferred": {
+          "games": 91,
+          "wins": 39,
+          "draws": 3,
+          "losses": 49,
+          "win_percent": 42.857
+        }
+      }
+    },
+    {
+      "id": "cleric_tempest_domain",
+      "name": "牧师·风暴领域",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 418,
+          "draws": 5,
+          "losses": 697,
+          "win_percent": 37.321
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 878,
+          "draws": 6,
+          "losses": 908,
+          "win_percent": 48.996
+        },
+        "dual": {
+          "games": 288,
+          "wins": 98,
+          "draws": 1,
+          "losses": 189,
+          "win_percent": 34.028
+        },
+        "eight": {
+          "games": 76,
+          "wins": 28,
+          "draws": 0,
+          "losses": 48,
+          "win_percent": 36.842
+        },
+        "identity": {
+          "games": 289,
+          "wins": 122,
+          "draws": 5,
+          "losses": 162,
+          "win_percent": 42.215
+        },
+        "identity-preferred": {
+          "games": 97,
+          "wins": 41,
+          "draws": 2,
+          "losses": 54,
+          "win_percent": 42.268
+        }
+      }
+    },
+    {
+      "id": "monk_way_of_the_drunken_master",
+      "name": "武僧·醉拳宗",
+      "axis": "混乱",
+      "modes": {
+        "1v1": {
+          "games": 1120,
+          "wins": 513,
+          "draws": 8,
+          "losses": 599,
+          "win_percent": 45.804
+        },
+        "2v2": {
+          "games": 1792,
+          "wins": 810,
+          "draws": 3,
+          "losses": 979,
+          "win_percent": 45.201
+        },
+        "dual": {
+          "games": 288,
+          "wins": 130,
+          "draws": 1,
+          "losses": 157,
+          "win_percent": 45.139
+        },
+        "eight": {
+          "games": 91,
+          "wins": 31,
+          "draws": 0,
+          "losses": 60,
+          "win_percent": 34.066
+        },
+        "identity": {
+          "games": 305,
+          "wins": 112,
+          "draws": 6,
+          "losses": 187,
+          "win_percent": 36.721
+        },
+        "identity-preferred": {
+          "games": 69,
+          "wins": 30,
+          "draws": 1,
+          "losses": 38,
+          "win_percent": 43.478
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "固定AI策略采样，不代表真人胜率或最优权重。",
+    "2v2为固定队伍偏移配桌；双将为514组合固定偏移抽样，并非全部组合两两循环。",
+    "八人身份偏好以独立的2,000局随机身份样本拟合，另用600局验证实际候选偏好。角色出场不均衡。",
+    "反映本轮九个子职的规则和AI更新，并复查57子职策略和开局对策。"
+  ]
+}

@@ -73,7 +73,24 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void OathOfDevotion_turns_six_into_a_shield()
+        public void Archfey_cancels_personal_attack_and_charms_the_attacker()
+        {
+            var game = Match(CharacterDefinition.Blank, CharacterDefinition.TheArchfey, out _, out _);
+            var attacker = game.PlayerA;
+            var defender = game.PlayerB;
+            attacker.LeftHand.SetValue(1);
+            defender.LeftHand.SetValue(3);
+            defender.RightHand.SetValue(4);
+            var result = game.ExecuteTurn(attacker, attacker.LeftHand, defender.LeftHand);
+            Assert.True(result.WasCancelled);
+            Assert.AreEqual(0, result.DamageDealt);
+            Assert.AreEqual(5, defender.RightHand.Value);
+            Assert.AreEqual(2, attacker.StatusTurnsLeft(StatusEffect.Charm));
+            Assert.AreEqual(defender, attacker.StatusSourceOf(StatusEffect.Charm));
+        }
+
+        [Test]
+        public void OathOfDevotion_uses_six_as_an_ordinary_attack()
         {
             GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
@@ -87,7 +104,9 @@ namespace FingerDiceDuel.Tests
             TurnResult r = game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(6, r.ResultValue);
-            Assert.AreEqual(HandEffectType.Shield, r.Effect, "圣武士·奉献之誓的 6 也应改为护盾。");
+            Assert.AreEqual(HandEffectType.Attack6, r.Effect);
+            Assert.AreEqual(6, r.DamageDealt);
+            Assert.IsFalse(oathOfDevotion.LeftHand.IsShield);
         }
 
         [Test]
@@ -220,10 +239,9 @@ namespace FingerDiceDuel.Tests
 
                 int before = foe.Health;
 
-                // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击，
-                // 所以扣血量就是冲击本身的伤害）
+                // 1 + 3 = 4 -> 合盾，只触发卫护斩。
                 TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
-                foe.RightHand.SetValue(5);
+                foe.RightHand.SetValue(3);
 
                 game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.RightHand);
 
@@ -292,10 +310,6 @@ namespace FingerDiceDuel.Tests
         {
             // 玩家明确要求"可以被游荡者·风流剑客闪避"。
             //
-            // ⚠️ 局面必须让**只有冲击**造成伤害：圣武士·奉献之誓的 4/6 会变成护盾（不攻击）。
-            //    我第一次把游荡者·风流剑客右手设成 3（1+3=4），结果 4 也被改写成护盾 ——
-            //    对！所以不该有普通攻击伤害，除非目标手是 4。
-            //    这次把游荡者·风流剑客右手设成 5：1+5=6 -> 仍是护盾，且**没有普通攻击**。
             GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Swashbuckler,
                                      out _, out _);
             PlayerState oathOfDevotion = game.PlayerA;
@@ -307,9 +321,9 @@ namespace FingerDiceDuel.Tests
 
             int before = swashbuckler.Health;
 
-            // 1 + 5 = 6 -> 合盾 -> 触发冲击（6 也是护盾，不产生普通攻击）
+            // 1 + 3 = 4 -> 合盾，只触发卫护斩。
             TestSetup.SetHand(oathOfDevotion.LeftHand, 1);
-            swashbuckler.RightHand.SetValue(5);
+            swashbuckler.RightHand.SetValue(3);
 
             game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, swashbuckler.RightHand);
 

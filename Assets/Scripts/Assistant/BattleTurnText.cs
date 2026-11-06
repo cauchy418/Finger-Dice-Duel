@@ -30,8 +30,9 @@ namespace FingerDiceDuel.Assistant
                 head = CombatText.Skill(t.Actor, "赌博", $"开赌：掷出 {t.GambleRoll}");
             else
             {
-                int sum = Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
-                head = $"{t.Actor.Name} {CombatText.HandName(t.Actor, t.ActedHand)}：{t.ActedHandValueBefore} + {t.TargetHandValue} = {sum}";
+                int sum = t.WasSubtraction ? Hand.ComputeDifference(t.ActedHandValueBefore, t.TargetHandValue)
+                    : Hand.ComputeSum(t.ActedHandValueBefore, t.TargetHandValue);
+                head = $"{t.Actor.Name} {CombatText.HandName(t.Actor, t.ActedHand)}：{t.ActedHandValueBefore} {(t.WasSubtraction ? "−" : "+")} {t.TargetHandValue} = {sum}";
                 if(t.SecondAddendValue>0){int final=Hand.ComputeSum(sum,t.SecondAddendValue);head+=$"；{sum} + {t.SecondAddendValue} = {final}";sum=final;}
                 if(t.TrickeryCalculated>0)head+=$"【诡诈换位】→{t.ResultValue}";
                 else if (sum != t.ResultValue)

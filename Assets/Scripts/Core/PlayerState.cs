@@ -59,17 +59,11 @@ namespace FingerDiceDuel.Core
             get
             {
                 var list = new System.Collections.Generic.List<StatusEffect>();
-                for (int i = 1; i <= MaxStatusValue; i++)
-                {
-                    var s = (StatusEffect)i;
-                    if (HasStatus(s)) list.Add(s);
-                }
+                foreach (var status in StatusNames.AllStatuses)
+                    if (HasStatus(status)) list.Add(status);
                 return list;
             }
         }
-
-        /// <summary>枚举上限包含束缚、油腻；用于稳定顺序显示状态。</summary>
-        private const int MaxStatusValue = (int)StatusEffect.DarknessBlind;
 
         /// <summary>是否带有某个状态。</summary>
         public bool HasStatus(StatusEffect status)

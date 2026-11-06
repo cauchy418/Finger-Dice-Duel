@@ -144,9 +144,10 @@ namespace FingerDiceDuel.Tests
         public void Shock_hits_the_victim_and_adjacent_players()
         {
             PlayerState a = Make("甲", CharacterDefinition.Champion);
-            PlayerState b = Make("乙", CharacterDefinition.Champion);
+            PlayerState b = Make("乙", CharacterDefinition.TheArchfey);
             PlayerState c = Make("丙", CharacterDefinition.Champion);
             PlayerState d = Make("丁", CharacterDefinition.Champion);
+            b.LeftHand.SetValue(1);
 
             GameManager game = GameManager.Create2v2(
                 new[] { a, b, c, d },
@@ -163,10 +164,11 @@ namespace FingerDiceDuel.Tests
 
             game.ResolveStatusTurnStart(a);
 
-            Assert.AreEqual(aBefore - 1, a.Health, "自己受 1 点。");
+            Assert.AreEqual(aBefore - 2, a.Health, "自己受 2 点。");
             Assert.AreEqual(bBefore - 1, b.Health, "座位 2 相邻 -> 也受 1 点。");
             Assert.AreEqual(dBefore - 1, d.Health, "座位 4 相邻 -> 也受 1 点。");
             Assert.AreEqual(cBefore, c.Health, "座位 3 距离 2 -> 不受影响。");
+            Assert.False(a.HasStatus(StatusEffect.Charm));
         }
 
         // ============================================================

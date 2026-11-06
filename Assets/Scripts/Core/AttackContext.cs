@@ -263,7 +263,7 @@ namespace FingerDiceDuel.Core
             //    必须排在攻击方钩子**之前** —— 规则确认它是"最早结算"的，
             //    所以能取消掉法师·咒法学派那种"在钩子里改写伤害"的攻击。
             //
-            //    ⚠️ 取消者不是挨打的人，而是**场上的第三方**，所以要遍历全部参战玩家。
+            //    只有本次被选为攻击目标的至高妖精可以取消。
             //    ⚠️ 追加攻击与冲击的"攻击数字视为 0"（见 AttackValue），
             //       任何手值都不等于 0，所以它们天然无法被取消 —— 不需要特判。
             if (TryCancelAttack(manager))
@@ -516,9 +516,10 @@ namespace FingerDiceDuel.Core
                 // **固定伤害**（牧师·光明领域）：跳过目标侧增减（倒伏 ×1.5 等）。
                 if (!IgnoreIncomingModifiers)
                     dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
-                bool piercesImmunity = !IsStatusDamage && !IsReflected
-                    && Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(Attacker, AttackType);
-                dealt = StatusRules.ApplyDamageAffinities(Defender, dealt, AttackType, ignoreImmunity: piercesImmunity);
+                bool piercesAffinities = !IsStatusDamage && !IsReflected
+                    && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType);
+                dealt = StatusRules.ApplyDamageAffinities(Defender, dealt, AttackType, includeResistance: !piercesAffinities,
+                    ignoreImmunity: piercesAffinities);
 
                 // 法师·防护学派：在护盾/抗性之后、实际扣血之前吸收。
                 if (manager != null && dealt > 0)
@@ -611,8 +612,9 @@ namespace FingerDiceDuel.Core
             {
                 if (WasTypeImmune)
                 {
-                    if (!IsStatusDamage && !IsReflected && Characters.SpecialLogics.StormSorceryLogic.PiercesImmunity(Attacker, AttackType))
-                        manager?.NoteSkill(Attacker, "暴风狂怒", "穿透伤害免疫，未附加元素效果", Defender,
+                    if (!IsStatusDamage && !IsReflected && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType))
+                        manager?.NoteSkill(Attacker, Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(Attacker, AttackType)
+                            ? "暴风狂怒" : "龙族先祖", "穿透伤害免疫，未附加元素效果", Defender,
                             new SkillVisualData(source:SourceHand,variant:"pierce",element:AttackType));
                     else manager?.NoteSkill(Defender, "伤害免疫", AttackDamageTypes.NameOf(AttackType));
                 }
@@ -791,10 +793,13 @@ namespace FingerDiceDuel.Core
                     int remaining = victim.StatusTurnsLeft(status);
                     if (remaining > 0)
                     {
-                        turns = remaining + 1;extendedFrom=remaining;
+                        turns = remaining + 1 - (hit.Resisted ? 1 : 0) - (hit.Guard != AttackGuard.None ? 1 : 0);
+                        if (turns > remaining) extendedFrom = remaining;
                     }
                 }
+                bool wasSheep = victim.IsPolymorphed;
                 victim.ApplyStatus(status,turns,Attacker);
+                if (wasSheep && !victim.IsPolymorphed) manager?.OfferTransmutationOperation(victim, entered: false);
                 if(extendedFrom>0)manager?.RecordSkillVisual(Attacker,"龙族体魄",victim,
                     new SkillVisualData(source:SourceHand,value:victim.StatusTurnsLeft(status),previous:extendedFrom,
                         variant:"extend",status:status,element:hit.AttackType));
@@ -1032,64 +1037,31 @@ namespace FingerDiceDuel.Core
         public Func<PlayerState, bool> AskedCancelLookup { get; set; }
 
         /// <summary>
-        /// 询问场上有没有角色能**取消**这次攻击（邪术师·至高妖精）。
-        ///
-        /// 遍历全部参战玩家（取消者是第三方，不是挨打的人）。
-        /// 第一个答应的就取消成功。
+        /// 被选为攻击目标的至高妖精可取消来袭并魅惑攻击者。
         /// </summary>
         private bool TryCancelAttack(GameManager manager)
         {
-            if (manager == null) return false;
+            if (manager == null || IsStatusDamage) return false;
 
             int attackValue = AttackValue;
             if (attackValue <= 0) return false;      // 特殊攻击（视为 0）不可取消
 
-            IReadOnlyList<PlayerState> all = manager.Players;
-            for (int i = 0; i < all.Count; i++)
-            {
-                PlayerState p = all[i];
-                if (p == null || !p.IsAlive) continue;
+            var owner = Defender;
+            if (owner?.IsAlive != true || ReferenceEquals(owner, Attacker) || manager.IsTeammate(owner, Attacker)) return false;
+            var fey = CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(owner);
+            if (fey == null) return false;
+            bool asked = AskedCancelLookup?.Invoke(owner) == true;
+            if (!asked && manager.GetSkillPolicy(owner) is IChoiceProvider && manager.IsKnownAlly(owner, Attacker)) return false;
+            Hand answer = AnsweredLookupFor?.Invoke(owner, HandEffect.TheArchfeyCancel, 0);
+            if (!fey.TryCancelAttackWithAnswer(owner, attackValue, asked, answer)) return false;
 
-                // ⚠️ **不能取消自己发起的攻击**（玩家实测抓到：
-                //    邪术师·至高妖精取消了自己的攻击 —— 设计上他只能取消**他人**的攻击）。
-                if (ReferenceEquals(p, Attacker)) continue;
-
-                // ⚠️ 多人模式里**不能取消队友的攻击**。
-                //    队友在攻击敌人，取消掉等于自伤。
-                if (manager.IsTeammate(p, Attacker)) continue;
-                if(manager.GetSkillPolicy(p) is IChoiceProvider&&manager.IsKnownAlly(p,Attacker)&&!(AskedCancelLookup?.Invoke(p)??false))continue;
-
-                if (CharacterBehaviors.FirstImplementer<TheArchfeyLogic>(p) is TheArchfeyLogic theArchfey)
-                {
-                    // 人类的邪术师·至高妖精走"询问式"：按玩家在收集阶段的回答决定。
-                    // AI 的邪术师·至高妖精没被问过 -> wasAsked = false -> 自动取消。
-                    bool wasAsked = AskedCancelLookup != null && AskedCancelLookup(p);
-                    Hand answer = AnsweredLookupFor?.Invoke(p, HandEffect.TheArchfeyCancel, 0);
-
-                    if (theArchfey.TryCancelAttackWithAnswer(p, attackValue, wasAsked, answer))
-                    {
-                        WasCancelled = true;
-                        CancelledBy = p.Name;
-                        VisualEvasionActor=p;
-                        manager.NoteSkill(p, "妖精步伐·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击");
-                        return true;
-                    }
-
-                    continue;
-                }
-
-                if (p.Character is IAttackCanceller canceller
-                    && canceller.TryCancelAttack(p, Attacker, Defender, attackValue, manager))
-                {
-                    WasCancelled = true;
-                    CancelledBy = p.Name;
-                    VisualEvasionActor=p;
-                    manager.NoteSkill(p, "妖精步伐·取消攻击", $"取消 {Attacker.Name} 的攻击");
-                    return true;
-                }
-            }
-
-            return false;
+            WasCancelled = true;
+            CancelledBy = owner.Name;
+            VisualEvasionActor = owner;
+            Attacker.ApplyStatus(StatusEffect.Charm, PlayerState.StatusDurationTurns, owner);
+            manager.NoteSkill(owner, "妖精步伐·取消攻击", $"同值手永久＋1，取消 {Attacker.Name} 的攻击"
+                + (Attacker.StatusSourceOf(StatusEffect.Charm) == owner ? "，魅惑2回合" : ""));
+            return true;
         }
 
         /// <summary>

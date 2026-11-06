@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Assistant
         private int AvoidFriendlyShock(PlayerState actor,LegalMove move,int result,GameManager game)
         {
             if(CharacterBehaviors.FirstImplementer<IProtectionChoiceProvider>(actor)==null)return 0;
-            if(result!=4&&result!=5&&result!=6&&!move.ActedHand.IsShield)return 0;
+            if(result!=4&&result!=5&&!move.ActedHand.IsShield)return 0;
             bool ally=false;
             foreach(var p in game.Players)
             {

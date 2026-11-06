@@ -1,9 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Core
 {
     public partial class GameManager
     {
+        internal bool? TacticianSubtraction { get; set; }
+
+        public bool CanChooseTacticianOperation(PlayerState actor)
+            => CharacterBehaviors.FirstImplementer<TacticianLogic>(actor) != null
+                && !WillSuppressOperationEffects(actor);
+
+        private bool ShouldSubtract(PlayerState actor)
+            => TacticianSubtraction == true && CharacterBehaviors.FirstImplementer<TacticianLogic>(actor) != null;
+
+        internal bool ChooseTacticianSubtraction(PlayerState actor, Hand source, Hand operand)
+            => (GetSkillPolicy(actor) as ITacticianOperationPolicy ?? GetChoiceProvider(actor) as ITacticianOperationPolicy)
+                ?.ChooseSubtraction(this, actor, source, operand) == true;
+
+        internal int PreviewTacticianResult(PlayerState actor, Hand source, Hand operand, bool subtract)
+            => ModifiedOperationValue(actor, OperationSum(actor, operand, source.Value, operand.Value, subtract: subtract));
+
         private bool IsTouchedTaiChiZero(PlayerState actor, Hand addend, int value)
         {
             if (value != 0) return false;
@@ -13,10 +30,10 @@ namespace FingerDiceDuel.Core
         }
 
         private int OperationSum(PlayerState actor, Hand addend, int sourceValue, int addendValue,
-                                 bool useSecondAddend = true, bool touchTaiChi = true)
+                                 bool useSecondAddend = true, bool touchTaiChi = true, bool subtract = false)
         {
             if (touchTaiChi && IsTouchedTaiChiZero(actor, addend, addendValue)) addendValue = 1;
-            int value = Hand.ComputeSum(sourceValue, addendValue);
+            int value = subtract ? Hand.ComputeDifference(sourceValue, addendValue) : Hand.ComputeSum(sourceValue, addendValue);
             if (useSecondAddend && DruidForms.IsDragon(actor) && DruidSecondAddend != null)
                 value = Hand.ComputeSum(value, ReferenceEquals(addend, DruidSecondAddend)
                     ? addendValue : DruidSecondAddend.Value);
@@ -34,7 +51,7 @@ namespace FingerDiceDuel.Core
         {
             bool suppressed = WillSuppressOperationEffects(actor);
             int value = ModifiedOperationValue(actor,
-                OperationSum(actor, addend, sourceValue, addendValue, !suppressed, !suppressed));
+                OperationSum(actor, addend, sourceValue, addendValue, !suppressed, !suppressed, !suppressed && ShouldSubtract(actor)));
             if (suppressed) return value;
 
             if (shown != null && IsTouchedTaiChiZero(actor, addend, addendValue))

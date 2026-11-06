@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Assistant
         {
             get
             {
-                if (_game.IsGameOver || CollegeOfValorChoicePending
+                if (_game.IsGameOver || TransmutationOperationActive || CollegeOfValorChoicePending
                     || (Phase!=BoardPhase.ChoosingAttackerHand && Phase!=BoardPhase.ChoosingTargetHand
                         && Phase!=BoardPhase.ChoosingGamble)) return false;
                 foreach (var player in _game.Players) if (CanCastleWith(player)) return true;

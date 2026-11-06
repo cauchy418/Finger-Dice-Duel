@@ -40,11 +40,13 @@ namespace FingerDiceDuel.Assistant
         {
             if(!Version3||!Guided||Step==null)return;
             if(Player.Character is StormSorceryLogic storm)storm.ForcedRoll=Step.ForcedRoll??-1;
+            if(Player.Character is DraconicBloodlineLogic dragon)dragon.ForcedRoll=0;
             if(Player.Character is WildMagicLogic wild)wild.ForcedRoll=Step.ForcedRoll??-1;
         }
         private void ReleaseGuidedRolls()
         {
             if(Player.Character is StormSorceryLogic storm)storm.ForcedRoll=-1;
+            if(Player.Character is DraconicBloodlineLogic dragon)dragon.ForcedRoll=-1;
             if(Player.Character is WildMagicLogic wild)wild.ForcedRoll=-1;
         }
         public void LeaveLesson(){ReleaseGuidedRolls();}

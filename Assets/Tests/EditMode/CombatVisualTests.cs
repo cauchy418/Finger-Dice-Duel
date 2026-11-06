@@ -142,7 +142,7 @@ namespace FingerDiceDuel.Tests
             target.TryPolymorph(1);target.TickStatuses(g);
             var cue=g.DrainCombatVisuals().Single();
             Assert.AreEqual("expire",cue.SkillData.Variant);
-            Assert.AreEqual(5,cue.Before.Players[1].MaximumHealth);
+            Assert.AreEqual(8,cue.Before.Players[1].MaximumHealth);
             Assert.AreEqual(20,cue.After.Players[1].MaximumHealth);
             Assert.True(cue.After.Players[1].Right.IsTargetRestricted);
             Assert.True(cue.After.Players[1].Right.CanBeOperated);

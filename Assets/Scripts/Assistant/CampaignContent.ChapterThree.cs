@@ -21,7 +21,8 @@ namespace FingerDiceDuel.Assistant
                 case 23:
                     s.Hands=new[]{1,2,2,3,2,4,3,1};s.Npcs[1].Maximum=30;
                     s.Op(0,0,3,0,"1＋同袍3＝4盾，只选择卫护斩人物目标，冲击甲2。");
-                    s.Op(0,0,1,0,"完整4盾＋甲2＝6，旧盾破与新盾成分别冲击2，不追加普通攻击。");break;
+                    s.Op(0,0,3,1,"完整4盾＋同袍1＝5，旧盾碎、新盾成，各触发一次卫护斩。");
+                    s.Op(0,0,3,1,"完整5盾＋同袍1＝6，碎盾触发卫护斩，再发起普通6攻击。");break;
                 case 24:
                     s.Hands=new[]{1,2,3,2,2,4,3,1};s.First=1;s.Npcs[1].Maximum=30;s.Npcs[1].Range=2;s.Npcs[2].Maximum=26;s.Npcs[3].Role=CharacterDefinition.OathOfDevotion;s.Npcs[3].Health=12;s.Opening=l=>l.Player.SetHealthExact(12);
                     s.Op(1,0,0,0,"甲3＋玩家1＝4，攻击同袍；玩家无完整盾不能援护，同袍防+1，12→9。",3);

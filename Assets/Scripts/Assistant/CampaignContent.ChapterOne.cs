@@ -17,11 +17,14 @@ namespace FingerDiceDuel.Assistant
                     s.Op(0,1,1,0,"碎盾5＋老兵左4＝9，回复；超过上限的部分不保留。");
                     s.Op(1,1,0,0,"老兵6＋你的4＝10→1，无效果。接下来，试着抓住老兵的破绽。",0);break;
                 case 2:
-                    s.Hands=new[]{1,6,5,8};s.Npcs[1].Maximum=26;
-                    s.Op(0,0,1,0,"1＋5＝6，此时双6、和12，普通7伤。");
-                    s.Op(1,0,0,0,"教官5＋6＝11→1，为下一次重击留下8。",0);
-                    s.Op(0,0,1,1,"6＋8＝4，自己的双手4／6和10；基础4×1.5再攻+1，7伤。");
-                    s.Op(1,1,0,0,"教官8＋4＝2；看清手值，再决定下一步。",0);break;
+                    s.Hands=new[]{2,1,2,3};s.Npcs[1].Maximum=40;
+                    s.Op(0,0,1,0,"2＋2＝4，普通攻击造成5。");
+                    s.Op(1,0,0,1,"教官2＋1＝3，保留右手3。",0);
+                    s.Op(0,1,1,1,"1＋3＝4，重击造成7，附物理易伤两回合。");
+                    s.Wait(1,"教官休整，左手调整为4。").Prepare=(l,p)=>l.Tune(p,p.LeftHand,4);
+                    s.Op(0,0,1,0,"4＋4＝8，攻防结算后9，易伤令伤害变为14。");
+                    s.Wait(1,"教官经过第二个自身回合，物理易伤到期。");
+                    s.Op(0,1,1,0,"再算8，易伤到期后恢复为9伤。");break;
                 case 3:
                     s.Hands=new[]{2,1,3,5};s.Opening=l=>Shield(l.Seats[1],1);s.Npcs[1].Shield=true;
                     s.Op(0,0,1,0,"2＋3＝5，先合盾。");
@@ -60,12 +63,15 @@ namespace FingerDiceDuel.Assistant
                     s.Hands=new[]{2,4,2,3};s.Npcs[1].Maximum=30;s.Npcs[1].FreeAttack=1;
                     s.Op(0,0,1,0,"2＋2＝4得到双4；发动双刃连斩，先追加4及流血，再主攻击7，总11。").TargetSeat=1;break;
                 case 9:
-                    s.Hands=new[]{1,1,2,3};s.Npcs[1].Maximum=32;s.Npcs[1].Health=20;s.Npcs[1].FreeAttack=1;
-                    s.Op(0,0,1,1,"20对20，体力差0；1＋3＝4，造成5。最大生命上限不参与差值。");
-                    s.Op(1,1,0,0,"教官3＋4＝7，观察体力差5、额外攻防1。",0);
-                    s.Op(0,0,1,0,"4＋2＝6，使用当前额外攻防1，造成8；体力差13、额外4。");
-                    s.Wait(1,"教官一次训练整备回16，7→23；体力差降至3、额外1。").Prepare=(l,p)=>l.Refit(p);
-                    s.Op(0,1,1,0,"按当前体力差算出8再攻击，留意体力差带来的变化。",1,8);break;
+                    s.Hands=new[]{1,4,3,6};s.Npcs[1].Maximum=32;s.Npcs[1].FreeAttack=1;
+                    s.Opening=l=>l.Player.SetHealthExact(16);
+                    s.Op(0,0,1,0,"选择加法，1＋3＝4。").Option=0;
+                    s.Op(1,0,0,0,"教官3＋4＝7，右手仍是6。",0);
+                    s.Op(0,1,1,1,"选择减法，4−6＝−2，记为8。").Option=1;
+                    s.Wait(1,"教官把左手调整为4。").Prepare=(l,p)=>l.Tune(p,p.LeftHand,4);
+                    s.Op(0,0,1,0,"选择减法，4−4＝0，记为1。").Option=1;
+                    s.Wait(1,"教官把左手调整为2。").Prepare=(l,p)=>l.Tune(p,p.LeftHand,2);
+                    s.Op(0,0,1,0,"选择减法，1−2＝−1，记为9并回复。").Option=1;break;
                 case 10:
                     s.Role=CharacterDefinition.Champion;s.Npcs[1]=new CampaignNpcSpec("哨站骑士",AdventureChapter.KnightId,40){Attack=2,Defense=1,Range=2,Shield=true,Rally=true};break;
             }

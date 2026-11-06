@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -141,6 +142,52 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(SpecialLogicType.None,l.Player.Definition.Logic);
             Assert.AreEqual(2,l.Player.Character.AttackBonus);Assert.AreEqual(2,l.Player.Character.DefenseBonus);
             Assert.AreEqual(6,l.Seats[1].Health);Assert.AreEqual(18,l.Player.Health);
+        }
+
+        [Test] public void Outpost_demonstrates_real_critical_vulnerability_and_both_operators()
+        {
+            var champion = CampaignLesson.CreateV3(2);
+            champion.Game.RecordCombatVisuals = true;
+            champion.BeginTutorial();champion.Board.BeginTurn();
+            var damage = new List<int>();
+            var instructor = champion.Seats[1];
+            var vulnerabilityKeys = new[] { "Vulnerability/vulnerability_slashing", "Vulnerability/vulnerability_bludgeoning",
+                "Vulnerability/vulnerability_piercing" };
+            void CheckVulnerabilityIcons(string counter)
+            {
+                Assert.IsTrue(instructor.Statuses.Contains(StatusEffect.PhysicalVulnerability));
+                var frame = champion.Game.CaptureVisualFrame().Players.Single(p => ReferenceEquals(p.Player, instructor));
+                var icons = frame.Icons.Where(icon => icon.NegativeStatus == StatusEffect.PhysicalVulnerability).ToArray();
+                Assert.AreEqual(string.Join(",", vulnerabilityKeys), string.Join(",", icons.Select(icon => icon.ResourceKey)));
+                Assert.IsTrue(icons.All(icon => icon.Counter == counter));
+            }
+            for (int i = 0; i < 80 && !champion.TrialConfirmationPending; i++)
+            {
+                int before = champion.Cursor;
+                Assert.IsTrue(CampaignFlowTests.ClickGuide(champion),CampaignFlowTests.Diagnostic(champion));
+                if (champion.Cursor == before || before % 2 != 0) continue;
+                damage.Add(champion.Board.LastTurn.DamageDealt);
+                if (before == 2) CheckVulnerabilityIcons("2");
+                if (before == 4) CheckVulnerabilityIcons("1");
+            }
+            Assert.AreEqual("5,7,14,9",string.Join(",",damage));
+            Assert.IsFalse(instructor.HasStatus(StatusEffect.PhysicalVulnerability));
+            Assert.IsFalse(CombatStatusIcons.For(instructor, champion.Game).Any(icon => vulnerabilityKeys.Contains(icon.ResourceKey)));
+            Assert.IsTrue(champion.TrialConfirmationPending);
+
+            var tactician = CampaignLesson.CreateV3(9);
+            tactician.BeginTutorial();tactician.Board.BeginTurn();
+            var results = new List<int>();
+            for (int i = 0; i < 80 && !tactician.TrialConfirmationPending; i++)
+            {
+                int before = tactician.Cursor;
+                if (tactician.Board.PendingWizardChoice?.Prompt.Contains("战术眼光") == true)
+                    Assert.IsFalse(tactician.AllowsOption(before == 0 ? 1 : 0));
+                Assert.IsTrue(CampaignFlowTests.ClickGuide(tactician),CampaignFlowTests.Diagnostic(tactician));
+                if (tactician.Cursor != before && before % 2 == 0) results.Add(tactician.Board.LastTurn.ResultValue);
+            }
+            Assert.AreEqual("4,8,1,9",string.Join(",",results));
+            Assert.IsTrue(tactician.TrialConfirmationPending);
         }
         [Test] public void Retry_restores_trial_model_and_delegates_without_reapplying_rewards()
         {

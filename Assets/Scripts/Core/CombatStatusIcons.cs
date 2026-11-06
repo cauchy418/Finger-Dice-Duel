@@ -32,7 +32,7 @@ namespace FingerDiceDuel.Core
                 result.Add(new CombatStatusIcon("Subclasses/bard_college_of_lore","逸闻记录 · "+book.RecordCount+" / 9\n已记录："+(values.Count==0?"无":string.Join("、",values))+"\n成长"+book.LoreLevel+"次；消耗对应记录可使本次伤害减半。",book.RecordCount+"/9",value:book.RecordCount));
             }
             if(DruidWildShape.Has<IDruidCaster>(player.DruidOriginal))result.Add(new CombatStatusIcon("Professions/druid","荒野充能 · 剩余"+player.WildCharges,player.WildCharges.ToString(),value:player.WildCharges));
-            if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立5生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
+            if(player.IsPolymorphed)result.Add(new CombatStatusIcon("Status/polymorph","变羊 · 剩余"+player.PolymorphTurns+"回合\n独立8生命，攻防−2/−2、距离1，原技能暂停；击破的溢伤扣原生命。",player.PolymorphTurns.ToString()));
             if(player.IsSummon)result.Add(new CombatStatusIcon("Units/hexbound_specter","咒缚幽灵 · 来源："+player.SummonOwner?.Name+"\n占位计距，AI行动；召唤者死亡或替换时消失，不计胜负存活人数。",""));
             foreach(var spell in CharacterBehaviors.Implementers<IElementEnchantment>(player))
                 if(spell.Enchantment!=AttackDamageType.None)result.Add(new CombatStatusIcon("Damage/"+AttackDamageTypes.IconKeyOf(spell.Enchantment),"奥法武器 · 下次攻击："+AttackDamageTypes.NameOf(spell.Enchantment)+"\n攻击发起即消耗，闪避/盾挡也消耗。",""));
@@ -48,18 +48,27 @@ namespace FingerDiceDuel.Core
             if(player.FalseLife>0)result.Add(new CombatStatusIcon("Effects/false_life",
                 "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；直坠噩梦可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
+            {
+                if (status == StatusEffect.PhysicalVulnerability) continue;
                 result.Add(new CombatStatusIcon(StatusNames.ResourceKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),
                     player.StatusTurnsLeft(status).ToString(),status));
+            }
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
                     ResistanceNames.Name(type)+(player.HasSustainedResistance(type)?"：技能持续抗性；不因受击消耗，按对应技能条件结束。":player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
             if(player.Character is INpcCircuitProgress phantom&&player.Definition?.Id=="mage_tower_phantom")
                 result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3",value:phantom.CircuitProgress));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);
+            int physicalVulnerabilityTurns = player.StatusTurnsLeft(StatusEffect.PhysicalVulnerability);
             foreach (var type in ResistanceNames.All)
             {
-                if (player.HasVulnerability(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
+                if (physicalVulnerabilityTurns > 0 && AttackDamageTypes.IsPhysical(type))
+                    result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
+                        DamageAffinityNames.Name(DamageAffinity.Vulnerability, type) + " · 剩余" + physicalVulnerabilityTurns + "回合\n"
+                        + StatusNames.Describe(StatusEffect.PhysicalVulnerability),
+                        physicalVulnerabilityTurns.ToString(), StatusEffect.PhysicalVulnerability));
+                else if (player.HasTemporaryVulnerability(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Vulnerability, type),
                     DamageAffinityNames.Name(DamageAffinity.Vulnerability, type) + "：该类型伤害×1.5，向上取整。一次攻击落地后，全部临时伤害修正清除。", ""));
                 if (player.HasImmunity(type)) result.Add(new CombatStatusIcon(DamageAffinityNames.Key(DamageAffinity.Immunity, type),
                     DamageAffinityNames.Name(DamageAffinity.Immunity, type) + (player.HasPermanentImmunity(type)?"：本场永久免疫，不受该类型伤害及其附加状态。"
@@ -74,7 +83,7 @@ namespace FingerDiceDuel.Core
             if(MonkRules.DrunkenOf(player)!=null)result.Add(new CombatStatusIcon("Effects/drunken_fist","醉拳：所有数字攻击，每段基础1d10；受到攻击每段改为1d5。回合开始消耗1气维持；持续伤害不变。",""));
             if(player.HasResonance)result.Add(new CombatStatusIcon("Effects/hidden_force","暗劲 · 来源："+player.HiddenForceSource?.Name+"\n仅施加者后续首次命中引爆，造成应有伤害一半的真实伤害。无倒计时，不叠加。",""));
             var portentBook=CharacterBehaviors.FirstImplementer<IPortentBook>(player);
-            if(portentBook!=null){var values=new List<int>(portentBook.Portents);values.Sort();result.Add(new CombatStatusIcon("Effects/portent","预兆："+(values.Count==0?"无":string.Join("、",values))+"\n持有7时可消耗记录替换角色运算结果。",values.Count.ToString()));}
+            if(portentBook!=null){var values=new List<int>(portentBook.Portents);values.Sort();result.Add(new CombatStatusIcon("Effects/portent","预兆："+(values.Count==0?"无":string.Join("、",values))+"\n每保有三个预兆，攻防各+1；持有7时可消耗记录替换角色运算结果。",values.Count.ToString()));}
             if(game!=null)
             {
                 var sources=new List<string>();

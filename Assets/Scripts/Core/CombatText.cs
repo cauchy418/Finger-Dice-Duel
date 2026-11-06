@@ -39,7 +39,7 @@
                 case HandEffect.OathbreakerTransfer: skill = "转移攻击"; action = "持有5：选择一名持完整盾的非攻击者承受整次攻击，或不发动。"; break;
                 case HandEffect.OathOfDevotionRedirect: skill = "代挡"; action = "持有完整盾牌时，可替范围内的受击角色承受本次攻击。"; break;
                 case HandEffect.WayOfTheTaiChiTaichi: skill = "太极八卦"; action = "可将一只太极手 5→0，减伤一半并反弹其余伤害。"; break;
-                case HandEffect.TheArchfeyCancel: skill = "妖精步伐·取消攻击"; action = "可将同攻击数字的手永久＋1，取消本次攻击。"; break;
+                case HandEffect.TheArchfeyCancel: skill = "妖精步伐·取消攻击"; action = "被攻击时可将同值手永久＋1，取消攻击并令攻击者魅惑2回合。"; break;
                 case HandEffect.LifeDomainAttackOrHeal: skill = "攻击／回复"; action = "选择照常攻击，或将本次数字用于治疗。"; break;
                 case HandEffect.LifeDomainHealTarget: skill = "治疗"; action = "选择一名角色回复生命（可选自己）。"; break;
                 case HandEffect.LifeDomainExtraHealTarget: skill = "双九回复"; action = "双手为 9：选择一名角色，额外回复 9。"; break;
