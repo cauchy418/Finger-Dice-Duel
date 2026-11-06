@@ -39,4 +39,4 @@
 
 [review-a.cs.txt](review-a.cs.txt)先执行三战/四战/翻页并进入五战真实投骰，返回后让动画与AI协程运行；再执行[review-b.cs.txt](review-b.cs.txt)，若返回WAIT，待AI分配后再执行B，直至PASS。两段包含[公共助手](helpers.cs.txt)，已展开保存，可直接交给引擎execute_csharp_script（Play模式）。临时偏好备份保存在忽略目录Tools/UiCompileCheck/bin，成功或异常时恢复。
 
-设计：[三战](../../../Docs/Adventure/level-03.md)、[四战](../../../Docs/Adventure/level-04.md)、[五战](../../../Docs/Adventure/level-05.md)。美术：[石头原图与内置imagegen完整提示词](../../Production/border-outpost-stone-v1/README.md)。
+设计：三战、四战、五战（已并入 [四章现行设计](../../../Docs/Adventure/four-chapter-v3/README.md)）。美术：[石头原图与内置imagegen完整提示词](../../Production/border-outpost-stone-v1/README.md)。

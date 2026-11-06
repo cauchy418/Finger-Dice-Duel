@@ -1,17 +1,17 @@
 # 文档索引
 
-仓库首页在 [README](../README.md)。这里按「想找什么」分类。
+仓库首页在 [README](../README.md)。这里按「想找什么」分类。文档只保留**当前有效**的版本；被取代的设计稿一律从仓库删除，需要时用 `git log` 翻回。
 
 ## 想上手玩
 
 | 文档 | 内容 |
 |---|---|
 | [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 23 种负面状态 |
-| [德鲁伊重构与孢子结社](druid-rework-2026-11-05.md) | 独立荒野体力、四结社、充能与双武僧初始气 |
 | [角色图鉴](roster.md) | 57 名子职的数值与关键机制、阵营分类、全角色胜率 |
-| [剧情教学](Adventure/four-chapter-v3/README.md) | 四章40关，万象回廊与高塔重排 |
-| [共同流程](Adventure/four-chapter-v3/common-flow.md) | 中央实战确认、敌方整备、50轮与两个重试入口 |
+| [德鲁伊重构与孢子结社](druid-rework-2026-11-05.md) | 独立荒野体力、四结社、充能与双武僧初始气 |
 | [音乐与音频](music-and-audio.md) | 配乐切换逻辑与设置持久化 |
+| [剧情教学](Adventure/four-chapter-v3/README.md) | 四章 40 关，万象回廊与高塔重排 |
+| [共同流程](Adventure/four-chapter-v3/common-flow.md) | 中央实战确认、敌方整备、50 轮与两个重试入口 |
 
 ## 想改代码
 
@@ -23,16 +23,23 @@
 | [AI 策略与权重](ai-strategy-reference.md) | 57 名子职的自身／针对策略与配置 |
 | [格挡定义](combat-defense.md) | 格挡、抗性与状态时长的扣减规则 |
 | [技能文案](character-skill-copy-draft.md) | 全部技能正文 |
+| [提交与推送约定](../CONTRIBUTING.md) | 文件该放哪、什么该提交、一轮改动怎么组织 |
 
 ## 剧情关卡设计
 
+只保留现行四章版本。
+
 | 文档 | 内容 |
 |---|---|
-| [four-chapter-v3](Adventure/four-chapter-v3/README.md) | **现行**：四章40关、技能教学与实战、旧存档迁移 |
-| [single-battle-v2](Adventure/single-battle-v2/README.md) | 历史：三章连续战斗改造，现行流程已由V3取代 |
-| [chapter-01](Adventure/single-battle-v2/chapter-01.md) · [chapter-02](Adventure/single-battle-v2/chapter-02.md) · [chapter-03](Adventure/single-battle-v2/chapter-03.md) | 历史分章十战配置 |
-| [implementation-audit](Adventure/single-battle-v2/implementation-audit.md) | 改造前的差异清单与验收要求 |
-| `Adventure/level-*.md`、`Adventure/chapter-0*.md` | **历史**：逐关独立样本时代的旧设计稿，仅作实现记录保留 |
+| [four-chapter-v3](Adventure/four-chapter-v3/README.md) | 四章 40 关、技能教学与实战、旧存档迁移 |
+| [第一章与第四章](Adventure/four-chapter-v3/chapter-01-and-04.md) | 边境哨站、残旗战场 |
+| [第二章：万象回廊](Adventure/four-chapter-v3/chapter-02-gallery.md) | 11–20 十战，一元素一关 |
+| [第三章：法师高塔](Adventure/four-chapter-v3/chapter-03-tower.md) | 21–30 十战，法师九学派 |
+| [指引台词](Adventure/four-chapter-v3/guide-dialogues.md) | 40 关全部教学台词 |
+| [NPC 与美术](Adventure/four-chapter-v3/npcs-and-art.md) | 指引角色、背景与素材 |
+| [剧情与迁移](Adventure/four-chapter-v3/story-and-migration.md) | 旧存档映射与章节关系 |
+
+> 逐关时代（`level-01`～`level-30`、`chapter-02`、`chapter-03`）与三章连续战斗版（`single-battle-v2`）的设计稿已下线，需要时从 git 历史取回。
 
 ## 表现与美术
 
@@ -48,5 +55,6 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样报告](../Tools/Statistics/2026-11-05-ranger/README.md) | 2026-11-05，游侠调整后57子职62,768局的完整分母、种子与复现命令 |
-| [机器数据](../Tools/Statistics/2026-11-05-ranger/results.json) | 可复核的原始结果 |
+| [胜率采样](../Tools/Statistics/2026-11-06-arcane/README.md) | 2026-11-06，57 子职 64,768 局，五个模式 + 两种身份采样 |
+| [机器数据](../Tools/Statistics/2026-11-06-arcane/results.json) | 可复核的原始结果 |
+| [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

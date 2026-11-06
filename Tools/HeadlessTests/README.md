@@ -6,7 +6,7 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通.NET可执行文件跑测试。当前1627项功能回归、8项独立统计入口；最新57子职五模式采样共62,768局，含1v1 31,920局、2v2 25,536局、双将4,112局和两种八人模式各600局。采样统一走实际BoardController，细节见[本轮报告](../Statistics/2026-11-05-ranger/README.md)；
+一个普通.NET可执行文件跑测试。当前1627项功能回归、8项独立统计入口；最新 57 子职五模式采样共 64,768 局：1v1 31,920、2v2 25,536、双将 4,112、八人阵营 600、八人身份 2,000+600。采样统一走实际BoardController，细节见[本轮报告](../Statistics/2026-11-06-arcane/README.md)；
 专项可按测试类过滤，不必每次重跑全部统计。
 
 ```powershell
@@ -42,7 +42,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-OutputDirectory <path>` | 使用独立构建目录，不覆盖正在运行的DLL或旧分片的构建标识 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
 
-五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-05-ranger/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
+五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-06-arcane/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
 
 运行器还支持两个命令行参数（直接传给 `dotnet bin/HeadlessTests.dll`）：
 

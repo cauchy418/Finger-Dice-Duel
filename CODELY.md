@@ -1,6 +1,6 @@
 # CODELY.md
 
-最新57子职胜率采样为2026-11-05的62,768局，涵盖1v1、2v2、514种双将组合抽样及两种八人模式；逐局记录、分母和源码指纹见[报告](Tools/Statistics/2026-11-05-ranger/README.md)。游侠职业基础攻防为+1/−1，幽域追踪者伏击另加2攻。巨像屠夫用目标当前与已损体力的较大值除以5并向下取整，战斗结算和AI预估共用公式。相关对策见[AI策略清单](Docs/ai-strategy-reference.md)。
+最新57子职胜率采样为2026-11-06的64,768局，涵盖1v1、2v2、514种双将组合抽样及两种八人模式；逐局记录、分母和源码指纹见[报告](Tools/Statistics/2026-11-06-arcane/README.md)。游侠职业基础攻防为+1/−1，幽域追踪者伏击另加2攻。巨像屠夫用目标当前与已损体力的较大值除以5并向下取整，战斗结算和AI预估共用公式。相关对策见[AI策略清单](Docs/ai-strategy-reference.md)。
 
 德鲁伊现行规则见[重构与孢子结社](Docs/druid-rework-2026-11-05.md)。`DruidWildShape`在PlayerState保存原体力／行为、充能与星耀，替换为WildShapeBehavior；羊可套在荒野外，溢伤逐层传递。公共回合开始选择完成后通过WildSkipPending正常消耗回合，回合末允许解除；巨龙改用纯运算，不再连续加手。双武僧初始4气、上限6；双德鲁伊初始充能相加。孢子生命独立于虚假生命，死亡回充在CollectNewDeaths内按死亡前物理座位和占位物去重结算，包括最终击杀。旧德鲁伊与双将技能共存、巨龙第二加数描述均为历史。
 
@@ -53,7 +53,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1627项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职62,768局五模式采样见Tools/Statistics/2026-11-05-ranger，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
+| 测试 | 1627项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职64,768局五模式采样见Tools/Statistics/2026-11-06-arcane，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 主动幻术默发改动前的52子职统计快照：1v1 **106,080** 局、2v2 **169,728** 局、425双将 **2,162,400** 局、集火 **187,200** 局；八人阵营 **2,000** 局；
@@ -176,7 +176,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 `GameBootstrap` 通过 `[RuntimeInitializeOnLoadMethod]` 自动创建并按需建 `EventSystem`，
 **不需要场景配置、不需要预制体、不需要拖脚本**。
 
-状态图标第三版当时包含18种，圣光阶段曾为19种，加束缚／油腻后曾为21种；当前22种负面（新增失明）与圣光／剑歌／战争祝福3种角色状态，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，此后增强酸／中毒互刷与火焰／油腻至九条，现增加雷电互刷共十一条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
+状态图标第三版当时包含18种，圣光阶段曾为19种，加束缚／油腻后曾为21种；当前23种负面（新增失明、物理易伤）与圣光／剑歌／战争祝福3种角色状态，统一由 `Core/StatusNames.IconKeyOf` 映射，避免 `Freeze/Frost`、`Stun/Panic` 枚举别名及多状态共用伤害类型引起错图。9 张新绘画和 2 个规范资源别名见 [`Art/Production/status-icons-v3/README.md`](Art/Production/status-icons-v3/README.md)。秘法手册通过 `GuideEntry.Status` 保留真实状态，当时按「伤害类型／状态一览／元素反应」分三页（当前为五页，见上文），第三页当时只有六条反应，此后增强酸／中毒互刷与火焰／油腻至九条，现增加雷电互刷共十一条，心灵概率留在伤害类型页。该阶段多人布局为三列六行；现有状态栏可滚动。该阶段验证结果及已复现的既有失败见 [`validation.md`](Art/Production/status-icons-v3/validation.md)。
 
 新角色美术：正式 `Subclasses/paladin_oathbreaker`、`barbarian_path_of_the_berserker`、`fighter_tactician` 已导入；野蛮人·守望者道途换用用户选定的兽角图腾，原斧徽记用于野蛮人·狂战士道途。源图／提示词／选择清单见 [`Art/Production/new-roles-v1/`](Art/Production/new-roles-v1/README.md)。旧绘画图集重导入后自动重新应用本批 4 枚徽记，避免还原野蛮人·守望者道途。图鉴总览采用每页 12 名、4×3 翻页，筛选重置页码，从详情返回保留所在页；选将仍为拖动网格，末行预留边距。实际界面验收及既有双将强停复现见 [`Art/Integration/new-roles/`](Art/Integration/new-roles/README.md)。
 
@@ -351,7 +351,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 - [x] **2v2**（入门 / 经典 + 先攻界面 + 环形布局 + 攻击距离）
 - [x] **8 人阵营混战**（单将、三阵营 3/3/2、50 轮、按阵营总血量判胜）
 - [x] **8 人身份对局** —— AI 练习已接入；80 轮、主公 +10 / +1/+1、内奸 5 人亮身份、忠臣替死；真人对战占位
-- [ ] **8人角色/阵营平衡** —— 最新50角色采样仍有阵营差异，见 `Tools/8p-report.txt`；需单独调整
+- [ ] **8人角色/阵营平衡** —— 最新采样仍有阵营差异，见 [`Tools/Statistics/2026-11-06-arcane/README.md`](Tools/Statistics/2026-11-06-arcane/README.md)；需单独调整
 - [ ] 竞技（联网）
 - [ ] 菜单按钮音效
 - [x] 50子职可完整选取；大徽记纵向拖动，双侧三列、单侧四列；图鉴12名一页并按职业/阵营筛选
@@ -375,7 +375,7 @@ private bool IsTurnBoundary => !ReferenceEquals(_lastBoundaryPlayer, ActivePlaye
 | `Assistant/GreedyChoiceProvider.cs` | `FocusPolicy`（None / Self / Mate）、`FocusBonus = 25000`、`IntendedVictim`；集火分**只加在攻击**上，且目标必须真的可达 |
 | `Assistant/FocusPolicies.cs` | 生产策略：**默认所有角色 focusSelf**，黑名单 4 个（邪术师·旧日支配者 / 游侠·幽域追踪者 / 野蛮人·野兽道途 / 游荡者·魔术师）。旧日支配者基于早期实验暂不叠加集火；最新表现见统计报告 |
 | `Tests/EditMode/FocusPolicyTests.cs` | 车道解析、只对攻击生效、近战打不到 Mate 车道时不退化 |
-| `Tests/EditMode/FocusPolicyExperimentTests.cs` | 50角色 × 600局 × 2段种子 × 3组 = 180,000局，写 `Tools/focus-report.txt` |
+| `Tests/EditMode/FocusPolicyExperimentTests.cs` | 集火策略实验，结果并入 `Tools/Statistics/<日期>-<主题>/` |
 
 ### 新角色触发测试
 
@@ -404,7 +404,7 @@ dotnet Tools/HeadlessTests/bin/HeadlessTests.dll FocusPolicyExperimentTests
 | `Characters/DualGeneralFactory.cs` | 创建入口、同阵营校验、副将候选、随机搭配 |
 | `Tests/EditMode/DualGeneralTests.cs` | 合并规则与选将规则的单测 |
 | `Tests/EditMode/DualVersusDualHarness.cs` | **交叉对战测试台**：当前460个双将；旧425组合样本为90,100对、每对24局，共2,162,400局 |
-| `Tests/EditMode/DualVersusDualTests.cs` | 批量跑测试台并把报告写到 `Tools/dual-report.txt` |
+| `Tests/EditMode/DualVersusDualTests.cs` | 批量跑双将对局，结果并入 `Tools/Statistics/<日期>-<主题>/` |
 | `UI/GameBootstrap.cs` | 选将界面、`PrepareDualMatch`、选将状态机 |
 
 ### 为什么是“容器”
@@ -477,13 +477,13 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 `AdventureGuideHistory`只保存已解锁文字，不持有对局状态；上一页/下一页/回到当前，浏览旧页时刷新和新步骤不强制跳走，跟随当前时正常前进；新关卡清空记录。翻页按钮位于指引面板底部，正文保留独立空间。
 
-三份设计先落盘再编码：[三战](Docs/Adventure/level-03.md)、[四战](Docs/Adventure/level-04.md)、[五战](Docs/Adventure/level-05.md)。新增12项后续关卡专项、3项指引历史专项，全量1215项通过，Unity条件/UI编译通过；含初战/次战原16项回归。实际引擎138项检查覆盖老兵投骰解释、真实随机先攻、失败与胜利、重投/返回、石头避让及翻页，见[最新验收](Art/Integration/adventure-later-training/README.md)。旧双教学[验收](Art/Integration/adventure-chapter-01/README.md)保留历史截图。占位石头以内置imagegen绘制，[原图与提示词](Art/Production/border-outpost-stone-v1/README.md)；不手改meta。挑战仍预留。
+三份设计先落盘再编码：三战、四战、五战（旧逐关设计稿已随逐关体系下线，可从 git 历史取回）。新增12项后续关卡专项、3项指引历史专项，全量1215项通过，Unity条件/UI编译通过；含初战/次战原16项回归。实际引擎138项检查覆盖老兵投骰解释、真实随机先攻、失败与胜利、重投/返回、石头避让及翻页，见[最新验收](Art/Integration/adventure-later-training/README.md)。旧双教学[验收](Art/Integration/adventure-chapter-01/README.md)保留历史截图。占位石头以内置imagegen绘制，[原图与提示词](Art/Production/border-outpost-stone-v1/README.md)；不手改meta。挑战仍预留。
 
 `AdventureChapter`统一十战名称、入口提示、固定训练角色及终战战士池；初战对手使用AdventureLevel1.GuideName“老兵”，开场为“身负旧伤的老兵拦住了去路”，各步指引和战报姓名一致；第二至九战使用InstructorName“哨站教官”。终战开场明确显示实际所选子职，骑士属性与经典流程单独分行。六战魔射手单NPC20生命，连续穿盾8伤、增伤8伤、两段4先破盾再击杀，NPC主动改变盾手并重新正常合盾，无中途造盾。八战剑士追加固定4先附流血，再主7，共11；九战战术家体力差0/5/13，动态攻防0/1/4，攻击5/8/13。七战40生命、训练射程2教官以普通核心动作展示四状态，`Beat.Maneuver`和`AllowManeuver`只约束教学状态按钮，最后必须拒绝附加；NPC算出8因震慑无目标而放弃，倒伏下一击4→6后完成目标，NPC仍可存活。普通/终战抉择不受限制。跛脚后的实际射程同步显示于1v1和多人面板。
 
 终战`AdventureFinaleSelect`独立选角，`AdventureChapter.FinaleRoster`仅包含已注册的6个战士子职，三列两行完整可见；详情跟随选择。对手`AdventureChapter.Knight`为关卡定义（None逻辑，20生命，攻防+1/+1、射程1），不加入BuiltIn，也不使用王冠之誓。`Adventure/knight_original.png`直接复用`Art/Production/painted-icons-v2/native/Subclasses/paladin_oath_of_the_crown.png`原骑士徽记；选角与战斗都用同一资源。终战复用第五战真实经典流程、Greedy AI，重打保留选择并重新投骰，返回章内可重选。胜利保存Level10及`FingerDiceDuel.Adventure.Chapter1.Completed`，失败/平局不覆盖既有记录。所有新增关卡共用哨站背景，退出清理章节专属状态。
 
-五份设计先落盘：[六战](Docs/Adventure/level-06.md)、[七战](Docs/Adventure/level-07.md)、[八战](Docs/Adventure/level-08.md)、[九战](Docs/Adventure/level-09.md)、[终战](Docs/Adventure/level-10.md)。新增`AdventureChapterFinaleTests`10项，实际控制器覆盖完整演算、四状态与必选门禁、6子职池、终战无安全AI及重开；旧关卡专项保持通过；全量1225项、Unity条件/UI编译、实际引擎175项主流程通过；姓名/终战开场文案补充后，41项冒险专项与44项引擎复验通过（引擎合计219项）。最新编译/回归/引擎与截图见[验收记录](Art/Integration/adventure-chapter-finale/README.md)。此前138项五战验收保留历史版本口径。
+五份设计先落盘：六战、七战、八战、九战、终战（旧逐关设计稿已随逐关体系下线，可从 git 历史取回）。新增`AdventureChapterFinaleTests`10项，实际控制器覆盖完整演算、四状态与必选门禁、6子职池、终战无安全AI及重开；旧关卡专项保持通过；全量1225项、Unity条件/UI编译、实际引擎175项主流程通过；姓名/终战开场文案补充后，41项冒险专项与44项引擎复验通过（引擎合计219项）。最新编译/回归/引擎与截图见[验收记录](Art/Integration/adventure-chapter-finale/README.md)。此前138项五战验收保留历史版本口径。
 
 ## Codely Structured Memories
 
@@ -494,11 +494,11 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 - [2026-10-24 06:09:37] 实现类任务先交方案再动手（用户两次明确要求"先列工作清单/设计稿给我看，检查后再开始"）：开工前给出分阶段工作清单或设计稿供用户检查；规则口径有歧义时用带选项的问题让用户逐条拍板，未拍板不实现；文档三处同步（RULES.md/代码/测试）是项目铁律。
 
 ### Project
-- 历史第二章“灰塔秘法”提案已归档；当前权威为 [法师高塔](Docs/Adventure/chapter-02.md)，已完成十关实现。
+- 历史第二章“灰塔秘法”提案已归档；当前权威为[四章现行设计](Docs/Adventure/four-chapter-v3/README.md)，法师高塔作为第三章已完成十关实现。
 
 ### Reference
 - [2026-10-24 12:45:47] 冒险模式·剧情模式第一关（2026-10-24 已确认并实现）：勇士 vs 生命12旧伤白板士兵，7 回合强制脚本教学（攻击/合盾/碎盾/满十归一/回血/半自由决胜）；三个决策已拍板（士兵HP12、引导员头像=原士兵徽记 guide_soldier、不做三星）。权威设计文档已入库 Docs/Adventure/level-01.md；实现=Assistant/AdventureLevel1.cs（剧本+导演+收官保护，点击守门只在界面层）+ UI/AdventureGuidePanel.cs + 初稿AdventureLevel1Tests 4项（收尾增至8项，当前验收见上文）；RULES.md §20 已同步。
-- 历史第二章“灰塔秘法”提案已归档；当前权威为 [法师高塔](Docs/Adventure/chapter-02.md)，已完成十关实现。
+- 历史第二章“灰塔秘法”提案已归档；当前权威为[四章现行设计](Docs/Adventure/four-chapter-v3/README.md)，法师高塔作为第三章已完成十关实现。
 
 ## 伤害保护与8人界面收尾（2026-10-24）
 
@@ -604,7 +604,7 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 ## 第三章：残旗战场（2026-10-30，已实现）
 
-[章节总案](Docs/Adventure/chapter-03.md)、[转场](Docs/Adventure/chapter-03-transition.md)与全局21～30十份逐战设计已落盘。六个圣武士子职依次教学借数／攻击目标分离、王冠成长、奉献合盾与援护、古贤辅助、破誓转移、征服时点、复仇标记与纯运算；九战引入公开3／3／2八人关系、距离与普通击杀奖励，终战为六圣武士自选的真实经典2v2。普通攻击可误伤队友；借手合法性、攻击距离、援护范围与转移范围分别处理，教学不能改变公共规则。
+章节总案已并入[四章现行设计](Docs/Adventure/four-chapter-v3/chapter-03-tower.md)；全局21～30的旧逐战设计稿已下线，可从 git 历史取回。六个圣武士子职依次教学借数／攻击目标分离、王冠成长、奉献合盾与援护、古贤辅助、破誓转移、征服时点、复仇标记与纯运算；九战引入公开3／3／2八人关系、距离与普通击杀奖励，终战为六圣武士自选的真实经典2v2。普通攻击可误伤队友；借手合法性、攻击距离、援护范围与转移范围分别处理，教学不能改变公共规则。
 
 `TatteredBannersChapter`配置23个独立样本、六圣武士选角与专用NPC；`TatteredBannersLesson`通过`ITutorialInput`执行实际战斗操作，标准运算／休整／奖励行动使用`BoardController.CompletedActions`独立计数，纯运算不计、不篡改公共轮次。脚本出招实现`IAttackTargetIntent`，将加数与受击者分开。`GameBootstrap.TatteredBanners`连接章节、恢复进度、经典四人先攻、队伍胜负与结果页。终战落座后以实际人类引用构建导演，不假定人类是PlayerA；全局关卡21～30及每样本独立保存，失败／平局保留旧胜利。第二章胜利页保留旧三按钮，另加第三章转场。
 
@@ -658,7 +658,7 @@ Core的 `IDruidForm` 暴露结社与形态，`DruidForms`集中维护图案键�
 
 ## 当前规则胜率重采样（2026-10-27）
 
-52子职、425种双将，七项共2,631,408局、异常与模拟器强停0。1v1为106,080局，2v2为169,728局，双将2,162,400局，集火187,200局；八人阵营及身份随机／偏好各2,000局。上述历史实现日志保留时不再作为当前强度结论；README、RULES及七份报告已同步，机器汇总见[results.json](Tools/Statistics/results.json)。
+52子职、425种双将，七项共2,631,408局、异常与模拟器强停0。1v1为106,080局，2v2为169,728局，双将2,162,400局，集火187,200局；八人阵营及身份随机／偏好各2,000局。上述历史实现日志保留时不再作为当前强度结论；README、RULES及七份报告已同步，机器汇总见[results.json](Tools/Statistics/2026-11-06-arcane/results.json)。
 
 统计台已修正：1v1实际交换物理座位，逐结果保留先手标记；双将FirstWon表示第一组角色获胜，汇总不可再按座位反转；身份偏好按洗牌后的座位索引存回。八人“作为2人阵营”按实际局数作分母。旧手写对局循环改用Tests.TestSetup.RunSampling与实机BoardController，覆盖技能选择、赌博、偷窃、目标、击杀奖励及额外运算。
 
@@ -708,7 +708,7 @@ HunterWildIntegrationTests新增22项：真实控制器、人类放弃与防守�
 
 `SustainedResistance`按来源区分防护学派赋予的持续保护、塑能待用类型自带保护和一次攻击后消耗的普通临时抗性。防护重施仅撤销本来源旧目标／类型，施法者死亡立即失效；圣光清除并阻止非永久保护。持续伤害不消费塑能的待用类型或误触发元素状态。
 
-第一章三、四战统一破阵强袭；第二章次战增加reserve_ward，四战增加持续／重施样本，七战全换预兆改写。全部实际教学样本通过真实BoardController逐步驱动，指定按钮高亮并只允许点该项，其他选项正常显示；末拍仍由右侧试炼结束按钮进入完成页。当前五模式采样为62,768局，原52子职七份大规模快照留作历史，不与本轮分母混算。
+第一章三、四战统一破阵强袭；第二章次战增加reserve_ward，四战增加持续／重施样本，七战全换预兆改写。全部实际教学样本通过真实BoardController逐步驱动，指定按钮高亮并只允许点该项，其他选项正常显示；末拍仍由右侧试炼结束按钮进入完成页。当前五模式采样为64,768局，原52子职七份大规模快照留作历史，不与本轮分母混算。
 
 醉拳已激活时，数字改写优先于双将主副将顺序，避免巨人副职把9重新改回回复；其他独立技能仍按公共结算触发。该双序回归计入19项专项。
 

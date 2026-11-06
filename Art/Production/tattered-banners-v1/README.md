@@ -9,4 +9,4 @@
 
 运行时副本：`Assets/Resources/Art/Battle/v1/Backgrounds/tattered_banners_chapter_03.png`，资源键 `Backgrounds/tattered_banners_chapter_03`。元数据由编辑器生成，已接入第三章全部战斗、选角后的开场与经典先攻后的战斗，离场恢复普通桌面。四人／八人实际界面与点击验证见[第三章验收](../../Integration/adventure-chapter-03/README.md)。
 
-生成源来自 `.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-f1cdbe22-6118-4b68-abff-37767af0287f.png`。保留完整原图，使用已获授权的 Pillow 缩放／裁切导出选用版本。设计见[第三章](../../../Docs/Adventure/chapter-03.md)。
+生成源来自 `.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-f1cdbe22-6118-4b68-abff-37767af0287f.png`。保留完整原图，使用已获授权的 Pillow 缩放／裁切导出选用版本。设计见[第四章](../../../Docs/Adventure/four-chapter-v3/chapter-01-and-04.md)。

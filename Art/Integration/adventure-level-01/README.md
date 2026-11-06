@@ -21,4 +21,4 @@
 | 通关要点 | [victory.png](victory.png) |
 | 重打及自由练习 | [replay.png](replay.png) |
 
-权威流程见[关卡文档](../../../Docs/Adventure/level-01.md)，规则见[RULES第20章](../../../RULES.md#20-冒险模式--剧情模式教学关卡)。本次未制作第二关或挑战关卡。
+权威流程见[关卡文档](../../../Docs/Adventure/four-chapter-v3/chapter-01-and-04.md)，规则见[RULES第20章](../../../RULES.md#20-冒险模式--剧情模式教学关卡)。本次未制作第二关或挑战关卡。

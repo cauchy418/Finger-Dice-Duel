@@ -30,6 +30,6 @@
 | 重打与自由练习入口 | [重打](second-replay.png) |
 | 两战完成状态 | [进度](chapter-completed.png) |
 
-[次战设计](../../../Docs/Adventure/level-02.md) · [背景原图与完整生成提示词](../../Production/border-outpost-v1/README.md)。素材使用内置imagegen生成；截图是引擎实际渲染，不是概念图。
+次战设计（已并入 [四章现行设计](../../../Docs/Adventure/four-chapter-v3/README.md)） · [背景原图与完整生成提示词](../../Production/border-outpost-v1/README.md)。素材使用内置imagegen生成；截图是引擎实际渲染，不是概念图。
 
 后续接入五战滚动列表、指引翻页及投骰老兵旁白，本页保留da71536的双教学验收口径；当前复验请使用[五战验收脚本](../adventure-later-training/README.md)。
