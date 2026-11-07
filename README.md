@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1645_passed-success)
+![tests](https://img.shields.io/badge/regression-1658_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1645 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1658 项。
 
 ## 现在有什么
 
@@ -84,10 +84,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 对局模式 | 6（剧情、1v1、2v2、双将、8 人阵营、8 人身份） |
 | 伤害类型 | 13 |
 | 负面状态 | 22 |
-| 角色状态 | 5（圣光 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者） |
+| 角色状态 | 5（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者） |
 | 元素反应 | 11 条 |
 | 双将组合 | 514 种无序组合 |
-| 回归测试 | 1645 项通过、0 失败 |
+| 回归测试 | 1658 项通过、0 失败 |
 
 ## 现在的样子
 
@@ -102,7 +102,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、23 种负面状态、11 条元素反应 |
+| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、24 种负面状态、11 条元素反应 |
 | [角色图鉴](./Docs/roster.md) | 57 名子职的数值与关键机制、阵营分类、全角色胜率 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |

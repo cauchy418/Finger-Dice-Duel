@@ -7,7 +7,7 @@
 | [cleric_purification_domain.png](cleric_purification_domain.png) | 净化领域：旧金圆框、焚香炉、白炽圣焰 |
 | [scorch.png](scorch.png) | 灼伤负面状态：旧金方框、焦黑心脏、炽热裂纹 |
 
-目前为制作原图，待圣火清除范围确认后与规则、选将、图鉴及战斗状态统一接入。
+已接入选将、图鉴与战斗状态；运行时使用新净化徽记与灼伤图标，旧光明徽记保留备用。
 
 ## 生成提示词
 
