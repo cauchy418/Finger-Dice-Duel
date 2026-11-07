@@ -1,0 +1,26 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "id": "cleric_purification_domain",
+      "source": "Art/Production/purification-domain/cleric_purification_domain.png",
+      "sha256": "d7ff83effe0ec1c4ef74afd8e2a4176f650aec88fb61db068e71fd0f10435b9e",
+      "size": [
+        1254,
+        1254
+      ],
+      "format": "RGBA PNG"
+    },
+    {
+      "id": "scorch",
+      "source": "Art/Production/purification-domain/scorch.png",
+      "sha256": "8c593dd114cb4e029364660631b258e499ec423d128dc8c55c5f1b2cf747236b",
+      "size": [
+        1254,
+        1254
+      ],
+      "format": "RGBA PNG"
+    }
+  ],
+  "preserved_emblem": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_light_domain.png"
+}
