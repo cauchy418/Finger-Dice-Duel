@@ -172,14 +172,14 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// **攻击方角色声明的"本次命中要挂的状态"**，优先于伤害类型的默认状态
-        /// （牧师·光明领域：圣光优先于光耀的目盲）。
+        /// （牧师·净化领域：圣火优先于光耀的目盲）。
         /// 死灵的免费暗蚀仍保持最高优先（腐朽不可被覆盖）。
         /// </summary>
         public StatusEffect AttackerStatusOverride { get; set; } = StatusEffect.None;
 
         /// <summary>
         /// true 时跳过 <see cref="StatusRules.ApplyIncomingDamage"/>（倒伏 ×1.5 等
-        /// 目标侧增减）—— 用于"最终伤害恒定"的攻击（牧师·光明领域固定 4）。
+        /// 目标侧增减）—— 用于"最终伤害恒定"的攻击（牧师·净化领域固定 4）。
         /// 护盾 / 闪避 / 转移 / 太极 / 抗性 / 屏障等防御机制**不受**本标记影响。
         /// </summary>
         public bool IgnoreIncomingModifiers { get; set; }
@@ -513,11 +513,12 @@ namespace FingerDiceDuel.Core
 
                 if (i == 0) perHitReduction = reductionThisSegment;
 
-                // **固定伤害**（牧师·光明领域）：跳过目标侧增减（倒伏 ×1.5 等）。
+                // **固定伤害**（牧师·净化领域）：跳过目标侧增减（倒伏 ×1.5 等）。
                 if (!IgnoreIncomingModifiers)
                     dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
                 bool piercesAffinities = !IsStatusDamage && !IsReflected
                     && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType);
+                if(!(IgnoreIncomingModifiers && AttackerStatusOverride==StatusEffect.HolyLight))
                 dealt = StatusRules.ApplyDamageAffinities(Defender, dealt, AttackType, includeResistance: !piercesAffinities,
                     ignoreImmunity: piercesAffinities);
 
@@ -614,12 +615,12 @@ namespace FingerDiceDuel.Core
                 {
                     if (!IsStatusDamage && !IsReflected && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType))
                         manager?.NoteSkill(Attacker, Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(Attacker, AttackType)
-                            ? "暴风狂怒" : "龙族先祖", "穿透伤害免疫，未附加元素效果", Defender,
+                            ? "暴风狂怒" : CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.LightDomainLogic>(Attacker)!=null ? "净化圣焰" : "龙族先祖", "穿透伤害免疫，未附加元素效果", Defender,
                             new SkillVisualData(source:SourceHand,variant:"pierce",element:AttackType));
                     else manager?.NoteSkill(Defender, "伤害免疫", AttackDamageTypes.NameOf(AttackType));
                 }
                 else if (Defender.HasVulnerability(AttackType)) manager?.NoteSkill(Defender, "伤害易伤", AttackDamageTypes.NameOf(AttackType) + "×1.5");
-                Defender.ClearTemporaryDamageAffinities();
+                if(AttackerStatusOverride!=StatusEffect.HolyLight || WasTypeImmune) Defender.ClearTemporaryDamageAffinities();
             }
 
             // 保持旧行为：第一段的最终伤害写入属性（供诊断与测试读）
@@ -799,11 +800,16 @@ namespace FingerDiceDuel.Core
                 }
                 bool wasSheep = victim.IsPolymorphed;
                 victim.ApplyStatus(status,turns,Attacker);
+                if(status==StatusEffect.HolyLight && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.LightDomainLogic>(Attacker)!=null)
+                {
+                    int scorchTurns=hit.StatusDuration(StatusEffect.Scorch,StatusDuration);
+                    if(scorchTurns>0)victim.ApplyStatus(StatusEffect.Scorch,scorchTurns,Attacker);
+                }
                 if (wasSheep && !victim.IsPolymorphed) manager?.OfferTransmutationOperation(victim, entered: false);
                 if(extendedFrom>0)manager?.RecordSkillVisual(Attacker,"龙族体魄",victim,
                     new SkillVisualData(source:SourceHand,value:victim.StatusTurnsLeft(status),previous:extendedFrom,
                         variant:"extend",status:status,element:hit.AttackType));
-                if(status==StatusEffect.HolyLight&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"守御闪光",victim,new SkillVisualData(value:turns,status:status));
+                if(status==StatusEffect.HolyLight&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"净化圣焰",victim,new SkillVisualData(value:turns,status:status));
                 manager?.NoteSkill(Attacker,"施加状态",$"第{hit.Index+1}段 {victim.Name}：{StatusNames.Of(status)} {turns}回合"+(penalty.Length>0?"（"+penalty+"）":""));
             }
         }

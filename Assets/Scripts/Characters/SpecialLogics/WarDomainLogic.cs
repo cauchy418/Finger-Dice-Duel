@@ -3,7 +3,7 @@ using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>回合开始按攻击数字数量，为至多两名不同角色施加战争祝福。</summary>
-    public sealed class WarDomainLogic:CharacterTemplate,ITurnStartHook,ISkillUseCounter
+    public sealed class WarDomainLogic:ClericTemplate,ITurnStartHook,ISkillUseCounter
     {
         public int SkillUseCount {get;private set;}
         public override string DisplayName=>"牧师·战争领域";

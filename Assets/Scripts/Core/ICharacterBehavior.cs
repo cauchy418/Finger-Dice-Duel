@@ -114,7 +114,7 @@ namespace FingerDiceDuel.Core
     }
 
     /// <summary>
-    /// 固定普通攻击伤害（如光明领域的4点伤害）。
+    /// 固定普通攻击伤害（如净化领域的5点火焰伤害）。
     ///
     /// 由 <see cref="GameManager.ResolveStatusTurnEnd"/> 在"该玩家的回合结束"
     /// （燃烧 / 状态递减之后）触发 —— 界面与无头两条路径都经过它，

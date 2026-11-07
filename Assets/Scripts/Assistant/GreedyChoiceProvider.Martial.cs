@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -103,7 +103,7 @@ namespace FingerDiceDuel.Assistant
             int value = StatusRules.ApplyResultModifiers(owner, roll);
             var effect = CharacterBehaviors.DisplayedEffectOf(owner, value);
             if (effect == HandEffectType.Heal)
-                return StatusRules.CanHeal(owner) ? Math.Min(owner.MaximumHealth - health, owner.HasStatus(StatusEffect.HolyLight) ? 5 : 9) : 0;
+                return StatusRules.CanHeal(owner) ? Math.Min(owner.MaximumHealth - health, 9) : 0;
             if (effect == HandEffectType.Shield)
                 return owner.HasStatus(StatusEffect.Tinnitus) ? 0 : 4;
             if (!IsAttackEffect(effect) || owner.HasStatus(StatusEffect.Disabled)) return 0;

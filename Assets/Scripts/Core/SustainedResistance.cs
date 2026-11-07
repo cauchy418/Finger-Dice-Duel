@@ -8,7 +8,7 @@ namespace FingerDiceDuel.Core
         private sealed class Grant {public AttackDamageType Type;public Func<bool> Valid;}
         private readonly Dictionary<object,Grant> _resistanceGrants=new Dictionary<object,Grant>();
         public void GrantSustainedResistance(object source,AttackDamageType type,Func<bool> valid)
-        {if(source!=null&&!HasStatus(StatusEffect.HolyLight))_resistanceGrants[source]=new Grant{Type=type,Valid=valid};}
+        {if(source!=null)_resistanceGrants[source]=new Grant{Type=type,Valid=valid};}
         public void RemoveSustainedResistance(object source){if(source!=null)_resistanceGrants.Remove(source);}
         public bool HasSustainedResistance(AttackDamageType type)
         {

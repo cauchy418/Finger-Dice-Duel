@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -1969,9 +1969,9 @@ namespace FingerDiceDuel.Core
             else if (effect == HandEffectType.Heal)
             {
                 int before = actor.Health;
-                actor.Heal(Hand.HealAmount);
+                actor.Heal(Hand.HealAmount,this);
                 result.Healed = actor.Health - before;
-                result.ActualHealed = result.Healed;
+                result.ActualHealed = actor.LastActualHealing;
                 result.HealAmount = Hand.HealAmount;
                 result.HealTarget = actor;
             }
@@ -2113,14 +2113,14 @@ namespace FingerDiceDuel.Core
         {
             if (actor == null || !actor.IsAlive) return;
 
-            // ---- 中毒 / 流血 / 圣光：不可被抵挡，提示按真实状态命名 ----
+            // ---- 中毒 / 流血 / 圣火：不可被抵挡，提示按真实状态命名 ----
             int statusDamage = StatusRules.TurnStartDamage(actor, out bool unstoppable);
             if (statusDamage > 0 && unstoppable)
             {
                 var statusNames = new List<string>(3);
                 if (actor.HasStatus(StatusEffect.Poison)) statusNames.Add("中毒");
                 if (actor.HasStatus(StatusEffect.Bleed)) statusNames.Add("流血");
-                if (actor.HasStatus(StatusEffect.HolyLight)) statusNames.Add("圣光");
+                if (actor.HasStatus(StatusEffect.HolyLight)) statusNames.Add("圣火");
                 string statusName = statusNames.Count > 0 ? string.Join("／", statusNames) : "状态";
                 int healthBeforeStatus=actor.Health;
                 int falseLifeBeforeStatus=actor.FalseLife;
@@ -2784,7 +2784,7 @@ namespace FingerDiceDuel.Core
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
-                            result.ActualHealed = (target?.Health ?? before) - before;
+                            result.ActualHealed = target?.LastActualHealing ?? 0;
                             result.HealAmount = amount;
                             result.HealTarget = target;
                             break;
@@ -2916,7 +2916,7 @@ namespace FingerDiceDuel.Core
                         // 默认：回复行动方自己。
                         // 但角色可以"接管"这一步（例如牧师·生命领域的 9 能回给对手），
                         // 接管时不再执行默认治疗，避免一次 9 回两次。
-                        if (CharacterBehaviors.FirstImplementer<IHealOverride>(actor) is IHealOverride healer)
+                        if ((CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor) as IHealOverride ?? CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(actor) as IHealOverride ?? CharacterBehaviors.FirstImplementer<IHealOverride>(actor)) is IHealOverride healer)
                         {
                             var sink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                             PlayerState target = healer.ApplyHeal(actor, this, sink);
@@ -2931,21 +2931,21 @@ namespace FingerDiceDuel.Core
                                 : LifeDomainLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
                             if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
-                            else {target?.Heal(amount);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
+                            else {target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
                                 : 0;   // 回给了别人，行动方自己没变
-                            result.ActualHealed = (target?.Health ?? before) - before;
+                            result.ActualHealed = target?.LastActualHealing ?? 0;
                             result.HealAmount = amount;
                             result.HealTarget = target;
                         }
                         else
                         {
                             int before = actor.Health;
-                            actor.Heal(Hand.HealAmount);
+                            actor.Heal(Hand.HealAmount,this);
                             result.Healed = actor.Health - before;
-                            result.ActualHealed = result.Healed;
+                            result.ActualHealed = actor.LastActualHealing;
                             result.HealAmount = Hand.HealAmount;
                             result.HealTarget = actor;
                         }
@@ -2953,7 +2953,7 @@ namespace FingerDiceDuel.Core
                     }
             }
 
-            FinishTurn();
+            ResolveAllClericHealing(actor,result.HealTarget,FinishTurn);
             void FinishTurn()
             {
             // 3c. "运算后"钩子（野蛮人·野兽道途的双手和为 7 等）。

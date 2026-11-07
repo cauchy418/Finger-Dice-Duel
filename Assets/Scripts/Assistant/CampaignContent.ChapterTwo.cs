@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
@@ -18,7 +18,7 @@ namespace FingerDiceDuel.Assistant
                     s.Op(1,0,0,1,"护卫1＋2＝3；燃烧在它本回合末扣血。",0);
                     s.Op(1,0,0,1,"观摩，让护卫切为光耀并普通4攻击；受击后选记录光耀。",0,4).Prepare=(l,p)=>l.Equip(p,AttackDamageType.Radiant);
                     s.Steps[s.Steps.Count-1].Option=1;
-                    s.Op(0,1,1,0,"算出6，使用刚记录的光耀攻击；目盲不是圣光。",1,6);
+                    s.Op(0,1,1,0,"算出6，使用刚记录的光耀攻击；目盲不是圣火。",1,6);
                     s.Wait(1,"护卫换装火焰，接下来试着应对他的火焰攻击。").Prepare=(l,p)=>l.Equip(p,AttackDamageType.Fire);break;
                 case 12:EvocationCourse(s);break;
                 case 13:

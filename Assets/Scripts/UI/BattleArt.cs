@@ -18,6 +18,7 @@ namespace FingerDiceDuel.UI
             if (path.StartsWith("Classes/") || path.StartsWith("Subclasses/"))
                 path = "Subclasses/" + CharacterIdentity.NormalizeId(path.Substring(path.IndexOf('/') + 1));
             // NPC与变形也可能出现在角色目标按钮里，不能假定它们在Subclasses目录。
+            if(path=="Subclasses/cleric_light_domain")path="Subclasses/cleric_purification_domain";
             if(path=="Subclasses/mage_tower_guard")path="Adventure/npc_arcane_guard";
             if(path=="Subclasses/mage_tower_phantom")path="Adventure/npc_mage_phantom";
             if(path=="Subclasses/border_outpost_knight")path="Adventure/knight_original";

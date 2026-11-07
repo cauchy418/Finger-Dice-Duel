@@ -387,6 +387,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                                                HandEffect.LifeDomainExtraHealTarget);
             int before = target?.Health ?? 0;
             CleanseAndHeal(owner, target, ExtraHealAmount, manager,"维持生命");
+            manager?.RegisterExtraClericHealing(owner,target);
             manager?.NoteSkill(owner, "双九回复", $"{target?.Name} 回复 {(target?.Health ?? 0) - before}");
         }
 

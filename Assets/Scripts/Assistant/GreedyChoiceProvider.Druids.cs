@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -147,7 +147,7 @@ namespace FingerDiceDuel.Assistant
         private static int HealingGain(PlayerState player, int amount)
             => StatusRules.CanHeal(player)
                 ? Math.Min(player.MaximumHealth - player.Health,
-                    player.HasStatus(StatusEffect.HolyLight) ? (amount + 1) / 2 : amount)
+                    amount)
                 : 0;
 
         private static bool WantsSymbiosis(PlayerState owner, GameManager game)

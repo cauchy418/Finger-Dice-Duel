@@ -105,10 +105,9 @@
         Dizzy = 18,
 
         /// <summary>
-        /// **圣光（牧师·光明领域，2026-10-23）**：目标回合开始受 1 点伤害（不可抵挡）、
-        /// 回复量减半（向上取整）；施加时立即清除目标其他全部状态与全部抗性，
-        /// 存在期间阻止新的状态与抗性附加（重复施加圣光 = 刷新时长）。
-        /// 剑歌与战争祝福会被清除；战斗激励增益与奥术守御是独立系统，不受圣光影响（玩家口径）。
+        /// **圣火（牧师·净化领域，2026-10-23）**：目标回合开始受 1 点伤害（不可抵挡）、
+        /// 存在期间阻止新的状态与抗性附加（重复施加圣火 = 刷新时长）。
+        /// 剑歌与战争祝福会被清除；战斗激励增益与奥术守御是独立系统，不受圣火影响（玩家口径）。
         /// </summary>
         HolyLight = 19,
         Restrained = 20,
@@ -118,6 +117,7 @@
         DarknessBlind = 24,
         BlessedHealing = 25,
         PhysicalVulnerability = 26,
+        Scorch = 27,
     }
 
     /// <summary>
@@ -172,6 +172,7 @@
         {
             switch (status)
             {
+                case StatusEffect.Scorch: return "scorch";
                 case StatusEffect.Resonance: return "resonance";
                 case StatusEffect.Acid: return "acid";
                 case StatusEffect.Poison: return "poison";
@@ -226,6 +227,7 @@
         {
             switch (status)
             {
+                case StatusEffect.Scorch: return "灼伤";
                 case StatusEffect.Resonance: return "残响";
                 case StatusEffect.Acid: return "强酸";
                 case StatusEffect.Poison: return "中毒";
@@ -244,7 +246,7 @@
                 case StatusEffect.Charm: return "魅惑";
                 case StatusEffect.Disabled: return "失能";
                 case StatusEffect.Dizzy: return "眩晕";
-                case StatusEffect.HolyLight: return "圣光";
+                case StatusEffect.HolyLight: return "圣火";
                 case StatusEffect.Restrained: return "束缚";
                 case StatusEffect.Greased: return "油腻";
                 case StatusEffect.WarBlessing: return "战争祝福";
@@ -261,6 +263,7 @@
         {
             switch (status)
             {
+                case StatusEffect.Scorch: return "回复后立即受到实际回复量一半的火焰伤害，向上取整；无实际回复不触发。";
                 case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。";
                 case StatusEffect.Resonance:
                     return "只能攻击与自己距离 1 的角色";
@@ -299,7 +302,7 @@
                 case StatusEffect.Dizzy:
                     return "本次运算结果无效，不触发任何技能";
                 case StatusEffect.HolyLight:
-                    return "回合开始失去1生命（不可抵挡），回复减半；清除并阻止其他状态及临时抗性／易伤／免疫";
+                    return "回合开始失去1生命（不可抵挡）；保留燃烧、灼伤、目盲，清除并阻止其他状态；抗性／易伤／免疫暂停作用、继续计时，结束后恢复未到期者";
                 case StatusEffect.Tinnitus:
                     return "受到攻击与持续状态伤害×1.5，不能合盾或回复；免疫雷鸣伤害，持续2个自身回合";
                 case StatusEffect.Restrained:
@@ -370,7 +373,7 @@
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
             StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
-            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability,
+            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability, StatusEffect.Scorch,
         };
 
         /// <summary>
@@ -436,7 +439,8 @@
                 case StatusEffect.PhysicalVulnerability: return 0xCC6852;
                 case StatusEffect.DarknessBlind: return 0x67558D;
                 case StatusEffect.Tinnitus: return 0xB99DCD;
-                case StatusEffect.HolyLight: return 0xFFE194;  // 圣光暖金（浅于目盲的亮金）
+                case StatusEffect.Scorch: return 0xF16C32;
+                case StatusEffect.HolyLight: return 0xFFE194;  // 圣火暖金（浅于目盲的亮金）
                 case StatusEffect.Restrained: return 0x638653;
                 case StatusEffect.Greased: return 0xB8993C;
                 default: return 0x9AA0AC;                       // 中性灰
@@ -481,7 +485,8 @@
                 case StatusEffect.BlessedHealing: return "✦";
                 case StatusEffect.DarknessBlind: return "◈";
                 case StatusEffect.Tinnitus: return "≋";
-                case StatusEffect.HolyLight: return "✚";    // ✚ 圣光（重十字）
+                case StatusEffect.Scorch: return "✹";
+                case StatusEffect.HolyLight: return "✚";    // ✚ 圣火（重十字）
                 case StatusEffect.Restrained: return "♧";
                 case StatusEffect.Greased: return "◒";
 

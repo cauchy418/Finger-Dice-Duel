@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using UnityEngine;
@@ -24,6 +24,7 @@ namespace FingerDiceDuel.UI
         public void Initialize(RectTransform root,Func<PlayerState,Vector2> anchor,Func<PlayerState,Hand,Vector2> handAnchor=null){_root=root;_anchor=anchor;_handAnchor=handAnchor;}
         public static string Effect(string key)
         {
+            if(key=="Status/scorch"||key=="Status/holy_light")return "fx_fire";
             if(key=="Overlay/locked")return "chain_link";
             if(key.Contains("restrain"))return "vine_tendril";
             if(key.Contains("stealth")||key=="Status/darkness_blind")return "fx_necrotic";

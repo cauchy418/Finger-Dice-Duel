@@ -1,4 +1,4 @@
-namespace FingerDiceDuel.Core
+﻿namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 角色特殊逻辑标识，用于 CharacterData / CharacterFactory 在编辑器中
@@ -152,8 +152,7 @@ namespace FingerDiceDuel.Core
         SchoolOfAbjuration = 30,
 
         /// <summary>
-        /// 牧师·光明领域：攻击恒为 4 点光耀伤害（无视攻防与增减益），
-        /// 命中附带 2 回合圣光（净化并阻止附加、回复减半、回合开始掉 1 点）。
+        /// 牧师·净化领域：攻击恒为 4 点光耀伤害（无视攻防与增减益），
         /// </summary>
         LightDomain = 31,
 

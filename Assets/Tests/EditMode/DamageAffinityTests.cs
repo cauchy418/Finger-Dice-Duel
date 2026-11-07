@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 #if FDD_UNITY_TESTS
@@ -140,9 +140,9 @@ namespace FingerDiceDuel.Tests
             var g = Game(); var p = g.PlayerB; p.AddVulnerability(AttackDamageType.Fire); p.AddImmunity(AttackDamageType.Cold);
             p.ClearStatuses(); Assert.IsFalse(p.HasVulnerability(AttackDamageType.Fire)); Assert.IsTrue(p.HasImmunity(AttackDamageType.Cold));
             p.Reset(); Assert.AreEqual(0, p.Immunities.Count); p.AddVulnerability(AttackDamageType.Fire); p.AddImmunity(AttackDamageType.Fire);
-            p.ApplyStatus(StatusEffect.HolyLight); Assert.AreEqual(0, p.Vulnerabilities.Count); Assert.AreEqual(0, p.Immunities.Count);
+            p.ApplyStatus(StatusEffect.HolyLight); Assert.AreEqual(1, p.Vulnerabilities.Count); Assert.AreEqual(1, p.Immunities.Count);
             p.AddVulnerability(AttackDamageType.Cold); p.AddImmunity(AttackDamageType.Cold);
-            Assert.AreEqual(0, p.Vulnerabilities.Count); Assert.AreEqual(0, p.Immunities.Count);
+            Assert.AreEqual(2, p.Vulnerabilities.Count); Assert.AreEqual(2, p.Immunities.Count);
         }
         [Test] public void Unstoppable_poison_tick_respects_typed_immunity_and_vulnerability_without_spending_attack_tokens()
         {
@@ -156,8 +156,8 @@ namespace FingerDiceDuel.Tests
             var p = Game().PlayerB; foreach (var type in ResistanceNames.All) { p.AddResistance(type); p.AddVulnerability(type); p.AddImmunity(type); }
             var icons = CombatStatusIcons.For(p); Assert.AreEqual(39, icons.Count); var keys = new HashSet<string>();
             foreach (var icon in icons) { keys.Add(icon.ResourceKey); Assert.AreEqual("", icon.Counter); }
-            Assert.AreEqual(39, keys.Count); var guide = GuideSheets.Protections(); Assert.AreEqual(39, guide.Lines.Count);
-            Assert.AreEqual(3, guide.Groups.Count); foreach(var group in guide.Groups) Assert.AreEqual(13, group.Entries.Count);
+            Assert.AreEqual(39, keys.Count); var guide = GuideSheets.Protections(); Assert.AreEqual(40, guide.Lines.Count);
+            Assert.AreEqual(3, guide.Groups.Count); foreach(var group in guide.Groups) Assert.AreEqual(group.Title=="易伤"?14:13, group.Entries.Count);
             Assert.AreEqual("角色标记", GuideSheets.CharacterMarks().TitleZh); Assert.AreEqual(12, GuideSheets.CharacterMarks().Lines.Count);
         }
         [Test] public void Ai_lethal_estimate_respects_immunity_and_vulnerability()

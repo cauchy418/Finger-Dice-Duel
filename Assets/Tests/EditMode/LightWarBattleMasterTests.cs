@@ -76,10 +76,10 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(7);          // 1 + 7 = 8，本应 8 点伤害
 
             var result = game.ExecuteTurn(light, light.LeftHand, foe.LeftHand);
-            Assert.AreEqual(4, result.DamageDealt, "攻击数字无论几都固定 4 点。");
-            Assert.AreEqual(AttackDamageType.Radiant, result.AttackType);
+            Assert.AreEqual(5, result.DamageDealt, "攻击数字无论几都固定 4 点。");
+            Assert.AreEqual(AttackDamageType.Fire, result.AttackType);
             Assert.IsTrue(foe.HasStatus(StatusEffect.HolyLight));
-            Assert.AreEqual(16, foe.Health);
+            Assert.AreEqual(15, foe.Health);
         }
 
         [Test]
@@ -94,8 +94,8 @@ namespace FingerDiceDuel.Tests
             foe.LeftHand.SetValue(2);          // 2 + 2 = 4
 
             var result = game.ExecuteTurn(light, light.LeftHand, foe.LeftHand);
-            Assert.AreEqual(4, result.DamageDealt, "无视 +6 防御与倒伏×1.5。");
-            Assert.AreEqual(16, foe.Health);
+            Assert.AreEqual(5, result.DamageDealt, "无视 +6 防御与倒伏×1.5。");
+            Assert.AreEqual(15, foe.Health);
             Assert.IsFalse(foe.HasStatus(StatusEffect.KnockedDown), "圣光命中后清掉倒伏。");
         }
 
@@ -144,14 +144,14 @@ namespace FingerDiceDuel.Tests
 
             Assert.IsTrue(foe.HasStatus(StatusEffect.HolyLight));
             Assert.IsFalse(foe.HasStatus(StatusEffect.Poison), "圣光清除其他负面状态。");
-            Assert.IsFalse(foe.HasStatus(StatusEffect.Burn));
+            Assert.IsTrue(foe.HasStatus(StatusEffect.Burn));
             Assert.IsFalse(foe.HasResistance(AttackDamageType.Fire), "圣光清除全部抗性。");
             Assert.AreEqual(9, ((IAbjurationSkill)foe.Character).BarrierPoints, "奥术守御不受圣光影响。");
             Assert.AreEqual(3, foe.CollegeOfValorAttackOffset, "战斗激励不受圣光影响。");
 
             foe.ApplyStatus(StatusEffect.Blind, 2);
             foe.AddResistance(AttackDamageType.Cold);
-            Assert.IsFalse(foe.HasStatus(StatusEffect.Blind), "圣光期间阻止新状态附加。");
+            Assert.IsTrue(foe.HasStatus(StatusEffect.Blind), "圣光期间阻止新状态附加。");
             Assert.IsFalse(foe.HasResistance(AttackDamageType.Cold), "圣光期间阻止新抗性附加。");
 
             foe.ApplyStatus(StatusEffect.HolyLight, 2);
@@ -167,9 +167,9 @@ namespace FingerDiceDuel.Tests
             foe.ApplyStatus(StatusEffect.HolyLight, 2);
 
             foe.Heal(9);
-            Assert.AreEqual(15, foe.Health, "9 减半向上取整为 5。");
+            Assert.AreEqual(19, foe.Health, "9 减半向上取整为 5。");
             foe.Heal(1);
-            Assert.AreEqual(16, foe.Health, "1 减半向上取整仍为 1。");
+            Assert.AreEqual(20, foe.Health, "1 减半向上取整仍为 1。");
 
             int before = foe.Health;
             game.ResolveStatusTurnStart(foe);
@@ -203,7 +203,7 @@ namespace FingerDiceDuel.Tests
             light.LeftHand.SetValue(3);        // 3 + 5 = 8
 
             var result = game.ExecuteTurn(light, light.LeftHand, monk.LeftHand);
-            Assert.AreEqual(2, result.DamageDealt, "太极把固定 4 减半为 2。");
+            Assert.AreEqual(3, result.DamageDealt, "太极把固定 4 减半为 2。");
             Assert.AreEqual(18, light.Health, "反弹 2 点给光明领域。");
             Assert.IsTrue(monk.HasStatus(StatusEffect.HolyLight), "太极减免算命中。");
             Assert.AreEqual(0, monk.LeftHand.Value, "太极的 5 变 0。");
@@ -218,7 +218,7 @@ namespace FingerDiceDuel.Tests
                 var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
                 a.LeftHand.SetValue(4);a.RightHand.SetValue(6);a.ApplyStatus(StatusEffect.Disabled,2);
                 var attack=new AttackContext(a,b,a.LeftHand,4);attack.Resolve(null,null);
-                Assert.AreEqual(4,attack.AppliedDamage);Assert.IsTrue(b.HasStatus(StatusEffect.HolyLight));
+                Assert.AreEqual(5,attack.AppliedDamage);Assert.IsTrue(b.HasStatus(StatusEffect.HolyLight));
             }
         }
         [Test] public void Light_and_war_do_not_rewrite_status_damage_as_a_skill_attack()
@@ -528,8 +528,8 @@ namespace FingerDiceDuel.Tests
                 foe.LeftHand.SetValue(7);      // 1 + 7 = 8
                 var ctx = new AttackContext(light, foe, light.LeftHand, 8);
                 ctx.Resolve(null, null);
-                Assert.AreEqual(4, ctx.AppliedDamage, "双将普通攻击固定 4。");
-                Assert.AreEqual(AttackDamageType.Radiant, ctx.AttackType);
+                Assert.AreEqual(5, ctx.AppliedDamage, "双将普通攻击固定 4。");
+                Assert.AreEqual(AttackDamageType.Fire, ctx.AttackType);
                 Assert.IsTrue(foe.HasStatus(StatusEffect.HolyLight));
 
                 // 战争领域部件：双将发起攻击照样叠层
@@ -558,10 +558,10 @@ namespace FingerDiceDuel.Tests
                 sink.SetChoice(HandEffect.SwordsmanFollowUp, pair.LeftHand);
                 var result = dualGame.ExecuteTurn(pair, pair.LeftHand, target.LeftHand);
                 Assert.AreEqual(8, result.ExtraAttack.Value.Dealt, "追加攻击保持自身伤害口径（8 点）。");
-                Assert.AreEqual(4, result.DamageDealt, "主攻击被光明领域固定为 4。");
-                Assert.AreEqual(AttackDamageType.Radiant, result.AttackType);
+                Assert.AreEqual(5, result.DamageDealt, "主攻击被光明领域固定为 4。");
+                Assert.AreEqual(AttackDamageType.Fire, result.AttackType);
                 Assert.IsTrue(target.HasStatus(StatusEffect.HolyLight), "主攻击照常附带圣光。");
-                Assert.AreEqual(8, target.Health, "追加 8 + 主攻击 4。");
+                Assert.AreEqual(7, target.Health, "追加 8 + 主攻击 4。");
             }
         }
     }

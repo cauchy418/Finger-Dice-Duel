@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
@@ -70,7 +70,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Draconic_reset_asks_again_and_does_not_keep_old_permanent_resistance()
         {
-            var board=Board(CharacterDefinition.DraconicBloodline,out var game);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Acid);
+            var board=Board(CharacterDefinition.DraconicBloodline,out var game);((DraconicBloodlineLogic)game.PlayerA.Character).ForcedRoll=0;board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Acid);
             game.ResetMatch();board.BeginTurn();Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);
             Assert.IsFalse(game.PlayerA.HasResistance(AttackDamageType.Acid));board.ChooseSkillOption((int)AttackDamageType.Poison);
             Assert.IsTrue(game.PlayerA.HasResistance(AttackDamageType.Poison));Assert.IsFalse(game.PlayerA.HasResistance(AttackDamageType.Fire));
@@ -159,7 +159,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Draconic_chosen_element_applies_status_on_real_attack()
         {
-            var board=Board(CharacterDefinition.DraconicBloodline,out var game);board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Acid);
+            var board=Board(CharacterDefinition.DraconicBloodline,out var game);((DraconicBloodlineLogic)game.PlayerA.Character).ForcedRoll=0;board.BeginTurn();board.ChooseSkillOption((int)AttackDamageType.Acid);
             game.PlayerB.LeftHand.SetValue(3);board.ClickHand(game.PlayerA.LeftHand);board.ClickHand(game.PlayerB.LeftHand);
             if(board.Phase==BoardPhase.ChoosingTargetPlayer) board.ClickHand(game.PlayerB.LeftHand);
             Assert.AreEqual(AttackDamageType.Acid,board.LastTurn.AttackType);Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.Acid));

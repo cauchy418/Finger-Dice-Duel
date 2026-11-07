@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -431,15 +431,15 @@ namespace FingerDiceDuel.Core
             description: "打出2选择目标并授予物理整组或五元素抗性，持续至施法者死亡或再次施法；再次施法撤销旧赋予。攻击数字可存入奥术守御，吸收后清空。");
 
         /// <summary>
-        /// 牧师·光明领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，中立善良。
-        /// 攻击为光耀伤害、最终伤害恒为 4（无视攻防与数值增减益，防御机制照常），
-        /// 命中附带 2 回合圣光。
+        /// 牧师·净化领域（2026-10-23）：攻 0 / 防 -1，攻击距离无限，中立善良。
+        /// 攻击为火焰伤害、最终伤害恒为5（无视攻防与数值增减益，防御机制照常），
+        /// 命中附带 2 回合圣火。
         /// </summary>
         public static CharacterDefinition LightDomain { get; } = new CharacterDefinition(
-            LightDomainId, "牧师·光明领域", SpecialLogicType.LightDomain,
+            LightDomainId, "牧师·净化领域", SpecialLogicType.LightDomain,
             attackBonus: 0, defenseBonus: -1,
-            englishName: "Light Domain",
-            description: "攻击为光耀伤害、最终伤害恒为4（4/6/8一律4点，无视攻防与倒伏×1.5等增减益；护盾/闪避/转移/太极照常生效）。命中附带2回合圣光：立即清除目标其他负面／角色状态（含剑歌与战争祝福）及临时抗性／易伤／免疫（战斗激励与奥术守御除外），期间阻止新状态与抗性附加；目标回合开始受1点（不可抵挡）、回复量减半（向上取整）。攻防0/-1，攻击距离∞。");
+            englishName: "Purification Domain",
+            description: "普通攻击固定5点火焰伤害，穿透火焰抗性与免疫；命中附圣火、灼伤各2回合。回复可选其他存活角色，并附2回合圣火。");
 
         /// <summary>战争领域：回合开始按攻击手数赋予战争祝福，基础−1/−1。</summary>
         public static CharacterDefinition WarDomain { get; } = new CharacterDefinition(
@@ -455,7 +455,7 @@ namespace FingerDiceDuel.Core
             BattleMasterId, "战士·战斗大师", SpecialLogicType.BattleMaster,
             attackBonus: 0, defenseBonus: 0,
             englishName: "Battle Master",
-            description: "攻击伤害按数字分型：4为挥砍、6为钝击、8为穿刺。攻击实际造成伤害后（>0，盾挡/闪避/取消不触发），若另一只手为4/8，选择给目标附加流血或跛脚2回合；另一只手为6，选择附加震慑或倒伏2回合。攻防0/0，攻击距离2。");
+            description: "攻击伤害按数字分型：4为挥砍、6为钝击、8为穿刺。攻击实际造成伤害后（>0，盾挡/闪避/取消不触发），若另一只手为4/8，选择给目标附加流血或跛脚2回合；另一只手为6，选择附加震慑或倒伏2回合。攻防0/0，攻击距离2。回复可选择其他角色，并附加2回合战争祝福。");
 
         public static CharacterDefinition DraconicBloodline { get; } = new CharacterDefinition(
             DraconicBloodlineId, "术士·龙族血脉", SpecialLogicType.DraconicBloodline,

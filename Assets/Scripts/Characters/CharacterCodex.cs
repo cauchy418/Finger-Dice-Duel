@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"9后可入醉；全数字攻击，基础1d10，受击1d5。",
                 playGuide:"9先正常回复，再选择入醉。每个自身回合消耗1气维持；行动后双手相同回1气。持续伤害不掷骰。",
                 counter:"消耗其气，等醉拳解除；持续伤害与固定伤害保持原规则。",
-                interactions:new[]{"与其它武僧双将共用2/6气；圣光清除并阻止醉拳。"});
+                interactions:new[]{"与其它武僧双将共用2/6气；圣火清除并阻止醉拳。"});
             Add(CharacterDefinition.ChampionId, "Champion", Alignment.NeutralGood,
                 shortSkill: "精通重击：用1发起攻击，基础伤害×1.5，命中附物理易伤2回合。",
                 playGuide: "保留一只1，借3、5或7打出重击。趁目标的物理易伤仍在，用挥砍、钝击或穿刺追击。",
@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "4/6/8可转治疗，双9两次治疗。净化，溢出攻防+1。",
                 playGuide: "缺血时治疗，溢出时可为满血队友加攻防。",
                 counter: "限制9与双9。净化能清除腐朽，攻击可消耗其治疗机会。",
-                interactions: new[] { "神佑医者与战争祝福可共存。圣光清除已有角色状态。" });
+                interactions: new[] { "神佑医者与战争祝福可共存。圣火清除已有角色状态。" });
 
             Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.ChaoticGood,
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
@@ -291,20 +291,17 @@ namespace FingerDiceDuel.Characters
                 counter: "换用其未防护的类型，或逼其重新施法撤销旧抗性。",
                 interactions: new string[0]);
 
-            // ---- 光明领域（中立善良，2026-10-23）----
-            Add(CharacterDefinition.LightDomainId, "Light Domain", Alignment.NeutralGood,
-                shortSkill: "攻击恒为 4 点光耀伤害；命中附带 2 回合圣光：净化目标状态、压制其回血。",
-                playGuide: "4/6/8均造成4点光耀。命中施加圣光，清除其他状态与抗性；"
-                         + "持续两回合，回复减半，回合开始失去1生命。"
-                         + "盾挡仍附圣光，闪避和取消不附加。",
-                counter: "闪避或取消可避免圣光；护盾只挡伤害，仍会中圣光。"
-                       + "用净化解除圣光后再回复。",
-                interactions: new[] { "与生命领域：回复先净化圣光，再按全额治疗。", "双将的追加、反弹、免费暗蚀不改成固定4点，也不附圣光。" });
+            // ---- 净化领域（中立善良，2026-10-23）----
+            Add(CharacterDefinition.LightDomainId, "Purification Domain", Alignment.NeutralGood,
+                shortSkill: "固定5火焰，穿透抗性免疫；命中附圣火与灼伤。治疗附圣火。",
+                playGuide: "三个攻击数字均为固定5伤。圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；防护暂停生效但继续计时。",
+                counter: "闪避或取消避免附加；灼伤按实际回复量的一半造成火焰伤害。",
+                interactions: new[]{"格挡与对应抗性各使灼伤时长−1，圣火为角色状态、不减时长。免疫仍阻止本击附加。"});
 
             Add(CharacterDefinition.WarDomainId,"War Domain",Alignment.LawfulEvil,
                 shortSkill:"回合开始按攻击手数，最多赐予两名不同角色战争祝福2回合。",
-                playGuide:"可以选自己或队友，少选或不发动。战争祝福攻防+1，9可放弃回复改为攻击；持战争祝福时9也提供施恩次数。",
-                counter:"圣光清除并阻止战争祝福；减少其回合开始时的攻击数字，压低施恩次数。",
+                playGuide:"可以选自己或队友，少选或不发动。战争祝福攻防+1，9可改攻击并计入施恩次数；回复也附祝福2回合。",
+                counter:"圣火清除并阻止战争祝福；减少其回合开始时的攻击数字，压低施恩次数。",
                 interactions:new[]{"战争祝福不叠加，重复施加刷新；本次最多两名不同目标。"});
 
             Add(CharacterDefinition.BattleMasterId, "Battle Master", Alignment.LawfulNeutral,
@@ -313,7 +310,7 @@ namespace FingerDiceDuel.Characters
                          + "先把手凑成「攻击数字 + 4/6/8」再出手；6 的震慑/倒伏最强。",
                 counter: "别让他的另一只手停在 4/6/8；"
                        + "闪避与护盾挡住攻击就完全不给附加机会。",
-                interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣光期间不能附加招式状态。" });
+                interactions: new[] { "与太极宗：减免后仍造成伤害才附招式，完全盾挡不附加。", "多段整次结算一次招式；圣火期间不能附加招式状态。" });
 
             Add(CharacterDefinition.DraconicBloodlineId, "Draconic Bloodline", Alignment.ChaoticNeutral,
                 shortSkill: "选一种永久抗性，攻击80%改为所选类型，伤害穿透同型抗性和免疫。",
@@ -381,7 +378,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "溢出治疗存10点虚假生命；可耗尽令目标失能/恐慌。",
                 playGuide: "攻击时选失能、恐慌或保留；虚假生命先吸伤。造成伤害后目标半血以下（含击杀）回复3。",
                 counter: "少量伤害先消耗其防护；用腐朽阻止回复与溢出转化。",
-                interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣光移除。" });
+                interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣火移除。" });
 
             Add(CharacterDefinition.SchoolOfTransmutationId,"School of Transmutation",Alignment.ChaoticNeutral,
                 shortSkill:"结束可将同数角色变羊；羊有独立8生命。形态进出时可额外运算。",playGuide:"回合结束可选自己或双手无序匹配的角色。变羊或解除后，可用变化莫测再做一次有效运算。",counter:"避免双手匹配。打破羊形态时留意施术者可能再出手，溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
@@ -390,9 +387,9 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.EldritchKnightId,"Eldritch Knight",Alignment.LawfulGood,
                 shortSkill:"碎盾选五元素，受魔法伤可记录该类型，附魔下次攻击。",playGuide:"主动用完整盾运算先选元素，本次算出攻击立即生效；受非物理伤害可记录。附魔覆盖，攻击发起即消耗。",counter:"用盾挡或闪避消耗附魔；留意其记录的伤害类型。",interactions:new[]{"只被虚假生命吸收不触发记录；免疫或零伤不触发。"});
             Add(CharacterDefinition.BladesingingId,"Bladesinging",Alignment.ChaoticGood,
-                shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束；圣光清除并阻止剑歌。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
+                shortSkill:"双手和等于体力可入剑歌，元素攻击且攻防+1。",playGuide:"回合结束达成条件后选元素或不发动；之后每回合至少攻击、合盾或实际回复一次维持剑歌。",counter:"破坏双手和与体力的等式；冻结或限制有效行动可令剑歌结束；圣火清除并阻止剑歌。",interactions:new[]{"闪避、盾挡或零伤仍可维持，攻击被取消则不算。"});
             Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
-                shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣光可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
+                shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣火可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
             Add(CharacterDefinition.TrickeryDomainId,"Trickery Domain",Alignment.ChaoticNeutral,
                 "诡诈换位：借手逢2，可换数字并魅惑。",
                 "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",

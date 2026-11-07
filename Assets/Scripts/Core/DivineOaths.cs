@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.Core
     }
     public partial class PlayerState
     {
-        /// <summary>治疗仅净化不利状态，保留战争祝福；圣光与重开仍清除全部。</summary>
+        /// <summary>治疗仅净化不利状态，保留战争祝福；圣火与重开仍清除全部。</summary>
         public void ClearNegativeStatuses()
         {
             int turns=StatusTurnsLeft(StatusEffect.WarBlessing);var source=StatusSourceOf(StatusEffect.WarBlessing);

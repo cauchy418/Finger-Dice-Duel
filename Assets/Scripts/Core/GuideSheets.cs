@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -232,11 +232,16 @@ namespace FingerDiceDuel.Core
                     string text = DamageAffinityNames.Name(affinity, type) + "：" + effect;
                     entries.Add(new GuideEntry(AttackDamageTypes.IconKeyOf(type), AttackDamageTypes.ColorOf(type), text,
                         resourceKey: DamageAffinityNames.Key(affinity, type))); lines.Add(text);
+                    if(affinity==DamageAffinity.Vulnerability && type==AttackDamageType.Piercing)
+                    {
+                        string physical="物理易伤："+StatusNames.Describe(StatusEffect.PhysicalVulnerability);
+                        entries.Add(new GuideEntry("physical_vulnerability",0xC34D50,physical,StatusEffect.PhysicalVulnerability,resourceKey:StatusNames.ResourceKeyOf(StatusEffect.PhysicalVulnerability)));lines.Add(physical);
+                    }
                 }
                 groups.Add(new GuideGroup(DamageAffinityNames.Name(affinity), entries));
             }
             return new GuideSheet("抗性、易伤与免疫", "Resistance, Vulnerability & Immunity", lines, true, groups,
-                "十三种伤害各有抗性、易伤、免疫图标。同类型免疫优先；否则先算易伤×1.5，再算抗性减半，逐步向上取整。一次攻击落地后，全部临时修正一起消耗；盾挡／闪避不消耗，多段整次生效。免疫不清除既有状态。防护学派仅能赋予物理整组及五元素抗性，持续到施法者死亡或再次赋予；塑能学派待用类型自带对应抗性，消耗／覆盖类型时结束。两者不随一次受击消耗，圣光清除并阻止。");
+                "十三种伤害各有抗性、易伤、免疫图标。同类型免疫优先；否则先算易伤×1.5，再算抗性减半，逐步向上取整。一次攻击落地后，全部临时修正一起消耗；盾挡／闪避不消耗，多段整次生效。免疫不清除既有状态。防护学派仅能赋予物理整组及五元素抗性，持续到施法者死亡或再次赋予；塑能学派待用类型自带对应抗性，消耗／覆盖类型时结束。两者不随一次受击消耗。圣火期间所有抗性、易伤、免疫暂停生效但继续计时，结束后恢复未到期者。");
         }
 
         public static GuideSheet CharacterMarks()
@@ -319,18 +324,19 @@ namespace FingerDiceDuel.Core
             var lines=new List<string>();var negative=new List<GuideEntry>();var character=new List<GuideEntry>();
             foreach(var status in StatusNames.AllStatuses)
             {
+                if(status==StatusEffect.PhysicalVulnerability)continue;
                 string text=StatusNames.Of(status)+"："+StatusNames.Describe(status);lines.Add(text);
                 var entry=new GuideEntry(StatusNames.IconKeyOf(status),StatusNames.StatusColorOf(status),text,status,
                     resourceKey:StatusNames.ResourceKeyOf(status));
                 if(StatusNames.IsNegativeStatus(status))negative.Add(entry);else character.Add(entry);
             }
-            string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣光立即清除并阻止重新进入。";
+            string song="剑歌：剑咏者的元素攻击状态、攻防+1。后续自身回合须攻击、合盾或实际回复维持；圣火立即清除并阻止重新进入。";
             character.Insert(1,new GuideEntry("bladesong",0x58A5EB,song,resourceKey:"Effects/bladesong"));lines.Add(song);
-            string drunk="醉拳：所有数字改为攻击，5不合盾、9不回复；每段基础1d10，受到非零攻击每段改为1d5后再计算防护。每个自身回合开始消耗1气，气不足解除；持续／不可增减伤害不变，圣光清除并阻止。";
+            string drunk="醉拳：所有数字改为攻击，5不合盾、9不回复；每段基础1d10，受到非零攻击每段改为1d5后再计算防护。每个自身回合开始消耗1气，气不足解除；持续／不可增减伤害不变，圣火清除并阻止。";
             character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "23种负面状态。圣光、剑歌、战争祝福、醉拳、神佑医者为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣光清除并阻止其他状态。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
+                "23种负面状态。圣火、剑歌、战争祝福、醉拳、神佑医者为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；物理易伤见抗性、易伤与免疫页。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

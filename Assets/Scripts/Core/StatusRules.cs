@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -82,7 +82,7 @@ namespace FingerDiceDuel.Core
         public const int ShockDamagePerTurn = 2;
         public const int ShockAdjacentDamagePerTurn = 1;
 
-        /// <summary>圣光：每回合开始时受 1 点伤害，**不可被抵挡**（牧师·光明领域）。</summary>
+        /// <summary>圣火：每回合开始时受 1 点伤害，**不可被抵挡**（牧师·净化领域）。</summary>
         public const int HolyLightDamagePerTurn = 1;
 
         // ============================================================

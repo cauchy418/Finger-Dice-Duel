@@ -46,6 +46,44 @@ namespace FingerDiceDuel.Core
     }
     public partial class GameManager
     {
+        private readonly List<(PlayerState Healer,PlayerState Target)> _extraClericHealing=new List<(PlayerState,PlayerState)>();
+        public void RegisterExtraClericHealing(PlayerState healer,PlayerState target)
+        {if(target!=null)_extraClericHealing.Add((healer,target));}
+        public void ResolveAllClericHealing(PlayerState healer,PlayerState target,Action completed)
+        {
+            var heals=new List<(PlayerState Healer,PlayerState Target)>(_extraClericHealing);_extraClericHealing.Clear();
+            if(target!=null)heals.Add((healer,target));
+            Action<int> next=null;next=i=>{if(i>=heals.Count){completed();return;}ResolveClericHealing(heals[i].Healer,heals[i].Target,()=>next(i+1));};next(0);
+        }
+        public void ResolveClericHealing(PlayerState healer,PlayerState target,Action completed)
+        {
+            var finish=completed;PendingClericResolution=true;completed=()=>{PendingClericResolution=false;finish();};
+            if(!target.IsAlive){completed();return;}
+            if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.LightDomainLogic>(healer)!=null)
+            {
+                target.ApplyStatus(StatusEffect.HolyLight,2,healer);
+                NoteSkill(healer,"圣焰赐福",target.Name+" 圣火2回合",target,new SkillVisualData(status:StatusEffect.HolyLight));
+            }
+            if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.WarDomainLogic>(healer)!=null)
+            {
+                target.ApplyStatus(StatusEffect.WarBlessing,2,healer);
+                NoteSkill(healer,"战争赐福",target.Name+" 战争祝福2回合",target,new SkillVisualData(status:StatusEffect.WarBlessing));
+            }
+            Action storm=()=>{
+                if(CharacterBehaviors.FirstImplementer<ITempestDomain>(healer)!=null&&target.IsAlive)
+                    ClericChoices.FreeOperation(target,this,null,true,"风暴赐福",completed);
+                else completed();
+            };
+            if(CharacterBehaviors.FirstImplementer<ITrickeryDomain>(healer)==null){storm();return;}
+            var request=new WizardChoice(healer,"诡术赐福 · 点击受疗者一只手改为2，或不发动",new List<Hand>{target.LeftHand,target.RightHand},true,hand=>{
+                if(hand!=null&&target.IsAlive){hand.SetValue(2);NoteSkill(healer,"诡术赐福",target.Name+"手值改为2",target,new SkillVisualData(source:hand,value:2));}storm();},false,"不发动");
+            if(DeferWizardChoice?.Invoke(request)!=true)
+            {
+                Hand pick=null;
+                if(IsKnownAlly(healer,target))pick=target.LeftHand.Value!=5?target.LeftHand:target.RightHand.Value!=5?target.RightHand:null;
+                request.Choose(pick);
+            }
+        }
         public Func<PlayerState,IClericDomainPolicy> ClericPolicyFor {get;set;}
         public IClericDomainPolicy ClericPolicy(PlayerState p)=>ClericPolicyFor?.Invoke(p)??GetChoiceProvider(p) as IClericDomainPolicy;
         private sealed class TrickeryStep {public TrickeryTouch Touch;public bool Swap,Charm;}

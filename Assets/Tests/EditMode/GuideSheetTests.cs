@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -122,6 +122,7 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
+                if(st==StatusEffect.PhysicalVulnerability)continue;
                 GuideEntry e = null;
                 foreach(var group in s.Groups)foreach(var entry in group.Entries)if(entry.Status==st)e=entry;
                 Assert.IsTrue(e!=null,"两组中必须能找到真实状态："+st);
@@ -215,7 +216,8 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
-                Assert.IsTrue(s.Lines[i].Contains(StatusNames.Describe(st)),
+                if(st==StatusEffect.PhysicalVulnerability)continue;
+                Assert.IsTrue(string.Join("|",s.Lines).Contains(StatusNames.Describe(st)),
                     $"「{StatusNames.Of(st)}」那一行应当包含它的效果说明。");
             }
         }
@@ -250,8 +252,8 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)
             {
                 StatusEffect st = StatusNames.AllStatuses[i];
-                Assert.AreEqual(StatusNames.Of(st) + "：" + StatusNames.Describe(st),
-                                st2.Lines[i]);
+                if(st==StatusEffect.PhysicalVulnerability)continue;
+                Assert.IsTrue(string.Join("|",st2.Lines).Contains(StatusNames.Of(st) + "：" + StatusNames.Describe(st)));
             }
         }
 

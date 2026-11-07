@@ -68,7 +68,7 @@ namespace FingerDiceDuel.Assistant
             a.Conclusion="完整盾作运算源，也会先触发附魔。本击6火焰＋燃烧3，共9伤；普通物理伤害不会自动附燃烧。";list.Add(a);
             var b=new MageTowerSample("echo","法术回响",new[]{1,2,3,5},"受到实际魔法伤害后，可记录其类型；记录覆盖旧附魔，下次发起攻击消耗。")
                 .Turn(1,0,0,0,"护卫左3＋己左1＝4，光耀使你20→16并致盲。点【记忆·光耀】，保留下一击的类型。")
-                .Turn(0,1,1,0,"己右2＋护卫左4＝6。确认攻击：6光耀，护卫20→14并致盲。光耀不是圣光状态。");
+                .Turn(0,1,1,0,"己右2＋护卫左4＝6。确认攻击：6光耀，护卫20→14并致盲。光耀不是圣火状态。");
             b.FirstSeat=1;b.GuardType=AttackDamageType.Radiant;
             b.Verify=l=>l.Board.LastTurn?.AttackType==AttackDamageType.Radiant&&l.Soldier.Health==14;list.Add(b);
         }
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.Assistant
             var explains=new[]{"燃烧：目标回合结束失去3生命。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
                 "感电：目标回合开始，自身受2点闪电，相邻角色各受1点。","残响：限制攻击距离，不限制借用加数。",
                 "强酸命中后防−2，首次命中不提前享受这次降防。","中毒：目标回合开始失去2生命。",
-                "光耀附目盲，只能借用距离1的角色手牌；与圣光不同。","腐朽：无法回复生命。",
+                "光耀附目盲，只能借用距离1的角色手牌；与圣火不同。","腐朽：无法回复生命。",
                 "心灵随机附恐慌或震慑。恐慌降攻且不能攻击来源；震慑不能发起攻击。","力场无附加负面状态；下一课展示其穿盾能力。"};
             for(int i=0;i<types.Length;i++)
             {

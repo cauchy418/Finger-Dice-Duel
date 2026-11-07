@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -298,7 +298,9 @@ namespace FingerDiceDuel.Tests
                         // 此组合在控制器显式分开体力改写与潜行等待，并有双序回归；其余竞争仍报警。
                         bool separateSkip=capability==typeof(ITurnSkipRule)
                             && (x is AssassinLogic && y is TheArchfeyLogic || x is TheArchfeyLogic && y is AssassinLogic);
-                        if(!separateSkip)clashes.Add(pair.Name+" "+capability.Name);
+                        bool sharedHealing=(capability==typeof(IHealOverride)||capability==typeof(IHealTargetAdvisor))
+                            &&(x is ClericTemplate||y is ClericTemplate);
+                        if(!separateSkip&&!sharedHealing)clashes.Add(pair.Name+" "+capability.Name);
                     }
                 if(x is ISelectiveHandEffectRewriter a && y is ISelectiveHandEffectRewriter b)
                     for(int v=1;v<=9;v++)if(a.HandlesResult(v)&&b.HandlesResult(v))clashes.Add(pair.Name+" value "+v);

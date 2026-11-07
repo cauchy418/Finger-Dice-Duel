@@ -9,7 +9,8 @@
         1254,
         1254
       ],
-      "format": "RGBA PNG"
+      "format": "RGBA PNG",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_purification_domain.png"
     },
     {
       "id": "scorch",
@@ -19,7 +20,8 @@
         1254,
         1254
       ],
-      "format": "RGBA PNG"
+      "format": "RGBA PNG",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/scorch.png"
     }
   ],
   "preserved_emblem": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_light_domain.png"

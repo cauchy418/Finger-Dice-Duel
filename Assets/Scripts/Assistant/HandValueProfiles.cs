@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -436,8 +436,8 @@ namespace FingerDiceDuel.Assistant
             Own[CharacterDefinition.SchoolOfIllusionId]=new HandValueProfile().Set(2,90).Set(4,75).Set(8,70).Set(6,68).Set(5,65).Set(9,65)
                 .AddCombo(ComboRule.ContainsAll(70,"差2且持2的幻术防守",2,4));
 
-            // ---- 牧师·光明领域（攻 0 / 防 -1，射程无限，2026-10-23）----
-            // 4/6/8 全是固定 4 点，真正的价值在圣光（净化 + 禁附 + 减疗），
+            // ---- 牧师·净化领域（攻 0 / 防 -1，射程无限，2026-10-23）----
+            // 4/6/8 全是固定5点火焰，真正的价值在圣火（净化 + 暂停防护 + 灼伤），
             // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。
             Own[CharacterDefinition.LightDomainId] = new HandValueProfile()
                 .Set(4, 76).Set(6, 76).Set(8, 76)
@@ -651,9 +651,9 @@ namespace FingerDiceDuel.Assistant
                 new ValueAdjust(5, -12),
             };
 
-            // ---- 面对牧师·光明领域（2026-10-23）----
-            // 他打谁都只有固定 4 点，攻击数字对他"不增值"；
-            // 但被圣光命中后我的回复减半 —— 我的 9 略降，5 正常（盾完全挡得住 4 点）。
+            // ---- 面对牧师·净化领域（2026-10-23）----
+            // 他打谁都是固定5点，攻击数字对他"不增值"；
+            // 灼伤使回复后受到火焰伤害，降低9的优先级；盾能挡固定5点。
             OpponentAdjust[CharacterDefinition.LightDomainId] = new List<ValueAdjust>
             {
                 new ValueAdjust(9, -10),

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -41,7 +41,7 @@ namespace FingerDiceDuel.Core
 
         // ============ 计时状态（负面状态与角色状态） ============
         /// <summary>
-        /// 身上的**计时状态**（负面状态、圣光与战争祝福）。
+        /// 身上的**计时状态**（负面状态、圣火与战争祝福）。
         ///
         /// 以 <see cref="StatusEffect"/> 为键，值 = 剩余"目标自己的回合数"
         /// （玩家确认的持续时间为 **2**）。
@@ -88,23 +88,16 @@ namespace FingerDiceDuel.Core
             if (status == StatusEffect.None || turns <= 0) return;
             if(status==StatusEffect.DarknessBlind&&!IsPolymorphed&&CharacterBehaviors.FirstImplementer<IShadowEyes>(this)!=null)return;
 
-            // ⚠️ **圣光（牧师·光明领域）的两个特例**（玩家口径，2026-10-23）：
-            //    ① 施加圣光时，先清除目标身上**其他全部状态**与**全部抗性**
-            //       —— 战斗激励增益与奥术守御是独立系统，不受影响；
-            //    ② 圣光存在期间，**阻止**其他任何状态被附加；
-            //       再施加圣光本身 = 刷新时长，允许。
-            //
-            // 放在这个唯一入口：塑能 / 狂野魔法 / 技能流血 / 卓越战技等
-            // 所有附加路径都经过这里，不需要逐个判断（与腐朽拦截回血同一思路）。
+            // 圣火保留火焰／光耀状态及计时易伤；其他状态移除，防护数据保留并暂停作用。
             if (status == StatusEffect.HolyLight)
             {
-                ClearStatuses();
-                ClearTemporaryDamageAffinities();
-                ClearSustainedResistances();
+                foreach(var old in new System.Collections.Generic.List<StatusEffect>(_statuses.Keys))
+                    if(!HolyFireAllows(old)) RemoveStatus(old);
+                EndPolymorph(); ClearEnchantments();
                 foreach (var song in CharacterBehaviors.Implementers<IBladesong>(this)) song.EndSong();
                 foreach(var stance in CharacterBehaviors.Implementers<IDrunkenStance>(this))stance.EndDrunken();
             }
-            else if (HasStatus(StatusEffect.HolyLight))
+            else if (HasStatus(StatusEffect.HolyLight) && !HolyFireAllows(status))
             {
                 return;
             }
@@ -112,6 +105,10 @@ namespace FingerDiceDuel.Core
             _statuses[status] = turns;
             if (source != null) _statusSources[status] = source;
         }
+
+        public static bool HolyFireAllows(StatusEffect status) => status == StatusEffect.HolyLight
+            || status == StatusEffect.Burn || status == StatusEffect.Scorch || status == StatusEffect.Blind
+            || status == StatusEffect.PhysicalVulnerability;
 
         private readonly System.Collections.Generic.Dictionary<StatusEffect, PlayerState>
             _statusSources = new System.Collections.Generic.Dictionary<StatusEffect, PlayerState>();
@@ -218,7 +215,7 @@ namespace FingerDiceDuel.Core
         private readonly System.Collections.Generic.HashSet<AttackDamageType> _permanentResistances
             = new System.Collections.Generic.HashSet<AttackDamageType>();
 
-        public bool HasPhysicalResistance => _physicalResistance;
+        public bool HasPhysicalResistance => !HasStatus(StatusEffect.HolyLight) && _physicalResistance;
 
         /// <summary>武僧·散打宗的暗劲标记。</summary>
         public bool HasResonance { get; private set; }
@@ -234,6 +231,7 @@ namespace FingerDiceDuel.Core
         public void ClearFalseLife() => FalseLife = 0;
         public bool HasResistance(AttackDamageType type)
         {
+            if(HasStatus(StatusEffect.HolyLight))return false;
             if(HasSustainedResistance(type))return true;
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
@@ -244,9 +242,7 @@ namespace FingerDiceDuel.Core
 
         public void AddResistance(AttackDamageType type)
         {
-            // **圣光存在期间抗性不可附加**（与状态附加同一套拦截口径）。
-            if (HasStatus(StatusEffect.HolyLight)) return;
-
+            // **圣火存在期间抗性不可附加**（与状态附加同一套拦截口径）。
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
                 || type == AttackDamageType.Slashing)
@@ -392,14 +388,15 @@ namespace FingerDiceDuel.Core
         /// 逐个判断必然会漏；而这里是**唯一**真正改生命值上行的出口。
         /// （<see cref="SetHealth"/> 是"赋值"语义 —— 邪术师·至高妖精那种不算治疗，不受腐朽影响。）
         /// </summary>
-        public void Heal(int amount)
+        public int LastActualHealing { get; private set; }
+        public void Heal(int amount, GameManager manager = null)
         {
+            LastActualHealing=0;
             if (amount <= 0) return;
             if (!StatusRules.CanHeal(this)) return;      // 腐朽／耳鸣：禁止回血
 
-            // **圣光**：回复量减半（向上取整 —— 与抗性减半同一取整口径）。
             // 放在最底层的原因与腐朽一致：回血入口不止一处，逐个判断必漏。
-            if (HasStatus(StatusEffect.HolyLight)) amount = (amount + 1) / 2;
+
 
             int before = Health;
             int allowed = MaximumHealth - before;
@@ -412,7 +409,15 @@ namespace FingerDiceDuel.Core
 
             // ⚠️ 吟游诗人·勇气学院的触发条件是"**实际**回过体力" —— 满血回复不算，
             //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。
-            if (Health > before) HealedThisTurn = true;
+            LastActualHealing=actual;
+            if (actual > 0) HealedThisTurn = true;
+            if (actual > 0 && HasStatus(StatusEffect.Scorch))
+            {
+                var scorch = new AttackContext(StatusSourceOf(StatusEffect.Scorch) ?? this,this,LeftHand,(actual+1)/2,manager)
+                    {IsStatusDamage=true,IgnoreStatBonuses=true,AttackType=AttackDamageType.Fire};
+                scorch.Resolve(manager?.GetChoiceProvider(this),manager);
+                manager?.NoteSkill(this,"灼伤",$"回复{actual}，火焰伤害{scorch.AppliedDamage}",this,new SkillVisualData(value:scorch.AppliedDamage,status:StatusEffect.Scorch,element:AttackDamageType.Fire));
+            }
         }
 
         // ============ 吟游诗人·勇气学院：本回合的"是否受过伤 / 回过血" ============

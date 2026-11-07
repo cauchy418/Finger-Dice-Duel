@@ -11,7 +11,8 @@ namespace FingerDiceDuel.Core
             : affinity == DamageAffinity.Vulnerability ? "易伤" : "抗性";
         public static string Name(DamageAffinity affinity, AttackDamageType type) => AttackDamageTypes.NameOf(type) + Name(affinity);
         public static bool AttackPiercesAffinities(PlayerState attacker, AttackDamageType type)
-            => Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(attacker, type)
+            => type == AttackDamageType.Fire && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.LightDomainLogic>(attacker) != null
+                || Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(attacker, type)
                 || CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(attacker)?.Element == type;
         public static string Key(DamageAffinity affinity, AttackDamageType type)
         {
@@ -30,24 +31,25 @@ namespace FingerDiceDuel.Core
         private readonly HashSet<AttackDamageType> _immunities = new HashSet<AttackDamageType>();
         public IReadOnlyCollection<AttackDamageType> Vulnerabilities => _vulnerabilities;
         public IReadOnlyCollection<AttackDamageType> Immunities => _immunities;
-        public bool HasVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type)
-            || AttackDamageTypes.IsPhysical(type) && HasStatus(StatusEffect.PhysicalVulnerability);
+        public bool HasVulnerability(AttackDamageType type) => !HasStatus(StatusEffect.HolyLight) && (_vulnerabilities.Contains(type)
+            || AttackDamageTypes.IsPhysical(type) && HasStatus(StatusEffect.PhysicalVulnerability));
         public bool HasTemporaryVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
-        public bool HasImmunity(AttackDamageType type) => _immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus));
+        public bool HasImmunity(AttackDamageType type) => !HasStatus(StatusEffect.HolyLight) && (_immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus)));
         public void AddVulnerability(AttackDamageType type)
         {
-            if (!HasStatus(StatusEffect.HolyLight) && System.Array.IndexOf(ResistanceNames.All, type) >= 0)
+            if (System.Array.IndexOf(ResistanceNames.All, type) >= 0)
                 _vulnerabilities.Add(type);
         }
         public void AddImmunity(AttackDamageType type)
         {
-            if (!HasStatus(StatusEffect.HolyLight) && System.Array.IndexOf(ResistanceNames.All, type) >= 0)
+            if (System.Array.IndexOf(ResistanceNames.All, type) >= 0)
                 _immunities.Add(type);
         }
         public void ClearVulnerabilities() => _vulnerabilities.Clear();
         public void ClearImmunities() => _immunities.Clear();
         public void ClearTemporaryDamageAffinities()
         {
+            if(HasStatus(StatusEffect.HolyLight))return;
             ClearResistances(); ClearVulnerabilities(); ClearImmunities();
         }
     }

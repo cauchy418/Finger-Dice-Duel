@@ -34,7 +34,7 @@
                 case "中毒":return "fx_poison";
                 case "流血":return "fx_impact";
                 case "感电":return "fx_lightning";
-                case "圣光":return "fx_radiant";
+                case "圣火":case "灼伤":case "净化圣焰":case "圣焰赐福":return "fx_fire";
                 case "预言压制":return "Effects/portent";
                 default:return SecondarySkillAnimation.Find(skill)?.Sprite;
             }

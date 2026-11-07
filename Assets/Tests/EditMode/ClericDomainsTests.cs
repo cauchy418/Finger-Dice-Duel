@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Tests
   {var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.TempestDomain);g.ClericPolicyFor=o=>new Policy();g.PlayerA.LeftHand.SetValue(5);g.PlayerA.LeftHand.SetShieldState(ShieldState.Formed);g.PlayerB.LeftHand.SetValue(4);
    Hit(g,AttackDamageType.Bludgeoning);Assert.AreEqual(20,g.PlayerA.Health);Assert.False(g.PlayerA.LeftHand.IsShield);Assert.True(g.PlayerB.LeftHand.Value!=4);}
   [Test] public void Tinnitus_does_not_modify_fixed_light_damage_and_life_heals_after_cleanse()
-  {var g=CharacterFactory.CreateMatch(CharacterDefinition.LightDomain,CharacterDefinition.Blank);g.PlayerB.ApplyStatus(StatusEffect.Tinnitus,2);Assert.AreEqual(4,Hit(g,AttackDamageType.Radiant).AppliedDamage);
+  {var g=CharacterFactory.CreateMatch(CharacterDefinition.LightDomain,CharacterDefinition.Blank);g.PlayerB.ApplyStatus(StatusEffect.Tinnitus,2);Assert.AreEqual(5,Hit(g,AttackDamageType.Radiant).AppliedDamage);
    var h=CharacterFactory.CreateMatch(CharacterDefinition.LifeDomain,CharacterDefinition.Blank);h.PlayerB.TakeDamage(10);h.PlayerB.ApplyStatus(StatusEffect.Tinnitus,2);FingerDiceDuel.Characters.SpecialLogics.LifeDomainLogic.CleanseAndHeal(h.PlayerA,h.PlayerB,9,h);Assert.AreEqual(19,h.PlayerB.Health);Assert.False(h.PlayerB.HasStatus(StatusEffect.Tinnitus));}
   [Test] public void Tempest_ai_does_not_counter_known_2v2_teammate()
   {var p=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.TempestDomain),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank)};
