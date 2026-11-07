@@ -53,7 +53,7 @@ P2／P3动画：`SecondarySkillAnimation`登记64个语义入口、33类动作�
 | 引擎 | 团结引擎（Tuanjie，Unity 中国版）`2022.3.62t15` / Editor `1.10.3` |
 | 语言 | C#（源文件 **UTF-8 with BOM**） |
 | 渲染 / UI | 内置管线 + 正交相机；uGUI + TextMeshPro |
-| 测试 | 1627项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职64,768局五模式采样见Tools/Statistics/2026-11-06-arcane，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
+| 测试 | 1645项功能回归、0失败；UI与Unity/NUnit条件编译通过。当前57子职64,768局五模式采样见Tools/Statistics/2026-11-06-arcane，德鲁伊21项实机检查见Art/Integration/druid-rework-v2。 |
 | 美术 | 全部界面**运行时用代码构建**，无预制体 |
 
 > 主动幻术默发改动前的52子职统计快照：1v1 **106,080** 局、2v2 **169,728** 局、425双将 **2,162,400** 局、集火 **187,200** 局；八人阵营 **2,000** 局；

@@ -55,6 +55,6 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样](../Tools/Statistics/2026-11-06-arcane/README.md) | 2026-11-06，57 子职 64,768 局，五个模式 + 两种身份采样 |
+| [胜率采样](../Tools/Statistics/2026-11-06-arcane/README.md) | 2026-11-06，57 子职 64,768 局；含八人阵营／身份的全角色表、阵营与身份整体胜率 |
 | [机器数据](../Tools/Statistics/2026-11-06-arcane/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

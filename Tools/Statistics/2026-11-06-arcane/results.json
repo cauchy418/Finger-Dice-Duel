@@ -2856,5 +2856,106 @@
     "2v2为固定队伍偏移配桌；双将为514组合固定偏移抽样，并非全部组合两两循环。",
     "八人身份偏好以独立的2,000局随机身份样本拟合，另用600局验证实际候选偏好。角色出场不均衡。",
     "反映本轮九个子职的规则和AI更新，并复查57子职策略和开局对策。"
-  ]
+  ],
+  "eight_player_summary": {
+    "factions": {
+      "中立": {
+        "overall": {
+          "wins": 182,
+          "games": 600,
+          "win_percent": 30.333
+        },
+        "two_seats": {
+          "wins": 54,
+          "games": 200,
+          "win_percent": 27.0
+        },
+        "three_seats": {
+          "wins": 128,
+          "games": 400,
+          "win_percent": 32.0
+        }
+      },
+      "守序": {
+        "overall": {
+          "wins": 225,
+          "games": 600,
+          "win_percent": 37.5
+        },
+        "two_seats": {
+          "wins": 63,
+          "games": 200,
+          "win_percent": 31.5
+        },
+        "three_seats": {
+          "wins": 162,
+          "games": 400,
+          "win_percent": 40.5
+        }
+      },
+      "混乱": {
+        "overall": {
+          "wins": 191,
+          "games": 600,
+          "win_percent": 31.833
+        },
+        "two_seats": {
+          "wins": 43,
+          "games": 200,
+          "win_percent": 21.5
+        },
+        "three_seats": {
+          "wins": 148,
+          "games": 400,
+          "win_percent": 37.0
+        }
+      }
+    },
+    "identities": {
+      "identity": {
+        "Lord": {
+          "wins": 816,
+          "games": 2000,
+          "win_percent": 40.8
+        },
+        "Loyalist": {
+          "wins": 816,
+          "games": 2000,
+          "win_percent": 40.8
+        },
+        "Rebel": {
+          "wins": 882,
+          "games": 2000,
+          "win_percent": 44.1
+        },
+        "Traitor": {
+          "wins": 270,
+          "games": 2000,
+          "win_percent": 13.5
+        }
+      },
+      "identity-preferred": {
+        "Lord": {
+          "wins": 281,
+          "games": 600,
+          "win_percent": 46.833
+        },
+        "Loyalist": {
+          "wins": 281,
+          "games": 600,
+          "win_percent": 46.833
+        },
+        "Rebel": {
+          "wins": 226,
+          "games": 600,
+          "win_percent": 37.667
+        },
+        "Traitor": {
+          "wins": 82,
+          "games": 600,
+          "win_percent": 13.667
+        }
+      }
+    }
+  }
 }
