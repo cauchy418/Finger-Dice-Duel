@@ -2,7 +2,7 @@
 
 namespace FingerDiceDuel.Assistant
 {
-    /// <summary>次战：普通攻击对照、精通重击、半自由练习。逐步演算见 Docs/Adventure/level-02.md。</summary>
+    /// <summary>次战：普通攻击对照、精通重击、半自由练习。逐步演算见 Docs/Adventure/four-chapter-v3/chapter-01-and-04.md。</summary>
     public sealed class AdventureLevel2 : AdventureLesson
     {
         public const string Title = "第一章：边境哨站·次战";
