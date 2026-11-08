@@ -6,8 +6,8 @@
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 24 种负面状态 |
-| [角色图鉴](roster.md) | 57 名子职的数值与关键机制、阵营分类、全角色胜率 |
+| [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 25 种负面状态 |
+| [角色图鉴](roster.md) | 58 名子职的数值与关键机制、阵营分类、全角色胜率 |
 | [德鲁伊重构与孢子结社](druid-rework-2026-11-05.md) | 独立荒野体力、四结社、充能与双武僧初始气 |
 | [音乐与音频](music-and-audio.md) | 配乐切换逻辑与设置持久化 |
 | [剧情教学](Adventure/four-chapter-v3/README.md) | 四章 40 关，万象回廊与高塔重排 |
@@ -21,6 +21,7 @@
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [开发与测试](development.md) | 技术栈、测试命令、验证流程 |
 | [AI 策略与权重](ai-strategy-reference.md) | 57 名子职的自身／针对策略与配置 |
+| [知识领域](knowledge-domain.md) | 知识层数、独立力场伤害与困惑 |
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
 | [格挡定义](combat-defense.md) | 格挡、抗性与状态时长的扣减规则 |
 | [技能文案](character-skill-copy-draft.md) | 全部技能正文 |
