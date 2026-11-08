@@ -10,7 +10,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {
             if(!ReferenceEquals(game.CurrentPlayer,owner)||!owner.IsAlive)return;
-            foreach(var p in game.Players)if(p.IsAlive&&!ReferenceEquals(p,owner)&&game.DistanceBetween(owner,p)==1&&p.Health<owner.Health)
+            foreach(var p in game.Players)if(owner.SporeLife>0&&p.IsAlive&&!ReferenceEquals(p,owner)&&game.DistanceBetween(owner,p)==1)
             {
                 var frame=game.CaptureVisualFrame();p.ApplyStatus(StatusEffect.Decay,2,owner);
                 bool applied=p.HasStatus(StatusEffect.Decay);

@@ -1,4 +1,4 @@
-using FingerDiceDuel.Core;
+﻿using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -26,8 +26,16 @@ namespace FingerDiceDuel.Tests
       Assert.IsTrue(exposed-ai.ScoreMoveForTest(move,attacker,g)>ai.LethalBonus/2);
       Assert.AreEqual(10,target.SporeLife);
   }
-  [Test] public void Halo_checks_actual_health_and_only_at_own_turn_start()
-  {var g=Match();g.PlayerB.SetHealthExact(19);g.PlayerA.LeftHand.SetValue(1);g.PlayerA.RightHand.SetValue(2);g.BeginTurn();Assert.AreEqual(2,g.PlayerB.StatusTurnsLeft(StatusEffect.Decay));g.PlayerB.RemoveStatus(StatusEffect.Decay);g.ForceActivePlayerForTest(g.PlayerB);g.BeginTurn();Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Decay));}
+  [Test] public void Halo_requires_spore_life_ignores_health_comparison_and_only_runs_on_own_turn()
+  {var g=Match();g.PlayerA.SetHealthExact(3);g.PlayerA.GainSporeLife();g.PlayerA.LeftHand.SetValue(1);g.PlayerA.RightHand.SetValue(2);g.BeginTurn();Assert.AreEqual(2,g.PlayerB.StatusTurnsLeft(StatusEffect.Decay));g.PlayerB.RemoveStatus(StatusEffect.Decay);g.ForceActivePlayerForTest(g.PlayerB);g.BeginTurn();Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Decay));}
+  [Test] public void Halo_does_not_trigger_without_spore_life_even_against_lower_health()
+  {var g=Match();g.PlayerB.SetHealthExact(1);g.PlayerA.LeftHand.SetValue(1);g.PlayerA.RightHand.SetValue(2);g.BeginTurn();Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Decay));}
+  [Test] public void Halo_affects_adjacent_allies_and_enemies_but_not_distant_seats()
+  {
+   var p=new[]{CharacterFactory.CreatePlayer("A",CharacterDefinition.CircleOfSpores),CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank),CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank)};
+   var g=GameManager.Create2v2(p,new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});p[0].GainSporeLife();g.BeginTurn();
+   Assert.AreEqual(2,p[1].StatusTurnsLeft(StatusEffect.Decay));Assert.AreEqual(2,p[3].StatusTurnsLeft(StatusEffect.Decay));Assert.IsFalse(p[2].HasStatus(StatusEffect.Decay));Assert.IsFalse(p[0].HasStatus(StatusEffect.Decay));
+  }
   [Test] public void Death_restores_charge_once_even_at_match_end_but_sheep_break_does_not()
   {var g=Match();var p=g.PlayerA;p.SpendWildCharge();g.PlayerB.TryPolymorph();g.PlayerB.TakeDamage(5);g.RefreshGameOver();Assert.AreEqual(1,p.WildCharges);g.PlayerB.TakeDamage(99);g.RefreshGameOver();Assert.AreEqual(2,p.WildCharges);g.RefreshGameOver();Assert.AreEqual(2,p.WildCharges);}
   [Test] public void Death_proximity_uses_pre_death_ring_and_obstacles()

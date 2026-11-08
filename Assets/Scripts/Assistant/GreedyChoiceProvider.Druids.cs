@@ -264,15 +264,10 @@ namespace FingerDiceDuel.Assistant
         private static int SpecialistCounterplayScore(LegalMove move, PlayerState actor, int result, GameManager game)
         {
             int risk = 0;
-            int decayAvoidance = 0;
             var hand = move.ActedHand;
             foreach (var foe in game.Players)
             {
                 if (!foe.IsAlive || foe == actor || game.IsKnownAlly(actor, foe) || !StatusRules.CanAct(foe)) continue;
-                if (CharacterBehaviors.FirstImplementer<ISporeDruid>(foe) != null && actor.Health < foe.Health
-                    && game.DistanceBetween(foe, actor) == 1 && !actor.HasStatus(StatusEffect.HolyLight)
-                    && CharacterBehaviors.DisplayedEffectOf(actor, result) == HandEffectType.Heal
-                    && actor.Health + HealingGain(actor, 9) >= foe.Health) decayAvoidance = 22;
                 if (hand.IsConcealed || hand.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(foe, hand, game)) continue;
                 bool wild = foe.IsWildShaped && !foe.IsPolymorphed;
                 bool tactician = game.CanChooseTacticianOperation(foe);
@@ -309,7 +304,7 @@ namespace FingerDiceDuel.Assistant
                 }
                 risk += after - before;
             }
-            return decayAvoidance - Clamp(risk, -60, 60);
+            return -Clamp(risk, -60, 60);
         }
 
         private static int SpecialistThreat(PlayerState foe, PlayerState actor, int result, int other, GameManager game, bool wild)

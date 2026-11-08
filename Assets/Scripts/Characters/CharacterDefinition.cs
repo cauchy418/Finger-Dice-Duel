@@ -114,7 +114,7 @@ namespace FingerDiceDuel.Core
         public const string CircleOfTheStarsId = "druid_circle_of_the_stars";
         public const string CircleOfTheLandId = "druid_circle_of_the_land";
         public const string CircleOfSporesId = "druid_circle_of_spores";
-        public static CharacterDefinition CircleOfSpores {get;}=new CharacterDefinition(CircleOfSporesId,"德鲁伊·孢子结社",SpecialLogicType.CircleOfSpores,description:"孢子环绕：回合开始使相邻且体力低于自己的角色腐朽2回合。一体共生：双手相同时可消耗1荒野充能获得10孢子生命，存在时攻击为毒素。真菌感染：相邻角色死亡恢复1荒野充能。");
+        public static CharacterDefinition CircleOfSpores {get;}=new CharacterDefinition(CircleOfSporesId,"德鲁伊·孢子结社",SpecialLogicType.CircleOfSpores,description:"孢子环绕：自己回合开始时，若有孢子生命，使距离1的其他角色腐朽2回合。一体共生：双手相同时可消耗1荒野充能获得10孢子生命，存在时攻击为毒素。真菌感染：相邻角色死亡恢复1荒野充能。");
         public const string OathOfTheAncientsId = "paladin_oath_of_the_ancients";
         public const string TheFiendId = "warlock_the_fiend";
         public const string CollegeOfLoreId = "bard_college_of_lore";

@@ -342,7 +342,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.CircleOfSporesId,"Circle of Spores",Alignment.TrueNeutral,
-                shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；保持体力高于邻居，施加腐朽。",counter:"避开相邻腐朽，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
+                shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；自己回合开始仍有孢子生命时，对距离1的其他角色附腐朽2回合。",counter:"避开相邻腐朽，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
             Add(CharacterDefinition.CircleOfTheMoonId,"Circle of the Moon",Alignment.ChaoticGood,
                 shortSkill:"3点充能；荒野独立体力，枭熊与黑豹耗2点。",playGuide:"回合开始双手和10可变形并跳过；熊4合盾，回合末可解除。",counter:"留意充能，破形态后的溢伤会扣原体力。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
