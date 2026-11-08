@@ -102,6 +102,7 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
+            if(status==StatusEffect.KnowledgeBlessing){KnowledgeStacks=Math.Max(1,KnowledgeStacks);turns=int.MaxValue;}
             _statuses[status] = turns;
             if (source != null) _statusSources[status] = source;
         }
@@ -120,6 +121,7 @@ namespace FingerDiceDuel.Core
         /// <summary>移除一个状态。</summary>
         public void RemoveStatus(StatusEffect status)
         {
+            if (status == StatusEffect.KnowledgeBlessing) KnowledgeStacks=0;
             if (status == StatusEffect.Restrained) ClearRestraintHands();
             if (status == StatusEffect.KnockedDown) _deferOilProneTick = false;
             _enchantments.Remove(status); _enchantmentSources.Remove(status);
@@ -142,6 +144,7 @@ namespace FingerDiceDuel.Core
 
             for (int i = 0; i < keys.Count; i++)
             {
+                if(keys[i]==StatusEffect.KnowledgeBlessing)continue;
                 if (SkipFreshOilProneTick(keys[i])) continue;
                 int left = _statuses[keys[i]] - 1;
                 if (left <= 0)
@@ -169,6 +172,7 @@ namespace FingerDiceDuel.Core
             EndPolymorph(); ClearEnchantments();
             ClearRestraintHands();
             _deferOilProneTick = false;
+            KnowledgeStacks=0;
             _statuses.Clear();
             _statusSources.Clear();
             ClearVulnerabilities();

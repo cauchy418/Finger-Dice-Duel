@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -49,6 +49,7 @@ namespace FingerDiceDuel.Core
                 "虚假生命 · "+player.FalseLife+" / 10\n治疗溢出转化，先于真实生命吸收伤害；直坠噩梦可消耗全部。角标是剩余点数。",player.FalseLife.ToString()));
             foreach(var status in player.Statuses)
             {
+                if(status==StatusEffect.KnowledgeBlessing){result.Add(new CombatStatusIcon("Status/knowledge_blessing","知识祝福 · "+player.KnowledgeStacks+"层\n"+StatusNames.Describe(status),player.KnowledgeStacks.ToString(),status));continue;}
                 if (status == StatusEffect.PhysicalVulnerability) continue;
                 result.Add(new CombatStatusIcon(StatusNames.ResourceKeyOf(status),
                     StatusNames.Of(status)+" · 剩余"+player.StatusTurnsLeft(status)+"回合\n"+StatusNames.Describe(status),

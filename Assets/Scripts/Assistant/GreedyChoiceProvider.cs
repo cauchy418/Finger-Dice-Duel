@@ -1066,6 +1066,8 @@ namespace FingerDiceDuel.Assistant
                 : ExpectedAffinityDamage(attacker, victim, damage, type, conservative: false);
             if (marked && projected > 0 && (victim.LeftHand.IsShield || victim.RightHand.IsShield))
                 projected = Math.Max(0, StatusRules.EffectiveAttackBonus(attacker));
+            if(attacker.KnowledgeStacks>0 && !FeyCanCancel(victim,result))
+                projected+=ProjectedAffinityDamage(attacker,victim,attacker.KnowledgeStacks,AttackDamageType.Force);
             return Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
         }
 

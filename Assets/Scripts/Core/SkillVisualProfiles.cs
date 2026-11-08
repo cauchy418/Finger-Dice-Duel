@@ -7,6 +7,9 @@
             switch(skill)
             {
                 case "王车易位":case "幻术默发":case "幻影实体":case "诡诈换位":case "不死奴仆":return "fx_psychic";
+                case "岁月知识":case "知识赐福":return "Status/knowledge_blessing";
+                case "知识祝福":return "fx_force";
+                case "困惑":return "fx_psychic";
                 case "预兆":case "预知未来":return "Effects/portent";
                 case "奥术守御":case "法术抗性":case "不死适应":return "Effects/arcane_barrier";
                 case "变形术":return "Status/polymorph";

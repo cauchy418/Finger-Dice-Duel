@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -88,6 +88,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.Bladesinging] = () => new BladesingingLogic();
             _registry[SpecialLogicType.TheHexblade] = () => new HexbladeLogic();
 
+            _registry[SpecialLogicType.KnowledgeDomain]=()=>new KnowledgeDomainLogic();
             _registry[SpecialLogicType.LightDomain] = () => new LightDomainLogic();
             _registry[SpecialLogicType.WarDomain] = () => new WarDomainLogic();
             _registry[SpecialLogicType.OathOfConquest] = () => new OathOfConquestLogic();

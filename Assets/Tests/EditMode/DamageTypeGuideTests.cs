@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_all_twenty_one_statuses()
         {
-            Assert.AreEqual(27, StatusNames.AllStatuses.Length,
+            Assert.AreEqual(29, StatusNames.AllStatuses.Length,
                 "计时状态包含物理易伤；剑歌按独立技能维持。");
         }
 

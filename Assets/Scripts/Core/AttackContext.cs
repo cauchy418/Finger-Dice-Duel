@@ -252,6 +252,8 @@ namespace FingerDiceDuel.Core
         /// 执行结算流程：调用攻击方钩子 -> 处理护盾 -> 应用伤害。
         /// </summary>
         private bool _resolutionPrepared,_preparedDamageDisabled;private PlayerState _intendedDefender;private IChoiceProvider _preparedDefenderChoice;
+        private int _knowledgeForce;
+        public bool IsKnowledgeForceDamage {get;set;}
         public bool TempestReactionPrepared {get;set;} public bool IsTempestCounter {get;set;} public int? AttackValueOverride {get;set;}
         public void PrepareResolution(IChoiceProvider defenderChoice, GameManager manager)
         {
@@ -266,6 +268,7 @@ namespace FingerDiceDuel.Core
             //    只有本次被选为攻击目标的至高妖精可以取消。
             //    ⚠️ 追加攻击与冲击的"攻击数字视为 0"（见 AttackValue），
             //       任何手值都不等于 0，所以它们天然无法被取消 —— 不需要特判。
+            if(!IsStatusDamage&&!IsReflected&&!IsSpecialAttack)_knowledgeForce=Attacker.ConsumeKnowledge();
             if (TryCancelAttack(manager))
             {
                 // 取消 = 完全无效：不扣血、不碎盾、不触发后续效果。
@@ -280,11 +283,11 @@ namespace FingerDiceDuel.Core
             //     玩家口径：被选中即算"受到攻击"（闪避 / 盾挡 / 零伤害都算），
             //     被取消不算（上面已经 return）。转移 / 代挡发生时，
             //     实际承受者稍后也会收到一次通知（见 TryRedirectDefender 之后）。
-            NotifyTargeted(Defender, manager);
+            if(!IsKnowledgeForceDamage)NotifyTargeted(Defender, manager);
 
             // 1. 攻击方钩子介入（如法师·咒法学派设置 IgnoreShield / 修改 FinalDamage / 游荡者·风流剑客设置倍率）
             if(!IsStatusDamage&&!IsReflected)Attacker.BeganAttackThisTurn=true;
-            Attacker.Character?.OnResolveAttack(this);
+            if(!IsKnowledgeForceDamage)Attacker.Character?.OnResolveAttack(this);
 
             // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
             //
@@ -340,7 +343,7 @@ namespace FingerDiceDuel.Core
             {
                 defenderChoice = manager.GetChoiceProvider(Defender);
                 // 转移 / 代挡后的**实际承受者**同样"受到攻击"（征服之誓等）。
-                NotifyTargeted(Defender, manager);
+                if(!IsKnowledgeForceDamage)NotifyTargeted(Defender, manager);
             }
 
             _independentHitTypes = PerHitTypeProvider != null && fixedRule == null && AttackType == PreparedPerHitType;
@@ -654,16 +657,24 @@ namespace FingerDiceDuel.Core
             // 5. **命中后的通用钩子**（邪术师·旧日支配者的距离修正走这里）。
             //    与挂状态同一个位置 —— 那一刻"算不算命中"已经确定
             //    （盾抵挡 / 太极减免算命中，闪避 / 取消不算）。
-            ApplyAttackerHitEffect(manager);
+            if(_knowledgeForce>0 && !WasCancelled && LandedHits+BlockedHits>0 && Defender?.IsAlive==true)
+            {
+                int force=_knowledgeForce;_knowledgeForce=0;
+                var knowledge=new AttackContext(Attacker,Defender,SourceHand,force,manager)
+                {IsKnowledgeForceDamage=true,IsSpecialAttack=true,IgnoreStatBonuses=true,AttackType=AttackDamageType.Force,AttackerStatusOverride=StatusEffect.Confusion};
+                knowledge.Resolve(manager?.GetChoiceProvider(Defender),manager);
+                manager?.NoteSkill(Attacker,"知识祝福",Defender.Name+" 力场伤害"+knowledge.AppliedDamage,Defender,new SkillVisualData(value:knowledge.AppliedDamage,element:AttackDamageType.Force));
+            }
+            if(!IsKnowledgeForceDamage)ApplyAttackerHitEffect(manager);
 
             // 6. **实际造成伤害后**的通知（战士·战斗大师的招式附加）。
             //    口径比"命中"更严：只有 AppliedDamage > 0 才触发。
-            ApplyDamageLandedEffects(manager);
+            if(!IsKnowledgeForceDamage)ApplyDamageLandedEffects(manager);
             if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
                 foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
             NotifyCompletedHealthDamage(manager);
             // 分别通知发起者、原目标与转移后的实际承受者；新加成不追溯改变本击。
-            if(!IsStatusDamage)
+            if(!IsStatusDamage&&!IsKnowledgeForceDamage)
             {
                 foreach(var hook in CharacterBehaviors.Implementers<IAttackFinishedHook>(Attacker))
                     hook.OnAttackFinished(Attacker,this,true,manager);

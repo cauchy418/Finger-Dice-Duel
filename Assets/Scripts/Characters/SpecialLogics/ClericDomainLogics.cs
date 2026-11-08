@@ -24,11 +24,22 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 int score=StatusRules.CanHeal(p)?System.Math.Min(9,p.MaximumHealth-p.Health)*8:0;
                 foreach(var state in p.Statuses)if(!PlayerState.HolyFireAllows(state)&&StatusNames.IsNegativeStatus(state))score+=12;
                 if(p.HasStatus(StatusEffect.Scorch))score-=20;
+                if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(owner)!=null&&!p.HasStatus(StatusEffect.HolyLight))
+                {score+=12;foreach(var hand in p.Hands)if(hand.Value==4||hand.Value==6||hand.Value==8)score+=5;}
                 if(p.Health<=5)score+=25;
                 if(score>bestScore){best=p;bestScore=score;}
             }
             return best;
         }
+    }
+    public sealed class KnowledgeDomainLogic:ClericTemplate
+    {
+        public override string DisplayName=>"牧师·知识领域";
+        public override int DefaultDefenseBonus=>-1;
+        public override int BaseAttackRange=>InfiniteAttackRange;
+        public override AttackDamageType AttackTypeOf(AttackContext c)=>ArcaneChoices.NearFar(c);
+        public override int ScoreMoveBonus(MoveValueContext c)
+            =>c.ActedHand!=null&&c.TargetHand!=null&&c.ActedHand.Value+c.TargetHand.Value>=10?20:0;
     }
     public sealed class TrickeryDomainLogic:ClericTemplate,ITrickeryDomain
     {

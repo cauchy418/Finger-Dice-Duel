@@ -22,6 +22,7 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("knight", "paladin_oath_of_the_crown", "paladin", "王冠之誓", "Oath of the Crown"),
             new CharacterIdentity("paladin", "paladin_oath_of_devotion", "paladin", "奉献之誓", "Oath of Devotion"),
             new CharacterIdentity("oathbreaker", "paladin_oathbreaker", "paladin", "破誓者", "Oathbreaker"),
+            new CharacterIdentity("knowledge", "cleric_knowledge_domain", "cleric", "知识领域", "Knowledge Domain"),
             new CharacterIdentity("cleric", "cleric_life_domain", "cleric", "生命领域", "Life Domain"),
             new CharacterIdentity("curseweaver", "wizard_school_of_conjuration", "wizard", "咒法学派", "School of Conjuration"),
             new CharacterIdentity("hexer", "warlock_the_archfey", "warlock", "至高妖精", "The Archfey"),

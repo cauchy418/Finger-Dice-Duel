@@ -208,6 +208,7 @@
         TempestDomain = 54,
         ShadowMagic = 56,
         WayOfTheDrunkenMaster = 55,
-        CircleOfSpores = 57
+        CircleOfSpores = 57,
+        KnowledgeDomain = 58
     }
 }

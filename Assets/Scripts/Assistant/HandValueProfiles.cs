@@ -439,6 +439,8 @@ namespace FingerDiceDuel.Assistant
             // ---- 牧师·净化领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定5点火焰，真正的价值在圣火（净化 + 暂停防护 + 灼伤），
             // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。
+            Own[CharacterDefinition.KnowledgeDomainId]=new HandValueProfile().Set(9,85).Set(8,82).Set(6,78).Set(4,73).Set(5,65).Set(7,63);
+            OpponentAdjust[CharacterDefinition.KnowledgeDomainId]=new List<ValueAdjust>{new ValueAdjust(9,-10),new ValueAdjust(8,-8)};
             Own[CharacterDefinition.LightDomainId] = new HandValueProfile()
                 .Set(4, 76).Set(6, 76).Set(8, 76)
                 .Set(5, 66).Set(9, 60)

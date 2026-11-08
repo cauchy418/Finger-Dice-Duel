@@ -69,6 +69,8 @@ namespace FingerDiceDuel.Core
                 target.ApplyStatus(StatusEffect.WarBlessing,2,healer);
                 NoteSkill(healer,"战争赐福",target.Name+" 战争祝福2回合",target,new SkillVisualData(status:StatusEffect.WarBlessing));
             }
+            if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.KnowledgeDomainLogic>(healer)!=null)
+            {target.GainKnowledge(healer);NoteSkill(healer,"知识赐福",target.Name+" 知识祝福+1",target,new SkillVisualData(value:target.KnowledgeStacks,status:StatusEffect.KnowledgeBlessing));}
             Action storm=()=>{
                 if(CharacterBehaviors.FirstImplementer<ITempestDomain>(healer)!=null&&target.IsAlive)
                     ClericChoices.FreeOperation(target,this,null,true,"风暴赐福",completed);

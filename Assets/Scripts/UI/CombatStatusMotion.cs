@@ -24,6 +24,8 @@ namespace FingerDiceDuel.UI
         public void Initialize(RectTransform root,Func<PlayerState,Vector2> anchor,Func<PlayerState,Hand,Vector2> handAnchor=null){_root=root;_anchor=anchor;_handAnchor=handAnchor;}
         public static string Effect(string key)
         {
+            if(key=="Status/knowledge_blessing")return "fx_radiant";
+            if(key=="Status/confusion")return "fx_psychic";
             if(key=="Status/scorch"||key=="Status/holy_light")return "fx_fire";
             if(key=="Overlay/locked")return "chain_link";
             if(key.Contains("restrain"))return "vine_tendril";

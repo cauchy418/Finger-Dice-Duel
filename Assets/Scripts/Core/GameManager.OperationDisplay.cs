@@ -33,10 +33,14 @@ namespace FingerDiceDuel.Core
                                  bool useSecondAddend = true, bool touchTaiChi = true, bool subtract = false)
         {
             if (touchTaiChi && IsTouchedTaiChiZero(actor, addend, addendValue)) addendValue = 1;
+            bool confused=actor?.HasStatus(StatusEffect.Confusion)==true;
             int value = subtract ? Hand.ComputeDifference(sourceValue, addendValue) : Hand.ComputeSum(sourceValue, addendValue);
+            if(!subtract && confused && sourceValue+addendValue>=10)value=1;
             if (useSecondAddend && DruidForms.IsDragon(actor) && DruidSecondAddend != null)
-                value = Hand.ComputeSum(value, ReferenceEquals(addend, DruidSecondAddend)
-                    ? addendValue : DruidSecondAddend.Value);
+            {
+                int second=ReferenceEquals(addend,DruidSecondAddend)?addendValue:DruidSecondAddend.Value;
+                value=confused&&value+second>=10?1:Hand.ComputeSum(value,second);
+            }
             return value;
         }
 

@@ -48,7 +48,7 @@ namespace FingerDiceDuel.Core
             target=PrepareOperationAddend(actor,source,target,effectless:true);
             RequestTrickeryOperation(actor,source,target,()=>{},true);
             int before=source.Value,add=target.Value;bool shield=source.IsShield;
-            int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(before,add)));
+            int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,actor.HasStatus(StatusEffect.Confusion)&&before+add>=10?1:Hand.ComputeSum(before,add)));
             ApplyTrickery(actor,source,target,value,out value);
             var frame=skill=="巨龙座"?CaptureVisualFrame():null;
             source.SetValue(value);
@@ -85,7 +85,8 @@ namespace FingerDiceDuel.Core
             int turns=StatusTurnsLeft(StatusEffect.WarBlessing);var source=StatusSourceOf(StatusEffect.WarBlessing);
             int blessedTurns=StatusTurnsLeft(StatusEffect.BlessedHealing);
             var healer=StatusSourceOf(StatusEffect.BlessedHealing);
-            ClearStatuses();if(turns>0)ApplyStatus(StatusEffect.WarBlessing,turns,source);
+            int knowledge=KnowledgeStacks;
+            ClearStatuses();for(int i=0;i<knowledge;i++)GainKnowledge();if(turns>0)ApplyStatus(StatusEffect.WarBlessing,turns,source);
             if(blessedTurns>0)ApplyStatus(StatusEffect.BlessedHealing,blessedTurns,healer);
         }
     }

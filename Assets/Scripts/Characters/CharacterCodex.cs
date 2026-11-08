@@ -292,6 +292,11 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             // ---- 净化领域（中立善良，2026-10-23）----
+            Add(CharacterDefinition.KnowledgeDomainId,"Knowledge Domain",Alignment.LawfulNeutral,
+                shortSkill:"进位与回复积累知识祝福，攻击消耗追加力场与困惑。",
+                playGuide:"运算进位自己得1层，回复使目标得1层；层数保留到攻击，整次只消耗一次。",
+                counter:"闪避或取消避免追加伤害；困惑期间加法进位结果为1。",
+                interactions:new[]{"普通盾挡仍可追加力场；圣火清除知识祝福。"});
             Add(CharacterDefinition.LightDomainId, "Purification Domain", Alignment.NeutralGood,
                 shortSkill: "固定5火焰，穿透抗性免疫；命中附圣火与灼伤。治疗附圣火。",
                 playGuide: "三个攻击数字均为固定5伤。圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；防护暂停生效但继续计时。",

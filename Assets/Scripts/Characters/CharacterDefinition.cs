@@ -535,6 +535,9 @@ namespace FingerDiceDuel.Core
         public const string WayOfTheDrunkenMasterId="monk_way_of_the_drunken_master";
         public static CharacterDefinition WayOfTheDrunkenMaster {get;}=new CharacterDefinition(WayOfTheDrunkenMasterId,"武僧·醉拳宗",SpecialLogicType.WayOfTheDrunkenMaster,englishName:"Way of the Drunken Master",description:"气初始2、上限6。打出9先回复，再可入醉。醉拳中所有数字攻击，每段基础1d10；受到攻击每段改为1d5。回合开始消耗1气维持，气不足解除。");
 
+        public const string KnowledgeDomainId="cleric_knowledge_domain";
+        public static CharacterDefinition KnowledgeDomain {get;}=new CharacterDefinition(KnowledgeDomainId,"牧师·知识领域",SpecialLogicType.KnowledgeDomain,defenseBonus:-1,englishName:"Knowledge Domain",description:"运算进位获得1层知识祝福；回复给目标1层知识祝福，保留至攻击消耗。攻击消耗所有层数，命中后独立追加等层力场伤害，并附困惑2回合。");
+
         public static CharacterDefinition[] BuiltIn { get; } =
         {
             // ⚠️ 白板已被战士·勇士取代（玩家要求）—— 白板不再出现在选择列表里。
@@ -550,7 +553,7 @@ namespace FingerDiceDuel.Core
             CircleOfTheLand, CircleOfSpores, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, ShadowMagic, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
-            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster
+            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster, KnowledgeDomain
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

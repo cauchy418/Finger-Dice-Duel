@@ -1,0 +1,23 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "id": "cleric_knowledge_domain",
+      "prompt": "A single production-ready dark fantasy tabletop RPG KNOWLEDGE DOMAIN CLERIC subclass emblem. Centered circular antique aged-gold double metal frame with four elegant diamond finials at cardinal points. Black iron recessed interior. Painterly subject: an ancient illuminated open scripture on a low altar, a luminous ivory-blue all-seeing eye suspended above its open pages, a fine antique gold quill crossing below, faint sacred halo and dust motes. Scholarly divine wisdom, solemn sacred archive, no wizard wand, no human figure. Rich hand-painted texture, tarnished metal glints, clear silhouette readable at 64 pixels. No text, no letters, no watermark. Perfectly centered complete badge with breathing space so no finials touch canvas edges; outside badge truly transparent. Square 1024x1024.",
+      "source": "Art/Production/knowledge-domain/cleric_knowledge_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_knowledge_domain.png"
+    },
+    {
+      "id": "knowledge_blessing",
+      "prompt": "A single dark fantasy RPG positive character status icon KNOWLEDGE BLESSING, square icon. Thin ornate aged antique-gold square frame with gothic pointed corner ornaments, black iron inset background. Painterly subject: three slightly staggered ancient gilded scripture pages glowing with a small brilliant ivory-blue star of divine insight above them, tiny gold dust motes, restrained luminous halo. Express accumulating sacred knowledge; clean readable composition at 48 pixels. Match richly hand painted dark fantasy inventory icons, worn gold frame and tangible brush texture. No text, letters, numbers, watermark or extra panel. Complete square frame inset slightly from image edges; truly transparent outside margin. 1024x1024.",
+      "source": "Art/Production/knowledge-domain/knowledge_blessing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/knowledge_blessing.png"
+    },
+    {
+      "id": "confusion",
+      "prompt": "A single dark fantasy RPG negative condition icon CONFUSION. Square thin ornate aged antique gold frame with gothic pointed corner details and black iron inset background. Painterly subject: a ghostly blue-violet human head in profile with the skull opening into a tangled luminous spiral labyrinth, broken intertwined strands of thought circling the head, unsettling but elegant. Clear strong central silhouette, violet and pale blue glow distinct from a purple eye icon. Hand painted miniature fantasy inventory illustration, tactile brushwork and aged gold highlights. No text, no letters, no numbers, no watermark. The whole square frame is visible with a narrow truly transparent outer margin. 1024x1024.",
+      "source": "Art/Production/knowledge-domain/confusion.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/confusion.png"
+    }
+  ]
+}

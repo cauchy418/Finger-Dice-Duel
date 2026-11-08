@@ -336,7 +336,7 @@ namespace FingerDiceDuel.Core
             character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "23种负面状态。圣火、剑歌、战争祝福、醉拳、神佑医者为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；物理易伤见抗性、易伤与免疫页。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
+                "24种负面状态（物理易伤另列伤害修正页）。圣火、剑歌、战争祝福、醉拳、神佑医者、知识祝福为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；物理易伤见抗性、易伤与免疫页。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>

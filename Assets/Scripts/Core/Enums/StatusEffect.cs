@@ -118,6 +118,8 @@
         BlessedHealing = 25,
         PhysicalVulnerability = 26,
         Scorch = 27,
+        KnowledgeBlessing = 28,
+        Confusion = 29,
     }
 
     /// <summary>
@@ -172,6 +174,8 @@
         {
             switch (status)
             {
+                case StatusEffect.KnowledgeBlessing: return "knowledge_blessing";
+                case StatusEffect.Confusion: return "confusion";
                 case StatusEffect.Scorch: return "scorch";
                 case StatusEffect.Resonance: return "resonance";
                 case StatusEffect.Acid: return "acid";
@@ -227,6 +231,8 @@
         {
             switch (status)
             {
+                case StatusEffect.KnowledgeBlessing: return "知识祝福";
+                case StatusEffect.Confusion: return "困惑";
                 case StatusEffect.Scorch: return "灼伤";
                 case StatusEffect.Resonance: return "残响";
                 case StatusEffect.Acid: return "强酸";
@@ -263,6 +269,8 @@
         {
             switch (status)
             {
+                case StatusEffect.KnowledgeBlessing: return "层数保留到攻击；消耗全部层数，命中后追加等层力场伤害，并附困惑2回合。";
+                case StatusEffect.Confusion: return "加法运算的和达到10或以上时，结果改为1。";
                 case StatusEffect.Scorch: return "回复后立即受到实际回复量一半的火焰伤害，向上取整；无实际回复不触发。";
                 case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。";
                 case StatusEffect.Resonance:
@@ -355,7 +363,7 @@
         /// <summary>与手册的负面效果分类一致；角色状态不参与格挡／抗性减时长。</summary>
         public static bool IsNegativeStatus(StatusEffect status)
             => status != StatusEffect.None && status != StatusEffect.HolyLight
-                && status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing;
+                && status != StatusEffect.KnowledgeBlessing && status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing;
 
         public static string ResourceKeyOf(StatusEffect status)
             => status == StatusEffect.BlessedHealing ? "Subclasses/cleric_life_domain"
@@ -373,7 +381,7 @@
             StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
             StatusEffect.HolyLight,
             StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
-            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability, StatusEffect.Scorch,
+            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability, StatusEffect.Scorch, StatusEffect.KnowledgeBlessing, StatusEffect.Confusion,
         };
 
         /// <summary>
@@ -439,6 +447,8 @@
                 case StatusEffect.PhysicalVulnerability: return 0xCC6852;
                 case StatusEffect.DarknessBlind: return 0x67558D;
                 case StatusEffect.Tinnitus: return 0xB99DCD;
+                case StatusEffect.KnowledgeBlessing: return 0xCFC283;
+                case StatusEffect.Confusion: return 0x9783D5;
                 case StatusEffect.Scorch: return 0xF16C32;
                 case StatusEffect.HolyLight: return 0xFFE194;  // 圣火暖金（浅于目盲的亮金）
                 case StatusEffect.Restrained: return 0x638653;
@@ -485,6 +495,8 @@
                 case StatusEffect.BlessedHealing: return "✦";
                 case StatusEffect.DarknessBlind: return "◈";
                 case StatusEffect.Tinnitus: return "≋";
+                case StatusEffect.KnowledgeBlessing: return "▤";
+                case StatusEffect.Confusion: return "∯";
                 case StatusEffect.Scorch: return "✹";
                 case StatusEffect.HolyLight: return "✚";    // ✚ 圣火（重十字）
                 case StatusEffect.Restrained: return "♧";

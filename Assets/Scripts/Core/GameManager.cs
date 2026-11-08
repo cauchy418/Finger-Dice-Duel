@@ -2595,7 +2595,11 @@ namespace FingerDiceDuel.Core
             else
             {
                 bool subtract = ShouldSubtract(actor);
+                bool carried=!subtract && result.ActedHandValueBefore+targetValue>=10;
                 effect = actedHand.PerformOperation(targetValue, subtract);
+                if(carried && actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;}
+                if(carried && CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null)
+                {actor.GainKnowledge(actor);NoteSkill(actor,"岁月知识","知识祝福+1",actor,new SkillVisualData(value:actor.KnowledgeStacks,status:StatusEffect.KnowledgeBlessing));}
                 if (subtract)
                 {
                     result.WasSubtraction = true;
@@ -2605,7 +2609,12 @@ namespace FingerDiceDuel.Core
                 if(DruidForms.IsDragon(actor)&&DruidSecondAddend!=null)
                 {
                     result.SecondAddendValue=DruidSecondAddend.Value;
-                    effect=actedHand.PerformOperation(result.SecondAddendValue);
+                    int previous=actedHand.Value;effect=actedHand.PerformOperation(result.SecondAddendValue);
+                    if(previous+result.SecondAddendValue>=10)
+                    {
+                        if(actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;}
+                        if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null)actor.GainKnowledge(actor);
+                    }
                     NoteSkill(actor,"巨龙座",$"再加 {result.SecondAddendValue}，结果 {actedHand.Value}");
                 }
             }
