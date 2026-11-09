@@ -2,7 +2,8 @@ param(
     [switch]$Run,
     [string]$Date = '2026-11-09',
     [string]$Directory = '2026-11-09-state-ai',
-    [string]$Baseline = ''
+    [string]$Baseline = '',
+    [string]$RuntimeVersion = '8.0.15'
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
@@ -41,6 +42,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Provenance capture failed' }
 $manifestPath = Join-Path $sampleRoot 'provenance.json'
 $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
 $manifest | Add-Member -NotePropertyName sampler_assembly_sha256 -NotePropertyValue $samplerHash
+$manifest | Add-Member -NotePropertyName sampler_runtime_version -NotePropertyValue $RuntimeVersion
 [System.IO.File]::WriteAllText((Join-Path $projectRoot $manifestPath), ($manifest | ConvertTo-Json -Depth 8), (New-Object System.Text.UTF8Encoding($false)))
 
 $baselineHash = (Get-FileHash -LiteralPath $Baseline -Algorithm SHA256).Hash
@@ -53,12 +55,12 @@ foreach ($mode in @('audit', '1v1', '2v2', 'dual', 'eight', 'identity', 'identit
     }
     $env:FDD_REVISION_MODE = $mode
     if ((Get-FileHash -LiteralPath $samplerBinary -Algorithm SHA256).Hash -ne $samplerHash) { throw 'Sampler binary changed during the round' }
-    dotnet $samplerBinary RevisionBalanceTests |
+    dotnet --fx-version $RuntimeVersion $samplerBinary RevisionBalanceTests |
         Tee-Object -Variable modeLog
     $modeLog | Out-File -LiteralPath "$sampleRoot/$mode.log" -Encoding utf8
     if ($LASTEXITCODE -ne 0) { throw "Sampling failed: $mode" }
 }
-dotnet $samplerBinary --skip-statistics |
+dotnet --fx-version $RuntimeVersion $samplerBinary --skip-statistics |
     Tee-Object -Variable regressionLog
 $regressionLog | Out-File -LiteralPath "$sampleRoot/regression.log" -Encoding utf8
 if ($LASTEXITCODE -ne 0) { throw 'Regression failed' }
