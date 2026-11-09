@@ -35,6 +35,34 @@ namespace FingerDiceDuel.Tests
         {var g=Match();g.PlayerA.GainKnowledge();new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.RightHand,4,g).Resolve(g.GetChoiceProvider(g.PlayerB),g);var cues=g.DrainCombatVisuals();var consume=cues.Single(e=>e.RedirectKind=="知识祝福"&&e.SkillData.Variant=="consume");Assert.AreEqual(1,consume.SkillData.Previous);Assert.AreEqual(0,consume.SkillData.Value);Assert.IsTrue(cues.Any(e=>e.RedirectKind=="困惑"&&e.SkillData.Variant=="apply"&&e.Target==g.PlayerB));}
         [Test] public void Giant_recovery_reports_healing_before_scorch_damage()
         {var g=Match(CharacterDefinition.PathOfTheGiant);g.PlayerA.SetHealthExact(10);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2);g.PlayerA.LeftHand.SetValue(8);g.PlayerA.RightHand.SetValue(3);g.PlayerB.LeftHand.SetValue(1);g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);var cue=g.DrainCombatVisuals().Single(e=>e.RedirectKind=="巨人恢复");Assert.AreEqual(6,cue.SkillData.Value);Assert.AreEqual(12,g.PlayerA.Health);}
+        [Test] public void Warden_force_conversion_has_a_real_incoming_element_payload()
+        {var g=Match(CharacterDefinition.Blank,CharacterDefinition.PathOfTheWarden);g.PlayerB.SetHealthExact(15);g.DeferWizardChoice=r=>{r.ChooseOption(1);return true;};new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.RightHand,4,g){AttackType=AttackDamageType.Fire}.Resolve(g.GetChoiceProvider(g.PlayerB),g);var cue=g.DrainCombatVisuals().Single(e=>e.RedirectKind=="守望誓约");Assert.IsTrue(SecondarySkillAnimation.Find(cue.RedirectKind)!=null);Assert.AreEqual((int)AttackDamageType.Fire,cue.SkillData.Previous);Assert.AreEqual(AttackDamageType.Force,cue.SkillData.Element);Assert.AreEqual(g.PlayerB,cue.Target);}
+        [Test] public void Transmutation_extra_operation_reports_the_completed_source_and_result_once()
+        {var g=Match(CharacterDefinition.SchoolOfTransmutation);var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(8);a.RightHand.SetValue(6);b.LeftHand.SetValue(6);b.RightHand.SetValue(4);var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider());board.BeginTurn();board.ClickHand(a.LeftHand);board.ClickHand(b.LeftHand);board.ConfirmTargetPlayer();board.ChooseWizardHand(b.LeftHand);board.ChooseSkillOption(1);g.ClearCombatVisuals();board.ClickHand(a.LeftHand);board.ClickHand(b.RightHand);board.ConfirmTargetPlayer();var cue=g.DrainCombatVisuals().Single(e=>e.RedirectKind=="变化莫测");Assert.IsTrue(SecondarySkillAnimation.Find(cue.RedirectKind)!=null);Assert.AreEqual(a.LeftHand,cue.SkillData.Source);Assert.AreEqual(4,cue.SkillData.Previous);Assert.AreEqual(8,cue.SkillData.Value);}
+        [Test] public void Magician_emits_the_current_trickery_skill_name()
+        {var g=Match(CharacterDefinition.Magician);g.PlayerA.LeftHand.SetValue(1);g.PlayerB.LeftHand.SetValue(1);g.ExecuteTurn(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);var cue=g.DrainCombatVisuals().Single(e=>e.RedirectKind=="诡术打击");Assert.IsTrue(SecondarySkillAnimation.Find(cue.RedirectKind)!=null);Assert.AreEqual(2,cue.SkillData.Value);}
+        [Test] public void Wolf_lifesteal_reports_actual_healing()
+        {var g=Match(CharacterDefinition.CircleOfTheMoon);g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);Assert.IsTrue(g.PlayerA.EnterWild(2,0,g));g.PlayerA.SetHealthExact(5);g.ClearCombatVisuals();new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(g.PlayerB),g);var cue=g.DrainCombatVisuals().Single(e=>e.RedirectKind=="狼形态");Assert.AreEqual(2,cue.SkillData.Value);}
+        [Test] public void Every_literal_skill_event_has_a_registered_route_or_explicit_existing_presentation()
+        {
+            // These names are prose companions of already-recorded non-Skill events or snapshots.
+            var alternatives=new System.Collections.Generic.HashSet<string>(new[]{
+                "仇敌誓言","守护之誓","憎恨灵光","妖精步伐·取消攻击","梦幻舞步", // VowTransfer / Attack redirect / Attack dodge
+                "恐惧打击","惧怖收割","次级咒术","潇洒无畏","灭族者", // real Attack, including free/extra attacks
+                "双九回复", // CleanseAndHeal records 维持生命 with the actual recipient and healing
+                "伤害免疫","伤害易伤","施加状态","附加抵挡","耳鸣","油腻","附魔", // Attack/frame/status icons, not extra successes
+                "刻印","回廊重赋","折光外壳","推开路障","操演护持","整装迎战","架盾","架盾试验","注水铭刻","演练调律","稳弦","符文换装","训练整备" // campaign UI, hands, shields and frames
+            });
+            var root=System.IO.Path.GetFullPath("Assets/Scripts");
+            foreach(var file in System.IO.Directory.GetFiles(root,"*.cs",System.IO.SearchOption.AllDirectories))
+            {
+                if(file.Contains(System.IO.Path.DirectorySeparatorChar+"UI"+System.IO.Path.DirectorySeparatorChar))continue;
+                string source=System.IO.File.ReadAllText(file);
+                foreach(System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(source,@"(?:NoteSkill|RecordSkillVisual)\([^
+]*?,\s*""([^""]+)"""))
+                {string name=match.Groups[1].Value;Assert.IsTrue(SkillVisualProfiles.Key(name)!=null||alternatives.Contains(name),name+" in "+file);}
+            }
+        }
         private sealed class CountRandom:Random
         {public int Calls;public override int Next(int maxValue){Calls++;return Calls==1?40:56;}}
         [Test] public void Wild_magic_visuals_do_not_roll_again_or_change_per_hit_results()

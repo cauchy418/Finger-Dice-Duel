@@ -48,6 +48,11 @@ namespace FingerDiceDuel.UI
                     Picture(0,p.Sprite,target,100,pulse);
                     for(int i=0;i<3;i++)Picture(i+1,"fx_fire",target+new Vector2((i-1)*35,move*65),100,pulse*.65f,0,null,red);
                     Digit(0,"灼伤 −"+value,target+Vector2.up*70,pulse,red);break;
+                case SecondarySkillStyle.ForceShell:
+                    Picture(0,"fx_force",target,165,pulse,60*t,null,blue);
+                    Orbit(1,target,"fx_force",78-22*move,70,5,-100*t,pulse*.65f,blue);
+                    if(d!=null&&d.Previous>0){var previous=(AttackDamageType)d.Previous;string oldFx=AttackDamageTypes.IsMagic(previous)?"fx_"+AttackDamageTypes.IconKeyOf(previous):"fx_impact";Picture(7,oldFx,target+Vector2.up*(65+55*move),90,pulse*(1-move),0,null,ElementColor(previous));}
+                    Digit(0,"转为力场",target+Vector2.up*65,pulse,blue);break;
                 case SecondarySkillStyle.Strike:
                     Picture(0,p.Sprite,from+Vector2.up*30,175+(p.Flavor=="giant"?80:30)*pulse,pulse,-65+90*move);
                     Orbit(1,from,"fx_slash",45+30*move,95,3,150*t,pulse*.7f,p.Flavor=="shadow"?purple:gold);break;
@@ -166,6 +171,7 @@ namespace FingerDiceDuel.UI
                     Digit(0,p.Flavor=="growth"?"层 "+value:value,Arc(p.Flavor=="consume"?origin:from,p.Flavor=="consume"?target:origin,move,65),pulse,gold);
                     if(p.Flavor=="growth")Orbit(1,origin,"fx_radiant",70,65,6,120*t,pulse*.6f);break;
                 case SecondarySkillStyle.Wind:
+                    if(p.Flavor=="transmutation")Picture(5,p.Sprite,from+Vector2.down*60,66,pulse*.65f);
                     if(e.RedirectKind=="诡术赐福")
                     {Picture(0,"fx_psychic",to,130,pulse,90*t);Digit(0,old+" → "+value,to+Vector2.up*65,pulse,purple);break;}
                     for(int i=0;i<4;i++)Picture(i,"fx_slash",from+new Vector2(50*move,(i-1.5f)*22),90,pulse*.4f,-25+35*t,null,blue);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
-    public enum SecondarySkillStyle { Arrows, Book, Cards, Charm, Circuit, Cleanse, Dice, Dragon, Drain, Drunk, ElementFist, ElementGuard, Enchant, Eye, FalseLife, Growth, Hand, Heal, Ki, Maneuver, Measure, Music, Nightmare, Rage, Repair, Steal, Strike, Sun, Surge, TaichiBoost, Tether, Wind, Convert, Knowledge, Confusion, HolyFlame, Scorch }
+    public enum SecondarySkillStyle { Arrows, Book, Cards, Charm, Circuit, Cleanse, Dice, Dragon, Drain, Drunk, ElementFist, ElementGuard, Enchant, Eye, FalseLife, Growth, Hand, Heal, Ki, Maneuver, Measure, Music, Nightmare, Rage, Repair, Steal, Strike, Sun, Surge, TaichiBoost, Tether, Wind, Convert, ForceShell, Knowledge, Confusion, HolyFlame, Scorch }
     public sealed class SecondarySkillProfile
     {
         public string Skill {get;} public SecondarySkillStyle Style {get;} public string Sprite {get;} public int Priority {get;} public string Flavor {get;}
@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
             list["快手"]=new SecondarySkillProfile("快手",SecondarySkillStyle.Steal,"Hands/hand_right_2",2,"");
             list["死亡突袭"]=new SecondarySkillProfile("死亡突袭",SecondarySkillStyle.Strike,"weapon_sword",2,"shadow");
             list["法师之手"]=new SecondarySkillProfile("法师之手",SecondarySkillStyle.Hand,"spectral_hand",2,"");
-            list["魔术攻击"]=new SecondarySkillProfile("魔术攻击",SecondarySkillStyle.Cards,"Subclasses/rogue_magician",2,"");
+            list["诡术打击"]=new SecondarySkillProfile("诡术打击",SecondarySkillStyle.Cards,"Subclasses/rogue_magician",2,"");
             list["太极八卦"]=new SecondarySkillProfile("太极八卦",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
             list["借力打力"]=new SecondarySkillProfile("借力打力",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
             list["阴阳流转"]=new SecondarySkillProfile("阴阳流转",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
@@ -91,6 +91,9 @@ namespace FingerDiceDuel.Core
             list["风暴赐福"]=new SecondarySkillProfile("风暴赐福",SecondarySkillStyle.Wind,"fx_slash",2,"");
             list["复仇之魂"]=new SecondarySkillProfile("复仇之魂",SecondarySkillStyle.Wind,"fx_slash",2,"");
             list["诡术赐福"]=new SecondarySkillProfile("诡术赐福",SecondarySkillStyle.Wind,"fx_psychic",2,"");
+            list["守望誓约"]=new SecondarySkillProfile("守望誓约",SecondarySkillStyle.ForceShell,"fx_force",1,"");
+            list["变化莫测"]=new SecondarySkillProfile("变化莫测",SecondarySkillStyle.Wind,"Status/polymorph",1,"transmutation");
+            list["狼形态"]=new SecondarySkillProfile("狼形态",SecondarySkillStyle.Heal,"Forms/moon_wolf",2,"");
             return list;
         }
     }

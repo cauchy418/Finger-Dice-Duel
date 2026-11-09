@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
@@ -95,7 +95,7 @@ namespace FingerDiceDuel.Core
         {if(ctx.IsStatusDamage||ctx.IsReflected)return;if(F==5)ctx.FinalDamage+=ctx.Manager.DistanceBetween(ctx.Attacker,ctx.Defender);if(F==6)ctx.InflictsBleed=true;}
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>ArcaneChoices.ElementStatus(ctx.AttackType);
         public void OnCompletedDamage(AttackContext ctx,GameManager game)
-        {if(F==2&&!ctx.IsStatusDamage&&!ctx.IsReflected&&ctx.ActualHealthDamage>0&&ctx.Attacker.IsAlive){int before=_owner.Health;_owner.Heal(ctx.ActualHealthDamage/2);game.NoteSkill(_owner,"狼形态","回复"+(_owner.Health-before),_owner);}}
+        {if(F==2&&!ctx.IsStatusDamage&&!ctx.IsReflected&&ctx.ActualHealthDamage>0&&ctx.Attacker.IsAlive){int before=_owner.Health;_owner.Heal(ctx.ActualHealthDamage/2);game.NoteSkill(_owner,"狼形态","回复"+(_owner.Health-before),_owner,new SkillVisualData(value:_owner.LastActualHealing));}}
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {
             if(!ReferenceEquals(game.CurrentPlayer,owner)||S!=3||!StatusRules.CanAct(owner))return;

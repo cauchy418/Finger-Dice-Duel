@@ -177,7 +177,7 @@ namespace FingerDiceDuel.Core
                     && CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(warden)!=null)
                 {
                     var oath=new WizardChoice(warden,"守望誓约 · 来袭攻击改为力场，清除附加状态与元素反应？",NewSubclassChoices.YesNo("守望誓约","Subclasses/barbarian_path_of_the_warden"),v=>{
-                        if(v==1&&warden.IsAlive&&warden.Health<=15){incoming.ConvertToWardenForce();NoteSkill(warden,"守望誓约","来袭攻击改为力场",warden,new SkillVisualData(element:AttackDamageType.Force));}
+                        if(v==1&&warden.IsAlive&&warden.Health<=15){var previous=incoming.AttackType;incoming.ConvertToWardenForce();NoteSkill(warden,"守望誓约","来袭攻击改为力场",warden,new SkillVisualData(previous:(int)previous,element:AttackDamageType.Force,variant:"convert"));}
                         OfferTempestReaction(incoming,completed);
                     });
                     if(DeferWizardChoice?.Invoke(oath)!=true)oath.ChooseOption(SkillChoicePolicy.Choose("warden_oath",oath.Options,warden,incoming.Attacker,this));

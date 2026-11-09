@@ -136,7 +136,7 @@ namespace FingerDiceDuel.Core
             // 若不压，别的机制可能按 4 去分段（例如双将里配战士·魔射手）。
             context.HitCount = 1;
             context.FinalDamage = MagicAttackValue;
-            context.Manager?.NoteSkill(context.Attacker, "魔术攻击", "运算出 2，转为攻击",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
+            context.Manager?.NoteSkill(context.Attacker, "诡术打击", "运算出 2，转为攻击",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
         }
 
         public override void OnMatchReset(PlayerState owner, GameManager manager)

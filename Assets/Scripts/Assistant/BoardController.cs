@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -1049,7 +1049,7 @@ namespace FingerDiceDuel.Assistant
                 };
                 _game.ForceActivePlayerForTest(caster);
                 ActivePlayer = caster;
-                _game.NoteSkill(caster, "变化莫测", "额外运算");
+                _game.NoteSkill(caster, "变化莫测", "额外运算",caster,new SkillVisualData(variant:"log-only"));
                 FlushSkillLog();
                 SetupFirstStep();
                 return true;
@@ -4269,6 +4269,7 @@ namespace FingerDiceDuel.Assistant
             {
             SnapshotCollegeOfValorEligibility();
             _game.SuppressAttackDamage=false;_game.RangeOverride=-1;_game.DamageTargetPlayer=null;_giveUpAttack=false;
+            if(wasTransmutationOperation)_game.RecordSkillVisual(result.Actor,"变化莫测",result.Actor,new SkillVisualData(source:result.ActedHand,value:result.ResultValue,previous:result.ActedHandValueBefore,variant:"operation"));
             LastTurn = result;
             LastTurnNumber = _game.TurnCount;
             CompletedActions++;
