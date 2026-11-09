@@ -109,6 +109,6 @@ namespace FingerDiceDuel.Assistant
             return best;
         }
         public int ExchangeValue(PlayerState owner, int value)
-            => HandValueProfiles.For(owner?.Definition).WeightOf(value);
+            => ActiveHandValueProfile(owner).WeightOf(value);
     }
 }

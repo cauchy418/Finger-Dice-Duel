@@ -5,6 +5,35 @@ namespace FingerDiceDuel.Assistant
 {
     public sealed partial class GreedyChoiceProvider
     {
+        private static double PortentOptionScore(int value,PlayerState owner,PlayerState actor,GameManager game)
+        {
+            if(value<0)return 1;
+            if(actor==null||game==null)return -100;
+            double difference=PortentOutcomeValue(actor,value,game)-PortentOutcomeValue(actor,game.CurrentPortentResult,game);
+            var book=CharacterBehaviors.FirstImplementer<IPortentBook>(owner);
+            int growthCost=book?.Portents.Count>0&&book.Portents.Count%3==0?2:0;
+            return (ReferenceEquals(owner,actor)||game.IsKnownAlly(owner,actor)?difference:-difference)-1-growthCost;
+        }
+        private static double PortentOutcomeValue(PlayerState actor,int value,GameManager game)
+        {
+            var effect=DivineScoredEffect(actor,value,game);
+            if(effect==HandEffectType.Heal)
+                return StatusRules.CanHeal(actor)?Math.Min(9,actor.MaximumHealth-actor.Health):0;
+            if(effect==HandEffectType.Shield)return actor.HasStatus(StatusEffect.Tinnitus)?0:5;
+            if(!IsAttackEffect(effect))return 0;
+            double best=0;
+            foreach(var enemy in game.OpponentsOf(actor))
+            {
+                if(!enemy.IsAlive||game.IsKnownAlly(actor,enemy)||!game.CanReach(actor,enemy)
+                    ||!StatusRules.CanAttackTarget(actor,enemy,game)||FeyCanCancel(enemy,value)
+                    ||(enemy.Character as IAttackTargetRule)?.IsImmuneToAttack(enemy)==true)continue;
+                int damage=EstimateAttackDamage(actor,enemy,value,game);
+                // Portent is scarce: a fully blocked normal hit only breaks a shield.
+                bool shield=enemy.LeftHand.IsShield||enemy.RightHand.IsShield;
+                best=Math.Max(best,shield?Math.Min(2,damage):damage);
+            }
+            return best;
+        }
         private static double MonkOptionScore(string key,int value,PlayerState owner,PlayerState target,GameManager game)
         {
             if(value==0)return 1;

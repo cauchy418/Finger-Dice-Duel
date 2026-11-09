@@ -1,21 +1,25 @@
 """Validate fresh seeded sampling against the runtime-exported roster."""
 from pathlib import Path
 import argparse, collections, csv, hashlib, json, subprocess
+from statistics_common import comparison, verify, source_hash
 
 parser = argparse.ArgumentParser(__doc__)
-parser.add_argument('--date', default='2026-11-06')
+parser.add_argument('--date', default='2026-11-09')
 parser.add_argument('--directory', help='Snapshot directory name, relative to Tools/Statistics')
 parser.add_argument('--log-prefix', default='Tools/HeadlessTests/bin/druid-57-')
 parser.add_argument('--optimized-ai', action='store_true')
 parser.add_argument('--balance', action='store_true')
 parser.add_argument('--ranger', action='store_true')
 parser.add_argument('--arcane', action='store_true')
+parser.add_argument('--state-ai', action='store_true', help='Current state/AI round; requires captured provenance and 58 roles / 532 duals')
+parser.add_argument('--baseline', type=Path, help='Previous results.json to embed as a comparison in the current report')
 parser.add_argument('--refresh-docs', action='store_true',
                     help='Validate published data and preserve its original sampling provenance')
 parser.add_argument('--update-roster', action='store_true', help='Synchronize the eight-player tables in Docs/roster.md')
 args = parser.parse_args()
+full_identity = args.arcane or args.state_ai
 root = Path(__file__).resolve().parents[2]
-out = root / 'Tools/Statistics' / (args.directory or args.date)
+out = root / 'Tools/Statistics' / (args.directory or (args.date + '-state-ai' if args.state_ai else args.date))
 roles = list(csv.DictReader((out / 'roster.tsv').read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
 ids = {r['id'] for r in roles}
 assert len(ids) == len(roles) and len(roles) > 1
@@ -23,14 +27,17 @@ axes = collections.Counter(r['axis'] for r in roles)
 n = len(roles)
 pairs = n * (n - 1) // 2
 duals = sum(k * (k - 1) // 2 for k in axes.values())
+if args.state_ai:
+    assert (n, duals) == (58, 532), (n, duals)
+    assert args.baseline or args.refresh_docs, '--state-ai requires --baseline'
 expected = {'1v1': pairs * 20, '2v2': pairs * 16, 'dual': duals * 8, 'eight': 600, 'identity': 600}
-if args.arcane:
+if full_identity:
     expected.update({'identity': 2000, 'identity-preferred': 600})
 totals, counts, mode_rows, identity_roles = {}, {}, {}, {}
 for mode, size in expected.items():
     path = out / (mode + '.csv')
     rows = list(csv.DictReader(path.open(encoding='utf-8-sig')))
-    log_path = out / (mode + '.log') if args.refresh_docs else root / (args.log_prefix + mode + '.log')
+    log_path = out / (mode + '.log') if args.refresh_docs or args.state_ai else root / (args.log_prefix + mode + '.log')
     log = log_path.read_text(encoding='utf-8-sig')
     mode_rows[mode] = rows
     assert len(rows) == size and '通过 1 / 失败 0' in log and 'zero errors / forced aborts' in log, mode
@@ -55,7 +62,7 @@ for mode, size in expected.items():
         first_counts = collections.Counter(r['first'] for r in rows)
         assert len(first_counts) == (pairs if mode == '2v2' else duals)
         assert set(first_counts.values()) == {16 if mode == '2v2' else 8}
-    if args.arcane and mode.startswith('identity'):
+    if full_identity and mode.startswith('identity'):
         by_role_path = out / (mode + '-roles.tsv')
         role_rows = list(csv.DictReader(by_role_path.read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
         identity_roles[mode] = role_rows
@@ -80,7 +87,7 @@ for mode, size in expected.items():
     counts[mode] = stats
     totals[mode] = {'games': size, 'draws': sum(int(r['winner']) == -1 for r in rows), 'errors': 0,
                     'forced_aborts': 0, 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
-    if not args.refresh_docs:
+    if not args.refresh_docs and log_path != out / (mode + '.log'):
         (out / (mode + '.log')).write_text(log, encoding='utf-8')
 
 def rate(wins, games):
@@ -122,37 +129,49 @@ for mode, records in identity_roles.items():
     assert sum(summary[r]['wins'] for r in ('Lord', 'Rebel', 'Traitor')) + totals[mode]['draws'] == expected[mode]
     identity_summary[mode] = summary
 
-def source_hash(folder):
-    digest = hashlib.sha256()
-    for path in sorted((root / folder).rglob('*.cs')):
-        digest.update(path.relative_to(root).as_posix().encode())
-        digest.update(path.read_bytes())
-    return digest.hexdigest()
-
 report = {'date': args.date, 'roster_count': n, 'law_axis_counts': [axes[a] for a in ('守序', '中立', '混乱')],
           'legal_duals': duals, 'source_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),
-          'source_sha256': source_hash('Assets/Scripts'), 'test_source_sha256': source_hash('Assets/Tests'),
+          'source_sha256': source_hash(root, 'Assets/Scripts'), 'test_source_sha256': source_hash(root, 'Assets/Tests'),
           'roster_sha256': hashlib.sha256((out / 'roster.tsv').read_bytes()).hexdigest(),
           'seeded_drunk_rng': True, 'totals': totals,
           'roles': [{**r, 'modes': {m: counts[m][r['id']] for m in counts}} for r in roles],
           'limitations': ['固定AI策略采样，不代表真人胜率或最优权重。',
                           f'2v2为固定队伍偏移配桌；双将为{duals}组合固定偏移抽样，并非全部组合两两循环。',
-                          '八人身份偏好以独立的2,000局随机身份样本拟合，另用600局验证实际候选偏好。角色出场不均衡。' if args.arcane
+                          '八人身份偏好以独立的2,000局随机身份样本拟合，另用600局验证实际候选偏好。角色出场不均衡。' if full_identity
                           else '八人两表各600局，角色出场不均衡，不宜比较小差异。',
-                          '反映本轮九个子职的规则和AI更新，并复查57子职策略和开局对策。' if args.arcane
+                          f'反映本轮状态AI和角色规则更新，并复查{n}子职策略和开局对策。' if args.state_ai
+                          else '反映本轮九个子职的规则和AI更新，并复查57子职策略和开局对策。' if args.arcane
                           else '五模式反映游侠职业调整及相关策略和对策更新后的配置。' if args.ranger
                           else '五模式反映八子职调整和全角色策略复查后的配置。' if args.balance
                           else '权重采用独立留出验证，五模式结果反映最终配置。' if args.optimized_ai
                           else '本轮只重新测量现有AI，没有调整角色数值或进行自身／针对权重的独立留出寻优。']}
+if args.state_ai and not args.refresh_docs:
+    provenance = json.loads((out / 'provenance.json').read_text(encoding='utf-8'))
+    verify(root, provenance)
+    report.update(provenance)
+    report['identity_preference_sha256'] = hashlib.sha256((out / 'identity-roles.tsv').read_bytes()).hexdigest()
+    audit = list(csv.DictReader((out / 'ai-audit.tsv').read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
+    assert len(audit) == n and {r['id'] for r in audit} == ids
+    audit_log = (out / 'audit.log').read_text(encoding='utf-8-sig')
+    assert f'{n} roles, {n*n*3} legal opening decisions' in audit_log and '通过 1 / 失败 0' in audit_log
+    regression_log = (out / 'regression.log').read_text(encoding='utf-8-sig')
+    assert '失败 0' in regression_log and '通过 0 /' not in regression_log
+    report['ai_audit'] = {'roles': n, 'legal_opening_checks': n*n*3,
+                          'sha256': hashlib.sha256((out / 'ai-audit.tsv').read_bytes()).hexdigest()}
 if args.refresh_docs:
     published = json.loads((out / 'results.json').read_text(encoding='utf-8'))
     assert published['date'] == args.date and published['roles'] == report['roles']
     assert published['totals'] == totals and published['roster_sha256'] == report['roster_sha256']
     report = published  # 补表不能把当前提交或源码指纹冒充为原始采样版本。
 report['eight_player_summary'] = {'factions': faction_summary, 'identities': identity_summary}
+if args.baseline:
+    baseline = json.loads(args.baseline.read_text(encoding='utf-8'))
+    report['previous_round_comparison'] = comparison(report, baseline)
+    report['previous_round_comparison']['baseline_sha256'] = hashlib.sha256(args.baseline.read_bytes()).hexdigest()
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 total = sum(expected.values())
-description = ('采用新版龙族、风暴、奉献、战争及法师技能，并更新防护学派和相关AI' if args.arcane
+description = ('采用最新状态AI与角色规则，并复查全角色策略和对策' if args.state_ai else
+               '采用新版龙族、风暴、奉献、战争及法师技能，并更新防护学派和相关AI' if args.arcane
                else '采用新版游侠面板、技能和相关AI策略' if args.ranger else
                '采用八子职平衡调整和全角色AI复查后的配置' if args.balance else
                '采用德鲁伊和幽影魔法新版专属策略、对策及通过留出验证的权重' if args.optimized_ai
@@ -166,7 +185,7 @@ lines = [f'# {n}子职胜率重新采样（{args.date}）', '',
          '| 八人阵营 | 600 | 单将3/3/2，角色与阵营轴一致；每类阵营各担任2人方200次 |',
          *(['| 八人身份（随机） | 2,000 | 主公随机8候选，其余各6；从各自候选均匀选一名 |',
             '| 八人身份（偏好） | 600 | 独立种子，同样随机发牌，再按身份内的平滑胜率加权 |']
-           if args.arcane else ['| 八人身份 | 600 | 随机8个不同子职与隐藏身份，按身份阵线记录胜者 |']), '',
+           if full_identity else ['| 八人身份 | 600 | 随机8个不同子职与隐藏身份，按身份阵线记录胜者 |']), '',
          '胜率均为胜场／全部出场，平局不算胜。双将子职按其组合共同计胜；八人角色阵亡仍按所属阵线计分。固定配桌和随机选角限制了泛化；旧数据与本次角色池及规则不同，百分点差不能直接归因于某次技能修改。', '',
          '## 平局与异常', '', '| 模式 | 平局 | 异常 | 模拟器强停 |', '|---|---:|---:|---:|']
 for mode, stat in totals.items():
@@ -206,10 +225,20 @@ def eight_tables(level):
     tables += ['', f'阵营局平局{totals["eight"]["draws"]}局；随机身份平局{totals["identity"]["draws"]}局，偏好身份平局{totals["identity-preferred"]["draws"]}局。角色出场少时波动较大，不宜据小幅差异排名。']
     return tables
 
-if args.arcane:
+if full_identity:
     lines += eight_tables(2)
+if 'previous_round_comparison' in report:
+    previous = report['previous_round_comparison']
+    lines += ['', '## 与上一轮相比', '',
+              f'上一轮为{previous["previous_date"]}，{previous["previous_roster_count"]}子职、{previous["previous_legal_duals"]}种双将、{sum(s["games"] for s in previous["previous_totals"].values()):,}局。{previous["caution"]}', '',
+              '| 角色 | 1v1差（百分点） | 2v2差（百分点） | 双将差（百分点） | 阵营差（百分点） | 随机身份差（百分点） | 偏好身份差（百分点） |',
+              '|---|---:|---:|---:|---:|---:|---:|']
+    for role in previous['roles']:
+        deltas = [role['modes'][mode]['delta_percentage_points'] for mode in counts]
+        lines.append('| ' + role['name'] + ' | ' + ' | '.join('新增／无可比样本' if d is None else f'{d:+.1f}' for d in deltas) + ' |')
+    lines += ['', '机器汇总保留上一轮各模式总局数、源码指纹，以及各角色原胜率、当前胜率、出场数和百分点差。新增角色不填旧轮胜率。']
 if args.update_roster:
-    assert args.arcane, 'Eight-player identity tables require --arcane'
+    assert full_identity, 'Eight-player identity tables require --arcane or --state-ai'
     roster_doc = root / 'Docs/roster.md'
     text = roster_doc.read_text(encoding='utf-8')
     marker = '<!-- eight-player-statistics:start -->'
@@ -237,7 +266,19 @@ lines += ['', '## 复现与证据', '',
           '}',
           f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --log-prefix {args.log_prefix}'
           + (' --arcane' if args.arcane else ' --ranger' if args.ranger else ' --balance' if args.balance else ' --optimized-ai' if args.optimized_ai else ''), '```']
-if args.arcane:
+if args.state_ai:
+    # The orchestrator captures provenance before sampling, then validates it between modes.
+    start = lines.index('```powershell', lines.index('## 复现与证据'))
+    lines = lines[:start] + ['```powershell',
+        'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run',
+        '```', '',
+        f'{n}子职共检查{n*n*3:,}个合法起手，见[AI审计](ai-audit.tsv)与[测试日志](regression.log)。', '',
+        '运行器在首局前保存provenance.json，并在每组前后核对游戏源码、测试源码、无头入口及采样工具SHA-256。指纹变化时拒绝拼接不同版本的数据。source_dirty标识采样时存在未提交改动，source_commit与源码指纹共同标识版本。', '',
+        '身份随机组完成后，将identity-roles.tsv逐字节复制到Assets/Resources/Art/Battle/v1/Adventure/identity-role-rates.txt；偏好组使用独立种子。汇总要求运行时表与随机组完全一致，记录identity_preference_sha256。', '',
+        '仅重新生成报告：', '', '```powershell',
+        f'python Tools/Statistics/summarize-current.py --date {args.date} --directory {out.name} --state-ai --refresh-docs',
+        '```']
+elif args.arcane:
     lines += ['', '身份偏好表按主公、忠臣、反贼、内奸分别计胜／出场，并用同身份总体胜率和24局先验平滑；只对随机分发到该席的候选加权。原始数据见[随机身份分角色](identity-roles.tsv)及[偏好验证分角色](identity-preferred-roles.tsv)。',
               '', '57子职均检查了自身权重、已有对策以及双方57×57配对的三档起手，共9,747个合法起手检查。逐角色运行时导出见[AI审计](ai-audit.tsv)，功能回归见[测试日志](regression.log)。']
     lines += ['', '仅补全现有样本的文档表格时，使用以下命令。它核对全部CSV、身份分表与已发布汇总，保留原采样日期、源码提交及指纹，不重采样。', '',

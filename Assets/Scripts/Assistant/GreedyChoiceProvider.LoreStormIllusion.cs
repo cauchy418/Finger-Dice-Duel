@@ -14,8 +14,8 @@ namespace FingerDiceDuel.Assistant
         private static int IllusionOperationValue(IllusionTouch touch,Hand addend,GameManager game)
         {
             var actor=touch.Actor;
-            int value=StatusRules.ApplyResultModifiers(actor,Hand.ComputeSum(touch.SourceValue,addend.Value));
-            var profile=HandValueProfiles.For(actor.Definition);int score=profile.WeightOf(value);
+            int value=AiStatePolicy.PreviewResult(actor,touch.SourceValue,addend.Value);
+            var profile=ActiveHandValueProfile(actor,game);int score=profile.WeightOf(value);
             int other=actor.GetOtherHand(touch.Source).Value;
             foreach(var combo in profile.Combos)if(combo.Matches(value,other))score+=Math.Min(80,combo.Bonus);
             if(touch.Effectless)return score;
@@ -44,8 +44,8 @@ namespace FingerDiceDuel.Assistant
         private Hand _stormPlannedSource;
         private static int StormPreparation(PlayerState owner,Hand source,Hand target,GameManager game)
         {
-            int value=StatusRules.ApplyResultModifiers(owner,Hand.ComputeSum(source.Value,target.Value));
-            var profile=ActiveHandValueProfile(owner);
+            int value=AiStatePolicy.PreviewResult(owner,source.Value,target.Value);
+            var profile=ActiveHandValueProfile(owner,game);
             int score=profile.WeightOf(value)-profile.WeightOf(source.Value);
             if(source.IsShield)score-=60;
             if (owner.IsWildShaped && owner.WildStar == 3)
@@ -57,7 +57,7 @@ namespace FingerDiceDuel.Assistant
                 foreach(var h in enemy.Hands)
                     if(game.IsLegalMove(owner,source,h,out _))
                     {
-                        int next=Hand.ComputeSum(value,h.Value);score+=next==8?5:next==6?4:next==4?3:next==5?2:0;
+                        int next=AiStatePolicy.PreviewResult(owner,value,h.Value);score+=next==8?5:next==6?4:next==4?3:next==5?2:0;
                     }
             }
             if(CharacterBehaviors.FirstImplementer<IOperationAddendIllusion>(owner)!=null&&value==2)score+=20;

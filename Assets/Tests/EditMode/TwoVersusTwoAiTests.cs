@@ -183,7 +183,7 @@ namespace FingerDiceDuel.Tests
         public void Ai_prefers_the_enemy_without_defense()
         {
             // 规则第 ③ 条：优先攻击没有防御（护盾 / 太极）的对手
-            GameManager game = Make2v2(CharacterDefinition.Champion, CharacterDefinition.Champion,
+            GameManager game = Make2v2(CharacterDefinition.ArcaneArcher, CharacterDefinition.Champion,
                                        CharacterDefinition.Champion, CharacterDefinition.Champion,
                                        out List<PlayerState> seated,
                                        out GreedyChoiceProvider ai1, out _, out _, out _);
@@ -198,6 +198,7 @@ namespace FingerDiceDuel.Tests
                 p.RightHand.SetValue(1);
             }
 
+            // 魔射手距离3，两个对手都可达，排除距离差异。
             // 给 P2 一面成型的盾（血量保持一致，只改防御）
             shielded.LeftHand.SetValue(5);
             shielded.LeftHand.SetShieldState(ShieldState.Formed);

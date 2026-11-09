@@ -7,13 +7,13 @@ namespace FingerDiceDuel.Assistant
         public bool SwapTrickery(TrickeryTouch t,GameManager game)
         {
             int old=ClericDigitValue(t.Actor,t.Result,t.Effectless,game),next=ClericDigitValue(t.Actor,t.AddendValue,t.Effectless,game);
-            int self=HandValueProfiles.For(t.Owner.Definition).WeightOf(t.Result)-HandValueProfiles.For(t.Owner.Definition).WeightOf(t.AddendValue);
+            int self=ActiveHandValueProfile(t.Owner,game).WeightOf(t.Result)-ActiveHandValueProfile(t.Owner,game).WeightOf(t.AddendValue);
             if(t.Addend.IsShield)self-=45;
             return self+(game.IsKnownAlly(t.Owner,t.Actor)?next-old:old-next)>0;
         }
         private static int ClericDigitValue(PlayerState actor,int value,bool pure,GameManager game)
         {
-            int score=HandValueProfiles.For(actor.Definition).WeightOf(value);if(pure)return score;
+            int score=ActiveHandValueProfile(actor,game).WeightOf(value);if(pure)return score;
             var effect=game.OperationEffect(actor,value);
             if(effect==HandEffectType.Heal&&StatusRules.CanHeal(actor))score+=System.Math.Min(9,actor.MaximumHealth-actor.Health)*12;
             if(effect==HandEffectType.Shield)score+=45;

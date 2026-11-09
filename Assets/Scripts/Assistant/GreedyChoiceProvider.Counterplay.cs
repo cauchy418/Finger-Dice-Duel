@@ -31,12 +31,14 @@ namespace FingerDiceDuel.Assistant
                 foreach(var hand in foe.Hands)
                 {
                     if(!hand.CanBeOperated)continue;
-                    foreach(int addend in new[]{next,other})
+                    foreach(var addendHand in new[]{move.ActedHand,actor.GetOtherHand(move.ActedHand)})
                     for(int op=0;op<operators;op++)
                     {
-                        int result=StatusRules.ApplyResultModifiers(foe,op==0?Hand.ComputeSum(hand.Value,addend):Hand.ComputeDifference(hand.Value,addend));
+                        if(!StatusRules.CanUseHandAsAddend(foe,addendHand,game)||addendHand.IsConcealed)continue;
+                        int addend=ReferenceEquals(addendHand,move.ActedHand)?next:other;
+                        int result=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
                         var effect=CharacterBehaviors.DisplayedEffectOf(foe,result);
-                        var profile=ActiveHandValueProfile(foe);
+                        var profile=ActiveHandValueProfile(foe,game);
                         int value=profile.WeightOf(result)/4;
                         switch(effect)
                         {
@@ -47,7 +49,7 @@ namespace FingerDiceDuel.Assistant
                                     if (damage > 0) value += Math.Min(IsLowHealth(actor) ? 60 : 32, damage * (IsLowHealth(actor) ? 8 : 4));
                                 }
                                 break;
-                            case HandEffectType.Shield:value+=IsLowHealth(foe)?45:15;break;
+                            case HandEffectType.Shield:if(!foe.HasStatus(StatusEffect.Tinnitus))value+=IsLowHealth(foe)?45:15;break;
                             case HandEffectType.Heal:
                                 if(StatusRules.CanHeal(foe)&&foe.Health<foe.MaximumHealth)value+=IsLowHealth(foe)?50:15;
                                 break;

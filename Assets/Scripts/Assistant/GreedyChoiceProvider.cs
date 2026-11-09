@@ -294,7 +294,7 @@ namespace FingerDiceDuel.Assistant
         private int SchoolOfEvocationRoll()
         {
             _wizardSeed = _wizardSeed * 1103515245 + 12345;
-            return (_wizardSeed >> 16) & 0x7FFF % 100;
+            return ((_wizardSeed >> 16) & 0x7FFF) % 100;
         }
 
         private int _wizardSeed = 20240816;
@@ -697,11 +697,11 @@ namespace FingerDiceDuel.Assistant
         {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
-            if (game != null && game.WillSuppressOperationEffects(actor))
+            if (game != null && (game.WillSuppressOperationEffects(actor)||actor.HasStatus(StatusEffect.Dizzy)))
             {
                 int value = Math.Max(1, StatusRules.ApplyResultModifiers(actor, Hand.ComputeSum(acted, target)));
                 int otherValue = actor.GetOtherHand(move.ActedHand).Value;
-                return HandValueScore(actor, value, otherValue) + DenyScore(actor, game, value, otherValue);
+                return HandValueScore(actor, value, otherValue) + DenyScore(actor, game, value, otherValue)+StateMoveAdjustment(move,actor,value,game,true);
             }
             if (!operationResult.HasValue && game?.CanChooseTacticianOperation(actor) == true)
             {
@@ -770,7 +770,7 @@ namespace FingerDiceDuel.Assistant
             Hand other = GetOtherHand(actor, move.ActedHand);
             if (game != null)
             {
-                int projectedResult = operationResult ?? Math.Max(1, StatusRules.ApplyResultModifiers(actor, result));
+                int projectedResult = result;
                 score += SpecialistMoveBonus(move, actor, projectedResult, other.Value, game);
                 score += AbjurationMoveBonus(actor, projectedResult, game);
                 score += SpecialistCounterplayScore(move, actor, projectedResult, game) * DenyRatioPercent / 67;
@@ -791,6 +791,7 @@ namespace FingerDiceDuel.Assistant
             //
             // 运算后：被操作的手变成**结果值**，另一只手不变。
             score += HandValueScore(actor, result, other.Value);
+            score += StateMoveAdjustment(move,actor,result,game);
 
             // ---- 带条件的次分 ----
             // 打掉对手已成型的盾，比让它继续挡着划算
@@ -921,7 +922,7 @@ namespace FingerDiceDuel.Assistant
 
                 PlayerState focus = FocusTargetForScoring(game, actor);
                 if (focus != null && ReferenceEquals(focus, victim)
-                    && game.CanReach(actor, victim))
+                    && game.CanReach(actor, victim)&&StatusRules.CanAttackTarget(actor,victim,game))
                     score += FocusBonus;
             }
 
@@ -1415,7 +1416,7 @@ namespace FingerDiceDuel.Assistant
             int atk = target.Character?.AttackBonus ?? 0;
             score += Clamp(atk + 5, -10, 10);
 
-            return score;
+            return score+(IsAttackResult(move,actor,game)?AiStatePolicy.ScoreTarget(actor,target,game):0);
         }
 
         private static int Clamp(int v, int lo, int hi)
@@ -1486,7 +1487,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private int HandValueScore(PlayerState actor, int actedAfter, int otherHandValue)
         {
-            HandValueProfile profile = ActiveHandValueProfile(actor);
+            HandValueProfile profile = ActiveHandValueProfile(actor,Game);
             if (profile == null) return 0;
 
             // ① 屯手值的偏好（次要，缩放）
@@ -1637,16 +1638,17 @@ namespace FingerDiceDuel.Assistant
 
                 foreach (Hand theirs in p.Hands)
                 {
-                    int result = Hand.ComputeSum(myHand, theirs.Value);
+                    if(!StatusRules.CanUseHandAsAddend(actor,theirs,game)||theirs.IsConcealed)continue;
+                    int result = AiStatePolicy.PreviewResult(actor,myHand,theirs.Value);
 
                     int s;
-                    switch (Hand.GetEffectType(result))
+                    switch (CharacterBehaviors.DisplayedEffectOf(actor,result))
                     {
                         case HandEffectType.Attack4: s = 44; break;
                         case HandEffectType.Attack6: s = 66; break;
                         case HandEffectType.Attack8: s = 88; break;
-                        case HandEffectType.Shield: s = 50; break;
-                        case HandEffectType.Heal: s = 30; break;
+                        case HandEffectType.Shield: s = actor.HasStatus(StatusEffect.Tinnitus)?0:50; break;
+                        case HandEffectType.Heal: s = StatusRules.CanHeal(actor)?30:0; break;
                         default: s = 0; break;
                     }
 
@@ -1810,18 +1812,7 @@ namespace FingerDiceDuel.Assistant
                     //    所以发动时取第一个（= 自己的手）。
                     if (decider == null) return null;
 
-                    bool danger = decider.Health * 100
-                                  <= decider.MaximumHealth * LifeDomainHealHealthPercent;
-
-                    if(Game!=null)foreach(var ally in Game.Players)
-                        if(ally.IsAlive&&Game.IsKnownAlly(decider,ally)&&(ally.Health*100<=ally.MaximumHealth*LifeDomainHealHealthPercent
-                            ||ally.HasStatus(StatusEffect.Frozen)||ally.HasStatus(StatusEffect.Disabled)||ally.HasStatus(StatusEffect.Charm)||ally.HasStatus(StatusEffect.Decay)))danger=true;
-                    if (!danger && Game != null && request.RelatedTarget != null
-                        && !decider.HasStatus(StatusEffect.BlessedHealing)
-                        && decider.MaximumHealth - decider.Health < request.ResultValue)
-                        danger = EstimateAttackDamage(decider, request.RelatedTarget, request.ResultValue, Game) <= 1
-                            || ((request.RelatedTarget.LeftHand.IsShield || request.RelatedTarget.RightHand.IsShield)
-                                && CharacterFactory.MaxAttackHits(decider) == 1);
+                    bool danger=WantsLifeHealing(decider,request.RelatedTarget,request.ResultValue,Game);
                     if (!danger) return null;
 
                     // 危险 -> 优先回血，且回给"自己这一队血最低的人"

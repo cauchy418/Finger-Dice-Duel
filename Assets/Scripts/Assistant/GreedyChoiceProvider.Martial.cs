@@ -14,9 +14,22 @@ namespace FingerDiceDuel.Assistant
             {
                 var giant=CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(owner);
                 if(owner.Health<=10||giant?.Enchantment!=AttackDamageType.None)return 0;
-                PlayerState enemy=null;foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&(enemy==null||p.Health<enemy.Health))enemy=p;
-                if(enemy==null)return 0;
-                int selected=0;double bladeBest=0;foreach(var option in options)if(option.Value!=0){double value=ElementScore(option.Value,owner,enemy,game);if(value>bladeBest){bladeBest=value;selected=option.Value;}}return selected;
+                // Compare the upgrade with the free slashing attack; raw elemental
+                // damage alone made us pay five health even against neutral foes.
+                int selected=0;double bladeBest=5;
+                foreach(var enemy in game.OpponentsOf(owner))
+                {
+                    if(!enemy.IsAlive||game.IsKnownAlly(owner,enemy)||!game.CanReach(owner,enemy)
+                        ||!StatusRules.CanAttackTarget(owner,enemy,game)
+                        ||(enemy.Character as IAttackTargetRule)?.IsImmuneToAttack(enemy)==true)continue;
+                    double baseline=ElementDamageScore(AttackDamageType.Slashing,owner,enemy);
+                    foreach(var option in options)if(option.Value!=0)
+                    {
+                        double value=ElementScore(option.Value,owner,enemy,game)-baseline;
+                        if(value>bladeBest){bladeBest=value;selected=option.Value;}
+                    }
+                }
+                return selected;
             }
             if(key=="druid_symbiosis")return WantsSymbiosis(owner,game)?1:0;
             if(key==ShadowRules.Darkness)return DarknessValue(owner,game)>0?1:0;
@@ -40,7 +53,7 @@ namespace FingerDiceDuel.Assistant
                 else if(key==AncientRoleChoices.FiendPact) score=FiendPactScore(option.Value,owner,target,game);
                 else if(key==MartialSkillChoices.Draconic) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
                 else if(key==MonkRules.Ninja||key==MonkRules.Taichi||key==MonkRules.Defense||key==MonkRules.Harmony||key==MonkRules.Drunken)score=MonkOptionScore(key,option.Value,owner,target,game);
-                else if(key==DivinationRules.Key)score=DivinationRules.AiScore(option.Value,owner,target,game);
+                else if(key==DivinationRules.Key)score=PortentOptionScore(option.Value,owner,target,game);
                 else if(key==MartialSkillChoices.OpenHand) score=OpenHandScore(option.Value,owner,target);
                 else if(key==MartialSkillChoices.FourElements) score=FourElementsScore(option.Value,owner,target,game);
                 else score=0;
@@ -153,7 +166,9 @@ namespace FingerDiceDuel.Assistant
             int damage=Math.Max(0,6+StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(target));
             var magic=AttackDamageTypes.ToDamageType(type);
             bool immune = target.HasImmunity(type);
-            if (!immune) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
+            // Psychic only rolls the inflicted status; damage is unchanged.
+            // Scoring must not draw from the combat interaction RNG.
+            if (!immune && magic != DamageType.Psychic) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
             ignoreAffinity |= DamageAffinityNames.AttackPiercesAffinities(owner, type);
             damage=StatusRules.ApplyDamageAffinities(target,damage,type,!ignoreAffinity,ignoreAffinity);
             if(immune) return damage;

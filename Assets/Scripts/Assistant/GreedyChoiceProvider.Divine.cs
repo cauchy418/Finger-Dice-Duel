@@ -41,9 +41,9 @@ namespace FingerDiceDuel.Assistant
             foreach(var enemy in game.Players)
             {
                 if(!enemy.IsAlive||game.IsKnownAlly(owner,enemy)||!game.CanReach(owner,enemy)||!StatusRules.CanAttackTarget(owner,enemy,game))continue;
-                int damage=StatusRules.EffectiveAttackBonus(owner)-StatusRules.EffectiveDefenseBonus(enemy)+9+ArcaneChoices.BonusAgainst(owner,enemy);
-                if(owner.HasStatus(StatusEffect.Disabled))damage=0;
-                double score=Math.Max(0,damage)*8+(damage>=enemy.Health?100:0);
+                if(FeyCanCancel(enemy,9)||(enemy.Character as IAttackTargetRule)?.IsImmuneToAttack(enemy)==true)continue;
+                int damage=EstimateAttackDamage(owner,enemy,9,game);
+                double score=Math.Max(0,damage)*8+(damage>=enemy.HealthAcrossForms?100:0);
                 if(enemy.LeftHand.IsShield||enemy.RightHand.IsShield)score-=25;
                 best=Math.Max(best,score);
             }

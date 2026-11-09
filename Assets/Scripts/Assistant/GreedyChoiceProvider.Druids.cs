@@ -9,16 +9,17 @@ namespace FingerDiceDuel.Assistant
     {
         private static readonly HandValueProfile FormHandValues = new HandValueProfile();
 
-        private static HandValueProfile ActiveHandValueProfile(PlayerState owner)
+        private static HandValueProfile ActiveHandValueProfile(PlayerState owner,GameManager game=null)
             {
-            if (owner.IsWildShaped || owner.IsPolymorphed) return FormHandValues;
+            if(owner==null)return FormHandValues;
+            if (owner.IsWildShaped || owner.IsPolymorphed) return AiStatePolicy.ApplyHandWeights(FormHandValues,owner,game);
             var profile=HandValueProfiles.For(owner.Definition);
-            if(owner.Health>15)return profile;
+            if(owner.Health>15)return AiStatePolicy.ApplyHandWeights(profile,owner,game);
             if(CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(owner)!=null)
                 profile=profile.Clone().Adjust(5,38).Adjust(9,35).Adjust(4,-48).Adjust(6,-54).Adjust(8,-60).Adjust(7,10);
             if(CharacterBehaviors.FirstImplementer<PathOfTheBerserkerLogic>(owner)!=null)
                 profile=profile.Clone().Adjust(5,25).Adjust(9,35);
-            return profile;
+            return AiStatePolicy.ApplyHandWeights(profile,owner,game);
         }
 
         private static int EnemySporeRefillCost(PlayerState actor, PlayerState victim, GameManager game)
@@ -35,15 +36,15 @@ namespace FingerDiceDuel.Assistant
 
         private static int DruidScoredResult(LegalMove move,PlayerState actor,GameManager game)
         {
-            int result=Hand.ComputeSum(move.ActedHand.Value,move.TargetHand.Value);
-            if(game!=null&&DruidForms.IsDragon(actor))
-            {
-                var hands=new List<Hand>();foreach(var next in game.GetLegalMoves(actor))if(ReferenceEquals(next.ActedHand,move.ActedHand))hands.Add(next.TargetHand);
-                var second=game.DruidSecondAddend??game.GetDruidPolicy(actor)?.SecondAddend(actor,move.ActedHand,move.TargetHand,hands,game);
-                if(second!=null)result=Hand.ComputeSum(result,second.Value);
-            }
-            return result;
+            if(game==null)return AiStatePolicy.PreviewResult(actor,move.ActedHand.Value,move.TargetHand.Value);
+            if(!DruidForms.IsDragon(actor)||game.DruidSecondAddend!=null)return game.PreviewOperationResult(actor,move.ActedHand,move.TargetHand);
+            int first=actor.HasStatus(StatusEffect.Confusion)&&move.ActedHand.Value+move.TargetHand.Value>=10?1:Hand.ComputeSum(move.ActedHand.Value,move.TargetHand.Value);
+            var hands=new List<Hand>();foreach(var next in game.GetLegalMoves(actor))if(ReferenceEquals(next.ActedHand,move.ActedHand))hands.Add(next.TargetHand);
+            var second=game.GetDruidPolicy(actor)?.SecondAddend(actor,move.ActedHand,move.TargetHand,hands,game);
+            int value=second==null?first:actor.HasStatus(StatusEffect.Confusion)&&first+second.Value>=10?1:Hand.ComputeSum(first,second.Value);
+            return GameManager.ModifiedOperationValue(actor,value);
         }
+
         public int ChooseForm(PlayerState owner,string circle,IReadOnlyList<SkillChoiceOption> options,GameManager game,int wildForm=0)
         {
             if(!StatusRules.CanAct(owner))return 0;
@@ -291,8 +292,8 @@ namespace FingerDiceDuel.Assistant
                 {
                     if (!source.CanBeOperated) continue;
                     int other = foe.GetOtherHand(source).Value;
-                    int oldResult = StatusRules.ApplyResultModifiers(foe, Hand.ComputeSum(source.Value, hand.Value));
-                    int newResult = StatusRules.ApplyResultModifiers(foe, Hand.ComputeSum(source.Value, result));
+                    int oldResult = AiStatePolicy.PreviewResult(foe,source.Value,hand.Value);
+                    int newResult = AiStatePolicy.PreviewResult(foe,source.Value,result);
                     before = Math.Max(before, SpecialistThreat(foe, actor, oldResult, other, game, wild));
                     after = Math.Max(after, SpecialistThreat(foe, actor, newResult, other, game, wild));
                     if ((tactician || champion && source.Value == 1) && game.CanReach(foe, actor) && StatusRules.CanAttackTarget(foe, actor, game))
@@ -305,7 +306,7 @@ namespace FingerDiceDuel.Assistant
                     {
                         int value = IsAttackEffect(DivineScoredEffect(foe, plus, game)) ? EstimateAttackDamage(foe, actor, plus, game, source.Value) : 0;
                         if (!tactician) return value * 5;
-                        int minus = GameManager.ModifiedOperationValue(foe, Hand.ComputeDifference(source.Value, operand));
+                        int minus = AiStatePolicy.PreviewResult(foe,source.Value,operand,true);
                         if (IsAttackEffect(DivineScoredEffect(foe, minus, game)))
                             value = Math.Max(value, EstimateAttackDamage(foe, actor, minus, game, source.Value));
                         return value * 5;

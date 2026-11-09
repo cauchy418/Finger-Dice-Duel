@@ -18,11 +18,13 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public PlayerState BestHealTarget(PlayerState owner,GameManager game)
         {
             PlayerState best=owner;int bestScore=int.MinValue;
+            bool purifies=CharacterBehaviors.FirstImplementer<LightDomainLogic>(owner)!=null;
             foreach(var p in game.Players)
             {
                 if(!p.IsAlive||!game.IsKnownAlly(owner,p))continue;
                 int score=StatusRules.CanHeal(p)?System.Math.Min(9,p.MaximumHealth-p.Health)*8:0;
-                foreach(var state in p.Statuses)if(!PlayerState.HolyFireAllows(state)&&StatusNames.IsNegativeStatus(state))score+=12;
+                if(purifies)foreach(var state in p.Statuses)
+                    if(!PlayerState.HolyFireAllows(state)&&StatusNames.IsNegativeStatus(state))score+=12;
                 if(p.HasStatus(StatusEffect.Scorch))score-=20;
                 if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(owner)!=null&&!p.HasStatus(StatusEffect.HolyLight))
                 {score+=12;foreach(var hand in p.Hands)if(hand.Value==4||hand.Value==6||hand.Value==8)score+=5;}
