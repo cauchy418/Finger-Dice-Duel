@@ -4,6 +4,7 @@ import copy
 import collections
 import csv
 import itertools
+import hashlib
 import json
 import shutil
 import subprocess
@@ -16,6 +17,56 @@ BIN = ROOT / 'Tools/HeadlessTests/bin'
 
 
 class StatisticsToolsTests(unittest.TestCase):
+    def test_identity_only_carry_provenance_and_tamper_rejection(self):
+        BIN.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='identity-only-tool-test-', dir=BIN) as temporary:
+            snapshot = Path(temporary) / 'snapshot'
+            shutil.copytree(latest_published(ROOT).parent, snapshot)
+            baseline_bytes = (snapshot / 'results.json').read_bytes()
+            baseline = json.loads(baseline_bytes)
+            # Fixture reuses recorded outcomes to validate tooling, never publishes them.
+            (snapshot / 'baseline-results.json').write_bytes(baseline_bytes)
+            manifest = capture(ROOT)
+            manifest['carried_forward'] = {
+                'baseline_path': str(latest_published(ROOT)),
+                'baseline_sha256': hashlib.sha256(baseline_bytes).hexdigest(),
+                'files': {mode + suffix: hashlib.sha256((snapshot / (mode + suffix)).read_bytes()).hexdigest()
+                          for mode in ('1v1', '2v2', 'dual', 'eight') for suffix in ('.csv', '.log')},
+            }
+            (snapshot / 'provenance.json').write_text(json.dumps(manifest), encoding='utf-8')
+            command = ['python', str(ROOT / 'Tools/Statistics/summarize-current.py'),
+                       '--date', baseline['date'], '--directory', str(snapshot), '--identity-only']
+            result = subprocess.run(command + ['--baseline', str(snapshot / 'baseline-results.json')],
+                                    cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            report = json.loads((snapshot / 'results.json').read_text(encoding='utf-8'))
+            self.assertEqual(2600, report['newly_sampled_games'])
+            for mode in ('1v1', '2v2', 'dual', 'eight'):
+                provenance = report['mode_provenance'][mode]
+                self.assertEqual('carried_forward', provenance['status'])
+                original = baseline.get('mode_provenance', {}).get(mode, baseline)
+                self.assertEqual(original['source_sha256'], provenance['source_sha256'])
+                self.assertEqual(baseline['totals'][mode], report['totals'][mode])
+            self.assertEqual('newly_sampled', report['mode_provenance']['identity']['status'])
+            aggregate = report['identity_aggregate_comparison']['identity']['Lord']
+            self.assertEqual(baseline['eight_player_summary']['identities']['identity']['Lord'], aggregate['previous'])
+            self.assertEqual(report['eight_player_summary']['identities']['identity']['Lord'], aggregate['current'])
+            result = subprocess.run(command + ['--refresh-docs'], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(report, json.loads((snapshot / 'results.json').read_text(encoding='utf-8')))
+            with (snapshot / 'eight.log').open('a', encoding='utf-8') as stream:
+                stream.write('\ntampered')
+            result = subprocess.run(command + ['--refresh-docs'], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('eight.log', result.stderr)
+            shutil.copyfile(latest_published(ROOT).parent / 'eight.log', snapshot / 'eight.log')
+            # A blank CSV line preserves parsed records, but its source fingerprint must still fail.
+            with (snapshot / 'eight.csv').open('a', encoding='utf-8') as stream:
+                stream.write('\n')
+            result = subprocess.run(command + ['--refresh-docs'], cwd=ROOT, capture_output=True, text=True, encoding='utf-8')
+            self.assertNotEqual(0, result.returncode)
+            self.assertIn('eight', result.stderr)
+
     def test_fingerprint_ignores_build_and_cache_directories(self):
         BIN.mkdir(parents=True, exist_ok=True)
         with tempfile.TemporaryDirectory(prefix='statistics-hash-test-', dir=BIN) as temporary:

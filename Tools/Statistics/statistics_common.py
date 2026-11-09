@@ -33,7 +33,7 @@ def comparison_baseline(root):
 
 
 def fingerprints(root):
-    return {
+    result = {
         'source_sha256': source_hash(root, 'Assets/Scripts'),
         'test_source_sha256': source_hash(root, 'Assets/Tests'),
         'headless_source_sha256': source_hash(root, 'Tools/HeadlessTests'),
@@ -41,6 +41,10 @@ def fingerprints(root):
         'statistics_tool_sha256': source_hash(root, 'Tools/Statistics', '*.py'),
         'statistics_runner_sha256': hashlib.sha256((root / 'Tools/Statistics/run-current.ps1').read_bytes()).hexdigest(),
     }
+    identity_runner = root / 'Tools/Statistics/run-identity.ps1'
+    if identity_runner.is_file():
+        result['identity_runner_sha256'] = hashlib.sha256(identity_runner.read_bytes()).hexdigest()
+    return result
 
 
 def capture(root):

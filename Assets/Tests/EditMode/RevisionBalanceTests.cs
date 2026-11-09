@@ -22,6 +22,7 @@ namespace FingerDiceDuel.Tests
         {
             string mode=Environment.GetEnvironmentVariable("FDD_REVISION_MODE")??"1v1";
             Directory.CreateDirectory(Root);int games=0;_written=0;
+            if(mode=="1v1" || mode=="audit")File.WriteAllLines(Root+"/roster.tsv",new[]{"id\tname\taxis"}.Concat(Roster.Select(d=>d.Id+"\t"+d.DisplayName+"\t"+Alignments.LawAxisOf(CharacterCodex.For(d).Alignment))),new System.Text.UTF8Encoding(false));
             if (mode == "audit")
             {
                 RunAiAudit();
@@ -32,7 +33,6 @@ namespace FingerDiceDuel.Tests
                 RunTuning(mode);
                 return;
             }
-            if(mode=="1v1")File.WriteAllLines(Root+"/roster.tsv",new[]{"id\tname\taxis"}.Concat(Roster.Select(d=>d.Id+"\t"+d.DisplayName+"\t"+Alignments.LawAxisOf(CharacterCodex.For(d).Alignment))),new System.Text.UTF8Encoding(false));
             using var writer=new StreamWriter(Root+"/"+mode+".csv",false,new System.Text.UTF8Encoding(false));
             writer.WriteLine("seed,first,second,winner,turns");
             if(mode=="1v1")

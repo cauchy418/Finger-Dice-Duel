@@ -12,14 +12,19 @@ parser.add_argument('--balance', action='store_true')
 parser.add_argument('--ranger', action='store_true')
 parser.add_argument('--arcane', action='store_true')
 parser.add_argument('--state-ai', action='store_true', help='Current state/AI round; requires captured provenance and 58 roles / 532 duals')
+parser.add_argument('--identity-only', action='store_true', help='Resample identity modes; validate unchanged modes against the explicitly carried baseline')
 parser.add_argument('--baseline', type=Path, help='Previous results.json to embed as a comparison in the current report')
 parser.add_argument('--refresh-docs', action='store_true',
                     help='Validate published data and preserve its original sampling provenance')
 parser.add_argument('--update-roster', action='store_true', help='Synchronize the eight-player tables in Docs/roster.md')
 args = parser.parse_args()
+if args.identity_only:
+    args.state_ai = True
 full_identity = args.arcane or args.state_ai
 root = Path(__file__).resolve().parents[2]
 out = root / 'Tools/Statistics' / (args.directory or (args.date + '-state-ai' if args.state_ai else args.date))
+if args.refresh_docs and json.loads((out / 'results.json').read_text(encoding='utf-8')).get('sampling_scope') == 'identity-only':
+    args.identity_only = args.state_ai = full_identity = True
 roles = list(csv.DictReader((out / 'roster.tsv').read_text(encoding='utf-8-sig').splitlines(), delimiter='\t'))
 ids = {r['id'] for r in roles}
 assert len(ids) == len(roles) and len(roles) > 1
@@ -158,6 +163,39 @@ if args.state_ai and not args.refresh_docs:
     assert '失败 0' in regression_log and '通过 0 /' not in regression_log
     report['ai_audit'] = {'roles': n, 'legal_opening_checks': n*n*3,
                           'sha256': hashlib.sha256((out / 'ai-audit.tsv').read_bytes()).hexdigest()}
+if args.identity_only:
+    provenance = json.loads((out / 'provenance.json').read_text(encoding='utf-8'))
+    carry = provenance['carried_forward']
+    baseline_path = out / 'baseline-results.json'
+    assert hashlib.sha256(baseline_path.read_bytes()).hexdigest() == carry['baseline_sha256']
+    baseline_data = json.loads(baseline_path.read_text(encoding='utf-8'))
+    assert baseline_data['roster_sha256'] == report['roster_sha256']
+    prior_roles = {r['id']: r for r in baseline_data['roles']}
+    report['sampling_scope'] = 'identity-only'
+    report['newly_sampled_games'] = 2600
+    report['mode_provenance'] = {}
+    for mode in expected:
+        fresh = mode.startswith('identity')
+        if not fresh:
+            assert totals[mode] == baseline_data['totals'][mode], mode
+            assert all(counts[mode][r['id']] == prior_roles[r['id']]['modes'][mode] for r in roles), mode
+            for suffix in ('.csv', '.log'):
+                name = mode + suffix
+                assert hashlib.sha256((out / name).read_bytes()).hexdigest() == carry['files'][name], name
+        original = baseline_data.get('mode_provenance', {}).get(mode, baseline_data)
+        report['mode_provenance'][mode] = {
+            'status': 'newly_sampled' if fresh else 'carried_forward',
+            'date': args.date if fresh else original['date'],
+            'source_commit': report['source_commit'] if fresh else original['source_commit'],
+            'source_sha256': report['source_sha256'] if fresh else original['source_sha256'],
+            'test_source_sha256': report['test_source_sha256'] if fresh else original['test_source_sha256'],
+            'sampler_assembly_sha256': (report if fresh else original).get('sampler_assembly_sha256'),
+            'sampler_runtime_version': (report if fresh else original).get('sampler_runtime_version'),
+            'csv_sha256': totals[mode]['sha256'],
+        }
+    for mode, base_seed in (('identity', 5000000), ('identity-preferred', 5100000)):
+        assert [int(row['seed']) for row in mode_rows[mode]] == list(range(base_seed, base_seed + expected[mode]))
+    report['limitations'][-1] = '本轮仅重采移除忠臣替死后的身份随机及偏好组；1v1、2v2、双将和八人阵营沿用旧来源，不代表本次代码的重新测量。'
 if args.refresh_docs:
     published = json.loads((out / 'results.json').read_text(encoding='utf-8'))
     assert published['date'] == args.date and published['roles'] == report['roles']
@@ -168,6 +206,15 @@ if args.baseline:
     baseline = json.loads(args.baseline.read_text(encoding='utf-8'))
     report['previous_round_comparison'] = comparison(report, baseline)
     report['previous_round_comparison']['baseline_sha256'] = hashlib.sha256(args.baseline.read_bytes()).hexdigest()
+if args.identity_only:
+    previous_identities = baseline_data['eight_player_summary']['identities']
+    report['identity_aggregate_comparison'] = {
+        mode: {role: {
+            'previous': previous_identities[mode][role], 'current': stat,
+            'delta_percentage_points': round(stat['win_percent'] - previous_identities[mode][role]['win_percent'], 3),
+        } for role, stat in identity_summary[mode].items()}
+        for mode in identity_summary
+    }
 (out / 'results.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 total = sum(expected.values())
 description = ('采用最新状态AI与角色规则，并复查全角色策略和对策' if args.state_ai else
@@ -293,5 +340,24 @@ elif args.optimized_ai:
     lines += ['', '策略、配对权重实验与前后对照见[优化记录](ai-tuning.md)。']
 else:
     lines += ['', '执行记录：首次2v2测试进程发生原生中断，随后从首局完整重跑25,536局并通过。完整功能回归1611项通过、0失败，日志见regression.log。']
+if args.identity_only:
+    lines[0] = f'# {n}子职胜率汇总：身份局重新采样（{args.date}）'
+    lines[2] = ('移除忠臣替死后，仅重新采样八人身份随机2,000局及偏好600局，共 **2,600局新样本**。'
+                f'其余四组沿用旧来源；合并展示{total:,}局，不表示全部重测。底层扩展接口保留，游戏内替死按钮停用。')
+    lines[4:4] = ['## 数据来源', '',
+        '| 模式 | 本轮处理 | 原采样日期 | 原源码提交 |', '|---|---|---|---|',
+        *[f'| {mode} | {"新采样" if p["status"] == "newly_sampled" else "沿用旧样本，未重测"} | {p["date"]} | `{p["source_commit"]}` |'
+          for mode, p in report['mode_provenance'].items()], '',
+        '逐模式源码指纹见results.json的mode_provenance；旧数据与日志逐字节保留，来源汇总见baseline-results.json。', '']
+    lines = [line.replace('powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run',
+                         f'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run -Date {args.date} -Directory {out.name} -Baseline <旧轮results.json>')
+             .replace('--state-ai --refresh-docs', '--identity-only --refresh-docs') for line in lines]
+    lines += ['', '本轮运行器仅执行audit、identity、identity-preferred和回归；不会重新执行1v1、2v2、dual、eight。随机身份种子5000000–5001999，偏好身份种子5100000–5100599，与上一轮保持一致。']
+    lines += ['', '## 身份整体胜率与直接上一轮比较', '',
+              '保持相同样本数与逐局种子；数字是固定AI的描述性结果。主公与忠臣共用胜方，不能将两行相加。', '',
+              '| 模式 | 身份 | 上轮胜／局 | 本轮胜／局 | 差（百分点） |', '|---|---|---:|---:|---:|']
+    for mode, records in report['identity_aggregate_comparison'].items():
+        for role, stat in records.items():
+            lines.append(f'| {mode} | {role} | {cell(stat["previous"])} | {cell(stat["current"])} | {stat["delta_percentage_points"]:+.1f} |')
 (out / 'README.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
 print(f'PASS: {total:,} outcomes; {n} complete role rows; no errors or forced aborts.')
