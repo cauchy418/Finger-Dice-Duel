@@ -25,7 +25,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-最新结果：**1670 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成9,747次选点审计及57子职64,768局五模式采样，见[最新胜率](../Tools/Statistics/2026-11-06-arcane/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
+最新结果：**1705 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成10,092次选点审计及58子职66,964局五模式采样，见[最新胜率](../Tools/Statistics/2026-11-09-state-ai/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
 
 ## 精简后的完整性核查
 
@@ -33,7 +33,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 两份仍有效的次战／九战逐步演算已并入[第一章现行设计](Adventure/four-chapter-v3/chapter-01-and-04.md)，同时校正配置文件与源码注释的文档路径。仍被权重实验入口使用的[角色权重汇总脚本](../Tools/Statistics/summarize-role-tuning.py)已恢复，要求显式指定输入目录，避免引用已删除的旧采样目录。
 
-精简后重新运行功能回归：1670项通过、0失败；UI的237个脚本编译通过且无组件冲突。现有64,768局原始数据与已发布汇总核对一致，八人阵营／身份表均由原数据补全，保留原采样提交与源码指纹。仓库Markdown相对链接已检查，无缺失目标。
+精简后重新运行功能回归：1705项通过、0失败；UI的237个脚本编译通过且无组件冲突。现行66,964局原始数据与已发布汇总核对一致，八人阵营／身份表均由原数据补全，保留原采样提交与源码指纹。仓库Markdown相对链接已检查，无缺失目标。
 
 ## 文档
 
@@ -42,10 +42,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | [RULES](../RULES.md) | 权威规则、完整技能数值、状态与特殊交互 |
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [模式与战斗](modes-and-combat.md) | 回合流程、模式细则、伤害类型、状态与元素反应 |
-| [角色图鉴](roster.md) | 57 名子职数值、阵营分类、全角色胜率 |
+| [角色图鉴](roster.md) | 58 名子职数值、阵营分类、全角色胜率 |
 | [图鉴写法](../CODE-STYLE.md) | 文案长度、关键交互与排版约定 |
 | [测试工具](../Tools/HeadlessTests/README.md) | 环境、参数与专项运行方法 |
-| [全角色AI策略与权重](ai-strategy-reference.md) | 57 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
+| [全角色AI策略与权重](ai-strategy-reference.md) | 58 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
 | [AI策略检查](../Tools/ai-strategy-audit.md) | 专属策略、覆盖范围与统计说明 |
 | [美术制作](../Art/Production/)／[接入验收](../Art/Integration/) | 原图、提示词、导入清单与实际界面截图 |
 

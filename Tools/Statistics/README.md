@@ -6,8 +6,8 @@
 
 | 内容 | 位置 |
 |---|---|
-| 最新一轮（2026-11-06，57 子职 64,768 局） | [2026-11-06-arcane/README.md](2026-11-06-arcane/README.md) |
-| 机器可读汇总 | [results.json](2026-11-06-arcane/results.json) |
+| 最新一轮（2026-11-09，58子职66,964局） | [2026-11-09-state-ai/README.md](2026-11-09-state-ai/README.md) |
+| 机器可读汇总 | [results.json](2026-11-09-state-ai/results.json) |
 | 逐局记录 | 同目录 `1v1.csv`、`2v2.csv`、`dual.csv`、`eight.csv`、`identity.csv`、`identity-preferred.csv` |
 | 角色名单与阵营 | `roster.tsv` |
 | AI 逐角色审计 | `ai-audit.tsv` |
@@ -30,12 +30,12 @@
 
 ## 复现与补表
 
-完整重采按[现行报告的复现命令](2026-11-06-arcane/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
+完整重采按[现行报告的复现命令](2026-11-09-state-ai/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
 
 只从现有数据补全表格时：
 
 ```powershell
-python Tools/Statistics/summarize-current.py --date 2026-11-06 --directory 2026-11-06-arcane --arcane --refresh-docs --update-roster
+python Tools/Statistics/summarize-current.py --date 2026-11-09 --directory 2026-11-09-state-ai --state-ai --refresh-docs --update-roster
 ```
 
 日志与逐局 CSV 必须随目录一起提交；生成脚本会核对名单规模、逐角色出场数与异常数。
@@ -51,3 +51,9 @@ python Tools/Statistics/summarize-role-tuning.py --directory <实验目录> --lo
 ```
 
 脚本按训练段选候选，使用独立留出段做配对精确检验与多重比较校正，输出 `tuning.json`。这类实验与正式模式胜率分开统计，不把旧实验当作新采样。当前已采用参数的旧验证数据可从精简前提交 `9947e7b` 的 `Tools/Statistics/2026-11-05-ai/` 取回。
+
+## 统一运行环境
+
+`run-current.ps1 -Run`默认以本机.NET 8.0.15完成编译、功能检查和全部采样，所有模式复用同一程序集；可用`-RuntimeVersion`显式指定已安装版本。版本与程序集SHA256保存于provenance.json。旧.NET 6.0.11在本机长任务中出现过原生崩溃，本轮不会拼接中断样本或跨运行时样本。游戏及Unity编译目标不变。
+
+复现到新目录时显式传入`-Date`与`-Directory`，执行器拒绝覆盖已发布目录；每组前后核对源码，运行时身份偏好表必须来自同轮随机身份组。临时失败样本留在忽略的bin目录，不属于已发布统计。
