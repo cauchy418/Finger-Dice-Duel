@@ -33,7 +33,7 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 $env:FDD_REVISION_ROOT = $sampleRoot
 # Compile once, verify the fixture, then reuse this exact binary for every mode.
 # Repeated Roslyn launches on this host can fail inside the .NET runtime.
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only AiStatePolicyTests -SkipStatistics -OutputDirectory $buildRoot
+powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -Only AiStatePolicyTests -SkipStatistics -OutputDirectory $buildRoot -RuntimeVersion $RuntimeVersion
 if ($LASTEXITCODE -ne 0) { throw 'Sampling build validation failed' }
 $samplerBinary = Join-Path $buildRoot 'HeadlessTests.dll'
 $samplerHash = (Get-FileHash -LiteralPath $samplerBinary -Algorithm SHA256).Hash

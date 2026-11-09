@@ -16,6 +16,7 @@
 param(
     [string]$EditorRoot = $env:FDD_EDITOR_ROOT,
     [string]$Define = "",
+    [string]$RuntimeVersion = "",
     [switch]$Quiet,
     # 只跑某个测试类（对应运行器的过滤参数，例如 -Only AdventureLevel1Tests）。
     # 快速迭代单个 fixture 用；回归仍需跑一次全量。
@@ -166,7 +167,9 @@ if (-not $Quiet) {
     Write-Host ""
 }
 
-$compileOutput = & dotnet @cscArgs 2>&1
+$runtimeArgs = @()
+if ($RuntimeVersion) { $runtimeArgs = @('--fx-version', $RuntimeVersion) }
+$compileOutput = & dotnet @runtimeArgs @cscArgs 2>&1
 $compileExit = $LASTEXITCODE
 
 if ($compileOutput) { $compileOutput | ForEach-Object { Write-Host $_ } }
@@ -191,5 +194,5 @@ if (-not $Quiet) { Write-Host "编译成功，开始运行测试……" -Foregro
 $taskRunArgs = @($exe)
 if($Only){$taskRunArgs += $Only}
 if($SkipStatistics){$taskRunArgs += '--skip-statistics'}
-& dotnet @taskRunArgs
+& dotnet @runtimeArgs @taskRunArgs
 exit $LASTEXITCODE
