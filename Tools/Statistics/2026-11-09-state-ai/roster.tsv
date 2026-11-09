@@ -29,7 +29,7 @@ fighter_tactician	战士·战术家	中立
 wizard_school_of_divination	法师·预言学派	中立
 wizard_school_of_necromancy	法师·死灵学派	中立
 wizard_school_of_abjuration	法师·防护学派	守序
-cleric_light_domain	牧师·光明领域	中立
+cleric_light_domain	牧师·净化领域	中立
 cleric_war_domain	牧师·战争领域	守序
 fighter_battle_master	战士·战斗大师	守序
 sorcerer_draconic_bloodline	术士·龙族血脉	混乱
@@ -56,3 +56,4 @@ paladin_oath_of_vengeance	圣武士·复仇之誓	守序
 cleric_trickery_domain	牧师·诡术领域	混乱
 cleric_tempest_domain	牧师·风暴领域	混乱
 monk_way_of_the_drunken_master	武僧·醉拳宗	混乱
+cleric_knowledge_domain	牧师·知识领域	守序

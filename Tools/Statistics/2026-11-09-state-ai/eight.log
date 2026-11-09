@@ -1,7 +1,5 @@
-── RevisionBalanceTests  (1 项)
-progress 1000 games
-progress 2000 games
-identity completed 2000 games; zero errors / forced aborts
+﻿── RevisionBalanceTests  (1 项)
+eight completed 600 games; zero errors / forced aborts
    PASS  Revision_all_modes_win_rates
 
 ────────────────────────────────────────────────────────────

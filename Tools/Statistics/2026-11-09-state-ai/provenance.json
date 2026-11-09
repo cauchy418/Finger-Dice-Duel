@@ -1,0 +1,13 @@
+{
+    "captured_utc":  "2026-11-09T15:31:48.562456+00:00",
+    "source_commit":  "2c676356e19010c2444b0bc0fcf7339bb4c6fed5",
+    "source_dirty":  true,
+    "source_sha256":  "73e825f6520132e44449cf1295eaaf7b922eb08db11e1e3b1cfef2cbdd49d65e",
+    "test_source_sha256":  "d061b921f9ecc79e0acc4316bf3c940509cdbcb93e5dcbdd36cf264664c1e0cf",
+    "headless_source_sha256":  "35cf95b8f4a5a72236f3255c328aa447e44c272c5e99e64946ee4202248ba3bc",
+    "headless_runner_sha256":  "2e202923fe74ded4ba3bb89a659955475c34b6af7e23b5cfc998c164934f9a81",
+    "statistics_tool_sha256":  "e0e16f05b718b197c21f1a40f954dd7dd99e9b9f4273542017cb29bc0c579e27",
+    "statistics_runner_sha256":  "8552aee59f57c3db0cf8296e8365b63758201425959d18b0766c22189c256884",
+    "sampler_assembly_sha256":  "EB1A3B2172AFAE95BB9CE9FA75E1F6DF4985F4CB8A2ACF17262B12C2EB7D4497",
+    "sampler_runtime_version":  "8.0.15"
+}

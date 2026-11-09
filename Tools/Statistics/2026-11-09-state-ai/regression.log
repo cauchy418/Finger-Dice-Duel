@@ -1,11 +1,4 @@
-编译器   : C:\Users\29391\Finger Dice Duel\Tools\HeadlessTests\bin\csc\csc.dll
-引用目录 : C:\Program Files\Tuanjie\Hub\Editor\2022.3.62t15-x86_64\Editor\Data\MonoBleedingEdge\lib\mono\4.8-api
-源文件   : 321 个（产品 183 / 测试 137）
-输出     : C:\Users\29391\Finger Dice Duel\Tools\HeadlessTests\bin\HeadlessTests.dll
-
-编译成功，开始运行测试……
-
-── AdventureChapterFinaleTests  (10 项)
+﻿── AdventureChapterFinaleTests  (10 项)
    PASS  Eighth_follow_up_hits_first_bleed_increases_main_and_total_is_eleven
    PASS  Finale_all_seven_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded
    PASS  Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster
@@ -76,6 +69,20 @@
 ── AiChoiceProviderRoutingTests  (2 项)
    PASS  Ai_attacker_uses_its_own_choice_provider_to_power_shot
    PASS  Ai_defender_uses_its_own_choice_provider_to_dodge
+
+── AiStatePolicyTests  (12 项)
+   PASS  All_roles_accept_every_negative_modifier_without_changing_the_board
+   PASS  Combined_effects_stack_and_holy_fire_pauses_affinity_policy
+   PASS  Confusion_and_frost_are_applied_once_to_previewed_results
+   PASS  Decay_does_not_prefer_a_zero_heal_over_a_new_shield
+   PASS  Every_current_status_has_an_explicit_rule_and_effect_extension_keys_exist
+   PASS  Evocation_abandon_generator_reaches_the_full_hundred_point_range
+   PASS  Life_attack_digits_remain_valuable_cleansing_actions_while_disabled_or_stunned
+   PASS  Life_cleric_can_still_cleanse_decay_before_its_heal
+   PASS  Life_full_health_holy_fire_still_has_a_real_cleanse_and_overflow_blessing
+   PASS  State_hand_weights_are_copies_and_expire_without_leaking_to_other_roles
+   PASS  Tinnitus_discards_heal_and_shield_preferences_and_blindness_changes_target_value
+   PASS  Wet_scores_the_real_six_above_the_raw_eight_that_becomes_seven
 
 ── AlignmentMigrationTests  (13 项)
    PASS  All_50_alignments_match_the_latest_assignment_and_cancelled_berserker_move
@@ -225,6 +232,24 @@
    PASS  TheArchfey_is_bludgeoning_near_and_piercing_far
    PASS  WayOfTheTaiChi_attacking_normally_is_still_bludgeoning
 
+── BarbarianReworkTests  (16 项)
+   PASS  All_barbarians_have_the_shared_base_panel_and_slashing_type
+   PASS  Beast_accumulates_soul_then_heals_and_grows_at_turn_end
+   PASS  Beast_waits_for_enough_souls_and_growth_uses_missing_health_not_maximum
+   PASS  Berserker_low_health_five_attacks_and_leech_uses_actual_health_damage
+   PASS  Bound_low_health_displays_update_without_a_match_or_reset
+   PASS  Double_barbarian_has_one_health_bonus_and_one_missing_health_bonus
+   PASS  Giant_blade_pays_health_without_buffers_and_is_consumed_by_cancel
+   PASS  Giant_blade_takes_priority_over_dual_wild_magic_in_both_orders
+   PASS  Giant_cannot_pay_the_last_five_health_for_element_blade
+   PASS  Giant_high_health_has_ordinary_numbers_and_low_health_has_double_five_attack
+   PASS  Giant_nine_heals_twice_and_keeps_threshold_snapshot_between_heals
+   PASS  Missing_health_bonus_changes_immediately_when_damage_or_healing_changes_it
+   PASS  Warden_human_board_asks_after_target_and_resumes_once
+   PASS  Warden_oath_also_clears_untimed_attack_markers
+   PASS  Warden_oath_clears_attached_statuses_but_keeps_independent_knowledge_damage
+   PASS  Warden_reflection_waits_for_human_oath_before_damage_and_turn_end
+
 ── BattleReadabilityTests  (9 项)
    PASS  Declining_power_shot_does_not_log_it_as_activated
    PASS  Dual_paladin_does_not_restore_the_redundant_attack_question
@@ -359,34 +384,34 @@ GUIDE PASS L19
    PASS  Chapter_two_continues_without_rebuilding
 COMBAT PASS L1 rounds=12 win=False
 COMBAT PASS L2 rounds=7 win=False
-COMBAT PASS L3 rounds=10 win=True
+COMBAT PASS L3 rounds=18 win=True
 COMBAT PASS L4 rounds=50 win=False
 COMBAT PASS L5 rounds=7 win=True
 COMBAT PASS L6 rounds=6 win=True
 COMBAT PASS L7 rounds=13 win=True
 COMBAT PASS L8 rounds=3 win=True
 COMBAT PASS L9 rounds=7 win=False
-COMBAT PASS L10 rounds=9 win=False
-COMBAT PASS L11 rounds=12 win=False
+COMBAT PASS L10 rounds=7 win=False
+COMBAT PASS L11 rounds=11 win=False
 COMBAT PASS L12 rounds=27 win=False
 COMBAT PASS L13 rounds=8 win=False
-COMBAT PASS L14 rounds=20 win=True
-COMBAT PASS L15 rounds=19 win=True
-COMBAT PASS L16 rounds=10 win=True
-COMBAT PASS L17 rounds=15 win=False
+COMBAT PASS L14 rounds=50 win=False
+COMBAT PASS L15 rounds=7 win=False
+COMBAT PASS L16 rounds=12 win=True
+COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
-COMBAT PASS L19 rounds=16 win=False
-COMBAT PASS L20 rounds=8 win=False
-COMBAT PASS L21 rounds=7 win=False
+COMBAT PASS L19 rounds=11 win=False
+COMBAT PASS L20 rounds=6 win=False
+COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
-COMBAT PASS L23 rounds=13 win=True
+COMBAT PASS L23 rounds=10 win=False
 COMBAT PASS L24 rounds=7 win=False
-COMBAT PASS L25 rounds=11 win=False
-COMBAT PASS L26 rounds=12 win=False
-COMBAT PASS L27 rounds=9 win=False
-COMBAT PASS L28 rounds=13 win=True
-COMBAT PASS L29 rounds=11 win=True
-COMBAT PASS L30 rounds=14 win=False
+COMBAT PASS L25 rounds=9 win=False
+COMBAT PASS L26 rounds=20 win=True
+COMBAT PASS L27 rounds=13 win=False
+COMBAT PASS L28 rounds=8 win=True
+COMBAT PASS L29 rounds=23 win=True
+COMBAT PASS L30 rounds=12 win=False
    PASS  Every_lesson_can_finish_real_combat_without_resetting
    PASS  Finale_values_and_roles_match_the_new_design
    PASS  Protection_and_obstacle_actions_are_scoped_and_cost_an_action
@@ -430,46 +455,46 @@ V3 GUIDE PASS L37 round=4
 V3 GUIDE PASS L38 round=3
 V3 GUIDE PASS L39 round=2
    PASS  All_four_chapters_finish_guidance_before_confirming_trial
-V3 COMBAT PASS L1 rounds=9
+V3 COMBAT PASS L1 rounds=12
 V3 COMBAT PASS L2 rounds=14
-V3 COMBAT PASS L3 rounds=11
+V3 COMBAT PASS L3 rounds=14
 V3 COMBAT PASS L4 rounds=52
 V3 COMBAT PASS L5 rounds=7
 V3 COMBAT PASS L6 rounds=11
-V3 COMBAT PASS L7 rounds=27
+V3 COMBAT PASS L7 rounds=22
 V3 COMBAT PASS L8 rounds=3
 V3 COMBAT PASS L9 rounds=8
-V3 COMBAT PASS L10 rounds=9
-V3 COMBAT PASS L11 rounds=15
-V3 COMBAT PASS L12 rounds=8
-V3 COMBAT PASS L13 rounds=14
-V3 COMBAT PASS L14 rounds=8
-V3 COMBAT PASS L15 rounds=15
-V3 COMBAT PASS L16 rounds=25
-V3 COMBAT PASS L17 rounds=8
-V3 COMBAT PASS L18 rounds=36
-V3 COMBAT PASS L19 rounds=24
-V3 COMBAT PASS L20 rounds=2
+V3 COMBAT PASS L10 rounds=7
+V3 COMBAT PASS L11 rounds=51
+V3 COMBAT PASS L12 rounds=5
+V3 COMBAT PASS L13 rounds=8
+V3 COMBAT PASS L14 rounds=17
+V3 COMBAT PASS L15 rounds=7
+V3 COMBAT PASS L16 rounds=5
+V3 COMBAT PASS L17 rounds=11
+V3 COMBAT PASS L18 rounds=37
+V3 COMBAT PASS L19 rounds=26
+V3 COMBAT PASS L20 rounds=25
 V3 COMBAT PASS L21 rounds=7
-V3 COMBAT PASS L22 rounds=6
-V3 COMBAT PASS L23 rounds=26
-V3 COMBAT PASS L24 rounds=21
+V3 COMBAT PASS L22 rounds=8
+V3 COMBAT PASS L23 rounds=18
+V3 COMBAT PASS L24 rounds=9
 V3 COMBAT PASS L25 rounds=8
 V3 COMBAT PASS L26 rounds=16
-V3 COMBAT PASS L27 rounds=22
-V3 COMBAT PASS L28 rounds=13
-V3 COMBAT PASS L29 rounds=13
-V3 COMBAT PASS L30 rounds=8
-V3 COMBAT PASS L31 rounds=5
-V3 COMBAT PASS L32 rounds=13
+V3 COMBAT PASS L27 rounds=15
+V3 COMBAT PASS L28 rounds=14
+V3 COMBAT PASS L29 rounds=22
+V3 COMBAT PASS L30 rounds=6
+V3 COMBAT PASS L31 rounds=7
+V3 COMBAT PASS L32 rounds=16
 V3 COMBAT PASS L33 rounds=8
 V3 COMBAT PASS L34 rounds=8
 V3 COMBAT PASS L35 rounds=8
 V3 COMBAT PASS L36 rounds=7
-V3 COMBAT PASS L37 rounds=11
-V3 COMBAT PASS L38 rounds=13
-V3 COMBAT PASS L39 rounds=10
-V3 COMBAT PASS L40 rounds=13
+V3 COMBAT PASS L37 rounds=17
+V3 COMBAT PASS L38 rounds=8
+V3 COMBAT PASS L39 rounds=13
+V3 COMBAT PASS L40 rounds=12
    PASS  Every_trial_and_retry_can_resolve_a_complete_battle
 REACTION 1 Thunder damage=4 applied=None
 REACTION 2 Lightning damage=6 applied=None
@@ -1121,6 +1146,18 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Killing_a_teammate_queues_other_factions_from_the_next_seat
    PASS  Killing_an_enemy_queues_extra_actions_equal_to_remaining_faction
 
+── KnowledgeDomainTests  (10 项)
+   PASS  Carry_gains_permanent_knowledge_without_preview_side_effects
+   PASS  Confusion_changes_carry_to_one_in_preview_and_execution
+   PASS  Dodge_consumes_knowledge_but_prevents_force_and_confusion
+   PASS  Force_immunity_blocks_knowledge_damage_and_confusion
+   PASS  Healing_grants_other_role_one_layer_and_cleanse_preserves_it
+   PASS  Holy_fire_removes_knowledge_and_confusion
+   PASS  Independent_force_does_not_count_as_a_second_initiated_attack
+   PASS  Knowledge_domain_is_in_roster
+   PASS  Multihit_consumes_layers_only_once
+   PASS  Shield_blocks_normal_hit_but_not_independent_knowledge_force
+
 ── LayoutSpacingTests  (10 项)
    PASS  Character_screen_fits_inside_the_canvas
    PASS  Character_screen_has_no_overlapping_rows
@@ -1400,7 +1437,7 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Non_curseweaver_attacks_can_be_dodged_even_at_eight_damage
    PASS  PathOfTheBeast_growth_is_cleared_on_reset
    PASS  PathOfTheBeast_growth_stacks_across_triggers
-   PASS  PathOfTheBeast_has_25_max_health_and_minus_two_minus_two
+   PASS  PathOfTheBeast_has_the_shared_barbarian_panel
    PASS  PathOfTheBeast_heal_is_capped_at_max_health
    PASS  PathOfTheBeast_heals_and_grows_when_hand_sum_is_seven
    PASS  PathOfTheBeast_triggers_when_sum_is_seven
@@ -1525,6 +1562,21 @@ REACTION 13 Poison damage=6 applied=None
    PASS  All_27_identities_keep_their_approved_stats_and_legacy_aliases
    PASS  Profession_and_alignment_filters_intersect_without_adding_druid_roles
 
+── PurificationDomainTests  (13 项)
+   PASS  Affinity_lifetime_continues_while_suppressed
+   PASS  Dual_life_war_applies_blessing_to_both_double_nine_healing_targets
+   PASS  Fire_immunity_is_pierced_for_damage_but_prevents_attached_statuses
+   PASS  Holy_fire_keeps_fire_and_radiant_states_and_blocks_other_states
+   PASS  Holy_fire_no_longer_halves_healing
+   PASS  Holy_fire_suspends_and_restores_all_three_affinities
+   PASS  Holy_fire_suspension_keeps_affinities_through_incoming_attacks
+   PASS  Nine_can_heal_a_selected_other_character_and_apply_holy_fire
+   PASS  Ordinary_attack_is_fixed_five_fire_and_attaches_both_statuses
+   PASS  Scorch_uses_actual_healing_and_rounds_up_without_overflow_damage
+   PASS  Tempest_healing_offers_the_target_an_optional_pure_operation
+   PASS  Trickery_heal_hand_choice_holds_the_turn_until_answered
+   PASS  War_healing_targets_another_role_and_adds_blessing
+
 ── RevisionBalanceTests  (1 项)
    SKIP  Revision_all_modes_win_rates (statistics)
 
@@ -1543,6 +1595,15 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Teammate_is_on_the_right_when_they_are_the_next_seat
    PASS  The_other_two_seats_match_the_walk_rule
    PASS  There_are_exactly_two_opponents_and_one_teammate
+
+── RoleRefreshAiTests  (7 项)
+   PASS  Blessed_nine_does_not_trade_healing_for_cancelled_attack
+   PASS  Blessed_nine_keeps_healing_against_immune_target
+   PASS  Diviner_keeps_portent_when_enemy_attack_is_disabled
+   PASS  Element_preview_does_not_advance_psychic_status_random
+   PASS  Giant_buys_element_to_bypass_physical_immunity
+   PASS  Giant_preserves_five_health_without_elemental_upgrade
+   PASS  Ordinary_cleric_does_not_value_cleansing_it_cannot_perform
 
 ── RoundCountingTests  (5 项)
    PASS  One_versus_one_round_is_two_turns
@@ -1690,25 +1751,25 @@ REACTION 13 Poison damage=6 applied=None
 ── SkillActivationTests  (2 项)
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
-战士·勇士        20 / 30          67%
-战士·破阵者       28 / 30          93%
+战士·勇士        19 / 30          63%
+战士·破阵者       29 / 30          97%
 法师·咒法学派      30 / 30          100%
 野蛮人·守望者道途     29 / 30          97%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     28 / 30          93%
-战士·剑士        14 / 30          47%
-武僧·忍宗        22 / 30          73%
-游荡者·刺客       11 / 30          37%
+野蛮人·野兽道途     30 / 30          100%
+战士·剑士        13 / 30          43%
+武僧·忍宗        25 / 30          83%
+游荡者·刺客        8 / 30          27%
 圣武士·奉献之誓     30 / 30          100%
-邪术师·至高妖精      2 / 30          7%
+邪术师·至高妖精      1 / 30          3%
 战士·魔射手       30 / 30          100%
 游荡者·赌徒       30 / 30          100%
-圣武士·王冠之誓     27 / 30          90%
-武僧·太极宗       28 / 30          93%
-野蛮人·巨人道途     30 / 30          100%
-游荡者·盗贼        6 / 30          20%
-游侠·幽域追踪者     10 / 30          33%
+圣武士·王冠之誓     28 / 30          93%
+武僧·太极宗       29 / 30          97%
+野蛮人·巨人道途     11 / 30          37%
+游荡者·盗贼        8 / 30          27%
+游侠·幽域追踪者      9 / 30          30%
 游荡者·魔术师      30 / 30          100%
 法师·塑能学派       0 / 30          0%
 术士·狂野魔法       0 / 30          0%
@@ -1720,7 +1781,7 @@ REACTION 13 Poison damage=6 applied=None
 法师·预言学派       0 / 30          0%
 法师·死灵学派       0 / 30          0%
 法师·防护学派       0 / 30          0%
-牧师·光明领域       0 / 30          0%
+牧师·净化领域       0 / 30          0%
 牧师·战争领域       0 / 30          0%
 战士·战斗大师       0 / 30          0%
 术士·龙族血脉       0 / 30          0%
@@ -1747,24 +1808,25 @@ REACTION 13 Poison damage=6 applied=None
 牧师·诡术领域       0 / 30          0%
 牧师·风暴领域       0 / 30          0%
 武僧·醉拳宗        0 / 30          0%
+牧师·知识领域       0 / 30          0%
 
-尚未发动过招牌技能的角色（待补专属策略）：法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·光明领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗
+尚未发动过招牌技能的角色（待补专属策略）：法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·净化领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗、牧师·知识领域
    PASS  Ai_activates_signature_skills
 对 战士·破阵者：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
 对 法师·咒法学派：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1]
-对 野蛮人·守望者道途：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+7->7/7][7+2->7/2][2+7->7/7][7+1->1/7]
-对 牧师·生命领域：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+9->7/9][9+7->7/7][7+5->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+8->8/7][8+7->7/7][7+1->1/7][1+7->7/7][7+9->9/7][9+8->8/7][7+6->8/6]
+对 野蛮人·守望者道途：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+4->7/4][4+9->7/9][9+7->7/7][7+2->7/2][2+7->7/7][7+4->4/7][4+1->1/7][1+9->9/7]
+对 牧师·生命领域：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+9->7/9][9+7->7/7][7+5->5/7][5+6->6/7][6+4->4/7][4+9->9/7][9+7->7/7][7+2->2/7][2+8->8/7][8+2->2/7]
 对 游荡者·风流剑客：双 7 最多 1 只  [1+2->2/1][2+4->4/1][1+7->4/7][4+2->2/7]
-对 野蛮人·野兽道途：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+5->7/5][5+8->7/8][8+9->7/9][9+7->7/7][7+2->2/7][2+5->5/7][5+7->7/7][7+9->9/7][9+1->1/7][1+6->6/7][6+4->4/7][4+2->2/7]
+对 野蛮人·野兽道途：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+5->7/5][5+8->7/8][8+9->7/9][9+7->7/7][7+2->2/7][2+5->5/7][5+7->7/7][7+9->9/7][9+1->1/7][1+6->6/7]
 对 战士·剑士：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+9->7/9][9+4->7/4]
-对 武僧·忍宗：双 7 最多 2 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+8->8/1][8+7->7/1][1+1->7/1][1+7->7/7]
-对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
-对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
+对 武僧·忍宗：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+8->8/1][8+4->4/1]
+对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+5->5/5][5+1->1/5][1+7->7/5][5+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
+对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+5->5/5][5+1->1/5][1+7->7/5][5+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
 对 邪术师·至高妖精：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+3->3/7][3+8->8/7][8+4->4/7][4+5->5/7][5+3->3/7][3+8->8/7][8+4->4/7][7+8->4/8]
 对 战士·魔射手：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][1+8->6/8]
 
-出现过至少一只 7 的对局：11/12
-出现过双 7 的对局：4/12
+出现过至少一只 7 的对局：10/12
+出现过双 7 的对局：3/12
 
    PASS  Diagnose_assassin_double_seven
 
@@ -1827,12 +1889,14 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Sound_and_visual_stagger_use_the_same_rhythm
    PASS  Swordsman_follow_up_sounds_separately_from_the_main_hit
 
-── SporesTests  (9 项)
+── SporesTests  (11 项)
    PASS  Ai_drops_finishing_bonus_when_spore_life_absorbs_the_blow
    PASS  Death_proximity_uses_pre_death_ring_and_obstacles
    PASS  Death_restores_charge_once_even_at_match_end_but_sheep_break_does_not
    PASS  Dual_druids_share_initial_four_charge_cap_and_ai_can_activate
-   PASS  Halo_checks_actual_health_and_only_at_own_turn_start
+   PASS  Halo_affects_adjacent_allies_and_enemies_but_not_distant_seats
+   PASS  Halo_does_not_trigger_without_spore_life_even_against_lower_health
+   PASS  Halo_requires_spore_life_ignores_health_comparison_and_only_runs_on_own_turn
    PASS  Holy_light_blocks_halo_but_not_independent_spore_buffer
    PASS  Human_symbiosis_can_be_declined_and_consumes_one_charge_when_accepted
    PASS  Poison_type_ends_when_spore_life_is_exhausted
@@ -2146,5 +2210,5 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1645 / 失败 0
+通过 1705 / 失败 0
 独立统计测试已跳过 8 项。

@@ -1,4 +1,4 @@
-── RevisionBalanceTests  (1 项)
+﻿── RevisionBalanceTests  (1 项)
 progress 1000 games
 progress 2000 games
 progress 3000 games
@@ -24,7 +24,15 @@ progress 22000 games
 progress 23000 games
 progress 24000 games
 progress 25000 games
-2v2 completed 25536 games; zero errors / forced aborts
+progress 26000 games
+progress 27000 games
+progress 28000 games
+progress 29000 games
+progress 30000 games
+progress 31000 games
+progress 32000 games
+progress 33000 games
+1v1 completed 33060 games; zero errors / forced aborts
    PASS  Revision_all_modes_win_rates
 
 ────────────────────────────────────────────────────────────

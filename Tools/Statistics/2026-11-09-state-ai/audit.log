@@ -1,5 +1,5 @@
-── RevisionBalanceTests  (1 项)
-eight completed 600 games; zero errors / forced aborts
+﻿── RevisionBalanceTests  (1 项)
+58 roles, 10092 legal opening decisions, runtime profiles exported
    PASS  Revision_all_modes_win_rates
 
 ────────────────────────────────────────────────────────────
