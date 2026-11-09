@@ -224,7 +224,7 @@ namespace FingerDiceDuel.Core
         /// <summary>内奸是否已经亮明身份。</summary>
         public bool TraitorRevealed { get; private set; }
 
-        /// <summary>人类忠臣是否已按下“替死待命”；为空表示不指定。</summary>
+        /// <summary>保留的替死候选人接口；当前规则忽略此值。</summary>
         public PlayerState HumanSacrificeCandidate { get; set; }
 
         private readonly Dictionary<PlayerState, IdentityRole> _identity
@@ -2597,7 +2597,7 @@ namespace FingerDiceDuel.Core
                 bool subtract = ShouldSubtract(actor);
                 bool carried=!subtract && result.ActedHandValueBefore+targetValue>=10;
                 effect = actedHand.PerformOperation(targetValue, subtract);
-                if(carried && actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;}
+                if(carried && actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;RecordSkillVisual(actor,"困惑",actor,new SkillVisualData(source:actedHand,value:1,previous:result.ActedHandValueBefore+targetValue,status:StatusEffect.Confusion,variant:"carry"));}
                 if(carried && CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null)
                 {actor.GainKnowledge(actor);NoteSkill(actor,"岁月知识","知识祝福+1",actor,new SkillVisualData(value:actor.KnowledgeStacks,status:StatusEffect.KnowledgeBlessing));}
                 if (subtract)
@@ -2612,8 +2612,8 @@ namespace FingerDiceDuel.Core
                     int previous=actedHand.Value;effect=actedHand.PerformOperation(result.SecondAddendValue);
                     if(previous+result.SecondAddendValue>=10)
                     {
-                        if(actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;}
-                        if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null)actor.GainKnowledge(actor);
+                        if(actor.HasStatus(StatusEffect.Confusion)){actedHand.SetValue(1);effect=HandEffectType.None;RecordSkillVisual(actor,"困惑",actor,new SkillVisualData(source:actedHand,value:1,previous:previous+result.SecondAddendValue,status:StatusEffect.Confusion,variant:"carry"));}
+                        if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null){actor.GainKnowledge(actor);NoteSkill(actor,"岁月知识","知识祝福+1",actor,new SkillVisualData(value:actor.KnowledgeStacks,status:StatusEffect.KnowledgeBlessing));}
                     }
                     NoteSkill(actor,"巨龙座",$"再加 {result.SecondAddendValue}，结果 {actedHand.Value}");
                 }
@@ -2942,7 +2942,7 @@ namespace FingerDiceDuel.Core
                                 : LifeDomainLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
                             if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
-                            else {if(healer is PathOfTheGiantLogic && actor.Health<=15){target?.Heal(amount/2,this);int first=target?.LastActualHealing??0;target?.Heal(amount/2,this);target?.CombineEarlierHealing(first);}else target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
+                            else {if(healer is PathOfTheGiantLogic && actor.Health<=15){target?.Heal(amount/2,this);int first=target?.LastActualHealing??0;target?.Heal(amount/2,this);target?.CombineEarlierHealing(first);}else target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:target?.LastActualHealing??0));}
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -3750,33 +3750,9 @@ namespace FingerDiceDuel.Core
             }
         }
 
-        /// <summary>
-        /// 主公即将受到致命伤害时，选择一名存活忠臣替死并取消这次攻击。
-        /// 一次攻击最多一名忠臣替死（由 AttackContext 取消后续结算保证）。
-        /// </summary>
+        /// <summary>保留的替死扩展接口。当前身份规则不提供替死，始终返回 null。</summary>
         public PlayerState TryLoyalistSacrifice(PlayerState lord, int incomingDamage)
         {
-            if (!IsIdentityMode || lord == null || !lord.IsAlive) return null;
-            if (IdentityOf(lord) != IdentityRole.Lord) return null;
-            if (incomingDamage <= 0 || incomingDamage < lord.Health) return null;
-
-            if (HumanSacrificeCandidate != null
-                && HumanSacrificeCandidate.IsOriginalAlive
-                && IdentityOf(HumanSacrificeCandidate) == IdentityRole.Loyalist)
-            {
-                HumanSacrificeCandidate.SetHealthExact(0);
-                return HumanSacrificeCandidate;
-            }
-
-            for (int i = 0; i < _players.Count; i++)
-            {
-                PlayerState p = _players[i];
-                if (p != null && p.IsOriginalAlive && IdentityOf(p) == IdentityRole.Loyalist)
-                {
-                    p.SetHealthExact(0);
-                    return p;
-                }
-            }
             return null;
         }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;   // 图鉴资料（表现层入口是唯一允许看到它的地方）
@@ -147,7 +147,6 @@ namespace FingerDiceDuel.UI
         // ---- 8 人身份局状态 ----
         private bool _isIdentity;
         private PlayerState _eightHumanPlayer;
-        private bool _humanSacrificeArmed;
         private Text _idStatus;
         private Text _idSeats;
         private Text _idPicked;
@@ -1268,7 +1267,6 @@ namespace FingerDiceDuel.UI
             _controller.SetFirstPlayer(seated[0]);
 
             _isIdentity = true;
-            _humanSacrificeArmed = false;
             _isEightPlayer = true;
             _isTwoOnTwo = false;
             _isDualGeneral = false;
@@ -3228,37 +3226,12 @@ namespace FingerDiceDuel.UI
 
         private void RefreshSacrificeButton()
         {
-            if (!_isIdentity || _game == null || _eightHumanPlayer == null)
-            {
-                _board.SetSacrificeButtonVisible(false, false);
-                return;
-            }
-
-            PlayerState lord = null;
-            for (int i = 0; i < _game.Players.Count; i++)
-            {
-                PlayerState p = _game.Players[i];
-                if (p != null && _game.IdentityOf(p) == IdentityRole.Lord) { lord = p; break; }
-            }
-
-            bool show = lord != null && lord.IsAlive
-                        && _eightHumanPlayer.IsAlive
-                        && _game.IdentityOf(_eightHumanPlayer) == IdentityRole.Loyalist;
-            if (!show) _humanSacrificeArmed = false;
-            _board.SetSacrificeButtonVisible(show, _humanSacrificeArmed);
-            if (_game != null)
-                _game.HumanSacrificeCandidate = _humanSacrificeArmed ? _eightHumanPlayer : null;
+            _board.SetSacrificeButtonVisible(false, false);
+            if (_game != null) _game.HumanSacrificeCandidate = null;
         }
 
-        private void OnSacrificeClicked()
-        {
-            if (!_isIdentity || _game == null || _eightHumanPlayer == null) return;
-            if (!_eightHumanPlayer.IsAlive
-                || _game.IdentityOf(_eightHumanPlayer) != IdentityRole.Loyalist) return;
-
-            _humanSacrificeArmed = !_humanSacrificeArmed;
-            RefreshView();
-        }
+        // 保留事件接入点；当前身份规则不提供替死。
+        private void OnSacrificeClicked() { }
 
         private void RefreshView()
         {
