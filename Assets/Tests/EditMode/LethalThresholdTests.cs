@@ -156,15 +156,16 @@ namespace FingerDiceDuel.Tests
 
             GreedyChoiceProvider ai = Ai(pathOfTheGiant, foe, out GameManager game);
 
+            pathOfTheGiant.SetHealthExact(15);
             var move = new LegalMove(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
             // 野蛮人·巨人道途 攻+2；战士·勇士 防0
-            // 另一只手 3 -> 每段 3+2-0 = 5，两段共 10
+            // 另一只手3 -> 每段3+1=4，两段共8
             pathOfTheGiant.RightHand.SetValue(3);
             int dmg = ai.TotalLethalDamage(move, pathOfTheGiant, foe, 5);
 
-            Assert.AreEqual(10, dmg,
-                "野蛮人·巨人道途打 5、另一只手 3：两段各 5，共 10（不是 5+2-0=7）。");
+            Assert.AreEqual(8, dmg,
+                "野蛮人·巨人道途打 5、另一只手 3：两段各4，共8（不是 5+2-0=7）。");
         }
 
         [Test]
@@ -175,6 +176,7 @@ namespace FingerDiceDuel.Tests
             var foe = CharacterFactory.CreatePlayer("敌", CharacterDefinition.Champion);
 
             GreedyChoiceProvider ai = Ai(pathOfTheGiant, foe, out GameManager game);
+            pathOfTheGiant.SetHealthExact(15);
             var move = new LegalMove(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
             foreach (int v in new[] { 4, 6, 8 })

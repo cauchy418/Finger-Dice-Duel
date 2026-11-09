@@ -226,8 +226,8 @@ namespace FingerDiceDuel.Tests
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4);
             ctx.Resolve(sink, null);
 
-            // 4 + 2(战士·剑士攻) - 1(野蛮人·守望者道途防) = 5
-            Assert.AreEqual(5, ctx.AppliedDamage, "主攻击照常结算攻防加成。");
+            // 4 + 2 - (-1) = 7
+            Assert.AreEqual(7, ctx.AppliedDamage, "主攻击照常结算攻防加成。");
         }
 
         [Test]
@@ -524,7 +524,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Swordsman_main_attack_is_not_affected_by_follow_up_value()
         {
-            // 主攻击照常吃攻防加成：4 + 攻2 - 防1 = 5
+            // 主攻击照常吃攻防加成：4 + 攻2 - 防(-1) = 7
             var atk = CharacterFactory.CreatePlayer("S", CharacterDefinition.Swordsman);
             var def = CharacterFactory.CreatePlayer("B", CharacterDefinition.PathOfTheWarden);
             var sink = new ScriptedChoiceProvider();
@@ -532,7 +532,7 @@ namespace FingerDiceDuel.Tests
             var ctx = new AttackContext(atk, def, atk.LeftHand, 4);
             ctx.Resolve(sink, null);
 
-            Assert.AreEqual(5, ctx.AppliedDamage, "主攻击 4 + 2 - 1 = 5。");
+            Assert.AreEqual(7, ctx.AppliedDamage, "主攻击 4 + 2 - (-1) = 7。");
         }
 
         [Test]
@@ -1896,15 +1896,15 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void PathOfTheBeast_has_25_max_health_and_minus_two_minus_two()
+        public void PathOfTheBeast_has_the_shared_barbarian_panel()
         {
             PlayerState wolf = CharacterFactory.CreatePlayer("W", CharacterDefinition.PathOfTheBeast);
 
             Assert.AreEqual(25, wolf.MaximumHealth,
                 $"生命上限应为 20 + {PathOfTheBeastLogic.HealthBonus} = 25。");
             Assert.AreEqual(25, wolf.Health, "开局应满血。");
-            Assert.AreEqual(-2, wolf.Character.AttackBonus);
-            Assert.AreEqual(-2, wolf.Character.DefenseBonus);
+            Assert.AreEqual(-1, wolf.Character.AttackBonus);
+            Assert.AreEqual(-1, wolf.Character.DefenseBonus);
         }
 
         [Test]
@@ -1932,27 +1932,16 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void PathOfTheBeast_triggers_when_sum_is_seven()
         {
-            GameManager game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
-            PlayerState wolf = game.PlayerA;
-            PlayerState blank = game.PlayerB;
-
-            // 运算后双手和为 7：运算源 1 + 目标 3 = 4（Attack4），另一只手固定为 3。
-            TestSetup.SetHand(wolf.LeftHand, 1);
-            TestSetup.SetHand(wolf.RightHand, 3);
-            TestSetup.SetHand(blank.RightHand, 3);
-
-            wolf.TakeDamage(20);                            // 只剩 5
-
-            int attackBefore = wolf.Character.AttackBonus;
-            int defenseBefore = wolf.Character.DefenseBonus;
-
-            game.ExecuteTurn(wolf, wolf.LeftHand, blank.RightHand);
-
-            Assert.AreEqual(4, wolf.LeftHand.Value, "1 + 3 = 4。");
-            Assert.AreEqual(7, wolf.LeftHand.Value + wolf.RightHand.Value, "双手和应为 7。");
-            Assert.AreEqual(5 + 25 / 2, wolf.Health, "应回复上限的一半（12），再被上限夹住。");
-            Assert.AreEqual(attackBefore + 1, wolf.Character.AttackBonus, "攻击永久 +1。");
-            Assert.AreEqual(defenseBefore + 1, wolf.Character.DefenseBonus, "防御永久 +1。");
+            var game = Match(CharacterDefinition.PathOfTheBeast, CharacterDefinition.Blank);
+            var wolf=game.PlayerA; var blank=game.PlayerB;
+            wolf.SetHealthExact(15); wolf.LeftHand.SetValue(1); wolf.RightHand.SetValue(3); blank.RightHand.SetValue(3);
+            game.ExecuteTurn(wolf,wolf.LeftHand,blank.RightHand);
+            Assert.AreEqual(15,wolf.Health);
+            Assert.AreEqual(1,((PathOfTheBeastLogic)wolf.Character).BeastSouls);
+            game.ResolveStatusTurnEnd(wolf);
+            Assert.AreEqual(20,wolf.Health);
+            Assert.AreEqual(0,wolf.Character.AttackBonus);
+            Assert.AreEqual(0,wolf.Character.DefenseBonus);
         }
 
         [Test]
@@ -1970,10 +1959,11 @@ namespace FingerDiceDuel.Tests
                 TestSetup.SetHand(blank.RightHand, 3);
 
                 game.ExecuteTurn(wolf, wolf.LeftHand, blank.RightHand);
+                game.ResolveStatusTurnEnd(wolf);
             }
 
-            Assert.AreEqual(-2 + 3, wolf.Character.AttackBonus, "三次触发后攻击应为 +1。");
-            Assert.AreEqual(-2 + 3, wolf.Character.DefenseBonus, "三次触发后防御应为 +1。");
+            Assert.AreEqual(-1 + 3, wolf.Character.AttackBonus, "三次成长后基础攻击应为 +2。");
+            Assert.AreEqual(-1 + 3, wolf.Character.DefenseBonus, "三次成长后基础防御应为 +2。");
         }
 
         [Test]
@@ -1987,14 +1977,15 @@ namespace FingerDiceDuel.Tests
             TestSetup.SetHand(wolf.RightHand, 3);
             TestSetup.SetHand(blank.RightHand, 3);
             game.ExecuteTurn(wolf, wolf.LeftHand, blank.RightHand);
+                game.ResolveStatusTurnEnd(wolf);
 
-            Assert.AreEqual(-1, wolf.Character.AttackBonus, "触发一次后应为 -1。");
+            Assert.AreEqual(0, wolf.Character.AttackBonus, "成长一次后面板为0。");
 
             game.ResetMatch();
 
-            Assert.AreEqual(-2, wolf.Character.AttackBonus,
+            Assert.AreEqual(-1, wolf.Character.AttackBonus,
                 "重开一局必须丢弃成长，否则会一直叠加。");
-            Assert.AreEqual(-2, wolf.Character.DefenseBonus);
+            Assert.AreEqual(-1, wolf.Character.DefenseBonus);
             Assert.AreEqual(25, wolf.MaximumHealth, "生命上限不受重置影响。");
         }
 
@@ -2011,6 +2002,7 @@ namespace FingerDiceDuel.Tests
 
             // 不扣血，直接触发 -> 回复应被上限夹住
             game.ExecuteTurn(wolf, wolf.LeftHand, blank.RightHand);
+                game.ResolveStatusTurnEnd(wolf);
 
             Assert.AreEqual(wolf.MaximumHealth, wolf.Health, "回复不应超过上限。");
         }

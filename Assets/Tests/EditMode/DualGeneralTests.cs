@@ -167,6 +167,7 @@ namespace FingerDiceDuel.Tests
             // 野蛮人·巨人道途的 4/6/8 确实要变成“无效果”，不能被上一条修正误伤。
             PlayerState me = DualGeneralFactory.Create("甲", CharacterDefinition.PathOfTheGiant,
                                                        CharacterDefinition.Assassin);
+            me.SetHealthExact(15);
             var rewriter = (IHandEffectRewriter)me.Character;
 
             int[] dead = { 4, 6, 8 };

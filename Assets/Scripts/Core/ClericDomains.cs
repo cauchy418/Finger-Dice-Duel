@@ -157,11 +157,11 @@ namespace FingerDiceDuel.Core
         public Func<AttackContext,Action,bool> DeferClericAttack {get;set;}
         public bool PendingClericResolution {get;private set;}
         public bool HasTempestDomain()
-        {foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null)return true;return false;}
+        {foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&(CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null||CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(p)!=null))return true;return false;}
         public bool DeferOrdinaryClericAttack(AttackContext attack,Action resolve)
         {
             if(DeferClericAttack==null)return false;
-            bool possible=false;foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null)possible=true;
+            bool possible=false;foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&(CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null||CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(p)!=null))possible=true;
             if(!possible)return false;
             PendingClericResolution=true;
             if(DeferClericAttack(attack,()=>{PendingClericResolution=false;resolve();}))return true;
@@ -169,6 +169,21 @@ namespace FingerDiceDuel.Core
         }
         public void OfferTempestReaction(AttackContext incoming,Action completed)
         {
+            if(!incoming.WardenReactionPrepared)
+            {
+                incoming.WardenReactionPrepared=true;
+                var warden=incoming.Defender;
+                if(!incoming.WasCancelled&&!incoming.IsStatusDamage&&!incoming.IsKnowledgeForceDamage&&warden?.IsAlive==true&&warden.Health<=15
+                    && CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(warden)!=null)
+                {
+                    var oath=new WizardChoice(warden,"守望誓约 · 来袭攻击改为力场，清除附加状态与元素反应？",NewSubclassChoices.YesNo("守望誓约","Subclasses/barbarian_path_of_the_warden"),v=>{
+                        if(v==1&&warden.IsAlive&&warden.Health<=15){incoming.ConvertToWardenForce();NoteSkill(warden,"守望誓约","来袭攻击改为力场",warden,new SkillVisualData(element:AttackDamageType.Force));}
+                        OfferTempestReaction(incoming,completed);
+                    });
+                    if(DeferWizardChoice?.Invoke(oath)!=true)oath.ChooseOption(SkillChoicePolicy.Choose("warden_oath",oath.Options,warden,incoming.Attacker,this));
+                    return;
+                }
+            }
             if(incoming.TempestReactionPrepared){completed();return;}incoming.TempestReactionPrepared=true;
             var owner=incoming.Defender;var enemy=incoming.Attacker;
             if(incoming.WasCancelled||incoming.IsStatusDamage||incoming.IsReflected||incoming.IsTempestCounter||!owner.IsAlive||owner.IsPolymorphed||!enemy.IsAlive||ReferenceEquals(owner,enemy)
@@ -183,8 +198,9 @@ namespace FingerDiceDuel.Core
                     if(!owner.IsAlive||!enemy.IsAlive){completed();return;}
                     var counter=new AttackContext(owner,enemy,source,4){IsTempestCounter=true,AttackType=(AttackDamageType)v,AttackValueOverride=4,AttackerProvider=GetChoiceProvider(owner)};
                     Action finish=()=>{
-                        counter.Resolve(GetChoiceProvider(enemy),this);if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴之怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害",enemy,new SkillVisualData(variant:counter.AttackType.ToString().ToLowerInvariant()));
+                        counter.Resolve(GetChoiceProvider(enemy),this,()=>{if(!counter.WasCancelled)incoming.TempestCountered=true;NoteSkill(owner,"风暴之怒",$"{enemy.Name} {AttackDamageTypes.NameOf(counter.AttackType)} {counter.AppliedDamage}伤害",enemy,new SkillVisualData(variant:counter.AttackType.ToString().ToLowerInvariant()));
                         ClericChoices.FreeOperation(owner,this,source,false,"风暴之怒",completed);
+                        });
                     };
                     if(DeferWizardAttack?.Invoke(counter,finish)!=true)finish();
                 });

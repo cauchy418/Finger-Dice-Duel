@@ -106,6 +106,7 @@ namespace FingerDiceDuel.Tests
             GameManager g = Match(CharacterDefinition.PathOfTheGiant,
                                   CharacterDefinition.Champion,
                                   out PlayerState pathOfTheGiant, out _);
+            pathOfTheGiant.SetHealthExact(15);
             SetOpeningValue(pathOfTheGiant.LeftHand, 5);
             g.BeginTurn();
             Assert.AreEqual(ShieldState.None, pathOfTheGiant.LeftHand.State,

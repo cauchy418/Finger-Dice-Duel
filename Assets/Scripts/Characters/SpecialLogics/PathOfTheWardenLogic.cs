@@ -5,7 +5,7 @@ namespace FingerDiceDuel.Core
     /// <summary>
     /// 野蛮人·守望者道途：
     /// - 新合成一面盾时，可控制对手一只手（Lock），直到该盾破碎时解除（Unlock）。
-    /// - 防御 +1。
+    /// - 使用共同野蛮人面板与负伤加成；低体力可发动守望誓约。
     ///
     /// ## "同时只能控制一只手"的限制**只在场上仅剩两人时**生效
     ///
@@ -20,11 +20,11 @@ namespace FingerDiceDuel.Core
     /// 锁手目标在**运算前**收集（结算开始后无法再问 UI），
     /// 在护盾成型时（<see cref="OnShieldFormed"/>）回读并施加。
     /// </summary>
-    public class PathOfTheWardenLogic : CharacterTemplate, IPreTurnChoiceProvider
+    public class PathOfTheWardenLogic : BarbarianTemplate, IPreTurnChoiceProvider
     {
-        /// <summary>默认防御 +1（可被 CharacterDefinition.DefenseBonus 覆盖）。</summary>
-        public override int DefaultAttackBonus => 0;
-        public override int DefaultDefenseBonus => 1;
+        /// <summary>共同职业的基础攻防。</summary>
+        public override int DefaultAttackBonus => -1;
+        public override int DefaultDefenseBonus => -1;
 
         public override string DisplayName => "野蛮人·守望者道途";
 
@@ -167,9 +167,9 @@ namespace FingerDiceDuel.Core
             _lockMap.Clear();
         }
 
-        /// <summary>野蛮人·守望者道途：**钝击伤害**（玩家指定）。</summary>
+        /// <summary>继承野蛮人的挥砍伤害。</summary>
         public override AttackDamageType AttackTypeOf(AttackContext context)
-            => AttackDamageType.Bludgeoning;
+            => AttackDamageType.Slashing;
 
 }
 }

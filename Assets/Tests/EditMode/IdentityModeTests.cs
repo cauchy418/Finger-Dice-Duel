@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
@@ -58,12 +58,12 @@ namespace FingerDiceDuel.Tests
 
             MatchWith(CharacterDefinition.PathOfTheWarden, out GameManager chaotic, out List<PlayerState> cp);
             Assert.AreEqual("暴君", chaotic.IdentityLordTitle);
-            Assert.AreEqual(20 + 5 + 8 * 5, cp[0].MaximumHealth, "基础 +5，每个混乱单位再 +5。");
+            Assert.AreEqual(25 + 5 + 8 * 5, cp[0].MaximumHealth, "基础 +5，每个混乱单位再 +5。");
             Assert.AreEqual(cp[0].MaximumHealth, cp[0].Health);
 
             cp[1].SetHealthExact(0);
             chaotic.RefreshGameOver();
-            Assert.AreEqual(20 + 5 + 7 * 5, cp[0].MaximumHealth, "死亡后暴君加成实时下降。");
+            Assert.AreEqual(25 + 5 + 7 * 5, cp[0].MaximumHealth, "死亡后暴君加成实时下降。");
         }
 
         private static void MatchWith(CharacterDefinition def,

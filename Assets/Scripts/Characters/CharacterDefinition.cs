@@ -142,8 +142,8 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheWarden { get; } = new CharacterDefinition(
             PathOfTheWardenId, "野蛮人·守望者道途", SpecialLogicType.PathOfTheWarden,
-            defenseBonus: 1,
-            description: "新合盾时可锁住对手一只手，使其不能作为运算源，直到该盾破碎。防御 +1。");
+            attackBonus:-1, defenseBonus:-1,
+            description: "共同野蛮人面板与负伤成长。合盾可锁对手一只手，盾碎解锁；体力≤15时，守望誓约可将来袭改为力场，清除附加状态与元素反应，保留独立追加伤害。");
 
         /// <summary>
         /// 牧师·生命领域：攻击可改为回复；回复可以给任何人（自己或对手）；
@@ -166,10 +166,9 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheBeast { get; } = new CharacterDefinition(
             PathOfTheBeastId, "野蛮人·野兽道途", SpecialLogicType.PathOfTheBeast,
-            attackBonus: -2, defenseBonus: -2,
+            attackBonus: -1, defenseBonus: -1,
             maxHealth: PlayerState.DefaultMaxHealth,   // 实际上限 = 20 + PathOfTheBeastLogic.HealthBonus(5) = 25
-            description: "生命上限 +5（25）。运算后双手数字之和为 7 时，回复生命上限一半的血量，且攻防永久各 +1。" +
-                         "攻防 -2 / -2。");
+            description: "共同野蛮人面板与负伤成长。双手和7获得兽性之魂；回合末魂数达到实际攻防较小值且至少1点时，全部消耗，回复已损体力一半并永久攻防+1。");
 
         public static CharacterDefinition Swordsman { get; } = new CharacterDefinition(
             SwordsmanId, "战士·剑士", SpecialLogicType.Swordsman,
@@ -270,19 +269,11 @@ namespace FingerDiceDuel.Core
             attackBonus: 0, defenseBonus: 0,
             description: "气初始2、上限6。5改为太极；受到攻击可把太极5变0，受一半、反弹一半。借力打力可耗1气选择免伤或全额反弹。0被别人触碰先变1。");
 
-        /// <summary>
-        /// 野蛮人·巨人道途：攻 +2 / 防 +2，攻击距离 1。
-        ///
-        /// 4/6/8 不攻击、5 不合盾；打出 5 发起两段攻击（伤害 = 另一只手点数）；
-        /// 打出 9 进行两段回复。
-        /// </summary>
+        /// <summary>巨人道途：低体力时改写5/9；回合开始可发动元素战刃。</summary>
         public static CharacterDefinition PathOfTheGiant { get; } = new CharacterDefinition(
             PathOfTheGiantId, "野蛮人·巨人道途", SpecialLogicType.PathOfTheGiant,
-            attackBonus: 2, defenseBonus: 2,
-            description: "4/6/8 无法攻击，5 也无法合成盾牌。打出 5 时发起两段攻击，" +
-                         "每段的基础伤害等于另一只手的点数（之后各自再加攻防加成）；" +
-                         "打出 9 时进行两段回复，每段回复量等于另一只手的点数。" +
-                         "生命上限 +5（25）。攻防 +2 / +2。");
+            attackBonus: -1, defenseBonus: -1,
+            description: "共同野蛮人面板与负伤成长。体力≤15时，5两段攻击、9两段回复，每段取另一手点数；4/6/8无效果。回合开始可失去5体力，为下一次攻击选择元素战刃。");
 
         /// <summary>
         /// 游荡者·盗贼：攻 0 / 防 −1，攻击距离 1。
@@ -402,9 +393,9 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheBerserker { get; } = new CharacterDefinition(
             PathOfTheBerserkerId, "野蛮人·狂战士道途", SpecialLogicType.PathOfTheBerserker,
-            attackBonus: -1, defenseBonus: -2,
+            attackBonus: -1, defenseBonus: -1,
             englishName: "Path of the Berserker",
-            description: "生命上限 +5；9 不再回复，改为造成 9 点挥砍伤害；每少 5 点生命获得 +1/+1；造成伤害后回复伤害一半。攻防 -1/-2，攻击距离 1。");
+            description: "共同野蛮人面板与负伤成长。体力≤15时，5/9改为对应点数攻击，攻击实际体力伤害回复一半；高体力恢复普通数字并停止吸血。");
 
         public static CharacterDefinition Tactician { get; } = new CharacterDefinition(
             TacticianId, "战士·战术家", SpecialLogicType.Tactician,

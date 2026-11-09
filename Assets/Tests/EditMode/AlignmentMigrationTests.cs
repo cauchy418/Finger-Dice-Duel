@@ -82,7 +82,7 @@ namespace FingerDiceDuel.Tests
         {
             b=Solo(CharacterDefinition.Blank);
             a.LeftHand.SetValue(1);a.RightHand.SetValue(other);b.LeftHand.SetValue(result-1);
-            var g=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());g.BeginTurn();return g;
+            var g=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());if(CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(a)!=null)a.SetHealthExact(15);g.BeginTurn();return g;
         }
 
         [Test]
@@ -147,10 +147,10 @@ namespace FingerDiceDuel.Tests
             {
                 var a=Pair(reverse,CharacterDefinition.Magician,CharacterDefinition.PathOfTheGiant);
                 var g=Arrange(a,2,3,out var b);var hit=g.ExecuteTurn(a,a.LeftHand,b.LeftHand);
-                Assert.AreEqual(4,hit.DamageDealt,"2+魔术师0+巨人2=4");Assert.AreEqual(1,hit.HitCount);
+                Assert.AreEqual(3,hit.DamageDealt,"2+职业-1+失血2=3");Assert.AreEqual(1,hit.HitCount);
                 a=Pair(reverse,CharacterDefinition.Magician,CharacterDefinition.PathOfTheGiant);
                 g=Arrange(a,5,3,out b);hit=g.ExecuteTurn(a,a.LeftHand,b.LeftHand);
-                Assert.AreEqual(10,hit.DamageDealt,"两段各(另一手3+攻2)=10");Assert.AreEqual(2,hit.HitCount);
+                Assert.AreEqual(8,hit.DamageDealt,"两段各(另一手3+攻1)=8");Assert.AreEqual(2,hit.HitCount);
                 Assert.AreEqual(ShieldState.None,a.LeftHand.State);
             }
         }
@@ -180,12 +180,12 @@ namespace FingerDiceDuel.Tests
             foreach(bool reverse in new[]{false,true})
             {
                 var a=Pair(reverse,CharacterDefinition.Magician,CharacterDefinition.PathOfTheGiant);
-                var g=Arrange(a,2,1,out var b);var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();
+                var g=Arrange(a,2,1,out var b);var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();board.ChooseSkillOption(0);
                 Assert.IsTrue(CharacterBehaviors.ActorHasSelfAddend(a,a.RightHand));
                 Assert.IsTrue(board.ClickHand(a.LeftHand));Assert.IsTrue(board.CanAct(a.RightHand));
                 Assert.IsTrue(board.ClickHand(a.RightHand));
                 Assert.AreEqual(BoardPhase.ChoosingTargetPlayer,board.Phase);Assert.IsTrue(board.ConfirmTargetPlayer());
-                Assert.AreEqual(4,board.LastTurn.DamageDealt);
+                Assert.AreEqual(3,board.LastTurn.DamageDealt);
             }
         }
 
@@ -195,7 +195,7 @@ namespace FingerDiceDuel.Tests
             foreach(bool reverse in new[]{false,true})foreach(int v in new[]{2,4,5,6,8,9})
             {
                 var a=Pair(reverse,CharacterDefinition.Magician,CharacterDefinition.PathOfTheGiant);
-                var g=Arrange(a,v,3,out var b);var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();
+                var g=Arrange(a,v,3,out var b);var board=new BoardController(g,new SimpleChoiceProvider());board.BeginTurn();board.ChooseSkillOption(0);
                 var context=new PreTurnChoiceContext(a,b,a.LeftHand,b.LeftHand);
                 Assert.AreEqual(v,context.EffectiveResult);
                 Assert.AreEqual(v==2||v==5,context.IsAttack);
@@ -217,6 +217,7 @@ namespace FingerDiceDuel.Tests
                 var chaos=Pair(reverse,CharacterDefinition.GloomStalker,CharacterDefinition.Magician);
                 Assert.IsTrue(Attack(((IHandEffectDisplay)chaos.Character).DisplayedEffectOf(2)));
                 var neutral=Pair(reverse,CharacterDefinition.WayOfTheTaiChi,CharacterDefinition.PathOfTheBerserker);
+                neutral.SetHealthExact(15);
                 Assert.IsTrue(Attack(((IHandEffectDisplay)neutral.Character).DisplayedEffectOf(9)));
             }
         }

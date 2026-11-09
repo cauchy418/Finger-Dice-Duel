@@ -254,6 +254,16 @@ namespace FingerDiceDuel.Core
         private bool _resolutionPrepared,_preparedDamageDisabled;private PlayerState _intendedDefender;private IChoiceProvider _preparedDefenderChoice;
         private int _knowledgeForce;
         public bool IsKnowledgeForceDamage {get;set;}
+        private AttackDamageType _elementBlade;
+        public bool HasElementBlade => _elementBlade != AttackDamageType.None;
+        public bool WardenReactionPrepared {get;set;}
+        public bool SuppressAttackStatuses {get;private set;}
+        public void ConvertToWardenForce()
+        {
+            AttackType=AttackDamageType.Force;ElementOverride=DamageType.None;InteractionDamageType=DamageType.None;
+            InteractionStatus=StatusEffect.None;AttackerStatusOverride=StatusEffect.None;InflictsBleed=false;
+            PerHitTypeProvider=null;_independentHitTypes=false;SuppressAttackStatuses=true;
+        }
         public bool TempestReactionPrepared {get;set;} public bool IsTempestCounter {get;set;} public int? AttackValueOverride {get;set;}
         public void PrepareResolution(IChoiceProvider defenderChoice, GameManager manager)
         {
@@ -268,7 +278,13 @@ namespace FingerDiceDuel.Core
             //    只有本次被选为攻击目标的至高妖精可以取消。
             //    ⚠️ 追加攻击与冲击的"攻击数字视为 0"（见 AttackValue），
             //       任何手值都不等于 0，所以它们天然无法被取消 —— 不需要特判。
-            if(!IsStatusDamage&&!IsReflected&&!IsSpecialAttack)_knowledgeForce=Attacker.ConsumeKnowledge();
+            if(!IsStatusDamage&&!IsReflected&&!IsSpecialAttack)
+            {
+                _knowledgeForce=Attacker.ConsumeKnowledge();
+                var giant=CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(Attacker);
+                if(giant!=null && giant.Enchantment!=AttackDamageType.None)
+                { _elementBlade=giant.ConsumeBlade();AttackType=_elementBlade;ElementOverride=AttackDamageTypes.ToDamageType(_elementBlade); }
+            }
             if (TryCancelAttack(manager))
             {
                 // 取消 = 完全无效：不扣血、不碎盾、不触发后续效果。
@@ -356,11 +372,13 @@ namespace FingerDiceDuel.Core
         public PlayerState VisualIntendedTarget => _intendedDefender;
         private CombatVisualToken _visualHit;
         private bool _visualReaction,_visualReactionShown;
-        public void Resolve(IChoiceProvider defenderChoice,GameManager manager)
+        public void Resolve(IChoiceProvider defenderChoice,GameManager manager) => Resolve(defenderChoice,manager,null);
+        public void Resolve(IChoiceProvider defenderChoice,GameManager manager,Action completed)
         {
-            PrepareResolution(defenderChoice,manager);if(WasCancelled){manager?.FinishVisualAttack(manager.BeginVisualAttack(this,0),CombatVisualOutcome.Cancelled);return;}
-            if(!TempestReactionPrepared)manager?.OfferTempestReaction(this,()=>{});
-            if(!Attacker.IsAlive||!Defender.IsAlive){WasCancelled=true;CancelledBy=!Attacker.IsAlive?"风暴之怒（来袭者已阵亡）":"目标已阵亡";HitCount=0;return;}
+            PrepareResolution(defenderChoice,manager);if(WasCancelled){manager?.FinishVisualAttack(manager.BeginVisualAttack(this,0),CombatVisualOutcome.Cancelled);completed?.Invoke();return;}
+            if(!TempestReactionPrepared && manager!=null)
+            { manager.OfferTempestReaction(this,()=>Resolve(defenderChoice,manager,completed));return; }
+            if(!Attacker.IsAlive||!Defender.IsAlive){WasCancelled=true;CancelledBy=!Attacker.IsAlive?"风暴之怒（来袭者已阵亡）":"目标已阵亡";HitCount=0;completed?.Invoke();return;}
             defenderChoice=_preparedDefenderChoice;bool damageDisabled=_preparedDamageDisabled;var intendedDefender=_intendedDefender;
             // 1c. 伤害类型与目标状态的联动（先改伤害，命中后再清/挂状态）。
             if(!IgnoreIncomingModifiers && !IsStatusDamage)
@@ -643,10 +661,22 @@ namespace FingerDiceDuel.Core
             if (WasMitigated && reflectTotal > 0 && Attacker != null && Attacker.IsAlive && manager != null)
             {
                 if (_independentHitTypes)
-                    foreach (var reflected in _typedReflections) ResolveReflection(manager, reflected.Value, reflected.Key);
-                else ResolveReflection(manager, reflectTotal, AttackType);
+                {
+                    int reflectionIndex=0;
+                    void NextReflection()
+                    {
+                        if(reflectionIndex>=_typedReflections.Count){FinishResolution();return;}
+                        var reflected=_typedReflections[reflectionIndex++];
+                        ResolveReflection(manager,reflected.Value,reflected.Key,NextReflection);
+                    }
+                    NextReflection();
+                }
+                else ResolveReflection(manager,reflectTotal,AttackType,FinishResolution);
+                return;
             }
-
+            FinishResolution();
+            void FinishResolution()
+            {
             // Each landed/guarded segment applies its own duration, in hit order.
             // Negative statuses: guard -1 and corresponding resistance -1; role states keep their duration.
             // Deferred attachment preserves the existing whole-attack damage/affinity snapshot.
@@ -684,6 +714,8 @@ namespace FingerDiceDuel.Core
                     foreach(var hook in CharacterBehaviors.Implementers<IAttackFinishedHook>(Defender))
                         hook.OnAttackFinished(Defender,this,false,manager);
             }
+            completed?.Invoke();
+            }
         }
 
         /// <summary>
@@ -719,6 +751,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void ApplySkillBleed(GameManager manager)
         {
+            if(SuppressAttackStatuses)return;
             if (!InflictsBleed || WasCancelled || HitCount == 0) return;
             if (LandedHits == 0 && BlockedHits == 0) return;
             if (Defender == null || !Defender.IsAlive) return;
@@ -750,7 +783,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void ApplyAttackerStatus(GameManager manager, ElementHit onlyHit = null)
         {
-            if (Attacker == null || WasCancelled || IsStatusDamage) return;
+            if (Attacker == null || WasCancelled || IsStatusDamage || SuppressAttackStatuses) return;
             if(_visualReaction&&!_visualReactionShown&&!WasTypeImmune&&(LandedHits>0||BlockedHits>0))
             {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender,new SkillVisualData(variant:_reactionVariant));}
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);

@@ -9,6 +9,15 @@ namespace FingerDiceDuel.Assistant
     {
         public override int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
         {
+            if(key=="warden_oath")return owner.HasImmunity(AttackDamageType.Force)||!owner.HasAnyShield?1:0;
+            if(key=="giant_element_blade")
+            {
+                var giant=CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(owner);
+                if(owner.Health<=10||giant?.Enchantment!=AttackDamageType.None)return 0;
+                PlayerState enemy=null;foreach(var p in game.OpponentsOf(owner))if(p.IsAlive&&(enemy==null||p.Health<enemy.Health))enemy=p;
+                if(enemy==null)return 0;
+                int selected=0;double bladeBest=0;foreach(var option in options)if(option.Value!=0){double value=ElementScore(option.Value,owner,enemy,game);if(value>bladeBest){bladeBest=value;selected=option.Value;}}return selected;
+            }
             if(key=="druid_symbiosis")return WantsSymbiosis(owner,game)?1:0;
             if(key==ShadowRules.Darkness)return DarknessValue(owner,game)>0?1:0;
             if (key == GamblerLogic.RerollChoice)

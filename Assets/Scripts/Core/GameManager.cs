@@ -2893,8 +2893,8 @@ namespace FingerDiceDuel.Core
                         if (actor.Character is CharacterTemplate template)
                             template.LastAttackDistance = DistanceBetween(actor, opponent);
 
-                        void ResolveAttack(){
-                        ctx.Resolve(oppChoice, this);
+                        void ResolveAttack(Action completed=null){
+                        ctx.Resolve(oppChoice, this,()=>{
                         result.Defender = ctx.Defender;
                         result.AttackType = ctx.AttackType;
                         result.SegmentTypes = new List<AttackDamageType>(ctx.SegmentTypes);
@@ -2908,8 +2908,10 @@ namespace FingerDiceDuel.Core
                         result.BlockedHits = ctx.BlockedHits;
                         result.DodgedHits = ctx.DodgedHits;
                         result.DamageDealt = ctx.AppliedDamage;
+                        completed?.Invoke();
+                        });
                         }
-                        if(DeferOrdinaryClericAttack(ctx,()=>{ResolveAttack();FinishTurn();}))return result;
+                        if(DeferOrdinaryClericAttack(ctx,()=>ResolveAttack(FinishTurn)))return result;
                         ResolveAttack();
                         break;
                     }
@@ -2940,7 +2942,7 @@ namespace FingerDiceDuel.Core
                                 : LifeDomainLogic.HealAmountFor(effect);
                             int before = target?.Health ?? 0;
                             if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
-                            else {target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
+                            else {if(healer is PathOfTheGiantLogic && actor.Health<=15){target?.Heal(amount/2,this);int first=target?.LastActualHealing??0;target?.Heal(amount/2,this);target?.CombineEarlierHealing(first);}else target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:(target?.Health??before)-before));}
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before

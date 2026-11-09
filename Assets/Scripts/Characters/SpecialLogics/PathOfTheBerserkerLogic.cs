@@ -1,65 +1,28 @@
 ﻿using FingerDiceDuel.Core;
-
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>野蛮人·狂战士道途：9 改为攻击；每少 5 点生命获得 +1/+1；造成伤害回复一半。</summary>
-    public sealed class PathOfTheBerserkerLogic : CharacterTemplate,
-        IHandEffectRewriter, ISelectiveHandEffectRewriter, IHandEffectDisplay, IResultTargetProvider, IOnHitLanded,
-        IDynamicStats
+    public sealed class PathOfTheBerserkerLogic:BarbarianTemplate,IHandEffectRewriter,ISelectiveHandEffectRewriter,IHandEffectDisplay,IResultTargetProvider,ICompletedDamageDealt
     {
-        public const int AttackValue = 9;
-
-        public bool HandlesResult(int value) => value == AttackValue;
-
-        public override string DisplayName => "野蛮人·狂战士道途";
-        public override int DefaultAttackBonus => -1;
-        public override int DefaultDefenseBonus => -2;
-        public override int MaxHealthBonus => 5;
-        public override int BaseAttackRange => 1;
-
-        public HandEffectType RewriteEffect(PlayerState actor, Hand actedHand,
-                                            int targetValue, GameManager manager)
+        public const int AttackValue=9;
+        public override string DisplayName=>"野蛮人·狂战士道途";
+        private bool Active=>BarbarianOwner?.Health<=15;
+        public bool HandlesResult(int value)=>Active&&(value==5||value==9);
+        public override void OnMatchReset(PlayerState owner,GameManager game){BindBarbarianOwner(owner);ResetStats();}
+        public HandEffectType RewriteEffect(PlayerState actor,Hand hand,int add,GameManager game)=>actor.Health<=15&&(hand.Value==5||hand.Value==9)?HandEffectType.Attack4:Hand.GetEffectType(hand.Value);
+        public HandEffectType DisplayedEffectOf(int value)=>HandlesResult(value)?HandEffectType.Attack4:Hand.GetEffectType(value);
+        public override bool ResultNeedsTarget(PreTurnChoiceContext c)=>c.Actor.Health<=15&&(c.EffectiveResult==5||c.EffectiveResult==9)||base.ResultNeedsTarget(c);
+        public override void OnResolveAttack(AttackContext c)
         {
-            if (actedHand != null && actedHand.Value == AttackValue)
-                return HandEffectType.Attack4;
-            return Hand.GetEffectType(actedHand?.Value ?? 0);
+            if(c.IsStatusDamage||c.IsSpecialAttack||c.IsReflected||c.Attacker.Health>15)return;
+            if(c.AttackValue==5||c.AttackValue==9){c.FinalDamage=c.AttackValue;c.HitCount=1;}
         }
-
-        public HandEffectType DisplayedEffectOf(int resultValue)
-            => resultValue == AttackValue ? HandEffectType.Attack4 : Hand.GetEffectType(resultValue);
-
-        public override bool ResultNeedsTarget(PreTurnChoiceContext context)
+        public void OnCompletedDamage(AttackContext c,GameManager game)=>OnHitLanded(c,game);
+        public void OnHitLanded(AttackContext c,GameManager game)
         {
-            if (context != null && context.ResultValue == AttackValue) return true;
-            return base.ResultNeedsTarget(context);
+            if(c?.Attacker==null||c.IsStatusDamage||!c.Attacker.IsAlive||c.Attacker.Health>15||c.ActualHealthDamage<=0)return;
+            int heal=c.ActualHealthDamage/2;c.Attacker.Heal(heal,game);
+            game?.NoteSkill(c.Attacker,"嗜血","回复"+c.Attacker.LastActualHealing,c.Attacker,new SkillVisualData(value:c.Attacker.LastActualHealing));
         }
-
-        public override void OnResolveAttack(AttackContext context)
-        {
-            if(context!=null&&!context.IsStatusDamage){int tier=System.Math.Max(0,(context.Attacker.MaximumHealth-context.Attacker.Health)/5);if(tier>0)context.Manager?.RecordSkillVisual(context.Attacker,"狂乱",context.Attacker,new SkillVisualData(value:tier));}
-            if (context == null || context.AttackValue != AttackValue) return;
-            context.HitCount = 1;
-            context.FinalDamage = AttackValue;
-            context.Manager?.NoteSkill(context.Attacker, "狂怒", "9 转为攻击",context.Defender,new SkillVisualData(source:context.SourceHand,value:context.AttackValue));
-        }
-
-        public void OnHitLanded(AttackContext context, GameManager manager)
-        {
-            if (context == null || context.AppliedDamage <= 0) return;
-            int heal = context.AppliedDamage / 2;
-            if (heal > 0&&context.Attacker!=null){int before=context.Attacker.Health;context.Attacker.Heal(heal);manager?.RecordSkillVisual(context.Attacker,"嗜血",context.Defender,new SkillVisualData(value:context.Attacker.Health-before));}
-        }
-
-        public void RefreshDynamicStats(PlayerState owner, GameManager manager)
-        {
-            if (owner == null) return;
-            int missing = owner.MaximumHealth - owner.Health;
-            int bonus = missing / 5;
-            if (bonus < 0) bonus = 0;
-            owner.SetDynamicBonuses(bonus, bonus);
-        }
-
-        public override AttackDamageType AttackTypeOf(AttackContext context)
-            => AttackDamageType.Slashing;
+        public void RefreshDynamicStats(PlayerState owner,GameManager game){}
     }
 }

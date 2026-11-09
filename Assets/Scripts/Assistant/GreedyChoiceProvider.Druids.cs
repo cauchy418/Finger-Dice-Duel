@@ -10,7 +10,16 @@ namespace FingerDiceDuel.Assistant
         private static readonly HandValueProfile FormHandValues = new HandValueProfile();
 
         private static HandValueProfile ActiveHandValueProfile(PlayerState owner)
-            => owner.IsWildShaped || owner.IsPolymorphed ? FormHandValues : HandValueProfiles.For(owner.Definition);
+            {
+            if (owner.IsWildShaped || owner.IsPolymorphed) return FormHandValues;
+            var profile=HandValueProfiles.For(owner.Definition);
+            if(owner.Health>15)return profile;
+            if(CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(owner)!=null)
+                profile=profile.Clone().Adjust(5,38).Adjust(9,35).Adjust(4,-48).Adjust(6,-54).Adjust(8,-60).Adjust(7,10);
+            if(CharacterBehaviors.FirstImplementer<PathOfTheBerserkerLogic>(owner)!=null)
+                profile=profile.Clone().Adjust(5,25).Adjust(9,35);
+            return profile;
+        }
 
         private static int EnemySporeRefillCost(PlayerState actor, PlayerState victim, GameManager game)
         {

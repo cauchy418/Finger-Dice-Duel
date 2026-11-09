@@ -70,13 +70,14 @@ namespace FingerDiceDuel.Tests
             PlayerState schoolOfConjuration = game.PlayerA;
             PlayerState pathOfTheWarden = game.PlayerB;
 
+            pathOfTheWarden.SetCollegeOfValorOffset(pathOfTheWarden, 0, 2);
             TestSetup.SetHand(schoolOfConjuration.LeftHand, 3);                       // 3+1 = 4 -> 攻击 4
             TurnResult r = game.ExecuteTurn(schoolOfConjuration, schoolOfConjuration.LeftHand, pathOfTheWarden.LeftHand);
 
             Assert.AreEqual(HandEffectType.Attack4, r.Effect);
             // 4（原始）+ (-1)（法师·咒法学派攻击）- 0（无视野蛮人·守望者道途 +1 防御）= 3
             Assert.AreEqual(3, r.DamageDealt, "法师·咒法学派应无视野蛮人·守望者道途的 +1 防御加成。");
-            Assert.AreEqual(17, pathOfTheWarden.Health);
+            Assert.AreEqual(22, pathOfTheWarden.Health);
         }
 
         // ============================================================
@@ -109,8 +110,8 @@ namespace FingerDiceDuel.Tests
             TurnResult r = game.ExecuteTurn(blank, blank.LeftHand, pathOfTheWarden.LeftHand);
 
             Assert.AreEqual(HandEffectType.Attack4, r.Effect);
-            Assert.AreEqual(3, r.DamageDealt, "野蛮人·守望者道途防御 +1：4 点攻击只造成 3 点伤害。");
-            Assert.AreEqual(17, pathOfTheWarden.Health);
+            Assert.AreEqual(5, r.DamageDealt, "满体力职业防御-1：4点攻击造成5点伤害。");
+            Assert.AreEqual(20, pathOfTheWarden.Health);
         }
 
         [Test]
@@ -925,7 +926,7 @@ namespace FingerDiceDuel.Tests
             game.ResetMatch();
 
             Assert.AreEqual(20, a.Health);
-            Assert.AreEqual(20, b.Health);
+            Assert.AreEqual(25, b.Health);
             Assert.AreEqual(1, a.LeftHand.Value);
             Assert.AreEqual(1, a.RightHand.Value);
             Assert.AreEqual(ShieldState.None, a.LeftHand.State, "碎盾状态也应被清除。");

@@ -125,7 +125,7 @@ namespace FingerDiceDuel.Tests
                 : wolf.LeftHand.Value;
 
             Assert.AreEqual(PathOfTheBeastLogic.TriggerSum, result + other,
-                "AI 应优先凑出双手和 7（回半血 + 攻防永久 +1）。");
+                "AI应优先凑出双手和7，积累兽魂并在回合末检查成长。");
         }
 
         [Test]
@@ -145,6 +145,7 @@ namespace FingerDiceDuel.Tests
                 LegalMove move = ai.ChooseMove(game, actor);
                 if (move.ActedHand == null) break;
                 game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+                game.ResolveStatusTurnEnd(actor);
             }
 
             var logic = wolf.Character as PathOfTheBeastLogic;

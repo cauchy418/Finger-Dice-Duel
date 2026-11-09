@@ -100,6 +100,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnResolveAttack(AttackContext context)
         {
             if (context == null || context.IsReflected || context.IsStatusDamage) return;
+            if(context.HasElementBlade){_forceThisAttack=false;return;}
             context.PerHitTypeProvider = this;
             PrepareAttackHit(context, 0);
             context.PreparedPerHitType = context.AttackType;

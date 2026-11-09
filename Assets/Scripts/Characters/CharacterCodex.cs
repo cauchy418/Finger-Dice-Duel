@@ -67,12 +67,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：次级咒术不减半、不反弹，也不消耗太极手。", "与幽域追踪者：次级咒术穿透伏击，但不解除暗置。" });
 
             Add(CharacterDefinition.PathOfTheWardenId, "Path of the Warden", Alignment.ChaoticGood,
-                shortSkill: "合出盾时可控制对手一只手，盾碎时解锁。",
-                playGuide: "合盾不只是防御，更是控制：锁住对手更值钱的那只手。"
-                         + "锁手在盾碎时解除，所以算好盾能撑多久。",
-                counter: "别让他合成 5。另外注意："
-                       + "他的锁手在场上只剩两人时才有额外限制，人多时更凶。",
-                interactions: new string[0]);
+                shortSkill: "合盾可锁手；体力≤15可将来袭攻击改为力场。",
+                playGuide: "合盾后选择锁手。低体力受击可用守望誓约清除附加状态，但力场无法盾挡或闪避。",
+                counter: "先破盾解除锁手。低体力时仍要防其动态攻防加成，避免只靠状态消耗。",
+                interactions: new[] { "守望誓约保留独立追加伤害；选择改为力场后，自己的盾不会挡下这次攻击。" });
 
             Add(CharacterDefinition.LifeDomainId, "Life Domain", Alignment.LawfulGood,
                 shortSkill: "4/6/8可转治疗，双9两次治疗。净化，溢出攻防+1。",
@@ -90,13 +88,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与太极宗：反弹可以被闪避；多段攻击每段分别消耗一只1。" });
 
             Add(CharacterDefinition.PathOfTheBeastId, "Path of the Beast", Alignment.ChaoticEvil,
-                shortSkill: "运算后双手之和为 7 → 回半血且攻防永久 +1。",
-                playGuide: "目标是凑 7（不是手上有 7）。"
-                         + "⚠️ 7 对你是死牌：7 + 任何数都回不到 7。"
-                         + "所以要留 1/2/3/4 当凑 7 的伙伴。",
-                counter: "别让他两手凑成 7（有 1 别给 6、有 2 别给 5、"
-                       + "有 3 别给 4）。"
-                       + "他每次进化回半血且攻防 +1，拖久了很难消耗。",
+                shortSkill: "双手和7积累兽魂；回合末达标后回复已损体力一半并成长。",
+                playGuide: "运算凑双手和7积累兽魂。回合末达到实际攻防较小值才成长，负伤加成会提高门槛。",
+                counter: "限制凑7的加数，留意兽魂积累；高攻防时需要更多兽魂才能成长。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.SwordsmanId, "Swordsman", Alignment.LawfulNeutral,
@@ -166,14 +160,10 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与咒法学派：次级咒术不触发太极，不消耗5。", "与风流剑客：反弹可以被闪避。" });
 
             Add(CharacterDefinition.PathOfTheGiantId, "Path of the Giant", Alignment.ChaoticEvil,
-                shortSkill: "4/6/8 完全无效果、5 不合盾；5 是两段攻击、9 是两段回复。",
-                playGuide: "只有 5 与 9 是高价值。"
-                         + "打 5 时每段伤害 = 另一只手的点数，"
-                         + "所以配一个大数（7/8/9）收益最大；"
-                         + "打 9 时同样按另一只手回复。生命上限 25。",
-                counter: "别给他 5 与 9；4/6/8 对他完全无效果，"
-                       + "所以那三个数字给他也无所谓（算安全牌）。",
-                interactions: new string[0]);
+                shortSkill: "体力≤15时5攻击、9回复各两段；可失去5体力附魔。",
+                playGuide: "高体力按普通数字行动；体力≤15时留大数配5或9。元素战刃先失去5体力，发起下次攻击时消耗。",
+                counter: "体力≤15时防两段攻击与回复；高体力时4/6/8仍可攻击。元素战刃会改变下次攻击类型。",
+                interactions: new[] { "与狂野魔法：元素战刃的指定属性优先，本次不随机改写类型。" });
 
             Add(CharacterDefinition.ThiefId, "Thief", Alignment.NeutralEvil,
                 shortSkill: "放弃运算改为偷窃：双方点数互换，原先 ≥ 偷来的才生效。",
@@ -262,9 +252,9 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "与奉献之誓：转移目标后，奉献之誓仍可代挡。" });
 
             Add(CharacterDefinition.PathOfTheBerserkerId, "Path of the Berserker", Alignment.NeutralEvil,
-                shortSkill: "生命上限 +5；9 改为 9 点挥砍攻击；每少 5 血 +1/+1；造成伤害回一半。",
-                playGuide: "血量越低越强，但别把自己送进斩杀线；9 现在是主要输出。",
-                counter: "爆发要一次打死，别让他反复用伤害回血。",
+                shortSkill: "体力≤15时5/9改攻击，实际伤害回复一半体力。",
+                playGuide: "低体力用5/9攻击并吸血；回复超过15后恢复普通数字效果，吸血也暂停。",
+                counter: "低体力时限制5/9与连续吸血。高体力时仍按普通数字行动。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.TacticianId, "Tactician", Alignment.TrueNeutral,

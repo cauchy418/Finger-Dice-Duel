@@ -54,8 +54,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(-1, schoolOfConjuration.AttackBonus, "法师·咒法学派攻击 -1");
 
             var pathOfTheWarden = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.PathOfTheWarden);
-            Assert.AreEqual(0, pathOfTheWarden.AttackBonus);
-            Assert.AreEqual(1, pathOfTheWarden.DefenseBonus, "野蛮人·守望者道途防御 +1");
+            Assert.AreEqual(-1, pathOfTheWarden.AttackBonus);
+            Assert.AreEqual(-1, pathOfTheWarden.DefenseBonus, "野蛮人职业防御 -1");
 
             var blank = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Blank);
             Assert.AreEqual(0, blank.AttackBonus);
@@ -79,7 +79,7 @@ namespace FingerDiceDuel.Tests
             // 直接 new 出来的角色走代码默认值，方便单测角色逻辑
             Assert.AreEqual(1, new BreakerLogic().AttackBonus);
             Assert.AreEqual(-1, new SchoolOfConjurationLogic().AttackBonus);
-            Assert.AreEqual(1, new PathOfTheWardenLogic().DefenseBonus);
+            Assert.AreEqual(-1, new PathOfTheWardenLogic().DefenseBonus);
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Tests
                 CharacterDefinition.Breaker, CharacterDefinition.PathOfTheWarden);
 
             Assert.AreEqual(20, game.PlayerA.Health);
-            Assert.AreEqual(20, game.PlayerB.Health);
+            Assert.AreEqual(25, game.PlayerB.Health);
             Assert.True(game.PlayerA.Character is BreakerLogic);
             Assert.True(game.PlayerB.Character is PathOfTheWardenLogic);
             Assert.False(game.IsGameOver);

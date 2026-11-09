@@ -111,7 +111,7 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.ContainsAll(70,
                     "有 4/6/8 就该打出去：命中即把对手推开两个回合", 8, 6, 4));
 
-            // ---- 野蛮人·守望者道途（防 +1）----
+            // ---- 野蛮人·守望者道途（共同面板-1/-1）----
             // 5 = 成盾时**锁住对手一只手**（不能当运算源），强控制。
             Own[CharacterDefinition.PathOfTheWardenId] = new HandValueProfile()
                 .Set(5, 95)                       // 合盾 + 锁手
@@ -139,15 +139,15 @@ namespace FingerDiceDuel.Assistant
                 .Set(3, 45)                       // 多半是 2 变来的，本身没用
                 .AddCombo(ComboRule.ContainsAll(90, "同时有 1 和 2：能闪避 + 能强化", 1, 2));
 
-            // ---- 野蛮人·野兽道途（攻防 -2 / -2，生命 25）----
-            // 运算后**双手数字之和为 7** -> 回复半血 + 攻防永久 +1。
+            // ---- 野蛮人·野兽道途（攻防-1/-1，体力25）----
+            // 运算后双手和7积累兽性之魂，回合末达到实际攻防门槛后回复已损体力一半并成长。
             // ⚠️ "要有 7"和"要和为 7"是互斥的：7 + o 永远回不到 7，
             // 所以**7 对野蛮人·野兽道途是死牌**，必须大幅调低。
             Own[CharacterDefinition.PathOfTheBeastId] = new HandValueProfile()
                 .Set(1, 75).Set(2, 72).Set(3, 72).Set(4, 68)   // 凑 7 的伙伴
                 .Set(7, 15)                                      // 死牌
                 .Set(5, 45).Set(6, 45).Set(8, 48).Set(9, 48)
-                .AddCombo(ComboRule.SumEquals(7, 220, "双手之和为 7：回半血 + 攻防永久 +1"));
+                .AddCombo(ComboRule.SumEquals(7, 45, "双手和7：积累兽性之魂，回合末检查成长"));
 
             // ---- 战士·剑士（攻 +2）----
             // 运算出 4/6/8 且两手相同 -> 额外追加一次 4/6/8 伤害（无视攻防）。
@@ -262,22 +262,10 @@ namespace FingerDiceDuel.Assistant
                 .Set(9, 52)
                 .AddCombo(ComboRule.ContainsAll(70, "有 5 就能摆出太极", 5));
 
-            // ---- 野蛮人·巨人道途（攻 +2 / 防 +2，生命 25）----
-            // 玩家原话："野蛮人·巨人道途只有 5 和 9 是高数值"。
-            // 依据：
-            //   · **4 / 6 / 8 完全无效果**（不能攻击）-> 低价值
-            //   · **5 = 两段攻击**（每段伤害 = 另一只手的点数）-> 高价值
-            //   · **9 = 两段回复**（每段回复量 = 另一只手的点数）-> 高价值
-            //   · 1/2/3/7 无效果，但它们是"另一只手"的候选 —— 数值越大，
-            //     5 与 9 打出去越强，所以**越高越好**（7 比 1 值钱）。
+            // 巨人满体力按普通数字行动；15体力及以下的价值由ActiveHandValueProfile补充。
             Own[CharacterDefinition.PathOfTheGiantId] = new HandValueProfile()
-                .Set(5, 92)                             // 两段攻击，伤害看另一只手
-                .Set(9, 90)                             // 两段回复
-                .Set(4, 8).Set(6, 8).Set(8, 8)          // 完全无效果 -> 死牌
-                .Set(7, 70).Set(3, 60).Set(2, 58).Set(1, 56)
-                .AddCombo(ComboRule.ContainsAll(80, "有 5 或 9 就能打出高价值", 5, 9))
-                .AddCombo(ComboRule.ContainsAll(50, "5/9 的威力取决于另一只手：配大数更强",
-                                                7));
+                .Set(5, 58).Set(9, 55).Set(4, 56).Set(6, 62).Set(8, 68)
+                .Set(7, 60).Set(3, 60).Set(2, 58).Set(1, 56);
 
             // ---- 游侠·幽域追踪者（攻 +1 / 防 −1，距离 1 -> 伏击时 3）----
             // 运算后两手**同时是 1/2/3 且数字相同** -> 可暗置那只手进入伏击。
@@ -363,14 +351,10 @@ namespace FingerDiceDuel.Assistant
                 .Set(9, 50)
                 .AddCombo(ComboRule.ContainsAll(70, "有 5 就能转成攻击", 5));
 
-            // ---- 野蛮人·狂战士道途（攻 -1 / 防 -2，生命 25）----
-            // 9 改为 9 点攻击；失血越多，攻防动态提高。
+            // 狂战士满体力遵循普通数字；低体力5/9攻击与吸血由实时估值补充。
             Own[CharacterDefinition.PathOfTheBerserkerId] = new HandValueProfile()
-                .Set(9, 90)
-                .Set(8, 76).Set(6, 70).Set(4, 64)
-                .Set(5, 54)
-                .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48)
-                .AddCombo(ComboRule.ContainsAll(70, "有 9 就能转成攻击", 9));
+                .Set(9, 55).Set(8, 76).Set(6, 70).Set(4, 64).Set(5, 54)
+                .Set(1, 52).Set(2, 52).Set(3, 52).Set(7, 48);
 
             // ---- 战士·战术家（攻0 / 防0，加减法）----
             // 没有固定套路，沿用基线；动态攻防由场况决定。
@@ -522,7 +506,7 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对野蛮人·野兽道途 ----
-            // 他要"双手之和为 7"（回半血 + 攻防永久 +1）-> 别把 7 送到他手上。
+            // 他要双手和7积累兽性之魂，回合末达标才成长-> 别把 7 送到他手上。
             // 注意：这是**对手估值**的修正，不是"我不能选 7"。
             OpponentAdjust[CharacterDefinition.PathOfTheBeastId] = new List<ValueAdjust>
             {
@@ -572,14 +556,10 @@ namespace FingerDiceDuel.Assistant
                 new ValueAdjust(1, +10),
             };
 
-            // ---- 面对野蛮人·巨人道途 ----
-            // 他的 **5（两段攻击）与 9（两段回复）** 是高价值，
-            // 而且**4 / 6 / 8 对他完全无效果**。
-            // 所以：别给他 5 / 9；4 / 6 / 8 给他也无所谓（甚至可以说是"安全牌"）。
+            // 巨人低体力的5/9机会由实时对策估值；开局不把4/6/8误作安全数字。
             OpponentAdjust[CharacterDefinition.PathOfTheGiantId] = new List<ValueAdjust>
             {
-                new ValueAdjust(5, -35), new ValueAdjust(9, -35),
-                new ValueAdjust(4, +8), new ValueAdjust(6, +8), new ValueAdjust(8, +8),
+                new ValueAdjust(5, -15), new ValueAdjust(9, -15),
             };
 
             // ---- 面对邪术师·至高妖精 ----

@@ -26,7 +26,10 @@ namespace FingerDiceDuel.Tests
             sinkA = new SimpleChoiceProvider();
             sinkB = new SimpleChoiceProvider();
 
-            return new GameManager(Make("A", defA), Make("B", defB), sinkA, sinkB);
+            var game = new GameManager(Make("A", defA), Make("B", defB), sinkA, sinkB);
+            if(defA==CharacterDefinition.PathOfTheGiant)game.PlayerA.SetHealthExact(15);
+            if(defB==CharacterDefinition.PathOfTheGiant)game.PlayerB.SetHealthExact(15);
+            return game;
         }
 
         // ============================================================
@@ -394,8 +397,8 @@ namespace FingerDiceDuel.Tests
         {
             PlayerState g = Make("巨", CharacterDefinition.PathOfTheGiant);
 
-            Assert.AreEqual(2, g.Character.AttackBonus);
-            Assert.AreEqual(2, g.Character.DefenseBonus);
+            Assert.AreEqual(-1, g.Character.AttackBonus);
+            Assert.AreEqual(-1, g.Character.DefenseBonus);
             Assert.AreEqual(1, GameManager.BaseRangeOf(g), "野蛮人·巨人道途攻击距离 1。");
         }
 
@@ -444,7 +447,7 @@ namespace FingerDiceDuel.Tests
             TurnResult r = game.ExecuteTurn(pathOfTheGiant, pathOfTheGiant.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(5, r.ResultValue, "前置：结果应是 5。");
-            Assert.AreEqual(10, foeBefore - foe.Health,
+            Assert.AreEqual(8, foeBefore - foe.Health,
                 $"诊断：HitCount={r.HitCount} LandedHits={r.LandedHits}" +
                 $" DamageDealt={r.DamageDealt} Effect={r.Effect}" +
                 $" 野蛮人·巨人道途其他手={((PathOfTheGiantLogic)pathOfTheGiant.Character).OtherHandValueThisOperation}" +
@@ -480,6 +483,7 @@ namespace FingerDiceDuel.Tests
             // 通用规则是 5 = 护盾、4/6/8 = 攻击，**野蛮人·巨人道途正好相反** ——
             // 界面若按通用规则上色，玩家会看着红色以为"这张能打人"。
             PlayerState g = Make("巨", CharacterDefinition.PathOfTheGiant);
+            g.SetHealthExact(15);
             var display = g.Character as IHandEffectDisplay;
 
             Assert.NotNull(display, "野蛮人·巨人道途应实现 IHandEffectDisplay。");
@@ -544,7 +548,9 @@ namespace FingerDiceDuel.Tests
                 game.PlayerA.LeftHand.SetValue(1);
                 game.PlayerB.LeftHand.SetValue(target);
 
+                game.PlayerA.SetHealthExact(15);
                 board.BeginTurn();
+                board.ChooseSkillOption(0);
                 Assert.True(board.ClickHand(game.PlayerA.LeftHand), "选运算源");
                 Assert.True(board.ClickHand(game.PlayerB.LeftHand), "选加数");
 
@@ -572,7 +578,9 @@ namespace FingerDiceDuel.Tests
             game.PlayerA.LeftHand.SetValue(1);
             game.PlayerB.LeftHand.SetValue(4);
 
-            board.BeginTurn();
+            game.PlayerA.SetHealthExact(15);
+                board.BeginTurn();
+                board.ChooseSkillOption(0);
             Assert.True(board.ClickHand(game.PlayerA.LeftHand), "选运算源");
             Assert.True(board.ClickHand(game.PlayerB.LeftHand), "选加数");
 
@@ -589,7 +597,7 @@ namespace FingerDiceDuel.Tests
             PlayerState pathOfTheGiant = game.PlayerA;
             PlayerState foe = game.PlayerB;
 
-            pathOfTheGiant.TakeDamage(15);                       // 让回血看得出来
+            pathOfTheGiant.SetHealthExact(10);                       // 让回血看得出来
             int before = pathOfTheGiant.Health;
 
             // 另一只手 = 3，运算出 9（4 + 5）

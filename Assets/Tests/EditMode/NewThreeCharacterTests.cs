@@ -48,11 +48,11 @@ namespace FingerDiceDuel.Tests
             berserk.SetHealthExact(2);
             var logic = (PathOfTheBerserkerLogic)berserk.Character;
             logic.RefreshDynamicStats(berserk, null);
-            Assert.AreEqual(4, berserk.DynamicAttackBonus);
-            Assert.AreEqual(4, berserk.DynamicDefenseBonus);
+            Assert.AreEqual(0, berserk.DynamicAttackBonus);
+            Assert.AreEqual(0, berserk.DynamicDefenseBonus);
             Assert.AreEqual(-1 + 4, StatusRules.EffectiveAttackBonus(berserk));
             Assert.AreEqual(HandEffectType.Attack4,
-                new PathOfTheBerserkerLogic().DisplayedEffectOf(9),
+                logic.DisplayedEffectOf(9),
                 "AI/界面都必须把野蛮人·狂战士道途的 9 识别为攻击。");
         }
     }

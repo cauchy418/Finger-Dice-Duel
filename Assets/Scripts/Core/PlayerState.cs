@@ -338,7 +338,12 @@ namespace FingerDiceDuel.Core
         public void BindCharacter(ICharacterBehavior character) { Character = character; MonkRules.Bind(this); }
 
         /// <summary>绑定角色数据（由 <see cref="CharacterFactory"/> 调用）。</summary>
-        public void BindDefinition(CharacterDefinition definition) => Definition = definition;
+        public void BindDefinition(CharacterDefinition definition)
+        {
+            Definition = definition;
+            foreach (var barbarian in CharacterBehaviors.Implementers<BarbarianTemplate>(this))
+                barbarian.BindBarbarianOwner(this);
+        }
 
         /// <summary>设置显示名（角色选择界面确认后使用）。</summary>
         public void Rename(string name)
@@ -393,6 +398,7 @@ namespace FingerDiceDuel.Core
         /// （<see cref="SetHealth"/> 是"赋值"语义 —— 邪术师·至高妖精那种不算治疗，不受腐朽影响。）
         /// </summary>
         public int LastActualHealing { get; private set; }
+        internal void CombineEarlierHealing(int amount){LastActualHealing+=amount;}
         public void Heal(int amount, GameManager manager = null)
         {
             LastActualHealing=0;

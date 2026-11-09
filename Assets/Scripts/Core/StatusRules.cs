@@ -35,7 +35,7 @@ namespace FingerDiceDuel.Core
             if (p != null) bonus += p.IdentityAttackBonus;
             if (p != null&&!p.IsWildShaped) bonus += p.DynamicAttackBonus;
             if (p != null) bonus += p.LordAttackBonus;
-            return bonus;
+            return bonus+BarbarianRules.MissingHealthBonus(p);
         }
 
         /// <inheritdoc cref="EffectiveAttackBonus"/>
@@ -54,7 +54,7 @@ namespace FingerDiceDuel.Core
             if (p != null) bonus += p.IdentityDefenseBonus;
             if (p != null&&!p.IsWildShaped) bonus += p.DynamicDefenseBonus;
             if (p != null) bonus += p.LordDefenseBonus;
-            return bonus;
+            return bonus+BarbarianRules.MissingHealthBonus(p);
         }
 
         /// <summary>强酸的防御惩罚。</summary>

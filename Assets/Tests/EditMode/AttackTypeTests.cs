@@ -78,14 +78,12 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Bludgeoning_characters()
         {
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.PathOfTheWardenId),
-                "野蛮人·守望者道途 = 钝击");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.PathOfTheWardenId), "野蛮人职业挥砍");
             Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.OathOfDevotionId),
                 "圣武士·奉献之誓（含盾牌冲击）= 钝击");
             Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.WayOfTheTaiChiId),
                 "武僧·太极宗 = 钝击（太极反弹继承同类型）");
-            Assert.AreEqual(AttackDamageType.Bludgeoning, TypeOf(CharacterDefinition.PathOfTheGiantId),
-                "野蛮人·巨人道途 = 钝击");
+            Assert.AreEqual(AttackDamageType.Slashing, TypeOf(CharacterDefinition.PathOfTheGiantId), "野蛮人职业挥砍");
         }
 
         // ---------------- 穿刺 ----------------

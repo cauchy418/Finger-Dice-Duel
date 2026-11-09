@@ -1,71 +1,31 @@
-﻿using FingerDiceDuel.Core;
-
+﻿using System;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    /// <summary>
-    /// 野蛮人·野兽道途 PathOfTheBeast（攻防 -2 / -2，生命上限 +5）
-    ///
-    /// 技能：运算后若**两只手数字之和为 7**，则
-    ///   · 回复"生命上限一半"的血量（向下取整，且不超过上限）；
-    ///   · 攻防属性**永久**各 +1（可叠加）。
-    ///
-    /// 即：一次触发后 -1/-1，两次后 0/0，三次后 +1/+1 ……
-    /// 生命上限 20 + 5 = 25，因此每次回复 25 / 2 = 12 点（向下取整）。
-    ///
-    /// 成长是跨回合状态，因此 <see cref="OnMatchReset"/> **必须**把它清掉，
-    /// 否则重开一局会带着上一局的加成继续长。
-    /// </summary>
-    public sealed class PathOfTheBeastLogic : CharacterTemplate, IAiMoveAdvisor
+    public sealed class PathOfTheBeastLogic:BarbarianTemplate,ITurnEndHook
     {
-        /// <summary>触发条件：双手数字之和。</summary>
-        public const int TriggerSum = 7;
-
-        /// <summary>生命上限加成。</summary>
-        public const int HealthBonus = 5;
-
-        /// <summary>每次触发永久提升的攻防。</summary>
-        public const int GrowthPerTrigger = 1;
-
-        public override string DisplayName => "野蛮人·野兽道途";
-
-        public override int DefaultAttackBonus => -2;
-        public override int DefaultDefenseBonus => -2;
-
-        public override int MaxHealthBonus => HealthBonus;
-
-        /// <summary>本局已经触发过几次（仅用于日志 / 测试断言）。</summary>
-        public int TriggerCount { get; private set; }
-
-        public override void OnOperationResolved(PlayerState owner, Hand actedHand, int actedHandValueBefore,
-                                                 int targetValue, HandEffectType effect, GameManager manager,
-                                                 IPreTurnChoiceSink choiceSink)
+        public const int TriggerSum=7,HealthBonus=5,GrowthPerTrigger=1;
+        public int TriggerCount {get;private set;}
+        public int BeastSouls {get;private set;}
+        public override string DisplayName=>"野蛮人·野兽道途";
+        public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)
         {
-            if (owner == null) return;
-
-            // 判定用的是"两只手**运算后**的数字之和"
-            int sum = owner.LeftHand.Value + owner.RightHand.Value;
-            if (sum != TriggerSum) return;
-
-            TriggerCount++;
-
-            // 回复：生命上限的一半，向下取整；Heal 内部会夹到上限
-            int healAmount = owner.MaximumHealth / 2;
-            int healthBefore = owner.Health;
-            owner.Heal(healAmount);
-
-            // 永久成长
-            GrowStats(GrowthPerTrigger, GrowthPerTrigger);
-            manager?.NoteSkill(owner, "野兽形态", $"回复 {owner.Health - healthBefore}，永久攻防＋1",owner,new SkillVisualData(value:1,previous:owner.Health-healthBefore));
+            if(owner.LeftHand.Value+owner.RightHand.Value!=7)return;
+            BeastSouls++;game?.NoteSkill(owner,"野兽形态","兽性之魂+1，当前"+BeastSouls,owner,new SkillVisualData(value:BeastSouls));
         }
-
-        // 「凑 7 特别值钱」原本在这里硬编码（+200）。
-        // 现在统一由价值表表达（见 Assistant.HandValueProfiles 的野蛮人·野兽道途档案：
-        // 和为 7 加 220，且把 7 本身调到 15 —— 因为"要有 7"与"要和为 7"互斥）。
-
-        public override void OnMatchReset(PlayerState owner, GameManager manager)
+        public override int ScoreMoveBonus(MoveValueContext context)
         {
-            TriggerCount = 0;
-            ResetStats();   // 丢弃所有成长累计，回到 -2/-2
+            if(BarbarianOwner==null||context.ActedValueAfter+context.OtherHandValue!=7)return 0;
+            int threshold=Math.Min(StatusRules.EffectiveAttackBonus(BarbarianOwner),StatusRules.EffectiveDefenseBonus(BarbarianOwner));
+            return BeastSouls+1>=threshold?75+(BarbarianOwner.MaximumHealth-BarbarianOwner.Health)*3:15;
         }
+        public void OnTurnEnded(PlayerState owner,GameManager game)
+        {
+            if(!owner.IsAlive||BeastSouls<=0||BeastSouls<Math.Min(StatusRules.EffectiveAttackBonus(owner),StatusRules.EffectiveDefenseBonus(owner)))return;
+            BeastSouls=0;TriggerCount++;int heal=(owner.MaximumHealth-owner.Health)/2;
+            owner.Heal(heal,game);GrowStats(1,1);
+            game?.NoteSkill(owner,"野兽形态","清除兽性之魂，回复"+owner.LastActualHealing+"，永久攻防+1",owner,new SkillVisualData(value:1));
+        }
+        public override void OnMatchReset(PlayerState owner,GameManager game){BindBarbarianOwner(owner);BeastSouls=0;TriggerCount=0;ResetStats();}
     }
 }

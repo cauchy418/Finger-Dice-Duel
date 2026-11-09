@@ -29,6 +29,7 @@ namespace FingerDiceDuel.Core
         {
             bool follows=ReferenceEquals(target,Defender);
             Action apply=()=>{
+                if(SuppressAttackStatuses)return;
                 var actual=follows?Defender:target;if(actual?.IsAlive!=true||WasCancelled)return;
                 if(IsStatusDamage){if(enchantment)actual.ApplyEnchantment(status,source,turns);else actual.ApplyStatus(status,turns,source);return;}
                 foreach(var hit in _elementHits){
@@ -41,7 +42,7 @@ namespace FingerDiceDuel.Core
             if(_attachedStatusReady||IsStatusDamage)apply();else _queuedAttachedStatuses.Add(apply);
         }
         public void ApplyUntimedOnHit(Action apply)
-        {Action gated=()=>{if(!WasCancelled&&_elementHits.Count>0&&Defender.IsAlive)apply();};if(_attachedStatusReady)gated();else _queuedAttachedStatuses.Add(gated);}
+        {Action gated=()=>{if(!SuppressAttackStatuses&&!WasCancelled&&_elementHits.Count>0&&Defender.IsAlive)apply();};if(_attachedStatusReady)gated();else _queuedAttachedStatuses.Add(gated);}
         private void FinishAttachedStatusPhase()
         {_attachedStatusReady=true;foreach(var apply in _queuedAttachedStatuses)apply();_queuedAttachedStatuses.Clear();}
     }

@@ -47,18 +47,20 @@ namespace FingerDiceDuel.Core
                 ApplyAttackerStatus(game, _elementHits[_elementHits.Count - 1]);
         }
 
-        private void ResolveReflection(GameManager manager, int amount, AttackDamageType type)
+        private void ResolveReflection(GameManager manager, int amount, AttackDamageType type, System.Action completed)
         {
-            if (amount <= 0 || !Attacker.IsAlive || manager == null) return;
+            if (amount <= 0 || !Attacker.IsAlive || manager == null) {completed();return;}
             var reflected = new AttackContext(Defender, Attacker, _reflectionSource ?? Defender.LeftHand ?? Defender.RightHand, amount)
             {
                 IsSpecialAttack = true, IgnoreStatBonuses = true, IsReflected = true,
                 ReflectDepth = ReflectDepth + 1,
                 AttackType = type == AttackDamageType.None ? AttackDamageType.Bludgeoning : type,
             };
-            reflected.Resolve(manager.GetChoiceProvider(Attacker), manager);
-            ReflectedDealt += reflected.AppliedDamage;
-            ReflectedAttackType = reflected.AttackType;
+            reflected.Resolve(manager.GetChoiceProvider(Attacker), manager,()=>{
+                ReflectedDealt += reflected.AppliedDamage;
+                ReflectedAttackType = reflected.AttackType;
+                completed();
+            });
         }
     }
 }
