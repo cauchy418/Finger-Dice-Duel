@@ -20,7 +20,7 @@
 | [RULES](../RULES.md) | 权威规则原文，代码与它冲突时以它为准 |
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [开发与测试](development.md) | 技术栈、测试命令、验证流程 |
-| [AI 策略与权重](ai-strategy-reference.md) | 57 名子职的自身／针对策略与配置 |
+| [AI 策略与权重](ai-strategy-reference.md) | 58名子职的自身／针对策略与配置；含野蛮人低体力实时估值 |
 | [知识领域](knowledge-domain.md) | 知识层数、独立力场伤害与困惑 |
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
 | [格挡定义](combat-defense.md) | 格挡、抗性与状态时长的扣减规则 |

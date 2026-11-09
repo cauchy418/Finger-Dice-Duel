@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1670_passed-success)
+![tests](https://img.shields.io/badge/regression-1686_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1670 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1686 项。
+
+野蛮人职业拥有25点体力，基础攻防−1/−1；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
 ## 现在有什么
 
@@ -87,14 +89,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
 | 元素反应 | 11 条 |
 | 双将组合 | 532 种无序组合 |
-| 回归测试 | 1670 项通过、0 失败 |
+| 回归测试 | 1686 项通过、0 失败 |
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 2026-11-06 完成本轮技能和 AI 更新后，57 个子职共采样 64,768 局。报告包含各模式角色胜率、八人阵营整体胜率，以及随机／偏好选角两组身份胜率。[完整胜率与分母](Tools/Statistics/2026-11-06-arcane/README.md)
+- 2026-11-06 完成本轮技能和 AI 更新后，57 个子职共采样 64,768 局；该快照早于本次野蛮人重构。报告包含各模式角色胜率、八人阵营整体胜率，以及随机／偏好选角两组身份胜率。[完整胜率与分母](Tools/Statistics/2026-11-06-arcane/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
