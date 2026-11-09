@@ -281,9 +281,10 @@ namespace FingerDiceDuel.Core
             if(!IsStatusDamage&&!IsReflected&&!IsSpecialAttack)
             {
                 _knowledgeForce=Attacker.ConsumeKnowledge();
+            if(_knowledgeForce>0)manager?.RecordSkillVisual(Attacker,"知识祝福",Attacker,new SkillVisualData(source:SourceHand,value:0,previous:_knowledgeForce,variant:"consume"));
                 var giant=CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(Attacker);
                 if(giant!=null && giant.Enchantment!=AttackDamageType.None)
-                { _elementBlade=giant.ConsumeBlade();AttackType=_elementBlade;ElementOverride=AttackDamageTypes.ToDamageType(_elementBlade); }
+                { _elementBlade=giant.ConsumeBlade();manager?.RecordSkillVisual(Attacker,"元素战刃",Defender,new SkillVisualData(source:SourceHand,element:_elementBlade,variant:"consume"));AttackType=_elementBlade;ElementOverride=AttackDamageTypes.ToDamageType(_elementBlade); }
             }
             if (TryCancelAttack(manager))
             {
@@ -853,6 +854,7 @@ namespace FingerDiceDuel.Core
                 if(extendedFrom>0)manager?.RecordSkillVisual(Attacker,"龙族体魄",victim,
                     new SkillVisualData(source:SourceHand,value:victim.StatusTurnsLeft(status),previous:extendedFrom,
                         variant:"extend",status:status,element:hit.AttackType));
+                if(status==StatusEffect.Confusion&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"困惑",victim,new SkillVisualData(value:turns,status:status,variant:"apply"));
                 if(status==StatusEffect.HolyLight&&victim.HasStatus(status))manager?.RecordSkillVisual(Attacker,"净化圣焰",victim,new SkillVisualData(value:turns,status:status));
                 manager?.NoteSkill(Attacker,"施加状态",$"第{hit.Index+1}段 {victim.Name}：{StatusNames.Of(status)} {turns}回合"+(penalty.Length>0?"（"+penalty+"）":""));
             }

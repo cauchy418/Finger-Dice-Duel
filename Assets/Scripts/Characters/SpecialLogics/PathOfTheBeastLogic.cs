@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnOperationResolved(PlayerState owner,Hand hand,int before,int add,HandEffectType effect,GameManager game,IPreTurnChoiceSink sink)
         {
             if(owner.LeftHand.Value+owner.RightHand.Value!=7)return;
-            BeastSouls++;game?.NoteSkill(owner,"野兽形态","兽性之魂+1，当前"+BeastSouls,owner,new SkillVisualData(value:BeastSouls));
+            BeastSouls++;game?.NoteSkill(owner,"野兽形态","兽性之魂+1，当前"+BeastSouls,owner,new SkillVisualData(value:BeastSouls,previous:BeastSouls-1,variant:"gain"));
         }
         public override int ScoreMoveBonus(MoveValueContext context)
         {
@@ -22,9 +22,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {
             if(!owner.IsAlive||BeastSouls<=0||BeastSouls<Math.Min(StatusRules.EffectiveAttackBonus(owner),StatusRules.EffectiveDefenseBonus(owner)))return;
-            BeastSouls=0;TriggerCount++;int heal=(owner.MaximumHealth-owner.Health)/2;
+            int consumed=BeastSouls;BeastSouls=0;TriggerCount++;int heal=(owner.MaximumHealth-owner.Health)/2;
             owner.Heal(heal,game);GrowStats(1,1);
-            game?.NoteSkill(owner,"野兽形态","清除兽性之魂，回复"+owner.LastActualHealing+"，永久攻防+1",owner,new SkillVisualData(value:1));
+            game?.NoteSkill(owner,"野兽形态","清除兽性之魂，回复"+owner.LastActualHealing+"，永久攻防+1",owner,new SkillVisualData(value:0,previous:consumed,variant:"consume",amount:owner.LastActualHealing));
         }
         public override void OnMatchReset(PlayerState owner,GameManager game){BindBarbarianOwner(owner);BeastSouls=0;TriggerCount=0;ResetStats();}
     }

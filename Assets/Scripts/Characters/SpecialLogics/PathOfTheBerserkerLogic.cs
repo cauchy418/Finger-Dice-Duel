@@ -14,7 +14,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override void OnResolveAttack(AttackContext c)
         {
             if(c.IsStatusDamage||c.IsSpecialAttack||c.IsReflected||c.Attacker.Health>15)return;
-            if(c.AttackValue==5||c.AttackValue==9){c.FinalDamage=c.AttackValue;c.HitCount=1;}
+            if(c.AttackValue==5||c.AttackValue==9){c.FinalDamage=c.AttackValue;c.HitCount=1;c.Manager?.RecordSkillVisual(c.Attacker,"狂怒",c.Defender,new SkillVisualData(source:c.SourceHand,value:c.AttackValue));}
         }
         public void OnCompletedDamage(AttackContext c,GameManager game)=>OnHitLanded(c,game);
         public void OnHitLanded(AttackContext c,GameManager game)

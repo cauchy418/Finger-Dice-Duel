@@ -78,7 +78,7 @@ namespace FingerDiceDuel.Core
             };
             if(CharacterBehaviors.FirstImplementer<ITrickeryDomain>(healer)==null){storm();return;}
             var request=new WizardChoice(healer,"诡术赐福 · 点击受疗者一只手改为2，或不发动",new List<Hand>{target.LeftHand,target.RightHand},true,hand=>{
-                if(hand!=null&&target.IsAlive){hand.SetValue(2);NoteSkill(healer,"诡术赐福",target.Name+"手值改为2",target,new SkillVisualData(source:hand,value:2));}storm();},false,"不发动");
+                if(hand!=null&&target.IsAlive){int previous=hand.Value;hand.SetValue(2);NoteSkill(healer,"诡术赐福",target.Name+"手值改为2",target,new SkillVisualData(destination:hand,destinationOwner:target,value:2,previous:previous));}storm();},false,"不发动");
             if(DeferWizardChoice?.Invoke(request)!=true)
             {
                 Hand pick=null;

@@ -25,6 +25,29 @@ namespace FingerDiceDuel.UI
             if(p.Style==SecondarySkillStyle.Heal&&d?.Value==0)green=new Color(.6f,.65f,.65f);
             switch(p.Style)
             {
+                case SecondarySkillStyle.Knowledge:
+                    if(variant=="consume")
+                    {Picture(0,p.Sprite,origin,110,pulse*(1-move));Orbit(1,from,"fx_force",55*(1-move),60,4,100*t,pulse*.6f,blue);Digit(0,"知识 "+old+" → 0",origin+Vector2.up*65,pulse,gold);break;}
+                    bool release=e.RedirectKind=="知识祝福";
+                    Picture(0,p.Sprite,release?origin:Arc(origin,target,move,65),100,pulse,release?90*move:0);
+                    Orbit(1,target,release?"fx_force":"fx_radiant",65*(release?move:1-move*.4f),65,5,120*t,pulse*.65f,release?blue:gold);
+                    if(release)Line(7,origin,target,pulse*.6f);
+                    Digit(0,release?"力场 −"+value:"知识 "+value+"层",target+Vector2.up*67,pulse,release?blue:gold);break;
+                case SecondarySkillStyle.Confusion:
+                    Orbit(0,variant=="apply"?target:from,"fx_psychic",55,65,3,-160*t,pulse*.5f,purple);
+                    Picture(4,p.Sprite,variant=="apply"?target:from,90,pulse);
+                    Digit(0,variant=="carry"?old+" → "+value:"困惑",(variant=="apply"?target:from)+Vector2.up*65,pulse,purple);break;
+                case SecondarySkillStyle.HolyFlame:
+                    if(variant=="pierce")
+                    {Picture(0,"fx_force",target,130,pulse*(1-move));Orbit(1,target,"fx_fire",45+70*move,80,4,100*t,pulse*.7f,gold);Digit(0,"穿透免疫",target+Vector2.up*65,pulse,gold);break;}
+                    Picture(0,p.Sprite,Arc(origin,target,move,55),100,pulse,0,null,gold);
+                    Orbit(1,target,"fx_fire",70-25*move,75,4,90*t,pulse*.65f,gold);
+                    Picture(6,"fx_radiant",target+Vector2.up*(80-160*move),150,pulse,0,new Vector2(1.2f,.3f),gold);
+                    Digit(0,"圣火",target+Vector2.up*65,pulse,gold);break;
+                case SecondarySkillStyle.Scorch:
+                    Picture(0,p.Sprite,target,100,pulse);
+                    for(int i=0;i<3;i++)Picture(i+1,"fx_fire",target+new Vector2((i-1)*35,move*65),100,pulse*.65f,0,null,red);
+                    Digit(0,"灼伤 −"+value,target+Vector2.up*70,pulse,red);break;
                 case SecondarySkillStyle.Strike:
                     Picture(0,p.Sprite,from+Vector2.up*30,175+(p.Flavor=="giant"?80:30)*pulse,pulse,-65+90*move);
                     Orbit(1,from,"fx_slash",45+30*move,95,3,150*t,pulse*.7f,p.Flavor=="shadow"?purple:gold);break;
@@ -98,6 +121,13 @@ namespace FingerDiceDuel.UI
                     if(p.Flavor=="forced"){Orbit(1,from,"fx_radiant",75,45,3,90*t,pulse*.7f);Digit(0,"必赌",from+Vector2.up*75,pulse,gold);}
                     else if(t>.35f){Vector2 face=new Vector2(-2*(.7f+.3f*move),-9);float radians=spin*Mathf.Deg2Rad;face=new Vector2(face.x*Mathf.Cos(radians)-face.y*Mathf.Sin(radians),face.x*Mathf.Sin(radians)+face.y*Mathf.Cos(radians));Digit(0,value,from+face,pulse,gold);_finalNumbers[0].fontSize=34;_finalNumbers[0].rectTransform.localRotation=Quaternion.Euler(0,0,spin);}break;
                 case SecondarySkillStyle.Growth:
+                    if(p.Flavor=="claw"&&(variant=="gain"||variant=="consume"))
+                    {
+                        Picture(0,p.Sprite,badge,100,pulse);
+                        Orbit(1,badge,"fx_slash",variant=="consume"?70*(1-move):35+25*move,65,3,80*t,pulse*.7f,gold);
+                        Digit(0,variant=="gain"?"兽魂 "+old+" → "+value:"兽魂 "+old+" → 0",badge+Vector2.up*62,pulse,gold);
+                        if(variant=="consume"){Digit(1,"攻防 +1",badge+Vector2.down*55,pulse,gold);Digit(2,"回复 +"+d.Amount,origin+Vector2.up*65,pulse,green);}break;
+                    }
                     Picture(0,p.Sprite,badge,105,pulse,0,Vector2.one*(.8f+.35f*pulse));
                     Orbit(1,badge,p.Flavor=="claw"?"fx_slash":"fx_radiant",45+15*move,45,3,0,pulse*.65f,p.Flavor=="conquest"?red:gold);
                     Digit(0,variant=="decay"?"−1":value.Length>0?"+"+value:"+1",badge+Vector2.up*(35+30*move),pulse,p.Flavor=="conquest"?red:gold);break;
@@ -136,6 +166,8 @@ namespace FingerDiceDuel.UI
                     Digit(0,p.Flavor=="growth"?"层 "+value:value,Arc(p.Flavor=="consume"?origin:from,p.Flavor=="consume"?target:origin,move,65),pulse,gold);
                     if(p.Flavor=="growth")Orbit(1,origin,"fx_radiant",70,65,6,120*t,pulse*.6f);break;
                 case SecondarySkillStyle.Wind:
+                    if(e.RedirectKind=="诡术赐福")
+                    {Picture(0,"fx_psychic",to,130,pulse,90*t);Digit(0,old+" → "+value,to+Vector2.up*65,pulse,purple);break;}
                     for(int i=0;i<4;i++)Picture(i,"fx_slash",from+new Vector2(50*move,(i-1.5f)*22),90,pulse*.4f,-25+35*t,null,blue);
                     if(value.Length>0)Digit(0,old.Length>0?old+"→"+value:value,from+Vector2.up*65,pulse,blue);break;
                 case SecondarySkillStyle.Charm:

@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Core
         public override void OnResolveAttack(AttackContext c)
         {
             if(c.IsStatusDamage||c.IsSpecialAttack||c.IsReflected||c.Attacker.Health>15||c.AttackValue!=5)return;
-            c.FinalDamage=_other*2;c.HitCount=2;
+            c.FinalDamage=_other*2;c.HitCount=2;c.Manager?.RecordSkillVisual(c.Attacker,"巨人之力",c.Defender,new SkillVisualData(source:c.SourceHand,value:_other,amount:2));
         }
         public PlayerState ApplyHeal(PlayerState owner,GameManager game,IPreTurnChoiceSink sink)=>owner;
         public int HealAmountOf(PlayerState owner,GameManager game)=>owner.Health<=15?_other*2:9;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
-    public enum SecondarySkillStyle { Arrows, Book, Cards, Charm, Circuit, Cleanse, Dice, Dragon, Drain, Drunk, ElementFist, ElementGuard, Enchant, Eye, FalseLife, Growth, Hand, Heal, Ki, Maneuver, Measure, Music, Nightmare, Rage, Repair, Steal, Strike, Sun, Surge, TaichiBoost, Tether, Wind, Convert }
+    public enum SecondarySkillStyle { Arrows, Book, Cards, Charm, Circuit, Cleanse, Dice, Dragon, Drain, Drunk, ElementFist, ElementGuard, Enchant, Eye, FalseLife, Growth, Hand, Heal, Ki, Maneuver, Measure, Music, Nightmare, Rage, Repair, Steal, Strike, Sun, Surge, TaichiBoost, Tether, Wind, Convert, Knowledge, Confusion, HolyFlame, Scorch }
     public sealed class SecondarySkillProfile
     {
         public string Skill {get;} public SecondarySkillStyle Style {get;} public string Sprite {get;} public int Priority {get;} public string Flavor {get;}
@@ -82,6 +82,15 @@ namespace FingerDiceDuel.Core
             list["气"]=new SecondarySkillProfile("气",SecondarySkillStyle.Ki,"Effects/ki",2,"");
             list["汲能回路"]=new SecondarySkillProfile("汲能回路",SecondarySkillStyle.Circuit,"Adventure/npc_mage_phantom",3,"");
             list["战争祝福"]=new SecondarySkillProfile("战争祝福",SecondarySkillStyle.Convert,"Overlay/attack",2,"nine");
+            foreach(var skill in new[]{"岁月知识","知识赐福","知识祝福"})list[skill]=new SecondarySkillProfile(skill,SecondarySkillStyle.Knowledge,"Status/knowledge_blessing",1,"");
+            list["困惑"]=new SecondarySkillProfile("困惑",SecondarySkillStyle.Confusion,"Status/confusion",1,"");
+            foreach(var skill in new[]{"净化圣焰","圣焰赐福","圣火"})list[skill]=new SecondarySkillProfile(skill,SecondarySkillStyle.HolyFlame,"Status/holy_light",1,"");
+            list["灼伤"]=new SecondarySkillProfile("灼伤",SecondarySkillStyle.Scorch,"Status/scorch",1,"");
+            list["元素战刃"]=new SecondarySkillProfile("元素战刃",SecondarySkillStyle.Enchant,"weapon_sword",2,"blade");
+            list["战争赐福"]=new SecondarySkillProfile("战争赐福",SecondarySkillStyle.Music,"Status/war_blessing",2,"");
+            list["风暴赐福"]=new SecondarySkillProfile("风暴赐福",SecondarySkillStyle.Wind,"fx_slash",2,"");
+            list["复仇之魂"]=new SecondarySkillProfile("复仇之魂",SecondarySkillStyle.Wind,"fx_slash",2,"");
+            list["诡术赐福"]=new SecondarySkillProfile("诡术赐福",SecondarySkillStyle.Wind,"fx_psychic",2,"");
             return list;
         }
     }
