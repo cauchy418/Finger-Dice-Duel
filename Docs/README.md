@@ -24,6 +24,7 @@
 | [AI 策略与权重](ai-strategy-reference.md) | 58名子职的自身／针对策略与配置；含野蛮人低体力实时估值 |
 | [知识领域](knowledge-domain.md) | 知识层数、独立力场伤害与困惑 |
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
+| [身份规则与动画更新](identity-and-animation-update.md) | 忠臣扩展接口、动画核对及身份采样验收 |
 | [格挡定义](combat-defense.md) | 格挡、抗性与状态时长的扣减规则 |
 | [技能文案](character-skill-copy-draft.md) | 全部技能正文 |
 | [提交与推送约定](../CONTRIBUTING.md) | 文件该放哪、什么该提交、一轮改动怎么组织 |
@@ -58,6 +59,6 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样](../Tools/Statistics/2026-11-09-state-ai/README.md) | 2026-11-09，58子职66,964局；含八人阵营／身份的全角色表、阵营与身份整体胜率 |
-| [机器数据](../Tools/Statistics/2026-11-09-state-ai/results.json) | 可复核的原始结果 |
+| [胜率采样](../Tools/Statistics/2026-11-10-identity/README.md) | 58子职66,964局汇总；本轮身份新采2,600局，其余模式注明沿用来源 |
+| [机器数据](../Tools/Statistics/2026-11-10-identity/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

@@ -25,7 +25,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-最新结果：**1705 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成10,092次选点审计及58子职66,964局五模式采样，见[最新胜率](../Tools/Statistics/2026-11-09-state-ai/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
+最新结果：**1724 项功能回归通过，0 失败**；功能回归跳过8项独立统计；另行完成10,092次选点审计；58子职汇总66,964局，本轮仅重采身份2,600局，其余模式沿用2026-11-09来源，见[最新胜率](../Tools/Statistics/2026-11-10-identity/README.md)。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。
 
 ## 精简后的完整性核查
 
@@ -33,7 +33,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 两份仍有效的次战／九战逐步演算已并入[第一章现行设计](Adventure/four-chapter-v3/chapter-01-and-04.md)，同时校正配置文件与源码注释的文档路径。仍被权重实验入口使用的[角色权重汇总脚本](../Tools/Statistics/summarize-role-tuning.py)已恢复，要求显式指定输入目录，避免引用已删除的旧采样目录。
 
-精简后重新运行功能回归：1705项通过、0失败；UI的237个脚本编译通过且无组件冲突。现行66,964局原始数据与已发布汇总核对一致，八人阵营／身份表均由原数据补全，保留原采样提交与源码指纹。仓库Markdown相对链接已检查，无缺失目标。
+精简后重新运行功能回归：1724项通过、0失败；UI的241个脚本编译通过且无组件冲突。现行66,964局原始数据与已发布汇总核对一致，八人阵营／身份表均由原数据补全，保留原采样提交与源码指纹。仓库Markdown相对链接已检查，无缺失目标。
 
 ## 文档
 

@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1705_passed-success)
+![tests](https://img.shields.io/badge/regression-1724_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1705 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1724 项。
 
 野蛮人职业拥有25点体力，基础攻防−1/−1；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
@@ -89,14 +89,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
 | 元素反应 | 11 条 |
 | 双将组合 | 532 种无序组合 |
-| 回归测试 | 1705 项通过、0 失败 |
+| 回归测试 | 1724 项通过、0 失败 |
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 2026-11-09 完成统一状态策略和角色AI修正后，58个子职共采样66,964局。报告包含各模式角色胜率、八人阵营整体胜率，以及随机／偏好选角两组身份胜率。[完整胜率与分母](Tools/Statistics/2026-11-09-state-ai/README.md)
+- 当前58个子职的汇总展示66,964局。本轮停用忠臣替死后，重采八人身份随机2,000局和偏好600局；1v1、2v2、双将及八人阵营沿用上一轮样本，报告逐模式注明来源。[完整胜率与分母](Tools/Statistics/2026-11-10-identity/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
@@ -120,4 +120,4 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 四章关卡与剧情详见[冒险试炼](Docs/Adventure/four-chapter-v3/README.md)。初战使用无特殊技能的重甲战士（攻+2／防+2）；教学结束确认后进入实战，失败可重新指引或直接再次试炼。
 
-德鲁伊现采用独立荒野体力与充能；孢子结社已加入，双德鲁伊初始充能相加、双武僧初始4气（上限6），羊为5点体力。详见[重构说明](Docs/druid-rework-2026-11-05.md)。
+德鲁伊现采用独立荒野体力与充能；孢子结社已加入，双德鲁伊初始充能相加、双武僧初始4气（上限6），羊为8点体力。详见[重构说明](Docs/druid-rework-2026-11-05.md)。

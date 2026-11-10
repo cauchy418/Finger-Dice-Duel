@@ -6,8 +6,8 @@
 
 | 内容 | 位置 |
 |---|---|
-| 最新一轮（2026-11-09，58子职66,964局） | [2026-11-09-state-ai/README.md](2026-11-09-state-ai/README.md) |
-| 机器可读汇总 | [results.json](2026-11-09-state-ai/results.json) |
+| 现行汇总（58子职；身份新采2,600局，其余沿用） | [2026-11-10-identity/README.md](2026-11-10-identity/README.md) |
+| 机器可读汇总 | [results.json](2026-11-10-identity/results.json) |
 | 逐局记录 | 同目录 `1v1.csv`、`2v2.csv`、`dual.csv`、`eight.csv`、`identity.csv`、`identity-preferred.csv` |
 | 角色名单与阵营 | `roster.tsv` |
 | AI 逐角色审计 | `ai-audit.tsv` |
@@ -17,7 +17,7 @@
 ## 目录约定
 
 - **一轮采样一个时间目录**：`YYYY-MM-DD-<主题>/`，主题写这一轮改了什么（`arcane`＝奥法五式与法系调整，`ranger`＝游侠调整）。
-- 每个目录**必须是完整的一轮**：五类模式全部重采，身份局含随机和偏好两组，不允许只补一两个模式。做不到完整就等下一轮，不要产出半份。
+- 每个发布目录提供完整的六组表格。一般轮次全部重采；本次用户指定仅重采身份局时，允许原样沿用未受影响的1v1、2v2、双将及八人阵营数据，但必须逐模式记录原日期、源码提交与指纹，明确标注“沿用旧样本，未重测”，不能冒充本轮新样本。
 - 新的一轮提交后，**旧目录在同一个提交里删除**。历史交给 git：`git log -- Tools/Statistics` 能翻回去，不需要留 5 份 CSV 占 30MB。
 - 跨轮对比写成一张表放进当轮 README 的「与上一轮相比」小节，不要靠保留旧目录来做对比。
 
@@ -30,12 +30,12 @@
 
 ## 复现与补表
 
-完整重采按[现行报告的复现命令](2026-11-09-state-ai/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
+完整重采按[现行报告的复现命令](2026-11-10-identity/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
 
 只从现有数据补全表格时：
 
 ```powershell
-python Tools/Statistics/summarize-current.py --date 2026-11-09 --directory 2026-11-09-state-ai --state-ai --refresh-docs --update-roster
+python Tools/Statistics/summarize-current.py --date 2026-11-10 --directory 2026-11-10-identity --identity-only --refresh-docs --update-roster
 ```
 
 日志与逐局 CSV 必须随目录一起提交；生成脚本会核对名单规模、逐角色出场数与异常数。
@@ -57,3 +57,23 @@ python Tools/Statistics/summarize-role-tuning.py --directory <实验目录> --lo
 `run-current.ps1 -Run`默认以本机.NET 8.0.15完成编译、功能检查和全部采样，所有模式复用同一程序集；可用`-RuntimeVersion`显式指定已安装版本。版本与程序集SHA256保存于provenance.json。旧.NET 6.0.11在本机长任务中出现过原生崩溃，本轮不会拼接中断样本或跨运行时样本。游戏及Unity编译目标不变。
 
 复现到新目录时显式传入`-Date`与`-Directory`，执行器拒绝覆盖已发布目录；每组前后核对源码，运行时身份偏好表必须来自同轮随机身份组。临时失败样本留在忽略的bin目录，不属于已发布统计。
+
+## 仅重采身份局
+
+游戏、测试、UI及工具修改全部完成后运行下列命令。省略`-Run`只显示计划，不编译或采样。`-Baseline`必须指向待替换现行轮的`results.json`，不是其更早的`baseline-results.json`。
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run -Date <新日期> -Directory <新日期>-identity -Baseline Tools/Statistics/2026-11-10-identity/results.json
+```
+
+运行器用.NET 8.0.15编译一次，校验AI状态测试，后续审计、两组身份采样与完整功能回归复用同一DLL，并保存程序集SHA256。运行时导出角色表，必须与旧轮名单指纹一致。随机身份固定2,000局、种子5000000–5001999；完成后将`identity-roles.tsv`逐字节同步到游戏运行时偏好表，再以独立种子5100000–5100599采600局偏好身份。没有执行其他四种模式的采样入口。
+
+旧轮四组CSV及日志原样复制，新目录内的`baseline-results.json`保存直接来源汇总。`provenance.json.carried_forward`保存来源汇总和每个沿用文件的SHA256；`results.json.mode_provenance`保存逐模式状态、原采样日期、源码提交及源码／测试指纹。汇总器核对沿用文件指纹、总量、逐角色分母与胜负记录，并区分2,600局新采样和合并表的总量。旧轮AI审计不沿用，新审计与回归另有日志。发布新目录时仍在同一提交删除旧目录，保留一份现行汇总。
+
+重新生成报告和图鉴表格（不会重采，保持原来源）：
+
+```powershell
+python Tools/Statistics/summarize-current.py --date 2026-11-10 --directory 2026-11-10-identity --identity-only --refresh-docs --update-roster
+```
+
+工具校验：`python -m unittest discover -s Tools/Statistics -p test_statistics_tools.py`。测试在忽略的bin目录使用夹具，验证来源保留、刷新幂等及沿用文件篡改拒绝，不发布或宣称新采样结果。

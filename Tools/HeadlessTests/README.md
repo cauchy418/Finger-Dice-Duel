@@ -6,14 +6,14 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通.NET可执行文件跑测试。当前1670项功能回归、8项独立统计入口；最新 57 子职五模式采样共 64,768 局：1v1 31,920、2v2 25,536、双将 4,112、八人阵营 600、八人身份 2,000+600。采样统一走实际BoardController，细节见[本轮报告](../Statistics/2026-11-09-state-ai/README.md)；
+一个普通.NET可执行文件跑测试。当前1724项功能回归、8项独立统计入口；58子职现行汇总包含66,964局，其中本轮重采身份随机2,000局和身份偏好600局，其余模式保留上一轮来源。采样统一走实际BoardController，细节见[本轮报告](../Statistics/2026-11-10-identity/README.md)；
 专项可按测试类过滤，不必每次重跑全部统计。
 
 ```powershell
-# 本机.NET 6长时间统计关闭分层JIT，避免原生崩溃
+# 本机采样固定.NET 8.0.15；关闭分层JIT
 $env:DOTNET_TieredCompilation='0'
 $env:COMPlus_TieredCompilation='0'
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-tests.ps1 -SkipStatistics -RuntimeVersion 8.0.15
 ```
 
 > 注意：本机（Windows PowerShell 5.1）没有 `pwsh`（PowerShell 7），所以上面的命令用
@@ -38,11 +38,12 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-EditorRoot <path>` | 手动指定编辑器 `Editor/Data` 目录 |
 | `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时只编译成库、不执行，并自动引入 `nunit.framework.dll`） |
 | `-Only <filter>` | 编译后只运行类名包含该文本的测试，例如`-Only AdventureLevel1Tests`；全量回归时不传此项 |
-| `-SkipStatistics` | 跳过8项独立统计，只执行1670项功能回归 |
+| `-SkipStatistics` | 跳过8项独立统计，只执行1724项功能回归 |
 | `-OutputDirectory <path>` | 使用独立构建目录，不覆盖正在运行的DLL或旧分片的构建标识 |
+| `-RuntimeVersion <version>` | 为编译器和测试程序固定同一个已安装运行时，本机使用8.0.15 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
 
-五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-09-state-ai/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
+五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-10-identity/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
 
 运行器还支持两个命令行参数（直接传给 `dotnet bin/HeadlessTests.dll`）：
 
