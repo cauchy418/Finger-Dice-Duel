@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1724_passed-success)
+![tests](https://img.shields.io/badge/regression-1747_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1724 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1747 项。
 
 野蛮人职业拥有25点体力，基础攻防−1/−1；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
@@ -89,7 +89,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
 | 元素反应 | 11 条 |
 | 双将组合 | 532 种无序组合 |
-| 回归测试 | 1724 项通过、0 失败 |
+| 回归测试 | 1747 项通过、0 失败 |
 
 ## 现在的样子
 
@@ -121,3 +121,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 四章关卡与剧情详见[冒险试炼](Docs/Adventure/four-chapter-v3/README.md)。初战使用无特殊技能的重甲战士（攻+2／防+2）；教学结束确认后进入实战，失败可重新指引或直接再次试炼。
 
 德鲁伊现采用独立荒野体力与充能；孢子结社已加入，双德鲁伊初始充能相加、双武僧初始4气（上限6），羊为8点体力。详见[重构说明](Docs/druid-rework-2026-11-05.md)。
+
+最近的聚众赌博与AI对策调整见[规则与实现](Docs/gambler-crowd-gambling.md)。胜率表保留原采样源码和日期，新增改动需在后续重采后评估。

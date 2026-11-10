@@ -26,6 +26,7 @@
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
 | [身份规则与动画更新](identity-and-animation-update.md) | 忠臣扩展接口、动画核对及身份采样验收 |
 | [格挡定义](combat-defense.md) | 格挡、抗性与状态时长的扣减规则 |
+| [聚众赌博](gambler-crowd-gambling.md) | 赌徒新增选择、下一回合强制赌博与边界 |
 | [技能文案](character-skill-copy-draft.md) | 全部技能正文 |
 | [提交与推送约定](../CONTRIBUTING.md) | 文件该放哪、什么该提交、一轮改动怎么组织 |
 
