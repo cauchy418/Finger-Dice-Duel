@@ -62,6 +62,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public static HandEffectType EffectOf(int roll) => Hand.GetEffectType(roll);
 
+        public override void OnOperationResolved(PlayerState owner,Hand actedHand,int before,int targetValue,
+                                                HandEffectType effect,GameManager manager,IPreTurnChoiceSink sink)
+        {
+            if(actedHand.Value==1)manager.OfferCrowdGambling(owner,actedHand);
+        }
+
         public override void OnMatchReset(PlayerState owner, GameManager manager)
         {
             // 强制赌博状态属于"跨回合"的，但**新开一局必须清零**

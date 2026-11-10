@@ -141,7 +141,7 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.GamblerId, "Gambler", Alignment.ChaoticNeutral,
                 shortSkill: "掷1d9代替运算，见点后可失去1d5生命重掷。",
-                playGuide: "先选自己的手再开赌。首掷出来后决定是否重掷。",
+                playGuide: "先选自己的手再开赌。首掷出来后决定是否重掷。打出1后可邀请一名角色下回合赌博。",
                 counter: "正常运算后下一次必须赌博。低血重掷可能阵亡。",
                 interactions: new string[0]);
 

@@ -19,7 +19,7 @@
                 case HandEffect.SchoolOfAbjurationResistanceTarget: skill="法术抗性"; action="选择存活角色，然后选择抗性类型。"; break;
                 case HandEffect.SchoolOfAbjurationResistanceType: skill="法术抗性"; action="选择物理整组或火焰、寒冷、闪电、雷鸣、强酸抗性；持续至施法者死亡或再次施法。"; break;
                 case HandEffect.NinjaTechnique:skill="影分身";action="可消耗1气，基础伤害减半、攻击两段。";break;
-                case HandEffect.TaichiKiBoost:skill="借力打力";action="可消耗1气强化本段太极，或保留气。";break;
+                case HandEffect.TaichiKiBoost:skill="阴阳相生";action="可消耗1气强化本段太极，或保留气。";break;
                 case HandEffect.FourElementsDefense:skill="四象法门";action="可消耗1气获得本次元素抗性，或不发动。";break;
                 case HandEffect.OpenHandTechnique: skill="散打技巧／渗透劲"; action="消耗1气附倒伏／震慑，或3气打入暗劲；可不发动。"; break;
                 case HandEffect.FourElementsTechnique: skill="四象门徒"; action="选择本次元素或保留气点。"; break;

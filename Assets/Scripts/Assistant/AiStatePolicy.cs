@@ -69,6 +69,7 @@ namespace FingerDiceDuel.Assistant
             State(StatusEffect.WarBlessing,16,0,6,0,-6);
             State(StatusEffect.BlessedHealing,12,0,6,0,-6);
             State(StatusEffect.KnowledgeBlessing,18,0,4,0,-4);
+            Effect("crowd_gambling",(p,g)=>g?.HasCrowdGambling(p)==true);
             Effect("bladesong",(p,g)=>CharacterBehaviors.FirstImplementer<IBladesong>(p)?.Singing==true,12,8,10);
             Effect("drunken",(p,g)=>MonkRules.DrunkenOf(p)!=null,16,0,0,6);
             Effect("polymorph",(p,g)=>p.IsPolymorphed,0,16,18,0,18);

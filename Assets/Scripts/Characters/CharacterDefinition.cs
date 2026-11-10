@@ -245,7 +245,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition Gambler { get; } = new CharacterDefinition(
             GamblerId, "游荡者·赌徒", SpecialLogicType.Gambler,
             attackBonus: 0, defenseBonus: 0,
-            description: "掷1d9代替运算。得知首掷后可失去1d5生命重掷一次。正常运算后，下次必须赌博。");
+            description: "掷1d9代替运算。得知首掷后可失去1d5生命重掷一次。正常运算后，下次必须赌博。打出1可令一名角色下个自身回合必须赌博。");
 
         /// <summary>
         /// 圣武士·王冠之誓：攻 0 / 防 −1，攻击距离 1。
@@ -267,7 +267,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition WayOfTheTaiChi { get; } = new CharacterDefinition(
             WayOfTheTaiChiId, "武僧·太极宗", SpecialLogicType.WayOfTheTaiChi,
             attackBonus: 0, defenseBonus: 0,
-            description: "气初始2、上限6。5改为太极；受到攻击可把太极5变0，受一半、反弹一半。借力打力可耗1气选择免伤或全额反弹。0被别人触碰先变1。");
+            description: "气初始2、上限6。5改为太极；受到攻击可把太极5变0，受一半、反弹一半。阴阳相生可耗1气选择免伤或全额反弹。0被别人触碰先变1。");
 
         /// <summary>巨人道途：低体力时改写5/9；回合开始可发动元素战刃。</summary>
         public static CharacterDefinition PathOfTheGiant { get; } = new CharacterDefinition(

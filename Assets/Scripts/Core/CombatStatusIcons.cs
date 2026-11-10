@@ -16,6 +16,8 @@ namespace FingerDiceDuel.Core
         public static List<CombatStatusIcon> For(PlayerState player, GameManager game=null)
         {
             var result=new List<CombatStatusIcon>();if(player==null) return result;
+            if(game?.HasCrowdGambling(player)==true)result.Add(new CombatStatusIcon("Subclasses/rogue_gambler",
+                "聚众赌博 · 下个自己的回合必须以1d9代替正常运算；跳过或不能行动也到期，不叠加。额外纯运算不受影响。","1"));
             foreach(var beast in CharacterBehaviors.Implementers<FingerDiceDuel.Characters.SpecialLogics.PathOfTheBeastLogic>(player))
                 if(beast.BeastSouls>0)result.Add(new CombatStatusIcon("Subclasses/barbarian_path_of_the_beast","兽性之魂 · "+beast.BeastSouls+"；回合末达到较小攻防值时全部消耗。",beast.BeastSouls.ToString(),value:beast.BeastSouls));
             if(player.SporeLife>0)result.Add(new CombatStatusIcon("Effects/spore_life","孢子生命 · 剩余"+player.SporeLife+"；先于虚假生命吸收伤害，溢出继续结算。",player.SporeLife.ToString(),value:player.SporeLife));

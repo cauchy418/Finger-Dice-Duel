@@ -34,10 +34,10 @@ namespace FingerDiceDuel.Core
             list["战斗激励"]=new SecondarySkillProfile("战斗激励",SecondarySkillStyle.Music,"Professions/bard",2,"");
             list["快手"]=new SecondarySkillProfile("快手",SecondarySkillStyle.Steal,"Hands/hand_right_2",2,"");
             list["死亡突袭"]=new SecondarySkillProfile("死亡突袭",SecondarySkillStyle.Strike,"weapon_sword",2,"shadow");
-            list["法师之手"]=new SecondarySkillProfile("法师之手",SecondarySkillStyle.Hand,"spectral_hand",2,"");
-            list["诡术打击"]=new SecondarySkillProfile("诡术打击",SecondarySkillStyle.Cards,"Subclasses/rogue_magician",2,"");
+            list["魔术之手"]=new SecondarySkillProfile("魔术之手",SecondarySkillStyle.Hand,"spectral_hand",2,"");
+            list["魔术扑克"]=new SecondarySkillProfile("魔术扑克",SecondarySkillStyle.Cards,"Subclasses/rogue_magician",2,"");
             list["太极八卦"]=new SecondarySkillProfile("太极八卦",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
-            list["借力打力"]=new SecondarySkillProfile("借力打力",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
+            list["阴阳相生"]=new SecondarySkillProfile("阴阳相生",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
             list["阴阳流转"]=new SecondarySkillProfile("阴阳流转",SecondarySkillStyle.TaichiBoost,"Overlay/taichi",2,"");
             list["守望束缚"]=new SecondarySkillProfile("守望束缚",SecondarySkillStyle.Tether,"Overlay/locked",2,"chain");
             list["狂怒"]=new SecondarySkillProfile("狂怒",SecondarySkillStyle.Rage,"fx_fire",2,"");
@@ -48,6 +48,7 @@ namespace FingerDiceDuel.Core
             list["野兽形态"]=new SecondarySkillProfile("野兽形态",SecondarySkillStyle.Growth,"Subclasses/barbarian_path_of_the_beast",3,"claw");
             list["命运赌博"]=new SecondarySkillProfile("命运赌博",SecondarySkillStyle.Dice,"fate_die",2,"");
             list["赌徒之运"]=new SecondarySkillProfile("赌徒之运",SecondarySkillStyle.Dice,"fate_die",2,"forced");
+            list["聚众赌博"]=new SecondarySkillProfile("聚众赌博",SecondarySkillStyle.Dice,"fate_die",2,"forced");
             list["战术眼光"]=new SecondarySkillProfile("战术眼光",SecondarySkillStyle.Measure,"Professions/fighter",3,"");
             list["黎明曙光"]=new SecondarySkillProfile("黎明曙光",SecondarySkillStyle.Sun,"fx_radiant",2,"dawn");
             list["守御闪光"]=new SecondarySkillProfile("守御闪光",SecondarySkillStyle.Sun,"Status/holy_light",2,"brand");

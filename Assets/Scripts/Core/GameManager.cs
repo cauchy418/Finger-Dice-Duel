@@ -936,6 +936,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         private void AdvanceRoundAfter(PlayerState actor)
         {
+            ExpireCrowdGambling(actor);
             PlayerState next = NextPlayerAfter(actor);
             // 以名单索引是否绕回判断，避免首位被回合开始状态击杀时误算完成整轮。
             int actorIndex = ActionOrder.IndexOf(actor);
@@ -1299,6 +1300,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void ResetMatch()
         {
+            _crowdGambling.Clear();
             _pendingSpecters.Clear();
             foreach(var p in _players)p.RestoreDeadSeat();
             ClearPreparedOperationAddend();
@@ -2328,23 +2330,23 @@ namespace FingerDiceDuel.Core
         /// </summary>
         /// <exception cref="InvalidOperationException">不是游荡者·赌徒、或比赛已结束时抛出。</exception>
         public TurnResult ExecuteGamble(PlayerState actor, Hand actedHand, Random rng,
-                                        Hand targetHand = null)
+                                        Hand targetHand = null,bool extraAction=false)
         {
             if (rng == null) rng = new Random();
-            ValidateGamble(actor, actedHand);
+            ValidateGamble(actor, actedHand,extraAction);
             int roll = GamblerLogic.Roll(rng);
-            if (!WillSuppressOperationEffects(actor)
+            if (actor.Character is GamblerLogic && !WillSuppressOperationEffects(actor)
                 && SkillChoicePolicy.Choose(GamblerLogic.RerollChoice, GamblerLogic.RerollOptions(roll), actor, null, this) != 0)
             {
                 roll = PayForGambleReroll(actor, roll, rng);
                 if (!actor.IsAlive)
                 {
-                    if (!IsGameOver) GiveUpTurn();
+                    if (!IsGameOver && !extraAction) GiveUpTurn();
                     return new TurnResult { Actor = actor, ActedHand = actedHand, WasGamble = true,
                         GambleRoll = roll, GameOver = IsGameOver, Winner = Winner };
                 }
             }
-            return ExecuteGambleWithRoll(actor, actedHand, roll, targetHand);
+            return ExecuteGambleWithRoll(actor, actedHand, roll, targetHand,extraAction);
         }
 
         public int PayForGambleReroll(PlayerState actor, int first, Random rng)
@@ -2382,20 +2384,20 @@ namespace FingerDiceDuel.Core
                                                 int roll, Hand targetHand = null,
                                                 bool extraAction = false)
         {
-            ValidateGamble(actor, actedHand);
+            ValidateGamble(actor, actedHand, extraAction);
             RecordSkillVisual(actor,"命运赌博",actor,new SkillVisualData(source:actedHand,value:roll));
             try{return ResolveTurn(actor, actedHand, targetValue: 0, targetHand,
                                gambleResult: roll, extraAction: extraAction);}
             finally{WarBlessingNineAttack=null;}
         }
 
-        private void ValidateGamble(PlayerState actor, Hand actedHand)
+        private void ValidateGamble(PlayerState actor, Hand actedHand,bool extraAction=false)
         {
             if (IsGameOver)
                 throw new InvalidOperationException("非法赌博：比赛已结束。");
             if (actor == null)
                 throw new InvalidOperationException("非法赌博：行动方为空。");
-            if (!(actor.Character is GamblerLogic))
+            if (!(actor.Character is GamblerLogic) && !RequiresCrowdGambling(actor,extraAction))
                 throw new InvalidOperationException("非法赌博：该角色不是游荡者·赌徒。");
             if (actedHand == null || !actor.Owns(actedHand))
                 throw new InvalidOperationException("非法赌博：运算源必须是自己的手。");
@@ -2512,6 +2514,8 @@ namespace FingerDiceDuel.Core
         private TurnResult ResolveTurnCore(PlayerState actor, Hand actedHand, int targetValue,
                                            Hand targetHand, int gambleResult, bool extraAction)
         {
+            if(gambleResult==0 && RequiresCrowdGambling(actor,extraAction))
+                throw new InvalidOperationException("聚众赌博：本回合必须赌博，不能正常运算。");
             var result = new TurnResult
             {
                 Actor = actor,

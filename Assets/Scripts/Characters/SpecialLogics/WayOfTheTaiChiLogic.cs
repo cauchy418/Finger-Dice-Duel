@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     using System.Collections.Generic;
 
@@ -197,7 +197,7 @@
             totalReduced = boost==1?segmentDamage:reflect;
             totalReflect = boost==2?segmentDamage:reflect;
             stages = stagesUsed + 1;
-            context.Manager?.NoteSkill(owner, boost==0?"太极八卦":"借力打力", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {totalReduced}、反弹 {totalReflect}",context.Attacker,new SkillVisualData(source:taichi,value:totalReflect,previous:totalReduced,variant:boost==1?"guard":"reflect"));
+            context.Manager?.NoteSkill(owner, boost==0?"太极八卦":"阴阳相生", $"{CombatText.HandName(owner, taichi)} 5→0，减伤 {totalReduced}、反弹 {totalReflect}",context.Attacker,new SkillVisualData(source:taichi,value:totalReflect,previous:totalReduced,variant:boost==1?"guard":"reflect"));
 
             // taken 不用回传：外层用"perHit - 累计减免"自己算。
             _ = taken;
@@ -286,13 +286,13 @@
 
         private static List<SkillChoiceOption> BoostOptions()=>new List<SkillChoiceOption>{
             new SkillChoiceOption(0,"太极八卦 · 不耗气","Effects/ki"),
-            new SkillChoiceOption(1,"借力打力 · 1气免伤、反弹一半","Effects/ki"),
-            new SkillChoiceOption(2,"借力打力 · 1气受半伤、反弹全部","Effects/ki")};
+            new SkillChoiceOption(1,"阴阳相生·阴，防","Effects/ki","消耗1气：本段免伤，仍反弹一半伤害。"),
+            new SkillChoiceOption(2,"阴阳相生·阳，攻","Effects/ki","消耗1气：本段承受一半伤害，反弹全部伤害。")};
         public override void CollectFollowUpChoices(ChoiceRequest answered,Hand answer,IList<ChoiceRequest> requests)
         {
             if(answered.Effect!=HandEffect.WayOfTheTaiChiTaichi||answer==null||Ki<1)return;
             int variant=answered.Variant;
-            requests.Add(new ChoiceRequest(HandEffect.TaichiKiBoost,"【借力打力】本段太极是否消耗1气强化？",new Hand[0],decider:MonkOwner,variant:variant,
+            requests.Add(new ChoiceRequest(HandEffect.TaichiKiBoost,"【阴阳相生】本段太极是否消耗1气强化？",new Hand[0],decider:MonkOwner,variant:variant,
                 options:BoostOptions(),optionKey:MonkRules.Taichi,applyOption:v=>_boosts[variant]=v,relatedTarget:_incomingAttacker));
         }
         /// <summary>武僧·太极宗当前处于太极形态的**全部**手（最多两只）。</summary>

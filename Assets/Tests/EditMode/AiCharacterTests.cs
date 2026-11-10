@@ -135,26 +135,35 @@ namespace FingerDiceDuel.Tests
             PlayerState wolf = game.PlayerA;
             PlayerState blank = game.PlayerB;
 
+            // Supply a real sum-seven opportunity. A rival AI can deliberately withhold
+            // every useful operand, so an arbitrary duel cannot guarantee this skill fires.
+            TestSetup.SetHand(wolf.LeftHand, 1);
+            TestSetup.SetHand(wolf.RightHand, 2);
+            TestSetup.SetHand(blank.LeftHand, 4);
+            TestSetup.SetHand(blank.RightHand, 3);
+            TestSetup.SetHealth(wolf, 10);
             int attackBefore = wolf.Character.AttackBonus;
+            int defenseBefore = wolf.Character.DefenseBonus;
             int healthBefore = wolf.Health;
-
-            // 反复走几个回合，至少应触发一次成长
-            for (int i = 0; i < 20 && game.Winner == null; i++)
-            {
-                PlayerState actor = game.CurrentPlayer;
-                LegalMove move = ai.ChooseMove(game, actor);
-                if (move.ActedHand == null) break;
-                game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
-                game.ResolveStatusTurnEnd(actor);
-            }
-
+            int expectedHealing = (wolf.MaximumHealth - healthBefore) / 2;
             var logic = wolf.Character as PathOfTheBeastLogic;
             Assert.NotNull(logic);
-            Assert.True(logic.TriggerCount > 0,
-                "野蛮人·野兽道途 AI 在 20 个回合内应至少触发一次'和 7'。");
-            Assert.True(wolf.Character.AttackBonus > attackBefore,
-                "触发后攻防应永久成长。");
-            _ = healthBefore;
+
+            LegalMove move = ai.ChooseMove(game, wolf);
+            Assert.NotNull(move.ActedHand);
+            game.ExecuteTurn(wolf, move.ActedHand, move.TargetHand);
+            Assert.AreEqual(PathOfTheBeastLogic.TriggerSum, wolf.LeftHand.Value + wolf.RightHand.Value,
+                "AI must select an available sum-seven operation.");
+            Assert.AreEqual(1, logic.BeastSouls, "Resolving the operation must actually grant a soul.");
+            Assert.AreEqual(0, logic.TriggerCount, "Growth belongs to the turn-end hook.");
+            game.ResolveStatusTurnEnd(wolf);
+
+            Assert.AreEqual(1, logic.TriggerCount, "The actual turn end must trigger growth.");
+            Assert.AreEqual(0, logic.BeastSouls, "Growth must consume the soul.");
+            Assert.AreEqual(attackBefore + 1, wolf.Character.AttackBonus);
+            Assert.AreEqual(defenseBefore + 1, wolf.Character.DefenseBonus);
+            Assert.AreEqual(healthBefore + expectedHealing, wolf.Health);
+
         }
 
         // ============================================================

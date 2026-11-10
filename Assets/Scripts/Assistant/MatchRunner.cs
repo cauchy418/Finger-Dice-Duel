@@ -62,6 +62,7 @@ namespace FingerDiceDuel.Assistant
 
         /// <summary>是否在 History 中保留每回合明细（批量模拟时可关闭以省内存）。</summary>
         public bool RecordHistory { get; set; } = true;
+        public Random GambleRng { get; set; } = new Random(0);
 
         /// <summary>每回合结束后回调，便于观察/打日志。</summary>
         public Action<TurnResult> OnTurnResolved { get; set; }
@@ -148,7 +149,9 @@ namespace FingerDiceDuel.Assistant
                     break;
                 }
 
-                TurnResult turn = game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
+                TurnResult turn = game.MustUseGambling(actor)
+                    ? game.ExecuteGamble(actor,move.ActedHand,GambleRng,move.TargetHand)
+                    : game.ExecuteTurn(actor, move.ActedHand, move.TargetHand);
                 result.Turns++;
 
                 if (RecordHistory) result.History.Add(turn);

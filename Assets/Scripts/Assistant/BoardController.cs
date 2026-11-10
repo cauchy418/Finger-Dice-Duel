@@ -488,7 +488,7 @@ namespace FingerDiceDuel.Assistant
                && (Phase == BoardPhase.ChoosingGamble
                    || Phase == BoardPhase.ChoosingTargetHand)
                && SelectedHand != null
-               && ActivePlayer?.Character is GamblerLogic
+               && (ActivePlayer?.Character is GamblerLogic || _game.RequiresCrowdGambling(ActivePlayer,IsExtraAction))
                // 强制赌博时"选目标手"这条路本来就不该存在，所以两种相位都要放行；
                // 非强制时两种相位也都放行。此处不再额外区分。
                ;
@@ -546,6 +546,11 @@ namespace FingerDiceDuel.Assistant
             }
 
             var actor = ActivePlayer;
+            if(!(actor.Character is GamblerLogic))
+            {
+                FinishGambleChoice();
+                return true;
+            }
             int first = _pendingGambleRoll;
             var options = GamblerLogic.RerollOptions(first);
             var request = new WizardChoice(actor, $"恶之强运 · 已掷出 {first}，是否重掷？", options, value =>
@@ -1845,11 +1850,10 @@ namespace FingerDiceDuel.Assistant
 
             if (hand != null
                 && stillChoosingOperation
-                && ActivePlayer?.Character is GamblerLogic
-                && ActivePlayer.MustGamble
+                && _game.MustUseGambling(ActivePlayer,IsExtraAction)
                 && !ActivePlayer.Owns(hand))
             {
-                Hint = $"{ActivePlayer.Name}（游荡者·赌徒）上一回合做了正常运算，" +
+                Hint = $"{ActivePlayer.Name}受到强制赌博要求，" +
                        $"本回合必须赌博 —— 不能选别人的手，请点自己的一只手后按「开赌」。";
 
                 return false;
@@ -1907,9 +1911,8 @@ namespace FingerDiceDuel.Assistant
                     //   的那些回合看起来也像被强制（玩家实测报告：
                     //   "上一回合已经赌过了但仍被强制赌博"）。
                     //   MustGamble 只改了提示文案，没给玩家另一条路 —— 那是设计缺口。
-                    if (ActivePlayer?.Character is GamblerLogic
-                        && !_allowNormalOperationForTest
-                        && ActivePlayer.MustGamble)
+                    if (!_allowNormalOperationForTest
+                        && _game.MustUseGambling(ActivePlayer,IsExtraAction))
                     {
                         // 诊断：游荡者·赌徒的强制状态与"上一次结算是不是赌博"一起打出来。
                         // 玩家报"上一回合已经赌过了但仍被强制赌博"——
@@ -3543,6 +3546,8 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public bool MakeAutomaticMove()
         {
+            if(!_game.IsGameOver && Phase==BoardPhase.ChoosingGamble && GetAi(ActivePlayer)!=null)
+                return Gamble();
             if (_game.IsGameOver || Phase != BoardPhase.ChoosingAttackerHand) return false;
             IMoveSelector ai = GetAi(ActivePlayer);
             if (ai == null) return false;
@@ -3843,6 +3848,7 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool ShouldAiGamble(PlayerState actor)
         {
+            if (_game.RequiresCrowdGambling(actor,IsExtraAction)) return true;
             if (!(actor?.Character is GamblerLogic)) return false;
             if (actor.MustGamble) return true;      // 强制时没得选
 
@@ -3922,6 +3928,9 @@ namespace FingerDiceDuel.Assistant
         public bool ResolvePendingAiChoice()
         {
             if (_game.IsGameOver) return false;
+            // Skill choices can resume after hand selection. Both UI and sampling dispatchers
+            // must be able to advance this staged operation without selecting a second hand.
+            if(Phase==BoardPhase.ChoosingGamble && GetAi(ActivePlayer)!=null)return Gamble();
             if(Phase==BoardPhase.ChoosingTargetPlayer && GetAi(ActivePlayer)!=null)
             {
                 if(!BeginTargetPlayerChoice()) return GiveUpAttack();

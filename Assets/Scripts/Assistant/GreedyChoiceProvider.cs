@@ -452,8 +452,8 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         public GameManager Game { get; set; }
 
-        /// <summary>是否发动战士·破阵者破阵强袭。默认放弃（避免自作自受地破自己的盾）。</summary>
-        public bool UseChainBreak { get; set; }
+        /// <summary>是否发动战士·破阵者破阵强袭。默认启用，目标策略仅选择敌方盾牌。</summary>
+        public bool UseChainBreak { get; set; } = true;
 
         /// <summary>
         /// 低于该伤害就不发动战士·剑士的追加攻击。
@@ -1142,7 +1142,7 @@ namespace FingerDiceDuel.Assistant
             if (game == null || actor == null) return 0;
 
             PlayerState victim = game.OwnerOfHand(move.TargetHand);
-            if (victim == null || !victim.IsAlive || victim.MustGamble && victim.Character is GamblerLogic) return 0;
+            if (victim == null || !victim.IsAlive || game.HasCrowdGambling(victim) || game.MustUseGambling(victim)) return 0;
 
             // 借用队友数字也可攻击敌人，按实际预期攻击对象判断。
             if (ReferenceEquals(victim, actor) || game.IsTeammate(actor, victim)) return 0;

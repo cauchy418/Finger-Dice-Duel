@@ -277,8 +277,14 @@ namespace FingerDiceDuel.Assistant
             var hand = move.ActedHand;
             foreach (var foe in game.Players)
             {
-                if (!foe.IsAlive || foe == actor || game.IsKnownAlly(actor, foe) || !StatusRules.CanAct(foe)) continue;
+                if (!foe.IsAlive || foe == actor || game.IsKnownAlly(actor, foe) || !StatusRules.CanAct(foe)
+                    || game.HasCrowdGambling(foe) || game.MustUseGambling(foe)) continue;
                 if (hand.IsConcealed || hand.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(foe, hand, game)) continue;
+                if (IsAuditedCounterplayRole(foe) && !foe.IsWildShaped && !foe.IsPolymorphed)
+                {
+                    risk += AuditedOpportunityDelta(move, actor, result, foe, game);
+                    continue;
+                }
                 bool wild = foe.IsWildShaped && !foe.IsPolymorphed;
                 bool tactician = game.CanChooseTacticianOperation(foe);
                 bool champion = CharacterBehaviors.FirstImplementer<ChampionLogic>(foe) != null;

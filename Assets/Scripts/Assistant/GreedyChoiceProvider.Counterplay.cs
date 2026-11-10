@@ -25,7 +25,7 @@ namespace FingerDiceDuel.Assistant
             foreach(var foe in game.Players)
             {
                 if(foe==actor||!foe.IsAlive||game.IsKnownAlly(actor,foe)||!StatusRules.CanAct(foe)
-                    || foe.MustGamble && foe.Character is GamblerLogic)continue;
+                    || game.HasCrowdGambling(foe) || game.MustUseGambling(foe))continue;
                 int best=0;
                 int operators=game.CanChooseTacticianOperation(foe)?2:1;
                 foreach(var hand in foe.Hands)
@@ -65,5 +65,60 @@ namespace FingerDiceDuel.Assistant
         }
         public int ProjectedCounterplayScoreForTest(LegalMove move,PlayerState actor,GameManager game)
             =>ProjectedCounterplayScore(move,actor,game);
+
+        // Current sampled high-performing opponents: evaluate their actual arithmetic opportunities,
+        // including setup at full health. This does not alter any role's rules or sampling weights.
+        private static bool IsAuditedCounterplayRole(PlayerState foe)
+            => CharacterBehaviors.FirstImplementer<PathOfTheBeastLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<SwordsmanLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<TheGreatOldOneLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<PathOfTheBerserkerLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<DraconicBloodlineLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<SchoolOfIllusionLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null;
+
+        private static int AuditedOpportunityDelta(LegalMove move, PlayerState actor, int result, PlayerState foe, GameManager game)
+        {
+            if (game.WillSuppressOperationEffects(foe)) return 0;
+            int before = 0, after = 0;
+            foreach (var source in foe.Hands)
+            {
+                if (!source.CanBeOperated) continue;
+                foreach (var operand in actor.Hands)
+                {
+                    if (operand.IsConcealed || operand.IsTargetRestricted || !StatusRules.CanUseHandAsAddend(foe, operand, game)) continue;
+                    int previous = AiStatePolicy.PreviewResult(foe, source.Value, operand.Value);
+                    int projected = AiStatePolicy.PreviewResult(foe, source.Value, ReferenceEquals(operand, move.ActedHand) ? result : operand.Value);
+                    before = Math.Max(before, AuditedOpportunity(foe, actor, source, previous, game));
+                    after = Math.Max(after, AuditedOpportunity(foe, actor, source, projected, game));
+                }
+            }
+            return after - before;
+        }
+
+        private static int AuditedOpportunity(PlayerState foe, PlayerState victim, Hand source, int result, GameManager game)
+        {
+            int other = foe.GetOtherHand(source).Value;
+            int setup = (foe.Character as IAiMoveAdvisor)?.ScoreMoveBonus(new MoveValueContext(source, result, victim.LeftHand, other)) ?? 0;
+            foreach (var combo in ActiveHandValueProfile(foe, game).Combos)
+                if (combo.Matches(result, other)) setup += Math.Min(40, combo.Bonus / 4);
+            int value = Math.Min(60, Math.Max(0, setup));
+            var effect = DivineScoredEffect(foe, result, game);
+            if (effect == HandEffectType.Heal) value += HealingGain(foe, 9) * 3;
+            if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) value += 16;
+            if (!IsAttackEffect(effect) || !game.CanReach(foe, victim) || !StatusRules.CanAttackTarget(foe, victim, game)) return value;
+            int damage = EstimateAttackDamage(foe, victim, result, game, source.Value);
+            value += damage * 5;
+            if (damage > 0)
+            {
+                if (CharacterBehaviors.FirstImplementer<TheGreatOldOneLogic>(foe) != null) value += 12;
+                if (CharacterBehaviors.FirstImplementer<PathOfTheBerserkerLogic>(foe) != null && foe.Health <= 15)
+                    value += HealingGain(foe, damage / 2) * 2;
+                if (CharacterBehaviors.FirstImplementer<DraconicBloodlineLogic>(foe) != null && !victim.HasStatus(StatusEffect.HolyLight)) value += 8;
+                if (CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null && other == 5) value += 16;
+            }
+            return value;
+        }
     }
 }
