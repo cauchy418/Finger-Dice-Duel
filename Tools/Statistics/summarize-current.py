@@ -277,7 +277,10 @@ if full_identity:
 if 'previous_round_comparison' in report:
     previous = report['previous_round_comparison']
     lines += ['', '## 与上一轮相比', '',
-              f'上一轮为{previous["previous_date"]}，{previous["previous_roster_count"]}子职、{previous["previous_legal_duals"]}种双将、{sum(s["games"] for s in previous["previous_totals"].values()):,}局。{previous["caution"]}', '',
+              f'上一轮汇总发布于{previous["previous_date"]}，{previous["previous_roster_count"]}子职、{previous["previous_legal_duals"]}种双将、{sum(s["games"] for s in previous["previous_totals"].values()):,}局。各模式原采样日期及源码见下表。{previous["caution"]}', '',
+              '| 模式 | 原采样日期 | 原源码提交 | 原源码SHA256 |', '|---|---|---|---|',
+              *[f'| {mode} | {p["date"]} | `{p["source_commit"]}` | `{p["source_sha256"]}` |'
+                for mode, p in previous.get('previous_mode_provenance', {}).items()], '',
               '| 角色 | 1v1差（百分点） | 2v2差（百分点） | 双将差（百分点） | 阵营差（百分点） | 随机身份差（百分点） | 偏好身份差（百分点） |',
               '|---|---:|---:|---:|---:|---:|---:|']
     for role in previous['roles']:
@@ -317,7 +320,10 @@ if args.state_ai:
     # The orchestrator captures provenance before sampling, then validates it between modes.
     start = lines.index('```powershell', lines.index('## 复现与证据'))
     lines = lines[:start] + ['```powershell',
-        'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run',
+        (f'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run '
+         f'-Date {args.date} -Directory {out.name}-replay '
+         f'-Baseline "Tools/Statistics/{out.name}/baseline-results.json" '
+         f'-RuntimeVersion {report.get("sampler_runtime_version", "8.0.15")}'),
         '```', '',
         f'{n}子职共检查{n*n*3:,}个合法起手，见[AI审计](ai-audit.tsv)与[测试日志](regression.log)。', '',
         '运行器在首局前保存provenance.json，并在每组前后核对游戏源码、测试源码、无头入口及采样工具SHA-256。指纹变化时拒绝拼接不同版本的数据。source_dirty标识采样时存在未提交改动，source_commit与源码指纹共同标识版本。', '',
@@ -349,8 +355,12 @@ if args.identity_only:
         *[f'| {mode} | {"新采样" if p["status"] == "newly_sampled" else "沿用旧样本，未重测"} | {p["date"]} | `{p["source_commit"]}` |'
           for mode, p in report['mode_provenance'].items()], '',
         '逐模式源码指纹见results.json的mode_provenance；旧数据与日志逐字节保留，来源汇总见baseline-results.json。', '']
-    lines = [line.replace('powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run',
-                         f'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run -Date {args.date} -Directory {out.name} -Baseline <旧轮results.json>')
+    lines = [(f'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run '
+              f'-Date {args.date} -Directory {out.name}-replay -Baseline "Tools/Statistics/{out.name}/baseline-results.json"')
+             if line.startswith('powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run')
+             else line
+             for line in lines]
+    lines = [line
              .replace('--state-ai --refresh-docs', '--identity-only --refresh-docs') for line in lines]
     lines += ['', '本轮运行器仅执行audit、identity、identity-preferred和回归；不会重新执行1v1、2v2、dual、eight。随机身份种子5000000–5001999，偏好身份种子5100000–5100599，与上一轮保持一致。']
     lines += ['', '## 身份整体胜率与直接上一轮比较', '',

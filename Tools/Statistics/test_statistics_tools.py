@@ -111,6 +111,24 @@ class StatisticsToolsTests(unittest.TestCase):
         self.assertTrue(result['roles'][-1]['new_role'])
         self.assertIsNone(result['roles'][-1]['modes']['1v1']['delta_percentage_points'])
 
+    def test_comparison_preserves_mixed_baseline_mode_sources(self):
+        baseline = json.loads(latest_published(ROOT).read_text(encoding='utf-8'))
+        baseline['mode_provenance'] = {
+            mode: {'date': '2026-11-10' if mode.startswith('identity') else '2026-11-09',
+                   'source_commit': 'identity-commit' if mode.startswith('identity') else 'original-commit',
+                   'source_sha256': 'identity-source' if mode.startswith('identity') else 'original-source',
+                   'status': 'newly_sampled' if mode.startswith('identity') else 'carried_forward'}
+            for mode in baseline['totals']
+        }
+        result = comparison(copy.deepcopy(baseline), baseline)
+        for mode, original in baseline['mode_provenance'].items():
+            provenance = result['previous_mode_provenance'][mode]
+            self.assertEqual(original, provenance)
+            self.assertEqual(original['date'], result['roles'][0]['modes'][mode]['previous_date'])
+            self.assertEqual(original['source_sha256'], result['roles'][0]['modes'][mode]['previous_source_sha256'])
+        self.assertEqual('2026-11-09', result['previous_mode_provenance']['1v1']['date'])
+        self.assertEqual('2026-11-10', result['previous_mode_provenance']['identity']['date'])
+
     def test_provenance_rejects_changed_game_source(self):
         manifest = fingerprints(ROOT)
         verify(ROOT, manifest)
@@ -203,6 +221,10 @@ class StatisticsToolsTests(unittest.TestCase):
             self.assertEqual(66964, sum(s['games'] for s in report['totals'].values()))
             self.assertEqual(532, report['legal_duals'])
             self.assertEqual(json.loads(baseline.read_text(encoding='utf-8'))['roster_count'], report['previous_round_comparison']['previous_roster_count'])
+            readme = (out / 'README.md').read_text(encoding='utf-8')
+            self.assertIn('-Date 2026-11-09 -Directory 2026-11-09-state-ai-replay', readme)
+            self.assertIn('-Baseline "Tools/Statistics/2026-11-09-state-ai/baseline-results.json"', readme)
+            self.assertIn('原采样日期', readme)
             result = subprocess.run(command + ['--refresh-docs'], capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertEqual(report, json.loads((out / 'results.json').read_text(encoding='utf-8')))

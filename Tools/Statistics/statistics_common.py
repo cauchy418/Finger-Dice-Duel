@@ -63,6 +63,12 @@ def verify(root, manifest):
 
 def comparison(current, baseline):
     old = {r['id']: r for r in baseline['roles']}
+    previous_modes = {
+        mode: dict(baseline.get('mode_provenance', {}).get(mode, {
+            key: baseline[key] for key in ('date', 'source_commit', 'source_sha256', 'test_source_sha256')
+            if key in baseline
+        })) for mode in baseline['totals']
+    }
     roles = []
     for role in current['roles']:
         prior = old.get(role['id'])
@@ -70,6 +76,8 @@ def comparison(current, baseline):
         for mode, stat in role['modes'].items():
             before = prior['modes'].get(mode) if prior else None
             changes[mode] = {
+                'previous_date': previous_modes.get(mode, {}).get('date'),
+                'previous_source_sha256': previous_modes.get(mode, {}).get('source_sha256'),
                 'previous_games': before['games'] if before else None,
                 'previous_win_percent': before['win_percent'] if before else None,
                 'current_games': stat['games'],
@@ -80,6 +88,7 @@ def comparison(current, baseline):
         roles.append({'id': role['id'], 'name': role['name'], 'new_role': prior is None, 'modes': changes})
     return {'previous_date': baseline['date'], 'previous_source_commit': baseline['source_commit'],
             'previous_source_sha256': baseline['source_sha256'],
+            'previous_mode_provenance': previous_modes,
             'previous_roster_count': baseline['roster_count'], 'previous_legal_duals': baseline['legal_duals'],
             'previous_totals': baseline['totals'], 'roles': roles,
             'removed_roles': sorted(set(old) - {r['id'] for r in current['roles']}),

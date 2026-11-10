@@ -1,7 +1,7 @@
 param(
     [switch]$Run,
-    [string]$Date = '2026-11-09',
-    [string]$Directory = '2026-11-09-state-ai',
+    [string]$Date = '2026-11-10',
+    [string]$Directory = '2026-11-10-ai-activation',
     [string]$Baseline = '',
     [string]$RuntimeVersion = '8.0.15'
 )
