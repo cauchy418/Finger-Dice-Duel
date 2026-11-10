@@ -94,7 +94,7 @@ namespace FingerDiceDuel.Assistant
         {
             board.TutorialInput=_level<20?this:null;
             foreach(var p in Seats)if(!ReferenceEquals(p,_player))
-                board.BindPlayer(p,_level==20?(IMoveSelector)new GreedyChoiceProvider {UseLearnedFocus=true}:new TowerMoves(this),
+                board.BindPlayer(p,_level==20?(IMoveSelector)ProductionAi.Create(_game):new TowerMoves(this),
                     _game.GetChoiceProvider(p) as IPlayerChoiceSink??new SimpleChoiceProvider());
             board.ScriptedRestAllowed = actor => _level!=20 && !ReferenceEquals(actor,_player)
                 && (NextTurn==null || NextTurn.Source<0);

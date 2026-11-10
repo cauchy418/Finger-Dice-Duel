@@ -11,7 +11,7 @@ namespace FingerDiceDuel.Core
         public bool RequiresCrowdGambling(PlayerState player,bool extraAction=false)
             => !extraAction && player!=null && _crowdGambling.TryGetValue(player,out int after) && TurnCount>=after;
         public bool MustUseGambling(PlayerState player,bool extraAction=false)
-            => player!=null && (player.Character is GamblerLogic && player.MustGamble || RequiresCrowdGambling(player,extraAction));
+            => player!=null && (CharacterBehaviors.FirstImplementer<GamblerLogic>(player) != null && player.MustGamble || RequiresCrowdGambling(player,extraAction));
 
         private void ExpireCrowdGambling(PlayerState actor)
         {

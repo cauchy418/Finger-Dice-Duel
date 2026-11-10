@@ -805,7 +805,8 @@ namespace FingerDiceDuel.Core
             }
 
             // ⚠️ 先取走类型（无论命中与否）—— 玩家确认"没命中就作废，要重新放弃一次"。
-            if (Attacker.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
+            if (CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEvocationLogic>(Attacker)
+                is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
                 mage.ConsumeDamageType();
 
             // 使用攻击开始时的免疫快照：临时修正已在整次攻击末消耗，仍须阻止本击的元素状态。

@@ -140,8 +140,8 @@ namespace FingerDiceDuel.Tests
                 PlayerState pA = historicalMechanicsOnly ? HistoricalMechanicsPair("甲",a) : DualGeneralFactory.Create("甲", a.Primary, a.Secondary);
                 PlayerState pB = historicalMechanicsOnly ? HistoricalMechanicsPair("乙",b) : DualGeneralFactory.Create("乙", b.Primary, b.Secondary);
 
-                var choiceA = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
-                var choiceB = new GreedyChoiceProvider {UseChainBreak=true,UseValidatedTuning=true};
+                var choiceA = ProductionAi.Create();
+                var choiceB = ProductionAi.Create();
                 var game=new GameManager(pA,pB,new SimpleChoiceProvider(),new SimpleChoiceProvider());
 
                 // ⚠⚠ **回合上限必须放宽到 300**。

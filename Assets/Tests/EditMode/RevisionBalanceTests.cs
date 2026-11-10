@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Tests
         private static void Row(StreamWriter w,int seed,string first,string second,int winner,int turns)
         {w.WriteLine(seed+","+first+","+second+","+winner+","+turns);if(++_written%1000==0){w.Flush();Console.WriteLine("progress "+_written+" games");}}
         private static int _written;
-        private static GreedyChoiceProvider Ai()=>new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true};
+        private static GreedyChoiceProvider Ai(bool learnedFocus = false)=>ProductionAi.Create(learnedFocus: learnedFocus);
         [Test] public void Revision_all_modes_win_rates()
         {
             string mode=Environment.GetEnvironmentVariable("FDD_REVISION_MODE")??"1v1";
@@ -95,7 +95,7 @@ namespace FingerDiceDuel.Tests
                         picks[i] = mode == "eight" ? pool[i] : preference.Choose(roles[i], pool.GetRange(offset, count), rng);
                         offset += count;
                         players.Add(CharacterFactory.CreatePlayer("P"+i,picks[i]));
-                        sinks.Add(new SimpleChoiceProvider());ais.Add(Ai());
+                        sinks.Add(new SimpleChoiceProvider());ais.Add(Ai(learnedFocus: mode == "eight"));
                     }
                     var game=mode!="eight"?GameManager.CreateIdentityEight(players,sinks,roles):GameManager.CreateEight(players,sinks,teams);
                     foreach(var p in players)TwoVersusTwoHarness.ApplyClassicHands(p,seed+players.IndexOf(p)*31);

@@ -292,7 +292,7 @@ namespace FingerDiceDuel.Tests
                 PlayerState pB = CharacterFactory.CreatePlayer((aFirst?defB:defA).DisplayName,aFirst?defB:defA);
 
                 var game=new GameManager(pA,pB,new SimpleChoiceProvider(),new SimpleChoiceProvider());
-                var ais=new[]{new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true},new GreedyChoiceProvider{UseValidatedTuning=true,UseChainBreak=true}};
+                var ais=new[]{ProductionAi.Create(),ProductionAi.Create()};
                 configureA?.Invoke(ais[aFirst ? 0 : 1]);
 
                 // 1v1 经典：先掷 1d20 决定初始手值（见 PrepareClassicStart）

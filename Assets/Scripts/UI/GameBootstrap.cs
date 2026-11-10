@@ -1245,7 +1245,7 @@ namespace FingerDiceDuel.UI
             {
                 PlayerState p = CharacterFactory.CreatePlayer(_idNames[i], defs[i]);
                 var sink = new SimpleChoiceProvider();
-                var ai = i == _idHumanSeat ? null : new GreedyChoiceProvider();
+                var ai = i == _idHumanSeat ? null : ProductionAi.Create(learnedFocus: false);
                 seated.Add(p);
                 providers.Add(ai != null ? (IChoiceProvider)ai : sink);
                 selectors.Add(ai);
@@ -2848,15 +2848,7 @@ namespace FingerDiceDuel.UI
         {
             if (UseGreedyAI)
             {
-                var ai = new GreedyChoiceProvider
-                {
-                    UseChainBreak = true,   // 连锁目标已按实际队友关系过滤。
-                    UseValidatedTuning = true,
-
-                    // 2v2 集火策略（按角色查表，见 FocusPolicies / Tools/focus-report.txt）：
-                    // 只对实验证明有效的 8 个角色启用 focusSelf；1v1 里天然无副作用。
-                    UseLearnedFocus = true,
-                };
+                var ai = ProductionAi.Create();
 
                 // 难度**只在入门玩法**生效（玩家要求：经典保持不变）。
                 // 经典模式走贪心 AI 的默认行为（不抖动 = 始终最优）。

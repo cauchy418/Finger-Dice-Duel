@@ -24,7 +24,7 @@ namespace FingerDiceDuel.Assistant
         protected override ScriptedMoveSelector CreateOpeningScript() => new ScriptedMoveSelector();
         public override void Bind(BoardController board)
         {
-            board.BindPlayer(_soldier, new GreedyChoiceProvider { UseLearnedFocus = true },
+            board.BindPlayer(_soldier, ProductionAi.Create(_game),
                 _game.ChoiceProviderB as IPlayerChoiceSink ?? new SimpleChoiceProvider());
             board.ScriptedRestAllowed = null;
         }

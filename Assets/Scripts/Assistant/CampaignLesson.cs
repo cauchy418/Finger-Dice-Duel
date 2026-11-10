@@ -153,7 +153,7 @@ namespace FingerDiceDuel.Assistant
         public void Refit(PlayerState owner,int heal=16)
         {owner.ClearNegativeStatuses();_game.NoteSkill(owner,"训练整备","净化负面效果",owner);CampaignNpcLogic.Heal(_game,owner,owner,heal,"训练整备");}
         public static GreedyChoiceProvider NewAi(GameManager game)
-        {var ai=new GreedyChoiceProvider{Game=game,UseLearnedFocus=true};ai.ApplyDifficulty(AiDifficulty.Hard);return ai;}
+        {var ai=ProductionAi.Create(game);ai.ApplyDifficulty(AiDifficulty.Hard);return ai;}
         private bool ReadyOperation
         {
             get

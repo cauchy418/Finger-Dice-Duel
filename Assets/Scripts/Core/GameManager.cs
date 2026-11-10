@@ -1238,6 +1238,8 @@ namespace FingerDiceDuel.Core
         /// 由 <see cref="Assistant.BoardController"/> 注入。
         /// </summary>
         public System.Func<PlayerState, HandEffect, int, Hand> AnsweredLookupFor { get; set; }
+        /// <summary>Distinguishes an explicit decline from a choice that has not been asked.</summary>
+        public System.Func<PlayerState, HandEffect, int, bool> HasAnsweredChoiceFor { get; set; }
 
         /// <summary>
         /// 查询"**是否问过**某玩家是否取消攻击"（由 <see cref="Assistant.BoardController"/> 注入）。
@@ -1609,7 +1611,7 @@ namespace FingerDiceDuel.Core
         {
             if (actor?.Character == null) return;
 
-            var mage = actor.Character as IMageState;
+            var mage = CharacterBehaviors.FirstImplementer<IMageState>(actor);
             if (mage == null) return;
 
             // ⚠️⚠️ **"放弃攻击"的伤害抑制必须在所有提前 return 之前判。**
@@ -1632,6 +1634,10 @@ namespace FingerDiceDuel.Core
 
             // 已经有待用类型 -> 不用再问
             if (mage.HasPendingType) return;
+
+            // The controller has already applied both acceptance and decline. Do not
+            // roll the AI policy again while resolving the same operation.
+            if (HasAnsweredChoiceFor?.Invoke(actor, HandEffect.SchoolOfEvocationAbandonAttack, 0) == true) return;
 
             if (!(GetChoiceProvider(actor) is IDamageTypeChoiceSink sink)) return;
 
@@ -1700,7 +1706,7 @@ namespace FingerDiceDuel.Core
                 {
                     // 到这里"要不要放弃"已经有答案了（它在 requests 里排在前面）
                     if (sink.WantsToAbandonAttack
-                        || (actor.Character as IMageState)?.WantsToAbandonThisTurn == true)
+                        || mage.WantsToAbandonThisTurn)
                     {
                         provider.ChooseHandFor(requests[i], actor);
                     }
@@ -1835,7 +1841,7 @@ namespace FingerDiceDuel.Core
         public bool CanStealOn(PlayerState thief)
         {
             if (thief == null || IsGameOver) return false;
-            if (!(thief.Character is ThiefLogic)) return false;
+            if (CharacterBehaviors.FirstImplementer<ThiefLogic>(thief) == null) return false;
 
             // ⚠️ 判据：**这个人上一次自己的行动**是不是偷窃。
             //
@@ -1869,7 +1875,7 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法偷窃：比赛已结束。");
             if (actor == null)
                 throw new InvalidOperationException("非法偷窃：行动方为空。");
-            if (!(actor.Character is ThiefLogic))
+            if (CharacterBehaviors.FirstImplementer<ThiefLogic>(actor) == null)
                 throw new InvalidOperationException("非法偷窃：该角色不是游荡者·盗贼。");
             if (myHand == null || !actor.Owns(myHand))
                 throw new InvalidOperationException("非法偷窃：必须用自己的一只手。");
@@ -2296,7 +2302,7 @@ namespace FingerDiceDuel.Core
                                           result?.ResultValue ?? 0);
             StatusEffect status = applier.StatusToApplyOnHit(probe);
 
-            if (actor.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mage)
+            if (CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor) is SchoolOfEvocationLogic mage)
                 mage.ConsumeDamageType();
 
             if (status == StatusEffect.None) return;
@@ -2335,7 +2341,7 @@ namespace FingerDiceDuel.Core
             if (rng == null) rng = new Random();
             ValidateGamble(actor, actedHand,extraAction);
             int roll = GamblerLogic.Roll(rng);
-            if (actor.Character is GamblerLogic && !WillSuppressOperationEffects(actor)
+            if (CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) != null && !WillSuppressOperationEffects(actor)
                 && SkillChoicePolicy.Choose(GamblerLogic.RerollChoice, GamblerLogic.RerollOptions(roll), actor, null, this) != 0)
             {
                 roll = PayForGambleReroll(actor, roll, rng);
@@ -2351,7 +2357,7 @@ namespace FingerDiceDuel.Core
 
         public int PayForGambleReroll(PlayerState actor, int first, Random rng)
         {
-            if (actor?.IsAlive != true || IsGameOver || !(actor.Character is GamblerLogic)) return first;
+            if (actor?.IsAlive != true || IsGameOver || CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) == null) return first;
             int cost = rng.Next(1, GamblerLogic.RerollHealthDie + 1);
             int before = actor.Health;
             var visualBefore=CaptureVisualFrame();
@@ -2397,7 +2403,7 @@ namespace FingerDiceDuel.Core
                 throw new InvalidOperationException("非法赌博：比赛已结束。");
             if (actor == null)
                 throw new InvalidOperationException("非法赌博：行动方为空。");
-            if (!(actor.Character is GamblerLogic) && !RequiresCrowdGambling(actor,extraAction))
+            if (CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) == null && !RequiresCrowdGambling(actor,extraAction))
                 throw new InvalidOperationException("非法赌博：该角色不是游荡者·赌徒。");
             if (actedHand == null || !actor.Owns(actedHand))
                 throw new InvalidOperationException("非法赌博：运算源必须是自己的手。");
@@ -2698,7 +2704,7 @@ namespace FingerDiceDuel.Core
             //    结算完再放回去（类型本来就是跨回合的，这样做语义一致）。
             DamageType unspent = DamageType.None;
 
-            if (actor?.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mageForStash
+            if (CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor) is SchoolOfEvocationLogic mageForStash
                 && mageForStash.WantsToAbandonThisTurn)
             {
                 unspent = mageForStash.ConsumeDamageType();
@@ -3024,7 +3030,7 @@ namespace FingerDiceDuel.Core
             //    玩家确认："放弃这次攻击，为下一次攻击指定伤害类型" ——
             //    所以类型必须跨过这次结算、留在法师·塑能学派身上等下一次攻击。
             if (unspent != DamageType.None
-                && actor?.Character is Characters.SpecialLogics.SchoolOfEvocationLogic mageRestore)
+                && CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor) is SchoolOfEvocationLogic mageRestore)
             {
                 mageRestore.SetPendingDamageType(unspent);
                 RecordSkillVisual(actor,"法术塑形",actor,new SkillVisualData(source:actedHand,element:AttackDamageTypes.FromDamageType(unspent),variant:"prepare"));
@@ -3449,8 +3455,8 @@ namespace FingerDiceDuel.Core
             PrepareRestraint(CurrentPlayer);
             SuppressAttackDamage = false;
 
-            if (CurrentPlayer?.Character
-                is Characters.SpecialLogics.SchoolOfEvocationLogic schoolOfEvocation)
+            if (CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(CurrentPlayer)
+                is SchoolOfEvocationLogic schoolOfEvocation)
             {
                 schoolOfEvocation.WantsToAbandonThisTurn = false;
             }
@@ -3532,7 +3538,7 @@ namespace FingerDiceDuel.Core
             if (owner?.Character == null) return true;
 
             // ⚠️ 武僧·太极宗的 5 是「太极」，不是盾。
-            if (owner.Character is WayOfTheTaiChiLogic) return false;
+            if (CharacterBehaviors.FirstImplementer<WayOfTheTaiChiLogic>(owner) != null) return false;
 
             if (!(CharacterBehaviors.EffectRewriterFor(owner, hand?.Value ?? 5)
                   is IHandEffectRewriter rewriter))

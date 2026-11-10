@@ -26,7 +26,7 @@ namespace FingerDiceDuel.Core
             if (value != 0) return false;
             var owner = OwnerOfHand(addend);
             return owner != null && !ReferenceEquals(owner, actor)
-                && owner.Character is WayOfTheTaiChiLogic;
+                && CharacterBehaviors.FirstImplementer<WayOfTheTaiChiLogic>(owner) != null;
         }
 
         private int OperationSum(PlayerState actor, Hand addend, int sourceValue, int addendValue,

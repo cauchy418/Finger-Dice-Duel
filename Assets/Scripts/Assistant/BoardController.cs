@@ -258,6 +258,8 @@ namespace FingerDiceDuel.Assistant
             // 带**玩家参数**的版本：邪术师·至高妖精是场上的第三方，
             // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectTheArchfeyCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
+            _game.HasAnsweredChoiceFor = (player, effect, variant) => ReferenceEquals(player, ActivePlayer)
+                && _answeredThisTurn.ContainsKey(AnswerKey(effect, variant));
             _game.DeferWizardChoice = QueueWizardChoice;
             _game.DeferWizardAttack = QueueWizardAttack;
             _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
@@ -488,7 +490,7 @@ namespace FingerDiceDuel.Assistant
                && (Phase == BoardPhase.ChoosingGamble
                    || Phase == BoardPhase.ChoosingTargetHand)
                && SelectedHand != null
-               && (ActivePlayer?.Character is GamblerLogic || _game.RequiresCrowdGambling(ActivePlayer,IsExtraAction))
+               && (CharacterBehaviors.FirstImplementer<GamblerLogic>(ActivePlayer) != null || _game.RequiresCrowdGambling(ActivePlayer,IsExtraAction))
                // 强制赌博时"选目标手"这条路本来就不该存在，所以两种相位都要放行；
                // 非强制时两种相位也都放行。此处不再额外区分。
                ;
@@ -546,7 +548,7 @@ namespace FingerDiceDuel.Assistant
             }
 
             var actor = ActivePlayer;
-            if(!(actor.Character is GamblerLogic))
+            if(CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) == null)
             {
                 FinishGambleChoice();
                 return true;
@@ -1099,7 +1101,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **法师·塑能学派的"本回合放弃攻击"标记也必须清掉** ——
             //    它的语义是"这一次行动放弃攻击"，
             //    留在身上会让下一回合的普通攻击也被静默抑制（打不出伤害）。
-            if (ActivePlayer?.Character
+            if (CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic>(ActivePlayer)
                 is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mageReset)
             {
                 mageReset.WantsToAbandonThisTurn = false;
@@ -1547,7 +1549,7 @@ namespace FingerDiceDuel.Assistant
         public bool CanSteal
             => !TransmutationOperationActive && (Phase == BoardPhase.ChoosingAttackerHand
                 || Phase == BoardPhase.ChoosingTargetHand)
-               && ActivePlayer?.Character is ThiefLogic
+               && CharacterBehaviors.FirstImplementer<ThiefLogic>(ActivePlayer) != null
                && SelectedHand != null
                && _game.CanStealOn(ActivePlayer);
 
@@ -1659,7 +1661,7 @@ namespace FingerDiceDuel.Assistant
             //    等于没打诊断（白查两轮）。所以这里单独存一份。
             _thiefAiTrace = "enter";
 
-            if (!(ActivePlayer?.Character is ThiefLogic))
+            if (CharacterBehaviors.FirstImplementer<ThiefLogic>(ActivePlayer) == null)
             {
                 _thiefAiTrace = "exit:不是游荡者·盗贼";
                 return false;
@@ -1984,7 +1986,7 @@ namespace FingerDiceDuel.Assistant
                     //
                     //    判定放在"取消选择"之后、"收集抉择"之前 ——
                     //    这样"再点自己的手取消"这个既有手势仍然有效。
-                    if (ActivePlayer?.Character is ThiefLogic
+                    if (CharacterBehaviors.FirstImplementer<ThiefLogic>(ActivePlayer) != null
                         && !ActivePlayer.Owns(hand)
                         && _game.CanStealOn(ActivePlayer)
                         && (Phase == BoardPhase.ChoosingStealTarget
@@ -2708,7 +2710,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **法师·塑能学派：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
+            if (CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic>(context.Actor) is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -2854,7 +2856,7 @@ namespace FingerDiceDuel.Assistant
             // ⚠️ **法师·塑能学派：把抉择器记下的选择读回自己身上。**
             //    必须在这里做 —— 结算一旦开始就不再问玩家，
             //    而"选了什么伤害类型"只有在结算时才知道要用。
-            if (context.Actor?.Character is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
+            if (CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic>(context.Actor) is FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && provider is IDamageTypeChoiceSink dmgSink)
             {
                 mage.ReadFromSink(dmgSink);
@@ -3345,7 +3347,7 @@ namespace FingerDiceDuel.Assistant
             //
             //    正确的做法：**法师·塑能学派自己就是答案的归属者**，直接写给他。
             //    （抉择器那条路是给 AI 用的，两者互不冲突。）
-            var mage = ActivePlayer?.Character as Characters.SpecialLogics.SchoolOfEvocationLogic;
+            var mage = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEvocationLogic>(ActivePlayer);
             if (mage == null) return false;
 
             mage.SetPendingDamageType(type);
@@ -3402,7 +3404,7 @@ namespace FingerDiceDuel.Assistant
             //
             //    ⚠️ 只有**真的被接受**时才标记；被拒绝时不能留下脏标记。
             if (request.Effect == HandEffect.SchoolOfEvocationAbandonAttack
-                && ActivePlayer?.Character
+                && CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEvocationLogic>(ActivePlayer)
                    is Characters.SpecialLogics.SchoolOfEvocationLogic mage
                 && mage.WantsToAbandonThisTurn == false)
             {
@@ -3513,6 +3515,21 @@ namespace FingerDiceDuel.Assistant
             bool legal = IsChoiceCandidate(pick);
             if (!legal) pick = null;          // 非法或放弃
 
+            // Apply the first staged answer before SkipWhen inspects mage state.
+            // Also clear the previous action's sink so it cannot revive an old type.
+            var mageChoice = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEvocationLogic>(_pendingChoiceDecider);
+            if (request.Effect == HandEffect.SchoolOfEvocationAbandonAttack && mageChoice != null)
+            {
+                mageChoice.WantsToAbandonThisTurn = pick != null;
+                if (provider is IDamageTypeChoiceSink mageSink)
+                {
+                    mageSink.WantsToAbandonAttack = pick != null;
+                    mageSink.ChosenDamageType = DamageType.None;
+                }
+            }
+            else if (request.Effect == HandEffect.SchoolOfEvocationDamageType && provider is IDamageTypeChoiceSink typeSink)
+                mageChoice?.ReadFromSink(typeSink);
+
             // 诊断：记录 AI 对每个抉择的作答（含"被判定为非法"的情况）
             _aiTrace.Add($"AI作答 {request.Effect}(v{request.Variant}) " +
                          $"provider={provider?.GetType().Name ?? "null"} " +
@@ -3578,7 +3595,7 @@ namespace FingerDiceDuel.Assistant
             //    判据是"值不值得偷"：不值得才回去走正常运算
             //    （正常运算的偏好由游荡者·盗贼价值表负责合成更大点数）。
             if (Phase == BoardPhase.ChoosingAttackerHand
-                && ActivePlayer?.Character is ThiefLogic
+                && CharacterBehaviors.FirstImplementer<ThiefLogic>(ActivePlayer) != null
                 && TryAiThiefSteal())
             {
                 return true;
@@ -3849,7 +3866,7 @@ namespace FingerDiceDuel.Assistant
         private bool ShouldAiGamble(PlayerState actor)
         {
             if (_game.RequiresCrowdGambling(actor,IsExtraAction)) return true;
-            if (!(actor?.Character is GamblerLogic)) return false;
+            if (CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) == null) return false;
             if (actor.MustGamble) return true;      // 强制时没得选
 
             IReadOnlyList<LegalMove> moves = _game.GetLegalMoves(actor);
@@ -4297,7 +4314,7 @@ namespace FingerDiceDuel.Assistant
             //    跳过回合**不算**正常运算（不触发强制）——
             //    所以这里只看"有没有产生 TurnResult 且不是赌博"。
             //    放在结算收尾处：这是唯一能确定"这一回合到底做了什么"的时点。
-            if (result.Actor?.Character is GamblerLogic)
+            if (CharacterBehaviors.FirstImplementer<GamblerLogic>(result.Actor) != null)
             {
                 bool wasRequired=result.Actor.MustGamble;result.Actor.MustGamble = !result.WasGamble;
                 if(result.Actor.MustGamble&&!wasRequired)_game.RecordSkillVisual(result.Actor,"赌徒之运",result.Actor,new SkillVisualData(value:result.ResultValue,variant:"forced"));

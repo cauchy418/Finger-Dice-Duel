@@ -108,7 +108,7 @@ namespace FingerDiceDuel.Tests
                 for (int i = 0; i < 8; i++)
                 {
                     PlayerState p = CharacterFactory.CreatePlayer("P" + (i + 1), defs[i]);
-                    var ai = new GreedyChoiceProvider { UseValidatedTuning = true, UseChainBreak = true };
+                    var ai = ProductionAi.Create(learnedFocus: false);
                     var sink = new SimpleChoiceProvider();
                     seated.Add(p); providers.Add(ai); selectors.Add(ai); sinks.Add(sink);
                 }

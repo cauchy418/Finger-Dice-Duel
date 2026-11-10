@@ -1851,7 +1851,7 @@ namespace FingerDiceDuel.Assistant
 
                         // ⚠️ 用 Core 的 IMageState 而不是 SchoolOfEvocationLogic ——
                         //    Assistant 层不能引用 Characters 层（架构铁律）。
-                        var mage = decider.Character as IMageState;
+                        var mage = CharacterBehaviors.FirstImplementer<IMageState>(decider);
                         if (mage == null) return null;
 
                         // ⚠️⚠️ **"不重复放弃"是 AI 的策略，不是规则。**

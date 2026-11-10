@@ -94,7 +94,7 @@ namespace FingerDiceDuel.Assistant
                 &&CurrentTurn!=null&&CurrentTurn.Source<0&&ReferenceEquals(Seats[CurrentTurn.Actor],actor);
         }
         public static GreedyChoiceProvider NewAi(GameManager game)
-        {var ai=new GreedyChoiceProvider{Game=game,UseLearnedFocus=true};ai.ApplyDifficulty(AiDifficulty.Hard);return ai;}
+        {var ai=ProductionAi.Create(game);ai.ApplyDifficulty(AiDifficulty.Hard);return ai;}
         private sealed class BannerMoves:AbstractChoiceProvider,IMoveSelector,IAttackTargetIntent,IAncientRoleChoicePolicy,IArcaneChoicePolicy
         {
             private readonly TatteredBannersLesson _lesson;
