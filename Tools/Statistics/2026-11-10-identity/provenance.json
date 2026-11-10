@@ -1,0 +1,28 @@
+{
+    "captured_utc":  "2026-11-10T06:01:42.197583+00:00",
+    "source_commit":  "415d8d88242240f1821d1b06e489d978301b1023",
+    "source_dirty":  true,
+    "source_sha256":  "a5b370b2f4746a2d85548bfd64b181aefd0203eb9caa42c0eb116b8a9c4862cb",
+    "test_source_sha256":  "f8971c05a15cbbc048f177307dace9b776ab302679e720c0ed5dbbe0c684d0a2",
+    "headless_source_sha256":  "35cf95b8f4a5a72236f3255c328aa447e44c272c5e99e64946ee4202248ba3bc",
+    "headless_runner_sha256":  "2e202923fe74ded4ba3bb89a659955475c34b6af7e23b5cfc998c164934f9a81",
+    "statistics_tool_sha256":  "6d5f36de6e3efaf2f6d85a060e58fc2dbe14e32c1f11946d15d02c5a8648c37b",
+    "statistics_runner_sha256":  "8552aee59f57c3db0cf8296e8365b63758201425959d18b0766c22189c256884",
+    "identity_runner_sha256":  "4d55b2457608c69dfecf0e0988338896e8cf66aaff46b3614505fa76d3ca5cf1",
+    "sampler_assembly_sha256":  "9165A9DEC914484C1460448427E3619FC7E12EEB1E26DEB9B06768AE155A508B",
+    "sampler_runtime_version":  "8.0.15",
+    "carried_forward":  {
+                            "baseline_path":  "C:\\Users\\29391\\Finger Dice Duel\\Tools\\HeadlessTests\\bin\\identity-before-heal-visuals\\baseline-results.json",
+                            "baseline_sha256":  "2d9066c6b5bb85d26fa460934a982bee04199d096b01cb2d5bbb28b93b6262d3",
+                            "files":  {
+                                          "eight.csv":  "79cbfae646a899d4bef0452d2804ae703edebe365199621447b8a95360d1bcdf",
+                                          "dual.log":  "23b3fc189ee94defa6b9dea3b0247db4b85004268e77f0dce0eb3531ace2c484",
+                                          "1v1.csv":  "9f607a7ae3349e8dc6c3449734b244b27f55bc1bd06e4d71966e4acd23149a7f",
+                                          "1v1.log":  "d8da26a2b7898feac0a1682d7a1c8e9c04881946a56ad83438b0d6f668c56077",
+                                          "2v2.csv":  "456646951d7a70fde2d654365468cb822cbf0bc0833bcf037ecbf6c10699d6de",
+                                          "2v2.log":  "808233dfa3e85a0e0c580114f7f2586f0ae402462796c97568b82e1214b623b2",
+                                          "dual.csv":  "f8477395488682cff80fa0318ac1bbeeb2ea8a414994c8f83714145a98b91476",
+                                          "eight.log":  "f0fe34885b4573adc092f59354d510b889450218362bffdd9b3a057d46fbf6a9"
+                                      }
+                        }
+}

@@ -396,7 +396,7 @@ COMBAT PASS L11 rounds=11 win=False
 COMBAT PASS L12 rounds=27 win=False
 COMBAT PASS L13 rounds=8 win=False
 COMBAT PASS L14 rounds=50 win=False
-COMBAT PASS L15 rounds=7 win=False
+COMBAT PASS L15 rounds=15 win=True
 COMBAT PASS L16 rounds=12 win=True
 COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
@@ -406,12 +406,12 @@ COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
 COMBAT PASS L23 rounds=10 win=False
 COMBAT PASS L24 rounds=7 win=False
-COMBAT PASS L25 rounds=9 win=False
+COMBAT PASS L25 rounds=11 win=False
 COMBAT PASS L26 rounds=20 win=True
 COMBAT PASS L27 rounds=13 win=False
 COMBAT PASS L28 rounds=8 win=True
 COMBAT PASS L29 rounds=23 win=True
-COMBAT PASS L30 rounds=12 win=False
+COMBAT PASS L30 rounds=11 win=False
    PASS  Every_lesson_can_finish_real_combat_without_resetting
    PASS  Finale_values_and_roles_match_the_new_design
    PASS  Protection_and_obstacle_actions_are_scoped_and_cost_an_action
@@ -465,20 +465,20 @@ V3 COMBAT PASS L7 rounds=22
 V3 COMBAT PASS L8 rounds=3
 V3 COMBAT PASS L9 rounds=8
 V3 COMBAT PASS L10 rounds=7
-V3 COMBAT PASS L11 rounds=51
-V3 COMBAT PASS L12 rounds=5
+V3 COMBAT PASS L11 rounds=7
+V3 COMBAT PASS L12 rounds=7
 V3 COMBAT PASS L13 rounds=8
-V3 COMBAT PASS L14 rounds=17
+V3 COMBAT PASS L14 rounds=8
 V3 COMBAT PASS L15 rounds=7
 V3 COMBAT PASS L16 rounds=5
 V3 COMBAT PASS L17 rounds=11
-V3 COMBAT PASS L18 rounds=37
+V3 COMBAT PASS L18 rounds=36
 V3 COMBAT PASS L19 rounds=26
-V3 COMBAT PASS L20 rounds=25
+V3 COMBAT PASS L20 rounds=20
 V3 COMBAT PASS L21 rounds=7
 V3 COMBAT PASS L22 rounds=8
 V3 COMBAT PASS L23 rounds=18
-V3 COMBAT PASS L24 rounds=9
+V3 COMBAT PASS L24 rounds=12
 V3 COMBAT PASS L25 rounds=8
 V3 COMBAT PASS L26 rounds=16
 V3 COMBAT PASS L27 rounds=15
@@ -494,7 +494,7 @@ V3 COMBAT PASS L36 rounds=7
 V3 COMBAT PASS L37 rounds=17
 V3 COMBAT PASS L38 rounds=8
 V3 COMBAT PASS L39 rounds=13
-V3 COMBAT PASS L40 rounds=12
+V3 COMBAT PASS L40 rounds=11
    PASS  Every_trial_and_retry_can_resolve_a_complete_battle
 REACTION 1 Thunder damage=4 applied=None
 REACTION 2 Lightning damage=6 applied=None
@@ -1122,7 +1122,7 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Attacking_the_lord_marks_the_attacker_for_lord_side_ai
    PASS  Identity_ai_selects_only_dealt_roles_with_role_specific_bias
    PASS  Ignoring_a_major_suspect_raises_minor_suspicion_and_attacking_them_lowers_it
-   PASS  Lethal_attack_on_lord_is_cancelled_by_one_loyalist_sacrifice
+   PASS  Lethal_attack_on_lord_does_not_sacrifice_loyalists_even_when_armed
    PASS  Lord_dying_as_first_second_or_third_casualty_is_immediate_rebel_win
    PASS  Lord_has_five_extra_health_and_neutral_tyrant_bonus
    PASS  Lord_killing_a_rebel_queues_extra_actions_equal_to_remaining_rebels
@@ -1705,20 +1705,39 @@ REACTION 13 Poison damage=6 applied=None
    PASS  The_players_examples_both_hold
    PASS  Two_opponents_fill_the_remaining_seats
 
-── SecondaryAnimationTests  (13 项)
+── SecondaryAnimationTests  (32 项)
+   PASS  Beast_gain_and_growth_have_distinct_payloads
    PASS  Blocked_or_rejected_maneuvers_do_not_emit_success_animation
    PASS  Both_locked_hands_have_distinct_presentation_targets
+   PASS  Confusion_carry_visual_uses_the_real_sum_and_operating_hand
    PASS  Critical_visual_power_is_captured_without_becoming_a_damage_multiplier
+   PASS  Current_reworked_skills_have_dedicated_semantic_profiles
    PASS  Distance_shield_expiry_reports_the_real_pair_after_two_target_turns
+   PASS  Every_literal_skill_event_has_a_registered_route_or_explicit_existing_presentation
    PASS  Full_health_heal_never_claims_nonzero_recovery
+   PASS  Giant_recovery_reports_healing_before_scorch_damage
+   PASS  Heal_visual_callback_reports_zero_when_blocked_or_full
    PASS  Ki_gain_and_snapshot_count_are_immutable_and_cap_does_not_flash
    PASS  Ki_upkeep_records_once_and_uses_actual_shared_resource_counts
+   PASS  Knowledge_aura_exposes_stack_value_to_the_renderer
+   PASS  Knowledge_spend_and_successful_confusion_are_separate_visual_events
+   PASS  Life_domain_removes_scorch_before_healing
    PASS  Life_healing_records_cleanse_before_actual_heal_at_the_real_target
+   PASS  Magician_emits_the_current_trickery_skill_name
    PASS  Profiles_stay_silent_when_visual_recording_is_disabled
    PASS  Right_hand_taichi_formation_keeps_the_real_source_hand
+   PASS  Scorched_ancient_ally_heal_does_not_enable_reciprocal_gameplay_hooks
+   PASS  Scorched_ancient_self_heal_keeps_existing_reaction_count_and_records_order
+   PASS  Scorched_chalice_heal_records_full_heal_then_actual_fire_damage
+   PASS  Scorched_fiend_drain_uses_gross_healing_and_records_fire_damage
+   PASS  Scorched_harmony_uses_gross_healing_and_records_fire_damage
+   PASS  Scorched_wolf_heal_records_separate_real_fire_damage
    PASS  Tactician_visual_records_the_subtraction_result
+   PASS  Transmutation_extra_operation_reports_the_completed_source_and_result_once
    PASS  War_blessing_nine_conversion_uses_the_operating_right_hand
+   PASS  Warden_force_conversion_has_a_real_incoming_element_payload
    PASS  Wild_magic_visuals_do_not_roll_again_or_change_per_hit_results
+   PASS  Wolf_lifesteal_reports_actual_healing
 
 ── ShadowMagicTests  (11 项)
    PASS  Ai_counts_unspent_grave_strength_before_marking_a_finish
@@ -1751,16 +1770,16 @@ REACTION 13 Poison damage=6 applied=None
 ── SkillActivationTests  (2 项)
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
-战士·勇士        19 / 30          63%
-战士·破阵者       29 / 30          97%
+战士·勇士        18 / 30          60%
+战士·破阵者       28 / 30          93%
 法师·咒法学派      30 / 30          100%
 野蛮人·守望者道途     29 / 30          97%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     30 / 30          100%
+野蛮人·野兽道途     29 / 30          97%
 战士·剑士        13 / 30          43%
 武僧·忍宗        25 / 30          83%
-游荡者·刺客        8 / 30          27%
+游荡者·刺客        9 / 30          30%
 圣武士·奉献之誓     30 / 30          100%
 邪术师·至高妖精      1 / 30          3%
 战士·魔射手       30 / 30          100%
@@ -1768,7 +1787,7 @@ REACTION 13 Poison damage=6 applied=None
 圣武士·王冠之誓     28 / 30          93%
 武僧·太极宗       29 / 30          97%
 野蛮人·巨人道途     11 / 30          37%
-游荡者·盗贼        8 / 30          27%
+游荡者·盗贼        7 / 30          23%
 游侠·幽域追踪者      9 / 30          30%
 游荡者·魔术师      30 / 30          100%
 法师·塑能学派       0 / 30          0%
@@ -2210,5 +2229,5 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1705 / 失败 0
+通过 1724 / 失败 0
 独立统计测试已跳过 8 项。
