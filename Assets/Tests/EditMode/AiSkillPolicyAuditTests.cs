@@ -13,6 +13,38 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class AiSkillPolicyAuditTests
     {
+        [Test] public void Gambler_thief_sampling_seed_761708_completes_without_stalling()
+        {
+            var result = CharacterBalanceTests.RunOne(CharacterDefinition.Gambler, CharacterDefinition.Thief,
+                true, 761708, out string error);
+            Assert.True(error == null, error);
+            Assert.NotNull(result);
+        }
+
+        [Test] public void Forced_gambling_takes_precedence_over_a_profitable_AI_steal()
+        {
+            var gambler = CharacterFactory.CreatePlayer("gambler", CharacterDefinition.Gambler);
+            var thief = CharacterFactory.CreatePlayer("thief", CharacterDefinition.Thief);
+            var a = new SimpleChoiceProvider(); var b = new SimpleChoiceProvider();
+            var game = new GameManager(gambler, thief, a, b);
+            WizardChoice offered = null;
+            game.DeferWizardChoice = choice => { offered = choice; return true; };
+            gambler.LeftHand.SetValue(1);
+            game.OfferCrowdGambling(gambler, gambler.LeftHand);
+            Assert.True(offered.Choose(thief.LeftHand));
+            gambler.LeftHand.SetValue(8); gambler.RightHand.SetValue(1);
+            thief.LeftHand.SetValue(9); thief.RightHand.SetValue(1);
+            var board = new BoardController(game, a, b, ProductionAi.Create(), ProductionAi.Create());
+            board.SetFirstPlayer(thief); board.BeginTurn();
+            Assert.True(game.RequiresCrowdGambling(thief));
+            Assert.True(board.MakeAutomaticMove(), board.ThiefAiTrace + " " + board.DebugPhaseInfo());
+            for (int i = 0; i < 10 && game.TurnCount == 0; i++)
+                Assert.True(board.ResolvePendingAiChoice(), board.DebugPhaseInfo());
+            Assert.True(board.LastTurn.WasGamble);
+            Assert.False(game.HasCrowdGambling(thief));
+            Assert.AreEqual(8, gambler.LeftHand.Value, "Forced gambling must not exchange hands through stealing.");
+        }
+
         [Test] public void Roster_pre_attack_requests_receive_legal_policy_answers_for_attacking_and_defending()
         {
             int checkedRequests = 0;

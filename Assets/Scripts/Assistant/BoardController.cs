@@ -1673,6 +1673,15 @@ namespace FingerDiceDuel.Assistant
                 return false;
             }
 
+            // Selecting a source while gambling is mandatory enters ChoosingGamble.
+            // Decide this before clicking: a failed steal must not leave the normal
+            // move path trying to select a second source in that new phase.
+            if (_game.MustUseGambling(ActivePlayer, IsExtraAction))
+            {
+                _thiefAiTrace = "exit:本次行动必须赌博";
+                return false;
+            }
+
             IReadOnlyList<Hand> mine = ActivePlayer.Hands;
 
             Hand bestMine = null;
