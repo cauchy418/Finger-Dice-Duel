@@ -1,0 +1,470 @@
+[
+  {
+    "file": "ancient-healing/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "4e7124760ff0971971e23059b5f3c2293e255faeb6f36b52884226154e90361c"
+  },
+  {
+    "file": "ancient-healing/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "bccee31285e239b9615ce4e3880e0a8a756785ed45afbec3a55a3b9763c2a1fa"
+  },
+  {
+    "file": "beast-consume/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "cddf829820179db30b0fe9c902140e640c4b0d56f90b5d25879f2ece8f3ea305"
+  },
+  {
+    "file": "beast-consume/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "2ece0752c4cefd2aacc8bb747c931147acbef1285a437b27676a62491b67fd71"
+  },
+  {
+    "file": "beast-gain/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "e92c1b629ff17523c44fed8e99fb8b74d05ade611ab76e8e343a7bc0851ebb21"
+  },
+  {
+    "file": "beast-gain/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "23748f3d7811e4f1b54e9ce31f8900eda80c2d79b61e80619b2390b09156ff16"
+  },
+  {
+    "file": "berserker-five/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "b496a80ba560a829bce741d1741f47227109ab4a5b628b6fa411173d1fb91898"
+  },
+  {
+    "file": "berserker-five/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "83dddceaea19e777e615ff97a491a77d4dca190a522047151d03f1b74a5151af"
+  },
+  {
+    "file": "berserker-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "87e01920245f9968894529766d0ed988b25cf8d5356646baacf85f75db521a38"
+  },
+  {
+    "file": "berserker-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "1569072e4e3324ca4aa8bacd867e774dc9f374b48cd1d2529c6c8fcf36cfa160"
+  },
+  {
+    "file": "berserker-nine/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "9d0aa97b635b34c49d02a6040c74aea4d80d4b1450e826ebbcbdbb78a7ece2ce"
+  },
+  {
+    "file": "berserker-nine/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "1c90641b815c14ff4162b6fc47676d7e38649e713294bd4b804ae5e77ed913d3"
+  },
+  {
+    "file": "chalice-healing/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "d11265b933f1b29b055c8c3bd04fbacdfcc81cd5a5422c425a85f5415735e3a0"
+  },
+  {
+    "file": "chalice-healing/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "ec851631c33dac8d86d33e652fa7d4503453cd8f58c4f8fa62e81b54797527fe"
+  },
+  {
+    "file": "confusion-apply/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "31aeb1afc4c5dbd54c5863ff61c7540c4ba5e32c7277c3a937d6e66a850232b9"
+  },
+  {
+    "file": "confusion-apply/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "f846e1590354c02e074f6e73470810608b5b990d336a83ad8c142e6f88d49ce0"
+  },
+  {
+    "file": "confusion-carry/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "4c935f48357b08874f70febce517fb6d9b2c108be2cfd365465ad389b2b0a065"
+  },
+  {
+    "file": "confusion-carry/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "38a216da056a9bb918422990de3856ea033a7e43a8b923fc9e8f8909cb10db4b"
+  },
+  {
+    "file": "confusion-loop/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "e18d4ade2d259eb0d4f80c49080972e1d43a3d2d39a3e64902c089238f200213"
+  },
+  {
+    "file": "confusion-loop/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "e3190cd378574474bbcc9266b230e211bbe0743dde295c02332e30ae6e310511"
+  },
+  {
+    "file": "fiend-healing/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "360c447e309eecaf229b295c0c9b444d98c29ba54d3b43fc730814e96e1daeb6"
+  },
+  {
+    "file": "fiend-healing/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "f733806bdca752c0cacf06519910aad5657a5cf8c698d4cb07a69163c3b03935"
+  },
+  {
+    "file": "giant-blade-acid/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "9823f986cfa8bc2f54c4e0e3868f6d82e34458d5ab1f06f261cfdace49014c17"
+  },
+  {
+    "file": "giant-blade-acid/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "4e876feb1dcaaf3b0705d102bf3edb66ece3790df1fa8d9134d1d4468910d6ad"
+  },
+  {
+    "file": "giant-blade-cold/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "6641b4d8e756a720e57a7828f191a80a730ad119e2dd47348b355399a948bf25"
+  },
+  {
+    "file": "giant-blade-cold/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "6242e597fef99391a05f73e7245f40eec39342237be3595b036d7b99cfd63432"
+  },
+  {
+    "file": "giant-blade-consume/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "862d1aba1f0cd6b22bb6b134b590662352e548b7dbd9089452e554b7e2061521"
+  },
+  {
+    "file": "giant-blade-consume/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "2dfe05c7e3747905c8fe8a978488e12361e3df6e6e2fb85a81065ff38f48e3a4"
+  },
+  {
+    "file": "giant-blade-fire/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "89bbdec1438bb8a8a906124bd508c015e1781f4010585592ea409527b11194cb"
+  },
+  {
+    "file": "giant-blade-fire/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "74785c6f4832fc95c91a6e461343eb0f09d3ecb11aa981539c8366080695b90c"
+  },
+  {
+    "file": "giant-blade-lightning/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "b6ebcf0375720ea028ef4efcb8c15424a2997753a7141e77bf6b1ab94c3b9fda"
+  },
+  {
+    "file": "giant-blade-lightning/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "c32b1506347b8ba75e4869dd7ca2a7149685ec1ec4862387c844303bad8a74c2"
+  },
+  {
+    "file": "giant-blade-thunder/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "e76fd88a7646fff56ab279658b16bc1382aec6482b15c347dae95e2b68c2b859"
+  },
+  {
+    "file": "giant-blade-thunder/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "198a35ba3c09d6065c72780ec77aa4f1ab2522c9ba8456e038ed2594484b38b8"
+  },
+  {
+    "file": "giant-recovery/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "cf6b2613002d74ae2d359277bac5efd8c0694718076addb3d1b3d686343919d8"
+  },
+  {
+    "file": "giant-recovery/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "3b62e84ce6cd33e51f4998ef328c54ae0446c51639263332dee36c56628ca84f"
+  },
+  {
+    "file": "giant-strike/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "d7602e4a05173ec2ceef735d6de2cf3d9412ff430b80f3b63d8e6a870ee6e731"
+  },
+  {
+    "file": "giant-strike/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "9adf0132795430f95f062f4dd7df30d6ecd85f2e1b23866663c9076e62c18465"
+  },
+  {
+    "file": "harmony-healing/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "d055178746fe55bd48010a647ff6250b2c1036cf5445c0b9db047873d24af5e0"
+  },
+  {
+    "file": "harmony-healing/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "4798a73bfc54b067dfef9f1fb52689fdbfb314bf0bc8ae69f264f2c2a4d3c52a"
+  },
+  {
+    "file": "holy-flame/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "1a0bd96b813bedbc9843e7637e7d836a987729ee12b156ce7b4b40f190b94cd3"
+  },
+  {
+    "file": "holy-flame/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "867655458f8cb2a7aa7835f0174b9c882152b2cc189215bd015c282feb3578cc"
+  },
+  {
+    "file": "holy-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "7e59fc68771fb90551a3d15266f183cc27fe048fa8b02867adf21e5e42529c3c"
+  },
+  {
+    "file": "holy-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "c009c08881ab418d61e308b3513c1bf921dc82a4988836a23355ee6048c603ae"
+  },
+  {
+    "file": "holy-loop/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "be47b7c97d49bee0b95f61a5a66c7570982524bd46339d7ed229976f6af15fbd"
+  },
+  {
+    "file": "holy-loop/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "30b04d9ffcd0c2d241ae02cf2fb06ab973021067de73fdff6156ad9a37941fb2"
+  },
+  {
+    "file": "holy-pierce/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "888b32d7a209b1283ca3609d46b29a83cedb8e51a322fe236ee20e286ba122ad"
+  },
+  {
+    "file": "holy-pierce/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "5bb3c482949ab8d7c75fe2932b449469873d1040e0f80458473829600f9808d4"
+  },
+  {
+    "file": "knowledge-carry/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "223d21023e2cd0954ee50ba6830be78f0dc7886217a9188e46966cee9d16d9c2"
+  },
+  {
+    "file": "knowledge-carry/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "b7dc453f30a25df8015c70333449863faa744291b368388484b09cbbbf867e22"
+  },
+  {
+    "file": "knowledge-consume/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "0c1ace5402e59d463bc1224e9abbe97a8931cee39562e4d0ee9b3120ebc16398"
+  },
+  {
+    "file": "knowledge-consume/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "31f3abfdfbdf4346806bdc396c543b49a8a4b9e8ad752f54ee5107d4269e8655"
+  },
+  {
+    "file": "knowledge-force/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "9d0624cb25b4d3499dcfdedebcb45840887446ad3667f974241f21734116d112"
+  },
+  {
+    "file": "knowledge-force/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "785249648679e82ca03bf9faae2edb22b206bd1f15b86d1ad2a12d424876770a"
+  },
+  {
+    "file": "knowledge-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "435a7526ba0e16d563998dd5d9297a57e014eb821fa22aa965898a2f8ed99014"
+  },
+  {
+    "file": "knowledge-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "2b77a61bc66d0278d9fdcf32cdd991b2a28c01b3dbb8f005fe021b51eb7bb85a"
+  },
+  {
+    "file": "knowledge-loop/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "bedac5a24ce5385585720ed1a7dbcbf15a72a305e8e3c0dd69c42ed37b3d94c8"
+  },
+  {
+    "file": "knowledge-loop/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "9a4f15166f0ffeebd7f1111dac7b070ff92375b6f1a6b43312460d10c08655f5"
+  },
+  {
+    "file": "magician-trickery/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "73eddc40446da52f9cc0dcdafbfaceed4e40dc0c09945898145a498b32ba0600"
+  },
+  {
+    "file": "magician-trickery/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "a91a3478df74844359bf119d43e44c5c2c8b49c1ab7cbf915d47996335cb15b8"
+  },
+  {
+    "file": "scorch/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "01bf97681a71675aca6ae0bee74263cf648333044e1732ebd703cf2c564621e8"
+  },
+  {
+    "file": "scorch/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "eec9b1f9ca194a574796f4e5d2480bc04fdd794c0e4338df0d9b6a819af3ac5e"
+  },
+  {
+    "file": "scorch-loop/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "c52f202e0ccb4b3ffce65b2a9c2747da9d9421808054e028d86db272b0d94327"
+  },
+  {
+    "file": "scorch-loop/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "71731f1936479f7c246702cd1aff96a44f90f1b872d2f3c8930f41870130c980"
+  },
+  {
+    "file": "storm-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "41c8cc873121a4c227221378aa85f2fcab2f9579fe264a9a7b3262232b68c7a9"
+  },
+  {
+    "file": "storm-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "fe5e479b573b35f7dd6688fa278d2156574f24eb8a66394b6a898ed48d14c0ac"
+  },
+  {
+    "file": "transmutation-operation/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "67759e9fa1316199e2cc734198994dee4178e79540c1c17db8568102e8342d7b"
+  },
+  {
+    "file": "transmutation-operation/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "1025175768fb4482cbcfa096f553c105af0761278142367c2d00ac95dc23f7d0"
+  },
+  {
+    "file": "trickery-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "29655e685e7a4355bec32803a3238587b6bbacfc4e86a3aec60bc94badfc3266"
+  },
+  {
+    "file": "trickery-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "f638b1f49f920d4e326f96c8ae82d9507716f14af8db9a8e8ca44378bc674a2b"
+  },
+  {
+    "file": "vengeance-operation/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "bec7d2567a87464df6d829ada7749f2b88c7d17bbfc34c91cf0ea208f86dc4fc"
+  },
+  {
+    "file": "vengeance-operation/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "d9f7b2e040784773c9a756512727e53eb683755eeb3bf13d939b95e2c624b923"
+  },
+  {
+    "file": "war-heal/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "b5d62c6135d74c26daf8717555eda73f2141483eadf9ec31a4008b52f816983a"
+  },
+  {
+    "file": "war-heal/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "f6bc9d08f58f6f55b3a451c7398d57c899a577349077e161b639a683173e103c"
+  },
+  {
+    "file": "warden-force/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "a8dd2293c98706103d713c216531aad63700134f251b81429f617ef12d94b412"
+  },
+  {
+    "file": "warden-force/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "a1ee1aeaf792c975208a39dad52769e07ae2eadb432a9a42091f9597850abcba"
+  },
+  {
+    "file": "wolf-healing/peak.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "d9b5f558dfb6c76c0118d00c1f6d1e16d6049fffde3d299a1767bcc7abaacc97"
+  },
+  {
+    "file": "wolf-healing/windup.webp",
+    "width": 1280,
+    "height": 720,
+    "sha256": "f3096b913be1e7bd6b3fb728d7982e517decca276070793d87d1e753bd9a4946"
+  }
+]

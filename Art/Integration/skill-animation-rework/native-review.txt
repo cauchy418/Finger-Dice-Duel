@@ -1,0 +1,273 @@
+PASS cue knowledge-carry
+PASS sprite knowledge-carry
+PASS sprite knowledge-carry
+PASS sprite knowledge-carry
+PASS sprite knowledge-carry
+PASS sprite knowledge-carry
+PASS sprite knowledge-carry
+PASS visible effect knowledge-carry
+PASS cleanup knowledge-carry
+PASS cue knowledge-heal
+PASS sprite knowledge-heal
+PASS sprite knowledge-heal
+PASS sprite knowledge-heal
+PASS sprite knowledge-heal
+PASS sprite knowledge-heal
+PASS sprite knowledge-heal
+PASS visible effect knowledge-heal
+PASS cleanup knowledge-heal
+PASS cue knowledge-consume
+PASS sprite knowledge-consume
+PASS sprite knowledge-consume
+PASS sprite knowledge-consume
+PASS sprite knowledge-consume
+PASS sprite knowledge-consume
+PASS visible effect knowledge-consume
+PASS cleanup knowledge-consume
+PASS cue knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS sprite knowledge-force
+PASS visible effect knowledge-force
+PASS cleanup knowledge-force
+PASS cue confusion-carry
+PASS sprite confusion-carry
+PASS sprite confusion-carry
+PASS sprite confusion-carry
+PASS sprite confusion-carry
+PASS sprite confusion-carry
+PASS visible effect confusion-carry
+PASS cleanup confusion-carry
+PASS cue confusion-apply
+PASS sprite confusion-apply
+PASS sprite confusion-apply
+PASS sprite confusion-apply
+PASS sprite confusion-apply
+PASS sprite confusion-apply
+PASS visible effect confusion-apply
+PASS cleanup confusion-apply
+PASS cue holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS sprite holy-flame
+PASS visible effect holy-flame
+PASS cleanup holy-flame
+PASS cue holy-pierce
+PASS sprite holy-pierce
+PASS sprite holy-pierce
+PASS sprite holy-pierce
+PASS sprite holy-pierce
+PASS sprite holy-pierce
+PASS visible effect holy-pierce
+PASS cleanup holy-pierce
+PASS cue holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS sprite holy-heal
+PASS visible effect holy-heal
+PASS cleanup holy-heal
+PASS cue scorch
+PASS sprite scorch
+PASS sprite scorch
+PASS sprite scorch
+PASS sprite scorch
+PASS visible effect scorch
+PASS cleanup scorch
+PASS cue beast-gain
+PASS sprite beast-gain
+PASS sprite beast-gain
+PASS sprite beast-gain
+PASS sprite beast-gain
+PASS visible effect beast-gain
+PASS cleanup beast-gain
+PASS cue beast-consume
+PASS sprite beast-consume
+PASS sprite beast-consume
+PASS sprite beast-consume
+PASS sprite beast-consume
+PASS visible effect beast-consume
+PASS cleanup beast-consume
+PASS cue berserker-five
+PASS sprite berserker-five
+PASS sprite berserker-five
+PASS sprite berserker-five
+PASS sprite berserker-five
+PASS sprite berserker-five
+PASS visible effect berserker-five
+PASS cleanup berserker-five
+PASS cue berserker-nine
+PASS sprite berserker-nine
+PASS sprite berserker-nine
+PASS sprite berserker-nine
+PASS sprite berserker-nine
+PASS sprite berserker-nine
+PASS visible effect berserker-nine
+PASS cleanup berserker-nine
+PASS cue berserker-heal
+PASS sprite berserker-heal
+PASS sprite berserker-heal
+PASS sprite berserker-heal
+PASS sprite berserker-heal
+PASS sprite berserker-heal
+PASS visible effect berserker-heal
+PASS cleanup berserker-heal
+PASS initial choice giant-strike
+PASS cue giant-strike
+PASS sprite giant-strike
+PASS sprite giant-strike
+PASS sprite giant-strike
+PASS sprite giant-strike
+PASS visible effect giant-strike
+PASS cleanup giant-strike
+PASS initial choice giant-recovery
+PASS cue giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS sprite giant-recovery
+PASS visible effect giant-recovery
+PASS cleanup giant-recovery
+PASS cue war-heal
+PASS sprite war-heal
+PASS sprite war-heal
+PASS visible effect war-heal
+PASS cleanup war-heal
+PASS initial hand storm-heal
+PASS cue storm-heal
+PASS sprite storm-heal
+PASS sprite storm-heal
+PASS sprite storm-heal
+PASS sprite storm-heal
+PASS visible effect storm-heal
+PASS cleanup storm-heal
+PASS initial hand vengeance-operation
+PASS cue vengeance-operation
+PASS sprite vengeance-operation
+PASS sprite vengeance-operation
+PASS sprite vengeance-operation
+PASS sprite vengeance-operation
+PASS visible effect vengeance-operation
+PASS cleanup vengeance-operation
+PASS initial choice giant-blade-fire
+PASS cue giant-blade-fire
+PASS sprite giant-blade-fire
+PASS sprite giant-blade-fire
+PASS sprite giant-blade-fire
+PASS sprite giant-blade-fire
+PASS sprite giant-blade-fire
+PASS sprite giant-blade-fire
+PASS visible effect giant-blade-fire
+PASS cleanup giant-blade-fire
+PASS initial choice giant-blade-consume
+PASS cue giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS sprite giant-blade-consume
+PASS visible effect giant-blade-consume
+PASS cleanup giant-blade-consume
+PASS initial choice giant-blade-acid
+PASS cue giant-blade-acid
+PASS sprite giant-blade-acid
+PASS sprite giant-blade-acid
+PASS sprite giant-blade-acid
+PASS sprite giant-blade-acid
+PASS sprite giant-blade-acid
+PASS sprite giant-blade-acid
+PASS visible effect giant-blade-acid
+PASS cleanup giant-blade-acid
+PASS initial choice giant-blade-cold
+PASS cue giant-blade-cold
+PASS sprite giant-blade-cold
+PASS sprite giant-blade-cold
+PASS sprite giant-blade-cold
+PASS sprite giant-blade-cold
+PASS sprite giant-blade-cold
+PASS sprite giant-blade-cold
+PASS visible effect giant-blade-cold
+PASS cleanup giant-blade-cold
+PASS initial choice giant-blade-thunder
+PASS cue giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS sprite giant-blade-thunder
+PASS visible effect giant-blade-thunder
+PASS cleanup giant-blade-thunder
+PASS initial choice giant-blade-lightning
+PASS cue giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS sprite giant-blade-lightning
+PASS visible effect giant-blade-lightning
+PASS cleanup giant-blade-lightning
+PASS cue trickery-heal
+PASS sprite trickery-heal
+PASS visible effect trickery-heal
+PASS cleanup trickery-heal
+PASS cue warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS sprite warden-force
+PASS visible effect warden-force
+PASS cleanup warden-force
+PASS cue transmutation-operation
+PASS sprite transmutation-operation
+PASS sprite transmutation-operation
+PASS sprite transmutation-operation
+PASS sprite transmutation-operation
+PASS sprite transmutation-operation
+PASS sprite transmutation-operation
+PASS visible effect transmutation-operation
+PASS cleanup transmutation-operation
+PASS cue magician-trickery
+PASS sprite magician-trickery
+PASS sprite magician-trickery
+PASS sprite magician-trickery
+PASS sprite magician-trickery
+PASS sprite magician-trickery
+PASS sprite magician-trickery
+PASS visible effect magician-trickery
+PASS cleanup magician-trickery
+PASS wolf form entry
+PASS cue wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS visible effect wolf-healing
+PASS cleanup wolf-healing

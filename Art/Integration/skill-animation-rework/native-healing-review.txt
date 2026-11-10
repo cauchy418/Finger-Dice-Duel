@@ -1,0 +1,75 @@
+Source: 415d8d8; engine refreshed and recompiled before capture.
+PASS wolf form entry
+PASS cue wolf-healing
+PASS actual healing target wolf-healing
+PASS gross healing 2 wolf-healing
+PASS separate actual Scorch 1 wolf-healing
+PASS healing precedes Scorch wolf-healing
+PASS snapshot continuity wolf-healing hp 7 -> 6
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS sprite wolf-healing
+PASS visible effect wolf-healing
+PASS cleanup wolf-healing
+PASS chalice form entry
+PASS cue chalice-healing
+PASS actual healing target chalice-healing
+PASS gross healing 9 chalice-healing
+PASS separate actual Scorch 5 chalice-healing
+PASS healing precedes Scorch chalice-healing
+PASS snapshot continuity chalice-healing hp 14 -> 9
+PASS sprite chalice-healing
+PASS sprite chalice-healing
+PASS visible effect chalice-healing
+PASS cleanup chalice-healing
+PASS cue fiend-healing
+PASS actual healing target fiend-healing
+PASS gross healing 3 fiend-healing
+PASS separate actual Scorch 2 fiend-healing
+PASS healing precedes Scorch fiend-healing
+PASS snapshot continuity fiend-healing hp 8 -> 6
+PASS sprite fiend-healing
+PASS sprite fiend-healing
+PASS sprite fiend-healing
+PASS sprite fiend-healing
+PASS sprite fiend-healing
+PASS visible effect fiend-healing
+PASS cleanup fiend-healing
+PASS harmony activation
+PASS cue harmony-healing
+PASS actual healing target harmony-healing
+PASS gross healing 4 harmony-healing
+PASS separate actual Scorch 2 harmony-healing
+PASS healing precedes Scorch harmony-healing
+PASS snapshot continuity harmony-healing hp 6 -> 4
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS sprite harmony-healing
+PASS visible effect harmony-healing
+PASS cleanup harmony-healing
+PASS cue ancient-healing
+PASS actual healing target ancient-healing
+PASS gross healing 2 ancient-healing
+PASS separate actual Scorch 1 ancient-healing
+PASS healing precedes Scorch ancient-healing
+PASS snapshot continuity ancient-healing hp 8 -> 7
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS sprite ancient-healing
+PASS visible effect ancient-healing
+PASS cleanup ancient-healing
