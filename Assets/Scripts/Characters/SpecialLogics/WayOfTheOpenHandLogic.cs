@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public bool TryHarmonyBody(PlayerState owner,GameManager game)
         {
             if(owner==null||!owner.IsAlive||Ki<=0||Ki!=owner.Health)return false;
-            int amount=Ki;int before=owner.Health;owner.TrySpendMonkKi(amount);game?.RecordSkillVisual(owner,"气",owner,new SkillVisualData(value:owner.MonkKi,previous:amount,variant:"spend"));owner.Heal(amount*2);game?.NoteSkill(owner,"混元体",$"移除{amount}气，回复{amount*2}体力",owner,new SkillVisualData(value:owner.Health-before,previous:amount));return true;
+            int amount=Ki;var frame=game?.CaptureVisualFrame();owner.TrySpendMonkKi(amount);game?.RecordSkillVisual(owner,"气",owner,new SkillVisualData(value:owner.MonkKi,previous:amount,variant:"spend"));owner.Heal(amount*2,onHealed:actual=>game?.NoteSkill(owner,"混元体",$"移除{amount}气，回复{actual}体力",owner,new SkillVisualData(value:actual,previous:amount),frame),visualManager:game);return true;
         }
     }
 }

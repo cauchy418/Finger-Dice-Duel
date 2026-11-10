@@ -95,7 +95,7 @@ namespace FingerDiceDuel.Core
         {if(ctx.IsStatusDamage||ctx.IsReflected)return;if(F==5)ctx.FinalDamage+=ctx.Manager.DistanceBetween(ctx.Attacker,ctx.Defender);if(F==6)ctx.InflictsBleed=true;}
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>ArcaneChoices.ElementStatus(ctx.AttackType);
         public void OnCompletedDamage(AttackContext ctx,GameManager game)
-        {if(F==2&&!ctx.IsStatusDamage&&!ctx.IsReflected&&ctx.ActualHealthDamage>0&&ctx.Attacker.IsAlive){int before=_owner.Health;_owner.Heal(ctx.ActualHealthDamage/2);game.NoteSkill(_owner,"狼形态","回复"+(_owner.Health-before),_owner,new SkillVisualData(value:_owner.LastActualHealing));}}
+        {if(F==2&&!ctx.IsStatusDamage&&!ctx.IsReflected&&ctx.ActualHealthDamage>0&&ctx.Attacker.IsAlive){var frame=game?.CaptureVisualFrame();_owner.Heal(ctx.ActualHealthDamage/2,onHealed:actual=>game?.NoteSkill(_owner,"狼形态","回复"+actual,_owner,new SkillVisualData(value:actual),frame),visualManager:game);}}
         public void OnTurnStarted(PlayerState owner,GameManager game)
         {
             if(!ReferenceEquals(game.CurrentPlayer,owner)||S!=3||!StatusRules.CanAct(owner))return;
@@ -122,10 +122,9 @@ namespace FingerDiceDuel.Core
             var hands=new List<Hand>();var targets=new List<PlayerState>();foreach(var p in game.Players)if(p.IsAlive){hands.Add(p.LeftHand);targets.Add(p);}
             var request=new WizardChoice(owner,"圣杯座 · 额外回复9",hands,true,h=>{
                 var target=game.OwnerOfHand(h);if(target==null)return;
-                var frame=game.CaptureVisualFrame();int hp=target.Health;
-                target.Heal(9);int healed=target.Health-hp;
-                game.NoteSkill(owner,"圣杯座","回复"+target.Name+" "+healed,target,
-                    new SkillVisualData(source:hand,value:healed,variant:"heal"),frame);
+                var frame=game.CaptureVisualFrame();
+                target.Heal(9,onHealed:actual=>game.NoteSkill(owner,"圣杯座","回复"+target.Name+" "+actual,target,
+                    new SkillVisualData(source:hand,value:actual,variant:"heal"),frame),visualManager:game);
             },targetsPlayer:true);
             if(game.DeferWizardChoice?.Invoke(request)!=true)request.Choose(game.GetDruidPolicy(owner)?.ChaliceTarget(owner,targets,game)?.LeftHand);
         }

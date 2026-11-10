@@ -399,11 +399,12 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public int LastActualHealing { get; private set; }
         internal void CombineEarlierHealing(int amount){LastActualHealing+=amount;}
-        public void Heal(int amount, GameManager manager = null)
+        // visualManager records presentation only; it never enables gameplay hooks for a managerless heal.
+        public void Heal(int amount, GameManager manager = null, Action<int> onHealed = null, GameManager visualManager = null)
         {
             LastActualHealing=0;
-            if (amount <= 0) return;
-            if (!StatusRules.CanHeal(this)) return;      // 腐朽／耳鸣：禁止回血
+            if (amount <= 0) {onHealed?.Invoke(0);return;}
+            if (!StatusRules.CanHeal(this)) {onHealed?.Invoke(0);return;}      // 腐朽／耳鸣：禁止回血
 
             // 放在最底层的原因与腐朽一致：回血入口不止一处，逐个判断必漏。
 
@@ -421,12 +422,14 @@ namespace FingerDiceDuel.Core
             //    所以这里按**真实增量**判断，而不是看有没有调用过 Heal。
             LastActualHealing=actual;
             if (actual > 0) HealedThisTurn = true;
+            onHealed?.Invoke(actual);
             if (actual > 0 && HasStatus(StatusEffect.Scorch))
             {
+                var visualGame=visualManager??manager;var scorchFrame=visualGame?.CaptureVisualFrame();
                 var scorch = new AttackContext(StatusSourceOf(StatusEffect.Scorch) ?? this,this,LeftHand,(actual+1)/2,manager)
                     {IsStatusDamage=true,IgnoreStatBonuses=true,AttackType=AttackDamageType.Fire};
                 scorch.Resolve(manager?.GetChoiceProvider(this),manager);
-                manager?.NoteSkill(this,"灼伤",$"回复{actual}，火焰伤害{scorch.AppliedDamage}",this,new SkillVisualData(value:scorch.AppliedDamage,status:StatusEffect.Scorch,element:AttackDamageType.Fire));
+                visualGame?.NoteSkill(this,"灼伤",$"回复{actual}，火焰伤害{scorch.AppliedDamage}",this,new SkillVisualData(value:scorch.AppliedDamage,status:StatusEffect.Scorch,element:AttackDamageType.Fire),scorchFrame);
             }
         }
 

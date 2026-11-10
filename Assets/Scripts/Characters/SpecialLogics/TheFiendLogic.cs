@@ -44,8 +44,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (context.Defender != null
                 && context.Defender.Health * 2 <= context.Defender.MaximumHealth)
             {
-                int before=context.Attacker.Health;context.Attacker.Heal(3);
-                manager?.NoteSkill(context.Attacker, "黑暗强运", "回复 3 点",context.Defender,new SkillVisualData(value:context.Attacker.Health-before));
+                var frame=manager?.CaptureVisualFrame();context.Attacker.Heal(3,onHealed:actual=>
+                    manager?.NoteSkill(context.Attacker,"黑暗强运","回复 "+actual+" 点",context.Attacker,new SkillVisualData(value:actual),frame),visualManager:manager);
             }
         }
         public void OnDamageDealt(AttackContext context,GameManager manager) => OnHitLanded(context,manager);

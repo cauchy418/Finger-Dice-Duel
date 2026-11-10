@@ -34,12 +34,12 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"不灭哨卫 · 选择射程内另一名角色回复2",owner,manager,
                     AncientRoleChoices.OtherPlayers(owner,manager,true),false,true,hand=>{
                         var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                        int before=target.Health;target.Heal(2);manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{target.Health-before}",target,new SkillVisualData(value:target.Health-before));});
+                        var frame=manager.CaptureVisualFrame();target.Heal(2,onHealed:actual=>manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{actual}",target,new SkillVisualData(value:actual),frame),visualManager:manager);});
             }
             else
             {
-                int before=owner.Health;owner.Heal(2);
-                manager.NoteSkill(owner, "不灭哨卫", "回复 2 点",owner,new SkillVisualData(value:owner.Health-before));
+                var frame=manager.CaptureVisualFrame();owner.Heal(2,onHealed:actual=>
+                    manager.NoteSkill(owner,"不灭哨卫","回复 "+actual+" 点",owner,new SkillVisualData(value:actual),frame),visualManager:manager);
             }
         }
 
