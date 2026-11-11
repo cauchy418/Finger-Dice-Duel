@@ -213,6 +213,9 @@ class StatisticsToolsTests(unittest.TestCase):
             (out / 'audit.log').write_text('58 roles, 10092 legal opening decisions\n通过 1 / 失败 0', encoding='utf-8')
             (out / 'regression.log').write_text('通过 1 / 失败 0', encoding='utf-8')
             (out / 'provenance.json').write_text(json.dumps(capture(fixture)), encoding='utf-8')
+            manifest = json.loads((out / 'provenance.json').read_text(encoding='utf-8'))
+            manifest['sampler_processor_affinity'] = 2147483648
+            (out / 'provenance.json').write_text(json.dumps(manifest), encoding='utf-8')
             baseline = comparison_baseline(ROOT)
             command = ['python', str(tools / 'summarize-current.py'), '--date', '2026-11-09', '--directory', out.name, '--state-ai']
             result = subprocess.run(command + ['--baseline', str(baseline)], capture_output=True, text=True, encoding='utf-8')
@@ -224,6 +227,7 @@ class StatisticsToolsTests(unittest.TestCase):
             readme = (out / 'README.md').read_text(encoding='utf-8')
             self.assertIn('-Date 2026-11-09 -Directory 2026-11-09-state-ai-replay', readme)
             self.assertIn('-Baseline "Tools/Statistics/2026-11-09-state-ai/baseline-results.json"', readme)
+            self.assertIn('-ProcessorAffinity 2147483648', readme)
             self.assertIn('原采样日期', readme)
             result = subprocess.run(command + ['--refresh-docs'], capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

@@ -323,7 +323,9 @@ if args.state_ai:
         (f'powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-current.ps1 -Run '
          f'-Date {args.date} -Directory {out.name}-replay '
          f'-Baseline "Tools/Statistics/{out.name}/baseline-results.json" '
-         f'-RuntimeVersion {report.get("sampler_runtime_version", "8.0.15")}'),
+         f'-RuntimeVersion {report.get("sampler_runtime_version", "8.0.15")}'
+         + (f' -ProcessorAffinity {report["sampler_processor_affinity"]}'
+            if report.get('sampler_processor_affinity') else '')),
         '```', '',
         f'{n}子职共检查{n*n*3:,}个合法起手，见[AI审计](ai-audit.tsv)与[测试日志](regression.log)。', '',
         '运行器在首局前保存provenance.json，并在每组前后核对游戏源码、测试源码、无头入口及采样工具SHA-256。指纹变化时拒绝拼接不同版本的数据。source_dirty标识采样时存在未提交改动，source_commit与源码指纹共同标识版本。', '',
