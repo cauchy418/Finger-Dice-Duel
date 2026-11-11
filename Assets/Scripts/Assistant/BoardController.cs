@@ -1861,6 +1861,7 @@ namespace FingerDiceDuel.Assistant
 
             if (hand != null
                 && stillChoosingOperation
+                && !TransmutationOperationActive
                 && _game.MustUseGambling(ActivePlayer,IsExtraAction)
                 && !ActivePlayer.Owns(hand))
             {
@@ -1922,7 +1923,7 @@ namespace FingerDiceDuel.Assistant
                     //   的那些回合看起来也像被强制（玩家实测报告：
                     //   "上一回合已经赌过了但仍被强制赌博"）。
                     //   MustGamble 只改了提示文案，没给玩家另一条路 —— 那是设计缺口。
-                    if (!_allowNormalOperationForTest
+                    if (!_allowNormalOperationForTest && !TransmutationOperationActive
                         && _game.MustUseGambling(ActivePlayer,IsExtraAction))
                     {
                         // 诊断：游荡者·赌徒的强制状态与"上一次结算是不是赌博"一起打出来。
@@ -3874,6 +3875,9 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private bool ShouldAiGamble(PlayerState actor)
         {
+            // Transmutation grants arithmetic only, matching CanGamble. A gambler's
+            // required main-turn gamble remains pending while this operation resolves.
+            if (TransmutationOperationActive) return false;
             if (_game.RequiresCrowdGambling(actor,IsExtraAction)) return true;
             if (CharacterBehaviors.FirstImplementer<GamblerLogic>(actor) == null) return false;
             if (actor.MustGamble) return true;      // 强制时没得选

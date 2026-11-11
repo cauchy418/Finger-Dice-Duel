@@ -9,6 +9,56 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class DualGamblerActivationTests
     {
+        [Test] public void Dual_sampling_seed_4048400_completes_without_a_gambling_stall()
+        {
+            var duals = DualVersusDualHarness.AllDuals();
+            var first = duals[484]; var second = duals[218];
+            System.Console.WriteLine(first.Name + " vs " + second.Name);
+            var result = DualVersusDualHarness.Play(first, second, true, 4048400);
+            Assert.True(result.Error == null, result.Error); Assert.False(result.HitLimit);
+        }
+        [Test] public void Transmutation_extra_operation_uses_arithmetic_for_human_and_ai_gamblers()
+        {
+            foreach (bool reverse in new[] { false, true }) foreach (bool automated in new[] { false, true })
+            foreach (bool forced in new[] { false, true })
+            {
+                var gambler = DualGeneralFactory.Create("dual", reverse ? CharacterDefinition.SchoolOfTransmutation : CharacterDefinition.Gambler,
+                    reverse ? CharacterDefinition.Gambler : CharacterDefinition.SchoolOfTransmutation);
+                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
+                var a = new SimpleChoiceProvider(); var b = new SimpleChoiceProvider();
+                var game = new GameManager(gambler, foe, a, b);
+                var board = new BoardController(game, a, b, aiForA: automated ? ProductionAi.Create(game) : null);
+                gambler.LeftHand.SetValue(1); gambler.RightHand.SetValue(1);
+                foe.LeftHand.SetValue(1); foe.RightHand.SetValue(1);
+                gambler.MustGamble = forced;
+                board.SetFirstPlayer(foe); game.QueueTransmutationOperation(gambler); board.BeginTurn();
+                Assert.AreEqual(gambler, board.ActivePlayer); Assert.True(board.IsExtraAction);
+                if (automated) Assert.True(board.MakeAutomaticMove(), board.LastAiMoveDiagnostic);
+                else
+                {
+                    Assert.True(board.ClickHand(gambler.LeftHand)); Assert.False(board.CanGamble);
+                    Assert.AreEqual(BoardPhase.ChoosingTargetHand, board.Phase);
+                    Assert.True(board.ClickHand(foe.LeftHand));
+                }
+                Assert.NotNull(board.LastTurn); Assert.True(board.LastTurn.IsExtraAction);
+                Assert.False(board.LastTurn.WasGamble); Assert.AreEqual(2, board.LastTurn.ResultValue);
+                Assert.AreEqual(foe, board.ActivePlayer);
+                if (forced)
+                {
+                    Assert.True(gambler.MustGamble, "Arithmetic-only extra operation must not consume the required gamble.");
+                    game.ExecuteTurn(foe, foe.LeftHand, gambler.RightHand); board.BeginTurn();
+                    Assert.True(game.MustUseGambling(gambler)); board.GambleRng = new Dice(5);
+                    if (automated) Assert.True(board.MakeAutomaticMove());
+                    else
+                    {
+                        Assert.True(board.ClickHand(gambler.RightHand)); Assert.AreEqual(BoardPhase.ChoosingGamble, board.Phase);
+                        Assert.True(board.Gamble()); Assert.True(board.ChooseSkillOption(0));
+                    }
+                    Assert.True(board.LastTurn.WasGamble); Assert.AreEqual(5, board.LastTurn.GambleRoll);
+                    Assert.False(gambler.MustGamble);
+                }
+            }
+        }
         private sealed class Dice : System.Random
         {
             private readonly Queue<int> _values;
