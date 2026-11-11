@@ -1,0 +1,10 @@
+── RevisionBalanceTests  (1 项)
+progress 1000 games
+progress 2000 games
+progress 3000 games
+progress 4000 games
+dual completed 4256 games; zero errors / forced aborts
+   PASS  Revision_all_modes_win_rates
+
+────────────────────────────────────────────────────────────
+通过 1 / 失败 0
