@@ -766,3 +766,5 @@ HunterWildIntegrationTests新增22项：真实控制器、人类放弃与防守�
 ## AI技能入口与生产配置
 
 本轮完成[全角色启用审计](Docs/ai-activation-audit.md)，修复双将塑能／盗贼／太极／赌徒的外层类型检查、塑能重复决策与额外运算的赌博续接。ProductionAi统一普通实战及采样配置，教学脚本和实验基线仍可显式配置。全量采样由run-current.ps1完成，固定程序集、运行时及CPU亲和性，日志严格无损转为UTF-8；失败轮次不拼接。
+
+Unity运行时的内部测试接口由`AssemblyInfo.cs`限定授权给`FingerDiceDuel.Tests.EditMode`。无头NUnit编译检查必须保持两个asmdef的程序集边界，不能混编；`QueueTransmutationOperation`仍为内部接口。

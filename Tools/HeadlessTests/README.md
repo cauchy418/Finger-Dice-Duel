@@ -36,7 +36,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | 参数 | 说明 |
 |---|---|
 | `-EditorRoot <path>` | 手动指定编辑器 `Editor/Data` 目录 |
-| `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时只编译成库、不执行，并自动引入 `nunit.framework.dll`） |
+| `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时按asmdef名称分别编译运行时DLL和测试DLL，不执行，并自动引入 `nunit.framework.dll`） |
 | `-Only <filter>` | 编译后只运行类名包含该文本的测试，例如`-Only AdventureLevel1Tests`；全量回归时不传此项 |
 | `-SkipStatistics` | 跳过8项独立统计，只执行1769项功能回归 |
 | `-OutputDirectory <path>` | 使用独立构建目录，不覆盖正在运行的DLL或旧分片的构建标识 |
@@ -86,3 +86,7 @@ using NUnit.Framework;
 两者使用相同测试文件；条件编译检查能发现编译差异，但不能替代实际引擎的资源、点击与布局验收。
 
 长时间统计可传`-RuntimeVersion 8.0.15`固定编译与执行宿主；正式整轮使用`Tools/Statistics/run-current.ps1 -Run`，记录运行时与程序集指纹。该设置不改变Unity目标。
+
+## Unity测试程序集边界
+
+`-Define FDD_UNITY_TESTS`先生成`FingerDiceDuel.Runtime.dll`，再单独编译`FingerDiceDuel.Tests.EditMode.dll`并引用运行时DLL，名称读取各自asmdef。测试访问内部接口仅通过`Assets/Scripts/AssemblyInfo.cs`中限定测试程序集名的`InternalsVisibleTo`授权；不得通过混编或公开游戏内部接口来绕过验证。该检查可捕获CS1061等跨程序集访问错误。

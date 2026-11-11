@@ -56,3 +56,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 字体使用思源黑体（Noto Sans CJK SC，正文与数字）与思源宋体（标题），均采用 SIL Open Font License 1.1，详见[字体许可](../Assets/Resources/Fonts/README-字体许可.txt)。
 
 本次新增聚众赌博、破阵者AI默认设置、八名高胜角色对策及技能名称调整已完成1769项回归。首次全量运行在宿主.NET发生原生访问异常，使用同一程序集从头完整重跑后1769/0通过；未跳过失败用例。后续已在AI启用审计完成后全量重采，当前报告保存最终源码来源。
+
+## Unity编辑器编译入口
+
+EditMode测试与运行时代码在Unity中属于独立程序集。已为`FingerDiceDuel.Tests.EditMode`授予内部测试接口访问权限，并将条件编译检查改为先编译运行时、再编译引用它的测试程序集；此前的同程序集混编无法暴露这类访问错误。此修正只影响测试访问及验证方式，不改变游戏规则或胜率采样来源。
+
+本次修复已先用分离程序集编译复现原CS1061，再补授权后通过；完整1769项回归、244个UI脚本编译通过。编辑器原生重编译后确认`scriptCompilationFailed=False`，实际进入Play成功，并恢复编辑模式。
