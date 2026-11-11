@@ -148,6 +148,26 @@ if ($unityPathCheck) {
     $exe = Join-Path $outDir 'UnityPathCompileCheck.dll'
 }
 
+# Match Unity asmdef boundaries: compile runtime first, then tests referencing its DLL.
+# Combining both source sets hides internal-member accessibility failures.
+if ($unityPathCheck) {
+    $runtimeName = (Get-Content (Join-Path $projectRoot 'Assets/Scripts/FingerDiceDuel.Runtime.asmdef') -Raw | ConvertFrom-Json).name
+    $testName = (Get-Content (Join-Path $projectRoot 'Assets/Tests/EditMode/FingerDiceDuel.Tests.EditMode.asmdef') -Raw | ConvertFrom-Json).name
+    $runtimeDll = Join-Path $outDir ($runtimeName + '.dll')
+    $runtimeCompileArgs = @($csc, '-nologo', '-target:library', '-langversion:9.0', '-nostdlib+', '-optimize+', "-out:$runtimeDll")
+    if ($Define) { $runtimeCompileArgs += "-define:$Define" }
+    foreach ($r in $refs) { $runtimeCompileArgs += "-r:$r" }
+    $runtimeCompileArgs += $production
+    $runtimeHostArgs = @()
+    if ($RuntimeVersion) { $runtimeHostArgs = @('--fx-version', $RuntimeVersion) }
+    & dotnet @runtimeHostArgs @runtimeCompileArgs
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    $refs += $runtimeDll
+    $sources = @($tests)
+    $exe = Join-Path $outDir ($testName + '.dll')
+    Write-Host "Runtime/test assembly boundary: $runtimeName -> $testName"
+}
+
 $buildTarget = if ($unityPathCheck) { 'library' } else { 'exe' }
 
 $cscArgs = @(
@@ -184,7 +204,7 @@ if ($compileExit -ne 0) {
 if ($unityPathCheck) {
     if (-not $Quiet) {
         Write-Host ""
-        Write-Host "Unity 侧测试代码编译通过（仅校验编译，不执行）。" -ForegroundColor Green
+        Write-Host "Unity 侧运行时与测试独立程序集编译通过（仅校验编译，不执行）。" -ForegroundColor Green
     }
     exit 0
 }
