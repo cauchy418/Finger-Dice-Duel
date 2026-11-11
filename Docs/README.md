@@ -21,6 +21,7 @@
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [开发与测试](development.md) | 技术栈、测试命令、验证流程 |
 | [状态与特殊效果AI入口](ai-state-policy.md) | 全职业状态权重、注册接口、优先级与无副作用验证 |
+| [AI技能启用检查](ai-activation-audit.md) | 生产AI入口、双将能力转发、全角色抉择与采样一致性 |
 | [AI 策略与权重](ai-strategy-reference.md) | 58名子职的自身／针对策略与配置；含野蛮人低体力实时估值 |
 | [知识领域](knowledge-domain.md) | 知识层数、独立力场伤害与困惑 |
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
@@ -60,6 +61,6 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样](../Tools/Statistics/2026-11-10-identity/README.md) | 58子职66,964局汇总；本轮身份新采2,600局，其余模式注明沿用来源 |
-| [机器数据](../Tools/Statistics/2026-11-10-identity/results.json) | 可复核的原始结果 |
+| [胜率采样](../Tools/Statistics/2026-11-11-ai-activation/README.md) | 58子职66,964局全部重采；含八人阵营与两组身份的全角色表及前后来源比较 |
+| [机器数据](../Tools/Statistics/2026-11-11-ai-activation/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

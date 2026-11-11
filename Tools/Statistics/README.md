@@ -6,8 +6,8 @@
 
 | 内容 | 位置 |
 |---|---|
-| 现行汇总（58子职；身份新采2,600局，其余沿用） | [2026-11-10-identity/README.md](2026-11-10-identity/README.md) |
-| 机器可读汇总 | [results.json](2026-11-10-identity/results.json) |
+| 现行完整采样（58子职66,964局） | [2026-11-11-ai-activation/README.md](2026-11-11-ai-activation/README.md) |
+| 机器可读汇总 | [results.json](2026-11-11-ai-activation/results.json) |
 | 逐局记录 | 同目录 `1v1.csv`、`2v2.csv`、`dual.csv`、`eight.csv`、`identity.csv`、`identity-preferred.csv` |
 | 角色名单与阵营 | `roster.tsv` |
 | AI 逐角色审计 | `ai-audit.tsv` |
@@ -30,12 +30,12 @@
 
 ## 复现与补表
 
-完整重采按[现行报告的复现命令](2026-11-10-identity/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
+完整重采按[现行报告的复现命令](2026-11-11-ai-activation/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
 
 只从现有数据补全表格时：
 
 ```powershell
-python Tools/Statistics/summarize-current.py --date 2026-11-10 --directory 2026-11-10-identity --identity-only --refresh-docs --update-roster
+python Tools/Statistics/summarize-current.py --date 2026-11-11 --directory 2026-11-11-ai-activation --state-ai --refresh-docs --update-roster
 ```
 
 日志与逐局 CSV 必须随目录一起提交；生成脚本会核对名单规模、逐角色出场数与异常数。
@@ -63,7 +63,7 @@ python Tools/Statistics/summarize-role-tuning.py --directory <实验目录> --lo
 游戏、测试、UI及工具修改全部完成后运行下列命令。省略`-Run`只显示计划，不编译或采样。`-Baseline`必须指向待替换现行轮的`results.json`，不是其更早的`baseline-results.json`。
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run -Date <新日期> -Directory <新日期>-identity -Baseline Tools/Statistics/2026-11-10-identity/results.json
+powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identity.ps1 -Run -Date <新日期> -Directory <新日期>-identity -Baseline Tools/Statistics/2026-11-11-ai-activation/results.json
 ```
 
 运行器用.NET 8.0.15编译一次，校验AI状态测试，后续审计、两组身份采样与完整功能回归复用同一DLL，并保存程序集SHA256。运行时导出角色表，必须与旧轮名单指纹一致。随机身份固定2,000局、种子5000000–5001999；完成后将`identity-roles.tsv`逐字节同步到游戏运行时偏好表，再以独立种子5100000–5100599采600局偏好身份。没有执行其他四种模式的采样入口。
@@ -73,7 +73,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/Statistics/run-identit
 重新生成报告和图鉴表格（不会重采，保持原来源）：
 
 ```powershell
-python Tools/Statistics/summarize-current.py --date 2026-11-10 --directory 2026-11-10-identity --identity-only --refresh-docs --update-roster
+python Tools/Statistics/summarize-current.py --date 2026-11-11 --directory 2026-11-11-ai-activation --state-ai --refresh-docs --update-roster
 ```
 
 工具校验：`python -m unittest discover -s Tools/Statistics -p test_statistics_tools.py`。测试在忽略的bin目录使用夹具，验证来源保留、刷新幂等及沿用文件篡改拒绝，不发布或宣称新采样结果。
+
+本轮使用固定核心参数`-ProcessorAffinity 2147483648`，对应本机逻辑CPU31。该值必须是运行机器允许的亲和性掩码；其他机器可以指定允许的掩码，或省略使用默认调度。它只控制宿主进程调度，不修改战局、种子或策略。固定核心时，原始stdout／stderr留在忽略的bin诊断目录，成功日志严格验证UTF-8或CP936字节往返后转存UTF-8。

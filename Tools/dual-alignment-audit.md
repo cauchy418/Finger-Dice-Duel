@@ -13,4 +13,4 @@
 
 ## 对局采样
 
-[现行报告](Statistics/2026-11-10-identity/README.md)中双将采用532种组合的固定偏移配桌，保留原始种子、局数与源码指纹；这部分沿用上一轮数据，本轮仅重采八人身份局。[AI检查](ai-strategy-audit.md)与[状态策略](../Docs/ai-state-policy.md)说明实际策略与限制。
+[现行报告](Statistics/2026-11-11-ai-activation/README.md)中双将采用532种组合的固定偏移配桌，保留原始种子、局数与源码指纹；这部分沿用上一轮数据，本轮仅重采八人身份局。[AI检查](ai-strategy-audit.md)与[状态策略](../Docs/ai-state-policy.md)说明实际策略与限制。
