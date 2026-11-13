@@ -15,7 +15,8 @@
         0,
         254
       ],
-      "sha256": "0811e801350afe34536860099af3ca2d701773746dfd7b52cbdbc0a7dd4fd24f"
+      "sha256": "0811e801350afe34536860099af3ca2d701773746dfd7b52cbdbc0a7dd4fd24f",
+      "gender": "male"
     },
     {
       "character": "战士·破阵者",
@@ -31,7 +32,236 @@
         0,
         254
       ],
-      "sha256": "07536623b3fd65196d43f7633349c82e3a74a21ac2859fdeaf35f780f8b131e2"
+      "sha256": "07536623b3fd65196d43f7633349c82e3a74a21ac2859fdeaf35f780f8b131e2",
+      "gender": "female"
+    },
+    {
+      "subclass": "fighter_champion",
+      "gender": "female",
+      "character": "战士·勇士",
+      "design": "金狮肩甲、圆盾、象牙白与酒红织物；成熟沉静的女冠军",
+      "file": "fighter_champion_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Champion, human woman around45 with strong athletic build, freckled warm skin and silver-blond hair in a thick braid pinned over one shoulder, sharp blue eyes, calm earned authority. Heroic upright three-quarter pose turned left. Blackened fluted plate with antique-gold laurel borders, a golden lion-head right pauldron, mail sleeves, ivory knee-length split tabard with a small deep-burgundy sash, short burgundy shoulder mantle. Left hand carries a compact intact ROUND black shield with a raised gold lion and laurel wreath; right hand holds one straight cruciform longsword point upward at her outer right side. Elegant but martial silhouette. Distinct from a male Champion in burgundy full tabard and heater shield: lighter fluted armor, ivory vertical cloth, lion pauldron, round shield and upright blade. No divine halo or magic.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-a551f382-2abc-4880-8fe7-5eca71d3296e.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "6722681d4e3e90f46cdc81164bc73d5ef3fef4223554b96c9ca8c93f4bc7206e"
+    },
+    {
+      "subclass": "fighter_breaker",
+      "gender": "male",
+      "character": "战士·破阵者",
+      "design": "厚重非对称甲、削损圆盾、低位宽刃剑；魁梧破阵兵",
+      "file": "fighter_breaker_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Breaker, huge stocky human man late40s, shaved head, short grizzled reddish beard, broken nose, stern practical face. Low grounded forward stance, broad asymmetrical black-iron plate, thick gold-edged rectangular shoulder guards, battered leather hanging tassets, charcoal and dark rust-red cloth underlayers, no lion decoration. Left forearm carries a reinforced ROUND wooden shield with a heavy iron boss and a violently broken lower OUTSIDE section, split timber and bent rim but still strapped securely. Right hand holds ONE very wide straight single-edged breaching sword with a straight spine and broad steel tip low and OUTWARD; entire weapon inside frame. Scarred equipment, a dark rust-red short shoulder cloth rather than flowing cloak. Distinct from a black-haired female Breaker with tall split heater shield and diagonal longsword. Controlled armored siege professional, NOT barbarian, no horns, no magical fire or gore.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-026d40e9-0d60-445b-9ea4-80eb1027b50c.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "1f6db997026a758c4b6b472c25243bb9e1ebf28c8879e24a005b5f417552a63d"
+    },
+    {
+      "subclass": "fighter_arcane_archer",
+      "gender": "male",
+      "character": "战士·魔射手",
+      "design": "修长长弓、银发与靛蓝披肩；沉稳精密的奥术弓手",
+      "file": "fighter_arcane_archer_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Arcane Archer, slender adult elf man about40, pale olive skin, finely pointed ears, silver hair tied low, focused precise expression. Sleek navy-black brigandine with one elegantly engraved aged-gold pauldron, fitted mail, indigo waist sash and short cobalt hooded shoulder cape with hood down. LEFT hand holds ONE tall gold-inlaid recurved LONG BOW upright at outer left, wholly within frame; RIGHT hand holds ONE real arrow at chest height, narrow luminous blue-violet crystal arrowhead. Bowstring visible and physically attached at both tips. Modest quiver on back. Quiet poised stance, gaze assessing range. Restrained violet arcane tracery along the bow; keep face and fingers readable. Not forest ranger, no leaves or animal companions, not a robed wizard.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-70d85ef8-c612-4045-950e-ee84e85fd746.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "ca484f1bbae3c0b85832271dab365c9073e87383a333e566bc14bf918ed4547f"
+    },
+    {
+      "subclass": "fighter_arcane_archer",
+      "gender": "female",
+      "character": "战士·魔射手",
+      "design": "短反曲弓、铜饰辫发与分摆战衣；敏捷果断的奥术弓手",
+      "file": "fighter_arcane_archer_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Arcane Archer, athletic dark-skinned human woman about30, tightly braided black hair gathered with copper clasps, determined expressive eyes. Practical charcoal scale-and-leather armor, narrow aged-gold geometric trim, high collar, fitted sleeves, an indigo split long coat and teal-blue waist wrap, no broad cape. A compact gold-inlaid RECURVE BOW held in left hand diagonally downward OUTSIDE her legs, entire bow visible. Right hand holds a single blue-violet rune-tipped arrow beside her cheek, clear relaxed grip, not drawing the string yet. Wide balanced alert stance as she turns to look over her right shoulder. Quiver attached to right hip rather than back. Small arcane shimmer at arrowhead only. Distinct from a tall silver-haired male archer holding a vertical longbow: shorter bow, hip quiver, braided hair, split coat and active turning pose.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-2edc24f9-6ec5-4564-bd7f-9beb9991466a.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "50154dba86ccba1e23aa675d3c65e2053530b64f8eef926ca4d62e9f9a26fae0"
+    },
+    {
+      "subclass": "fighter_swordsman",
+      "gender": "male",
+      "character": "战士·剑士",
+      "design": "玉绿束腰、黑铁轻甲、双直剑低位架势；内敛剑客",
+      "file": "fighter_swordsman_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Swordsman, wiry human man in his early40s with East Asian features, shoulder-length black hair tied low, a thin moustache and faint stubble, controlled intent expression. Agile black-iron brigandine and fine mail with restrained aged-gold fastenings, small shoulder plates, muted jade-green wide waist sash and charcoal split fabric panels, no large shield or cape. TWO distinct STRAIGHT steel swords, one in EACH hand: right hand holds a longer straight sword at a low outward diagonal, left hand holds a shorter straight arming sword raised OUTSIDE his left shoulder, both cruciform hilts and both blade tips fully visible. Low side-on balanced footwork, both feet grounded, torso open enough to read armor. Weapons clearly STRAIGHT, not katanas, scimitars or curved sabres. Focus on trained double-blade discipline, no magic.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-44f0f8c6-f272-4f32-a119-23c641f62809.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "56c5b2b9fde0ebce52e247e26e448fc5fc5ad82cb678cb55e35e1f496ecf7805"
+    },
+    {
+      "subclass": "fighter_swordsman",
+      "gender": "female",
+      "character": "战士·剑士",
+      "design": "琥珀束带、交叠鳞甲、双剑开放架势；锋利敏捷的女剑客",
+      "file": "fighter_swordsman_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Swordsman, lean strong human woman about29 with fair freckled face, short auburn hair with a small side braid, alert determined eyes. Lightweight overlapping charcoal steel scales, gold rivets, practical asymmetric narrow pauldrons, full fitted leather sleeves and armored boots, muted amber-ochre sash and small dark brown coat tails. TWO STRAIGHT swords, one in EACH hand: right sword held upright outside her right shoulder, left sword angled downward well away from her left leg, forming a spacious open V, clear hands and entire tips in frame. One boot forward in a springy duelist stance, shoulders rotated and chin raised. Different armor silhouette and inverse blade arrangement from the jade-sashed male swordsman. No shield, no long cloak, no curved swords, no magic or glamour pose.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-5ef432c6-1074-4846-ab53-937fa6474326.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "423e125fb475872df93cc8b85d7d0b6418b08a9a9a6e1700f20c4eeea99fe263"
+    },
+    {
+      "subclass": "fighter_tactician",
+      "gender": "male",
+      "character": "战士·战术家",
+      "design": "灰蓝军官长衣、地图、罗盘；阅历深厚的战场筹划者",
+      "file": "fighter_tactician_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Tactician, human officer in his late50s with salt-and-pepper swept-back hair, close beard, lined intelligent face, thoughtful eyes. Long charcoal and slate-blue military coat over a visible black-steel cuirass and mail, thin aged-gold shoulder insignia, brass buckles, practical boots and gauntlets. A straight sword SHEATHED at left hip, fully comprehensible scabbard, not drawn. BOTH hands hold an unfolded weathered parchment field MAP at waist level, small muted diagram marks but NO readable writing or symbols resembling text. A brass compass and counting beads hang from belt. Calm slightly bent planning pose with gaze toward viewer, full body standing, short blue shoulder cape only on one side. Clearly an armored field commander rather than merchant or wizard. No crown, no magical glow.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-aca29342-71ab-4cda-a8cf-1d88c8f1e5a7.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "6de8e4fde071f2eb31c522f3196e67fb6a3fd75d3a2816a982cb6074ca6a7c95"
+    },
+    {
+      "subclass": "fighter_tactician",
+      "gender": "female",
+      "character": "战士·战术家",
+      "design": "翠绿军令战衣、折叠地图、指挥手势；果决的前线军官",
+      "file": "fighter_tactician_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Tactician, human officer about39, olive-brown skin, dark hair tightly braided into a compact bun, sharp focused face with a small healed nose scar. Sculpted practical BLACK-STEEL cuirass, restrained aged-gold fittings, emerald-dark green split officer tabard, layered leather arm guards and tall battle boots, no cape, no ornate crown. Left hand holds a small folded field map in a leather folio near her waist, a clearly drawn brass compass at belt. RIGHT arm extends in a measured command gesture with index and middle finger pointing outward, anatomically correct five-fingered hand. A sheathed straight sword on right hip. Upright forward-leaning stance, head looking toward her command direction. Distinct from older male tactician studying an open map in long blue coat: green tabard, active gesture, compact folio and silhouette. No readable text, no magical effects.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-f96185de-6bc7-49d9-9446-738ba5337018.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "81ea4c5ef93e11bdf03a80d5871b9d4a58709687aba853977535697456237546"
+    },
+    {
+      "subclass": "fighter_battle_master",
+      "gender": "male",
+      "character": "战士·战斗大师",
+      "design": "蓝灰老兵披肩、多用途长柄斧锤；沉厚老练的武艺教官",
+      "file": "fighter_battle_master_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Battle Master, burly human veteran about55, deeply weathered face, grey beard divided into two short braids, cropped grey hair, one old forehead scar. Full blackened steel harness with worn antique-gold joints, layered massive shoulder guards, navy-blue and faded cream short military cloak. Both hands comfortably carry ONE versatile POLEAXE with a steel cutting blade on one side, a compact hammer poll on the other and a short spear tip above: plausible integrated historical weapon, not three detached weapons. Shaft held at a relaxed outward diagonal, head high to one side but fully inside canvas; bottom of shaft inside canvas. Straight sword remains SHEATHED at belt. Stable square instructor stance, observant stern gaze. Emphasis on versatility and experience, not rage. Blue-black, aged gold, restrained cream textile; no rune glow, no lion crest, no shield.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-219ffa5c-92ec-46cd-a8c0-155e0f546fc9.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "81b039a3fbd921119376d1e453aa29a17577c6ba8b2e959b21a77640579e5a51"
+    },
+    {
+      "subclass": "fighter_battle_master",
+      "gender": "female",
+      "character": "战士·战斗大师",
+      "design": "钢蓝铆钉甲、直剑与战锤；壮健灵活的武艺大师",
+      "file": "fighter_battle_master_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Battle Master, muscular sturdy human woman early40s, brown skin, curly dark auburn hair tied in a compact high knot with shaved side, calm appraising eyes, small healed cheek scars. Steel-blue blackened brigandine studded with antique-gold rivets, asymmetrical articulated shoulder armor, padded ivory shoulder wrap and dark muted burgundy belt panels, full protective leather and plate sleeves. RIGHT hand holds ONE straight steel sword low and outward; LEFT hand holds ONE compact real WAR HAMMER upright beside shoulder, with flat impact face and short piercing back spike. Two clearly distinct functional grips, all sword and hammer tips in frame. Angled measured combat stance, not symmetrical pose. No shield, no long polearm or large cloak, no magic. Distinct from bearded male Battle Master with two-handed poleaxe: shorter weapons, agile asymmetry, different plate construction.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-811029c4-ad35-4aaf-b2fd-167b49574225.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "304e804887fcae78e88ab8d0da2638d02c67f261eabc3e89d33f6496033152bc"
+    },
+    {
+      "subclass": "fighter_eldritch_knight",
+      "gender": "male",
+      "character": "战士·奥法骑士",
+      "design": "幽蓝符文剑、角盾与冷色甲衣；凝练的雷霆武装",
+      "file": "fighter_eldritch_knight_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Male Eldritch Knight, human man about32 with olive skin, short black curls and close stubble, intent analytical expression. Heavy midnight-black fluted plate, modest aged-gold gothic edging, cobalt-blue cloth accents, armored collar and a short blue shoulder cloak. RIGHT hand holds ONE straight cruciform LONGSWORD tilted upward outside his right side, blade edged with a narrow cold BLUE LIGHTNING line and restrained rune geometry, no big lightning explosion. LEFT forearm carries an angular black iron HEATER SHIELD with a visible split across its surface, thin blue energy seams tracing the crack. The shield clearly remains physical and strapped. Balanced martial stance, both boots visible, face uncovered. A fighter bearing arcane arms, NOT a robe-wearing mage or divine paladin. No halo, no wings, no floating extra weapons.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-3ba90313-d065-4c35-b7ff-c2a46907f481.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "9e4dacde62329f7ccf208395ba533eecb0db8b37d818a3e93f153fcd04cfb0fa"
+    },
+    {
+      "subclass": "fighter_eldritch_knight",
+      "gender": "female",
+      "character": "战士·奥法骑士",
+      "design": "余烬符文剑、裂纹圆盾与铜红甲衣；深沉的火焰武装",
+      "file": "fighter_eldritch_knight_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: premium hand-painted FULL-BODY standing character illustration, transparent PNG cutout for the dark fantasy tactical RPG Finger Dice Duel. Match a coherent series of realistic painterly medieval fantasy warriors with subtle fine brushwork, weathered BLACK IRON and restrained AGED GOLD ornament, believable faces, practical layered steel armor, thick wool and scuffed leather. High-end painted game illustration, NOT photo, NOT 3D, NOT anime. Warm upper-left key light, subtle cool rim, grounded anatomy, readable silhouette. One adult character ONLY, head, BOTH boots, ALL hands, ALL weapon tips wholly visible, portrait 2:3 canvas 1024x1536, small breathing room on all sides. Correct grips, five fingers per hand, real straps. True transparent background around and between all forms; no setting, no floor plane, no opaque gradient, no vignette, no lettering, no text, no logo, no circular badge, no ornamental frame, no UI. No cropped limbs or weapons, no spare hands, no floating equipment. Female armor must be practical and fully protective, with flat functional cuirass rather than exaggerated breast cups, no bare midriff, no cleavage, no high heels. Faces clearly visible, restrained effects only if specified. Every design must have a distinct silhouette, equipment, personality and pose rather than a gender-swapped duplicate of another warrior. Female Eldritch Knight, mature human woman around49 with medium-dark skin, silver hair braided into a practical crown braid, strong lined face and perceptive grey eyes. Asymmetric obsidian-black plate with intricate restrained aged-gold geometric trim, warm copper-russet split coat panels, cream mail edging, no long blue cloak. RIGHT hand holds ONE straight broad LONGSWORD at a downward outward diagonal, a narrow AMBER FIRE glow hugs the cutting edge, a few contained tiny embers only. LEFT forearm carries a compact ROUND black-steel shield with an actual jagged crack and subtle amber luminous seams, aged-gold boss; functional straps, real grip. Weight on back leg, body turned right, looking toward viewer. Distinct from younger cobalt-armored male knight with upright lightning blade and angular heater shield: warm fire, round shield, downward blade and mature silhouette. No spellbook, no hat, no halo, no wings.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-534bb92a-a7d6-439c-ae7b-c8325ff117df.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "9dced1760141216b978b65c9c65a676a65308aef7669484ea63fcba2131ea96c"
     }
   ],
   "inspected_style_references": [
@@ -40,5 +270,7 @@
   ],
   "model_image_references": [],
   "transparent_background_requested": true,
-  "processing": "原始生成PNG逐字节复制，未切图、缩放或修改透明通道。"
+  "processing": "原始生成PNG逐字节复制，未切图、缩放或修改透明通道。",
+  "collection": "战士七子职男女全身立绘，共14张",
+  "runtime_integration": "原画交付，尚未替换游戏内徽记或接入立绘UI。"
 }
