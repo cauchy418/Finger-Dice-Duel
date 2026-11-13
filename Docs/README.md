@@ -55,6 +55,7 @@
 | [动画清单](skill-and-status-animation-list.md) | 每名子职、每个状态需要的表现 |
 | [战斗动画设计](combat-animation-design.md) | 挥击、飞行、格挡与闪避的时间轴 |
 | [武僧改造](monk-rework-design.md) · [奥法五式](arcane-five-implementation.md) | 专项改造记录 |
+| [战士人物立绘](../Art/Production/fighter-character-illustrations/README.md) | 勇士与破阵者的透明全身立绘及生成提示词 |
 | [美术制作](../Art/Production/) | 原图、内置 imagegen 提示词、导入清单 |
 
 ## 统计
