@@ -1,0 +1,594 @@
+{
+  "generator": "built-in image_gen",
+  "collection": "术士4子职、法师9子职男女全身立绘，共26张",
+  "assets": [
+    {
+      "id": "sorcerer_wild_magic",
+      "character": "术士·狂野魔法",
+      "gender": "male",
+      "file": "sorcerer_wild_magic_male_fullbody.png",
+      "design": "不稳定的多色魔法；男版紫色长衣与短杖，女版赭金披肩与蛋白石法器。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human sorcerer age 38, wiry energetic build, tousled shoulder-length auburn hair, short beard, crooked knowing smile, small eyebrow scar. Asymmetric plum-purple wrapped long coat over a charcoal leather vest, brass crescent clasp, rust-red sash, sturdy boots, one loose sleeve and one leather-braced forearm. No wizard book and no pointed hat. Right hand held chest-high with palm open, a small unstable braided swirl of amber, violet and icy blue sparks twisting above it; left hand lowered holding a short gnarled focus wand with an irregular raw opal tip. A few mundane dice charms at the belt, no legible symbols. Weight on one leg, playful daring three-quarter stance facing slightly left. Spontaneous unstable magic, subtle asymmetry and field-worn clothing, not courtly wizard uniform.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-6ffb512c-cfa4-41aa-8c72-6bcd052896fd.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "e805882ec8b72ab9e8612c7145e7f76892409a82740aff9081df4952412d7894"
+    },
+    {
+      "id": "sorcerer_wild_magic",
+      "character": "术士·狂野魔法",
+      "gender": "female",
+      "file": "sorcerer_wild_magic_female_fullbody.png",
+      "design": "不稳定的多色魔法；男版紫色长衣与短杖，女版赭金披肩与蛋白石法器。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human sorcerer age 59, robust traveling build, weathered olive skin, short curly silver hair with two small braided strands, wry amused expression. Layered ochre-gold travel poncho with dark plum underside over black quilted trousers and a fitted dark leather corset-like protective vest worn over a fully closed high-neck shirt. Several mismatched antique-gold bracelets, practical boots, a compact opal amulet held in the left hand near waist; right hand extended outward with a tiny many-colored prismatic magic knot unraveling into a few curling luminous threads. No staff, no spellbook. Grounded wide stance and broad poncho silhouette, experimental and self-possessed; visibly distinct from a younger male in a long purple coat.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-612df526-7fa1-4c9b-b5b7-86d6460f95e7.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "96b73ad7dae33eab19a5231e8f7c1b5b9ce2965ecffd9a06f2342ba2b9a6d3cf"
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "character": "术士·龙族血脉",
+      "gender": "male",
+      "file": "sorcerer_draconic_bloodline_male_fullbody.png",
+      "design": "人形血脉继承者、虚化龙像和五色宝石；男版赤铜短权杖，女版翠绿长衣与晶石。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male HUMAN sorcerer age 37, medium-brown skin, swept-back dark copper hair, neatly trimmed beard, powerful athletic build. Entirely human face, ears, hands and feet: NO dragonborn muzzle, horns, scales on face, wings or tail. Black fitted scale-textured leather cuirass over wine-red high-neck tunic, aged-gold dragon relief on ONE shoulder, short burgundy half-cloak, five tiny colored gems arranged in an old-gold ancestry brooch on chest. Right hand lowered gripping a short dark metal dragon-head focus scepter, left hand open at chest; a small translucent ember-red DRAGON silhouette made of fine ancestral light coils just above left forearm, ghostlike and ethereal, not a solid creature and not another character. Proud steady three-quarter standing pose, restrained inherited power. All translucent light within full-body frame.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-aab73622-071f-4d26-94dd-b9094dfaea4e.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "22fed5a471e65eff6330a5314b7039a9b0873a30057d67b94d1cfeeb80e6b3d2"
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "character": "术士·龙族血脉",
+      "gender": "female",
+      "file": "sorcerer_draconic_bloodline_female_fullbody.png",
+      "design": "人形血脉继承者、虚化龙像和五色宝石；男版赤铜短权杖，女版翠绿长衣与晶石。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female HUMAN sorcerer age 46, deep olive complexion, mature strong face, silver hair in a high tightly woven braid. Entirely human face and five-finger hands, NO draconic head, horns, wings, tail or clawed fingers. Long charcoal-green fitted coat with an emerald scale-pattern mantle around shoulders, antique-gold filigree belt with five small differently colored gemstone settings, armored forearm cuffs. Right hand holds a compact faceted emerald focus near sternum; left hand opens low to the side. A small faint emerald-teal ghost-dragon formed of ancestral translucent smoke and threads of light curls alongside the left shoulder and arm without hiding the face. Quiet regal bearing, tall narrow coat silhouette, copper-gold and green accents, no weapon, no spellbook, no crown; clearly unlike a red male scepter wielder.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-26e45d81-9866-49bb-bea2-12e7ec09c632.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "65298fe7c9110baed410d23da7b348e9e1e548518ef4522b37d4cdfcd45123d7"
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "character": "术士·风暴术法",
+      "gender": "male",
+      "file": "sorcerer_storm_sorcery_male_fullbody.png",
+      "design": "雷电与雷鸣；男版长杖和深蓝长衣，女版短披肩、空手引雷与声波。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human sorcerer age 52, dark brown weathered skin, salt-white close curls and short beard, tall lean build, calm storm-worn face. Long navy and slate-gray split travel coat with antique-gold lightning-shaped fasteners and broad weathered collar, dark blue scarf, leather straps and high practical boots. Left hand firmly grips a single long slim black-iron staff whose small forked bronze head stays entirely within canvas; right open hand low to side holds a short branching BLUE lightning arc and a few pale mist threads. A small bronze resonant ring hangs at belt, suggesting thunder. Slight forward lean with coat hem caught in a gentle wind, magic localized, no giant storm backdrop, no book.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-1ec08f67-6e6e-4a23-bcd4-ea234d498878.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "345c9880dcf870af1f331c1d8bf3c9111f8edc55ff43cc0231962e8c449e7e4e"
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "character": "术士·风暴术法",
+      "gender": "female",
+      "file": "sorcerer_storm_sorcery_female_fullbody.png",
+      "design": "雷电与雷鸣；男版长杖和深蓝长衣，女版短披肩、空手引雷与声波。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human sorcerer age 29, East Asian features, short tousled black hair, alert determined gaze, compact athletic build. Asymmetric storm-gray short mantle with pale blue lining over fitted charcoal layered tunic and wide loose charcoal trousers, antique-gold corded belt, dark bracers, sturdy ankle boots. No staff, no book. One palm raised outward at shoulder height with a compact white-blue lightning braid, the other hand held inward near waist shaping two small faint concentric thunder ripples; a tiny old-bronze tuning-fork charm at waist. Balanced side-on stance, trailing pale-gray scarf, more agile compact silhouette than the male long-coat staff bearer. Fully clothed.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-5008b7eb-9814-404b-a383-5fdb88d9e34c.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "1b60df78992052c4ac0a76c95cafc36c0bfa1dcff55251ae37c02130159e2015"
+    },
+    {
+      "id": "sorcerer_shadow_magic",
+      "character": "术士·幽影魔法",
+      "gender": "male",
+      "file": "sorcerer_shadow_magic_male_fullbody.png",
+      "design": "幽影、黑曜石与微弱银紫光；男版高领长衣和黑曜石，女版兜帽与暗灯。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human shadow sorcerer age 51, pale olive skin, short black hair graying at temples, slim severe lined face, trimmed beard, ordinary human silver-gray eyes. Long nearly black high-collared layered leather coat over charcoal cloth, tarnished gold clasps, dark violet sash, worn closed boots. Left hand holds one cracked polished ONYX focus sphere close to the chest, right hand lowered with an open five-fingered palm releasing a thin restrained dark-violet wisp and a tiny silver glimmer; effects stay on figure. No hood, no skeleton costume, no skull staff, no necromancer bones. Quiet upright stillness, three-quarter view, eldritch inner resilience rather than undead magic. Slightly desaturated face and muted violet edges.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-d361e867-0f00-45ee-8207-6ebc6ebc4eda.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "2d5237fc77942f16c94809548e69f0902f6a4a02c52a18198efca118ee70c227"
+    },
+    {
+      "id": "sorcerer_shadow_magic",
+      "character": "术士·幽影魔法",
+      "gender": "female",
+      "file": "sorcerer_shadow_magic_female_fullbody.png",
+      "design": "幽影、黑曜石与微弱银紫光；男版高领长衣和黑曜石，女版兜帽与暗灯。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human shadow sorcerer age 33, warm dark skin, serious watchful face fully visible inside a soft charcoal hood, long dark braids with a few old-gold rings. Charcoal layered travel robes with split skirt over trousers, smoky taupe long scarf, dark leather waist harness, worn gold crescent clasp. Right hand near mouth holding a small black-glass lantern with a single faint violet-silver glow inside; left hand extended low, a narrow gauzy shadow ribbon winding between five normal fingers. No bones, no skulls, no spellbook, no solid monster. Asymmetric cloak hem, one boot forward, grounded guarded pose. Different hooded lantern silhouette from male high-collared onyx caster.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-4f92b4de-0041-4096-a701-d42a2c80b2f6.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "fe9db22448bfa3613aafda29c9b8658453c4e81d5edd2fdbe7722c9b2e78d515"
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "character": "法师·咒法学派",
+      "gender": "male",
+      "file": "wizard_school_of_conjuration_male_fullbody.png",
+      "design": "几何力场与位置交换；男版方正学者装和空间刃，女版宽袖叠袍和双空间窗。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human wizard age 43, lean build, pale tan skin, neat dark hair tied in a small low knot, narrow mustache and patient precise gaze. Structured deep indigo long robe under a short black leather shoulder cape, antique-gold geometric piping, square clasp, dark boots. Left hand holds a closed heavy black grimoire against hip; right hand held forward at waist with a small transparent violet-blue geometric force BLADE suspended horizontally above palm, a few thin spatial threads curling around wrist. Tiny matching black and ivory chess ROOK charms hanging together at belt reference transposition. No giant portal, no summoned creatures. Restrained academic posture, angular geometric silhouette.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-df9367f8-34da-40b2-9cb6-2c903a4f55bd.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "b936385ea5c78ebd639aa060c253f935c2605f667bf3c2620bf6b7f9a603ce2f"
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "character": "法师·咒法学派",
+      "gender": "female",
+      "file": "wizard_school_of_conjuration_female_fullbody.png",
+      "design": "几何力场与位置交换；男版方正学者装和空间刃，女版宽袖叠袍和双空间窗。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human wizard age 57, medium-brown skin, silver-gray hair in a braided crown, wise lined face, slightly broad build. Deep aubergine and charcoal wrapped scholar's coat with wide sleeves, matte dark-gold square fasteners, burgundy sash and practical boots. Left hand lightly grips a short antique-gold focus rod downward at outer side; right hand held beside shoulder shapes TWO small interlocking translucent violet rectangular spatial windows, no scenery within, each only hand-sized. Compact travel grimoire secured closed at belt, no held book. One leg stepped sideways, turn of shoulders suggests switching position, spatial geometry localized. Distinct rounded draped silhouette from male structured blue coat.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-e366bed8-724d-4682-a63a-9e85dc9c4f29.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "3dee66e901cf2afb7da5801197f0e3eb031cd8ba849e075fae2f100a30091c91"
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "character": "法师·塑能学派",
+      "gender": "male",
+      "file": "wizard_school_of_evocation_male_fullbody.png",
+      "design": "受控元素晶核；男版深红长衣与晶杖，女版黑白宽袖与双手塑形。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human evocation wizard age 36, warm brown skin, tightly curled dark hair cut close, short beard, athletic straight posture. Charcoal layered scholar battlecoat, burgundy-red split outer panels, narrow antique-gold stitched channels and dark forearm guards, high neck and boots. Right hand holds a short slender crystal-tipped staff at the outer side; left palm open near chest supports a small sharply faceted BLUE crystal focus with THREE closely bound subtle strands of amber fire, icy blue frost and blue lightning flowing around it, never huge fireball. Field research grimoire closed at waist. Controlled deliberate stance, raw elemental power organized by careful study.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-ca22ea44-205d-495b-a1b3-28bca149958b.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "116b7eabdcb0a889f377ef3ee96b0b2481760b1225e3031d9aef3202214afac7"
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "character": "法师·塑能学派",
+      "gender": "female",
+      "file": "wizard_school_of_evocation_female_fullbody.png",
+      "design": "受控元素晶核；男版深红长衣与晶杖，女版黑白宽袖与双手塑形。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human evocation wizard age 47, fair freckled face, dark auburn hair in a tight bun, focused stern expression. Fully covered black-and-ivory long layered coat with antique-gold embroidered angular cuffs, narrow dark-red sash, black boots, no cape. Both hands around ONE small levitating prismatic crystal at waist, fingers clearly separate and anatomical; a narrow orange fire ribbon curls one side and pale cyan ice shards form the other, very small violet force glimmer at core. Heavy closed grimoire and leather scroll case at belt. Wide balanced stance, broad ivory sleeve silhouette different from male red long coat and staff. No floating extra hands.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-73e142d8-e6a0-49bb-a52d-495bfcfd0d88.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "76fcfae287ccab2fc762b10eaa2c86e6297130cbb79a17183f81c61a0d847ca6"
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "character": "法师·预言学派",
+      "gender": "male",
+      "file": "wizard_school_of_divination_male_fullbody.png",
+      "design": "预兆、观星与占卜；男版年长星盘学者，女版方形预兆牌与小水晶球。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human diviner age 65, dark olive skin, shoulder-length white hair, narrow braided white beard, gentle concentrated eyes, tall slender stooped scholarly build. Midnight-blue long robe with sparse aged-gold star embroidery, black leather belt, faded dark teal shoulder scarf, practical closed boots. Left hand carries a small open antique-gold framed ASTROLABE at chest; right hand low holding a closed thin vellum folio. A tiny pale blue orb inside the astrolabe with several restrained gold light ticks, NO legible numbers or writing. Thoughtful slight turn and forward tilt, no giant eye behind head, no pointed hat.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-e8775d47-f25d-4d7a-8e7b-ed1d8294131d.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "2c414bd26609b318f7a9c18df9be740f4b45cc5d34a26d616d3cd06e177b510e"
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "character": "法师·预言学派",
+      "gender": "female",
+      "file": "wizard_school_of_divination_female_fullbody.png",
+      "design": "预兆、观星与占卜；男版年长星盘学者，女版方形预兆牌与小水晶球。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human diviner age 34, brown skin, long black hair woven into a thick braid with a few brass beads, calm intent eyes. Dark teal fitted travel robe with a hood folded down, layered short dark-blue mantle, gold-edged gloves with visible normal fingers and a pale charcoal sash. Right hand holds one SQUARE black-gold omen tablet with an abstract star, no letters or digits, close to chest; left hand gently rolls a small transparent smoky crystal orb at hip, no extra objects floating. Relaxed asymmetrical stance, tablet and small orb clearly readable. No staff, no full-face veil. Distinct younger angular green-blue silhouette versus elder male astrolabe.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-0dab4ef5-f8b6-424a-a9aa-3f9bf449600f.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "b48989653c208583cd16d49672ed3efc18fb890fc9aeb7f20bcad3fae0823e21"
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "character": "法师·死灵学派",
+      "gender": "male",
+      "file": "wizard_school_of_necromancy_male_fullbody.png",
+      "design": "象牙骨饰与暗蚀紫光；男版骨环长杖与黑袍，女版灰长衣和短仪式杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human necromancer age 48, gaunt mature face, cool pale-brown skin, shoulder-length dark hair with a silver streak, neat pointed beard. Closed high-neck black scholar robe, dull bone-ivory stole, dark-purple inner lining, aged-gold clasps, sturdy boots. Left hand firmly holds a narrow dark staff topped by ONE small ivory vertebral ring around a dim violet crystal, entire staff fully within canvas; right hand holds closed black grimoire against waist. On right glove a subtle five-finger bone-segment pattern, NOT an extra skeletal limb. Very small violet threads at focus. Scholarly grave calm, not a villain caricature, no corpse, no blood, no extra hands.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-a2a9d107-9790-4d9b-916a-2a8182c0bc50.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "dd0e6339959eb00e72a4a7c8ada350c1bd419decc0ab4bfb8e711d5cab36cb1c"
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "character": "法师·死灵学派",
+      "gender": "female",
+      "file": "wizard_school_of_necromancy_female_fullbody.png",
+      "design": "象牙骨饰与暗蚀紫光；男版骨环长杖与黑袍，女版灰长衣和短仪式杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human necromancer age 61, deep brown skin, silver hair in an elegant low bun, sharp intelligent lined face. Ash-gray long coat over black pleated full-length garments, antique-gold bone-shaped clasps, small deep-plum collar, practical boots. Right hand holds a short dark obsidian ritual rod tipped with an ivory bead downward; left normal five-fingered hand open above a small floating translucent violet crystal shaped like a tapering seed, faint wisp only. Closed grimoire slung on a side strap, bone-inlaid belt pouch. No staff, no skull helmet, no exposed skeleton or extra limbs. Compact broad-shoulder shawl silhouette, dignified measured stance.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-43de7f3c-e420-4060-aad1-66ed63df5107.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "f80080c85b0f8b0897f518a3e3bb237ac23347a95bd6936f97f98dfe60fd17bb"
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "character": "法师·防护学派",
+      "gender": "male",
+      "file": "wizard_school_of_abjuration_male_fullbody.png",
+      "design": "层叠几何屏障与厚实防护衣料；男版蓝色厚衣和六角守御，女版高领浅衣和方形守御。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human abjurer age 56, sturdy broad build, medium tan skin, shaved head and short gray beard, patient watchful expression. Thick charcoal-blue quilted scholar coat, reinforced leather shoulder plates with restrained antique-gold angular trim, ivory sash and practical boots. Right hand holds a closed heavy brass-cornered spellbook near hip; left arm raised outward palm forward generating a small translucent layered BLUE hexagonal protective ward directly in front of forearm, only slightly larger than a physical buckler, three thin nested facets. No metal shield, no weapon, no giant dome. Grounded protective stance, tactile heavy fabrics and clean geometric ward.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-572c6ce5-a06d-43bf-a2cb-18067b670dd3.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "59121a2b9deebb12f9ce05b8a8749528d6c29a572b41e3dba5c133c1082acc34"
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "character": "法师·防护学派",
+      "gender": "female",
+      "file": "wizard_school_of_abjuration_female_fullbody.png",
+      "design": "层叠几何屏障与厚实防护衣料；男版蓝色厚衣和六角守御，女版高领浅衣和方形守御。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human abjurer age 41, East Asian features, black hair with a few silver strands in a high knot, slender composed face. Tall high-collared ivory-and-charcoal scholar coat with gold clasp and dark teal broad sash, full practical covered clothing and boots. Left hand grips a slender short dark staff with a small blue glass disc focus at top; right palm held low and outward builds a compact GOLD-BLUE interlocking square ward around wrist and front of hip, subtle transparent edges not a whole background circle. A small book holster on belt. Precise upright silhouette, light structured outer coat and staff distinct from male padded blue protector.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-962e42ff-aa38-4430-bcc8-bbf20917923f.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "48894629fb425c4d4395cb180d49dc209f018cbf80d8debc3d91f5301851548e"
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "character": "法师·幻术学派",
+      "gender": "male",
+      "file": "wizard_school_of_illusion_male_fullbody.png",
+      "design": "镜面、重影与蓝紫折光；男版修长外衣与手镜，女版披肩和框嵌镜片。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human illusionist age 39, olive skin, shoulder-length sleek black hair, clean shaven narrow face, subtle amused expression. Long plum and charcoal tailored split coat, high-collared black shirt, old-gold embroidered diagonal cuffs, muted silver-gray scarf, practical boots. Right hand holds a small antique-gold hand MIRROR angled outward near shoulder, mirror reflects only a violet crescent of light, not a second face; left hand open at waist manipulating two tiny nested violet rhombi with a faint doubled edge. No duplicate person, no extra arms, no circus hat or cards. Elegant quiet side-on standing pose, controlled ambiguity.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-3cb05a7c-2487-4cf0-9d81-ae8deaa6c6fd.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "bd2045b5e143ef1d09a87febda29762dd2ebc75de6f7ca9157e80a82ce61e448"
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "character": "法师·幻术学派",
+      "gender": "female",
+      "file": "wizard_school_of_illusion_female_fullbody.png",
+      "design": "镜面、重影与蓝紫折光；男版修长外衣与手镜，女版披肩和框嵌镜片。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human illusionist age 53, warm pale skin, short wavy silver-brown hair, thoughtful confident expression. Layered smoky lavender broad-sleeved mantle over black travel robes and dark trousers, fine gold lacing at collar, boots. Left hand holds a thin polished black MIRROR shard safely set in an antique-gold frame near waist; right palm raised close to chest where a small translucent angular blue-violet illusion crystal has two offset ghost outlines, contained not a background circle. Half-turned stance with asymmetric cloak folds. No duplicate body, no face mask, no cards, no clown costume, distinct mature cloak silhouette from male slim coat.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-a217652c-f222-4e2b-989f-bbff939d789a.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "af9b48fd12eb853a2ef5dbe992377f8140be32ea062bbe8f0ec5b91cecee2e93"
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "character": "法师·变化学派",
+      "gender": "male",
+      "file": "wizard_school_of_transmutation_male_fullbody.png",
+      "design": "材质变化、金属流动和青绿晶石，不以羊代表学派；男版研究围裙，女版短外衣和铜环短杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human transmuter age 46, medium-brown skin, receding short salt-and-pepper hair, round wire spectacles, trimmed mustache, sturdy practical build. Charcoal leather apron over dark teal long scholar tunic and loose trousers, antique-gold instrument buckles, many small secured mineral sample pouches and one plain glass vial, boots. Left hand holds closed copper-bound journal against ribs; right hand held at waist supports ONE palm-sized material sample halfway changing from rough dark cube through flowing polished silver into a faceted TEAL crystal. One continuous coherent transforming object, not several floating props. A few tiny gold sparks, no animal or sheep motif. Curious analytical posture, utilitarian alchemist silhouette.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-7853c0f5-b44f-4863-9f8b-0d70c34565dc.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "28c39043584020f7a741967a0d3a08f68f2416407d65d88e9f8421c5bebd09ca"
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "character": "法师·变化学派",
+      "gender": "female",
+      "file": "wizard_school_of_transmutation_female_fullbody.png",
+      "design": "材质变化、金属流动和青绿晶石，不以羊代表学派；男版研究围裙，女版短外衣和铜环短杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human transmuter age 31, warm tan skin, short curly dark-red hair, amber eyes, alert concentrated face. High-neck ivory scholar jacket under asymmetric charcoal-green leather overcoat, copper-gold scale-like clasps, broad practical belt with tools, dark loose trousers and boots. Right hand grips a short copper-ringed focus baton held downward; left open palm presents ONE small faceted teal mineral morphing at its lower edge into a narrow SILVER liquid ribbon that curls back into itself, localized. Closed notebook hangs on strap at hip. No sheep, no animal costume, no potion explosion. Dynamic slight forward lean, compact jacket and baton distinct from older male apron researcher.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-cd6d4fe5-098f-45e4-a67d-7c063e3feedc.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "3d4eaa9fdee0d7e2adbc9bbcaac6a781086588957c8ed6b0b5a2786b03b78b8a"
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "character": "法师·惑控学派",
+      "gender": "male",
+      "file": "wizard_school_of_enchantment_male_fullbody.png",
+      "design": "紫红心智灵光与精细法器；男版钟摆和深红长衣，女版紫晶扣外衣与施法短杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male human enchanter age 54, deep olive skin, carefully swept silver-black hair, clean-shaven refined mature face, intent penetrating eyes. Dark wine-red long high-collared academic coat over charcoal garments, restrained antique-gold chain fastening and cuff embroidery, boots. Right hand holds a small antique-gold pendulum with one magenta crystal at chest, hanging naturally, left hand rests on closed slim grimoire at hip. A faint pink-violet ring of light just around the pendulum gem, no victim, no hearts, no giant eye in background. Calm commanding upright posture, psychological focus and courtly discipline.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-2bd99888-294c-489f-b4be-13e0c605ab32.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "0472e1ab608e5f3c2f9910f4222c868db9e0dd0e4bc0357f9e352801ff8bf37f"
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "character": "法师·惑控学派",
+      "gender": "female",
+      "file": "wizard_school_of_enchantment_female_fullbody.png",
+      "design": "紫红心智灵光与精细法器；男版钟摆和深红长衣，女版紫晶扣外衣与施法短杖。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female human enchanter age 40, rich brown complexion, long dark braids bundled back with antique-gold bands, intelligent composed gaze. Closed charcoal robe beneath a deep mulberry structured sleeveless outer coat with full covered under-sleeves, subtle gold geometric embroidery and a high amethyst clasp, black boots. Left hand holds a narrow dark wand with a violet stone pommel across waist; right hand raised with fingers naturally spread shaping a compact delicate violet-pink spiral near fingertips, subtle light touches eyes without changing anatomy. Small leather grimoire holster. Half-turned measured stance, no seductive exposure, no hearts, no puppets. Distinct angular amethyst outercoat rather than male flowing red academic robe.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-26682fce-d9ec-4293-8153-5795ef054e76.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "5a6eec3fa2ae18e619b26e181c49634dd4302faff2f5e9611b484814f6cf0ef9"
+    },
+    {
+      "id": "wizard_bladesinging",
+      "character": "法师·剑咏者",
+      "gender": "male",
+      "file": "wizard_bladesinging_male_fullbody.png",
+      "design": "直剑、轻甲与蓝金剑歌；男版精灵蓝披风和竖剑，女版人类浅衣与低位直剑。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Male adult ELF bladesinger age about 40, slender athletic build, warm pale skin, pointed ears, long silver hair bound low, clean-shaven focused face. Lightweight charcoal-blue scale leather over fully covered fitted navy tunic, flowing short blue half-cape, antique-gold curved filigree cuffs, dark boots. One elegant STRAIGHT double-edged LONGSWORD held in right hand upright at outer right side, whole blade and point visible; LEFT hand open near chest weaving a very thin azure-gold ribbon that winds once around straight blade. A small closed spellbook on belt, no shield, no second sword, no scimitar, no curved blade. Poised dance-like balanced stance, graceful studied martial magic not a heavy fighter.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-a2b89e20-0026-48d6-b026-d3d91d64772c.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "5893b36510f41e507f41e8a3c60b027e3759c575531295c34ef58cfe50fb557b"
+    },
+    {
+      "id": "wizard_bladesinging",
+      "character": "法师·剑咏者",
+      "gender": "female",
+      "file": "wizard_bladesinging_female_fullbody.png",
+      "design": "直剑、轻甲与蓝金剑歌；男版精灵蓝披风和竖剑，女版人类浅衣与低位直剑。",
+      "prompt": "Use case: stylized-concept. Asset type: original premium full-body character standing illustration, transparent PNG cutout for the dark fantasy tactical RPG 指骰对决 / Finger Dice Duel. Match a coherent existing fighter illustration collection: sophisticated realistic HAND-PAINTED fantasy art, visible fine brush texture, softly modeled believable faces, tactile worn leather and wool, blackened iron and restrained antique GOLD trim, muted jewel-tone fabrics, rich material detail, warm upper-left key lighting with a subtle cool rim. Not a photograph, not a 3D render, not anime, not a glossy cartoon. This is a believable person with practical layered clothing, never a circular class emblem. One adult character only. Entire head, feet, fingertips, staff ends, sword tips, small magic effects and all accessories must fit within portrait 2:3 canvas; generous clear margin on every side, comfortable full-body view, no close-up crop. Neutral transparent space around figure, REAL transparent alpha background, including spaces between limbs, no backdrop, scenery, vignette, floor plane, opaque smoke cloud or painted checkerboard. Magic is localized and subordinate to the person, bounded small luminous strokes, never enormous circles behind body. Natural body proportions, realistic hands with exactly five fingers, functional grips and leather straps, boots and all limbs readable. Female armor/clothing as practical and dignified as male, no cleavage, no bare midriff, no high heels, no sexualized posing. No text, numbers, lettering, logo, UI, frame, watermark or title. Each design must be distinct from the other caster subclasses and its opposite-gender companion in silhouette, age, clothing construction, palette emphasis, pose and focus object; do not merely change the face. Female adult HUMAN bladesinger age 35, medium-brown skin, dark hair in a compact braided bun, athletic dancer build, alert composed face. Fully covered charcoal-and-ivory layered dueling coat over fine mail, gold embroidery on split coat tails, muted blue sash, practical flat boots, no cape. ONE slender STRAIGHT cruciform longsword in left hand angled low outward, entire sword visible within canvas, not a scimitar and not a curved saber; right palm raised near shoulder tracing a small pale blue musical-looking abstract ribbon of light that loops close to blade and wrist, no actual letters or music notation. Closed slim grimoire secured at rear belt visible on side. Weight on forward leg, grounded elegant turn, ivory coat and lowered left-hand sword clearly distinct from male silver-haired blue elf.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-927f6582-324e-4185-88e4-bbaa649220a5.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        254
+      ],
+      "sha256": "9add9c6ce5e00ed199c42d084b562e875c4029d2f942011a2eb3d357b7ad36d7"
+    }
+  ],
+  "designs": [
+    {
+      "id": "sorcerer_wild_magic",
+      "character": "术士·狂野魔法",
+      "design": "不稳定的多色魔法；男版紫色长衣与短杖，女版赭金披肩与蛋白石法器。"
+    },
+    {
+      "id": "sorcerer_draconic_bloodline",
+      "character": "术士·龙族血脉",
+      "design": "人形血脉继承者、虚化龙像和五色宝石；男版赤铜短权杖，女版翠绿长衣与晶石。"
+    },
+    {
+      "id": "sorcerer_storm_sorcery",
+      "character": "术士·风暴术法",
+      "design": "雷电与雷鸣；男版长杖和深蓝长衣，女版短披肩、空手引雷与声波。"
+    },
+    {
+      "id": "sorcerer_shadow_magic",
+      "character": "术士·幽影魔法",
+      "design": "幽影、黑曜石与微弱银紫光；男版高领长衣和黑曜石，女版兜帽与暗灯。"
+    },
+    {
+      "id": "wizard_school_of_conjuration",
+      "character": "法师·咒法学派",
+      "design": "几何力场与位置交换；男版方正学者装和空间刃，女版宽袖叠袍和双空间窗。"
+    },
+    {
+      "id": "wizard_school_of_evocation",
+      "character": "法师·塑能学派",
+      "design": "受控元素晶核；男版深红长衣与晶杖，女版黑白宽袖与双手塑形。"
+    },
+    {
+      "id": "wizard_school_of_divination",
+      "character": "法师·预言学派",
+      "design": "预兆、观星与占卜；男版年长星盘学者，女版方形预兆牌与小水晶球。"
+    },
+    {
+      "id": "wizard_school_of_necromancy",
+      "character": "法师·死灵学派",
+      "design": "象牙骨饰与暗蚀紫光；男版骨环长杖与黑袍，女版灰长衣和短仪式杖。"
+    },
+    {
+      "id": "wizard_school_of_abjuration",
+      "character": "法师·防护学派",
+      "design": "层叠几何屏障与厚实防护衣料；男版蓝色厚衣和六角守御，女版高领浅衣和方形守御。"
+    },
+    {
+      "id": "wizard_school_of_illusion",
+      "character": "法师·幻术学派",
+      "design": "镜面、重影与蓝紫折光；男版修长外衣与手镜，女版披肩和框嵌镜片。"
+    },
+    {
+      "id": "wizard_school_of_transmutation",
+      "character": "法师·变化学派",
+      "design": "材质变化、金属流动和青绿晶石，不以羊代表学派；男版研究围裙，女版短外衣和铜环短杖。"
+    },
+    {
+      "id": "wizard_school_of_enchantment",
+      "character": "法师·惑控学派",
+      "design": "紫红心智灵光与精细法器；男版钟摆和深红长衣，女版紫晶扣外衣与施法短杖。"
+    },
+    {
+      "id": "wizard_bladesinging",
+      "character": "法师·剑咏者",
+      "design": "直剑、轻甲与蓝金剑歌；男版精灵蓝披风和竖剑，女版人类浅衣与低位直剑。"
+    }
+  ],
+  "inspected_style_references": [
+    "Art/Production/fighter-character-illustrations/fighter_champion_female_fullbody.png",
+    "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_evocation.png",
+    "Assets/Resources/Art/Battle/v1/Subclasses/wizard_school_of_transmutation.png",
+    "Assets/Resources/Art/Battle/v1/Subclasses/sorcerer_draconic_bloodline.png",
+    "Assets/Resources/Art/Battle/v1/Subclasses/wizard_bladesinging.png"
+  ],
+  "model_image_references": [],
+  "transparent_background_requested": true,
+  "processing": "原始生成PNG逐字节复制，未切图、缩放或修改透明通道。",
+  "runtime_integration": "人物原画交付，后续可接入立绘UI。",
+  "validation": {
+    "asset_count": 26,
+    "subclass_count": 13,
+    "male_count": 13,
+    "female_count": 13,
+    "size": [
+      1024,
+      1536
+    ],
+    "visual_review": "26 images inspected individually: complete figures, focus objects, hands and paired visual differences.",
+    "transparent_alpha": "All images have actual transparent pixels; generated alpha preserved.",
+    "integrity": "SHA256, source byte identity and subclass coverage verified.",
+    "documentation_links_checked": 1369,
+    "broken_documentation_links": 0,
+    "gameplay_tests": "Not run; production artwork and documentation only."
+  }
+}
