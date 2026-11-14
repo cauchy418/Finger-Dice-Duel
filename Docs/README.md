@@ -56,6 +56,7 @@
 | [战斗动画设计](combat-animation-design.md) | 挥击、飞行、格挡与闪避的时间轴 |
 | [武僧改造](monk-rework-design.md) · [奥法五式](arcane-five-implementation.md) | 专项改造记录 |
 | [战士人物立绘](../Art/Production/fighter-character-illustrations/README.md) | 战士七子职男女14张透明全身立绘、差异说明及生成提示词 |
+| [术士与法师人物立绘](../Art/Production/caster-character-illustrations/README.md) | 术士4子职、法师9子职男女26张透明全身立绘、差异说明及生成提示词 |
 | [美术制作](../Art/Production/) | 原图、内置 imagegen 提示词、导入清单 |
 
 ## 统计
