@@ -4,8 +4,8 @@
 
 | 子职 | 男性 | 女性 | 子职辨识与男女设计差异 |
 |---|---|---|---|
-| 战士·勇士 | [PNG](fighter_champion_fullbody.png) | [PNG](fighter_champion_female_fullbody.png) | 金狮与月桂、完整盾牌。男性为深色重甲战袍、长盾与低持直剑；女性为浅色战衣、圆盾与竖持直剑。 |
-| 战士·破阵者 | [PNG](fighter_breaker_male_fullbody.png) | [PNG](fighter_breaker_fullbody.png) | 破损盾与宽刃直剑。男性为厚重方肩板甲、削损圆盾与低位宽刃剑；女性为利落黑甲、裂损长盾与斜持直剑。 |
+| 战士·勇士 | [PNG](fighter_champion_male_fullbody.png) | [PNG](fighter_champion_female_fullbody.png) | 金狮与月桂、完整盾牌。男性为深色重甲战袍、长盾与低持直剑；女性为浅色战衣、圆盾与竖持直剑。 |
+| 战士·破阵者 | [PNG](fighter_breaker_male_fullbody.png) | [PNG](fighter_breaker_female_fullbody.png) | 破损盾与宽刃直剑。男性为厚重方肩板甲、削损圆盾与低位宽刃剑；女性为利落黑甲、裂损长盾与斜持直剑。 |
 | 战士·魔射手 | [PNG](fighter_arcane_archer_male_fullbody.png) | [PNG](fighter_arcane_archer_female_fullbody.png) | 蓝紫奥术箭与旧金弓。男性为银发精灵、长弓、短披风与背部箭袋；女性为深肤编发、紧凑反曲弓、长衣与腰侧箭袋。 |
 | 战士·剑士 | [PNG](fighter_swordsman_male_fullbody.png) | [PNG](fighter_swordsman_female_fullbody.png) | 两把直剑与轻便战甲。男性为长发、青绿腰巾、侧身低位防守；女性为短赤发、赭金腰巾、双剑展开的进攻姿态。 |
 | 战士·战术家 | [PNG](fighter_tactician_male_fullbody.png) | [PNG](fighter_tactician_female_fullbody.png) | 地图、罗盘与指挥官装备。男性为年长军官、蓝灰长衣、双手阅图；女性为深绿战衣、夹持地图册、抬手指挥。 |
