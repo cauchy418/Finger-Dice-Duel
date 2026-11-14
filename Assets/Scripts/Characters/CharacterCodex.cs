@@ -15,13 +15,27 @@ namespace FingerDiceDuel.Characters
     /// <b>写新角色前先读这段</b> —— 玩家明确要求「不要长篇大论」，
     /// 并且已经由 <c>CodexTests.Codex_entries_are_not_over_long</c> 强制守住。
     ///
-    /// 篇幅基准（中文字数，实测 20 名角色的数据）：
+    /// 篇幅基准（中文字数，实测 58 名子职的数据，2026-11-14 重测）：
     ///
-    ///   段落        机制简单    有机制     硬上限
-    ///   技能一句    8 ~ 15     17 ~ 22    45
-    ///   操作指南    30 ~ 38    50 ~ 60    80
-    ///   如何针对    19 ~ 40    20 ~ 40    80
+    ///   段落        实测中位    实测最长    硬上限
+    ///   技能一句    27          38          30
+    ///   操作指南    36          64          60
+    ///   如何针对    25          48          40
     ///   交互        仅保留需要解释的例外或优先级，可为0条
+    ///
+    /// 硬上限就是 <c>CodexTests.Codex_entries_are_not_over_long</c> 里那三个常量，
+    /// 改文案时改这个文件，改上限时三个地方一起改（本注释 + 测试 + CODE-STYLE.md）。
+    ///
+    /// <b>句式固定</b>：技能一句 = 「做什么 + 什么时候 + 换到什么样」，
+    /// 不写补充说明；操作 = 「第一步 + 一个技巧 + 一个代价」，不写第三种情况；
+    /// 针对 = 只回答「破哪一环」，不写「注意 XX」。
+    ///
+    /// <b>写法固定</b>：新增或修改条目一律用短语法具名参数
+    /// （<c>shortSkill:</c> / <c>playGuide:</c> / <c>counter:</c> / <c>interactions:</c>），
+    /// 不许用位置参数 —— 58 个条目的参数顺序一致，位置参数只会在加字段时静默错位。
+    ///
+    /// <b>术语固定</b>：手值 / 运算手 / 加数手 / 完整盾 / 纯运算，全文一套说法；
+    /// 不写「借手」当名词用（动作叫「借作加数」）。
     ///
     /// <b>机制简单</b> = 一句能说完（勇士、风流剑客、王冠之誓、野兽道途、巨人道途…）
     /// <b>有机制</b>   = 要说清触发条件与代价（太极宗、盗贼、至高妖精、幽域追踪者、魔术师…）
@@ -52,10 +66,8 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.BreakerId, "Breaker", Alignment.LawfulEvil,
                 shortSkill: "盾碎可破阵强袭；主动碎盾攻击附流血2回合，碎另一盾可换∞距离。",
-                playGuide: "核心是主动合盾。"
-                         + "攻击时若另一只手是完整盾，可碎它换本次攻击距离∞ ——"
-                         + "够不到远处对手时这是解法；"
-                         + "自己的盾本来就要碎时，发动破阵强袭打碎对手的盾。",
+                playGuide: "核心是主动合盾。另一只手是完整盾时可碎它换本次距离∞，"
+                         + "够不到远处就用这招；自己的盾要碎时，改发动破阵强袭打碎对手的盾。",
                 counter: "别让他合成 5（那是他合盾的唯一来源）。"
                        + "给他的数字里 1/2/3/4/5 都要压低，4/6/8 次之。",
                 interactions: new string[0]);
@@ -63,7 +75,7 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.SchoolOfConjurationId, "School of Conjuration", Alignment.LawfulNeutral,
                 shortSkill: "次级咒术穿盾、正防与闪避；王车易位：同手值换座并跳过。",
                 playGuide: "优先合8/6/4。王车易位：点击技能后选双手值相同的存活角色（4/6同6/4），换座并跳过；不限距离，取消不耗回合，冻结不能用。",
-                counter: "盾、闪避、太极与伏击挡不住次级咒术，可用潜行或妖精取消。避免同手值被换座，注意换位后的射程变化。",
+                counter: "盾、闪避、太极与伏击挡不住次级咒术，用潜行或妖精取消。别被换座，留意换位后的射程。",
                 interactions: new[] { "与太极宗：次级咒术不减半、不反弹，也不消耗太极手。", "与幽域追踪者：次级咒术穿透伏击，但不解除暗置。" });
 
             Add(CharacterDefinition.PathOfTheWardenId, "Path of the Warden", Alignment.ChaoticGood,
@@ -177,10 +189,9 @@ namespace FingerDiceDuel.Characters
             // ---- 幽域追踪者（混乱善良）----
             Add(CharacterDefinition.GloomStalkerId, "Gloom Stalker", Alignment.ChaoticGood,
                 shortSkill: "恐惧伏击：运算后两手同为 1/2/3 时，可暗置那只手进入伏击。",
-                playGuide: "点【伏击】把参与运算的那只手暗置：它不能再运算、"
-                         + "对手也点不到，但数值可见。"
-                         + "伏击期间另一只手照常行动，额外攻击 +2、距离 3；"
-                         + "挨打时恢复那只手并挡下伤害。",
+                playGuide: "点【伏击】暗置参与运算的手：它不能再运算、对手也点不到，"
+                         + "数值可见。伏击期间另一只手照常行动，攻击 +2、距离 3；"
+                         + "挨打时恢复并挡下这一击。",
                 counter: "数值可见，能预判他的伏击回合；"
                        + "伏击只有一次，逼他提早用掉即可。",
                 interactions: new[] { "与咒法学派：次级咒术穿透伏击，且不解除暗置。", "双将有太极与伏击时：先太极，再伏击。" });
@@ -189,27 +200,21 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.MagicianId, "Magician", Alignment.ChaoticGood,
                 shortSkill: "可以拿自己的手当被加数；"
                           + "运算出 2/4/6/8 都是攻击（伤害 = 牌面数字）。",
-                playGuide: "点自己的一只手当加数，再点自己的另一只手当被加数："
-                         + "两只手任选方向，变的是先点的那只。"
-                         + "重复点同一只手不生效。"
-                         + "攻击牌是 2/4/6/8，伤害就是牌面数字，吃攻防加成 ——"
-                         + "所以 8 打得最疼、2 只打 2 点。",
+                playGuide: "先点一只手当加数，再点另一只手当被加数，方向由先点的决定；"
+                         + "重复点同一只手不生效。攻击牌是 2/4/6/8，伤害＝牌面数字，吃攻防加成。",
                 counter: "别让他凑出 2/4/6/8 —— 那四张对他都是攻击。"
                        + "他攻 0 / 防 −1，身材偏软，直接压血线有效。",
                 interactions: new string[0]);
 
             // ---- 塑能学派（绝对中立）----
             Add(CharacterDefinition.SchoolOfEvocationId, "School of Evocation", Alignment.TrueNeutral,
-                shortSkill: "运算出 4/6/8 时可放弃这次攻击，"
-                          + "给下一次攻击指定一种伤害类型（10 选 1），命中后挂上负面状态。",
-                playGuide: "算出 4/6/8 时问是否放弃攻击。选放弃就挑一种伤害类型，"
-                         + "这次白扔，下次打中谁就给谁挂状态（持续 2 回合）。"
-                         + "被盾挡或太极减免也算命中；被闪避或取消则作废，得重放弃。"
-                         + "连续放弃只留最后选的。",
-                counter: "他必须先白扔一回合才能挂状态 —— 趁那一回合压血。"
-                       + "腐朽（暗蚀）期间不要指望回血，中毒（毒素）2 点不可抵挡，"
-                       + "燃烧（火焰）3 点可以用盾扛。"
-                       + "他攻 0 / 防 −1，身材很软，抢在他铺垫完之前解决掉。",
+                shortSkill: "算出 4/6/8 时可放弃攻击，换一种伤害类型（10 选 1）；"
+                          + "下次命中挂负面状态。",
+                playGuide: "算出 4/6/8 时问是否放弃。选放弃就挑伤害类型，这次白扔，"
+                         + "下次打中挂状态 2 回合。被盾挡或太极也算命中，"
+                         + "闪避或取消则作废；连续放弃只留最后选的。",
+                counter: "他得先白扔一回合才挂得上状态，趁那回合压血。"
+                       + "攻 0 防 −1，很软，抢在他铺垫完前解决。",
                 interactions: new[] { "与太极宗：减免仍算命中，状态照常附加；闪避和取消不算。" });
 
             // ---- 狂野魔法（混乱中立）----
@@ -218,8 +223,8 @@ namespace FingerDiceDuel.Characters
                           + "改写后挂对应状态；余 20% 普攻。",
                 playGuide: "能力自动发动，不用选。掷到力场穿盾、无视正向防御、不可闪避。"
                          + "普攻距离 1 内是钝击、1 外是穿刺；多段攻击每段各掷一次。",
-                counter: "攻 0 防 −1 但射程∞，躲不掉只能硬扛。"
-                       + "闪避或取消能让那一段连属性一起作废；格挡使攻击附加的负面时长−1。",
+                counter: "攻 0 防 −1 但射程∞，躲不掉只能硬扛。闪避或取消能让那一段"
+                       + "连属性作废；格挡使附加的负面时长−1。",
                 interactions: new string[0]);
 
             // ---- 旧日支配者（中立邪恶）----
@@ -238,11 +243,11 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
                 shortSkill: "战斗激励：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
                           + "加/减攻防 ±(4-人数)。",
-                playGuide: "每次行动结算完，若本回合受过伤或回过血就会问你要不要发动。"
-                         + "先选增幅/削弱 攻击/防御，再选人数（1 人 ±3、2 人 ±2、3 人 ±1），"
-                         + "最后点角色。可以选自己，同一人点两只手只算一次。",
-                counter: "持续到你下次发动或你死，所以要盯住他给谁加了什么。"
-                       + "他攻 0 防 −1、射程 3，抢血就能逼他先给自己加防御。",
+                playGuide: "行动结算完，本回合受过伤或回过血就会问要不要发动。"
+                         + "先选增幅/削弱攻防，再选人数（1人±3、2人±2、3人±1），最后点角色；"
+                         + "可点自己，同一人点两只手算一次。",
+                counter: "效果持续到你下次发动或他死，盯住他给谁加了什么。"
+                       + "攻 0 防 −1、射程 3，抢血逼他先给自己加防。",
                 interactions: new string[0]);
 
             Add(CharacterDefinition.OathbreakerId, "Oathbreaker", Alignment.LawfulEvil,
@@ -386,15 +391,15 @@ namespace FingerDiceDuel.Characters
             Add(CharacterDefinition.OathOfConquestId,"Oath of Conquest",Alignment.LawfulEvil,
                 shortSkill:"持5攻／受击后涨攻／防，以攻击开始的攻防优势施加恐慌。",playGuide:"保留数字5来累积加成，盾是否完整不影响持5判定。新层从下一击生效；回合末未攻击减攻层，无5减防层，最低0。",counter:"逼其改掉5或空过回合，逐渐消除技能层数；圣火可阻止恐慌。",interactions:new[]{"多段整次只成长一次，闪避／盾挡／零伤仍算，取消与持续伤害不算。"});
             Add(CharacterDefinition.TrickeryDomainId,"Trickery Domain",Alignment.ChaoticNeutral,
-                "诡诈换位：借手逢2，可换数字并魅惑。",
-                "对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
-                "避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
-                new[]{"幻术先改加数，再判诡诈换位；换入的数字不重复受运算倍率影响。"});
+                shortSkill:"诡诈换位：借手逢2，可换数字并魅惑。",
+                playGuide:"对手借你的手时先选是否交换；交换成功后再选是否魅惑。对方按换入的数字结算。",
+                counter:"避开2相关运算；留意交换后可能把攻击变成合盾或回复。",
+                interactions:new[]{"幻术先改加数，再判诡诈换位；换入的数字不重复受运算倍率影响。"});
             Add(CharacterDefinition.TempestDomainId,"Tempest Domain",Alignment.ChaoticNeutral,
-                "风暴之怒：持4可先反击，再纯运算。",
-                "开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
-                "避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
-                new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});
+                shortSkill:"风暴之怒：持4可先反击，再纯运算。",
+                playGuide:"开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
+                counter:"避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
+                interactions:new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});
             Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
                 shortSkill:"开局标记仇敌，对其伤害+1、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含破阵强袭。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,

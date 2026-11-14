@@ -168,9 +168,9 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Codex_entries_are_not_over_long()
         {
-            const int maxSkill = 45;
-            const int maxGuide = 80;
-            const int maxCounter = 80;
+            const int maxSkill = 30;
+            const int maxGuide = 60;
+            const int maxCounter = 40;
 
             CharacterDefinition[] all = CharacterDefinition.BuiltIn;
             var bad = new List<string>();
