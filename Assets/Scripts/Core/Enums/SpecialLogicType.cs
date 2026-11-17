@@ -209,6 +209,7 @@
         ShadowMagic = 56,
         WayOfTheDrunkenMaster = 55,
         CircleOfSpores = 57,
-        KnowledgeDomain = 58
+        KnowledgeDomain = 58,
+        ArcaneTrickster = 59
     }
 }

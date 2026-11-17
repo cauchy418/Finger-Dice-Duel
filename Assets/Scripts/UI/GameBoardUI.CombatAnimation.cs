@@ -16,7 +16,7 @@ namespace FingerDiceDuel.UI
             if(_combatAnimations!=null)return;
             _combatInput=_canvasRoot.GetComponent<CanvasGroup>();if(_combatInput==null)_combatInput=_canvasRoot.gameObject.AddComponent<CanvasGroup>();
             _combatAnimations=_canvasRoot.gameObject.AddComponent<CombatAnimationPlayer>();
-            _combatAnimations.Initialize(_canvasRoot,_font,CombatHandAnchor,CombatTargetAnchor,ApplyCombatFrame,CombatImpact,PoseCombatEvasion);
+            _combatAnimations.Initialize(_canvasRoot,_font,CombatHandAnchor,CombatTargetAnchor,ApplyCombatFrame,CombatImpact,PoseCombatEvasion,MageHandAnchor);
             var ambient=new GameObject("PersistentStatusEffects",typeof(RectTransform));ambient.transform.SetParent(_canvasRoot,false);var rect=(RectTransform)ambient.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
             rect.SetSiblingIndex(((RectTransform)fieldAnimationRoot()).GetSiblingIndex());_statusMotion=ambient.AddComponent<CombatStatusMotion>();_statusMotion.Initialize(rect,CombatStatusAnchor,CombatHandAnchor);
             // Return and the history remain available while gameplay controls are locked.
@@ -75,6 +75,7 @@ namespace FingerDiceDuel.UI
             foreach(var state in frame.Players)
             {
                 var p=state.Player;
+                foreach(var view in _mageHands.Values)if(ReferenceEquals(view.Owner,p))ApplyMageHand(view,state.MageHandValue);
                 foreach(var card in CombatCards())if(ReferenceEquals(card.Owner,p)&&card.Button.gameObject.activeInHierarchy)
                 {
                     var hand=ReferenceEquals(card.Hand,p.LeftHand)?state.Left:state.Right;

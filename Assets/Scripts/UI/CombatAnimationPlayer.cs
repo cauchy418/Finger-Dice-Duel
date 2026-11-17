@@ -18,13 +18,15 @@ namespace FingerDiceDuel.UI
         private RectTransform _root;private Func<PlayerState,Hand,Vector2> _hand;private Func<PlayerState,Vector2> _target;
         private Action<CombatVisualFrame> _apply;private Action<CombatVisualEvent> _impact;private Action _complete;
         private Action<PlayerState,Vector2,float> _pose;
+        private Func<PlayerState,Vector2> _mageHand;
         private readonly List<Image> _pool=new List<Image>();private readonly List<Image> _used=new List<Image>();
         private Image _ready,_readyElement;private PlayerState _readyOwner;private Hand _readyHand;
         private GameObject _controls;private Text _speedText;private bool _skip;private Coroutine _routine;
         public void Initialize(RectTransform parent,Font font,Func<PlayerState,Hand,Vector2> hand,Func<PlayerState,Vector2> target,
-            Action<CombatVisualFrame> apply,Action<CombatVisualEvent> impact,Action<PlayerState,Vector2,float> pose)
+            Action<CombatVisualFrame> apply,Action<CombatVisualEvent> impact,Action<PlayerState,Vector2,float> pose,Func<PlayerState,Vector2> mageHand=null)
         {
             _hand=hand;_target=target;_apply=apply;_impact=impact;_pose=pose;
+            _mageHand=mageHand;
             var go=new GameObject("CombatAnimationLayer",typeof(RectTransform));go.transform.SetParent(parent,false);_root=(RectTransform)go.transform;
             _root.anchorMin=Vector2.zero;_root.anchorMax=Vector2.one;_root.offsetMin=_root.offsetMax=Vector2.zero;
             _controls=new GameObject("PlaybackControls",typeof(RectTransform));_controls.AddComponent<CanvasGroup>();_controls.transform.SetParent(_root,false);

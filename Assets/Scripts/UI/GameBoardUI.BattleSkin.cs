@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +16,89 @@ namespace FingerDiceDuel.UI
         private Image _badgeA, _badgeB;
         private ScrollRect _battleLogScroll;
         private PlayerState _battleChoiceOwner;
+
+        // Storage only: this view deliberately has neither a Hand nor a Button.
+        private sealed class MageHandDisplay
+        {
+            public RectTransform Root;
+            public Image Gesture;
+            public Text Value, Label, Storage;
+            public PlayerState Owner;
+            public HandCard[] BodyCards;
+            public bool Ring, Eight;
+        }
+        private readonly Dictionary<RectTransform, MageHandDisplay> _mageHands = new Dictionary<RectTransform, MageHandDisplay>();
+
+        private void RefreshMageHand(HandCard[] cards, PlayerState owner)
+        {
+            if (cards == null || cards.Length < 2 || owner == null) return;
+            var parent = (RectTransform)cards[0].Button.transform.parent;
+            if (!_mageHands.TryGetValue(parent, out var view))
+            {
+                var plate = ArtImage(parent, "MageHandStorage", "UI/hand_plate", Vector2.zero, new Vector2(210, 304));
+                view = new MageHandDisplay { Root = plate.rectTransform, BodyCards = cards };
+                var frame = ArtImage(view.Root, "Frame", "UI/hand_frame_normal", Vector2.zero, new Vector2(210, 304), true);
+                frame.color = new Color(.60f, .72f, 1f);
+                view.Gesture = ArtImage(view.Root, "MageHand", "Animation/fx_arcane_trickster_hand", new Vector2(0, 35), new Vector2(185, 231));
+                view.Gesture.preserveAspect = true;
+                ArtImage(view.Root, "NumberPlate", "UI/label_strip", new Vector2(0, -118), new Vector2(180, 34), true);
+                view.Value = CreateText(view.Root, "Value", new Vector2(-60, -118), new Vector2(48, 42), 30, TextAnchor.MiddleCenter, new Color(.70f, .85f, 1f));
+                UiFont.ApplyBold(view.Value);
+                view.Label = CreateText(view.Root, "Label", new Vector2(25, -118), new Vector2(132, 42), 22, TextAnchor.MiddleCenter, BattleArt.Ink);
+                view.Label.text = "法师手";
+                view.Storage = CreateText(view.Root, "Storage", new Vector2(0, -86), new Vector2(196, 30), 18, TextAnchor.MiddleCenter, new Color(.70f, .85f, 1f));
+                view.Storage.text = "储值";
+                foreach (var graphic in view.Root.GetComponentsInChildren<Graphic>()) graphic.raycastTarget = false;
+                foreach (var panel in _ringPanels) if (ReferenceEquals(panel.Root, parent)) { view.Ring = true; break; }
+                _mageHands.Add(parent, view);
+            }
+            view.Owner = owner;
+            view.Eight = view.Ring && _ringCount == 8;
+            ApplyMageHand(view, owner.IsAlive ? ArcaneTricksterLogic.For(owner)?.MageHandValue : null);
+        }
+
+        private void ApplyMageHand(MageHandDisplay view, int? value)
+        {
+            bool shown = value.HasValue;
+            view.Root.gameObject.SetActive(shown);
+            if (shown) view.Value.text = value.Value.ToString();
+            float scale = view.Ring ? (shown ? (view.Eight ? .40f : .58f) : view.Eight ? (view.Owner == _ringMe ? .51f : .47f) : .65f) : 1f;
+            float y = view.Ring ? (view.Eight ? -54 : -65) : -45;
+            float spacing = view.Ring ? (view.Eight ? 100 : 145) : 240;
+            for (int i = 0; i < view.BodyCards.Length; i++)
+            {
+                var rect = (RectTransform)view.BodyCards[i].Button.transform;
+                // Keep the 1v1 body hands in place: action buttons occupy their right side.
+                float x = shown && view.Ring ? i * spacing : (i == 0 ? -1 : 1) * (view.Ring ? (view.Eight ? 60 : 85) : 120);
+                rect.anchoredPosition = new Vector2(x, y);
+                rect.localScale = Vector3.one * scale;
+            }
+            view.Root.anchoredPosition = new Vector2(view.Ring ? -spacing : -360, y);
+            view.Root.localScale = Vector3.one * scale;
+            view.Value.fontSize = view.Eight ? 40 : 30;
+            view.Label.fontSize = view.Eight ? 32 : 22;
+            view.Storage.fontSize = view.Eight ? 26 : 18;
+        }
+
+        private Vector2 MageHandAnchor(PlayerState player)
+        {
+            foreach (var view in _mageHands.Values)
+                if (ReferenceEquals(view.Owner, player) && view.Root.gameObject.activeInHierarchy)
+                    return CombatPosition(view.Gesture.rectTransform);
+            return CombatTargetAnchor(player);
+        }
+
+        private void AnimateMageHands()
+        {
+            foreach (var view in _mageHands.Values)
+            {
+                if (!view.Root.gameObject.activeInHierarchy) continue;
+                float phase = Time.unscaledTime * 2.2f + view.Root.GetSiblingIndex();
+                view.Gesture.rectTransform.anchoredPosition = new Vector2(0, 35 + Mathf.Sin(phase) * 5);
+                view.Gesture.rectTransform.localRotation = Quaternion.Euler(0, 0, Mathf.Sin(phase * .7f) * 3);
+                view.Gesture.color = new Color(.85f, .90f, 1f, .86f + Mathf.Sin(phase) * .10f);
+            }
+        }
 
         private static void Position(RectTransform rect, Vector2 position, Vector2 size)
         {
@@ -280,6 +365,7 @@ namespace FingerDiceDuel.UI
         private void LateUpdate()
         {
             LayoutBattleActions();
+            AnimateMageHands();
         }
 
         private void LayoutBattleActions()

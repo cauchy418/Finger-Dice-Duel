@@ -17,7 +17,7 @@
             {
                 case "王车易位":return FinalSkillStyle.Portal;
                 case "预兆":case "预知未来":return FinalSkillStyle.Number;
-                case "幻术默发":case "诡诈换位":case "不死奴仆":return FinalSkillStyle.Exchange;
+                case "幻术默发":case "诡诈换位":case "不死奴仆":case "法师之手诈术":return FinalSkillStyle.Exchange;
                 case "奥术守御":case "不死适应":case "法术抗性":return FinalSkillStyle.Ward;
                 case "变形术":return FinalSkillStyle.Sheep;
                 case "咒缚幽灵":return FinalSkillStyle.Specter;

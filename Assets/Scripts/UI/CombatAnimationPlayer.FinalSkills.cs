@@ -19,6 +19,7 @@ namespace FingerDiceDuel.UI
             _skillOrigin=adaptive?SkillBodyAnchor(e.Actor):_target(e.Actor)+Vector2.down*150;_skillTarget=adaptive?SkillBodyAnchor(e.Target):_target(e.Target)+Vector2.down*150;
             _skillFrom=_hand(e.Actor,data?.Source??e.SourceHand);
             _skillTo=data?.Destination!=null?_hand(data.DestinationOwner??e.Target,data.Destination):_skillTarget;
+            if(e.RedirectKind=="法师之手诈术"&&_mageHand!=null)_skillTo=_mageHand(e.Actor);
         }
         private void Picture(int slot,string key,Vector2 at,float size,float alpha,float rotation=0,Vector2? stretch=null,Color? tint=null)
         {
@@ -55,6 +56,15 @@ namespace FingerDiceDuel.UI
                     if(name!="预兆")Digit(1,previous,to+new Vector2(30,-20),pulse*(1-arrive),Color.gray);
                     Picture(1,"fx_psychic",to,105,last*(1-last)*3);break;
                 case FinalSkillStyle.Exchange:
+                    if(name=="法师之手诈术")
+                    {
+                        Picture(0,"fx_arcane_trickster_hand",to,145,pulse,Mathf.Sin(t*Mathf.PI*2)*8);
+                        Picture(1,"fx_force",from,100,pulse*.45f);
+                        // Value is the new body value; previous is the new storage value.
+                        Digit(0,value,Arc(to,from,arrive,55),pulse,new Color(.65f,.85f,1));
+                        Digit(1,previous,Arc(from,to,arrive,55),pulse,BattleArt.Gold);
+                        break;
+                    }
                     Picture(0,"portal_frame",from,130,pulse,15,new Vector2(.55f,1));Picture(1,"portal_frame",to,130,pulse,-15,new Vector2(.55f,1));
                     if(name=="幻术默发")
                     {Digit(0,value,from,pulse*(1-arrive),Color.gray);Digit(1,previous,to,pulse,new Color(.6f,.85f,1));Line(4,Arc(from,to,arrive,40),to,pulse);}

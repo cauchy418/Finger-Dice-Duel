@@ -2224,6 +2224,7 @@ namespace FingerDiceDuel.Core
         {
             if (actor == null) return;
             bool endedAsSheep=actor.IsPolymorphed;
+            bool endedFrozen=actor.HasStatus(StatusEffect.Frozen);
             _statusActionSerial++;
 
             // ---- 燃烧 ----
@@ -2257,7 +2258,8 @@ namespace FingerDiceDuel.Core
             bool suppressed = _suppressedOperationActors.Contains(actor);
             if(!endedAsSheep)foreach (var hook in CharacterBehaviors.Implementers<ITurnEndHook>(actor))
                 // 回合收尾仍处理旧加成/剑歌的失效，但不发动新的回合末技能。
-                if (!suppressed || hook is OathOfConquestLogic || hook is BladesingingLogic song && song.Singing)
+                if ((!suppressed || hook is OathOfConquestLogic || hook is BladesingingLogic song && song.Singing)
+                    && !(endedFrozen && hook is ArcaneTricksterLogic))
                     hook.OnTurnEnded(actor, this);
             ArcaneTurnEnded(actor);
             _suppressedOperationActors.Remove(actor);

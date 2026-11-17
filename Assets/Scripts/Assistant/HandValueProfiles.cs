@@ -68,6 +68,8 @@ namespace FingerDiceDuel.Assistant
         private static void BuildOwn()
         {
             // ---- 战士·勇士（攻+1 / 防0，精通重击）：斩杀线按运算前为1的手估算 ----
+            // Mage hand stores a future digit; ordinary hand utility remains the baseline.
+            Own[CharacterDefinition.ArcaneTricksterId] = new HandValueProfile();
             Own[CharacterDefinition.ChampionId] = new HandValueProfile();
             // 王冠之誓沿用既有基线，显式登记避免新增角色无意走回退。
             Own[CharacterDefinition.OathOfTheCrownId] = new HandValueProfile();

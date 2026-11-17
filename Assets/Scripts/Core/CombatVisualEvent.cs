@@ -15,12 +15,14 @@ namespace FingerDiceDuel.Core
         public string Stats { get; }public int Attack {get;}public int Defense {get;}public int Range {get;}
         public string Emblem { get; }
         public IReadOnlyList<CombatStatusIcon> Icons { get; }
+        public int? MageHandValue { get; }
         private readonly Hand _left,_right;
         public Hand Left => Copy(_left);
         public Hand Right => Copy(_right);
         public CombatVisualPlayer(PlayerState p, GameManager game)
         {
             Player=p;Health=p.Health;MaximumHealth=p.MaximumHealth;Emblem=p.BattleEmblemKey;
+            MageHandValue=p.IsAlive?FingerDiceDuel.Characters.SpecialLogics.ArcaneTricksterLogic.For(p)?.MageHandValue:null;
             int range=StatusRules.EffectiveAttackRange(p,game);if(range<0)range=GameManager.BaseRangeOf(p);
             Attack=StatusRules.EffectiveAttackBonus(p);Defense=StatusRules.EffectiveDefenseBonus(p);Range=range;
             Stats="攻 "+Signed(Attack)+"    防 "+Signed(Defense)+"    距 "+(range==int.MaxValue?"∞":range.ToString());

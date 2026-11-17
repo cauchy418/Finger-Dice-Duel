@@ -380,6 +380,8 @@ namespace FingerDiceDuel.Characters
                 counter: "少量伤害先消耗其防护；用腐朽阻止回复与溢出转化。",
                 interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣火移除。" });
 
+            Add(CharacterDefinition.ArcaneTricksterId,"Arcane Trickster",Alignment.ChaoticNeutral,
+                shortSkill:"回合末可与储值魔法手交换本体手点数。",playGuide:"回合末点击可用本体手交换，或放弃；储存下回合需要的数字。",counter:"锁住本体手或冻结，阻止其交换点数。",interactions:new[]{"仅交换数字，不触发数字效果；完整盾换成非5时正常碎盾。"});
             Add(CharacterDefinition.SchoolOfTransmutationId,"School of Transmutation",Alignment.ChaoticNeutral,
                 shortSkill:"结束可将同数角色变羊；羊有独立8生命。形态进出时可额外运算。",playGuide:"回合结束可选自己或双手无序匹配的角色。变羊或解除后，可用变化莫测再做一次有效运算。",counter:"避免双手匹配。打破羊形态时留意施术者可能再出手，溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
             Add(CharacterDefinition.SchoolOfEnchantmentId,"School of Enchantment",Alignment.NeutralEvil,

@@ -6,6 +6,7 @@
         {
             switch(skill)
             {
+                case "法师之手诈术":return "fx_arcane_trickster_hand";
                 case "王车易位":case "幻术默发":case "幻影实体":case "诡诈换位":case "不死奴仆":return "fx_psychic";
                 case "岁月知识":case "知识赐福":return "Status/knowledge_blessing";
                 case "知识祝福":return "fx_force";

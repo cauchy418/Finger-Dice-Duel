@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1769_passed-success)
+![tests](https://img.shields.io/badge/regression-1789_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -23,7 +23,7 @@
 </tr>
 <tr>
 <td align="center"><sub>冒险模式第一章：老兵手把手教三步运算</sub></td>
-<td align="center"><sub>双将对决：两名同阵营子职叠加，532 种组合</sub></td>
+<td align="center"><sub>双将对决：两名同阵营子职叠加，551 种组合</sub></td>
 </tr>
 </table>
 
@@ -74,7 +74,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1769 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1789 项。
 
 野蛮人职业拥有25点体力，基础攻防−1/−1；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
@@ -82,21 +82,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 项目 | 数量 |
 |---|---|
-| 职业 / 子职 | 12 / 58（战士 7、圣武士 6、牧师 6、野蛮人 4、游侠 2、游荡者 5、吟游诗人 2、法师 9、术士 4、邪术师 4、德鲁伊 4、武僧 5） |
+| 职业 / 子职 | 12 / 59（战士 7、圣武士 6、牧师 6、野蛮人 4、游侠 2、游荡者 6、吟游诗人 2、法师 9、术士 4、邪术师 4、德鲁伊 4、武僧 5） |
 | 对局模式 | 6（剧情、1v1、2v2、双将、8 人阵营、8 人身份） |
 | 伤害类型 | 13 |
 | 负面状态 | 25 |
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
 | 元素反应 | 11 条 |
-| 双将组合 | 532 种无序组合 |
-| 回归测试 | 1769 项通过、0 失败 |
+| 双将组合 | 551 种无序组合 |
+| 回归测试 | 1789 项通过、0 失败 |
+
+新增**游荡者·诡术师（Arcane Trickster）**：混乱中立，攻0／防−1、距离∞，近挥砍、远穿刺。额外法师手初始储值1，只在自己回合末与一只可用本体手互换点数；不参与普通运算，也不能被指定为手部技能目标。详见[角色图鉴](Docs/roster.md#游荡者-rogue6)。
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 本轮修复技能漏接并统一运行时／采样AI配置后，对58个子职全部重采66,964局，包含1v1、2v2、双将、八人阵营和身份随机／偏好选角。[完整胜率与分母](Tools/Statistics/2026-11-11-ai-activation/README.md)
+- 最近完整采样覆盖加入诡术师前的58个子职，共66,964局，包含1v1、2v2、双将、八人阵营和身份随机／偏好选角。新增诡术师尚未采样。[历史胜率与分母](Tools/Statistics/2026-11-11-ai-activation/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
@@ -105,7 +107,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 文档 | 内容 |
 |---|---|
 | [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、25 种负面状态、11 条元素反应 |
-| [角色图鉴](./Docs/roster.md) | 58 名子职的数值与关键机制、阵营分类、全角色胜率 |
+| [角色图鉴](./Docs/roster.md) | 59 名子职的数值与关键机制、阵营分类、最近完整采样的58子职胜率 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [AI状态策略](./Docs/ai-state-policy.md) | 全角色统一接入负面、角色状态、形态、资源与特殊效果权重 |

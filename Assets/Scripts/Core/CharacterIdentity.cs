@@ -34,6 +34,7 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("hunter", "ranger_gloom_stalker", "ranger", "幽域追踪者", "Gloom Stalker"),
             new CharacterIdentity("thief", "rogue_thief", "rogue", "盗贼", "Thief"),
             new CharacterIdentity("assassin", "rogue_assassin", "rogue", "刺客", "Assassin"),
+            new CharacterIdentity("arcane_trickster", "rogue_arcane_trickster", "rogue", "诡术师", "Arcane Trickster"),
             new CharacterIdentity("magician", "rogue_magician", "rogue", "魔术师", "Magician"),
             new CharacterIdentity("swordsman", "fighter_swordsman", "fighter", "剑士", "Swordsman"),
             new CharacterIdentity("monk", "monk_way_of_the_tai_chi", "monk", "太极宗", "Way of the Tai Chi"),

@@ -875,6 +875,8 @@ namespace FingerDiceDuel.UI
             cards[0].NameText.text = "左手";
             cards[1].NameText.text = "右手";
 
+            RefreshMageHand(cards, owner);
+
             RegisterFlashTargets(owner, cards);
         }
 
@@ -1650,6 +1652,7 @@ namespace FingerDiceDuel.UI
                                         IReadOnlyList<Hand> highlightAsChoices,
                                         IReadOnlyList<Hand> extraHighlights)
         {
+            RefreshMageHand(cards, owner);
             foreach (HandCard card in cards)
             {
                 Hand hand = card.Hand;

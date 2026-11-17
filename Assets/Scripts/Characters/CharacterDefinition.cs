@@ -96,6 +96,8 @@ namespace FingerDiceDuel.Core
         public const string ThiefId = "rogue_thief";
         public const string GloomStalkerId = "ranger_gloom_stalker";
         public const string MagicianId = "rogue_magician";
+        public const string ArcaneTricksterId = "rogue_arcane_trickster";
+        public static CharacterDefinition ArcaneTrickster { get; } = new CharacterDefinition(ArcaneTricksterId, "游荡者·诡术师", SpecialLogicType.ArcaneTrickster, defenseBonus: -1, englishName: "Arcane Trickster", description: "诡术施法：距离∞，近距离挥砍、远距离穿刺。法师之手诈术：额外魔法手初始点数1，仅储值，自身回合结束可与一只可用本体手交换点数，可放弃；不触发数字效果。锁手或冻结时不可交换，完整盾换成非5时正常碎盾。");
         public const string SchoolOfEvocationId = "wizard_school_of_evocation";
         public const string WildMagicId = "sorcerer_wild_magic";
         public const string TheGreatOldOneId = "warlock_the_great_old_one";
@@ -535,7 +537,7 @@ namespace FingerDiceDuel.Core
             //    它仍作为兜底定义保留（未登记的逻辑类型会退化成它）。
             Champion, Breaker, SchoolOfConjuration, PathOfTheWarden, LifeDomain, Swashbuckler, PathOfTheBeast,
             Swordsman, WayOfTheNinja, Assassin, OathOfDevotion, TheArchfey, ArcaneArcher, Gambler, OathOfTheCrown,
-            WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
+            WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, ArcaneTrickster, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
             Oathbreaker, PathOfTheBerserker, Tactician,
             SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
             LightDomain, WarDomain, BattleMaster,

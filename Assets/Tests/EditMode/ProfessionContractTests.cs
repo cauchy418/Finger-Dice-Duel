@@ -29,6 +29,7 @@ namespace FingerDiceDuel.Tests
             "hunter|ranger_gloom_stalker|游侠·幽域追踪者|ranger|Gloom Stalker|1|-1|20|1",
             "thief|rogue_thief|游荡者·盗贼|rogue|Thief|0|-1|20|1",
             "assassin|rogue_assassin|游荡者·刺客|rogue|Assassin|2|-1|20|1",
+            "arcane_trickster|rogue_arcane_trickster|游荡者·诡术师|rogue|Arcane Trickster|0|-1|20|2147483647",
             "magician|rogue_magician|游荡者·魔术师|rogue|Magician|0|-1|20|2",
             "swordsman|fighter_swordsman|战士·剑士|fighter|Swordsman|2|-1|20|1",
             "monk|monk_way_of_the_tai_chi|武僧·太极宗|monk|Way of the Tai Chi|0|0|20|1",
@@ -61,7 +62,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(58, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(59, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -89,7 +90,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 7, 6, 6, 9, 4, 4, 2, 5, 2, 5, 4, 4 };
+            int[] counts = { 7, 6, 6, 9, 4, 4, 2, 6, 2, 5, 4, 4 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

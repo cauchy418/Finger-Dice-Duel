@@ -107,13 +107,13 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Current_axis_populations_produce_460_pairs_and_both_orders_can_be_built()
+        public void Current_axis_populations_produce_551_pairs_and_both_orders_can_be_built()
         {
-            // 当前54子职：守序18、中立17、混乱19，共460对。
+            // 当前59子职：守序19、中立20、混乱20，共551对。
             Assert.AreEqual(19,CharacterCodex.Filter("守序",null).Count);
             Assert.AreEqual(20,CharacterCodex.Filter("中立",null).Count);
-            Assert.AreEqual(19,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(532,all.Count);
+            Assert.AreEqual(20,CharacterCodex.Filter("混乱",null).Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(551,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {
@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(Math.Max(CharacterFactory.MaxHealthOf(pair.Primary),CharacterFactory.MaxHealthOf(pair.Secondary)),actor.MaximumHealth);
                 built++;
             }
-            Assert.AreEqual(1064,built);
+            Assert.AreEqual(all.Count * 2,built);
         }
 
         [Test]
@@ -285,7 +285,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Audit_all_111_pairs_for_competing_number_handlers_and_real_operation_failures()
+        public void Audit_all_same_axis_pairs_for_competing_number_handlers_and_real_operation_failures()
         {
             var lines=new List<string>{"主将\t副将\t结果\t效果\t伤害\t段数\t回复量\t手牌状态"};
             var clashes=new List<string>();int operations=0;
@@ -314,7 +314,7 @@ namespace FingerDiceDuel.Tests
                 }
             }
             Assert.AreEqual(0,clashes.Count,"同一个数字被两个子职同时接管："+string.Join(" / ",clashes));
-            Assert.AreEqual(6384,operations);
+            Assert.AreEqual(DualVersusDualHarness.AllDuals().Count * 2 * 6,operations);
             Directory.CreateDirectory("Tools");File.WriteAllLines("Tools/dual-alignment-probes.tsv",lines);
         }
     }

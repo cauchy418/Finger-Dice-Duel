@@ -57,6 +57,7 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.PathOfTheGiant] = () => new PathOfTheGiantLogic();
             _registry[SpecialLogicType.Thief] = () => new ThiefLogic();
             _registry[SpecialLogicType.GloomStalker] = () => new GloomStalkerLogic();
+            _registry[SpecialLogicType.ArcaneTrickster] = () => new ArcaneTricksterLogic();
             _registry[SpecialLogicType.Magician] = () => new MagicianLogic();
             _registry[SpecialLogicType.SchoolOfEvocation] = () => new SchoolOfEvocationLogic();
             _registry[SpecialLogicType.WildMagic] = () => new WildMagicLogic();
