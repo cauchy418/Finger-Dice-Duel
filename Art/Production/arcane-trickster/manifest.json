@@ -1,0 +1,54 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "file": "rogue_arcane_trickster.png",
+      "prompt": "Original dark fantasy tabletop RPG subclass emblem for Rogue Arcane Trickster. Square canvas, centered circular medallion, thin intricate worn ANTIQUE GOLD rim with small pointed diamond ornaments at cardinal directions, charcoal black interior. Realistic exquisite hand-painted textures matching an existing black iron/old gold class badge collection, not vector, not cartoon. Inside: ONE translucent blue-violet spectral HUMAN hand with EXACTLY FIVE digits (four long fingers and one thumb), emerging from a small dark leather cuff bearing old gold clasp, palm angled three quarters, fingers gracefully holding ONE tiny antique gold key between thumb and index. A very small slender silver straight dagger lies diagonally behind the ghostly wrist, violet arcane threads spiral around wrist. Focus on magical extra hand and subtle thief craft, NO top hat, NO playing cards, NO skull, no second hand. Strong clear readable silhouette at small icon scale, controlled bright blue-violet hand against near-black interior, aged gold outer rim fully in frame with generous margin. No text, numbers, letters, watermark. Transparent PNG OUTSIDE the circular medallion, preserve solid dark interior.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-c35c55c2-da81-4fb6-82c0-58f7def6d7c6.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "2272bcf013c407e6f71fc4adf0e70d2821350e133022b5b6dd52d2a4e4702ba4",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "runtime": {
+        "path": "Assets/Resources/Art/Battle/v1/Subclasses/rogue_arcane_trickster.png",
+        "size": [
+          512,
+          512
+        ],
+        "processing": "Authorized program resize with Pillow LANCZOS; source retained unchanged",
+        "sha256": "1266a154164ae114f93ba99a1ceba99dd9af1dde6954bbc19cdedcbd609a3d4d"
+      }
+    },
+    {
+      "file": "fx_arcane_trickster_hand.png",
+      "prompt": "Single standalone transparent VFX game sprite for a dark fantasy RPG, detailed hand-painted spectral human hand emerging from a short tapering magical wrist, palm visible in three-quarter angle, fingers relaxed and curved delicately as if exchanging an invisible object. EXACTLY FIVE fingers total: four long fingers and one distinct anatomically placed thumb. One hand only, normal human proportions, detailed knuckles and tendons, translucent smoky BLUE with VIOLET fingertips and pale silver-blue edge highlights, tiny worn antique-gold cuff ring. No object held, no key, no dagger, no orb, no second hand, no body, no face, no text, no circle, no frame, no scenery, no opaque background. Square canvas, entire hand and wrist centered with generous transparent space around all fingers. Painterly magical texture matching realistic black-iron/aged-gold fantasy icon art, NOT vector/3D/cartoon. Localized wispy arcane strands only near wrist, clean transparent alpha. Designed as a reusable spectral mage-hand animation sprite; clearly readable when scaled to 120px.",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-7133f100-b7cd-47cd-8f74-6176c0fb5a4d.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "sha256": "4eb9585686aed150008f3dadaf781f3529f845e4c0aa088d169b9e259fa7b054",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "runtime": {
+        "path": "Assets/Resources/Art/Battle/v1/Animation/fx_arcane_trickster_hand.png",
+        "size": [
+          512,
+          512
+        ],
+        "processing": "Authorized program resize with Pillow LANCZOS; source retained unchanged",
+        "sha256": "7f188b0af2af71bef1ad3719def1d7793019cf5612fed9e515147582929151ec"
+      }
+    }
+  ],
+  "processing": "Generated PNGs copied byte-for-byte; alpha preserved."
+}
