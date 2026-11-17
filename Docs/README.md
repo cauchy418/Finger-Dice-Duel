@@ -58,6 +58,7 @@
 | [武僧改造](monk-rework-design.md) · [奥法五式](arcane-five-implementation.md) | 专项改造记录 |
 | [战士人物立绘](../Art/Production/fighter-character-illustrations/README.md) | 战士七子职男女14张透明全身立绘、差异说明及生成提示词 |
 | [术士与法师人物立绘](../Art/Production/caster-character-illustrations/README.md) | 术士4子职、法师9子职男女26张透明全身立绘、差异说明及生成提示词 |
+| [青壮年人物立绘](../Art/Production/young-hero-illustrations/README.md) | 战士、术士、法师、圣武士26子职男女52张透明原画，保留原有立绘 |
 | [美术制作](../Art/Production/) | 原图、内置 imagegen 提示词、导入清单 |
 
 ## 统计
