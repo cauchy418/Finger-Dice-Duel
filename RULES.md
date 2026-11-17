@@ -1326,7 +1326,7 @@ UI  →  Assistant  →  Core
 
 | 内容 | 位置 |
 |---|---|
-| EditMode 测试（**1769 项**） | `Assets/Tests/EditMode/` |
+| EditMode 测试（**1789 项功能回归通过**） | `Assets/Tests/EditMode/` |
 | 无头运行 | `powershell -File Tools/HeadlessTests/run-tests.ps1` |
 | Unity 侧编译校验 | 同上，加 `-Define FDD_UNITY_TESTS` |
 | 表现层校验 | `powershell -File Tools/UiCompileCheck/check-ui.ps1` |
@@ -1654,9 +1654,9 @@ UI  →  Assistant  →  Core
 - 任何时刻分出胜负立即停止剩余奖惩；奖惩行动可以嵌套触发新的奖惩。
 - 人类玩家的奖惩行动由操作界面正常提示；AI 自动执行。
 
-**改版前52子职、425种双将的2,000局全AI快照**已接入击杀奖惩，当前 600 局阵营样本见[胜率采样](Tools/Statistics/2026-11-11-ai-activation/README.md)。
+**改版前52子职、425种双将的2,000局全AI快照**已接入击杀奖惩，最近完整58子职采样中的600局阵营样本见[历史胜率采样](Tools/Statistics/2026-11-11-ai-activation/README.md)，不含诡术师。
 
-历史2,000局中，2人方在守序／中立／混乱间轮换667／667／666次；当前600局为各200次。“作为2人阵营”列以该阵营担任2人方的实际局数作分母。角色池、队伍人数与AI策略共同影响结果，不能据此反推1v1／2v2强度。
+历史2,000局中，2人方在守序／中立／混乱间轮换667／667／666次；最近完整采样的600局为各200次。“作为2人阵营”列以该阵营担任2人方的实际局数作分母。角色池、队伍人数与AI策略共同影响结果，不能据此反推1v1／2v2强度。
 
 
 
