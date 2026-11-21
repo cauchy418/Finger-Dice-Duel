@@ -7,7 +7,7 @@
 | 文档 | 内容 |
 |---|---|
 | [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 25 种负面状态 |
-| [角色图鉴](roster.md) | 59 名子职的数值与关键机制、阵营分类、最近完整采样的58子职胜率 |
+| [角色图鉴](roster.md) | 59 名子职的数值与关键机制、阵营分类、本轮59子职完整采样胜率 |
 | [德鲁伊重构与孢子结社](druid-rework-2026-11-05.md) | 独立荒野体力、四结社、充能与双武僧初始气 |
 | [音乐与音频](music-and-audio.md) | 配乐切换逻辑与设置持久化 |
 | [剧情教学](Adventure/four-chapter-v3/README.md) | 四章 40 关，万象回廊与高塔重排 |
@@ -65,6 +65,6 @@
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样](../Tools/Statistics/2026-11-11-ai-activation/README.md) | 最近完整采样：诡术师加入前58子职66,964局，含八人阵营与两组身份；诡术师尚未采样 |
-| [机器数据](../Tools/Statistics/2026-11-11-ai-activation/results.json) | 可复核的原始结果 |
+| [胜率采样](../Tools/Statistics/2026-11-21-class-balance/README.md) | 本轮59子职69,204局，含551种合法双将、八人阵营与两组身份；诡术师已纳入 |
+| [机器数据](../Tools/Statistics/2026-11-21-class-balance/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

@@ -1,0 +1,15 @@
+{
+    "captured_utc":  "2026-11-21T04:07:23.836024+00:00",
+    "source_commit":  "8acafd683f5264ef64a2a1860227a9f15f9dc4de",
+    "source_dirty":  true,
+    "source_sha256":  "49f09980a825467816f095c2ffba64453f2606cb49dbb56b3356b92431aa8124",
+    "test_source_sha256":  "4abc4b479b742bdffe4885c0e94970b301e4af1efdf50b54db7531436cafcf37",
+    "headless_source_sha256":  "35cf95b8f4a5a72236f3255c328aa447e44c272c5e99e64946ee4202248ba3bc",
+    "headless_runner_sha256":  "6c589cb7ec68da2cb4d5e03fb697160808ca405d72d0b85993050c92a931871b",
+    "statistics_tool_sha256":  "18b0cebd537569cece1e432e36b16103c48333dfeaadfa85c75c6ee27a5a84e5",
+    "statistics_runner_sha256":  "9763c724fbb4c3a68a0dfa872123bc1c9d27e33dd1f599433a3fe9321dee4e82",
+    "identity_runner_sha256":  "4d55b2457608c69dfecf0e0988338896e8cf66aaff46b3614505fa76d3ca5cf1",
+    "sampler_assembly_sha256":  "168B745A3EB2F4A5B6C9872232D12289A36EA06425436914790276AB9BC21AFF",
+    "sampler_runtime_version":  "8.0.15",
+    "sampler_processor_affinity":  2147483648
+}

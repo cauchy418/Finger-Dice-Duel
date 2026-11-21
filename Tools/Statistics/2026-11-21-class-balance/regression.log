@@ -101,8 +101,8 @@
 ── AlignmentMigrationTests  (13 项)
    PASS  All_50_alignments_match_the_latest_assignment_and_cancelled_berserker_move
    PASS  Attack_target_prompt_and_effect_display_agree_for_two_five_and_dead_numbers
-   PASS  Audit_all_111_pairs_for_competing_number_handlers_and_real_operation_failures
-   PASS  Current_axis_populations_produce_460_pairs_and_both_orders_can_be_built
+   PASS  Audit_all_same_axis_pairs_for_competing_number_handlers_and_real_operation_failures
+   PASS  Current_axis_populations_produce_551_pairs_and_both_orders_can_be_built
    PASS  Every_selective_rewriter_declares_only_the_results_it_actually_handles
    PASS  Historical_castling_and_archfey_skip_remain_independent_choices
    PASS  Magician_and_giant_keep_dead_numbers_and_double_healing_in_both_orders
@@ -199,6 +199,33 @@
    PASS  Transmutation_repeats_after_an_extra_operation_breaks_the_sheep
    PASS  Validated_tuning_is_mode_specific_and_never_leaks_into_multiplayer
 
+── ArcaneTricksterTests  (25 项)
+   PASS  Ai_exchange_scoring_is_readonly_and_can_select_a_useful_exchange
+   PASS  Campaign_graph_clone_retains_independent_stored_digit_and_body_hands
+   PASS  Close_slashing_and_distant_piercing_use_real_attack_distance
+   PASS  Dual_general_in_either_slot_retains_store_across_sheep_and_wild_shape
+   PASS  Exchange_changes_only_digits_and_does_not_trigger_healing_attack_or_shield
+   PASS  Frozen_last_turn_does_not_offer_exchange_after_status_expires
+   PASS  Human_can_decline_without_changing_digits
+   PASS  Human_start_and_end_exchange_are_independent_single_choices_before_action_and_handoff
+   PASS  Human_start_exchange_breaks_normal_shield_and_then_allows_operation
+   PASS  Human_turn_end_pauses_for_body_hand_click_and_then_starts_next_player
+   PASS  Identity_mode_and_dual_general_distant_attacks_use_the_same_skill
+   PASS  Locked_concealed_and_restrained_hands_are_excluded_and_revalidated
+   PASS  Mage_hand_visual_frames_and_exchange_event_keep_immutable_digits
+   PASS  Mage_hand_visual_hides_while_dead_polymorphed_or_wild_shaped_and_returns_with_store
+   PASS  Multiplayer_modes_keep_exchange_on_owner_even_when_current_player_has_advanced
+   PASS  Pending_choice_checks_death_freeze_and_polymorph_again
+   PASS  Real_board_ai_resolves_start_and_end_exchange_without_human_prompt_and_full_match_finishes
+   PASS  Real_board_double_shield_skip_offers_exchange_and_breaks_chosen_shield
+   PASS  Registered_chaotic_neutral_rogue_has_explicit_profile_and_two_body_hands
+   PASS  Same_digit_preserves_complete_shield_and_shield_storage_is_not_a_targetable_shield
+   PASS  Shield_break_death_aborts_exchange_and_dead_owner_cannot_receive_choices
+   PASS  Shield_exchange_notifies_normal_break_hooks_and_does_not_form_new_shields
+   PASS  Start_decline_is_final_and_next_own_turn_offers_again
+   PASS  Start_exchange_is_only_for_active_owner_and_respects_freeze_locks_and_forms
+   PASS  Start_pending_choice_revalidates_hand_status_and_shapeshift
+
 ── ArithmeticTests  (11 项)
    PASS  Adding_1_leaves_the_value_unchanged
    PASS  Addition_is_commutative
@@ -247,7 +274,7 @@
    PASS  WayOfTheTaiChi_attacking_normally_is_still_bludgeoning
 
 ── BarbarianReworkTests  (16 项)
-   PASS  All_barbarians_have_the_shared_base_panel_and_slashing_type
+   PASS  Barbarian_class_and_subclass_bonuses_match_roster_defaults_and_slashing_type
    PASS  Beast_accumulates_soul_then_heals_and_grows_at_turn_end
    PASS  Beast_waits_for_enough_souls_and_growth_uses_missing_health_not_maximum
    PASS  Berserker_low_health_five_attacks_and_leech_uses_actual_health_damage
@@ -263,6 +290,20 @@
    PASS  Warden_oath_also_clears_untimed_attack_markers
    PASS  Warden_oath_clears_attached_statuses_but_keeps_independent_knowledge_damage
    PASS  Warden_reflection_waits_for_human_oath_before_damage_and_turn_end
+
+── BardInspirationTests  (12 项)
+   PASS  Adjusted_attack_number_is_used_by_defensive_lore_records
+   PASS  Ai_scores_bard_adjusted_lethal_result_without_mutation_and_uses_it_in_real_turn
+   PASS  Counterplay_accounts_for_both_bards_adjusting_three_into_an_attack
+   PASS  Cutting_words_inflicts_two_turn_confusion_directly_with_defender_as_source
+   PASS  Effectless_operations_do_not_offer_bard_choice_or_trigger_effects
+   PASS  Headless_choice_is_once_per_operation_and_uses_existing_decimal_boundaries
+   PASS  Human_both_bards_choose_adjustment_before_target_and_commit_final_digit
+   PASS  Keep_result_is_explicit_and_repeated_choice_cannot_adjust_twice
+   PASS  Only_final_adjusted_digit_triggers_attack_shield_or_healing
+   PASS  Portent_replacement_follows_bard_adjustment_and_wins_in_preview_and_commit
+   PASS  Prepared_bard_choice_is_cleared_on_cancel_and_revalidates_polymorph
+   PASS  Suppressed_and_dizzy_operations_do_not_offer_bard_skills
 
 ── BattleReadabilityTests  (9 项)
    PASS  Declining_power_shot_does_not_log_it_as_activated
@@ -355,13 +396,15 @@
    PASS  Two_shields_prompts_the_defender_to_choose
    PASS  Ui_flow_reaches_the_defense_choice_when_defender_has_two_shields
 
-── BreakerAiCounterplayTests  (7 项)
+── BreakerAiCounterplayTests  (9 项)
    PASS  Audited_attack_roles_deny_new_attack_opportunities
    PASS  Beast_counterplay_denies_new_sum_seven_soul_and_recovery
    PASS  Default_ai_breaks_before_five_plus_three_attack
    PASS  Devotion_counterplay_denies_new_shield_and_shock
    PASS  Enabled_chain_breaks_before_five_plus_three_attack
    PASS  Forced_gambling_suppresses_operand_denial_for_non_gamblers
+   PASS  Trickster_counterplay_anticipates_start_swap_without_changing_live_digits
+   PASS  Trickster_counterplay_requires_an_available_body_source_and_counts_existing_threat_once
    PASS  Unchanged_operand_that_already_grants_beast_soul_is_not_new_risk
 
 ── BreakerAttackOrderTests  (8 项)
@@ -373,6 +416,17 @@
    PASS  Range_break_collects_chain_and_breaks_shield_before_same_attack
    PASS  Range_chain_ai_chooses_enemy_shield_and_never_allied_shield
    PASS  Range_chain_hits_a_distant_shielded_enemy_in_four_and_eight_player_boards
+
+── BurningReactionTests  (9 项)
+   PASS  Burning_deals_two_fire_at_turn_end
+   PASS  Element_ai_rewards_new_scorch_but_not_reapplication_or_immunity
+   PASS  Fire_immunity_suppresses_reaction_even_when_consumed
+   PASS  Fire_on_burning_applies_existing_scorch_and_refreshes_burn
+   PASS  First_fire_hit_only_burns
+   PASS  Repeated_reaction_refreshes_scorch_instead_of_stacking
+   PASS  Scorch_duration_obeys_guard_and_resistance
+   PASS  Second_fire_segment_reacts_with_first_segments_burning
+   PASS  Status_fire_damage_does_not_react_with_burning
 
 ── CampaignFlowTests  (8 项)
    PASS  Campaign_player_copy_contains_story_and_teaching_instead_of_implementation_notes
@@ -415,21 +469,21 @@ COMBAT PASS L7 rounds=13 win=True
 COMBAT PASS L8 rounds=4 win=True
 COMBAT PASS L9 rounds=7 win=False
 COMBAT PASS L10 rounds=13 win=False
-COMBAT PASS L11 rounds=12 win=True
+COMBAT PASS L11 rounds=16 win=True
 COMBAT PASS L12 rounds=27 win=False
 COMBAT PASS L13 rounds=8 win=False
 COMBAT PASS L14 rounds=20 win=True
-COMBAT PASS L15 rounds=16 win=True
+COMBAT PASS L15 rounds=13 win=False
 COMBAT PASS L16 rounds=12 win=True
 COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
-COMBAT PASS L19 rounds=19 win=False
+COMBAT PASS L19 rounds=20 win=True
 COMBAT PASS L20 rounds=7 win=False
 COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
 COMBAT PASS L23 rounds=14 win=True
 COMBAT PASS L24 rounds=13 win=False
-COMBAT PASS L25 rounds=11 win=False
+COMBAT PASS L25 rounds=8 win=False
 COMBAT PASS L26 rounds=20 win=True
 COMBAT PASS L27 rounds=15 win=False
 COMBAT PASS L28 rounds=8 win=True
@@ -457,7 +511,7 @@ V3 GUIDE PASS L14 round=2
 V3 GUIDE PASS L15 round=2
 V3 GUIDE PASS L16 round=2
 V3 GUIDE PASS L17 round=3
-V3 GUIDE PASS L18 round=30
+V3 GUIDE PASS L18 round=32
 V3 GUIDE PASS L19 round=6
 V3 GUIDE PASS L21 round=3
 V3 GUIDE PASS L22 round=3
@@ -489,19 +543,19 @@ V3 COMBAT PASS L8 rounds=3
 V3 COMBAT PASS L9 rounds=8
 V3 COMBAT PASS L10 rounds=13
 V3 COMBAT PASS L11 rounds=51
-V3 COMBAT PASS L12 rounds=10
+V3 COMBAT PASS L12 rounds=7
 V3 COMBAT PASS L13 rounds=6
 V3 COMBAT PASS L14 rounds=11
 V3 COMBAT PASS L15 rounds=6
 V3 COMBAT PASS L16 rounds=11
 V3 COMBAT PASS L17 rounds=11
-V3 COMBAT PASS L18 rounds=36
+V3 COMBAT PASS L18 rounds=42
 V3 COMBAT PASS L19 rounds=25
-V3 COMBAT PASS L20 rounds=39
+V3 COMBAT PASS L20 rounds=2
 V3 COMBAT PASS L21 rounds=12
 V3 COMBAT PASS L22 rounds=8
 V3 COMBAT PASS L23 rounds=18
-V3 COMBAT PASS L24 rounds=28
+V3 COMBAT PASS L24 rounds=20
 V3 COMBAT PASS L25 rounds=8
 V3 COMBAT PASS L26 rounds=16
 V3 COMBAT PASS L27 rounds=11
@@ -532,7 +586,8 @@ REACTION 10 Fire damage=9 applied=None
 REACTION 11 Lightning damage=6 applied=None
 REACTION 12 Acid damage=6 applied=None
 REACTION 13 Poison damage=6 applied=None
-   PASS  Gallery_uses_thirteen_real_typed_hits_and_bladesong_survives_healing
+REACTION 14 Fire damage=6 applied=None
+   PASS  Gallery_uses_fourteen_real_typed_hits_and_bladesong_survives_healing
    PASS  Heavy_fighter_demonstrates_attack_and_defense_without_champion
    PASS  Outpost_demonstrates_real_critical_vulnerability_and_both_operators
    PASS  Retry_restores_trial_model_and_delegates_without_reapplying_rewards
@@ -935,7 +990,7 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Dual_gambler_human_can_open_the_reroll_prompt_and_pay_for_a_new_roll
    PASS  Dual_gambler_is_eligible_for_core_gambling_in_both_component_orders
    PASS  Dual_gambler_normal_operation_requires_next_gamble_and_gambling_clears_it
-德鲁伊·大地结社+法师·惑控学派 vs 游荡者·赌徒+法师·变化学派
+武僧·四象宗+术士·幽影魔法 vs 游荡者·赌徒+游荡者·诡术师
    PASS  Dual_sampling_seed_4048400_completes_without_a_gambling_stall
    PASS  Transmutation_extra_operation_uses_arithmetic_for_human_and_ai_gamblers
 
@@ -1696,7 +1751,7 @@ REACTION 13 Poison damage=6 applied=None
    PASS  After_the_type_is_consumed_the_wizard_may_abandon_again
    PASS  Ai_mage_applies_a_status_in_a_headless_match
    PASS  Burn_deals_three_at_turn_end_and_a_shield_can_block_it
-   PASS  Burn_deals_three_when_undefended
+   PASS  Burn_deals_two_when_undefended
    PASS  Decay_blocks_healing_during_a_turn
    PASS  Freeze_halves_a_real_operation_result
    PASS  Freeze_halves_but_the_mage_has_no_odd_result_to_worry_about
@@ -1825,26 +1880,27 @@ REACTION 13 Poison damage=6 applied=None
 ── SkillActivationTests  (2 项)
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
-战士·勇士        19 / 30          63%
-战士·破阵者       28 / 30          93%
+战士·勇士        17 / 30          57%
+战士·破阵者       29 / 30          97%
 法师·咒法学派      30 / 30          100%
 野蛮人·守望者道途     29 / 30          97%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     23 / 30          77%
-战士·剑士        13 / 30          43%
-武僧·忍宗        25 / 30          83%
-游荡者·刺客        7 / 30          23%
+野蛮人·野兽道途     20 / 30          67%
+战士·剑士        11 / 30          37%
+武僧·忍宗        26 / 30          87%
+游荡者·刺客        8 / 30          27%
 圣武士·奉献之誓     30 / 30          100%
-邪术师·至高妖精      1 / 30          3%
+邪术师·至高妖精      2 / 30          7%
 战士·魔射手       30 / 30          100%
 游荡者·赌徒       30 / 30          100%
 圣武士·王冠之誓     28 / 30          93%
 武僧·太极宗       29 / 30          97%
-野蛮人·巨人道途      9 / 30          30%
+野蛮人·巨人道途     11 / 30          37%
 游荡者·盗贼       10 / 30          33%
-游侠·幽域追踪者      9 / 30          30%
+游侠·幽域追踪者     10 / 30          33%
 游荡者·魔术师      30 / 30          100%
+游荡者·诡术师       0 / 30          0%
 法师·塑能学派       0 / 30          0%
 术士·狂野魔法       0 / 30          0%
 邪术师·旧日支配者      0 / 30          0%
@@ -1884,7 +1940,7 @@ REACTION 13 Poison damage=6 applied=None
 武僧·醉拳宗        0 / 30          0%
 牧师·知识领域       0 / 30          0%
 
-尚未发动过招牌技能的角色（待补专属策略）：法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·净化领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗、牧师·知识领域
+尚未发动过招牌技能的角色（待补专属策略）：游荡者·诡术师、法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·净化领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗、牧师·知识领域
    PASS  Ai_activates_signature_skills
 对 战士·破阵者：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
 对 法师·咒法学派：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1]
@@ -2288,5 +2344,5 @@ REACTION 13 Poison damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1769 / 失败 0
+通过 1817 / 失败 0
 独立统计测试已跳过 8 项。

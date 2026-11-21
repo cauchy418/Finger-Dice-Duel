@@ -12,7 +12,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1789_passed-success)
+![tests](https://img.shields.io/badge/regression-1817_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -32,6 +32,8 @@
 1. **点自己的一只手**——这只手做运算手。
 2. **点任一其他角色的一只手**——借它的数字当加数。队友可以借，也可以是攻击目标。
 3. **个位出结果**，再按提示选攻击目标、主动技能或防御技能。
+
+吟游诗人的两种子职都可在正常运算后选择结果+1、−1或保留，再按最终数字选目标和结算；沿用十进制归一化，0变1。诡术师则在自身回合开始、结束各有一次独立的法师手储值交换机会，可分别放弃。
 
 | 结果 | 基础效果 |
 |---|---|
@@ -74,9 +76,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1789 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1817 项。
 
-野蛮人职业拥有25点体力，基础攻防−1/−1；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
+野蛮人职业拥有25点体力，职业基础攻防−2/−2；狂战士子职攻击+1，守望者子职防御+1，巨人子职攻防各+1，野兽无额外初始加成；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
 ## 现在有什么
 
@@ -87,18 +89,18 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 伤害类型 | 13 |
 | 负面状态 | 25 |
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
-| 元素反应 | 11 条 |
+| 元素反应 | 12 条 |
 | 双将组合 | 551 种无序组合 |
-| 回归测试 | 1789 项通过、0 失败 |
+| 回归测试 | 1817 项通过、0 失败 |
 
-新增**游荡者·诡术师（Arcane Trickster）**：混乱中立，攻0／防−1、距离∞，近挥砍、远穿刺。额外法师手初始储值1，只在自己回合末与一只可用本体手互换点数；不参与普通运算，也不能被指定为手部技能目标。详见[角色图鉴](Docs/roster.md#游荡者-rogue6)。
+新增**游荡者·诡术师（Arcane Trickster）**：混乱中立，攻0／防−1、距离∞，近挥砍、远穿刺。额外法师手初始储值1，可在自己回合开始、结束各与一只可用本体手互换一次点数；不参与普通运算，也不能被指定为手部技能目标。详见[角色图鉴](Docs/roster.md#游荡者-rogue6)。
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 最近完整采样覆盖加入诡术师前的58个子职，共66,964局，包含1v1、2v2、双将、八人阵营和身份随机／偏好选角。新增诡术师尚未采样。[历史胜率与分母](Tools/Statistics/2026-11-11-ai-activation/README.md)
+- 本轮完整重采59个子职，共69,204局，包含1v1、2v2、双将、八人阵营和身份随机／偏好选角。[胜率与分母](Tools/Statistics/2026-11-21-class-balance/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
@@ -106,8 +108,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、25 种负面状态、11 条元素反应 |
-| [角色图鉴](./Docs/roster.md) | 59 名子职的数值与关键机制、阵营分类、最近完整采样的58子职胜率 |
+| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、25 种负面状态、12 条元素反应 |
+| [角色图鉴](./Docs/roster.md) | 59 名子职的数值与关键机制、阵营分类、本轮59子职胜率 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [AI状态策略](./Docs/ai-state-policy.md) | 全角色统一接入负面、角色状态、形态、资源与特殊效果权重 |

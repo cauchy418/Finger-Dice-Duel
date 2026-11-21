@@ -25,9 +25,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-最新结果：**1789 项功能回归通过，0 失败**；当前59子职，诡术师新增20项专项已纳入。最新表现层编译与组件冲突检查退出码为0；这项检查不等同于Unity实机验证。
+当前59子职，本轮功能回归、表现层编译与Unity/NUnit条件编译结果见[本轮报告](../Tools/Statistics/2026-11-21-class-balance/README.md)。编译检查不等同于Unity实机验证。
 
-以下为诡术师加入前的历史验收：功能回归跳过8项独立统计，另行完成10,092次选点审计；58子职汇总66,964局，六组使用同一冻结程序集完整重采，见[最近完整历史胜率](../Tools/Statistics/2026-11-11-ai-activation/README.md)，不含诡术师。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。这些历史引擎记录不代表诡术师完成了实机验收。
+本轮功能回归1817项通过、0失败，独立统计工具9项通过；表现层及Unity/NUnit程序集边界编译通过。新增覆盖诡术师起止交换与储值反制、吟游结果修正与预兆顺序、切割语困惑，以及燃烧反应的多段、格挡、抗性和免疫。完整采样与最终回归复用同一冻结程序集。宿主一次UI编译发生.NET原生访问异常，使用单处理器且关闭分层编译后完整重跑通过。
+
+本轮功能回归跳过8项独立统计，另行完成10,443次选点审计；59子职汇总69,204局，覆盖551种合法双将，六组使用同一冻结程序集完整重采，见[本轮胜率](../Tools/Statistics/2026-11-21-class-balance/README.md)，包含诡术师。以下引擎接入记录保留历史验收口径。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。这些历史引擎记录不代表诡术师完成了实机验收。
 
 ## 精简后的完整性核查（历史快照）
 
@@ -44,7 +46,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | [RULES](../RULES.md) | 权威规则、完整技能数值、状态与特殊交互 |
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [模式与战斗](modes-and-combat.md) | 回合流程、模式细则、伤害类型、状态与元素反应 |
-| [角色图鉴](roster.md) | 59 名子职数值、阵营分类与最近完整58子职历史胜率 |
+| [角色图鉴](roster.md) | 59 名子职数值、阵营分类与本轮59子职完整采样胜率 |
 | [图鉴写法](../CODE-STYLE.md) | 文案长度、关键交互与排版约定 |
 | [测试工具](../Tools/HeadlessTests/README.md) | 环境、参数与专项运行方法 |
 | [全角色AI策略与权重](ai-strategy-reference.md) | 59 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
