@@ -4,6 +4,8 @@
 
 # 指骰对决 · Finger Dice Duel
 
+最近完整胜率仍为[2026-11-21采样](Tools/Statistics/2026-11-21-class-balance/README.md)，包含吟游结果±1移除前的规则和旧诡术师AI；本次调整尚未重新采样。
+
 **两只手的数字，就是你的骰子。**
 
 每人左右各一只手，手值 1–9。选自己一只手当运算手，再借走任意一名角色的一只加数手，个位定乾坤：4 / 6 / 8 打伤害，5 合成完整护盾，9 回复生命，满十归一、0 变 1。五十多个子职把这条算式改写成了各自的脾气——有人合盾时顺手砸人，有人把 9 变成刀，有人干脆掷骰子。
@@ -12,7 +14,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1817_passed-success)
+![tests](https://img.shields.io/badge/regression-1810_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -33,7 +35,7 @@
 2. **点任一其他角色的一只手**——借它的数字当加数。队友可以借，也可以是攻击目标。
 3. **个位出结果**，再按提示选攻击目标、主动技能或防御技能。
 
-吟游诗人的两种子职都可在正常运算后选择结果+1、−1或保留，再按最终数字选目标和结算；沿用十进制归一化，0变1。诡术师则在自身回合开始、结束各有一次独立的法师手储值交换机会，可分别放弃。
+诡术师在自身回合开始、结束各有一次独立的法师手储值交换机会，可分别放弃。
 
 | 结果 | 基础效果 |
 |---|---|
@@ -76,7 +78,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1817 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1810 项。
 
 野蛮人职业拥有25点体力，职业基础攻防−2/−2；狂战士子职攻击+1，守望者子职防御+1，巨人子职攻防各+1，野兽无额外初始加成；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
@@ -91,7 +93,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 角色状态 | 6（圣火 / 剑歌 / 战争祝福 / 醉拳 / 神佑医者 / 知识祝福） |
 | 元素反应 | 12 条 |
 | 双将组合 | 551 种无序组合 |
-| 回归测试 | 1817 项通过、0 失败 |
+| 回归测试 | 1810 项通过、0 失败 |
 
 新增**游荡者·诡术师（Arcane Trickster）**：混乱中立，攻0／防−1、距离∞，近挥砍、远穿刺。额外法师手初始储值1，可在自己回合开始、结束各与一只可用本体手互换一次点数；不参与普通运算，也不能被指定为手部技能目标。详见[角色图鉴](Docs/roster.md#游荡者-rogue6)。
 
