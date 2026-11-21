@@ -197,7 +197,7 @@ namespace FingerDiceDuel.Tests
             game.PlayerA.ApplyStatus(StatusEffect.Burn);
             board.BeginTurn();
             Assert.True(board.SkipTurn());
-            Assert.AreEqual(17, game.PlayerA.Health);
+            Assert.AreEqual(18, game.PlayerA.Health);
             Assert.AreEqual(1, game.PlayerA.StatusTurnsLeft(StatusEffect.Burn));
             Assert.AreEqual(1, game.PlayerA.StatusTurnsLeft(StatusEffect.Frozen));
         }

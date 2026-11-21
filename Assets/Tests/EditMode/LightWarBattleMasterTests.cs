@@ -225,7 +225,7 @@ namespace FingerDiceDuel.Tests
         {
             var g=Game(CharacterDefinition.LightDomain,CharacterDefinition.Champion,out var a,out var b,out _,out _);
             a.ApplyStatus(StatusEffect.Burn,2);g.ResolveStatusTurnEnd(a);
-            Assert.AreEqual(17,a.Health);Assert.IsFalse(a.HasStatus(StatusEffect.HolyLight));
+            Assert.AreEqual(18,a.Health);Assert.IsFalse(a.HasStatus(StatusEffect.HolyLight));
             var war=CharacterFactory.CreatePlayer("W",CharacterDefinition.WarDomain);
             var attack=new AttackContext(war,war,war.LeftHand,1){IsStatusDamage=true,IgnoreStatBonuses=true};
             attack.Resolve(null,null);Assert.AreEqual(0,((WarDomainLogic)war.Character).SkillUseCount);

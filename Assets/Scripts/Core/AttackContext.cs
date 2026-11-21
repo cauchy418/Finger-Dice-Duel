@@ -788,7 +788,7 @@ namespace FingerDiceDuel.Core
             if(_visualReaction&&!_visualReactionShown&&!WasTypeImmune&&(LandedHits>0||BlockedHits>0))
             {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender,new SkillVisualData(variant:_reactionVariant));}
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
-            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction) return;
+            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction && !_burnReaction) return;
 
             StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
                 : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
@@ -812,7 +812,7 @@ namespace FingerDiceDuel.Core
             // 使用攻击开始时的免疫快照：临时修正已在整次攻击末消耗，仍须阻止本击的元素状态。
             if (WasTypeImmune && AttackDamageTypes.IsMagic(AttackType)) return;
 
-            if (status == StatusEffect.None) return;
+            if (status == StatusEffect.None && !_burnReaction) return;
 
             // 取消 / 一段都没落地 -> 不算命中
             if (HitCount == 0) return;
@@ -830,6 +830,13 @@ namespace FingerDiceDuel.Core
                     if(refreshed!=StatusEffect.None)manager?.NoteSkill(Attacker,"元素反应",$"{victim.Name}：{StatusNames.Of(refreshed)}刷新至{reactionTurns}回合");
                 }
                 if(_sonicCrossReaction&&reactionTurns>0)StatusRules.ApplySonicCrossReaction(victim,AttackType,Attacker,manager,reactionTurns,true);
+                if(hit.AttackType==AttackDamageType.Fire&&victim.HasStatus(StatusEffect.Burn)&&reactionTurns>0)
+                {
+                    victim.ApplyStatus(StatusEffect.Scorch,reactionTurns,Attacker);
+                    if(!_visualReactionShown){_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",victim,new SkillVisualData(variant:"fire_burn"));}
+                    if(victim.HasStatus(StatusEffect.Scorch))manager?.NoteSkill(Attacker,"元素反应",$"{victim.Name}：灼伤{reactionTurns}回合");
+                }
+                if(status==StatusEffect.None)continue;
                 string penalty=(hit.Guard!=AttackGuard.None?"格挡−1":"")+(hit.Resisted?(hit.Guard!=AttackGuard.None?"，抗性−1":"抗性−1"):"");
                 if(turns<=0){manager?.NoteSkill(Attacker,"附加抵挡",$"第{hit.Index+1}段：{penalty}，附加0回合，不施加或刷新状态");continue;}
                 int extendedFrom=0;

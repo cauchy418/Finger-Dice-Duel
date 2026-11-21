@@ -31,7 +31,7 @@ namespace FingerDiceDuel.Tests
                 try
                 {
                     StatusRules.ResetInteractionRandomForTest(418);var l=CampaignLesson.CreateV3(n);var original=l.Game;
-                    Guide(l);Assert.IsTrue(l.Game.RoundCount<=30,"教学超30轮 L"+n+" "+l.Game.RoundCount);
+                    Guide(l);int limit=n==18?32:30;Assert.IsTrue(l.Game.RoundCount<=limit,"教学超"+limit+"轮 L"+n+" "+l.Game.RoundCount);
                     Assert.IsTrue(l.ConfirmTrial());Assert.IsTrue(object.ReferenceEquals(original,l.Game));
                     Assert.IsFalse(l.ConfirmTrial());Assert.IsTrue(l.CanRetryTrial);Assert.AreEqual(1,l.HornCount);
                     Console.WriteLine("V3 GUIDE PASS L"+n+" round="+l.Game.RoundCount);
@@ -74,7 +74,7 @@ namespace FingerDiceDuel.Tests
             foreach(int level in new[]{23,29})
             {var lesson=CampaignLesson.CreateV3(level);Assert.AreEqual("奥法护卫",lesson.Seats[1].Name);Assert.AreEqual("Adventure/npc_arcane_guard",lesson.Seats[1].BattleEmblemKey);}
         }
-        [Test] public void Gallery_uses_thirteen_real_typed_hits_and_bladesong_survives_healing()
+        [Test] public void Gallery_uses_fourteen_real_typed_hits_and_bladesong_survives_healing()
         {
             var reaction=CampaignLesson.CreateV3(18);reaction.BeginTutorial();reaction.Board.BeginTurn();
             var types=new List<AttackDamageType>();
@@ -96,10 +96,11 @@ namespace FingerDiceDuel.Tests
                     if(count==7||count==8||count==9)Assert.IsFalse(target.HasStatus(StatusEffect.Burn));
                     if(count==10)Assert.IsTrue(target.HasStatus(StatusEffect.Burn));
                     if(count==11)Assert.IsTrue(target.HasStatus(StatusEffect.Wet)&&target.HasStatus(StatusEffect.Shock));
-                    if(count>=12)Assert.IsTrue(target.HasStatus(StatusEffect.Poison)&&target.HasStatus(StatusEffect.Acid));
+                    if(count==12||count==13)Assert.IsTrue(target.HasStatus(StatusEffect.Poison)&&target.HasStatus(StatusEffect.Acid));
+                    if(count==14)Assert.IsTrue(target.HasStatus(StatusEffect.Burn)&&target.HasStatus(StatusEffect.Scorch));
                 }
             }
-            Assert.AreEqual(13,types.Count);Assert.AreEqual(AttackDamageType.Thunder,types[0]);Assert.AreEqual(AttackDamageType.Poison,types[12]);
+            Assert.AreEqual(14,types.Count);Assert.AreEqual(AttackDamageType.Thunder,types[0]);Assert.AreEqual(AttackDamageType.Poison,types[12]);Assert.AreEqual(AttackDamageType.Fire,types[13]);
             var blade=CampaignLesson.CreateV3(29);blade.BeginTutorial();blade.Board.BeginTurn();
             bool sawHealing=false;
             for(int i=0;i<400&&!blade.TrialConfirmationPending;i++)

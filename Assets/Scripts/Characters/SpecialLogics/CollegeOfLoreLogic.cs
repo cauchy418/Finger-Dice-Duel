@@ -2,7 +2,7 @@
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    public sealed class CollegeOfLoreLogic : CharacterTemplate,ILoreRecord,ITurnEndHook,IWholeAttackDefense,IAttackTypeProvider
+    public sealed class CollegeOfLoreLogic : CharacterTemplate,ILoreRecord,ITurnEndHook,IWholeAttackDefense,IAttackTypeProvider,IBardInspiration
     {
         private readonly HashSet<int> _records=new HashSet<int>();private bool? _defend;private int _preparedValue;
         public override string DisplayName=>"吟游诗人·逸闻学院";
@@ -42,7 +42,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             bool use=_defend==true&&_preparedValue==value;
             if(game?.AnsweredLookupFor==null)use=SkillChoicePolicy.Choose(NewSubclassChoices.LoreDefense,NewSubclassChoices.YesNo("减伤","Subclasses/bard_college_of_lore"),context.Defender,context.Attacker,game)==1;
             _defend=null;if(!use)return;_records.Remove(value);context.HalveWholeAttackDamage();
-            game?.NoteSkill(context.Defender,"切割语",$"清除记录{value}，本次伤害减半",context.Attacker,new SkillVisualData(value:value,variant:"consume"));
+            context.Attacker.ApplyStatus(StatusEffect.Confusion,2,context.Defender);
+            game?.NoteSkill(context.Defender,"切割语",$"清除记录{value}，本次伤害减半，攻击者困惑2回合",context.Attacker,new SkillVisualData(value:value,variant:"consume"));
         }
         public override AttackDamageType AttackTypeOf(AttackContext context)=>AttackDamageType.Bludgeoning;
     }

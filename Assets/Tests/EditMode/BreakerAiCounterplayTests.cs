@@ -64,6 +64,26 @@ namespace FingerDiceDuel.Tests
             Assert.True(AiStatePolicy.Rules["effect:crowd_gambling"].Applies(g.PlayerB,g));
             Assert.False(AiStatePolicy.Rules["effect:crowd_gambling"].Applies(g.PlayerA,g));
         }
+        [Test] public void Trickster_counterplay_anticipates_start_swap_without_changing_live_digits()
+        {
+            var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.ArcaneTrickster,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+            var a=g.PlayerA;var foe=g.PlayerB;
+            a.LeftHand.SetValue(1);a.RightHand.SetValue(1);foe.LeftHand.SetValue(2);foe.RightHand.SetValue(2);
+            // Visible 2+7 only heals a full-health foe; reserve 1+7 creates an 8 attack.
+            Assert.True(CounterScore(g,a,7)<CounterScore(g,a,1));
+            Assert.AreEqual(1,a.LeftHand.Value);Assert.AreEqual(2,foe.LeftHand.Value);Assert.AreEqual(2,foe.RightHand.Value);
+            Assert.AreEqual(1,FingerDiceDuel.Characters.SpecialLogics.ArcaneTricksterLogic.For(foe).MageHandValue);
+        }
+        [Test] public void Trickster_counterplay_requires_an_available_body_source_and_counts_existing_threat_once()
+        {
+            var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.ArcaneTrickster,new SimpleChoiceProvider(),new SimpleChoiceProvider());
+            var a=g.PlayerA;var foe=g.PlayerB;
+            a.LeftHand.SetValue(1);a.RightHand.SetValue(7);foe.LeftHand.SetValue(2);foe.RightHand.SetValue(2);
+            Assert.AreEqual(0,CounterScore(g,a,7));
+            foe.LeftHand.Lock();foe.RightHand.Lock();
+            a.RightHand.SetValue(1);Assert.AreEqual(0,CounterScore(g,a,7));
+        }
+
         [Test] public void Unchanged_operand_that_already_grants_beast_soul_is_not_new_risk()
         {
             var g=CharacterFactory.CreateMatch(CharacterDefinition.Blank,CharacterDefinition.PathOfTheBeast,new SimpleChoiceProvider(),new SimpleChoiceProvider());

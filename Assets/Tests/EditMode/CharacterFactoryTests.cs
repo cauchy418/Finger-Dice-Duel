@@ -54,8 +54,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(-1, schoolOfConjuration.AttackBonus, "法师·咒法学派攻击 -1");
 
             var pathOfTheWarden = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.PathOfTheWarden);
-            Assert.AreEqual(-1, pathOfTheWarden.AttackBonus);
-            Assert.AreEqual(-1, pathOfTheWarden.DefenseBonus, "野蛮人职业防御 -1");
+            Assert.AreEqual(-2, pathOfTheWarden.AttackBonus);
+            Assert.AreEqual(-1, pathOfTheWarden.DefenseBonus, "野蛮人职业防御 -2，守望者子职 +1");
 
             var blank = (CharacterTemplate)CharacterFactory.CreateBehavior(CharacterDefinition.Blank);
             Assert.AreEqual(0, blank.AttackBonus);

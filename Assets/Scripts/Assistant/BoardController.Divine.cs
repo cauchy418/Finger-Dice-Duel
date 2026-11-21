@@ -33,6 +33,8 @@ namespace FingerDiceDuel.Assistant
         }
         private void ContinueSelectedOperation()
         {
+            if (_game.RequestBardOperation(ActivePlayer, SelectedHand, _selectedTarget, () => {}))
+            { TryStartWizardBoundary(ContinueSelectedOperation); return; }
             bool waitingForPortent = _game.RequestPortentOperation(ActivePlayer, SelectedHand, _selectedTarget, () => {});
             _operationDisplay.Clear();
             PrepareOperationDisplay();

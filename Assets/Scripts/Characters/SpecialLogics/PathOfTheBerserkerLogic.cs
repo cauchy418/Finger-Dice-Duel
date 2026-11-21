@@ -4,6 +4,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     public sealed class PathOfTheBerserkerLogic:BarbarianTemplate,IHandEffectRewriter,ISelectiveHandEffectRewriter,IHandEffectDisplay,IResultTargetProvider,ICompletedDamageDealt
     {
         public const int AttackValue=9;
+        public override int DefaultAttackBonus => base.DefaultAttackBonus + 1;
         public override string DisplayName=>"野蛮人·狂战士道途";
         private bool Active=>BarbarianOwner?.Health<=15;
         public bool HandlesResult(int value)=>Active&&(value==5||value==9);

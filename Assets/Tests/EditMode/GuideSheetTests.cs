@@ -163,8 +163,8 @@ namespace FingerDiceDuel.Tests
             foreach (string phrase in new[] { "眩晕", "冻结", "不附加燃烧", "保留潮湿", "×1.5" })
                 Assert.IsTrue(text.Contains(phrase), phrase);
             GuideSheet page = GuideSheets.ElementReactions();
-            Assert.AreEqual(11, page.Lines.Count);
-            Assert.AreEqual(11, page.Groups[0].Entries.Count);
+            Assert.AreEqual(12, page.Lines.Count);
+            Assert.AreEqual(12, page.Groups[0].Entries.Count);
             Assert.IsFalse(text.Contains("心灵"));
             Assert.IsFalse(text.Contains("50%"));
             Assert.IsTrue(page.Note.Contains("向上取整"));

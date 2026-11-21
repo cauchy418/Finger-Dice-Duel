@@ -60,8 +60,8 @@ if (-not $Baseline) {
     if ($LASTEXITCODE -ne 0) { throw 'No published baseline found; specify -Baseline' }
 }
 if (-not $Run) {
-    Write-Output "PLAN ONLY: $sampleRoot; expected 58 roles, 532 duals, 66,964 games."
-    Write-Output 'Modes: audit; 1v1 33060; 2v2 26448; dual 4256; eight 600; identity 2000; identity-preferred 600.'
+    Write-Output "PLAN ONLY: $sampleRoot; roster and legal dual count are exported from the runtime."
+    Write-Output 'Modes: audit; 1v1 pairs*20; 2v2 pairs*16; dual legal_duals*8; eight 600; identity 2000; identity-preferred 600.'
     Write-Output "Baseline: $Baseline"
     Write-Output "Processor affinity: $ProcessorAffinity (0 = unrestricted)"
     Write-Output 'Run again with -Run only after all gameplay and AI changes are finished.'

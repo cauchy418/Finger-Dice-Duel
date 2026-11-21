@@ -75,8 +75,8 @@ namespace FingerDiceDuel.Core
         /// <summary>中毒：每回合开始时受到 2 点毒素伤害，**不可被抵挡**。</summary>
         public const int PoisonDamagePerTurn = 2;
 
-        /// <summary>燃烧：每回合结束时受到 3 点火焰伤害。</summary>
-        public const int BurnDamagePerTurn = 3;
+        /// <summary>燃烧：每回合结束时受到 2 点火焰伤害。</summary>
+        public const int BurnDamagePerTurn = 2;
 
         /// <summary>感电：每回合开始时自己受2点闪电伤害，相邻玩家各受1点。</summary>
         public const int ShockDamagePerTurn = 2;

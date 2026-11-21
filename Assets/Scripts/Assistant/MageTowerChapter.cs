@@ -62,10 +62,10 @@ namespace FingerDiceDuel.Assistant
         {
             var a=new MageTowerSample("shield","碎盾附魔",new[]{5,2,1,3},"让一面完整盾成为运算源；附魔先于本次攻击生效。")
                 .Turn(0,0,1,0,"己左盾5＋护卫左1＝6。点【火焰】，再确认护卫为攻击目标；本击立即附魔，造成6火焰并附燃烧。")
-                .Turn(1,0,0,1,"护卫左1＋己右2＝3，无效果。其回合结束燃烧3：生命14→11。盾已碎，附魔已消耗。");
+                .Turn(1,0,0,1,"护卫左1＋己右2＝3，无效果。其回合结束燃烧2：生命14→12。盾已碎，附魔已消耗。");
             a.Prepare=g=>g.PlayerA.LeftHand.SetShieldState(ShieldState.Formed);
-            a.Verify=l=>l.Soldier.Health==11&&l.Board.LastTurn?.Actor==l.Soldier;
-            a.Conclusion="完整盾作运算源，也会先触发附魔。本击6火焰＋燃烧3，共9伤；普通物理伤害不会自动附燃烧。";list.Add(a);
+            a.Verify=l=>l.Soldier.Health==12&&l.Board.LastTurn?.Actor==l.Soldier;
+            a.Conclusion="完整盾作运算源，也会先触发附魔。本击6火焰＋燃烧2，共8伤；普通物理伤害不会自动附燃烧。";list.Add(a);
             var b=new MageTowerSample("echo","法术回响",new[]{1,2,3,5},"受到实际魔法伤害后，可记录其类型；记录覆盖旧附魔，下次发起攻击消耗。")
                 .Turn(1,0,0,0,"护卫左3＋己左1＝4，光耀使你20→16并致盲。点【记忆·光耀】，保留下一击的类型。")
                 .Turn(0,1,1,0,"己右2＋护卫左4＝6。确认攻击：6光耀，护卫20→14并致盲。光耀不是圣火状态。");
@@ -76,7 +76,7 @@ namespace FingerDiceDuel.Assistant
         {
             var types=new[]{DamageType.Fire,DamageType.Cold,DamageType.Lightning,DamageType.Thunder,DamageType.Acid,
                 DamageType.Poison,DamageType.Radiant,DamageType.Necrotic,DamageType.Psychic,DamageType.Force};
-            var explains=new[]{"燃烧：目标回合结束失去3生命。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
+            var explains=new[]{"燃烧：目标回合结束受2点火焰伤害；再被火焰命中附2回合灼伤。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
                 "感电：目标回合开始，自身受2点闪电，相邻角色各受1点。","残响：限制攻击距离，不限制借用加数。",
                 "强酸命中后防−2，首次命中不提前享受这次降防。","中毒：目标回合开始失去2生命。",
                 "光耀附目盲，只能借用距离1的角色手牌；与圣火不同。","腐朽：无法回复生命。",
@@ -89,7 +89,7 @@ namespace FingerDiceDuel.Assistant
                     .Turn(1,0,0,0,"护卫左3＋己左4＝7，无效果；下一击使用刚选择的类型。")
                     .Turn(0,0,1,1,"己左4＋护卫右2＝6。选择继续攻击，确认护卫。"+explains[i]);
                 s.CastingType=type;
-                if(type==DamageType.Fire)s.Turn(1,0,0,0,"护卫左7＋己左6＝3。回合结束燃烧3，护卫14→11。");
+                if(type==DamageType.Fire)s.Turn(1,0,0,0,"护卫左7＋己左6＝3。回合结束燃烧2，护卫14→12。");
                 if(type==DamageType.Cold)s.Turn(1,1,0,0,"护卫右2＋己左6＝8→覆霜减半4；实际攻击造成5伤，你20→15。");
                 if(type==DamageType.Necrotic)s.Turn(1,0,0,1,"护卫左7＋己右2＝9，本应回复；腐朽使实际回复0，仍为14生命。");
                 if(type!=DamageType.Fire&&type!=DamageType.Cold&&type!=DamageType.Necrotic)
@@ -105,10 +105,10 @@ namespace FingerDiceDuel.Assistant
             var reserve=new MageTowerSample("reserve_ward","待用类型与持续抗性",new[]{1,2,3,2},"塑能距离∞。存储的法术类型在消耗前赋予对应抗性；受击不会消耗待用类型。")
                 .Turn(0,0,1,0,"己左1＋护卫左3＝4，放弃攻击并选择火焰；获得待用火焰类型和火焰抗性。")
                 .Turn(1,1,0,0,"护卫右2＋己左4＝6火焰：原伤7减半为4，并附1回合燃烧。")
-                .Turn(0,0,1,0,"己左4＋护卫左3＝7，无攻击；回合结束燃烧3经火焰抗性减为2。待用类型和抗性仍在。")
+                .Turn(0,0,1,0,"己左4＋护卫左3＝7，无攻击；回合结束燃烧2经火焰抗性减为1。待用类型和抗性仍在。")
                 .Turn(1,1,0,1,"护卫右6＋己右2＝8火焰：原伤9减半为5。第二次受击后抗性仍在；之后发起待用类型的攻击才消耗它。");
             reserve.CastingType=DamageType.Fire;reserve.GuardType=AttackDamageType.Fire;
-            reserve.Verify=l=>l.Player.Health==9&&l.Player.HasResistance(AttackDamageType.Fire)&&((FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic)l.Player.Character).HasPendingType;list.Add(reserve);
+            reserve.Verify=l=>l.Player.Health==10&&l.Player.HasResistance(AttackDamageType.Fire)&&((FingerDiceDuel.Characters.SpecialLogics.SchoolOfEvocationLogic)l.Player.Character).HasPendingType;list.Add(reserve);
             Reaction(list,"freeze",DamageType.Cold,StatusEffect.Frost,"寒冷＋覆霜","清除覆霜／潮湿，附冻结2回合。冻结使双手无法行动；点击跳过回合继续，不会判为败北。",
                 l=>l.Soldier.HasStatus(StatusEffect.Frozen));
             Reaction(list,"steam",DamageType.Fire,StatusEffect.Wet,"火焰＋潮湿","本击6×1.5＝9；清除潮湿与覆霜，不附燃烧。",

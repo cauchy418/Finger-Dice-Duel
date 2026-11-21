@@ -9,6 +9,8 @@ namespace FingerDiceDuel.Core
         public int OtherHandValueThisOperation=>_other;
         private bool Active=>BarbarianOwner?.Health<=15;
         public AttackDamageType Enchantment {get;private set;}
+        public override int DefaultAttackBonus => base.DefaultAttackBonus + 1;
+        public override int DefaultDefenseBonus => base.DefaultDefenseBonus + 1;
         public override string DisplayName=>"野蛮人·巨人道途";
         public bool HandlesResult(int value)=>Active&&(value==4||value==5||value==6||value==8||value==9);
         public override void OnMatchReset(PlayerState owner,GameManager game){BindBarbarianOwner(owner);_other=0;Enchantment=AttackDamageType.None;ResetStats();}

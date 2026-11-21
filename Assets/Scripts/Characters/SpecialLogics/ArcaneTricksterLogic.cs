@@ -5,7 +5,7 @@ using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>The mage hand stores a digit outside the two targetable body hands.</summary>
-    public sealed class ArcaneTricksterLogic : CharacterTemplate, ITurnEndHook
+    public sealed class ArcaneTricksterLogic : CharacterTemplate, ITurnStartHook, ITurnEndHook
     {
         public const string ExchangeChoice = "mage_hand_exchange";
         public int MageHandValue { get; private set; } = 1;
@@ -37,14 +37,25 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             => owner?.IsAlive == true && game != null && !game.IsGameOver
                 && CharacterBehaviors.ActorHas(owner, this) && StatusRules.CanAct(owner)
                 && hand != null && owner.Owns(hand) && hand.CanBeOperated;
-        public void OnTurnEnded(PlayerState owner, GameManager game)
+        public void OnTurnStarted(PlayerState owner, GameManager game)
+        {
+            // BeginTurn broadcasts hooks to every player, but only the acting rogue may swap.
+            if (ReferenceEquals(owner, game?.CurrentPlayer)) OfferExchange(owner, game, "回合开始");
+        }
+        public void OnTurnEnded(PlayerState owner, GameManager game) => OfferExchange(owner, game, "回合结束");
+        private void OfferExchange(PlayerState owner, GameManager game, string timing)
         {
             var candidates = new List<Hand>();
             foreach (var hand in owner.Hands) if (CanExchange(owner, hand, game)) candidates.Add(hand);
             if (candidates.Count == 0) return;
+            bool resolved = false;
             var request = new WizardChoice(owner,
-                $"法师之手诈术 · 魔法手 {MageHandValue}，点击一只本体手交换点数", candidates, true,
-                hand => { if (hand != null) Exchange(owner, hand, game); }, declineLabel: "不交换");
+                $"法师之手诈术 · {timing} · 魔法手 {MageHandValue}，点击一只本体手交换点数", candidates, true,
+                hand => {
+                    if (resolved) return;
+                    resolved = true;
+                    if (hand != null) Exchange(owner, hand, game);
+                }, declineLabel: "不交换");
             if (game.DeferWizardChoice?.Invoke(request) == true) return;
             var options = new List<SkillChoiceOption> { new SkillChoiceOption(0, "不交换", "UI/status_counter") };
             foreach (var hand in candidates)

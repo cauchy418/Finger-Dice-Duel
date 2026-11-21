@@ -11,7 +11,7 @@ parser.add_argument('--optimized-ai', action='store_true')
 parser.add_argument('--balance', action='store_true')
 parser.add_argument('--ranger', action='store_true')
 parser.add_argument('--arcane', action='store_true')
-parser.add_argument('--state-ai', action='store_true', help='Current state/AI round; requires captured provenance and 58 roles / 532 duals')
+parser.add_argument('--state-ai', action='store_true', help='Current state/AI round; validates captured provenance and runtime-exported roster')
 parser.add_argument('--identity-only', action='store_true', help='Resample identity modes; validate unchanged modes against the explicitly carried baseline')
 parser.add_argument('--baseline', type=Path, help='Previous results.json to embed as a comparison in the current report')
 parser.add_argument('--refresh-docs', action='store_true',
@@ -33,7 +33,7 @@ n = len(roles)
 pairs = n * (n - 1) // 2
 duals = sum(k * (k - 1) // 2 for k in axes.values())
 if args.state_ai:
-    assert (n, duals) == (58, 532), (n, duals)
+    assert set(axes) == {'守序', '中立', '混乱'}, axes
     assert args.baseline or args.refresh_docs, '--state-ai requires --baseline'
 expected = {'1v1': pairs * 20, '2v2': pairs * 16, 'dual': duals * 8, 'eight': 600, 'identity': 600}
 if full_identity:

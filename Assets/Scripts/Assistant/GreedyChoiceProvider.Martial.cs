@@ -44,6 +44,7 @@ namespace FingerDiceDuel.Assistant
             {
                 double score;
                 if(key==ArcaneTricksterLogic.ExchangeChoice)score=MageHandExchangeScore(option.Value,owner,game);
+                else if(key==BardInspiration.Key)score=BardOptionScore(option.Value,owner,game);
                 else if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
                 else if(key==ArcaneChoices.TransmutationOperation||key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
                 else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);
@@ -174,6 +175,7 @@ namespace FingerDiceDuel.Assistant
             damage=StatusRules.ApplyDamageAffinities(target,damage,type,!ignoreAffinity,ignoreAffinity);
             if(immune) return damage;
             double score=damage;
+            if(type==AttackDamageType.Fire && target.HasStatus(StatusEffect.Burn) && !target.HasStatus(StatusEffect.Scorch)) score+=6;
             var status=StatusNames.StatusOf(magic);
             if(status!=StatusEffect.None && !target.HasStatus(status) && !target.HasStatus(StatusEffect.HolyLight))
                 score+=(type==AttackDamageType.Cold?5:type==AttackDamageType.Thunder?4:3)*(target.HasResistance(type)?.5:1);

@@ -17,7 +17,7 @@ namespace FingerDiceDuel.Tests
     /// 覆盖：
     ///   · 中毒：回合开始时扣 2 点，**不可被抵挡**
     ///   · 中毒打死人 -> **跳过其行动**
-    ///   · 燃烧：回合结束时扣 3 点，**可被盾抵挡**
+    ///   · 燃烧：回合结束时扣 2 点，**可被盾抵挡**
     ///   · 感电：自己 + 环上相邻各 1 点
     ///   · 计数递减：目标自己的 2 个回合后过期
     ///   · 腐朽：对局中回血被完全拦掉
@@ -122,7 +122,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Burn_deals_three_when_undefended()
+        public void Burn_deals_two_when_undefended()
         {
             PlayerState p = Make("甲", CharacterDefinition.Champion);
             PlayerState foe = Make("乙", CharacterDefinition.Champion);
@@ -133,7 +133,7 @@ namespace FingerDiceDuel.Tests
 
             game.ResolveStatusTurnEnd(p);
             Assert.AreEqual(before - StatusRules.BurnDamagePerTurn, p.Health,
-                "没有盾时燃烧造成 3 点火焰伤害。");
+                "没有盾时燃烧造成 2 点火焰伤害。");
         }
 
         // ============================================================

@@ -148,8 +148,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(29, StatusNames.AllStatuses.Length); Assert.AreEqual(2, CombatStatusIcons.For(p).Count);
             Assert.AreEqual("restrained", StatusNames.IconKeyOf(StatusEffect.Restrained));
             Assert.AreEqual("greased", StatusNames.IconKeyOf(StatusEffect.Greased));
-            Assert.AreEqual(11, GuideSheets.ElementReactions().Lines.Count);
-            Assert.True(GuideSheets.ElementReactions().Lines[10].Contains("油腻"));
+            Assert.AreEqual(12, GuideSheets.ElementReactions().Lines.Count);
+            Assert.True(GuideSheets.ElementReactions().Lines[11].Contains("油腻"));
         }
     }
 }

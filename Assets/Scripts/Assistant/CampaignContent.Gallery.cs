@@ -62,8 +62,8 @@ namespace FingerDiceDuel.Assistant
         {
             var s=GalleryBase(18,CharacterDefinition.WildMagic,32);
             s.Npcs[1].EveryThird=AttackDamageType.Fire;
-            var types=new[]{DamageType.Thunder,DamageType.Lightning,DamageType.Thunder,DamageType.Cold,DamageType.Cold,DamageType.Cold,DamageType.Cold,DamageType.Fire,DamageType.Fire,DamageType.Fire,DamageType.Lightning,DamageType.Acid,DamageType.Poison};
-            var precursors=new[]{StatusEffect.Resonance,StatusEffect.Resonance,StatusEffect.Shock,StatusEffect.Frost,StatusEffect.Wet,StatusEffect.Frozen,StatusEffect.Burn,StatusEffect.Frost,StatusEffect.Wet,StatusEffect.Greased,StatusEffect.Wet,StatusEffect.Poison,StatusEffect.Acid};
+            var types=new[]{DamageType.Thunder,DamageType.Lightning,DamageType.Thunder,DamageType.Cold,DamageType.Cold,DamageType.Cold,DamageType.Cold,DamageType.Fire,DamageType.Fire,DamageType.Fire,DamageType.Lightning,DamageType.Acid,DamageType.Poison,DamageType.Fire};
+            var precursors=new[]{StatusEffect.Resonance,StatusEffect.Resonance,StatusEffect.Shock,StatusEffect.Frost,StatusEffect.Wet,StatusEffect.Frozen,StatusEffect.Burn,StatusEffect.Frost,StatusEffect.Wet,StatusEffect.Greased,StatusEffect.Wet,StatusEffect.Poison,StatusEffect.Acid,StatusEffect.Burn};
             s.First=1;
             for(int i=0;i<types.Length;i++)
             {
@@ -80,7 +80,7 @@ namespace FingerDiceDuel.Assistant
                     p.ApplyStatus(precursors[index],2,p);
                     l.Game.NoteSkill(p,"刻印",StatusNames.Of(precursors[index])+"2回合",p);prepared=true;
                 };
-                int page=index==0?2:index<=2?3:index<=4?4:index<=6?5:index<=9?6:index==10?7:8;
+                int page=index==0?2:index<=2?3:index<=4?4:index<=6?5:index<=9||index==13?6:index==10?7:8;
                 setup.Verify=l=>prepared;setup.ForcedRoll=roll;setup.GuideIndex=index==0?0:page;
                 var hit=s.Op(0,0,1,0,"观察反应",1,index%2==0?4:6);hit.ForcedRoll=roll;
                 hit.Verify=l=>l.Board.LastTurn.AttackType==AttackDamageTypes.FromDamageType(types[index])&&l.Board.LastTurn.DamageDealt>0;

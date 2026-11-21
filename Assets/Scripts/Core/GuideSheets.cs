@@ -367,6 +367,7 @@ namespace FingerDiceDuel.Core
                 "寒冷＋覆霜／潮湿：清除这两种状态，附加 2 回合冻结",
                 "寒冷＋冻结：伤害 ×1.5，保留冻结，不附加覆霜",
                 "寒冷＋燃烧：清除燃烧，伤害 ×1.5，不附加覆霜",
+                "火焰＋燃烧：附加2回合灼伤，燃烧照常刷新；格挡与火焰抗性各减1回合，免疫阻止附加",
                 "火焰＋覆霜／潮湿：清除这两种状态，伤害 ×1.5，不附加燃烧",
                 "闪电＋潮湿：伤害 ×1.5，保留潮湿，照常附加感电",
                 "强酸＋中毒：附加强酸，中毒刷新至2回合",
@@ -381,7 +382,7 @@ namespace FingerDiceDuel.Core
         {
             var lines = InteractionLines();
             var types = new[] { DamageType.Thunder, DamageType.Cold, DamageType.Cold,
-                DamageType.Cold, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Lightning, DamageType.Thunder, DamageType.Fire };
+                DamageType.Cold, DamageType.Fire, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Lightning, DamageType.Thunder, DamageType.Fire };
             var entries = new List<GuideEntry>();
             for (int i = 0; i < lines.Count; i++)
                 entries.Add(new GuideEntry(IconKeyOf(types[i]), ColorOf(types[i]), lines[i]));

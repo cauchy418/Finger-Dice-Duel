@@ -97,7 +97,7 @@ namespace FingerDiceDuel.Core
         public const string GloomStalkerId = "ranger_gloom_stalker";
         public const string MagicianId = "rogue_magician";
         public const string ArcaneTricksterId = "rogue_arcane_trickster";
-        public static CharacterDefinition ArcaneTrickster { get; } = new CharacterDefinition(ArcaneTricksterId, "游荡者·诡术师", SpecialLogicType.ArcaneTrickster, defenseBonus: -1, englishName: "Arcane Trickster", description: "诡术施法：距离∞，近距离挥砍、远距离穿刺。法师之手诈术：额外魔法手初始点数1，仅储值，自身回合结束可与一只可用本体手交换点数，可放弃；不触发数字效果。锁手或冻结时不可交换，完整盾换成非5时正常碎盾。");
+        public static CharacterDefinition ArcaneTrickster { get; } = new CharacterDefinition(ArcaneTricksterId, "游荡者·诡术师", SpecialLogicType.ArcaneTrickster, defenseBonus: -1, englishName: "Arcane Trickster", description: "诡术施法：距离∞，近距离挥砍、远距离穿刺。法师之手诈术：额外魔法手初始点数1，仅储值，自身回合开始和结束时，各可与一只可用本体手交换一次点数，可分别放弃；不触发数字效果。锁手或冻结时不可交换，完整盾换成非5时正常碎盾。");
         public const string SchoolOfEvocationId = "wizard_school_of_evocation";
         public const string WildMagicId = "sorcerer_wild_magic";
         public const string TheGreatOldOneId = "warlock_the_great_old_one";
@@ -144,7 +144,7 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheWarden { get; } = new CharacterDefinition(
             PathOfTheWardenId, "野蛮人·守望者道途", SpecialLogicType.PathOfTheWarden,
-            attackBonus:-1, defenseBonus:-1,
+            attackBonus: -2, defenseBonus: -1,
             description: "共同野蛮人面板与负伤成长。合盾可锁对手一只手，盾碎解锁；体力≤15时，守望誓约可将来袭改为力场，清除附加状态与元素反应，保留独立追加伤害。");
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheBeast { get; } = new CharacterDefinition(
             PathOfTheBeastId, "野蛮人·野兽道途", SpecialLogicType.PathOfTheBeast,
-            attackBonus: -1, defenseBonus: -1,
+            attackBonus: -2, defenseBonus: -2,
             maxHealth: PlayerState.DefaultMaxHealth,   // 实际上限 = 20 + PathOfTheBeastLogic.HealthBonus(5) = 25
             description: "共同野蛮人面板与负伤成长。双手和7获得兽性之魂；回合末魂数达到实际攻防较小值且至少1点时，全部消耗，回复已损体力一半并永久攻防+1。");
 
@@ -379,7 +379,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition CollegeOfValor { get; } = new CharacterDefinition(
             CollegeOfValorId, "吟游诗人·勇气学院", SpecialLogicType.CollegeOfValor,
             attackBonus: 0, defenseBonus: -1,
-            description: "每次行动结算完，若本回合受过伤害或回复过体力" +
+            description: "吟游激励：正常运算后，可将结果+1、−1或保留，再触发最终数字效果。每次行动结算完，若本回合受过伤害或回复过体力" +
                          "（实际回 0 不算，状态伤害也算），可发动技能：" +
                          "先选增幅攻击 / 增幅防御 / 削弱攻击 / 削弱防御之一，" +
                          "再选攻击范围内 1~3 名角色（含自己，同一人点两只手只算一次），" +
@@ -395,7 +395,7 @@ namespace FingerDiceDuel.Core
 
         public static CharacterDefinition PathOfTheBerserker { get; } = new CharacterDefinition(
             PathOfTheBerserkerId, "野蛮人·狂战士道途", SpecialLogicType.PathOfTheBerserker,
-            attackBonus: -1, defenseBonus: -1,
+            attackBonus: -1, defenseBonus: -2,
             englishName: "Path of the Berserker",
             description: "共同野蛮人面板与负伤成长。体力≤15时，5/9改为对应点数攻击，攻击实际体力伤害回复一半；高体力恢复普通数字并停止吸血。");
 
@@ -498,7 +498,7 @@ namespace FingerDiceDuel.Core
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition CollegeOfLore { get; } = new CharacterDefinition(
             CollegeOfLoreId,"吟游诗人·逸闻学院",SpecialLogicType.CollegeOfLore,defenseBonus:-1,englishName:"College of Lore",
-            description:"记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半。攻0／防−1，距离1，钝击。");
+            description:"吟游激励：正常运算后，可将结果+1、−1或保留，再触发最终数字效果。记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半并令攻击者困惑2回合。攻0／防−1，距离1，钝击。");
         public static CharacterDefinition StormSorcery { get; } = new CharacterDefinition(
             StormSorceryId,"术士·风暴术法",SpecialLogicType.StormSorcery,defenseBonus:-1,englishName:"Storm Sorcery",
             description:"开局选择永久闪电或雷鸣抗性；攻击40%闪电、40%雷鸣，均穿透对应伤害抗性和免疫，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");

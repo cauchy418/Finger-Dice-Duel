@@ -12,19 +12,21 @@ namespace FingerDiceDuel.Core
         private readonly List<KeyValuePair<AttackDamageType, int>> _typedReflections = new List<KeyValuePair<AttackDamageType, int>>();
 
         private string _reactionVariant;
+        private bool _burnReaction;
         private int ConfigureHitInteraction(int damage)
         {
             _visualReaction = AttackType==AttackDamageType.Cold&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Frozen)||Defender.HasStatus(StatusEffect.Burn))
                 ||AttackType==AttackDamageType.Fire&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Greased))
                 ||AttackType==AttackDamageType.Lightning&&Defender.HasStatus(StatusEffect.Wet)||AttackType==AttackDamageType.Thunder&&Defender.HasStatus(StatusEffect.Resonance);
             WasTypeImmune = Defender.HasImmunity(AttackType);
+            _burnReaction = !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Burn);
             _sonicCrossReaction = !WasTypeImmune && StatusRules.HasSonicCrossReaction(Defender, AttackType);
             _greaseReaction = !WasTypeImmune && AttackType == AttackDamageType.Fire && Defender.HasStatus(StatusEffect.Greased);
             _acidPoisonReaction = !WasTypeImmune && (AttackType == AttackDamageType.Acid && Defender.HasStatus(StatusEffect.Poison)
                 || AttackType == AttackDamageType.Poison && Defender.HasStatus(StatusEffect.Acid));
-            _visualReaction|=_sonicCrossReaction||_acidPoisonReaction;
+            _visualReaction|=_sonicCrossReaction||_acidPoisonReaction||_burnReaction;
             StatusEffect partner=StatusEffect.None;
-            if(AttackType==AttackDamageType.Fire)partner=Defender.HasStatus(StatusEffect.Greased)?StatusEffect.Greased:Defender.HasStatus(StatusEffect.Frost)?StatusEffect.Frost:StatusEffect.Wet;
+            if(AttackType==AttackDamageType.Fire)partner=Defender.HasStatus(StatusEffect.Greased)?StatusEffect.Greased:Defender.HasStatus(StatusEffect.Frost)?StatusEffect.Frost:Defender.HasStatus(StatusEffect.Wet)?StatusEffect.Wet:StatusEffect.Burn;
             else if(AttackType==AttackDamageType.Cold)partner=Defender.HasStatus(StatusEffect.Frozen)?StatusEffect.Frozen:Defender.HasStatus(StatusEffect.Burn)?StatusEffect.Burn:Defender.HasStatus(StatusEffect.Frost)?StatusEffect.Frost:StatusEffect.Wet;
             else if(AttackType==AttackDamageType.Lightning)partner=_sonicCrossReaction?StatusEffect.Resonance:StatusEffect.Wet;
             else if(AttackType==AttackDamageType.Thunder)partner=_sonicCrossReaction?StatusEffect.Shock:StatusEffect.Resonance;

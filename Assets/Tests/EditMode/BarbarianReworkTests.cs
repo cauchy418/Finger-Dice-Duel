@@ -9,12 +9,16 @@ namespace FingerDiceDuel.Tests
     [TestFixture] public class BarbarianReworkTests
     {
         private static CharacterDefinition[] Roles=>new[]{CharacterDefinition.PathOfTheWarden,CharacterDefinition.PathOfTheBeast,CharacterDefinition.PathOfTheGiant,CharacterDefinition.PathOfTheBerserker};
-        [Test] public void All_barbarians_have_the_shared_base_panel_and_slashing_type()
+        [Test] public void Barbarian_class_and_subclass_bonuses_match_roster_defaults_and_slashing_type()
         {
-            foreach(var d in Roles)
+            int[] attacks={-2,-2,-1,-1}, defenses={-1,-2,-1,-2};
+            for(int i=0;i<Roles.Length;i++)
             {
-                var p=CharacterFactory.CreatePlayer("A",d);
-                Assert.AreEqual(-1,d.AttackBonus);Assert.AreEqual(-1,d.DefenseBonus);Assert.AreEqual(25,p.MaximumHealth);
+                var d=Roles[i];var p=CharacterFactory.CreatePlayer("A",d);
+                var defaults=CharacterFactory.CreateBehavior(d.Logic);
+                Assert.AreEqual(attacks[i],d.AttackBonus);Assert.AreEqual(defenses[i],d.DefenseBonus);
+                Assert.AreEqual(attacks[i],defaults.AttackBonus);Assert.AreEqual(defenses[i],defaults.DefenseBonus);
+                Assert.AreEqual(attacks[i],p.Character.AttackBonus);Assert.AreEqual(defenses[i],p.Character.DefenseBonus);Assert.AreEqual(25,p.MaximumHealth);
                 Assert.AreEqual(AttackDamageType.Slashing,((IAttackTypeProvider)p.Character).AttackTypeOf(new AttackContext(p,p,p.LeftHand,4)));
             }
         }
@@ -23,18 +27,27 @@ namespace FingerDiceDuel.Tests
             foreach(var d in Roles)
             {
                 var p=CharacterFactory.CreatePlayer("A",d);p.SetHealthExact(15);
-                Assert.AreEqual(1,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(1,StatusRules.EffectiveDefenseBonus(p));
-                p.SetHealthExact(5);Assert.AreEqual(3,StatusRules.EffectiveAttackBonus(p));
-                p.Heal(11);Assert.AreEqual(-1,StatusRules.EffectiveAttackBonus(p));
+                Assert.AreEqual(d.AttackBonus+2,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(d.DefenseBonus+2,StatusRules.EffectiveDefenseBonus(p));
+                p.SetHealthExact(5);Assert.AreEqual(d.AttackBonus+4,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(d.DefenseBonus+4,StatusRules.EffectiveDefenseBonus(p));
+                p.Heal(11);Assert.AreEqual(d.AttackBonus,StatusRules.EffectiveAttackBonus(p));Assert.AreEqual(d.DefenseBonus,StatusRules.EffectiveDefenseBonus(p));
             }
         }
         private static GameManager Match(CharacterDefinition d,out PlayerState a,out PlayerState b)
         {a=CharacterFactory.CreatePlayer("A",d);b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);return new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());}
         [Test] public void Double_barbarian_has_one_health_bonus_and_one_missing_health_bonus()
         {
-            var a=DualGeneralFactory.Create("A",CharacterDefinition.PathOfTheWarden,CharacterDefinition.PathOfTheGiant);
-            Assert.AreEqual(25,a.MaximumHealth);int baseline=StatusRules.EffectiveAttackBonus(a);a.SetHealthExact(15);
-            Assert.AreEqual(baseline+2,StatusRules.EffectiveAttackBonus(a));
+            foreach(var primary in Roles)foreach(var secondary in Roles)
+            {
+                if(primary.Id==secondary.Id||!DualGeneralFactory.SameAxis(primary,secondary))continue;
+                var a=DualGeneralFactory.Create("A",primary,secondary);
+                Assert.AreEqual(25,a.MaximumHealth);
+                int attack=primary.AttackBonus+secondary.AttackBonus, defense=primary.DefenseBonus+secondary.DefenseBonus;
+                Assert.AreEqual(attack,StatusRules.EffectiveAttackBonus(a));Assert.AreEqual(defense,StatusRules.EffectiveDefenseBonus(a));
+                a.SetHealthExact(15);
+                Assert.AreEqual(attack+2,StatusRules.EffectiveAttackBonus(a));Assert.AreEqual(defense+2,StatusRules.EffectiveDefenseBonus(a));
+                a.SetHealthExact(5);
+                Assert.AreEqual(attack+4,StatusRules.EffectiveAttackBonus(a));Assert.AreEqual(defense+4,StatusRules.EffectiveDefenseBonus(a));
+            }
         }
         [Test] public void Warden_oath_clears_attached_statuses_but_keeps_independent_knowledge_damage()
         {
@@ -49,7 +62,7 @@ namespace FingerDiceDuel.Tests
             var g=Match(CharacterDefinition.PathOfTheBeast,out var a,out var b);a.SetHealthExact(15);a.LeftHand.SetValue(1);a.RightHand.SetValue(5);b.LeftHand.SetValue(1);
             var beast=(FingerDiceDuel.Characters.SpecialLogics.PathOfTheBeastLogic)a.Character;g.ExecuteTurn(a,a.LeftHand,b.LeftHand);
             Assert.AreEqual(1,beast.BeastSouls);Assert.AreEqual(0,beast.TriggerCount);Assert.AreEqual(15,a.Health);
-            g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,beast.BeastSouls);Assert.AreEqual(1,beast.TriggerCount);Assert.AreEqual(20,a.Health);Assert.AreEqual(0,a.Character.AttackBonus);
+            g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,beast.BeastSouls);Assert.AreEqual(1,beast.TriggerCount);Assert.AreEqual(20,a.Health);Assert.AreEqual(-1,a.Character.AttackBonus);
         }
         [Test] public void Giant_high_health_has_ordinary_numbers_and_low_health_has_double_five_attack()
         {
@@ -103,8 +116,8 @@ namespace FingerDiceDuel.Tests
             var g=Match(CharacterDefinition.PathOfTheBeast,out var a,out var b);a.SetHealthExact(5);
             var beast=(FingerDiceDuel.Characters.SpecialLogics.PathOfTheBeastLogic)a.Character;
             a.LeftHand.SetValue(4);a.RightHand.SetValue(3);
-            for(int i=0;i<2;i++){beast.OnOperationResolved(a,a.LeftHand,1,3,HandEffectType.Attack4,g,null);beast.OnTurnEnded(a,g);}
-            Assert.AreEqual(2,beast.BeastSouls);Assert.AreEqual(5,a.Health);Assert.AreEqual(0,beast.TriggerCount);
+            beast.OnOperationResolved(a,a.LeftHand,1,3,HandEffectType.Attack4,g,null);beast.OnTurnEnded(a,g);
+            Assert.AreEqual(1,beast.BeastSouls);Assert.AreEqual(5,a.Health);Assert.AreEqual(0,beast.TriggerCount);
             beast.OnOperationResolved(a,a.LeftHand,1,3,HandEffectType.Attack4,g,null);beast.OnTurnEnded(a,g);
             Assert.AreEqual(15,a.Health);Assert.AreEqual(0,beast.BeastSouls);Assert.AreEqual(1,beast.TriggerCount);
         }

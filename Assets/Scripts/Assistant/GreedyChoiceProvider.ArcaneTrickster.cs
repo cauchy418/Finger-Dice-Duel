@@ -6,6 +6,25 @@ namespace FingerDiceDuel.Assistant
 {
     public sealed partial class GreedyChoiceProvider
     {
+        private static int MageHandReserveOpportunity(PlayerState foe, PlayerState victim, Hand source, int addend, GameManager game)
+        {
+            var skill = ArcaneTricksterLogic.For(foe);
+            if (skill == null || !skill.CanExchange(foe, source, game)) return 0;
+            int best = 0;
+            int raw = AiStatePolicy.PreviewResult(foe, skill.MageHandValue, addend);
+            foreach (int result in BardInspiration.Results(foe, raw))
+            {
+                var effect = DivineScoredEffect(foe, result, game);
+                int value = 0;
+                if (effect == HandEffectType.Heal) value = HealingGain(foe, 9) * 3;
+                else if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) value = 16;
+                else if (IsAttackEffect(effect) && game.CanReach(foe, victim) && StatusRules.CanAttackTarget(foe, victim, game))
+                    value = EstimateAttackDamage(foe, victim, result, game, skill.MageHandValue) * 5;
+                best = Math.Max(best, value);
+            }
+            return best;
+        }
+
         private double MageHandExchangeScore(int option, PlayerState owner, GameManager game)
         {
             if (option == 0) return 0;
@@ -17,7 +36,7 @@ namespace FingerDiceDuel.Assistant
             double after = MageHandBoardValue(owner, hand, skill.MageHandValue, game);
             if (hand.IsShield && skill.MageHandValue != 5) after -= 24;
             var profile = HandValueProfiles.For(owner.Definition);
-            // Stored digits become usable only at a later turn end, so discount their value.
+            // Stored digits become usable at the next start/end exchange, so discount their value.
             after += (profile.WeightOf(hand.Value) - profile.WeightOf(skill.MageHandValue)) * .08;
             return after - before - .1;
         }

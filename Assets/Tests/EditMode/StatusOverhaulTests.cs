@@ -162,7 +162,7 @@ namespace FingerDiceDuel.Tests
             var game = new GameManager(a, b, new SimpleChoiceProvider(), new SimpleChoiceProvider());
             a.ApplyStatus(StatusEffect.Disabled, 2); a.ApplyStatus(StatusEffect.Burn, 2);
             game.ResolveStatusTurnEnd(a);
-            Assert.AreEqual(17, a.Health, "失能只清零发起攻击的伤害，不能免除已有燃烧。");
+            Assert.AreEqual(18, a.Health, "失能只清零发起攻击的伤害，不能免除已有燃烧。");
         }
 
         [Test]

@@ -6,8 +6,8 @@ namespace FingerDiceDuel.Core
     {
         protected PlayerState BarbarianOwner { get; private set; }
         internal void BindBarbarianOwner(PlayerState owner) => BarbarianOwner = owner;
-        public override int DefaultAttackBonus=>-1;
-        public override int DefaultDefenseBonus=>-1;
+        public override int DefaultAttackBonus=>-2;
+        public override int DefaultDefenseBonus=>-2;
         public override int MaxHealthBonus=>5;
         public override AttackDamageType AttackTypeOf(AttackContext c)=>AttackDamageType.Slashing;
     }

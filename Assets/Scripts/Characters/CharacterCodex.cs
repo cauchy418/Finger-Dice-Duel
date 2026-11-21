@@ -80,7 +80,7 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.PathOfTheWardenId, "Path of the Warden", Alignment.ChaoticGood,
                 shortSkill: "合盾可锁手；体力≤15可将来袭攻击改为力场。",
-                playGuide: "合盾后选择锁手。低体力受击可用守望誓约清除附加状态，但力场无法盾挡或闪避。",
+                playGuide: "初始攻防−2/−1（职业−2/−2，子职业防御+1）。合盾后选择锁手。低体力受击可用守望誓约清除附加状态，但力场无法盾挡或闪避。",
                 counter: "先破盾解除锁手。低体力时仍要防其动态攻防加成，避免只靠状态消耗。",
                 interactions: new[] { "守望誓约保留独立追加伤害；选择改为力场后，自己的盾不会挡下这次攻击。" });
 
@@ -101,7 +101,7 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.PathOfTheBeastId, "Path of the Beast", Alignment.ChaoticEvil,
                 shortSkill: "双手和7积累兽魂；回合末达标后回复已损体力一半并成长。",
-                playGuide: "运算凑双手和7积累兽魂。回合末达到实际攻防较小值才成长，负伤加成会提高门槛。",
+                playGuide: "初始攻防−2/−2。运算凑双手和7积累兽魂。回合末达到实际攻防较小值才成长，负伤加成会提高门槛。",
                 counter: "限制凑7的加数，留意兽魂积累；高攻防时需要更多兽魂才能成长。",
                 interactions: new string[0]);
 
@@ -173,7 +173,7 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.PathOfTheGiantId, "Path of the Giant", Alignment.ChaoticEvil,
                 shortSkill: "体力≤15时5攻击、9回复各两段；可失去5体力附魔。",
-                playGuide: "高体力按普通数字行动；体力≤15时留大数配5或9。元素战刃先失去5体力，发起下次攻击时消耗。",
+                playGuide: "初始攻防−1/−1（职业−2/−2，子职业攻防各+1）。高体力按普通数字行动；体力≤15时留大数配5或9。元素战刃先失去5体力，发起下次攻击时消耗。",
                 counter: "体力≤15时防两段攻击与回复；高体力时4/6/8仍可攻击。元素战刃会改变下次攻击类型。",
                 interactions: new[] { "与狂野魔法：元素战刃的指定属性优先，本次不随机改写类型。" });
 
@@ -241,9 +241,9 @@ namespace FingerDiceDuel.Characters
 
             // ---- 勇气学院（守序善良）----
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
-                shortSkill: "战斗激励：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
+                shortSkill: "运算结果可±1；战斗激励：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
                           + "加/减攻防 ±(4-人数)。",
-                playGuide: "行动结算完，本回合受过伤或回过血就会问要不要发动。"
+                playGuide: "正常运算后可保留结果或±1，再按最终数字触发效果。行动结算完，本回合受过伤或回过血就会问要不要发动。"
                          + "先选增幅/削弱攻防，再选人数（1人±3、2人±2、3人±1），最后点角色；"
                          + "可点自己，同一人点两只手算一次。",
                 counter: "效果持续到你下次发动或他死，盯住他给谁加了什么。"
@@ -258,7 +258,7 @@ namespace FingerDiceDuel.Characters
 
             Add(CharacterDefinition.PathOfTheBerserkerId, "Path of the Berserker", Alignment.NeutralEvil,
                 shortSkill: "体力≤15时5/9改攻击，实际伤害回复一半体力。",
-                playGuide: "低体力用5/9攻击并吸血；回复超过15后恢复普通数字效果，吸血也暂停。",
+                playGuide: "初始攻防−1/−2（职业−2/−2，子职业攻击+1）。低体力用5/9攻击并吸血；回复超过15后恢复普通数字效果，吸血也暂停。",
                 counter: "低体力时限制5/9与连续吸血。高体力时仍按普通数字行动。",
                 interactions: new string[0]);
 
@@ -345,9 +345,9 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"荒野叠星耀：射手光耀、圣杯治疗、巨龙纯运算。",playGuide:"先选荒野再选星耀；攻防相加、距离取高，一起解除。",counter:"打破独立血池；巨龙未在开局纯运算，回合末必须进行。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
             Add(CharacterDefinition.CollegeOfLoreId,"College of Lore",Alignment.LawfulNeutral,
-                shortSkill:"记录1～9；集齐可成长，消耗对应记录可减伤。",
-                playGuide:"打出新数自动记录；集齐后选成长或保留。受击时选择清除对应记录减半，或保留。",
-                counter:"留意其已有记录；换数字攻击，逼其消耗成长进度。",
+                shortSkill:"运算结果可±1；记录1～9；消耗对应记录减伤并令攻击者困惑2回合。",
+                playGuide:"正常运算后可保留结果或±1，再结算并记录最终数字；集齐后选成长或保留。受击时可清除对应记录减半，并令攻击者困惑2回合。",
+                counter:"留意其已有记录与结果调整机会；换数字攻击，逼其消耗成长进度，发动切割语后注意困惑。",
                 interactions:new[]{"风暴导向只改手值，不触发记录。"});
             Add(CharacterDefinition.ShadowMagicId,"Shadow Magic",Alignment.NeutralEvil,
                 shortSkill:"首次归0恢复至1；双手和10可施黑暗术，免疫失明，对失明目标暗蚀伤害+2。",
@@ -381,7 +381,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new[] { "满血治疗仍可转化溢出；虚假生命不被净化或圣火移除。" });
 
             Add(CharacterDefinition.ArcaneTricksterId,"Arcane Trickster",Alignment.ChaoticNeutral,
-                shortSkill:"回合末可与储值魔法手交换本体手点数。",playGuide:"回合末点击可用本体手交换，或放弃；储存下回合需要的数字。",counter:"锁住本体手或冻结，阻止其交换点数。",interactions:new[]{"仅交换数字，不触发数字效果；完整盾换成非5时正常碎盾。"});
+                shortSkill:"自身回合开始和结束各可与储值魔法手交换一次本体手点数。",playGuide:"回合开始和结束各可点击一只可用本体手交换，两次机会独立，可分别放弃。",counter:"锁住本体手或冻结，阻止其交换点数。",interactions:new[]{"仅交换数字，不触发数字效果；完整盾换成非5时正常碎盾。"});
             Add(CharacterDefinition.SchoolOfTransmutationId,"School of Transmutation",Alignment.ChaoticNeutral,
                 shortSkill:"结束可将同数角色变羊；羊有独立8生命。形态进出时可额外运算。",playGuide:"回合结束可选自己或双手无序匹配的角色。变羊或解除后，可用变化莫测再做一次有效运算。",counter:"避免双手匹配。打破羊形态时留意施术者可能再出手，溢伤仍会扣原体力。",interactions:new[]{"羊形态保留原状态计时、暂停原技能；解除恢复原生命。"});
             Add(CharacterDefinition.SchoolOfEnchantmentId,"School of Enchantment",Alignment.NeutralEvil,

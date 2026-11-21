@@ -1587,6 +1587,7 @@ namespace FingerDiceDuel.Core
                     if (!TacticianSubtraction.HasValue && CanChooseTacticianOperation(actor))
                         TacticianSubtraction = ChooseTacticianSubtraction(actor, actedHand, targetHand);
                     RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});
+                    RequestBardOperation(actor,actedHand,targetHand,()=>{});
                     RequestPortentOperation(actor,actedHand,targetHand,()=>{});
                 }
                 return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);
@@ -2214,7 +2215,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// **某人的回合结束之后**的状态结算（燃烧）与**状态计数递减**。
         ///
-        /// · 燃烧：3 点火焰伤害，可被盾抵挡 / 游荡者·风流剑客闪避 / 太极减免
+        /// · 燃烧：2 点火焰伤害，可被盾抵挡 / 游荡者·风流剑客闪避 / 太极减免
         /// · 递减：**目标自己的回合**结束时把所有状态计数 −1，归零即移除
         ///
         /// ⚠️ 递减放在这里（"他自己的回合结束"）而不是"每个回合都减" ——
@@ -2636,6 +2637,8 @@ namespace FingerDiceDuel.Core
             int finalValue = calculated;
             bool trickery = gambleResult == 0 && ApplyTrickery(actor, actedHand, targetHand, calculated, out finalValue);
             if (trickery) result.TrickeryCalculated = calculated;
+            bool bard = gambleResult == 0 && HasPreparedBard(actor, actedHand, targetHand);
+            if (gambleResult == 0) finalValue = ApplyBardResult(actor, actedHand, targetHand, finalValue);
             bool portent = HasPreparedPortent(actor, actedHand, targetHand);
             finalValue = PortentPreview(actor, actedHand, targetHand, finalValue);
             if (!trickery && !portent && calculated != raw) result.FreezeHalvedFrom = raw;
@@ -2884,7 +2887,7 @@ namespace FingerDiceDuel.Core
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.SecondAddendValueBefore=result.SecondAddendValue;
-                        if (trickery || portent || result.WasSubtraction || result.FreezeHalvedFrom > 0 || MonkRules.DrunkenOf(actor)!=null)
+                        if (trickery || bard || portent || result.WasSubtraction || result.FreezeHalvedFrom > 0 || MonkRules.DrunkenOf(actor)!=null)
                             ctx.AttackValueOverride = result.ResultValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);

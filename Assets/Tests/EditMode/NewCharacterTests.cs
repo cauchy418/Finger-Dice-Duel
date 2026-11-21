@@ -1903,8 +1903,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(25, wolf.MaximumHealth,
                 $"生命上限应为 20 + {PathOfTheBeastLogic.HealthBonus} = 25。");
             Assert.AreEqual(25, wolf.Health, "开局应满血。");
-            Assert.AreEqual(-1, wolf.Character.AttackBonus);
-            Assert.AreEqual(-1, wolf.Character.DefenseBonus);
+            Assert.AreEqual(-2, wolf.Character.AttackBonus);
+            Assert.AreEqual(-2, wolf.Character.DefenseBonus);
         }
 
         [Test]
@@ -1940,8 +1940,8 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(1,((PathOfTheBeastLogic)wolf.Character).BeastSouls);
             game.ResolveStatusTurnEnd(wolf);
             Assert.AreEqual(20,wolf.Health);
-            Assert.AreEqual(0,wolf.Character.AttackBonus);
-            Assert.AreEqual(0,wolf.Character.DefenseBonus);
+            Assert.AreEqual(-1,wolf.Character.AttackBonus);
+            Assert.AreEqual(-1,wolf.Character.DefenseBonus);
         }
 
         [Test]
@@ -1962,8 +1962,8 @@ namespace FingerDiceDuel.Tests
                 game.ResolveStatusTurnEnd(wolf);
             }
 
-            Assert.AreEqual(-1 + 3, wolf.Character.AttackBonus, "三次成长后基础攻击应为 +2。");
-            Assert.AreEqual(-1 + 3, wolf.Character.DefenseBonus, "三次成长后基础防御应为 +2。");
+            Assert.AreEqual(-2 + 3, wolf.Character.AttackBonus, "三次成长后基础攻击应为 +1。");
+            Assert.AreEqual(-2 + 3, wolf.Character.DefenseBonus, "三次成长后基础防御应为 +1。");
         }
 
         [Test]
@@ -1979,13 +1979,13 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(wolf, wolf.LeftHand, blank.RightHand);
                 game.ResolveStatusTurnEnd(wolf);
 
-            Assert.AreEqual(0, wolf.Character.AttackBonus, "成长一次后面板为0。");
+            Assert.AreEqual(-1, wolf.Character.AttackBonus, "成长一次后面板为-1。");
 
             game.ResetMatch();
 
-            Assert.AreEqual(-1, wolf.Character.AttackBonus,
+            Assert.AreEqual(-2, wolf.Character.AttackBonus,
                 "重开一局必须丢弃成长，否则会一直叠加。");
-            Assert.AreEqual(-1, wolf.Character.DefenseBonus);
+            Assert.AreEqual(-2, wolf.Character.DefenseBonus);
             Assert.AreEqual(25, wolf.MaximumHealth, "生命上限不受重置影响。");
         }
 

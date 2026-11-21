@@ -25,7 +25,7 @@
                 case HandEffect.FourElementsTechnique: skill="四象门徒"; action="选择本次元素或保留气点。"; break;
                 case HandEffect.TheFiendPact: skill="直坠噩梦"; action="耗尽虚假生命令目标失能／恐慌2回合，或保留虚假生命。"; break;
                 case HandEffect.VengeanceRetarget: skill="仇敌誓言"; action="可将标记转移到本次攻击者，或保留原标记。"; break;
-                case HandEffect.CollegeOfLoreDefense: skill="切割语"; action="清除对应记录，使本次伤害减半；或保留。"; break;
+                case HandEffect.CollegeOfLoreDefense: skill="切割语"; action="清除对应记录，使本次伤害减半，并令攻击者困惑2回合；或保留。"; break;
                 case HandEffect.SchoolOfIllusionDefense: skill="幻影实体"; action="双手差2：可将较小手变为2，使本次伤害减半。"; break;
                 case HandEffect.BattleMasterManeuver: skill="卓越战技"; action="攻击造成伤害后，按另一只手附加流血/跛脚或震慑/倒伏（2 回合）。"; break;
                 case HandEffect.SchoolOfNecromancyBlock: skill="不死适应"; action="可将一只2变1，抵挡这一段；力场除外。"; break;

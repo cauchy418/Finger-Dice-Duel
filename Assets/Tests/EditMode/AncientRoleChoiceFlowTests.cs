@@ -145,7 +145,7 @@ namespace FingerDiceDuel.Tests
                 var a=CharacterFactory.CreatePlayer("妖魔",CharacterDefinition.TheFiend);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
                 var game=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
                 a.SetHealthExact(8);a.GainFalseLife(buffer);a.ApplyStatus(StatusEffect.Burn,2);game.ResolveStatusTurnEnd(a);
-                Assert.AreEqual(buffer==0?5:8,a.Health);Assert.AreEqual(buffer==0?0:2,a.FalseLife);
+                Assert.AreEqual(buffer==0?6:8,a.Health);Assert.AreEqual(buffer==0?0:3,a.FalseLife);
                 Assert.False(a.HasStatus(StatusEffect.Disabled),"持续伤害不是妖魔对自己发起攻击。");
             }
         }

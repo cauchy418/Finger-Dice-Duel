@@ -14,6 +14,71 @@ namespace FingerDiceDuel.Tests
         private static GameManager Match() => CharacterFactory.CreateMatch(CharacterDefinition.ArcaneTrickster, CharacterDefinition.Blank, new SimpleChoiceProvider(), new SimpleChoiceProvider());
         private static List<WizardChoice> Capture(GameManager game)
         { var requests = new List<WizardChoice>(); game.DeferWizardChoice = c => { requests.Add(c); return true; }; return requests; }
+        [Test] public void Human_start_and_end_exchange_are_independent_single_choices_before_action_and_handoff()
+        {
+            var game = Match(); var owner = game.PlayerA; var skill = ArcaneTricksterLogic.For(owner);
+            owner.LeftHand.SetValue(7); game.PlayerB.LeftHand.SetValue(1);
+            var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB);
+            board.BeginTurn();
+            Assert.AreEqual(BoardPhase.ChoosingWizardChoice, board.Phase);
+            var start = board.PendingWizardChoice;
+            Assert.AreEqual(owner, start.Owner); Assert.True(start.Prompt.Contains("回合开始"));
+            Assert.False(board.ClickHand(game.PlayerB.LeftHand)); Assert.True(board.ClickHand(owner.LeftHand));
+            Assert.AreEqual(7, skill.MageHandValue); Assert.AreEqual(1, owner.LeftHand.Value);
+            start.Choose(owner.RightHand); Assert.AreEqual(7, skill.MageHandValue);
+            Assert.True(board.ClickHand(owner.LeftHand)); Assert.True(board.ClickHand(game.PlayerB.LeftHand));
+            Assert.AreEqual(BoardPhase.ChoosingWizardChoice, board.Phase);
+            var end = board.PendingWizardChoice;
+            Assert.True(end.Prompt.Contains("回合结束")); Assert.True(board.ClickHand(owner.LeftHand));
+            Assert.AreEqual(7, owner.LeftHand.Value); Assert.AreEqual(2, skill.MageHandValue);
+            end.Choose(owner.RightHand); Assert.AreEqual(2, skill.MageHandValue); Assert.AreEqual(game.PlayerB, board.ActivePlayer);
+        }
+        [Test] public void Start_exchange_is_only_for_active_owner_and_respects_freeze_locks_and_forms()
+        {
+            var game = Match(); var owner = game.PlayerA; var requests = Capture(game);
+            owner.LeftHand.Lock(); game.BeginTurn();
+            Assert.AreEqual(1, requests.Count); Assert.AreEqual(owner.RightHand, requests[0].Candidates[0]);
+            Assert.AreEqual(1, requests[0].Candidates.Count); requests[0].Choose(null);
+            requests.Clear(); game.GiveUpTurn(); game.BeginTurn(); Assert.AreEqual(0, requests.Count);
+            game.GiveUpTurn(); owner.ApplyStatus(StatusEffect.Frozen); game.BeginTurn(); Assert.AreEqual(0, requests.Count);
+            owner.RemoveStatus(StatusEffect.Frozen); owner.TryPolymorph(); game.BeginTurn(); Assert.AreEqual(0, requests.Count);
+            owner.EndPolymorph(); game.BeginTurn(); Assert.AreEqual(1, requests.Count);
+        }
+        [Test] public void Start_decline_is_final_and_next_own_turn_offers_again()
+        {
+            var game = Match(); var owner = game.PlayerA; var requests = Capture(game);
+            owner.LeftHand.SetValue(7); game.BeginTurn(); var start = requests[0];
+            start.Choose(null); start.Choose(owner.LeftHand);
+            Assert.AreEqual(7, owner.LeftHand.Value); Assert.AreEqual(1, ArcaneTricksterLogic.For(owner).MageHandValue);
+            game.GiveUpTurn(); game.BeginTurn(); Assert.AreEqual(1, requests.Count);
+            game.GiveUpTurn(); game.BeginTurn(); Assert.AreEqual(2, requests.Count);
+            requests[1].Choose(owner.LeftHand); Assert.AreEqual(7, ArcaneTricksterLogic.For(owner).MageHandValue);
+        }
+        [Test] public void Start_pending_choice_revalidates_hand_status_and_shapeshift()
+        {
+            for (int mode = 0; mode < 4; mode++)
+            {
+                var owner = DualGeneralFactory.Create("A", CharacterDefinition.ArcaneTrickster, CharacterDefinition.CircleOfTheMoon);
+                var game = new GameManager(owner, CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank), new SimpleChoiceProvider(), new SimpleChoiceProvider());
+                var skill = ArcaneTricksterLogic.For(owner); var requests = Capture(game); owner.LeftHand.SetValue(7);
+                game.BeginTurn(); var start = requests[0];
+                if (mode == 0) owner.LeftHand.Lock();
+                else if (mode == 1) owner.ApplyStatus(StatusEffect.Frozen);
+                else if (mode == 2) owner.TryPolymorph();
+                else { owner.LeftHand.SetValue(1); owner.RightHand.SetValue(9); Assert.True(owner.EnterWild(1, 0, game)); }
+                start.Choose(owner.LeftHand); Assert.AreEqual(1, skill.MageHandValue);
+            }
+        }
+        [Test] public void Human_start_exchange_breaks_normal_shield_and_then_allows_operation()
+        {
+            var game = Match(); var owner = game.PlayerA;
+            owner.LeftHand.SetValue(5); owner.LeftHand.SetShieldState(ShieldState.Formed);
+            var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB);
+            board.BeginTurn(); Assert.True(board.ClickHand(owner.LeftHand));
+            Assert.AreEqual(1, owner.LeftHand.Value); Assert.False(owner.LeftHand.IsShield);
+            Assert.AreEqual(5, ArcaneTricksterLogic.For(owner).MageHandValue);
+            Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase); Assert.True(board.ClickHand(owner.LeftHand));
+        }
         [Test] public void Registered_chaotic_neutral_rogue_has_explicit_profile_and_two_body_hands()
         {
             var game = Match(); var owner = game.PlayerA;
@@ -51,7 +116,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Human_turn_end_pauses_for_body_hand_click_and_then_starts_next_player()
         {
             var game = Match(); var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB);
-            game.PlayerA.LeftHand.SetValue(1); game.PlayerB.LeftHand.SetValue(1); board.BeginTurn();
+            game.PlayerA.LeftHand.SetValue(1); game.PlayerB.LeftHand.SetValue(1); board.BeginTurn(); Assert.True(board.DeclinePendingChoice());
             Assert.True(board.ClickHand(game.PlayerA.LeftHand)); Assert.True(board.ClickHand(game.PlayerB.LeftHand));
             Assert.AreEqual(BoardPhase.ChoosingWizardChoice, board.Phase);
             Assert.AreEqual(game.PlayerA, board.PendingWizardChoice.Owner); Assert.AreEqual(0, board.PendingSkillOptions.Count);
@@ -62,7 +127,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Human_can_decline_without_changing_digits()
         {
             var game = Match(); var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB);
-            board.BeginTurn(); board.ClickHand(game.PlayerA.LeftHand); board.ClickHand(game.PlayerB.LeftHand);
+            board.BeginTurn(); Assert.True(board.DeclinePendingChoice()); board.ClickHand(game.PlayerA.LeftHand); board.ClickHand(game.PlayerB.LeftHand);
             Assert.True(board.CanDeclinePendingChoice); Assert.True(board.DeclinePendingChoice());
             Assert.AreEqual(2, game.PlayerA.LeftHand.Value); Assert.AreEqual(1, ArcaneTricksterLogic.For(game.PlayerA).MageHandValue);
         }
@@ -85,7 +150,7 @@ namespace FingerDiceDuel.Tests
         {
             var game = Match(); var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB);
             foreach (var hand in game.PlayerA.Hands) { hand.SetValue(5); hand.SetShieldState(ShieldState.Formed); }
-            board.BeginTurn(); Assert.True(board.SkipTurn()); Assert.AreEqual(BoardPhase.ChoosingWizardChoice, board.Phase);
+            board.BeginTurn(); Assert.True(board.DeclinePendingChoice()); Assert.True(board.SkipTurn()); Assert.AreEqual(BoardPhase.ChoosingWizardChoice, board.Phase);
             Assert.True(board.ClickHand(game.PlayerA.LeftHand)); Assert.AreEqual(1, game.PlayerA.LeftHand.Value);
             Assert.False(game.PlayerA.LeftHand.IsShield); Assert.True(game.PlayerA.RightHand.IsShield);
         }
@@ -184,14 +249,17 @@ namespace FingerDiceDuel.Tests
             var hit = new AttackContext(game.PlayerB, owner, game.PlayerB.LeftHand, 4, game); hit.Resolve(game.ChoiceProviderA, game);
             Assert.True(owner.Health < 20); Assert.AreEqual(5, skill.MageHandValue);
         }
-        [Test] public void Real_board_ai_resolves_end_exchange_without_human_prompt_and_full_match_finishes()
+        [Test] public void Real_board_ai_resolves_start_and_end_exchange_without_human_prompt_and_full_match_finishes()
         {
             var game = Match(); var owner = game.PlayerA;
-            owner.LeftHand.SetValue(4); owner.RightHand.SetValue(7); game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
+            owner.LeftHand.SetValue(7); owner.RightHand.SetValue(7); game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
             var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB, aiForA: new GreedyChoiceProvider());
-            board.BeginTurn(); Assert.True(board.ClickHand(owner.LeftHand)); Assert.True(board.ClickHand(game.PlayerB.LeftHand));
-            Assert.AreEqual(game.PlayerB, board.ActivePlayer); Assert.AreEqual(7, ArcaneTricksterLogic.For(owner).MageHandValue);
+            board.BeginTurn(); Assert.AreEqual(7, ArcaneTricksterLogic.For(owner).MageHandValue);
             Assert.True(owner.LeftHand.Value == 1 || owner.RightHand.Value == 1); Assert.True(board.PendingWizardChoice == null);
+            var source = owner.LeftHand.Value == 1 ? owner.LeftHand : owner.RightHand;
+            Assert.True(board.ClickHand(source)); Assert.True(board.ClickHand(game.PlayerB.LeftHand));
+            if (ReferenceEquals(board.ActivePlayer, owner)) Assert.True(board.ClickHand(game.PlayerB.LeftHand));
+            Assert.AreEqual(game.PlayerB, board.ActivePlayer); Assert.True(board.PendingWizardChoice == null);
             var result = CharacterBalanceTests.RunOne(CharacterDefinition.ArcaneTrickster, CharacterDefinition.Champion, true, 761708, out string error);
             Assert.True(error == null, error); Assert.NotNull(result);
         }

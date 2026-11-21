@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Assistant
         private int ProjectedCounterplayScore(LegalMove move,PlayerState actor,GameManager game,int? operationResult=null)
         {
             if(game==null||actor==null||move.ActedHand==null||DenyRatioPercent<=0)return 0;
-            int next=operationResult??DruidScoredResult(move,actor,game),other=actor.GetOtherHand(move.ActedHand).Value;
+            int next=operationResult??ScoredOperationResult(move,actor,game),other=actor.GetOtherHand(move.ActedHand).Value;
             int worst=0;
             foreach(var foe in game.Players)
             {
@@ -36,7 +36,9 @@ namespace FingerDiceDuel.Assistant
                     {
                         if(!StatusRules.CanUseHandAsAddend(foe,addendHand,game)||addendHand.IsConcealed)continue;
                         int addend=ReferenceEquals(addendHand,move.ActedHand)?next:other;
-                        int result=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
+                        int rawResult=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
+                        foreach (int result in BardInspiration.Results(foe, rawResult))
+                        {
                         var effect=CharacterBehaviors.DisplayedEffectOf(foe,result);
                         var profile=ActiveHandValueProfile(foe,game);
                         int value=profile.WeightOf(result)/4;
@@ -57,6 +59,7 @@ namespace FingerDiceDuel.Assistant
                         int remaining=foe.GetOtherHand(hand).Value;
                         foreach(var combo in profile.Combos)if(combo.Matches(result,remaining))value+=Math.Min(40,combo.Bonus/4);
                         best=Math.Max(best,value);
+                        }
                     }
                 }
                 worst=Math.Max(worst,best);
@@ -76,7 +79,9 @@ namespace FingerDiceDuel.Assistant
                 || CharacterBehaviors.FirstImplementer<PathOfTheBerserkerLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<DraconicBloodlineLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<SchoolOfIllusionLogic>(foe) != null
-                || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null;
+                || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null
+                || BardInspiration.Available(foe)
+                || ArcaneTricksterLogic.For(foe) != null;
 
         private static int AuditedOpportunityDelta(LegalMove move, PlayerState actor, int result, PlayerState foe, GameManager game)
         {
@@ -92,12 +97,23 @@ namespace FingerDiceDuel.Assistant
                     int projected = AiStatePolicy.PreviewResult(foe, source.Value, ReferenceEquals(operand, move.ActedHand) ? result : operand.Value);
                     before = Math.Max(before, AuditedOpportunity(foe, actor, source, previous, game));
                     after = Math.Max(after, AuditedOpportunity(foe, actor, source, projected, game));
+                    // A trickster can replace this body source with its public reserve before acting.
+                    before = Math.Max(before, MageHandReserveOpportunity(foe, actor, source, operand.Value, game));
+                    after = Math.Max(after, MageHandReserveOpportunity(foe, actor, source,
+                        ReferenceEquals(operand, move.ActedHand) ? result : operand.Value, game));
                 }
             }
             return after - before;
         }
 
         private static int AuditedOpportunity(PlayerState foe, PlayerState victim, Hand source, int result, GameManager game)
+        {
+            int best = 0;
+            foreach (int value in BardInspiration.Results(foe, result))
+                best = Math.Max(best, AuditedSingleOpportunity(foe, victim, source, value, game));
+            return best;
+        }
+        private static int AuditedSingleOpportunity(PlayerState foe, PlayerState victim, Hand source, int result, GameManager game)
         {
             int other = foe.GetOtherHand(source).Value;
             int setup = (foe.Character as IAiMoveAdvisor)?.ScoreMoveBonus(new MoveValueContext(source, result, victim.LeftHand, other)) ?? 0;

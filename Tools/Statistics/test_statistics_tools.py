@@ -153,9 +153,15 @@ class StatisticsToolsTests(unittest.TestCase):
             self.assertIn(f'{sum(stat["games"] for stat in before["totals"].values()):,}', result.stdout)
 
     def test_current_round_synthetic_csv_validation_and_refresh(self):
+        self._check_synthetic_round(58)
+
+    def test_expanded_roster_round_validates_and_refreshes(self):
+        self._check_synthetic_round(59)
+
+    def _check_synthetic_round(self, role_count):
         # Synthetic draws exercise the reporting pipeline without playing any games.
         BIN.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(prefix='statistics-58-fixture-', dir=BIN) as temporary:
+        with tempfile.TemporaryDirectory(prefix=f'statistics-{role_count}-fixture-', dir=BIN) as temporary:
             fixture = Path(temporary)
             tools = fixture / 'Tools/Statistics'
             tools.mkdir(parents=True)
@@ -168,7 +174,7 @@ class StatisticsToolsTests(unittest.TestCase):
             out = tools / '2026-11-09-state-ai'
             out.mkdir()
             roles = []
-            for axis, size in (('守序', 19), ('中立', 20), ('混乱', 19)):
+            for axis, size in (('守序', 19), ('中立', 20), ('混乱', role_count - 39)):
                 for _ in range(size):
                     roles.append({'id': f'role-{len(roles)}', 'name': f'角色{len(roles)}', 'axis': axis})
             with (out / 'roster.tsv').open('w', encoding='utf-8', newline='') as stream:
@@ -194,7 +200,7 @@ class StatisticsToolsTests(unittest.TestCase):
                     writer = csv.writer(stream)
                     writer.writerow(('seed', 'first', 'second', 'winner', 'turns'))
                     for game in range(size):
-                        picks = [r['id'] for r in (roles*2)[game%58:game%58+8]]
+                        picks = [r['id'] for r in (roles*2)[game%role_count:game%role_count+8]]
                         if mode == 'eight':
                             picks = [role for index, pool in enumerate(factions) for role in pool[:2 if index == game%3 else 3]]
                         writer.writerow((game, '', '+'.join(picks), -1, 1))
@@ -210,7 +216,7 @@ class StatisticsToolsTests(unittest.TestCase):
             for mode in ('1v1', '2v2', 'dual', 'eight', 'identity', 'identity-preferred'):
                 (out / (mode + '.log')).write_text('通过 1 / 失败 0\nzero errors / forced aborts', encoding='utf-8')
             (out / 'ai-audit.tsv').write_text('id\n' + '\n'.join(r['id'] for r in roles), encoding='utf-8')
-            (out / 'audit.log').write_text('58 roles, 10092 legal opening decisions\n通过 1 / 失败 0', encoding='utf-8')
+            (out / 'audit.log').write_text(f'{role_count} roles, {role_count*role_count*3} legal opening decisions\n通过 1 / 失败 0', encoding='utf-8')
             (out / 'regression.log').write_text('通过 1 / 失败 0', encoding='utf-8')
             (out / 'provenance.json').write_text(json.dumps(capture(fixture)), encoding='utf-8')
             manifest = json.loads((out / 'provenance.json').read_text(encoding='utf-8'))
@@ -221,8 +227,8 @@ class StatisticsToolsTests(unittest.TestCase):
             result = subprocess.run(command + ['--baseline', str(baseline)], capture_output=True, text=True, encoding='utf-8')
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             report = json.loads((out / 'results.json').read_text(encoding='utf-8'))
-            self.assertEqual(66964, sum(s['games'] for s in report['totals'].values()))
-            self.assertEqual(532, report['legal_duals'])
+            self.assertEqual(len(pairs)*36+len(duals)*8+3200, sum(s['games'] for s in report['totals'].values()))
+            self.assertEqual(len(duals), report['legal_duals'])
             self.assertEqual(json.loads(baseline.read_text(encoding='utf-8'))['roster_count'], report['previous_round_comparison']['previous_roster_count'])
             readme = (out / 'README.md').read_text(encoding='utf-8')
             self.assertIn('-Date 2026-11-09 -Directory 2026-11-09-state-ai-replay', readme)

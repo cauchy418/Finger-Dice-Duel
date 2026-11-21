@@ -22,9 +22,9 @@ namespace FingerDiceDuel.Core
     /// </summary>
     public class PathOfTheWardenLogic : BarbarianTemplate, IPreTurnChoiceProvider
     {
-        /// <summary>共同职业的基础攻防。</summary>
-        public override int DefaultAttackBonus => -1;
-        public override int DefaultDefenseBonus => -1;
+        /// <summary>职业基础攻防 -2/-2；守望者额外防御 +1。</summary>
+        public override int DefaultAttackBonus => base.DefaultAttackBonus;
+        public override int DefaultDefenseBonus => base.DefaultDefenseBonus + 1;
 
         public override string DisplayName => "野蛮人·守望者道途";
 
