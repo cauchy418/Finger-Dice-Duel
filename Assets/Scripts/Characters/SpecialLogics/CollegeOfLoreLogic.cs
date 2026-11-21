@@ -2,7 +2,7 @@
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
-    public sealed class CollegeOfLoreLogic : CharacterTemplate,ILoreRecord,ITurnEndHook,IWholeAttackDefense,IAttackTypeProvider,IBardInspiration
+    public sealed class CollegeOfLoreLogic : CharacterTemplate,ILoreRecord,ITurnEndHook,IWholeAttackDefense,IAttackTypeProvider
     {
         private readonly HashSet<int> _records=new HashSet<int>();private bool? _defend;private int _preparedValue;
         public override string DisplayName=>"吟游诗人·逸闻学院";

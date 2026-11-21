@@ -44,6 +44,17 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(HandEffect.CollegeOfLoreDefense,board.PendingEffect);Assert.AreEqual(b,board.Chooser);board.ChooseSkillOption(use?1:0);Assert.AreEqual(use?17:15,b.Health);Assert.AreEqual(!use,lore.HasRecord(4));
             }
         }
+        [Test] public void Cutting_words_inflicts_two_turn_confusion_directly_with_defender_as_source()
+        {
+            var policy = new SimpleChoiceProvider();
+            var game = CharacterFactory.CreateMatch(CharacterDefinition.Blank, CharacterDefinition.CollegeOfLore, new SimpleChoiceProvider(), policy);
+            var lore = (CollegeOfLoreLogic)game.PlayerB.Character;
+            game.PlayerB.LeftHand.SetValue(4); lore.OnOperationResolved(game.PlayerB, game.PlayerB.LeftHand, 1, 3, HandEffectType.Attack4, game, new SimpleChoiceProvider());
+            game.SkillPolicyFor = _ => new GreedyChoiceProvider();
+            new AttackContext(game.PlayerA, game.PlayerB, game.PlayerA.LeftHand, 4, game).Resolve(policy, game);
+            Assert.AreEqual(2, game.PlayerA.StatusTurnsLeft(StatusEffect.Confusion));
+            Assert.AreEqual(game.PlayerB, game.PlayerA.StatusSourceOf(StatusEffect.Confusion)); Assert.False(lore.HasRecord(4));
+        }
         [Test] public void Lore_cannot_defend_an_unrecorded_number_and_reset_clears_growth()
         {
             Board(CharacterDefinition.Blank,CharacterDefinition.CollegeOfLore,out var g);var lore=(CollegeOfLoreLogic)g.PlayerB.Character;Record(lore,g.PlayerB,g,6);

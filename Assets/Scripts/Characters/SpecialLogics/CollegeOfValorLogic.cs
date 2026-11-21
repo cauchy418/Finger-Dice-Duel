@@ -19,7 +19,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     ///
     /// ⚠️ 生效范围 = **他的攻击范围内**（3），不是"全场"。
     /// </summary>
-    public sealed class CollegeOfValorLogic : CharacterTemplate, IAttackRangeProvider, IBardInspiration
+    public sealed class CollegeOfValorLogic : CharacterTemplate, IAttackRangeProvider
     {
         public override string DisplayName => "吟游诗人·勇气学院";
 

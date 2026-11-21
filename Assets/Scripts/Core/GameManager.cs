@@ -1587,7 +1587,6 @@ namespace FingerDiceDuel.Core
                     if (!TacticianSubtraction.HasValue && CanChooseTacticianOperation(actor))
                         TacticianSubtraction = ChooseTacticianSubtraction(actor, actedHand, targetHand);
                     RequestTrickeryOperation(actor,actedHand,targetHand,()=>{});
-                    RequestBardOperation(actor,actedHand,targetHand,()=>{});
                     RequestPortentOperation(actor,actedHand,targetHand,()=>{});
                 }
                 return ResolveTurn(actor, actedHand, targetHand.Value, targetHand,extraAction: extraAction);
@@ -2637,8 +2636,6 @@ namespace FingerDiceDuel.Core
             int finalValue = calculated;
             bool trickery = gambleResult == 0 && ApplyTrickery(actor, actedHand, targetHand, calculated, out finalValue);
             if (trickery) result.TrickeryCalculated = calculated;
-            bool bard = gambleResult == 0 && HasPreparedBard(actor, actedHand, targetHand);
-            if (gambleResult == 0) finalValue = ApplyBardResult(actor, actedHand, targetHand, finalValue);
             bool portent = HasPreparedPortent(actor, actedHand, targetHand);
             finalValue = PortentPreview(actor, actedHand, targetHand, finalValue);
             if (!trickery && !portent && calculated != raw) result.FreezeHalvedFrom = raw;
@@ -2887,7 +2884,7 @@ namespace FingerDiceDuel.Core
                         ctx.SourceHandValueBefore = result.ActedHandValueBefore;
                         ctx.TargetHandValueBefore = result.TargetHandValue;
                         ctx.SecondAddendValueBefore=result.SecondAddendValue;
-                        if (trickery || bard || portent || result.WasSubtraction || result.FreezeHalvedFrom > 0 || MonkRules.DrunkenOf(actor)!=null)
+                        if (trickery || portent || result.WasSubtraction || result.FreezeHalvedFrom > 0 || MonkRules.DrunkenOf(actor)!=null)
                             ctx.AttackValueOverride = result.ResultValue;
                         ctx.AttackerChoiceSink = GetChoiceProvider(actor) as IPreTurnChoiceSink;
                         ctx.AttackerProvider = GetChoiceProvider(actor);

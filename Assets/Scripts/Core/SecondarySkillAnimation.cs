@@ -65,7 +65,6 @@ namespace FingerDiceDuel.Core
             list["直坠噩梦"]=new SecondarySkillProfile("直坠噩梦",SecondarySkillStyle.Nightmare,"Effects/false_life",2,"");
             list["黑暗强运"]=new SecondarySkillProfile("黑暗强运",SecondarySkillStyle.Drain,"Effects/false_life",2,"");
             list["逸闻记录"]=new SecondarySkillProfile("逸闻记录",SecondarySkillStyle.Book,"lore_book",2,"record");
-            list["吟游激励"]=new SecondarySkillProfile("吟游激励",SecondarySkillStyle.Music,"Professions/bard",2,"");
             list["切割语"]=new SecondarySkillProfile("切割语",SecondarySkillStyle.Book,"lore_book",2,"consume");
             list["无与伦比技艺"]=new SecondarySkillProfile("无与伦比技艺",SecondarySkillStyle.Book,"lore_book",2,"growth");
             list["风暴之护"]=new SecondarySkillProfile("风暴之护",SecondarySkillStyle.ElementGuard,"fx_thunder",2,"");

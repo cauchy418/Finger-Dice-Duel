@@ -379,7 +379,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition CollegeOfValor { get; } = new CharacterDefinition(
             CollegeOfValorId, "吟游诗人·勇气学院", SpecialLogicType.CollegeOfValor,
             attackBonus: 0, defenseBonus: -1,
-            description: "吟游激励：正常运算后，可将结果+1、−1或保留，再触发最终数字效果。每次行动结算完，若本回合受过伤害或回复过体力" +
+            description: "每次行动结算完，若本回合受过伤害或回复过体力" +
                          "（实际回 0 不算，状态伤害也算），可发动技能：" +
                          "先选增幅攻击 / 增幅防御 / 削弱攻击 / 削弱防御之一，" +
                          "再选攻击范围内 1~3 名角色（含自己，同一人点两只手只算一次），" +
@@ -498,7 +498,7 @@ namespace FingerDiceDuel.Core
         /// <summary>全部内置角色（顺序即为角色选择界面的建议顺序）。</summary>
         public static CharacterDefinition CollegeOfLore { get; } = new CharacterDefinition(
             CollegeOfLoreId,"吟游诗人·逸闻学院",SpecialLogicType.CollegeOfLore,defenseBonus:-1,englishName:"College of Lore",
-            description:"吟游激励：正常运算后，可将结果+1、−1或保留，再触发最终数字效果。记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半并令攻击者困惑2回合。攻0／防−1，距离1，钝击。");
+            description:"记录实际打出的1～9；集齐后可清空，永久攻／防／距离各+1。受攻击时可清除对应攻击数字记录，使本次伤害减半并令攻击者困惑2回合。攻0／防−1，距离1，钝击。");
         public static CharacterDefinition StormSorcery { get; } = new CharacterDefinition(
             StormSorceryId,"术士·风暴术法",SpecialLogicType.StormSorcery,defenseBonus:-1,englishName:"Storm Sorcery",
             description:"开局选择永久闪电或雷鸣抗性；攻击40%闪电、40%雷鸣，均穿透对应伤害抗性和免疫，其余近钝击远穿刺。行动后可额外做一次只改变手值的无效果运算。攻0／防−1，距离∞。");

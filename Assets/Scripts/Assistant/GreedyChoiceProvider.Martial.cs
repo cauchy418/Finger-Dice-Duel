@@ -44,7 +44,6 @@ namespace FingerDiceDuel.Assistant
             {
                 double score;
                 if(key==ArcaneTricksterLogic.ExchangeChoice)score=MageHandExchangeScore(option.Value,owner,game);
-                else if(key==BardInspiration.Key)score=BardOptionScore(option.Value,owner,game);
                 else if(key==DivineChoices.Nine||key==DivineChoices.Retarget)score=DivineOptionScore(key,option.Value,owner,target,game);
                 else if(key==ArcaneChoices.TransmutationOperation||key==ArcaneChoices.Enchantment||key==ArcaneChoices.KnightElement||key==ArcaneChoices.KnightCopy||key==ArcaneChoices.Bladesong)score=ArcaneOptionScore(key,option.Value,owner,target,game);
                 else if(key==NewSubclassChoices.StormResistance) score=BloodlineScore((AttackDamageType)option.Value,owner,game);

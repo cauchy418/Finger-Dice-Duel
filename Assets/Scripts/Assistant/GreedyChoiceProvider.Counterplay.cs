@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -20,7 +20,7 @@ namespace FingerDiceDuel.Assistant
         private int ProjectedCounterplayScore(LegalMove move,PlayerState actor,GameManager game,int? operationResult=null)
         {
             if(game==null||actor==null||move.ActedHand==null||DenyRatioPercent<=0)return 0;
-            int next=operationResult??ScoredOperationResult(move,actor,game),other=actor.GetOtherHand(move.ActedHand).Value;
+            int next=operationResult??DruidScoredResult(move,actor,game),other=actor.GetOtherHand(move.ActedHand).Value;
             int worst=0;
             foreach(var foe in game.Players)
             {
@@ -36,35 +36,44 @@ namespace FingerDiceDuel.Assistant
                     {
                         if(!StatusRules.CanUseHandAsAddend(foe,addendHand,game)||addendHand.IsConcealed)continue;
                         int addend=ReferenceEquals(addendHand,move.ActedHand)?next:other;
-                        int rawResult=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
-                        foreach (int result in BardInspiration.Results(foe, rawResult))
-                        {
-                        var effect=CharacterBehaviors.DisplayedEffectOf(foe,result);
-                        var profile=ActiveHandValueProfile(foe,game);
-                        int value=profile.WeightOf(result)/4;
-                        switch(effect)
-                        {
-                            case HandEffectType.Attack4:case HandEffectType.Attack6:case HandEffectType.Attack8:
-                                if (game.CanReach(foe, actor) && StatusRules.CanAttackTarget(foe, actor, game))
-                                {
-                                    int damage = EstimateAttackDamage(foe, actor, result, game, hand.Value);
-                                    if (damage > 0) value += Math.Min(IsLowHealth(actor) ? 60 : 32, damage * (IsLowHealth(actor) ? 8 : 4));
-                                }
-                                break;
-                            case HandEffectType.Shield:if(!foe.HasStatus(StatusEffect.Tinnitus))value+=IsLowHealth(foe)?45:15;break;
-                            case HandEffectType.Heal:
-                                if(StatusRules.CanHeal(foe)&&foe.Health<foe.MaximumHealth)value+=IsLowHealth(foe)?50:15;
-                                break;
-                        }
+                        int result=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
                         int remaining=foe.GetOtherHand(hand).Value;
-                        foreach(var combo in profile.Combos)if(combo.Matches(result,remaining))value+=Math.Min(40,combo.Bonus/4);
-                        best=Math.Max(best,value);
+                        best=Math.Max(best,ProjectedOpportunityValue(foe,actor,hand.Value,result,remaining,game));
+                        var reserve=ArcaneTricksterLogic.For(foe);
+                        if(reserve!=null&&reserve.CanExchange(foe,hand,game))
+                        {
+                            int storedResult=AiStatePolicy.PreviewResult(foe,reserve.MageHandValue,addend,op!=0);
+                            best=Math.Max(best,ProjectedOpportunityValue(foe,actor,reserve.MageHandValue,storedResult,remaining,game));
                         }
                     }
                 }
                 worst=Math.Max(worst,best);
             }
             return -worst*DenyRatioPercent/100;
+        }
+        private int ProjectedOpportunityValue(PlayerState foe, PlayerState actor, int sourceValue,
+            int result, int remaining, GameManager game)
+        {
+            var profile=ActiveHandValueProfile(foe,game);
+            int value=profile.WeightOf(result)/4;
+            var effect=game.WillSuppressOperationEffects(foe)||foe.HasStatus(StatusEffect.Dizzy)
+                ? HandEffectType.None : DivineScoredEffect(foe,result,game);
+            switch(effect)
+            {
+                case HandEffectType.Attack4:case HandEffectType.Attack6:case HandEffectType.Attack8:
+                    if(game.CanReach(foe,actor)&&StatusRules.CanAttackTarget(foe,actor,game))
+                    {
+                        int damage=EstimateAttackDamage(foe,actor,result,game,sourceValue);
+                        value+=Math.Min(IsLowHealth(actor)?60:32,damage*(IsLowHealth(actor)?8:4));
+                    }
+                    break;
+                case HandEffectType.Shield:if(!foe.HasStatus(StatusEffect.Tinnitus))value+=IsLowHealth(foe)?45:15;break;
+                case HandEffectType.Heal:
+                    if(StatusRules.CanHeal(foe)&&foe.Health<foe.MaximumHealth)value+=IsLowHealth(foe)?50:15;
+                    break;
+            }
+            foreach(var combo in profile.Combos)if(combo.Matches(result,remaining))value+=Math.Min(40,combo.Bonus/4);
+            return value;
         }
         public int ProjectedCounterplayScoreForTest(LegalMove move,PlayerState actor,GameManager game)
             =>ProjectedCounterplayScore(move,actor,game);
@@ -80,7 +89,6 @@ namespace FingerDiceDuel.Assistant
                 || CharacterBehaviors.FirstImplementer<DraconicBloodlineLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<SchoolOfIllusionLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null
-                || BardInspiration.Available(foe)
                 || ArcaneTricksterLogic.For(foe) != null;
 
         private static int AuditedOpportunityDelta(LegalMove move, PlayerState actor, int result, PlayerState foe, GameManager game)
@@ -108,10 +116,7 @@ namespace FingerDiceDuel.Assistant
 
         private static int AuditedOpportunity(PlayerState foe, PlayerState victim, Hand source, int result, GameManager game)
         {
-            int best = 0;
-            foreach (int value in BardInspiration.Results(foe, result))
-                best = Math.Max(best, AuditedSingleOpportunity(foe, victim, source, value, game));
-            return best;
+            return AuditedSingleOpportunity(foe, victim, source, result, game);
         }
         private static int AuditedSingleOpportunity(PlayerState foe, PlayerState victim, Hand source, int result, GameManager game)
         {

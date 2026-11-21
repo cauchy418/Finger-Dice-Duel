@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -9,20 +9,24 @@ namespace FingerDiceDuel.Assistant
         private static int MageHandReserveOpportunity(PlayerState foe, PlayerState victim, Hand source, int addend, GameManager game)
         {
             var skill = ArcaneTricksterLogic.For(foe);
-            if (skill == null || !skill.CanExchange(foe, source, game)) return 0;
-            int best = 0;
-            int raw = AiStatePolicy.PreviewResult(foe, skill.MageHandValue, addend);
-            foreach (int result in BardInspiration.Results(foe, raw))
-            {
-                var effect = DivineScoredEffect(foe, result, game);
-                int value = 0;
-                if (effect == HandEffectType.Heal) value = HealingGain(foe, 9) * 3;
-                else if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) value = 16;
-                else if (IsAttackEffect(effect) && game.CanReach(foe, victim) && StatusRules.CanAttackTarget(foe, victim, game))
-                    value = EstimateAttackDamage(foe, victim, result, game, skill.MageHandValue) * 5;
-                best = Math.Max(best, value);
-            }
-            return best;
+            if (skill == null || !skill.CanExchange(foe, source, game) || game.WillSuppressOperationEffects(foe) || foe.HasStatus(StatusEffect.Dizzy)) return 0;
+            int result = AiStatePolicy.PreviewResult(foe, skill.MageHandValue, addend);
+            var effect = DivineScoredEffect(foe, result, game);
+            if (effect == HandEffectType.Heal) return HealingGain(foe, 9) * 3;
+            if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) return 16;
+            if (IsAttackEffect(effect) && game.CanReach(foe, victim) && StatusRules.CanAttackTarget(foe, victim, game))
+                return EstimateAttackDamage(foe, victim, result, game, skill.MageHandValue) * 5;
+            return 0;
+        }
+
+        private static int MageHandAttackDamage(PlayerState attacker, PlayerState victim, int result,
+            int sourceValue, bool shielded, GameManager game)
+        {
+            if (FeyCanCancel(victim, result) || (victim.Character as IAttackTargetRule)?.IsImmuneToAttack(victim) == true)
+                return 0;
+            if (shielded && CharacterFactory.MaxAttackHits(attacker) == 1
+                && CharacterBehaviors.FirstImplementer<BreakerLogic>(attacker) == null) return 0;
+            return EstimateAttackDamage(attacker, victim, result, game, sourceValue);
         }
 
         private double MageHandExchangeScore(int option, PlayerState owner, GameManager game)
@@ -34,7 +38,6 @@ namespace FingerDiceDuel.Assistant
             // Compare projected digits directly; scoring must not alter the live model.
             double before = MageHandBoardValue(owner, null, 0, game);
             double after = MageHandBoardValue(owner, hand, skill.MageHandValue, game);
-            if (hand.IsShield && skill.MageHandValue != 5) after -= 24;
             var profile = HandValueProfiles.For(owner.Definition);
             // Stored digits become usable at the next start/end exchange, so discount their value.
             after += (profile.WeightOf(hand.Value) - profile.WeightOf(skill.MageHandValue)) * .08;
@@ -49,6 +52,8 @@ namespace FingerDiceDuel.Assistant
             {
                 int digit = ReferenceEquals(source, changed) ? replacement : source.Value;
                 value += profile.WeightOf(digit) * .12;
+                bool shield = source.IsShield && (!ReferenceEquals(source, changed) || replacement == source.Value);
+                if (shield) value += 24;
                 if (!source.CanBeOperated) continue;
                 double sourceBest = 0;
                 foreach (var player in game.Players)
@@ -57,29 +62,40 @@ namespace FingerDiceDuel.Assistant
                     foreach (var operand in player.Hands)
                     {
                         if (operand.IsConcealed || !StatusRules.CanUseHandAsAddend(owner, operand, game)) continue;
-                        int result = AiStatePolicy.PreviewResult(owner, digit, operand.Value);
-                        var effect = DivineScoredEffect(owner, result, game);
+                        int result = game.PreviewOperationResult(owner, source, operand, digit, operand.Value);
+                        var effect = game.OperationEffectsSuppressed(owner, source, operand)
+                            ? HandEffectType.None : DivineScoredEffect(owner, result, game);
                         double score = 0;
                         if (effect == HandEffectType.Heal && StatusRules.CanHeal(owner))
-                            score = Math.Min(9, owner.MaximumHealth - owner.Health) * 5;
-                        else if (effect == HandEffectType.Shield) score = source.IsShield ? 4 : 22;
+                            score = HealingGain(owner, 9) * 5;
+                        else if (effect == HandEffectType.Shield && !owner.HasStatus(StatusEffect.Tinnitus)) score = shield ? 4 : 22;
                         else if (IsAttackEffect(effect))
                             foreach (var target in game.Players)
                                 if (target.IsAlive && !game.IsKnownAlly(owner, target) && game.CanReach(owner, target)
-                                    && StatusRules.CanAttackTarget(owner, target, game))
-                                    score = Math.Max(score, EstimateAttackDamage(owner, target, result, game, digit) * 6);
+                                    && StatusRules.CanAttackTarget(owner, target, game) && !FeyCanCancel(target, result))
+                                {
+                                    int damage = MageHandAttackDamage(owner, target, result, digit, target.HasAnyShield, game);
+                                    score = Math.Max(score, damage >= target.HealthAcrossForms ? 1000 + damage : damage * 6);
+                                }
                         sourceBest = Math.Max(sourceBest, score);
                     }
                 }
                 if (sourceBest > best) { other = best; best = sourceBest; }
                 else other = Math.Max(other, sourceBest);
             }
-            value += best + other * .3;
+            // End exchange hands the board to the opponents. The rogue can exchange again
+            // before its next action; an immediate attack/heal opportunity has no value now.
+            if (ArcaneTricksterLogic.For(owner)?.ExchangeAtTurnStart != false)
+                value += best + other * .3;
             // Body digits are public addends. Deny strong opposing follow-up operations.
             foreach (var foe in game.Players)
             {
                 if (!foe.IsAlive || game.IsKnownAlly(owner, foe) || !StatusRules.CanAct(foe)
                     || !game.CanReach(foe, owner) || !StatusRules.CanAttackTarget(foe, owner, game)) continue;
+                if (game.WillSuppressOperationEffects(foe) || foe.HasStatus(StatusEffect.Dizzy)) continue;
+                bool hasShield = false;
+                foreach (var body in owner.Hands)
+                    if (body.IsShield && (!ReferenceEquals(body, changed) || replacement == body.Value)) hasShield = true;
                 int threat = 0;
                 foreach (var source in foe.Hands)
                 {
@@ -88,9 +104,12 @@ namespace FingerDiceDuel.Assistant
                     {
                         if (operand.IsConcealed || !StatusRules.CanUseHandAsAddend(foe, operand, game)) continue;
                         int digit = ReferenceEquals(operand, changed) ? replacement : operand.Value;
-                        int result = AiStatePolicy.PreviewResult(foe, source.Value, digit);
+                        int result = game.PreviewOperationResult(foe, source, operand, source.Value, digit);
                         if (IsAttackEffect(DivineScoredEffect(foe, result, game)))
-                            threat = Math.Max(threat, EstimateAttackDamage(foe, owner, result, game, source.Value));
+                        {
+                            int damage = MageHandAttackDamage(foe, owner, result, source.Value, hasShield, game);
+                            threat = Math.Max(threat, damage >= owner.HealthAcrossForms ? 1000 : damage);
+                        }
                     }
                 }
                 value -= threat * 3;

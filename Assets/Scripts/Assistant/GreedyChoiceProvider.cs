@@ -558,7 +558,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (move.ActedHand == null || move.TargetHand == null || game?.WillSuppressOperationEffects(actor) == true) return false;
 
-            int result = operationResult ?? ScoredOperationResult(move,actor,game);
+            int result = operationResult ?? DruidScoredResult(move,actor,game);
             if(CharacterBehaviors.FirstImplementer<IDruidForm>(actor)!=null&&!(result==9&&actor.HasStatus(StatusEffect.WarBlessing)))return IsAttackEffect(CharacterBehaviors.DisplayedEffectOf(actor,result));
             HandEffectType effect = DivineScoredEffect(actor,result,game);
 
@@ -707,10 +707,8 @@ namespace FingerDiceDuel.Assistant
             {
                 int plus = game.PreviewTacticianResult(actor, move.ActedHand, move.TargetHand, false);
                 int minus = game.PreviewTacticianResult(actor, move.ActedHand, move.TargetHand, true);
-                return Math.Max(ScoreMove(move, actor, game, BardBestResult(move, actor, game, plus)), ScoreMove(move, actor, game, BardBestResult(move, actor, game, minus)));
+                return Math.Max(ScoreMove(move, actor, game, plus), ScoreMove(move, actor, game, minus));
             }
-            if (!operationResult.HasValue && game?.CanAdjustBardResult(actor) == true && !game.HasPreparedBard(actor, move.ActedHand, move.TargetHand))
-                return ScoreMove(move, actor, game, BardBestResult(move, actor, game, DruidScoredResult(move, actor, game)));
             int result = operationResult ?? DruidScoredResult(move,actor,game);
 
             int score;
@@ -1157,7 +1155,7 @@ namespace FingerDiceDuel.Assistant
             //    因为**对手下一手可以拿它当被加数**。
             //    运算源会变成结果值，另一只手不变 —— 两只都要算。
             int otherValue = GetOtherHand(actor, move.ActedHand)?.Value ?? 0;
-            int actedAfter = operationResult ?? ScoredOperationResult(move,actor,game);
+            int actedAfter = operationResult ?? DruidScoredResult(move,actor,game);
 
             // 用**对手自己的价值表**衡量：他看重什么，我就少留什么
             HandValueProfile foeProfile = ActiveHandValueProfile(victim);

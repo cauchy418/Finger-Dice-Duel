@@ -241,8 +241,8 @@ namespace FingerDiceDuel.Characters
 
             // ---- 勇气学院（守序善良）----
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
-                shortSkill: "结果可±1；受伤或实际回血后，可增减范围内1～3人的攻防。",
-                playGuide: "正常运算后选保留或±1。行动结算后可发动战斗激励：选攻防、增减与目标；1人±3、2人±2、3人±1，可选自己。",
+                shortSkill: "受伤或实际回血后，可增减范围内1～3人的攻防。",
+                playGuide: "行动结算后可发动战斗激励：选攻防、增减与目标；1人±3、2人±2、3人±1，可选自己。",
                 counter: "效果持续到你下次发动或他死，盯住他给谁加了什么。"
                        + "攻 0 防 −1、射程 3，抢血逼他先给自己加防。",
                 interactions: new string[0]);
@@ -342,9 +342,9 @@ namespace FingerDiceDuel.Characters
                 shortSkill:"荒野叠星耀：射手光耀、圣杯治疗、巨龙纯运算。",playGuide:"先选荒野再选星耀；攻防相加、距离取高，一起解除。",counter:"打破独立血池；巨龙未在开局纯运算，回合末必须进行。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
             Add(CharacterDefinition.CollegeOfLoreId,"College of Lore",Alignment.LawfulNeutral,
-                shortSkill:"运算结果可±1；记录1～9；消耗对应记录减伤并令攻击者困惑2回合。",
-                playGuide:"正常运算后可保留结果或±1，再结算并记录最终数字；集齐后选成长或保留。受击时可清除对应记录减半，并令攻击者困惑2回合。",
-                counter:"留意其已有记录与结果调整机会；换数字攻击，逼其消耗成长进度，发动切割语后注意困惑。",
+                shortSkill:"记录1～9；消耗对应记录减伤并令攻击者困惑2回合。",
+                playGuide:"记录自己打出的1～9；集齐后选成长或保留。受击时可清除对应记录减半，并令攻击者困惑2回合。",
+                counter:"留意其已有记录；换数字攻击，逼其消耗成长进度，发动切割语后注意困惑。",
                 interactions:new[]{"风暴导向只改手值，不触发记录。"});
             Add(CharacterDefinition.ShadowMagicId,"Shadow Magic",Alignment.NeutralEvil,
                 shortSkill:"首次归0恢复至1；双手和10可施黑暗术，免疫失明，对失明目标暗蚀伤害+2。",

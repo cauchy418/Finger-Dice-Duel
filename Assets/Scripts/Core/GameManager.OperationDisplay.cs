@@ -62,7 +62,6 @@ namespace FingerDiceDuel.Core
                 shown.Add(new KeyValuePair<Hand, int>(addend, 1));
 
             value = TrickeryPreview(actor, source, addend, value, shown);
-            value = BardPreview(actor, source, addend, value);
             return PortentPreview(actor, source, addend, value);
         }
 

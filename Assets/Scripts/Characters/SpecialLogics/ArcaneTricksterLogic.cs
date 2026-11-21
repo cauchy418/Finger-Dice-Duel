@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -9,6 +9,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     {
         public const string ExchangeChoice = "mage_hand_exchange";
         public int MageHandValue { get; private set; } = 1;
+        /// <summary>Timing of the currently offered exchange, including deferred UI choices.</summary>
+        public bool ExchangeAtTurnStart { get; private set; } = true;
         public override string DisplayName => "游荡者·诡术师";
         public override int DefaultDefenseBonus => -1;
         public override int BaseAttackRange => InfiniteAttackRange;
@@ -32,7 +34,8 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     if (part is ArcaneTricksterLogic trickster) return trickster;
             return null;
         }
-        public override void OnMatchReset(PlayerState owner, GameManager manager) => MageHandValue = 1;
+        public override void OnMatchReset(PlayerState owner, GameManager manager)
+        { MageHandValue = 1; ExchangeAtTurnStart = true; }
         public bool CanExchange(PlayerState owner, Hand hand, GameManager game)
             => owner?.IsAlive == true && game != null && !game.IsGameOver
                 && CharacterBehaviors.ActorHas(owner, this) && StatusRules.CanAct(owner)
@@ -40,14 +43,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public void OnTurnStarted(PlayerState owner, GameManager game)
         {
             // BeginTurn broadcasts hooks to every player, but only the acting rogue may swap.
-            if (ReferenceEquals(owner, game?.CurrentPlayer)) OfferExchange(owner, game, "回合开始");
+            if (ReferenceEquals(owner, game?.CurrentPlayer)) OfferExchange(owner, game, true);
         }
-        public void OnTurnEnded(PlayerState owner, GameManager game) => OfferExchange(owner, game, "回合结束");
-        private void OfferExchange(PlayerState owner, GameManager game, string timing)
+        public void OnTurnEnded(PlayerState owner, GameManager game) => OfferExchange(owner, game, false);
+        private void OfferExchange(PlayerState owner, GameManager game, bool atStart)
         {
             var candidates = new List<Hand>();
             foreach (var hand in owner.Hands) if (CanExchange(owner, hand, game)) candidates.Add(hand);
             if (candidates.Count == 0) return;
+            ExchangeAtTurnStart = atStart;
+            string timing = atStart ? "回合开始" : "回合结束";
             bool resolved = false;
             var request = new WizardChoice(owner,
                 $"法师之手诈术 · {timing} · 魔法手 {MageHandValue}，点击一只本体手交换点数", candidates, true,

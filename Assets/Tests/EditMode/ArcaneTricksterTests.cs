@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
@@ -253,7 +253,7 @@ namespace FingerDiceDuel.Tests
         {
             var game = Match(); var owner = game.PlayerA;
             owner.LeftHand.SetValue(7); owner.RightHand.SetValue(7); game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
-            var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB, aiForA: new GreedyChoiceProvider());
+            var board = new BoardController(game, (IPlayerChoiceSink)game.ChoiceProviderA, (IPlayerChoiceSink)game.ChoiceProviderB, aiForA: ProductionAi.Create(game));
             board.BeginTurn(); Assert.AreEqual(7, ArcaneTricksterLogic.For(owner).MageHandValue);
             Assert.True(owner.LeftHand.Value == 1 || owner.RightHand.Value == 1); Assert.True(board.PendingWizardChoice == null);
             var source = owner.LeftHand.Value == 1 ? owner.LeftHand : owner.RightHand;
@@ -262,6 +262,77 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(game.PlayerB, board.ActivePlayer); Assert.True(board.PendingWizardChoice == null);
             var result = CharacterBalanceTests.RunOne(CharacterDefinition.ArcaneTrickster, CharacterDefinition.Champion, true, 761708, out string error);
             Assert.True(error == null, error); Assert.NotNull(result);
+        }
+        [Test] public void Ai_end_exchange_does_not_trade_safe_digits_for_an_attack_it_cannot_take()
+        {
+            var game = Match(); var owner = game.PlayerA; var ai = new GreedyChoiceProvider();
+            owner.LeftHand.SetValue(7); owner.RightHand.SetValue(7);
+            game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
+            game.SkillPolicyFor = _ => ai;
+            // At start, reserve 1 enables 1+3=4. At end it only feeds the foe 3+1=4;
+            // retaining 7 keeps both enemy operations at 1 until the next start swap.
+            game.ResolveStatusTurnEnd(owner);
+            Assert.AreEqual(7, owner.LeftHand.Value); Assert.AreEqual(7, owner.RightHand.Value);
+            Assert.AreEqual(1, ArcaneTricksterLogic.For(owner).MageHandValue);
+        }
+        [Test] public void Projected_counterplay_includes_reserve_source_without_mutating_the_board()
+        {
+            var game = CharacterFactory.CreateMatch(CharacterDefinition.Blank, CharacterDefinition.ArcaneTrickster,
+                new SimpleChoiceProvider(), new SimpleChoiceProvider());
+            var actor = game.PlayerA; var foe = game.PlayerB; var ai = new GreedyChoiceProvider();
+            actor.LeftHand.SetValue(1); actor.RightHand.SetValue(1);
+            foe.LeftHand.SetValue(2); foe.RightHand.SetValue(2);
+            var move = new LegalMove(actor, actor.LeftHand, foe.LeftHand);
+            var score = typeof(GreedyChoiceProvider).GetMethod("ProjectedCounterplayScore", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            int dangerous = (int)score.Invoke(ai, new object[] { move, actor, game, (int?)7 });
+            foe.LeftHand.SetValue(3); ArcaneTricksterLogic.For(foe).Exchange(foe, foe.LeftHand, game);
+            foe.LeftHand.SetValue(2);
+            int safe = (int)score.Invoke(ai, new object[] { move, actor, game, (int?)7 });
+            Assert.True(dangerous < safe, "Reserve 1+7 attacks; visible 2+7 only heals at full health.");
+            Assert.AreEqual(1, actor.LeftHand.Value); Assert.AreEqual(2, foe.LeftHand.Value);
+            Assert.AreEqual(3, ArcaneTricksterLogic.For(foe).MageHandValue);
+        }
+        [Test] public void Projected_exchange_to_stored_five_matches_actual_broken_shield_without_live_mutation()
+        {
+            var game = Match(); var owner = game.PlayerA; var skill = ArcaneTricksterLogic.For(owner);
+            owner.RightHand.SetValue(5); skill.Exchange(owner, owner.RightHand, game);
+            owner.LeftHand.SetValue(5); owner.LeftHand.SetShieldState(ShieldState.Formed);
+            owner.RightHand.SetValue(2); game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
+            var ai = ProductionAi.Create(game);
+            var value = typeof(GreedyChoiceProvider).GetMethod("MageHandBoardValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            double projected = (double)value.Invoke(ai, new object[] { owner, owner.RightHand, 5, game });
+            Assert.AreEqual(2, owner.RightHand.Value); Assert.True(owner.LeftHand.IsShield);
+            Assert.True(skill.Exchange(owner, owner.RightHand, game));
+            Assert.AreEqual(ShieldState.Broken, owner.RightHand.State);
+            double actual = (double)value.Invoke(ai, new object[] { owner, null, 0, game });
+            Assert.AreEqual(projected, actual);
+        }
+        private sealed class OperationInvalidator : CharacterTemplate, IActionInvalidator
+        {
+            public bool Active;
+            public bool CanInvalidateAction(PlayerState owner, PlayerState actor) => Active;
+            public bool TryInvalidateAction(PlayerState owner, PlayerState actor, Hand source, Hand operand,
+                GameManager game, out string reason) { reason = "test suppression"; return Active; }
+        }
+        [Test] public void Exchange_projection_suppresses_phantom_effects_for_dizzy_and_invalidated_actions()
+        {
+            foreach (bool invalidated in new[] { false, true })
+            {
+                var invalidator = new OperationInvalidator { Active = invalidated };
+                var game = new GameManager(CharacterFactory.CreatePlayer("A", CharacterDefinition.ArcaneTrickster),
+                    new PlayerState("B", invalidator), new SimpleChoiceProvider(), new SimpleChoiceProvider());
+                var owner = game.PlayerA; owner.LeftHand.SetValue(7); owner.RightHand.SetValue(7);
+                game.PlayerB.LeftHand.SetValue(3); game.PlayerB.RightHand.SetValue(3);
+                if (!invalidated) owner.ApplyStatus(StatusEffect.Dizzy);
+                else Assert.True(game.WillSuppressOperationEffects(owner));
+                var ai = ProductionAi.Create(game);
+                var score = typeof(GreedyChoiceProvider).GetMethod("MageHandExchangeScore", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                double suppressed = (double)score.Invoke(ai, new object[] { 1, owner, game });
+                owner.RemoveStatus(StatusEffect.Dizzy); invalidator.Active = false;
+                double normal = (double)score.Invoke(ai, new object[] { 1, owner, game });
+                Assert.True(normal > suppressed, "Only a real 1+3 attack may earn immediate attack value.");
+                Assert.AreEqual(7, owner.LeftHand.Value); Assert.AreEqual(1, ArcaneTricksterLogic.For(owner).MageHandValue);
+            }
         }
         [Test] public void Mage_hand_visual_frames_and_exchange_event_keep_immutable_digits()
         {
@@ -295,7 +366,7 @@ namespace FingerDiceDuel.Tests
             var options = new[] { new SkillChoiceOption(0,"none",""), new SkillChoiceOption(1,"left",""), new SkillChoiceOption(2,"right","") };
             int choice = ai.ChooseSkillOption(ArcaneTricksterLogic.ExchangeChoice, options, owner, null, game);
             Assert.True(choice == 1 || choice == 2); Assert.AreEqual(7, owner.LeftHand.Value); Assert.AreEqual(7, owner.RightHand.Value); Assert.AreEqual(1, skill.MageHandValue);
-            game.SkillPolicyFor = _ => ai; game.ResolveStatusTurnEnd(owner);
+            game.SkillPolicyFor = _ => ai; game.BeginTurn();
             Assert.AreEqual(7, skill.MageHandValue); Assert.True(owner.LeftHand.Value == 1 || owner.RightHand.Value == 1);
         }
     }
