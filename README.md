@@ -117,6 +117,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | [AI状态策略](./Docs/ai-state-policy.md) | 全角色统一接入负面、角色状态、形态、资源与特殊效果权重 |
 | [开发与测试](./Docs/development.md) | 测试环境、AI 策略参考、美术制作与接入验收索引 |
 | [青壮年人物立绘](./Art/Production/young-hero-illustrations/README.md) | 战士、术士、法师、圣武士26子职男女52张透明原画；原有立绘保留 |
+| [动态战斗立绘](./Art/Production/action-hero-illustrations/README.md) | 同26子职男女52张，穿插攻防、施法、不同朝向与施法媒介 |
 | [图鉴写法](./CODE-STYLE.md) | 文案长度、关键交互与排版约定 |
 
 `Art/Integration/` 下每个功能点都有一个验收目录，放着真实界面截图、校验说明和复核记录。
