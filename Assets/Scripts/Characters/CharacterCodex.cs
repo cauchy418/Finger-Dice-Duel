@@ -241,11 +241,8 @@ namespace FingerDiceDuel.Characters
 
             // ---- 勇气学院（守序善良）----
             Add(CharacterDefinition.CollegeOfValorId, "College of Valor", Alignment.LawfulGood,
-                shortSkill: "运算结果可±1；战斗激励：本回合受伤或实际回血后，可给攻击范围内 1~3 人"
-                          + "加/减攻防 ±(4-人数)。",
-                playGuide: "正常运算后可保留结果或±1，再按最终数字触发效果。行动结算完，本回合受过伤或回过血就会问要不要发动。"
-                         + "先选增幅/削弱攻防，再选人数（1人±3、2人±2、3人±1），最后点角色；"
-                         + "可点自己，同一人点两只手算一次。",
+                shortSkill: "结果可±1；受伤或实际回血后，可增减范围内1～3人的攻防。",
+                playGuide: "正常运算后选保留或±1。行动结算后可发动战斗激励：选攻防、增减与目标；1人±3、2人±2、3人±1，可选自己。",
                 counter: "效果持续到你下次发动或他死，盯住他给谁加了什么。"
                        + "攻 0 防 −1、射程 3，抢血逼他先给自己加防。",
                 interactions: new string[0]);
