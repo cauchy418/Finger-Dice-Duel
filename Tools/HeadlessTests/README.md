@@ -38,7 +38,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-EditorRoot <path>` | 手动指定编辑器 `Editor/Data` 目录 |
 | `-Define <symbols>` | 追加编译定义。用 `-Define FDD_UNITY_TESTS` 可校验"Unity 侧测试代码"能否编译（此时按asmdef名称分别编译运行时DLL和测试DLL，不执行，并自动引入 `nunit.framework.dll`） |
 | `-Only <filter>` | 编译后只运行类名包含该文本的测试，例如`-Only AdventureLevel1Tests`；全量回归时不传此项 |
-| `-SkipStatistics` | 跳过8项独立统计，只执行1769项功能回归 |
+| `-SkipStatistics` | 跳过8项独立统计，只执行1810项功能回归 |
 | `-OutputDirectory <path>` | 使用独立构建目录，不覆盖正在运行的DLL或旧分片的构建标识 |
 | `-RuntimeVersion <version>` | 为编译器和测试程序固定同一个已安装运行时，本机使用8.0.15 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
