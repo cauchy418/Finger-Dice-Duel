@@ -9,8 +9,7 @@
 圣武士的铠甲和攻击特效呼应誓言：王冠为蓝金法印，奉献为银白与暖金圣光，古贤为青铜绿甲与生命藤叶，破誓者为焦黑甲、暗影裂光和断链；征服突出猩红威压，复仇突出冷色追击剑路。术士八张采用侧步、转身、前踏、反制等施法瞬间，狂野涌流、龙影血脉、雷电和幽影各有独立表现。
 
 幻术学派女性使用紧凑镜面折射效果，剑咏者以直剑、剑气和韵律光弧结合。幽影魔法女性以朝向一致的躯干、骨盆和腿部完成前踏施法，保留兜帽、紫晶灯与幽影魔眼。武器与特效用于美术表现，游戏内规则数值不变。
-
-原[青壮年立绘](../young-hero-illustrations/README.md)、[战士原立绘](../fighter-character-illustrations/README.md)和[术士／法师原立绘](../caster-character-illustrations/README.md)均保留。本目录为独立美术素材，尚未接入游戏立绘界面。
+本目录为独立美术素材，尚未接入游戏立绘界面。
 
 目录统一为 `character-portraits`，文件统一采用 `<子职ID>_<male|female>_fullbody.png`，子职ID与清单一致。
 
@@ -44,3 +43,16 @@
 | 圣武士·古贤之誓 | [男性](paladin_oath_of_the_ancients_male_fullbody.png) | [女性](paladin_oath_of_the_ancients_female_fullbody.png) |
 | 圣武士·征服之誓 | [男性](paladin_oath_of_conquest_male_fullbody.png) | [女性](paladin_oath_of_conquest_female_fullbody.png) |
 | 圣武士·复仇之誓 | [男性](paladin_oath_of_vengeance_male_fullbody.png) | [女性](paladin_oath_of_vengeance_female_fullbody.png) |
+
+## 历史恢复
+
+当前仓库仅保留本目录52张有效立绘。被取代的三套旧版共92张已从工作树清理，清理前完整144张及制作文档保存在标签 [`art/portrait-collections-preserved`](https://github.com/cauchy418/Finger-Dice-Duel/tree/art/portrait-collections-preserved)，提交 `f82e72c`。已从该提交导出全部144张，并逐张核对SHA256。
+
+需要恢复清理前完整立绘时，在仓库根目录运行：
+
+```powershell
+git fetch origin tag art/portrait-collections-preserved
+git archive --format=zip --output=Tools/HeadlessTests/bin/portrait-collections.zip art/portrait-collections-preserved -- Art/Production/character-portraits Art/Production/young-hero-illustrations Art/Production/fighter-character-illustrations Art/Production/caster-character-illustrations
+```
+
+该命令导出独立压缩包，保留当前工作树。清单里的 `git:<提交>:<路径>` 表示生成时使用的历史参考图，可用 `git show <提交>:<路径>` 查阅；本机 `generated_images` 来源路径只记录绘图溯源，不是游戏运行依赖。
