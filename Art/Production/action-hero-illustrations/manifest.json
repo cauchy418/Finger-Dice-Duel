@@ -1,6 +1,6 @@
 {
   "generator": "built-in image_gen",
-  "revision": "subclass-identity-attack-effects-kinetic-casting",
+  "revision": "coherent-anatomy-forceful-subclass-actions",
   "expected_count": 52,
   "completed_count": 52,
   "raw_outputs_unchanged": true,
@@ -76,38 +76,37 @@
       "profession": "fighter",
       "gender": "male",
       "file": "fighter_breaker_male_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-291d6de9-145e-4232-a25a-879e74acc935.png",
-      "reference_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-b04f03a3-c1a7-4ba9-8a3d-9f853444303c.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. REDO male Breaker MORE KINETIC FORCE: preserve handsome young black-haired human, battered BLACKIRON heavy asymmetric brigandine one giant reinforced shoulder, bare muscular upper arm, russet straps, torn rust cloth; NO lion/laurel, no polished silver. Dramatic three-quarter RIGHT-facing TWO-HANDED GIANT WARAXE breaching attack: moderate forward lean from hips 20 degrees, shoulders and hips coherent, head upright looking toward contact. BOTH hands grip widely separated points on long stout axe haft with natural wrists, braced low center of gravity forward knee bent rear foot planted. Axe just cleaved a truly HUGE THICK TOWER SHIELD: chest-height large rectangular steel-rimmed reinforced oak slab, visibly thick layered construction, empty freestanding shield no victim. Shield occupies lower right, deep split down middle, strong SHARP METAL and wooden fragments fly outward, robust contained WHITE-GOLD curved SHOCK ARC at contact. Axe head large heavy complete. Powerful weight transfer and followthrough, no tiny prop or static pose. Full body, entire giant shield/axe/fragments in frame with padding. No background/floor.",
-      "action": "Powerful giant waraxe breach splits thick tower shield with forceful fragments and shock arc",
-      "sha256": "f2de7c068c879a81057fcd0d9f63c2e3d9aa947238d19ff1761c9394ab6dad79",
-      "source_sha256": "f2de7c068c879a81057fcd0d9f63c2e3d9aa947238d19ff1761c9394ab6dad79",
-      "width": 1536,
-      "height": 1024,
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c9-d0c5-76f3-b9d0-8e96a2276d49/exec-bafc9528-c6b5-47b4-9cf5-0521feb7e3d8.png",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_breaker_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Asset type: isolated full-body action RPG hero cutout. Input image 1 is the male Breaker edit target: retain his attractive Chinese-aesthetic young adult masculine face, short dark hair, powerful build, battered asymmetric blackiron armor with aged gold and russet wraps. Input image 2 is the female Breaker reference for the TWO-HANDED DOWNWARD GROUND SLAM action and pale shock WAVE only. Redraw male Breaker as a distinct industrial brigandine champion forcefully driving one heavy two-handed warhammer into an implied point beside his forward boot. Both five-finger hands grip one coherent shaft, separated for leverage. Strong shoulder connections, natural short neck, coherent torso/pelvis and leg direction, braced athletic weight transfer, moderate knee bend, not extreme crouch. Exposed muscular arm, asymmetrical armor, scarred practical layered iron and russet cloth. Keep handsome young adult age 22-32 and detailed painterly realism dark fantasy. REMOVE GIANTSHIELD ENTIRELY: no shield of any kind, no target, no wooden slab. Hammer head fully visible. Impact effect is ONLY a COMPACT PALE GOLD/WHITE SHOCKWAVE ring with a few tiny loose fragments, no ground slab, no platform, no large terrain, no floor or dust scene. Full figure including both boots, all hammer and entire compact effect comfortably inside frame with transparent margins. Real transparent alpha background, absolutely no opaque background, black vignette, floor, gradient, backdrop or scenery. Subject richly textured but clean readable silhouette. No text.",
+      "action": "Powerful two-handed warhammer downward groundslam; giantshield removed entirely; compact pale shockwave only.",
+      "sha256": "138f1522fc217ba4fb80e64261698cc6fe937502e7483b4760246856c99bc10d",
+      "source_sha256": "138f1522fc217ba4fb80e64261698cc6fe937502e7483b4760246856c99bc10d",
+      "width": 1214,
+      "height": 1295,
       "mode": "RGBA",
       "alpha_extrema": [
         0,
-        254
+        255
       ],
-      "alpha_zero_pixels": 598324,
-      "visual_review": "Revised kinetic rightward giant waraxe breach, deep braced lunge moderate forward lean, hands well separated on haft, shoulder/hip coherent, tall thick tower shield split with strong sharp fragments and white-gold shock arc. Whole boots/axe/shield in frame. Head naturally follows attack.",
+      "alpha_zero_pixels": 893244,
+      "visual_review": "Accepted: coherent shoulders, short neck, strong two-handed shaft grip, braced body/legs, full boots and hammer in frame. Asymmetric battered blackiron/russet brigandine and exposed arms retained. No shield, backdrop, floor or terrain slab; few tiny impact fragments. Native transparency retained.",
       "facing": "THREE-QUARTER VIEWER LEFT",
-      "design": "Powerful giant waraxe breach splits thick tower shield with forceful fragments and shock arc",
+      "design": "Powerful two-handed warhammer downward groundslam; giantshield removed entirely; compact pale shockwave only.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "prompt_history": [
-        {
-          "asset": "fighter_breaker_male_fullbody.png",
-          "prompt": "Use case: identity-preserve. Edit target: existing male Breaker fantasy game portrait. Keep handsome young dark-haired human male 25-30 identity, painterly realistic rendering and weathered texture. Redo action distinctly from Champion: three-quarter RIGHT facing powerful but balanced two-handed downward cleaving axe strike, the actual axe head shatters a small EMPTY freestanding shield prop near lower right, several sharp metal fragments and small contained white-grey shock pulse at contact. No victim, no other character. Distinct BATTERED BLACK IRON asymmetric heavy brigandine, one oversized reinforced pauldrON, exposed muscular upper arm, russet leather straps and torn rust-red cloth, utilitarian battle damage. NO lion/laurel/regalia, NO shiny silver fullplate, NO crown/cape. Normal upright head neck, level chin, strong attractive face unobscured. Natural hips/knees/shoulders and wrists, credible wide braced stance and two hands anatomically gripping axe handle; all feet and entire weapon in frame with margin. True transparent alpha background, no background wash, no scenery/floor, no text/UI. Restrained impact FX only at axe/shield, clear silhouette. One full body character. This must be visibly heavy industrial brute equipment, unlike disciplined polished silver Champion.",
-          "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-b04f03a3-c1a7-4ba9-8a3d-9f853444303c.png",
-          "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_breaker_male_fullbody.png",
-          "action": "Two-handed axe cleave shatters empty freestanding shield",
-          "visualreview": "Young handsome head in natural neck line, braced stance, entire weapon and boots. Black iron battered asymmetric heavy armor and rust cloth strongly distinct from Champion silver fullplate. Small sharp fragments and local impact pulse, no victim."
-        }
+      "reference_sha256": "f2de7c068c879a81057fcd0d9f63c2e3d9aa947238d19ff1761c9394ab6dad79",
+      "reference_paths": [
+        "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_breaker_male_fullbody.png",
+        "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_breaker_female_fullbody.png"
       ],
-      "reference_sha256": "bdb99137c39e7f199edf66d67d27ddd293edc6d9d622814b7db36e11307afc12"
+      "reference_sha256s": [
+        "f2de7c068c879a81057fcd0d9f63c2e3d9aa947238d19ff1761c9394ab6dad79",
+        "ded66d0a2bda3b57bc6c59f12a9f313cf3a30a0bf5033967dd6589a49c53ab3b"
+      ],
+      "reference_revision": "f686929"
     },
     {
       "index": 3,
@@ -218,29 +217,41 @@
       "profession": "fighter",
       "gender": "male",
       "file": "fighter_swordsman_male_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-3ecf764d-e260-4146-acb6-01321e4f87a2.png",
-      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_swordsman_male_fullbody.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. Male Swordsman retain handsome dark-haired youthful human identity. Change outfit to lighter elegant fencing doublet in charcoal leather with burgundy sleeves, narrow blackiron breastplate and slender agedgold fittings, no heavy shoulders, no fullplate, supple tall boots. Dynamic frontal to LEFT-facing dual sword attack: TWO actual STRAIGHT SWORDS one longsword right hand, one shorter straight sword left hand, both arms naturally bent in flowing controlled crossing cuts, TWO CRISP narrow SILVER-WHITE crossing sword trails make an X below chest without obscuring face. No extra weapons or phantom blades. Graceful grounded fencing footwork and normal upright head neck. No huge magic wash.",
-      "action": "Dual straight sword crossing cuts with two crisp X trails",
-      "sha256": "d6711d38e69c0845b5ba99d2a0ff9ac58be646b8e346083c59965dcd8f395316",
-      "source_sha256": "d6711d38e69c0845b5ba99d2a0ff9ac58be646b8e346083c59965dcd8f395316",
-      "width": 1024,
-      "height": 1536,
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c5-10df-7601-aac4-569ada28750b/exec-3dec36c1-1d70-4b64-9925-dbcbcfbb61b8.png",
+      "reference_path": "C:/Users/29391/.codex/generated_images/01a207c5-10df-7601-aac4-569ada28750b/exec-af8a2e36-cb6c-499f-aca4-b856ce14c5cc.png",
+      "prompt": "Use case: precise-object-edit. Preserve this male swordsman's excellent leftward double cut, teal light fencing outfit, handsome youthful face and natural anatomy EXACTLY. Single correction: reframe with generous transparent margin on EVERY side, especially left sword-energy arc and right coat tails. Show whole silhouette and both blades/boots/effects with at least 7% clear border; zoom figure out slightly without cutting any part. True transparent background. No backdrop, floor, vignette, fog or glow behind body. Only thin sharp crossing sword motion trails. Keep two actual straight swords held one in each hand.",
+      "action": "Leftward advancing dual cut with grounded forward weight shift; two actual straight swords and crossing sharp sword-energy paths.",
+      "sha256": "1b7e380e4d5defca650e6bbfd0decbf59db112318c19908575c19352b9ee90a0",
+      "source_sha256": "1b7e380e4d5defca650e6bbfd0decbf59db112318c19908575c19352b9ee90a0",
+      "width": 1312,
+      "height": 1199,
       "mode": "RGBA",
       "alpha_extrema": [
         0,
-        254
+        255
       ],
-      "alpha_zero_pixels": 1041839,
-      "visual_review": "Two real blade handles, clear two crossing white trails below face. Graceful open arm mechanics, soft fencing gear, full boots, level head looking left.",
+      "alpha_zero_pixels": 1064403,
+      "visual_review": "Passed on gray alpha composite: natural neck and aligned torso/pelvis/legs, youthful face, teal light fencing kit, both swords/grips and boots complete; no visible backdrop or floor.",
       "facing": "FRONT",
-      "design": "Dual straight sword crossing cuts with two crisp X trails",
+      "design": "Leftward advancing dual cut with grounded forward weight shift; two actual straight swords and crossing sharp sword-energy paths.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "571fe746e8817c3609dac429db4f372376344cd9921e2a0127fb57e070f030f3"
+      "reference_sha256": "81a2e08d525f36dc872a7cfe36276e10d74dece9ef0607e7fc29985bf4b2070b",
+      "reference_paths": [
+        "C:/Users/29391/.codex/generated_images/01a207c5-10df-7601-aac4-569ada28750b/exec-af8a2e36-cb6c-499f-aca4-b856ce14c5cc.png"
+      ],
+      "reference_sha256s": [
+        "81a2e08d525f36dc872a7cfe36276e10d74dece9ef0607e7fc29985bf4b2070b"
+      ],
+      "prompt_history": [
+        {
+          "prompt": "Use case: stylized-concept. Production transparent full-body action hero cutout for a dark fantasy game. Redraw the referenced male swordsman into a much more powerful, urgent athletic sword-technique action. Preserve handsome young adult 26-year-old human, Chinese-aesthetic refined face, tousled dark hair, realistic painterly rendering and aged-gold/blackiron details. Replace burgundy with dark teal fitted cloth and supple charcoal leather LIGHT fencing kit, tiny shoulder guards only, mobile light duelist silhouette, no heavy plate. TWO actual straight swords, a full-length straight sword and a straight shortsword, visibly firmly gripped one in each hand with anatomically credible fingers, each blade attached to its own hilt. Decisive forward double cut toward IMAGE LEFT: lead foot planted left, rear foot pushes off to right, moderate athletic knee bend, hips and shoulders rotate coherently together, face focused toward left attack. Arms making complementary cuts across the front so blade silhouettes stay readable; two sharp thin crossing silver blade-energy paths emphasize sword technique. Torso, pelvis and legs connected naturally, natural neck, no extreme twist, no arch or extreme squat. Flowing cloth and hair trail to right. Full body, both entire swords including tips, both boots and all effects inside ample clear margins. Portrait illustration; figure occupies about 82% canvas height. Truly transparent RGBA alpha background, no floor, no environment, no haze/backdrop, no vignette, no cast ground shadow, no text. Do not copy the static pose or opaque background of reference. The movement and swordsmanship are the centerpiece.",
+          "source_path": "C:/Users/29391/.codex/generated_images/01a207c5-10df-7601-aac4-569ada28750b/exec-af8a2e36-cb6c-499f-aca4-b856ce14c5cc.png",
+          "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_swordsman_male_fullbody.png"
+        }
+      ]
     },
     {
       "index": 7,
@@ -249,13 +260,13 @@
       "profession": "fighter",
       "gender": "female",
       "file": "fighter_swordsman_female_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-273e2527-55c3-41f1-8ff2-5089bd6b7202.png",
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c5-10df-7601-aac4-569ada28750b/exec-ca33fda7-8f4b-40ed-9608-754453f211cd.png",
       "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_swordsman_female_fullbody.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. Female Swordsman retain beautiful young silver-haired high elf with long ponytail and teal accents. REDO elegant LIGHT fencing gear: teal fitted doublet, charcoal slim leather cuirass, slender blackiron vambraces and shoulder caps, supple dark boots, no bulky plate skirt/cape. LEFT-facing graceful controlled paired sword crossing attack: TWO real STRAIGHT SWORDS properly held one in each hand, one full sword and one shortsword. Two crisp narrow SILVER WHITE sword trails cross in X in front of waist. Hands naturally bent, feet in grounded modest fencing step, no ballet contortion or extreme backbend. Face clear, head upright and neck natural. Distinct female pose with forward LEFT cut and slightly low offhand parry.",
-      "action": "Left-facing paired straight sword crossing slash and low parry",
-      "sha256": "6a62b938477f3262c56fd1ae1aa1f82d684458f6e04907545eeb6e2c999b1f34",
-      "source_sha256": "6a62b938477f3262c56fd1ae1aa1f82d684458f6e04907545eeb6e2c999b1f34",
+      "prompt": "Use case: stylized-concept. Production transparent full-body action hero cutout for a dark fantasy game. Redraw the referenced female swordsman into an urgent athletic cross-parry counterstroke diagonally toward the viewer and IMAGE RIGHT. Preserve attractive young adult 26-year-old Chinese-aesthetic high elf, refined realistic face, short pointed ears, silver high braid, realistic painterly rendering, aged-gold and blackiron details. Distinctive dark teal fitted cloth and charcoal leather LIGHT fencing kit with tiny shoulder guards only, practical lightweight duelist outfit. TWO actual straight steel swords, one full-length straight sword and one straight shortsword, firmly visibly gripped one in each hand with natural fingers. Each weapon clearly has one own grip and guard and long straight blade; no missing sword, no disembodied sword. Action: advancing toward image RIGHT/front with rightward leading boot planted and rear boot pushing off, moderate natural knee bend, center of gravity over supported foot; hips shoulders and torso rotate coherently as one. Upper sword makes swift diagonally down-right countercut while lower shortsword makes rising cross-parry across the front, forming two readable crossing silver blade-energy paths. Intent focus faces right/front. Both sword hilts/guards clearly separated and arm placement readable. Hair and teal coat tails fly left. Natural neck, connected torso/pelvis/legs, no extreme twist, no excessive knee bend or arched back. Full body, all sword tips, boots, hair and effects completely inside generous margins 7% on every side, figure about 80% height. Truly transparent RGBA alpha background; no floor, environment, vignette, opaque haze, backdrop or ground shadow. No text/watermark. Movement and dual-sword technique are centerpiece, do not copy static reference pose/background.",
+      "action": "Right/front advancing cross-parry counterstroke, silver braid and cloth trailing left.",
+      "sha256": "e39ff8431b131f48c71de889fa6822b7693a9a4d51756d75ed8fb3fb77dd7ef3",
+      "source_sha256": "e39ff8431b131f48c71de889fa6822b7693a9a4d51756d75ed8fb3fb77dd7ef3",
       "width": 1024,
       "height": 1536,
       "mode": "RGBA",
@@ -263,15 +274,21 @@
         0,
         254
       ],
-      "alpha_zero_pixels": 1016930,
-      "visual_review": "Two real straight swords, two crisp crossing trails, light teal fencing gear; full body, normal neck level chin. Front orientation.",
+      "alpha_zero_pixels": 927774,
+      "visual_review": "Passed on gray alpha composite: natural coherent anatomy, two actual straight sword grips and full blades, intact boots, youthful high-elf face, teal light fencing identity; no visible vignette or floor.",
       "facing": "THREE-QUARTER VIEWER LEFT",
-      "design": "Left-facing paired straight sword crossing slash and low parry",
+      "design": "Right/front advancing cross-parry counterstroke, silver braid and cloth trailing left.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "bde1b8e91e4454578415aadc2f7affdf25182a3fa4910e53ad0711150ca67de3"
+      "reference_revision": "f686929",
+      "reference_sha256": "6a62b938477f3262c56fd1ae1aa1f82d684458f6e04907545eeb6e2c999b1f34",
+      "reference_paths": [
+        "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_swordsman_female_fullbody.png"
+      ],
+      "reference_sha256s": [
+        "6a62b938477f3262c56fd1ae1aa1f82d684458f6e04907545eeb6e2c999b1f34"
+      ]
     },
     {
       "index": 8,
@@ -342,29 +359,35 @@
       "profession": "fighter",
       "gender": "male",
       "file": "fighter_battle_master_male_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-c5114f78-424b-4b9b-a28e-7d0f9333a592.png",
-      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_battle_master_male_fullbody.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. Male Battle Master retain handsome brown-haired youthful human. REDO as LIGHT AGILE articulated HALFPLATE over visible chainmail, fitted leather vest, small segmented shoulders, exposed flexible mail elbows, crimson waist sash, leather riding boots with light greaves. NO lion/laurel emblems, NO fullplate skirt/cape. Three-quarter LEFT facing precision axe riposte, both hands guide a compact single-bladed battleaxe diagonally across front to lower LEFT; restrained crisp SILVER-GOLD impact-angle stroke connected to axe edge, short angular glint only no explosions. Controlled balanced athletic footwork, normal head turned LEFT, no exaggerated twisting. Must read mobile weapon expert unlike Champion or heavy Breaker.",
-      "action": "Left-facing precision battleaxe riposte with crisp silver-gold angle",
-      "sha256": "c3b25afadf8165ee9fd54c3cb70a3113dff5996a7f4bf72c50507d19149536a7",
-      "source_sha256": "c3b25afadf8165ee9fd54c3cb70a3113dff5996a7f4bf72c50507d19149536a7",
-      "width": 1024,
-      "height": 1536,
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c0-3e83-7d21-9e65-f38734c4b216/exec-27ab41fb-a7a1-4538-86ec-8abdffe27ee9.png",
+      "reference_path": "C:\\Users\\29391\\Finger Dice Duel\\Tools\\HeadlessTests\\bin\\battlemaster-originals\\fighter_battle_master_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Production transparent fullbody dark fantasy RPG character illustration. Reference image supplies practical Battle Master armor identity/material rendering only; completely redraw the pose and upgrade youthful Chinese-aesthetic facial attractiveness. A handsome young adult male human martial tactician age 26, refined Chinese fantasy hero face, sharp focused expression, dark wavy swept-back hair. Recognizably BattleMaster: mobile articulated gunmetal halfplate with restrained brass edging over chainmail and dark leather, crimson waist sash streaming, compact belt maneuver kit and sheathed dagger. NOT champion: no lion emblems, no massive parade fullplate, no crown. Capture a decisive forceful CONTROLLED diagonal two-handed LONGSWORD maneuver, sweeping from upper left toward lower right of image, visible long silver blade crossing forward/right, both hands firmly gripping the same straight hilt. A narrow silver-gold crescent impact slash follows blade path with small bright sparks. Entire body actively transferring weight into a bent forward leg toward image right, rear leg braced back toward image left, balanced anatomically plausible martial footwork, coherent ribcage pelvis hips knees, natural length neck, head upright, slight torso turn only. STRIKE in progress, not standing guard or low idle weapon. Motion tension in forearms and sash. Painterly realistic dark fantasy premium game illustration, nuanced brush textures and metal, attractive proportions. Full body head to boot soles, whole sword and all effects inside frame with generous clean margin. Single figure, no enemy, no lettering. Truly transparent RGBA background, no floor, no backdrop, no ground shadow, no ambient cloudy halo; only compact weapon slash glow. Preserve transparency.",
+      "action": "Replaced static low axe pose with controlled diagonal two-handed longsword maneuver and compact silver-gold impact slash.",
+      "sha256": "6d528e194d32b1831b55e0a592fad1c3cfdcd5b24098f7f64fe7b9b034e133bc",
+      "source_sha256": "6d528e194d32b1831b55e0a592fad1c3cfdcd5b24098f7f64fe7b9b034e133bc",
+      "width": 1199,
+      "height": 1312,
       "mode": "RGBA",
       "alpha_extrema": [
         0,
-        254
+        255
       ],
-      "alpha_zero_pixels": 1160447,
-      "visual_review": "Lighter halfplate leather/mail crimson sash strongly differentiated, normal neck and limbs, compact axe with crisp angle glint, weapon left face right.",
+      "alpha_zero_pixels": 995375,
+      "visual_review": "Accepted: strong active stance toward right, bent forward knee and braced rear leg, natural neck and coherent torso/pelvis/legs, two hands on one hilt, youthful attractive face, practical halfplate/mail/leather/crimson sash and maneuver kit, full body and sword visible. Native RGBA with substantial alpha-zero background.",
       "facing": "THREE-QUARTER VIEWER LEFT",
-      "design": "Left-facing precision battleaxe riposte with crisp silver-gold angle",
+      "design": "Replaced static low axe pose with controlled diagonal two-handed longsword maneuver and compact silver-gold impact slash.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "464168445fb66b51b6f47748c090f7f532f5442b6ca177157717016716766b1d"
+      "reference_revision": "f686929",
+      "reference_sha256": "c3b25afadf8165ee9fd54c3cb70a3113dff5996a7f4bf72c50507d19149536a7",
+      "reference_paths": [
+        "C:\\Users\\29391\\Finger Dice Duel\\Tools\\HeadlessTests\\bin\\battlemaster-originals\\fighter_battle_master_male_fullbody.png"
+      ],
+      "reference_sha256s": [
+        "c3b25afadf8165ee9fd54c3cb70a3113dff5996a7f4bf72c50507d19149536a7"
+      ]
     },
     {
       "index": 11,
@@ -373,13 +396,13 @@
       "profession": "fighter",
       "gender": "female",
       "file": "fighter_battle_master_female_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-59900f3d-f804-453b-8b21-3b525c4e292f.png",
-      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_battle_master_female_fullbody.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. Female Battle Master retain beautiful brown-eyed human young woman with dark braid. REDO LIGHT AGILE articulated HALFPLATE fitted leather/mail, small shoulders, short crimson waist sash and split leather tassets, practical light greaves; NO fullplate skirt, NO lion/laurel, NO long cape. Three-quarter RIGHT-facing precise rapier parry-riposte, one straight slender actual rapier extended to RIGHT, offhand small parrying dagger angled downward to LEFT; TWO real weapons correctly gripped, subtle crisp silver-gold short impact-angle FX at rapier tip only. Athletic modest fencing step, normal shoulders, level chin turned right; tactical practiced precision not big explosion.",
-      "action": "Rapier and dagger precision parry-riposte to right",
-      "sha256": "acb127d8164a3bef269e0bad1b580be1557e85cf8b61db1f13bff0cbb8ef1095",
-      "source_sha256": "acb127d8164a3bef269e0bad1b580be1557e85cf8b61db1f13bff0cbb8ef1095",
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c0-3e83-7d21-9e65-f38734c4b216/exec-f1f3ae73-d17e-4c72-8d69-16d130a68661.png",
+      "reference_path": "C:/Users/29391/.codex/generated_images/01a207c0-3e83-7d21-9e65-f38734c4b216/exec-f639a58f-fcb6-47c3-96e0-2d93c6a71f48.png",
+      "prompt": "Use case: background-extraction. Edit this exact female battleaxe fighter image: remove EVERY part of the smoky brown/gray background and ground atmosphere, output truly transparent RGBA with alpha zero in the empty space. Keep entire character, face, anatomy, axe, braids, sash, armor and their positions exactly unchanged. Keep only the narrow silver-gold weapon arc and its small sparks; remove the broad surrounding haze/halo entirely. No floor, no cast ground shadow, no vignette, no backdrop. The spaces between limbs, axe shaft and body must also become actual transparent empty pixels. Preserve original full frame with every boot and axe fully visible. This is background extraction only.",
+      "action": "Replaced static rapier presentation with low-to-high battleaxe riposte, leftward forward step and narrow trailing strike arc; requested background extraction in second tool pass.",
+      "sha256": "794de5ec6a1f7894e0e28bd9251b879a8e51ee582a7f50611f0ccce015e55dbd",
+      "source_sha256": "794de5ec6a1f7894e0e28bd9251b879a8e51ee582a7f50611f0ccce015e55dbd",
       "width": 1024,
       "height": 1536,
       "mode": "RGBA",
@@ -387,15 +410,27 @@
         0,
         254
       ],
-      "alpha_zero_pixels": 1203890,
-      "visual_review": "Light halfplate with mail joints, crimson sash, believable rightward rapier and offhand dagger; small tip glint, normal neck, whole body.",
+      "alpha_zero_pixels": 1015450,
+      "visual_review": "Accepted: different silhouette and weapon direction to male, active rising axe arc, practical tactical halfplate/mail/leather and crimson sash, natural upright neck, coherent torso/pelvis/legs and credible forward weight transfer. All boots, axe and major effects within frame. Native RGBA: visible brown in preview is RGB under zero-alpha empty background, confirmed by pixel samples; substantial alpha-zero background.",
       "facing": "THREE-QUARTER VIEWER RIGHT",
-      "design": "Rapier and dagger precision parry-riposte to right",
+      "design": "Replaced static rapier presentation with low-to-high battleaxe riposte, leftward forward step and narrow trailing strike arc; requested background extraction in second tool pass.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "a0be934947fc1f3fc27507403876f8295ae71f2791363b31045370779603db96"
+      "reference_sha256": "ea624064182c6934f111e34616feda19876cadb806d7ce594d8238f51ef545b6",
+      "reference_paths": [
+        "C:/Users/29391/.codex/generated_images/01a207c0-3e83-7d21-9e65-f38734c4b216/exec-f639a58f-fcb6-47c3-96e0-2d93c6a71f48.png"
+      ],
+      "reference_sha256s": [
+        "ea624064182c6934f111e34616feda19876cadb806d7ce594d8238f51ef545b6"
+      ],
+      "prompt_history": [
+        {
+          "prompt": "Use case: stylized-concept. Production transparent fullbody dark fantasy RPG character illustration. Reference image supplies practical Battle Master armor identity/material rendering only; COMPLETELY redraw dynamic pose, weapon and youthful Chinese-aesthetic facial attractiveness. Beautiful young adult female high elf age 25, refined Chinese fantasy heroine face, subtle pointed ears, intensely focused eyes, dark braided hair streaming behind. Recognizable BattleMaster martial tactician with articulated gunmetal HALFPLATE over chainmail and flexible brown leather, restrained brass trim, crimson sash streaming, practical belt maneuver kit/sheath. No champion lion motifs, no heavy parade fullplate, no crown. Active LOW-TO-HIGH BATTLEAXE RIPOSTE in progress toward image LEFT, different silhouette from male swordsman: one strong coherent two-handed medium haft grip near torso, a single practical steel crescent axe head rising into upper-left quadrant, edge turned along the swing, narrow precise trailing silver-gold strike arc curves from lower left up to axe head, compact sparks. Balanced forward step toward left with leftward forward knee bent, opposite rear boot pushing off toward right, body modestly rotated and upright with natural neck, coherent ribcage pelvis leg lengths, believable weight transfer and combat technique. Not a stationary guard, not idle presentation. Weapon momentum and sash show decisive action. Painterly realistic dark fantasy premium game illustration, nuanced brush textures, fine metal detail, restrained dramatic highlights. Full body including both boot soles and all axe and effects entirely INSIDE image with clean margin. Single figure only. Truly transparent RGBA background, no floor, no backdrop, no cast ground shadow or ambient cloudy halo. No text. Preserve transparency.",
+          "source_path": "C:/Users/29391/.codex/generated_images/01a207c0-3e83-7d21-9e65-f38734c4b216/exec-f639a58f-fcb6-47c3-96e0-2d93c6a71f48.png",
+          "reference_path": "Tools/HeadlessTests/bin/battlemaster-originals/fighter_battle_master_female_fullbody.png"
+        }
+      ]
     },
     {
       "index": 12,
@@ -435,29 +470,35 @@
       "profession": "fighter",
       "gender": "female",
       "file": "fighter_eldritch_knight_female_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:/Users/29391/.codex/generated_images/01a20353-73e8-7530-8e9e-5d24e2df276e/exec-42e3f174-41d7-42a6-bd6e-9b727fdf04c5.png",
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a207c9-d0c5-76f3-b9d0-8e96a2276d49/exec-f020b174-b7da-4e3a-b8de-27151edbcae3.png",
       "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_eldritch_knight_female_fullbody.png",
-      "prompt": "Use case: identity-preserve. Edit target: supplied current fighter portrait. Young 22-32 attractive face, realistic rich painterly fantasy art, black iron and aged gold details. Normal head and neck aligned, chin level, no tilted head, coherent martial mechanics, natural elbows/wrists/knees; no contorted limbs. Full body including both boots and every weapon tip/effect in frame with generous margin. True transparent alpha, no background, no haze/vignette/floor; no text/UI/watermark; face/silhouette unobscured. Female Eldritch Knight preserve beautiful young dark-braided half-high elf, martial dark plate agedgold fittings/plum split tabard and shield. Redo three-quarter RIGHT-facing natural advancing sword cut toward lower RIGHT. RIGHT hand grips actual straight runed LONGSWORD, pale CYAN WHITE FROST RUNES etched along steel, sharp ICE CRYSTALS and thin icy FROST slash trail tightly attached to blade, no purple flame/lightning, no big aura. LEFT hand shield guards side, simplify shield to dark iron agedgold arcane knot only, remove multicolor elemental circles. Natural upright neck and level chin, coherent shoulders/elbows/wrists, modest grounded forward step. All sword and shield tips/boots and ice fully in frame.",
-      "action": "Rightward runed frost sword cut with shield guard",
-      "sha256": "19e9152aa1e8d4638e0a3a95be89c3ddec50083134d8e2fc0e194eec6a9ddf07",
-      "source_sha256": "19e9152aa1e8d4638e0a3a95be89c3ddec50083134d8e2fc0e194eec6a9ddf07",
-      "width": 1024,
-      "height": 1536,
+      "prompt": "Use case: stylized-concept. Asset type: isolated fullbody dark fantasy action RPG hero cutout. Input image is the female Eldritch Knight edit target and face/material reference. Redraw her into a forceful martial ARCANE KNIGHT action. Preserve youthful attractive age 22-32 Chinese-aesthetic half-high-elf woman, green eyes, dark braided hair, subtle pointed ears; functional blackiron articulated plate with aged gold edges and plum/navy textile, practical armored boots and gauntlets. Replace idle low guard with a readable ACTIVE DIAGONAL LONGSWORD SLASH: forward weight transfer into a moderate lunge, front knee flexed, rear boot braced behind, pelvis and torso coherently turning into sword cut; shoulders naturally attached, short natural neck, athletic tension not twisted/broken anatomy. One straight runic longsword is clearly the primary weapon, right five-finger gauntleted hand firmly gripping hilt, blade crossing diagonally across upper-front space mid-cut, entire blade/tip in frame. A COMPACT CYAN FROST BLADE CRESCENT follows the slash, narrowly tracing blade motion, not a huge surrounding aura. Left hand raised near chest creates a SMALL translucent circular runic ward near forearm: no physical tower shield. Focused alert face, braid and short plum cape trailing behind motion. Distinct medium-armored knight silhouette, not heavy hammer champion nor lightly clothed swordsman. Detailed painterly realism dark fantasy, beautiful face and realistic proportions. Full figure head to boots, sword/effects all inside frame with comfortable transparent margins. True transparent alpha PNG cutout; no backdrop, opaque black, gradient, floor, platform, cast shadow, vignette, landscape, scenery, text, watermark. Preserve all generated edge transparency.",
+      "action": "Athletic forward diagonal runic longsword slash with compact cyan frost blade crescent and small runic ward.",
+      "sha256": "3ae47fe9d7aaa30ba7cb8b459a0a573b2b2689a369d9344d711f6319853dfbca",
+      "source_sha256": "3ae47fe9d7aaa30ba7cb8b459a0a573b2b2689a369d9344d711f6319853dfbca",
+      "width": 1116,
+      "height": 1409,
       "mode": "RGBA",
       "alpha_extrema": [
         0,
-        254
+        255
       ],
-      "alpha_zero_pixels": 948140,
-      "visual_review": "Right-facing advance, complete cyan frost runed blade with attached ice crystal edge/trail, shield simplified; normal upright neck and all boots.",
+      "alpha_zero_pixels": 909200,
+      "visual_review": "Accepted: youthful pretty half-elf dark braid, functional plum/navy blackiron/gold plate, recognizably martial arcane knight. Coherent torso/pelvis, planted forward leg and trailing braced boot, natural neck/shoulder connections. Sword primary, full blade, ward, cape and boots in frame. No idle low guard or opaque backdrop; native transparency retained.",
       "facing": "THREE-QUARTER VIEWER LEFT",
-      "design": "Rightward runed frost sword cut with shield guard",
+      "design": "Athletic forward diagonal runic longsword slash with compact cyan frost blade crescent and small runic ward.",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "cb5f4e0690cb5d4c578f14a392e097e9eeb3d34f3b2fc1e525812a6db63d2ca0"
+      "reference_revision": "f686929",
+      "reference_sha256": "19e9152aa1e8d4638e0a3a95be89c3ddec50083134d8e2fc0e194eec6a9ddf07",
+      "reference_paths": [
+        "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/fighter_eldritch_knight_female_fullbody.png"
+      ],
+      "reference_sha256s": [
+        "19e9152aa1e8d4638e0a3a95be89c3ddec50083134d8e2fc0e194eec6a9ddf07"
+      ]
     },
     {
       "index": 14,
@@ -676,28 +717,34 @@
       "profession": "sorcerer",
       "gender": "female",
       "file": "sorcerer_shadow_magic_female_fullbody.png",
-      "revision": "subclass-identity-attack-effects-kinetic-casting",
-      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20361-a7cc-71e3-b36d-5062bd1f9630\\exec-8cfe2363-d6b5-4896-aeb2-7505b9ac0131.png",
+      "revision": "coherent-anatomy-forceful-subclass-actions",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-f28d16aa-c752-4ffb-8e5c-519ea56f1e24.png",
       "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/sorcerer_shadow_magic_female_fullbody.png",
-      "prompt": "Use case: stylized-concept. Edit target/reference: supplied sorcerer portrait. Completely REDRAW same character and costume theme in an unmistakable kinetic full-body spellcasting moment. Preserve young 22-32 human/high-elf/half-elf face and original premium realistic painterly dark-fantasy aesthetic: black iron, old gold, worn ornate fabrics, detailed natural skin. Anatomy is paramount: natural neck with level chin, connected shoulders/ribcage/pelvis, credible weight transfer and knees, five fingers per hand. Full body and both boots all inside generous canvas. Transparent alpha background, no environment, no opaque smoke backdrop, no ground platform. Bright but restrained magic does not cover face. Do not merely wave cloth around an upright standing torso. No staffs, no guns, no extra limbs or fingers, no S-back, no deep backbend or extreme waist twist, no deep squat. Portrait composition preferred if it fits the natural action. SPECIFIC CHARACTER AND ACTION: Same beautiful young high-elf woman with dark braided hair, small pointed ears, purple-black hood and gold-embroidered robe, jeweled belt and purple lantern. WHOLE BODY turns on feet in a quick half-turn toward FRONT-RIGHT: rear foot pivoted on toe heel visibly raised, leading foot landing ahead with bent knee, pelvis and shoulders rotate TOGETHER 40 degrees, no independent waist twist. One hand slices a low outward crescent releasing a compact dark veil burst front-right, the other draws back near shoulder with curled relaxed fingers. Straight natural spine, modest forward inclination, level chin. Purple shadow eye wisps restrained and away from face. Both boots visible and inside canvas.",
-      "action": "Stepping half-turn dark veil burst front-right",
-      "sha256": "0c8f71b5ed8b67572b5fce62cb3102a2af63a843f18ac85ba4f055737072a7f4",
-      "source_sha256": "0c8f71b5ed8b67572b5fce62cb3102a2af63a843f18ac85ba4f055737072a7f4",
-      "width": 1024,
-      "height": 1536,
+      "prompt": "Use case: stylized-concept. REDRAW the referenced female shadow-magic sorcerer with CORRECT COHERENT WHOLE BODY DIRECTION. Keep her beautiful youthful22-30 human/half-high-elf face, dark braided hair under hood, violet agedgold embroidered layered dark robe, amethyst lantern at belt, compact purple shadow eyes and wisps. The old image has torso rotated opposite hips/legs: DO NOT preserve its body pose. New action: whole body three-quarter toward SCREEN RIGHT, chest sternum belt buckle pelvis and BOTH knees all aligned toward screen RIGHT. A grounded forward casting weightshift, leading RIGHTward foot planted knee modestly flexed, rear LEFTward foot braced with heel slightly raised; normal anatomical hips and natural S-free spine. No opposing torque between chest and pelvis; no backward arch, no twisted knees, no skirt hiding broken leg anatomy. Head above torso on natural short neck, chin level follows cast right. Near hand extends forward screenRIGHT shaping a compact dark violet veil wave with one small glowing eye; other hand draws a small wisp near waist. One coherent forceful whole-body countercast, not upright display. Realistic painterly dark fantasy matching reference detail/materials and attractive Chinese aesthetic. Full body both boots and all cloth/FX inside generous margins. Only character and attached compact magic, TRUE RGBA transparent background no floor, environment, vignette, background haze or text/watermark. Exactly two anatomically correct hands five fingers each.",
+      "action": "Coherent right-facing advancing shadow countercast; chest pelvis knees and feet aligned",
+      "sha256": "b181ac64f1e56aebc2b58f1c1f9226faaf0793d1fabfceefce6eaf769d96a1d5",
+      "source_sha256": "b181ac64f1e56aebc2b58f1c1f9226faaf0793d1fabfceefce6eaf769d96a1d5",
+      "width": 1199,
+      "height": 1312,
       "mode": "RGBA",
       "alpha_extrema": [
         0,
-        254
+        255
       ],
-      "alpha_zero_pixels": 736170,
-      "visual_review": "Accepted: whole-body stepping turn front-right with rear boot pivoted on toe, leading knee bent and coherent modest torso lean; dark veil crescent, normal neck, full boots.",
-      "design": "Stepping half-turn dark veil burst front-right",
+      "alpha_zero_pixels": 868535,
+      "visual_review": "Reviewed coherent right-facing chest/pelvis/knee/foot alignment, normal neck, forward casting weight transfer and complete figure.",
+      "design": "Coherent right-facing advancing shadow countercast; chest pelvis knees and feet aligned",
       "tool": "built-in image_gen",
-      "reference_role": "Edit target; retain youthful identity and painterly style; redraw subclass costume/action/effects where requested.",
+      "reference_role": "Edit target and subclass/action references; anatomy, pose and effects revised as specified.",
       "visual_weapon_only": true,
-      "reference_revision": "dd39068",
-      "reference_sha256": "e4229b575aebd36711ec4ae6e639ad12dc93afdf0dd945f51b63e3e13aeded64"
+      "reference_revision": "f686929",
+      "reference_sha256": "0c8f71b5ed8b67572b5fce62cb3102a2af63a843f18ac85ba4f055737072a7f4",
+      "reference_paths": [
+        "C:/Users/29391/Finger Dice Duel/Art/Production/action-hero-illustrations/sorcerer_shadow_magic_female_fullbody.png"
+      ],
+      "reference_sha256s": [
+        "0c8f71b5ed8b67572b5fce62cb3102a2af63a843f18ac85ba4f055737072a7f4"
+      ]
     },
     {
       "index": 22,
@@ -1536,6 +1583,6 @@
       "reference_sha256": "08ddafd736d0aa29c9c3be47de694a72e03d8e5663c015a57d7e6bdd6c47d03b"
     }
   ],
-  "changed_assets": 37,
-  "unchanged_wizard_assets": 15
+  "changed_assets": 7,
+  "unchanged_assets": 45
 }
