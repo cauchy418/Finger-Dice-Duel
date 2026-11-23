@@ -59,7 +59,7 @@
 | [战士人物立绘](../Art/Production/fighter-character-illustrations/README.md) | 战士七子职男女14张透明全身立绘、差异说明及生成提示词 |
 | [术士与法师人物立绘](../Art/Production/caster-character-illustrations/README.md) | 术士4子职、法师9子职男女26张透明全身立绘、差异说明及生成提示词 |
 | [青壮年人物立绘](../Art/Production/young-hero-illustrations/README.md) | 战士、术士、法师、圣武士26子职男女52张透明原画，保留原有立绘 |
-| [动态战斗立绘](../Art/Production/action-hero-illustrations/README.md) | 同26子职男女52张，动作、朝向与施法方式各有变化，保留原有立绘 |
+| [动态战斗立绘](../Art/Production/character-portraits/README.md) | 同26子职男女52张，动作、朝向与施法方式各有变化，保留原有立绘 |
 | [美术制作](../Art/Production/) | 原图、内置 imagegen 提示词、导入清单 |
 
 ## 统计

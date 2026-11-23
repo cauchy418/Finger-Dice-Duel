@@ -827,5 +827,7 @@
       "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20354-dc96-7842-88cd-0c1240b721b4\\exec-8eb9246e-0e7a-4633-8033-133650b64926.png",
       "action": "front-right precision rapier thrust/free hand"
     }
-  ]
+  ],
+  "collection": "character-portraits",
+  "filename_pattern": "<subclass_id>_<male|female>_fullbody.png"
 }

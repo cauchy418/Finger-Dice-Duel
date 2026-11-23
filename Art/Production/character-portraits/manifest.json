@@ -1584,5 +1584,7 @@
     }
   ],
   "changed_assets": 7,
-  "unchanged_assets": 45
+  "unchanged_assets": 45,
+  "collection": "character-portraits",
+  "filename_pattern": "<subclass_id>_<male|female>_fullbody.png"
 }
