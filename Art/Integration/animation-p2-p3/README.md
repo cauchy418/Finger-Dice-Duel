@@ -69,7 +69,7 @@
 | p2-39-tether | 大地束缚 · vine | [截图](p2-39-tether/windup.webp) | [截图](p2-39-tether/peak.webp) |
 | p2-40-tether | 大地行者 · roots | [截图](p2-40-tether/windup.webp) | [截图](p2-40-tether/peak.webp) |
 | p2-41-tether | 自然之怒 · vine | [截图](p2-41-tether/windup.webp) | [截图](p2-41-tether/peak.webp) |
-| p2-42-heal | 不灭哨卫 | [截图](p2-42-heal/windup.webp) | [截图](p2-42-heal/peak.webp) |
+| p2-42-heal | 守御灵光 | [截图](p2-42-heal/windup.webp) | [截图](p2-42-heal/peak.webp) |
 | p2-43-falselife | 黑暗赐福 | [截图](p2-43-falselife/windup.webp) | [截图](p2-43-falselife/peak.webp) |
 | p2-44-nightmare | 直坠噩梦 · prepare | [截图](p2-44-nightmare/windup.webp) | [截图](p2-44-nightmare/peak.webp) |
 | p2-45-drain | 黑暗强运 | [截图](p2-45-drain/windup.webp) | [截图](p2-45-drain/peak.webp) |

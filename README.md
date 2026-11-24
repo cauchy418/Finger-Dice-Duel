@@ -130,3 +130,5 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 德鲁伊现采用独立荒野体力与充能；孢子结社已加入，双德鲁伊初始充能相加、双武僧初始4气（上限6），羊为8点体力。详见[重构说明](Docs/druid-rework-2026-11-05.md)。
 
 聚众赌博与AI对策调整已纳入本轮采样，规则见[接入说明](Docs/gambler-crowd-gambling.md)。全角色技能入口、双将转发和AI配置检查见[启用审计](Docs/ai-activation-audit.md)。
+
+圣武士职业共有守护灵光：持5可替范围内他人承受攻击，依受击者之后顺时针询问，每次攻击最多转移一次。奉献另允许4/6代挡并将4/6改为合盾；完整规则见[RULES](RULES.md)，自身策略与对策见[AI策略](Docs/ai-strategy-reference.md)。本轮未重采胜率。
