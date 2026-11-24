@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -1437,7 +1437,7 @@ namespace FingerDiceDuel.Core
                     //    **打一个没有意义的空位**，局面永远推不动。
                     //    （2v2 实测：只剩两个敌对座位时，P3 的 12 步里有 8 步是打死人，
                     //     于是 400 次行动后双方仍然满血。）
-                    if (!owner.IsAlive) continue;
+                    if ((!owner.IsAlive || owner.HasStatus(StatusEffect.FeignedDeath)) && !DeathDomainRules.CanBorrow(actor,owner)) continue;
 
                     // ⚠️ **目盲**：只能选距离 1 的手当被加数（这里是别的玩家）。
                     if (!StatusRules.CanUseHandAsAddend(actor, owner.LeftHand, this)
@@ -1486,6 +1486,12 @@ namespace FingerDiceDuel.Core
                 reason = "被加数必须属于某位参战玩家。";
                 return false;
             }
+            if (!ReferenceEquals(addendOwner,actor) && addendOwner.HasStatus(StatusEffect.FeignedDeath)
+                && !DeathDomainRules.CanBorrow(actor,addendOwner))
+            {
+                reason = "假死角色的手牌仅死亡领域可借用。";
+                return false;
+            }
 
             // ⚠️ **一只手不能加自己**。
             //
@@ -1508,7 +1514,9 @@ namespace FingerDiceDuel.Core
             //    玩家确认的做法："若打出攻击数字且无合法目标就放弃攻击"
             //    —— 与 1v1 面对游荡者·刺客潜行时同一处理。所以这里不是拒绝运算，
             //    而是**拒绝把它当成攻击**；实际放行由 ResolveTurn 决定。
-            if (!StatusRules.CanUseHandAsAddend(actor, targetHand, this))
+            bool terminalCleanup = addendOwner.IsDead;
+            if(terminalCleanup)foreach(var player in Players)if(player.IsAlive&&!ReferenceEquals(player,actor)&&!IsTeammate(actor,player)){terminalCleanup=false;break;}
+            if (!terminalCleanup && !StatusRules.CanUseHandAsAddend(actor, targetHand, this))
             {
                 reason = "目盲：只能选择与自己距离 1 的手。";
                 return false;
@@ -1841,6 +1849,7 @@ namespace FingerDiceDuel.Core
         public bool CanStealOn(PlayerState thief)
         {
             if (thief == null || IsGameOver) return false;
+            if (thief.HasStatus(StatusEffect.FeignedDeath)) return false;
             if (CharacterBehaviors.FirstImplementer<ThiefLogic>(thief) == null) return false;
 
             // ⚠️ 判据：**这个人上一次自己的行动**是不是偷窃。
@@ -2461,6 +2470,7 @@ namespace FingerDiceDuel.Core
         public bool WillSuppressOperationEffects(PlayerState actor)
         {
             if (actor == null) return false;
+            if (actor.HasStatus(StatusEffect.FeignedDeath)) return true;
             foreach (var owner in _players)
                 if (owner != null && owner.IsAlive && !ReferenceEquals(owner, actor))
                     foreach (var invalidator in CharacterBehaviors.Implementers<IActionInvalidator>(owner))
@@ -2496,7 +2506,7 @@ namespace FingerDiceDuel.Core
             bool wasShield = actedHand.IsShield;
             actedHand.SetValue(value); // 5 也是普通数字；不合盾、不触发原盾破碎奖励。
             // 维持旧盾的锁手约束随盾态消失而到期，不能留下永久锁；不通知其它碎盾技能。
-            if (wasShield)
+            if (wasShield && !actor.HasStatus(StatusEffect.FeignedDeath))
                 foreach (var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))
                     warden.OnOwnShieldBroken(actor, actedHand, this);
             result.ResultValue = result.ActedHandValueAfter = value;
@@ -2507,7 +2517,7 @@ namespace FingerDiceDuel.Core
             result.ActionInvalidated = true;
             _suppressedOperationActors.Add(actor);
             result.InvalidatedBy = reason;
-            NoteSkill(actor, "预言压制", $"手值变为 {value}，本次运算无其它效果");
+            NoteSkill(actor, actor.HasStatus(StatusEffect.FeignedDeath) ? "假死" : "预言压制", $"手值变为 {value}，本次运算无其它效果");
             if (!extraAction)
             {
                 BumpOwnTurnOrdinal(actor);
@@ -2531,6 +2541,9 @@ namespace FingerDiceDuel.Core
                 IsExtraAction = extraAction,
             };
 
+            if (actor.HasStatus(StatusEffect.FeignedDeath))
+                return ResolveInvalidatedAction(result, actor, actedHand, targetValue, targetHand,
+                                                "假死", gambleResult, extraAction);
             if (TryInvalidateAction(actor, actedHand, targetHand, out string invalidReason))
                 return ResolveInvalidatedAction(result, actor, actedHand, targetValue, targetHand,
                                                 invalidReason, gambleResult, extraAction);
@@ -2553,7 +2566,13 @@ namespace FingerDiceDuel.Core
             // 所以挨打的默认取被加数手主（保持 1v1 与既有测试不变），
             // 但 <see cref="DamageTargetPlayer"/> 可以覆盖它。
             PlayerState addendOwner = OwnerOfHand(targetHand);
-            PlayerState opponent = DamageTargetPlayer ?? addendOwner ?? GetOpponent(actor);
+            PlayerState opponent = DamageTargetPlayer ?? (DeathDomainRules.CanBorrow(actor,addendOwner) && addendOwner.IsDead ? null : addendOwner) ?? GetOpponent(actor);
+            if(DamageTargetPlayer==null && DeathDomainRules.CanBorrow(actor,addendOwner) && addendOwner.IsDead)
+            {
+                var livingOpponents=OpponentsOf(actor);
+                if(livingOpponents.Count>0)opponent=livingOpponents[0];
+            }
+            bool usesDeathTouchAddend = addendOwner != null && (addendOwner.IsDead || addendOwner.HasStatus(StatusEffect.FeignedDeath));
             result.Defender = opponent;
 
             // ⚠️ **武僧·太极宗的 0 被他人触碰 -> 立即变 1**（玩家确认的规则）。
@@ -2878,6 +2897,7 @@ namespace FingerDiceDuel.Core
                         }
 
                         var ctx = new AttackContext(actor, opponent, actedHand, WarBlessingNineAttack==true&&actedHand.Value==9?9:(int)effect);
+                        ctx.UsesDeathTouchAddend = usesDeathTouchAddend;
                         ctx.StartedFromStealth = startedFromStealth;
                         ctx.InflictsBleed = activelyBrokeShield && CharacterBehaviors.FirstImplementer<BreakerLogic>(actor) != null;
                         ctx.LethalLoyalistSacrifice = TryLoyalistSacrifice;

@@ -93,6 +93,7 @@ namespace FingerDiceDuel.Assistant
             var type=(AttackDamageType)value;
             if(target.HasImmunity(type)) return -100;
             double score=ElementDamageScore(type,owner,target);
+            if(CharacterBehaviors.FirstImplementer<NatureDomainLogic>(target)!=null&&NatureDomainLogic.IsElement(type))return score;
             if(type==AttackDamageType.Lightning && target.HasStatus(StatusEffect.Wet)) score+=15;
             if(type==AttackDamageType.Cold && (target.HasStatus(StatusEffect.Frost)||target.HasStatus(StatusEffect.Wet))) score+=22;
             if(type==AttackDamageType.Thunder && target.HasStatus(StatusEffect.Resonance)) score+=20;
@@ -169,10 +170,12 @@ namespace FingerDiceDuel.Assistant
             bool immune = target.HasImmunity(type);
             // Psychic only rolls the inflicted status; damage is unchanged.
             // Scoring must not draw from the combat interaction RNG.
-            if (!immune && magic != DamageType.Psychic) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
+            bool suppressed=CharacterBehaviors.FirstImplementer<NatureDomainLogic>(target)!=null&&NatureDomainLogic.IsElement(type);
+            if (!immune && !suppressed && magic != DamageType.Psychic) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
             ignoreAffinity |= DamageAffinityNames.AttackPiercesAffinities(owner, type);
             damage=StatusRules.ApplyDamageAffinities(target,damage,type,!ignoreAffinity,ignoreAffinity);
             if(immune) return damage;
+            if(suppressed)return damage-4;
             double score=damage;
             if(type==AttackDamageType.Fire && target.HasStatus(StatusEffect.Burn) && !target.HasStatus(StatusEffect.Scorch)) score+=6;
             var status=StatusNames.StatusOf(magic);

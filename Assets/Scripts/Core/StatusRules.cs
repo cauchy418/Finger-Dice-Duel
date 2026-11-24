@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -181,6 +181,8 @@ namespace FingerDiceDuel.Core
         public static bool CanUseHandAsAddend(PlayerState actor, Hand hand, GameManager game)
         {
             if (hand != null && hand.IsTargetRestricted) return false;
+            var addendOwner=game?.OwnerOfHand(hand);
+            if(addendOwner!=null&&!ReferenceEquals(actor,addendOwner)&&(!addendOwner.IsAlive||addendOwner.HasStatus(StatusEffect.FeignedDeath))&&!DeathDomainRules.CanBorrow(actor,addendOwner))return false;
             if (actor == null || hand == null || game == null) return true;
             if (!actor.HasStatus(StatusEffect.Blind)) return true;
 

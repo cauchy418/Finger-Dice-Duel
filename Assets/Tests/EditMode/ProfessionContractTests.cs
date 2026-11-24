@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Tests
             "divination|wizard_school_of_divination|法师·预言学派|wizard|School of Divination|0|-1|20|2147483647",
             "necromancy|wizard_school_of_necromancy|法师·死灵学派|wizard|School of Necromancy|0|-1|20|2147483647",
             "abjuration|wizard_school_of_abjuration|法师·防护学派|wizard|School of Abjuration|0|-1|20|2147483647",
-            "light|cleric_light_domain|牧师·净化领域|cleric|Purification Domain|0|-1|20|2147483647",
+            "purification|cleric_purification_domain|牧师·净化领域|cleric|Purification Domain|0|-1|20|2147483647",
             "war|cleric_war_domain|牧师·战争领域|cleric|War Domain|0|-1|20|2147483647",
             "battle_master|fighter_battle_master|战士·战斗大师|fighter|Battle Master|0|0|20|2",
             "draconic|sorcerer_draconic_bloodline|术士·龙族血脉|sorcerer|Draconic Bloodline|0|-1|20|2147483647",
@@ -62,7 +62,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void All_27_identities_keep_their_approved_stats_and_legacy_aliases()
         {
-            Assert.AreEqual(59, CharacterDefinition.BuiltIn.Length);
+            Assert.AreEqual(62, CharacterDefinition.BuiltIn.Length);
             var ids = new HashSet<string>();
             foreach (string row in Before)
             {
@@ -90,7 +90,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(12, CharacterProfession.All.Count);
             string[] professions = { "fighter", "paladin", "cleric", "wizard", "warlock", "sorcerer", "bard", "rogue", "ranger", "monk", "barbarian", "druid" };
             // 2026-10-23 后：战士 6（+战斗大师）、牧师 3（+光明/战争领域）；德鲁伊仍预留。
-            int[] counts = { 7, 6, 6, 9, 4, 4, 2, 6, 2, 5, 4, 4 };
+            int[] counts = { 7, 6, 9, 9, 4, 4, 2, 6, 2, 5, 4, 4 };
             for (int i=0; i<professions.Length; i++)
             {
                 Assert.AreEqual(counts[i], CharacterCodex.Filter(null,null,professions[i]).Count, professions[i]);

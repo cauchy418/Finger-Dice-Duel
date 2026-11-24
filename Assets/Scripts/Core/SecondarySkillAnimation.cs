@@ -27,7 +27,15 @@ namespace FingerDiceDuel.Core
             list["神圣誓忠"]=new SecondarySkillProfile("神圣誓忠",SecondarySkillStyle.Growth,"Professions/paladin",3,"crown");
             list["生命门徒"]=new SecondarySkillProfile("生命门徒",SecondarySkillStyle.Heal,"Professions/cleric",2,"");
             list["维持生命"]=new SecondarySkillProfile("维持生命",SecondarySkillStyle.Heal,"Professions/cleric",2,"");
-            list["神佑医者"]=new SecondarySkillProfile("神佑医者",SecondarySkillStyle.Cleanse,"Professions/cleric",2,"");
+            list["生命赐福"]=new SecondarySkillProfile("生命赐福",SecondarySkillStyle.Cleanse,"Status/life_blessing",2,"");
+            list["生命祝福"]=new SecondarySkillProfile("生命祝福",SecondarySkillStyle.Growth,"Status/life_blessing",2,"");
+            list["死亡赐福"]=new SecondarySkillProfile("死亡赐福",SecondarySkillStyle.FalseLife,"Status/feigned_death",2,"");
+            list["假死"]=new SecondarySkillProfile("假死",SecondarySkillStyle.FalseLife,"Status/feigned_death",2,"");
+            list["自然赐福"]=new SecondarySkillProfile("自然赐福",SecondarySkillStyle.Heal,"Status/nature_blessing",2,"");
+            list["自然祝福"]=new SecondarySkillProfile("自然祝福",SecondarySkillStyle.Tether,"Status/nature_blessing",2,"vine");
+            list["抑制元素"]=new SecondarySkillProfile("抑制元素",SecondarySkillStyle.ElementGuard,"Professions/cleric",2,"");
+            list["光明赐福"]=new SecondarySkillProfile("光明赐福",SecondarySkillStyle.Heal,"Status/light_blessing",2,"");
+            list["光明祝福"]=new SecondarySkillProfile("光明祝福",SecondarySkillStyle.Enchant,"Status/light_blessing",2,"");
             list["思维之盾"]=new SecondarySkillProfile("思维之盾",SecondarySkillStyle.Eye,"Subclasses/warlock_the_great_old_one",2,"");
             list["法术塑形"]=new SecondarySkillProfile("法术塑形",SecondarySkillStyle.Enchant,"fx_force",2,"orb");
             list["狂野魔法浪涌"]=new SecondarySkillProfile("狂野魔法浪涌",SecondarySkillStyle.Surge,"fx_psychic",2,"");

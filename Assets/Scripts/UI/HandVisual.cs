@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace FingerDiceDuel.UI
 {
@@ -98,6 +98,8 @@ namespace FingerDiceDuel.UI
         public static string StatusText(Core.Hand hand, Core.PlayerState owner = null)
         {
             if (hand == null) return "";
+            if (owner!=null&&!owner.IsAlive) return "已死亡 · 死亡之触加数";
+            if (owner!=null&&owner.HasStatus(Core.StatusEffect.FeignedDeath)) return "假死 · 死亡之触加数";
             if(hand.IsTargetRestricted)return (hand.IsRestrained?"束缚":hand.IsLocked?"已锁定":"大地行者")+" · 禁作加数";
 
             if (hand.IsRestrained) return "束缚 · 无法运算";

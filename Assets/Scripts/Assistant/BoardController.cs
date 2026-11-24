@@ -1276,7 +1276,12 @@ namespace FingerDiceDuel.Assistant
                     //    AI 选中一只被锁的手时 `ClickHand` 会被拒 ->
                     //    `MakeAutomaticMove` 返回 false -> **对局卡死**
                     //    （玩家实测"经典里战士·破阵者攻击卡住了"，批量测试复现）。
-                    if (!ActivePlayer.Owns(hand)) return true;
+                    if (!ActivePlayer.Owns(hand))
+                    {
+                        var owner=OwnerOf(hand);
+                        return owner!=null&&(owner.IsAlive||DeathDomainRules.CanBorrow(ActivePlayer,owner))
+                            &&_game.IsLegalMove(ActivePlayer,SelectedHand,hand,out _);
+                    }
 
                     // ⚠️ **游荡者·魔术师例外：他可以碰自己的另一只手。**
                     //
@@ -4381,7 +4386,7 @@ namespace FingerDiceDuel.Assistant
             //    跳过回合**不算**正常运算（不触发强制）——
             //    所以这里只看"有没有产生 TurnResult 且不是赌博"。
             //    放在结算收尾处：这是唯一能确定"这一回合到底做了什么"的时点。
-            if (CharacterBehaviors.FirstImplementer<GamblerLogic>(result.Actor) != null)
+            if (result.InvalidatedBy != "假死" && CharacterBehaviors.FirstImplementer<GamblerLogic>(result.Actor) != null)
             {
                 bool wasRequired=result.Actor.MustGamble;result.Actor.MustGamble = !result.WasGamble;
                 if(result.Actor.MustGamble&&!wasRequired)_game.RecordSkillVisual(result.Actor,"赌徒之运",result.Actor,new SkillVisualData(value:result.ResultValue,variant:"forced"));

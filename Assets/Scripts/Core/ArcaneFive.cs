@@ -153,6 +153,8 @@ namespace FingerDiceDuel.Core
             if(sporeFrame!=null)visuals.RecordSkillVisual(this,"孢子生命",this,
                 new SkillVisualData(value:spores,previous:SporeLife,variant:SporeLife==0?"break":"absorb"),sporeFrame);
             int absorbed=Math.Min(FalseLife,amount);FalseLife-=absorbed;amount-=absorbed;
+            // 假死保护当前生命池，任何伤害（包括持续伤害和真实伤害）均不能击穿至零。
+            if(HasStatus(StatusEffect.FeignedDeath) && IsAlive)amount=Math.Min(amount,Health-1);
             bool wasSheep=IsPolymorphed||IsWildShaped;
             if(!wasSheep)amount=ProtectOriginalHealth(amount);
             int actual=Math.Min(Health,amount);

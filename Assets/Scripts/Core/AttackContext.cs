@@ -22,6 +22,7 @@ namespace FingerDiceDuel.Core
         public Hand SourceHand { get; }
         public PlayerState TargetAtStart { get; }
         public bool IsHunterVolley { get; set; }
+        public bool UsesDeathTouchAddend { get; set; }
         public bool NinjaShadowSplit {get;set;}
 
         /// <summary>原始伤害（来自 HandEffectType 的数值，4/6/8）。</summary>
@@ -269,6 +270,7 @@ namespace FingerDiceDuel.Core
         {
             if(_resolutionPrepared)return;_resolutionPrepared=true;
             Manager = manager;
+            BeginClericAttack();
             _startBonuses.Clear();SnapshotBonuses(Attacker);SnapshotBonuses(Defender);
             // 0. **最早结算：取消攻击**（邪术师·至高妖精）。
             //
@@ -323,6 +325,8 @@ namespace FingerDiceDuel.Core
                 AttackType = typeProvider.AttackTypeOf(this);
             }
 
+            ConvertLightAttack();
+
             // 1a-bis. 防守方的元素反应（武僧·四象宗：消耗气获得抗性）。
             if (AttackType != AttackDamageType.None
                 && Defender?.Character is IIncomingElementReaction reaction)
@@ -339,7 +343,7 @@ namespace FingerDiceDuel.Core
             var fixedRule=!IsSpecialAttack&&!IsReflected&&!IsNecromancyFreeAttack&&!IsStatusDamage
                 ? CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(Attacker) : null;
             if(fixedRule!=null)
-            { FinalDamage=fixedRule.NormalAttackDamage;AttackType=fixedRule.NormalAttackType;
+            { FinalDamage=fixedRule.NormalAttackDamage;AttackType=_lightBlessing?AttackDamageType.Radiant:fixedRule.NormalAttackType;
               IgnoreStatBonuses=true;IgnoreIncomingModifiers=true; }
             else FinalDamage = ApplyBonuses(FinalDamage);
 
@@ -363,7 +367,8 @@ namespace FingerDiceDuel.Core
                 if(!IsKnowledgeForceDamage)NotifyTargeted(Defender, manager);
             }
 
-            _independentHitTypes = PerHitTypeProvider != null && fixedRule == null && AttackType == PreparedPerHitType;
+            _natureBlessedTarget=Defender.HasStatus(StatusEffect.NatureBlessing);
+            _independentHitTypes = PerHitTypeProvider != null && fixedRule == null && (AttackType == PreparedPerHitType||_lightBlessing);
             _preparedDamageDisabled=damageDisabled;_intendedDefender=intendedDefender;_preparedDefenderChoice=defenderChoice;
         }
         public string VisualWeapon { get; set; }
@@ -438,16 +443,23 @@ namespace FingerDiceDuel.Core
             bool detonateHidden=ReferenceEquals(Defender.HiddenForceSource,Attacker)&&Defender.HasResonance&&!IsStatusDamage;
             int hiddenExpected=0;
             int nonForceChoice = 0;
-            for (int i = 0; i < hits; i++)
+            ResolveRemainingHits(0);return;
+            void ResolveRemainingHits(int start)
+            {
+            for (int i = start; i < hits; i++)
             {
                 if (!Attacker.IsAlive || !Defender.IsAlive) break;
                 var drunkenAttack=!IsStatusDamage&&!IsReflected&&!IgnoreIncomingModifiers?MonkRules.DrunkenOf(Attacker):null;
                 int currentBase = drunkenAttack==null?perHitBase:ApplyBonuses(drunkenAttack.RollOutgoing())/(NinjaShadowSplit?2:1);
+                int defenseChoice=i;
+                if(!_dawnAnswered.Contains(i))
+                {
                 if (_independentHitTypes)
                 {
                     if (i > 0)
                     {
                         PerHitTypeProvider.PrepareAttackHit(this, i);
+                        ConvertLightAttack();
                         if (Defender.Character is IIncomingElementReaction incoming)
                             incoming.OnIncomingElementAttack(this, manager);
                     }
@@ -455,7 +467,7 @@ namespace FingerDiceDuel.Core
                 }
                 _segmentTypes.Add(AttackType);
                 _visualHit=manager?.BeginVisualAttack(this,i);
-                int defenseChoice = _independentHitTypes && AttackType != AttackDamageType.Force ? nonForceChoice++ : i;
+                defenseChoice = _independentHitTypes && AttackType != AttackDamageType.Force ? nonForceChoice++ : i;
                 // 2a. **闪避**（游荡者·风流剑客每次消耗一只"1"；游荡者·刺客潜行则整次攻击都打不到）
                 //
                 //     现在它排在**太极之前**（玩家要求）：
@@ -468,8 +480,11 @@ namespace FingerDiceDuel.Core
                     continue;
                 }
 
+                }
+                int dawnIndex=i;
+                if(RequestDawn(i,manager,()=>ResolveRemainingHits(dawnIndex)))return;
                 perHit=damageDisabled?0:IgnoreStatBonuses?currentBase:ApplyStatBonuses(currentBase);
-                if(!damageDisabled&&!IsStatusDamage)perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);
+                if(!damageDisabled&&!IsStatusDamage){perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);if(_dawnBonuses.TryGetValue(i,out int dawnBonus))perHit+=dawnBonus;}
                 if(!IsStatusDamage&&!IsReflected&&!IgnoreIncomingModifiers)perHit=ShadowRules.Outgoing(Attacker,Defender,perHit);
                 for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
                 if(detonateHidden)hiddenExpected+=System.Math.Max(0,perHit);
@@ -539,8 +554,8 @@ namespace FingerDiceDuel.Core
                 if (!IgnoreIncomingModifiers)
                     dealt = StatusRules.ApplyIncomingDamage(Defender, dealt);
                 bool piercesAffinities = !IsStatusDamage && !IsReflected
-                    && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType);
-                if(!(IgnoreIncomingModifiers && AttackerStatusOverride==StatusEffect.HolyLight))
+                    && (DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType)||_lightPierces);
+                if(!(IgnoreIncomingModifiers && AttackerStatusOverride==StatusEffect.HolyLight && AttackType==AttackDamageType.Fire))
                 dealt = StatusRules.ApplyDamageAffinities(Defender, dealt, AttackType, includeResistance: !piercesAffinities,
                     ignoreImmunity: piercesAffinities);
 
@@ -598,6 +613,10 @@ namespace FingerDiceDuel.Core
                         postDamage.OnDamageTaken(Defender, Defender.LastDamageToOriginalForm, this, manager);
             }
 
+            FinishHits();
+            }
+            void FinishHits()
+            {
             if(detonateHidden && ElementHits.Count>0 && !WasCancelled)
             {Defender.SetResonance(false);ExtraTrueDamage+=hiddenExpected/2;manager?.NoteSkill(Attacker,"渗透劲","暗劲引爆，真实伤害"+(hiddenExpected/2),Defender,new SkillVisualData(value:hiddenExpected/2,variant:"detonate"));}
 
@@ -635,7 +654,8 @@ namespace FingerDiceDuel.Core
             {
                 if (WasTypeImmune)
                 {
-                    if (!IsStatusDamage && !IsReflected && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType))
+                    if(_lightPierces)manager?.NoteSkill(Attacker,"光明祝福","穿透光耀伤害免疫，状态仍被免疫",Defender,new SkillVisualData(element:AttackType,variant:"pierce"));
+                    else if (!IsStatusDamage && !IsReflected && DamageAffinityNames.AttackPiercesAffinities(Attacker, AttackType))
                         manager?.NoteSkill(Attacker, Characters.SpecialLogics.StormSorceryLogic.PiercesAffinities(Attacker, AttackType)
                             ? "暴风狂怒" : CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.LightDomainLogic>(Attacker)!=null ? "净化圣焰" : "龙族先祖", "穿透伤害免疫，未附加元素效果", Defender,
                             new SkillVisualData(source:SourceHand,variant:"pierce",element:AttackType));
@@ -704,6 +724,7 @@ namespace FingerDiceDuel.Core
             if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
                 foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
             NotifyCompletedHealthDamage(manager);
+            FinishClericBlessings(manager);
             // 分别通知发起者、原目标与转移后的实际承受者；新加成不追溯改变本击。
             if(!IsStatusDamage&&!IsKnowledgeForceDamage)
             {
@@ -716,6 +737,7 @@ namespace FingerDiceDuel.Core
                         hook.OnAttackFinished(Defender,this,false,manager);
             }
             completed?.Invoke();
+            }
             }
         }
 
@@ -812,6 +834,7 @@ namespace FingerDiceDuel.Core
             // 使用攻击开始时的免疫快照：临时修正已在整次攻击末消耗，仍须阻止本击的元素状态。
             if (WasTypeImmune && AttackDamageTypes.IsMagic(AttackType)) return;
 
+            if(SuppressesNatureElement()&&status==StatusNames.StatusOf(AttackDamageTypes.ToDamageType(AttackType)))status=StatusEffect.None;
             if (status == StatusEffect.None && !_burnReaction) return;
 
             // 取消 / 一段都没落地 -> 不算命中

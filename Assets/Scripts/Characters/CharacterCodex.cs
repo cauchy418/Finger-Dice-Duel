@@ -88,7 +88,7 @@ namespace FingerDiceDuel.Characters
                 shortSkill: "4/6/8可转治疗，双9两次治疗。净化，溢出攻防+1。",
                 playGuide: "缺血时治疗，溢出时可为满血队友加攻防。",
                 counter: "限制9与双9。净化能清除腐朽，攻击可消耗其治疗机会。",
-                interactions: new[] { "神佑医者与战争祝福可共存。圣火清除已有角色状态。" });
+                interactions: new[] { "生命赐福与战争祝福可共存。圣火清除已有角色状态。" });
 
             Add(CharacterDefinition.SwashbucklerId, "Swashbuckler", Alignment.ChaoticGood,
                 shortSkill: "1→2闪避；2→3强化基础值×1.5、距离∞，命中附流血2回合。",
@@ -289,7 +289,7 @@ namespace FingerDiceDuel.Characters
                 playGuide:"运算进位自己得1层，回复使目标得1层；层数保留到攻击，整次只消耗一次。",
                 counter:"闪避或取消避免追加伤害；困惑期间加法进位结果为1。",
                 interactions:new[]{"普通盾挡仍可追加力场；圣火清除知识祝福。"});
-            Add(CharacterDefinition.LightDomainId, "Purification Domain", Alignment.NeutralGood,
+            Add(CharacterDefinition.PurificationDomainId, "Purification Domain", Alignment.NeutralGood,
                 shortSkill: "固定5火焰，穿透抗性免疫；命中附圣火与灼伤。治疗附圣火。",
                 playGuide: "三个攻击数字均为固定5伤。圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；防护暂停生效但继续计时。",
                 counter: "闪避或取消避免附加；灼伤按实际回复量的一半造成火焰伤害。",
@@ -399,6 +399,21 @@ namespace FingerDiceDuel.Characters
                 playGuide:"开回合可额外运算；受攻击点一只4，再选闪电或雷鸣，反击后同手必须运算。",
                 counter:"避免在低血量时攻击持4的目标；护盾和对应抗性可抵挡反击。",
                 interactions:new[]{"一整次来袭只反击一次，反击不连锁；击杀来袭者终止其未结算攻击。"});
+            Add(CharacterDefinition.NatureDomainId,"Nature Domain",Alignment.NeutralGood,
+                shortSkill:"回复赋自然祝福；抑制五元素状态并储存反施。",
+                playGuide:"自然祝福使攻击者在整次攻击后束缚；受到五元素攻击时储存基础状态，下次攻击发起即消耗。",
+                counter:"储存的新元素覆盖旧元素；圣火清除并阻止自然祝福。",
+                interactions:new[]{"抑制仅阻止该攻击类型的基础状态及其反应，不免疫独立流血或战技。"});
+            Add(CharacterDefinition.LightDomainId,"Light Domain",Alignment.LawfulGood,
+                shortSkill:"光耀攻击附目盲；命中可净化负面状态增伤。",
+                playGuide:"每段命中可清除目标负面状态，每种令本段伤害+2；回复赋光明祝福2回合。",
+                counter:"光明祝福将攻击转为光耀；原本光耀可穿透光耀伤害抗性与免疫。",
+                interactions:new[]{"穿透仅影响伤害，状态仍受免疫及抗性减时长；圣火清除并阻止光明祝福。"});
+            Add(CharacterDefinition.DeathDomainId,"Death Domain",Alignment.NeutralEvil,
+                shortSkill:"死亡之触借死者或假死者手值，攻击变暗蚀；回复后可赐假死。",
+                playGuide:"正常点击自己的运算手，再点击其他死者或假死者的手作加数。回复后选择受疗者或不发动死亡赐福。",
+                counter:"假死期间仅可改变手值；圣火可清除并阻止假死。",
+                interactions:new[]{"死亡角色只作加数，不能作为攻击目标。假死不算死亡，永久获得13类抗性，体力最低1。"});
             Add(CharacterDefinition.OathOfVengeanceId,"Oath of Vengeance",Alignment.LawfulNeutral,
                 shortSkill:"开局标记仇敌，对其伤害+2、其余−1；仇敌破盾可额外纯运算。",playGuide:"受攻击前可转移仇敌标记，仇敌死亡可重选。额外运算先点自己的手，再点加数，可放弃，只改变数字。",counter:"留意标记归属；仇敌破盾会给予其调整手值的机会。",interactions:new[]{"每段攻击计算标记增减伤；每碎一面盾各获得一次纯运算，包含破阵强袭。"});
             Add(CharacterDefinition.TheHexbladeId,"The Hexblade",Alignment.NeutralEvil,

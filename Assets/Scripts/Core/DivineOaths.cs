@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -46,15 +46,16 @@ namespace FingerDiceDuel.Core
         public bool ApplyEffectlessOperation(PlayerState actor,Hand source,Hand target,string skill)
         {
             if(!actor.IsAlive||actor.IsPolymorphed||!StatusRules.CanAct(actor)||!IsLegalMove(actor,source,target,out _))return false;
-            target=PrepareOperationAddend(actor,source,target,effectless:true);
+            bool feigned=actor.HasStatus(StatusEffect.FeignedDeath);
+            if(!feigned)target=PrepareOperationAddend(actor,source,target,effectless:true);
             RequestTrickeryOperation(actor,source,target,()=>{},true);
             int before=source.Value,add=target.Value;bool shield=source.IsShield;
             int value=Math.Max(1,StatusRules.ApplyResultModifiers(actor,actor.HasStatus(StatusEffect.Confusion)&&before+add>=10?1:Hand.ComputeSum(before,add)));
             ApplyTrickery(actor,source,target,value,out value);
             var frame=skill=="巨龙座"?CaptureVisualFrame():null;
             source.SetValue(value);
-            if(skill=="巨龙座"&&actor.Character is WildShapeBehavior wild)wild.MarkDragonOperation();
-            if(shield)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
+            if(!feigned&&skill=="巨龙座"&&actor.Character is WildShapeBehavior wild)wild.MarkDragonOperation();
+            if(shield&&!feigned)foreach(var warden in CharacterBehaviors.Implementers<PathOfTheWardenLogic>(actor))warden.OnOwnShieldBroken(actor,source,this);
             NoteSkill(actor,skill,$"{CombatText.HandName(actor,source)}{before}+{add}→{value}（只改手值）",actor,
                 new SkillVisualData(source:source,destination:target,value:value,previous:before,
                     variant:skill=="巨龙座"?"operation":null,destinationOwner:OwnerOfHand(target),amount:add),frame);
@@ -87,8 +88,10 @@ namespace FingerDiceDuel.Core
             int blessedTurns=StatusTurnsLeft(StatusEffect.BlessedHealing);
             var healer=StatusSourceOf(StatusEffect.BlessedHealing);
             int knowledge=KnowledgeStacks;
+            int feignedTurns=StatusTurnsLeft(StatusEffect.FeignedDeath);var deathSource=StatusSourceOf(StatusEffect.FeignedDeath);
             ClearStatuses();for(int i=0;i<knowledge;i++)GainKnowledge();if(turns>0)ApplyStatus(StatusEffect.WarBlessing,turns,source);
             if(blessedTurns>0)ApplyStatus(StatusEffect.BlessedHealing,blessedTurns,healer);
+            if(feignedTurns>0)ApplyStatus(StatusEffect.FeignedDeath,feignedTurns,deathSource);
         }
     }
 }

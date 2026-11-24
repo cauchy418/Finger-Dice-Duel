@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **法师·塑能学派（SchoolOfEvocation）的负面状态**。
@@ -120,6 +120,9 @@
         Scorch = 27,
         KnowledgeBlessing = 28,
         Confusion = 29,
+        FeignedDeath = 30,
+        NatureBlessing = 31,
+        LightBlessing = 32,
     }
 
     /// <summary>
@@ -199,7 +202,10 @@
                 case StatusEffect.Restrained: return "restrained";
                 case StatusEffect.Greased: return "greased";
                 case StatusEffect.WarBlessing: return "war_blessing";
-                case StatusEffect.BlessedHealing: return "blessed_healing";
+                case StatusEffect.BlessedHealing: return "life_blessing";
+                case StatusEffect.FeignedDeath: return "feigned_death";
+                case StatusEffect.NatureBlessing: return "nature_blessing";
+                case StatusEffect.LightBlessing: return "light_blessing";
                 case StatusEffect.PhysicalVulnerability: return "physical_vulnerability";
                 case StatusEffect.Tinnitus: return "tinnitus";
                 case StatusEffect.DarknessBlind: return "darkness_blind";
@@ -256,7 +262,10 @@
                 case StatusEffect.Restrained: return "束缚";
                 case StatusEffect.Greased: return "油腻";
                 case StatusEffect.WarBlessing: return "战争祝福";
-                case StatusEffect.BlessedHealing: return "神佑医者";
+                case StatusEffect.BlessedHealing: return "生命祝福";
+                case StatusEffect.FeignedDeath: return "假死";
+                case StatusEffect.NatureBlessing: return "自然祝福";
+                case StatusEffect.LightBlessing: return "光明祝福";
                 case StatusEffect.PhysicalVulnerability: return "物理易伤";
                 case StatusEffect.Tinnitus: return "耳鸣";
                 case StatusEffect.DarknessBlind: return "失明";
@@ -319,6 +328,10 @@
                     return "攻防+1；算出9可选择放弃回复，改为9点基础伤害攻击；重复施加刷新2回合，不叠加";
                 case StatusEffect.BlessedHealing:
                     return "治疗溢出获得攻防+1，持续2回合。重复获得刷新时长";
+                case StatusEffect.NatureBlessing: return "受到未取消的整次攻击后，使攻击者束缚2回合；闪避、护盾及零伤害均触发。持续2个自身回合，刷新不叠加；圣火清除并阻止。";
+                case StatusEffect.LightBlessing: return "攻击改为光耀并附加目盲2回合；原本为光耀的攻击穿透光耀伤害抗性与免疫，但状态仍受免疫及抗性影响。持续2个自身回合；圣火清除并阻止。";
+                case StatusEffect.FeignedDeath:
+                    return "持续2个自身回合；获得全部13种伤害抗性，受伤或支付生命均至少保留1生命。自身运算仅改变手值，不攻击、合盾、治疗或触发技能；他人不能选择其手牌，死亡领域除外。仍占座位并参与胜负判断；圣火清除并阻止假死。";
                 case StatusEffect.PhysicalVulnerability:
                     return "受到挥砍、钝击和穿刺伤害×1.5，向上取整。持续期间每次命中均生效，重复施加刷新。";
                 case StatusEffect.Greased:
@@ -363,11 +376,11 @@
         /// <summary>与手册的负面效果分类一致；角色状态不参与格挡／抗性减时长。</summary>
         public static bool IsNegativeStatus(StatusEffect status)
             => status != StatusEffect.None && status != StatusEffect.HolyLight
-                && status != StatusEffect.KnowledgeBlessing && status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing;
+                && status != StatusEffect.KnowledgeBlessing && status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing
+                && status != StatusEffect.FeignedDeath && status != StatusEffect.NatureBlessing && status != StatusEffect.LightBlessing;
 
         public static string ResourceKeyOf(StatusEffect status)
-            => status == StatusEffect.BlessedHealing ? "Subclasses/cleric_life_domain"
-                : status == StatusEffect.PhysicalVulnerability ? DamageAffinityNames.Key(DamageAffinity.Vulnerability, AttackDamageType.Slashing)
+            => status == StatusEffect.PhysicalVulnerability ? DamageAffinityNames.Key(DamageAffinity.Vulnerability, AttackDamageType.Slashing)
                 : "Status/" + IconKeyOf(status);
 
         /// <summary>计时状态（排除兼容别名，顺序固定）。</summary>
@@ -382,6 +395,7 @@
             StatusEffect.HolyLight,
             StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
             StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability, StatusEffect.Scorch, StatusEffect.KnowledgeBlessing, StatusEffect.Confusion,
+            StatusEffect.FeignedDeath, StatusEffect.NatureBlessing, StatusEffect.LightBlessing,
         };
 
         /// <summary>
@@ -444,6 +458,9 @@
                 case StatusEffect.Dizzy: return 0xE8A838;       // 眩晕橙黄
                 case StatusEffect.WarBlessing: return 0xDBB662;
                 case StatusEffect.BlessedHealing: return 0xE7CA89;
+                case StatusEffect.FeignedDeath: return 0x7A869C;
+                case StatusEffect.NatureBlessing: return 0x487A43;
+                case StatusEffect.LightBlessing: return 0xF5D979;
                 case StatusEffect.PhysicalVulnerability: return 0xCC6852;
                 case StatusEffect.DarknessBlind: return 0x67558D;
                 case StatusEffect.Tinnitus: return 0xB99DCD;
@@ -493,6 +510,9 @@
                 case StatusEffect.Dizzy: return "◌";         // ◌ 眩晕
                 case StatusEffect.WarBlessing: return "⚔";
                 case StatusEffect.BlessedHealing: return "✦";
+                case StatusEffect.FeignedDeath: return "◇";
+                case StatusEffect.NatureBlessing: return "叶";
+                case StatusEffect.LightBlessing: return "光";
                 case StatusEffect.DarknessBlind: return "◈";
                 case StatusEffect.Tinnitus: return "≋";
                 case StatusEffect.KnowledgeBlessing: return "▤";

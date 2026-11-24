@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -61,7 +61,7 @@ namespace FingerDiceDuel.Core
             }
             foreach(var type in ResistanceNames.All)
                 if(player.HasResistance(type)) result.Add(new CombatStatusIcon(ResistanceNames.Key(type),
-                    ResistanceNames.Name(type)+(player.HasSustainedResistance(type)?"：技能持续抗性；不因受击消耗，按对应技能条件结束。":player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
+                    ResistanceNames.Name(type)+(player.HasStatus(StatusEffect.FeignedDeath)?"：假死期间持续生效，不因受击消耗；该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":player.HasSustainedResistance(type)?"：技能持续抗性；不因受击消耗，按对应技能条件结束。":player.HasPermanentResistance(type)?"：本场永久抗性，该类型伤害减半，向上取整；攻击附加的负面效果时长−1。":"：该类型伤害减半，向上取整；攻击附加的负面效果时长−1。一次攻击落地后，所有临时抗性、易伤、免疫一起清除。"),""));
             if(player.Character is INpcCircuitProgress phantom&&player.Definition?.Id=="mage_tower_phantom")
                 result.Add(new CombatStatusIcon("Adventure/npc_mage_phantom","汲能回路 · "+phantom.CircuitProgress+" / 3\n每3次普通攻击实际伤人后回复3生命，腐朽可阻止回复。",phantom.CircuitProgress+"/3",value:phantom.CircuitProgress));
             var barrier=CharacterBehaviors.FirstImplementer<IAbjurationSkill>(player);

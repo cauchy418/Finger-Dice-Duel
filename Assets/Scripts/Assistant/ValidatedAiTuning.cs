@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
     /// <summary>由独立留出实验生成，只采用多重比较校正后仍改善的角色／模式配置。</summary>
@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Assistant
                 case "sorcerer_wild_magic":ai.HandValueWeight=12;ai.DenyRatioPercent=43;ai.UseProjectedCounterplay=true;break;
                 case "paladin_oathbreaker":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "wizard_school_of_abjuration":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
-                case "cleric_light_domain":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
+                case "cleric_purification_domain":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "sorcerer_draconic_bloodline":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "monk_way_of_the_four_elements":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;
                 case "druid_circle_of_the_moon":ai.HandValueWeight=12;ai.DenyRatioPercent=100;ai.UseProjectedCounterplay=true;break;

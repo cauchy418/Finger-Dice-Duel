@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Core;
@@ -697,6 +697,11 @@ namespace FingerDiceDuel.Assistant
         {
             int acted = move.ActedHand.Value;
             int target = move.TargetHand.Value;
+            if (actor.HasStatus(StatusEffect.FeignedDeath))
+            {
+                int pureResult = operationResult ?? (game != null ? game.PreviewOperationResult(actor, move.ActedHand, move.TargetHand) : AiStatePolicy.PreviewResult(actor, acted, target));
+                return HandValueScore(actor, pureResult, actor.GetOtherHand(move.ActedHand).Value);
+            }
             if (game != null && (game.WillSuppressOperationEffects(actor)||actor.HasStatus(StatusEffect.Dizzy)))
             {
                 int value = Math.Max(1, StatusRules.ApplyResultModifiers(actor, Hand.ComputeSum(acted, target)));
@@ -793,6 +798,14 @@ namespace FingerDiceDuel.Assistant
             // 运算后：被操作的手变成**结果值**，另一只手不变。
             score += HandValueScore(actor, result, other.Value);
             score += StateMoveAdjustment(move,actor,result,game);
+            score += ClericDomainMoveValue(actor,ResolveIntendedVictim(move,actor,game,result),result,game);
+            if(game!=null&&DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand))
+                &&IsAttackEffect(DivineScoredEffect(actor,result,game)))
+            {
+                var deathVictim=ResolveIntendedVictim(move,actor,game,result);
+                if(deathVictim!=null)score+=(EstimateAttackDamage(actor,deathVictim,result,game,acted,move.TargetHand)
+                    -EstimateAttackDamage(actor,deathVictim,result,game,acted))*8;
+            }
 
             // ---- 带条件的次分 ----
             // 打掉对手已成型的盾，比让它继续挡着划算
@@ -890,7 +903,10 @@ namespace FingerDiceDuel.Assistant
                 && game.CanReach(actor, strikeTarget) && StatusRules.CanAttackTarget(actor, strikeTarget, game))
                 score += (result + 1) / 2 * 9 + (strikeTarget.HasStatus(StatusEffect.PhysicalVulnerability) ? 0 : 8);
 
-            if (priorityIsAttack && actor != null && game != null
+            if(priorityIsAttack && game!=null && game.OwnerOfHand(move.TargetHand)?.IsDead==true
+                && DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand)))
+                score+=TargetPriorityScoreFor(move,actor,game,ResolveIntendedVictim(move,actor,game,result));
+            else if (priorityIsAttack && actor != null && game != null
                 && game.OwnerOfHand(move.TargetHand) != null
                 && ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor))
             {
@@ -917,7 +933,9 @@ namespace FingerDiceDuel.Assistant
             if (priorityIsAttack && actor != null && game != null
                 && IsAttackResult(move, actor, game, operationResult))
             {
-                PlayerState victim = ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor)
+                PlayerState victim = game.OwnerOfHand(move.TargetHand)?.IsDead==true && DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand))
+                    ? ResolveIntendedVictim(move,actor,game,result)
+                    : ReferenceEquals(game.OwnerOfHand(move.TargetHand), actor)
                     ? (game.OpponentsOf(actor).Count > 0 ? game.OpponentsOf(actor)[0] : null)
                     : game.OwnerOfHand(move.TargetHand);
 
@@ -968,7 +986,7 @@ namespace FingerDiceDuel.Assistant
             if (!isAttack) return false;
 
             PlayerState victim = ResolveIntendedVictim(move,actor,game,result);
-            if (victim == null || !victim.IsAlive) return false;
+            if (victim == null || !victim.IsAlive || victim.HasStatus(StatusEffect.FeignedDeath) || actor.HasStatus(StatusEffect.FeignedDeath)) return false;
             if (CharacterBehaviors.FirstImplementer<IDruidForm>(actor) != null
                 && (!game.CanReach(actor, victim) || !StatusRules.CanAttackTarget(actor, victim, game))) return false;
 
@@ -991,7 +1009,7 @@ namespace FingerDiceDuel.Assistant
         public int TotalLethalDamage(LegalMove move, PlayerState actor, PlayerState victim,
                                      int result, GameManager game = null)
         {
-            if (actor == null || victim == null) return 0;
+            if (actor == null || victim == null || actor.HasStatus(StatusEffect.FeignedDeath)) return 0;
             if (actor.HasStatus(StatusEffect.Disabled)
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor) == null) return 0;
 
@@ -1020,8 +1038,10 @@ namespace FingerDiceDuel.Assistant
                     return Math.Max(0, atkBonus - victim.SporeLife - victim.FalseLife);
             }
             total+=ArcaneChoices.BonusAgainst(actor,victim)*CharacterFactory.MaxAttackHits(actor);
+            total+=LightCleanseDamage(actor,victim,game);
             var preview=new AttackContext(actor,victim,move.ActedHand,result,game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
+            if(game!=null&&DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand)))type=AttackDamageType.Necrotic;
             var fixedRule=CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(actor);
             if(fixedRule!=null) {total=fixedRule.NormalAttackDamage;type=fixedRule.NormalAttackType;}
             else
@@ -1036,7 +1056,8 @@ namespace FingerDiceDuel.Assistant
             if(game!=null) foreach(var p in game.Players)
                 if(p.IsAlive && CharacterBehaviors.FirstImplementer<IAbjurationSkill>(p) is IAbjurationSkill barrier)
                     total=System.Math.Max(0,total-barrier.BarrierPoints);
-            return System.Math.Max(0,total-victim.SporeLife-victim.FalseLife);
+            int applied = System.Math.Max(0,total-victim.SporeLife-victim.FalseLife);
+            return victim.HasStatus(StatusEffect.FeignedDeath) ? Math.Min(applied, Math.Max(0,victim.Health-1)) : applied;
         }
 
         /// <summary>
@@ -1045,8 +1066,9 @@ namespace FingerDiceDuel.Assistant
         /// 只算**单段**；多段的合计由角色的
         /// <see cref="ILethalThresholdAdvisor"/> 负责。
         /// </summary>
-        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim, int result, GameManager game, int sourceValue = 0)
+        private static int EstimateAttackDamage(PlayerState attacker, PlayerState victim, int result, GameManager game, int sourceValue = 0, Hand addend = null)
         {
+            if (attacker.HasStatus(StatusEffect.FeignedDeath)) return 0;
             if (attacker.HasStatus(StatusEffect.Disabled)
                 && CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker) == null) return 0;
             var fixedRule = CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker);
@@ -1056,9 +1078,11 @@ namespace FingerDiceDuel.Assistant
             int damage = AttackContext.ApplyStatBonuses(baseDamage + (marked ? RangerHunterLogic.ColossusBonus(victim) : 0),
                 StatusRules.EffectiveAttackBonus(attacker), StatusRules.EffectiveDefenseBonus(victim), ignorePositiveDefense: marked);
             damage+=ArcaneChoices.BonusAgainst(attacker,victim);
+            damage+=LightCleanseDamage(attacker,victim,game);
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
             var context = new AttackContext(attacker, victim, attacker.LeftHand, result, game);
             var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
+            if(addend!=null&&game!=null&&DeathDomainRules.CanBorrow(attacker,game.OwnerOfHand(addend)))type=AttackDamageType.Necrotic;
             if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
                     if(defense.CanReduceAttack(victim,result))damage=(damage+1)/2;
@@ -1070,7 +1094,8 @@ namespace FingerDiceDuel.Assistant
                 projected = Math.Max(0, StatusRules.EffectiveAttackBonus(attacker));
             if(attacker.KnowledgeStacks>0 && !FeyCanCancel(victim,result))
                 projected+=ProjectedAffinityDamage(attacker,victim,attacker.KnowledgeStacks,AttackDamageType.Force);
-            return Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
+            int applied = Math.Max(0, projected - victim.SporeLife - victim.FalseLife);
+            return victim.HasStatus(StatusEffect.FeignedDeath) ? Math.Min(applied, Math.Max(0,victim.Health-1)) : applied;
         }
 
         private static bool FeyCanCancel(PlayerState target, int value)
@@ -1079,7 +1104,10 @@ namespace FingerDiceDuel.Assistant
 
         private static int ProjectedAffinityDamage(PlayerState attacker, PlayerState target, int damage, AttackDamageType type)
         {
-            bool pierces = DamageAffinityNames.AttackPiercesAffinities(attacker, type);
+            bool originallyRadiant=type==AttackDamageType.Radiant;
+            bool lightBlessed=attacker.HasStatus(StatusEffect.LightBlessing);
+            if(lightBlessed)type=AttackDamageType.Radiant;
+            bool pierces = DamageAffinityNames.AttackPiercesAffinities(attacker, type)||lightBlessed&&originallyRadiant;
             return StatusRules.ApplyDamageAffinities(target, damage, type, !pierces, pierces);
         }
 
@@ -1401,7 +1429,7 @@ namespace FingerDiceDuel.Assistant
                 score += TargetPriorityBase;
 
             // ② 血量更低（血越少分越高）
-            int exposedHealth = target.HealthAcrossForms + target.SporeLife;
+            int exposedHealth = target.HasStatus(StatusEffect.FeignedDeath) ? target.MaximumHealth : target.HealthAcrossForms + target.SporeLife;
             int exposedPercent = Clamp(exposedHealth * 100 / target.MaximumHealth, 0, 100);
             score += (100 - exposedPercent) * (TargetPriorityBase / 100);
 
@@ -1634,7 +1662,7 @@ namespace FingerDiceDuel.Assistant
             for (int i = 0; i < all.Count; i++)
             {
                 PlayerState p = all[i];
-                if (p == null || !p.IsAlive) continue;
+                if (p == null || !p.IsAlive&&!DeathDomainRules.CanBorrow(actor,p)) continue;
                 if (ReferenceEquals(p, actor)) continue;
 
                 foreach (Hand theirs in p.Hands)

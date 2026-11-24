@@ -63,7 +63,7 @@ namespace FingerDiceDuel.Assistant
                 case HandEffectType.Attack4:case HandEffectType.Attack6:case HandEffectType.Attack8:
                     if(game.CanReach(foe,actor)&&StatusRules.CanAttackTarget(foe,actor,game))
                     {
-                        int damage=EstimateAttackDamage(foe,actor,result,game,sourceValue);
+                        int damage=EstimateAttackDamage(foe,actor,result,game,sourceValue,actor.LeftHand);
                         value+=Math.Min(IsLowHealth(actor)?60:32,damage*(IsLowHealth(actor)?8:4));
                     }
                     break;
@@ -90,7 +90,10 @@ namespace FingerDiceDuel.Assistant
                 || CharacterBehaviors.FirstImplementer<SchoolOfIllusionLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null
                 || PaladinGuardianAura.IsPaladin(foe)
-                || ArcaneTricksterLogic.For(foe) != null;
+                || ArcaneTricksterLogic.For(foe) != null
+                || CharacterBehaviors.FirstImplementer<DeathDomainLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<NatureDomainLogic>(foe) != null
+                || CharacterBehaviors.FirstImplementer<RadiantLightDomainLogic>(foe) != null;
 
         private static int AuditedOpportunityDelta(LegalMove move, PlayerState actor, int result, PlayerState foe, GameManager game)
         {
@@ -127,6 +130,7 @@ namespace FingerDiceDuel.Assistant
                 if (combo.Matches(result, other)) setup += Math.Min(40, combo.Bonus / 4);
             int value = Math.Min(60, Math.Max(0, setup));
             var effect = DivineScoredEffect(foe, result, game);
+            value+=ClericDomainMoveValue(foe,victim,result,game);
             if(PaladinGuardianAura.IsPaladin(foe))
             {
                 bool devotion=CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(foe)!=null;
@@ -141,7 +145,7 @@ namespace FingerDiceDuel.Assistant
             if (effect == HandEffectType.Heal) value += HealingGain(foe, 9) * 3;
             if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) value += 16;
             if (!IsAttackEffect(effect) || !game.CanReach(foe, victim) || !StatusRules.CanAttackTarget(foe, victim, game)) return value;
-            int damage = EstimateAttackDamage(foe, victim, result, game, source.Value);
+            int damage = EstimateAttackDamage(foe, victim, result, game, source.Value,victim.LeftHand);
             value += damage * 5;
             if (damage > 0)
             {

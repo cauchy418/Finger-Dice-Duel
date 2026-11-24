@@ -1,9 +1,36 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
     public sealed partial class GreedyChoiceProvider:IClericDomainPolicy
     {
+        // The blessing prevents death but gives up two active turns. Healthy allies
+        // keep their actions; use it only against a concrete imminent lethal threat.
+        public bool DeathBlessing(PlayerState healer,PlayerState patient,GameManager game)=>WantsDeathBlessing(healer,patient,game);
+        private static bool WantsDeathBlessing(PlayerState healer,PlayerState patient,GameManager game)
+        {
+            if(game==null||patient?.IsAlive!=true||!game.IsKnownAlly(healer,patient)
+                ||patient.HasStatus(StatusEffect.HolyLight)||patient.HasStatus(StatusEffect.FeignedDeath))return false;
+            int threat=0;
+            foreach(var enemy in game.Players)
+            {
+                if(!enemy.IsAlive||game.IsKnownAlly(patient,enemy)||!StatusRules.CanAct(enemy)
+                    ||game.WillSuppressOperationEffects(enemy)||!game.CanReach(enemy,patient)
+                    ||!StatusRules.CanAttackTarget(enemy,patient,game))continue;
+                int strongest=0;
+                foreach(var move in game.GetLegalMoves(enemy))
+                {
+                    int result=game.PreviewOperationResult(enemy,move.ActedHand,move.TargetHand);
+                    if(!IsAttackEffect(DivineScoredEffect(enemy,result,game)))continue;
+                    if(FeyCanCancel(patient,result))continue;
+                    if(patient.HasAnyShield&&CharacterFactory.MaxAttackHits(enemy)==1
+                        &&CharacterBehaviors.FirstImplementer<IPiercesMitigation>(enemy)==null)continue;
+                    strongest=System.Math.Max(strongest,EstimateAttackDamage(enemy,patient,result,game,move.ActedHand.Value,move.TargetHand)*CharacterFactory.MaxAttackHits(enemy));
+                }
+                threat+=strongest;
+            }
+            return threat>=patient.HealthAcrossForms;
+        }
         public bool SwapTrickery(TrickeryTouch t,GameManager game)
         {
             int old=ClericDigitValue(t.Actor,t.Result,t.Effectless,game),next=ClericDigitValue(t.Actor,t.AddendValue,t.Effectless,game);

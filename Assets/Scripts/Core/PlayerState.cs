@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -219,7 +219,7 @@ namespace FingerDiceDuel.Core
         private readonly System.Collections.Generic.HashSet<AttackDamageType> _permanentResistances
             = new System.Collections.Generic.HashSet<AttackDamageType>();
 
-        public bool HasPhysicalResistance => !HasStatus(StatusEffect.HolyLight) && _physicalResistance;
+        public bool HasPhysicalResistance => !HasStatus(StatusEffect.HolyLight) && (_physicalResistance || HasStatus(StatusEffect.FeignedDeath));
 
         /// <summary>武僧·散打宗的暗劲标记。</summary>
         public bool HasResonance { get; private set; }
@@ -236,6 +236,7 @@ namespace FingerDiceDuel.Core
         public bool HasResistance(AttackDamageType type)
         {
             if(HasStatus(StatusEffect.HolyLight))return false;
+            if(HasStatus(StatusEffect.FeignedDeath) && Array.IndexOf(ResistanceNames.All,type)>=0)return true;
             if(HasSustainedResistance(type))return true;
             if (type == AttackDamageType.Bludgeoning
                 || type == AttackDamageType.Piercing
@@ -505,7 +506,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void SetHealthExact(int value)
         {
-            Health = Math.Max(0, value);
+            Health = Math.Max(HasStatus(StatusEffect.FeignedDeath) && IsAlive ? 1 : 0, value);
         }
 
         // ============ 手部访问 ============

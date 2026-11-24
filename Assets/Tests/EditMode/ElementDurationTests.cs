@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -66,7 +66,7 @@ namespace FingerDiceDuel.Tests
    var g=GameManager.Create2v2(p,new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});p[1].LeftHand.SetValue(5);Shield(p[2].LeftHand);g.AnsweredLookupFor=(owner,e,v)=>e==HandEffect.OathbreakerTransfer?p[2].LeftHand:null;
    var c=Hit(g);Assert.AreEqual(p[2],c.Defender);Assert.True((c.ElementHits[0].Guard&AttackGuard.Transfer)!=0);Assert.True((c.ElementHits[0].Guard&AttackGuard.Shield)!=0);Assert.AreEqual(1,p[2].StatusTurnsLeft(StatusEffect.Burn));}
   [Test] public void Holy_light_role_status_keeps_full_duration_through_guard_and_resistance()
-  {for(int flags=0;flags<4;flags++){var g=CharacterFactory.CreateMatch(CharacterDefinition.LightDomain,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());if((flags&1)!=0)Shield(g.PlayerB.LeftHand);if((flags&2)!=0)g.PlayerB.AddResistance(AttackDamageType.Radiant);
+  {for(int flags=0;flags<4;flags++){var g=CharacterFactory.CreateMatch(CharacterDefinition.PurificationDomain,CharacterDefinition.Blank,new SimpleChoiceProvider(),new SimpleChoiceProvider());if((flags&1)!=0)Shield(g.PlayerB.LeftHand);if((flags&2)!=0)g.PlayerB.AddResistance(AttackDamageType.Radiant);
     var c=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4);c.Resolve(g.GetChoiceProvider(g.PlayerB),g);Assert.AreEqual(2,g.PlayerB.StatusTurnsLeft(StatusEffect.HolyLight));}}
 
   [Test] public void Zero_damage_without_guard_keeps_full_status_duration()

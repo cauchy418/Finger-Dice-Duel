@@ -1,14 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
+    public static class DeathDomainRules
+    {
+        public static bool CanBorrow(PlayerState actor,PlayerState owner)
+            =>actor?.IsAlive==true&&!actor.IsPolymorphed&&!actor.IsWildShaped&&owner!=null&&!ReferenceEquals(actor,owner)
+              &&CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DeathDomainLogic>(actor)!=null
+              &&(!owner.IsAlive||owner.HasStatus(StatusEffect.FeignedDeath));
+    }
     public interface ITrickeryDomain {} public interface ITempestDomain {}
     public sealed class TrickeryTouch
     {
         public PlayerState Owner,Actor;public Hand Source,Addend;public int SourceValue,AddendValue,Result;public bool Effectless;
     }
     public interface IClericDomainPolicy
-    {bool SwapTrickery(TrickeryTouch touch,GameManager game);bool CharmTrickery(TrickeryTouch touch,GameManager game);
+    {bool DeathBlessing(PlayerState healer,PlayerState patient,GameManager game);
+     bool CleanseLightAttack(PlayerState owner,PlayerState target,GameManager game);
+     bool SwapTrickery(TrickeryTouch touch,GameManager game);bool CharmTrickery(TrickeryTouch touch,GameManager game);
      Hand TempestHand(PlayerState owner,PlayerState attacker,IReadOnlyList<Hand> hands,GameManager game);
      AttackDamageType TempestType(PlayerState owner,PlayerState target,GameManager game);
      Hand TempestAddend(PlayerState owner,Hand source,IReadOnlyList<Hand> targets,GameManager game);}
@@ -64,6 +73,14 @@ namespace FingerDiceDuel.Core
                 target.ApplyStatus(StatusEffect.HolyLight,2,healer);
                 NoteSkill(healer,"圣焰赐福",target.Name+" 圣火2回合",target,new SkillVisualData(status:StatusEffect.HolyLight));
             }
+            if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.RadiantLightDomainLogic>(healer)!=null)
+            {
+                target.ApplyStatus(StatusEffect.LightBlessing,2,healer);
+                if(target.HasStatus(StatusEffect.LightBlessing))NoteSkill(healer,"光明赐福",target.Name+" 光明祝福2回合",target,new SkillVisualData(status:StatusEffect.LightBlessing));
+            }
+            if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.NatureDomainLogic>(healer)!=null){
+                target.ApplyStatus(StatusEffect.NatureBlessing,2,healer);
+                if(target.HasStatus(StatusEffect.NatureBlessing))NoteSkill(healer,"自然赐福",target.Name+" 自然祝福2回合",target,new SkillVisualData(status:StatusEffect.NatureBlessing));}
             if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.WarDomainLogic>(healer)!=null)
             {
                 target.ApplyStatus(StatusEffect.WarBlessing,2,healer);
@@ -71,10 +88,19 @@ namespace FingerDiceDuel.Core
             }
             if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.KnowledgeDomainLogic>(healer)!=null)
             {target.GainKnowledge(healer);NoteSkill(healer,"知识赐福",target.Name+" 知识祝福+1",target,new SkillVisualData(value:target.KnowledgeStacks,status:StatusEffect.KnowledgeBlessing));}
+            Action death=()=>{
+                if(CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DeathDomainLogic>(healer)==null||!target.IsAlive){completed();return;}
+                var blessing=new WizardChoice(healer,"死亡赐福 · 选择受疗者附加假死2回合，或不发动",
+                    new List<Hand>{target.LeftHand,target.RightHand},true,hand=>{
+                        if(hand!=null&&target.IsAlive){target.ApplyStatus(StatusEffect.FeignedDeath,2,healer);
+                            if(target.HasStatus(StatusEffect.FeignedDeath))NoteSkill(healer,"死亡赐福",target.Name+" 假死2回合",target,new SkillVisualData(status:StatusEffect.FeignedDeath));}
+                        completed();},true,"不发动");
+                if(DeferWizardChoice?.Invoke(blessing)!=true)blessing.Choose(ClericPolicy(healer)?.DeathBlessing(healer,target,this)==true?target.LeftHand:null);
+            };
             Action storm=()=>{
                 if(CharacterBehaviors.FirstImplementer<ITempestDomain>(healer)!=null&&target.IsAlive)
-                    ClericChoices.FreeOperation(target,this,null,true,"风暴赐福",completed);
-                else completed();
+                    ClericChoices.FreeOperation(target,this,null,true,"风暴赐福",death);
+                else death();
             };
             if(CharacterBehaviors.FirstImplementer<ITrickeryDomain>(healer)==null){storm();return;}
             var request=new WizardChoice(healer,"诡术赐福 · 点击受疗者一只手改为2，或不发动",new List<Hand>{target.LeftHand,target.RightHand},true,hand=>{
@@ -161,7 +187,7 @@ namespace FingerDiceDuel.Core
         public bool DeferOrdinaryClericAttack(AttackContext attack,Action resolve)
         {
             if(DeferClericAttack==null)return false;
-            bool possible=false;foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&(CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null||CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(p)!=null))possible=true;
+            bool possible=CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.RadiantLightDomainLogic>(attack.Attacker)!=null;foreach(var p in Players)if(p.IsAlive&&!p.IsPolymorphed&&(CharacterBehaviors.FirstImplementer<ITempestDomain>(p)!=null||CharacterBehaviors.FirstImplementer<PathOfTheWardenLogic>(p)!=null))possible=true;
             if(!possible)return false;
             PendingClericResolution=true;
             if(DeferClericAttack(attack,()=>{PendingClericResolution=false;resolve();}))return true;

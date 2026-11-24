@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>52个子职的唯一命名与归属表；旧角色ID在此兼容，数值和技能逻辑保持原样。</summary>
@@ -48,7 +48,8 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("divination", "wizard_school_of_divination", "wizard", "预言学派", "School of Divination"),
             new CharacterIdentity("necromancy", "wizard_school_of_necromancy", "wizard", "死灵学派", "School of Necromancy"),
             new CharacterIdentity("abjuration", "wizard_school_of_abjuration", "wizard", "防护学派", "School of Abjuration"),
-            new CharacterIdentity("light", "cleric_light_domain", "cleric", "净化领域", "Purification Domain"),
+            new CharacterIdentity("purification", "cleric_purification_domain", "cleric", "净化领域", "Purification Domain"),
+            new CharacterIdentity("light", "cleric_light_domain", "cleric", "光明领域", "Light Domain"),
             new CharacterIdentity("war", "cleric_war_domain", "cleric", "战争领域", "War Domain"),
             new CharacterIdentity("battle_master", "fighter_battle_master", "fighter", "战斗大师", "Battle Master"),
             new CharacterIdentity("draconic", "sorcerer_draconic_bloodline", "sorcerer", "龙族血脉", "Draconic Bloodline"),
@@ -72,6 +73,8 @@ namespace FingerDiceDuel.Core
             new CharacterIdentity("conquest", "paladin_oath_of_conquest", "paladin", "征服之誓", "Oath of Conquest"),
             new CharacterIdentity("trickery", "cleric_trickery_domain", "cleric", "诡术领域", "Trickery Domain"),
             new CharacterIdentity("tempest", "cleric_tempest_domain", "cleric", "风暴领域", "Tempest Domain"),
+            new CharacterIdentity("death", "cleric_death_domain", "cleric", "死亡领域", "Death Domain"),
+            new CharacterIdentity("nature", "cleric_nature_domain", "cleric", "自然领域", "Nature Domain"),
             new CharacterIdentity("vengeance", "paladin_oath_of_vengeance", "paladin", "复仇之誓", "Oath of Vengeance"),
             new CharacterIdentity("drunken", "monk_way_of_the_drunken_master", "monk", "醉拳宗", "Way of the Drunken Master"),
             new CharacterIdentity("hexblade", "warlock_the_hexblade", "warlock", "咒剑", "The Hexblade"),

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS
@@ -116,7 +116,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
             Assert.AreEqual(2, s.Groups.Count);
             Assert.AreEqual(24, s.Groups[0].Entries.Count, "23种负面状态。");
-            Assert.AreEqual(6, s.Groups[1].Entries.Count, "神佑医者列为角色状态。");
+            Assert.AreEqual(9, s.Groups[1].Entries.Count, "生命赐福列为角色状态。");
             var uniqueKeys = new HashSet<string>();
 
             for (int i = 0; i < StatusNames.AllStatuses.Length; i++)

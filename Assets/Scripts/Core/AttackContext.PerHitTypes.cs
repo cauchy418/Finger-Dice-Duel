@@ -15,6 +15,7 @@ namespace FingerDiceDuel.Core
         private bool _burnReaction;
         private int ConfigureHitInteraction(int damage)
         {
+            if(SuppressesNatureElement()){WasTypeImmune=Defender.HasImmunity(AttackType);InteractionStatus=StatusEffect.None;InteractionDamageType=DamageType.None;_visualReaction=_burnReaction=_sonicCrossReaction=_greaseReaction=_acidPoisonReaction=false;return damage;}
             _visualReaction = AttackType==AttackDamageType.Cold&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Frozen)||Defender.HasStatus(StatusEffect.Burn))
                 ||AttackType==AttackDamageType.Fire&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Greased))
                 ||AttackType==AttackDamageType.Lightning&&Defender.HasStatus(StatusEffect.Wet)||AttackType==AttackDamageType.Thunder&&Defender.HasStatus(StatusEffect.Resonance);
@@ -45,6 +46,7 @@ namespace FingerDiceDuel.Core
 
         private void ApplyIndependentHitStatus(GameManager game)
         {
+            if(_elementHits.Count>0)ApplyLightBlind(_elementHits[_elementHits.Count-1]);
             if (_independentHitTypes && _elementHits.Count > 0)
                 ApplyAttackerStatus(game, _elementHits[_elementHits.Count - 1]);
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Assistant
@@ -13,7 +13,7 @@ namespace FingerDiceDuel.Assistant
             bool canAttack=victim!=null&&victim.IsAlive&&!game.IsKnownAlly(actor,victim)&&game.CanReach(actor,victim)&&StatusRules.CanAttackTarget(actor,victim,game)&&(victim.Character as IAttackTargetRule)?.IsImmuneToAttack(victim)!=true;
             bool lifeHealing=!effectless&&IsAttackEffect(effect)&&WantsLifeHealing(actor,victim,result,game);
             if(lifeHealing)effect=HandEffectType.Heal;
-            int damage=canAttack&&IsAttackEffect(effect)?EstimateAttackDamage(actor,victim,result,game,move.ActedHand.Value):0;
+            int damage=canAttack&&IsAttackEffect(effect)?EstimateAttackDamage(actor,victim,result,game,move.ActedHand.Value,move.TargetHand):0;
             int heal=0;
             if(effect==HandEffectType.Heal)
             {
@@ -61,6 +61,9 @@ namespace FingerDiceDuel.Assistant
             if(patient.HasStatus(StatusEffect.HolyLight))return 0;
             if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(actor)!=null)return 1;
             if(CharacterBehaviors.FirstImplementer<WarDomainLogic>(actor)!=null&&patient.StatusTurnsLeft(StatusEffect.WarBlessing)<2)return 1;
+            if(CharacterBehaviors.FirstImplementer<NatureDomainLogic>(actor)!=null&&patient.StatusTurnsLeft(StatusEffect.NatureBlessing)<2)return 1;
+            if(CharacterBehaviors.FirstImplementer<RadiantLightDomainLogic>(actor)!=null&&patient.StatusTurnsLeft(StatusEffect.LightBlessing)<2)return 1;
+            if(CharacterBehaviors.FirstImplementer<DeathDomainLogic>(actor)!=null&&WantsDeathBlessing(actor,patient,game))return 1;
             if(CharacterBehaviors.FirstImplementer<LightDomainLogic>(actor)!=null)
                 foreach(var status in patient.Statuses)if(!PlayerState.HolyFireAllows(status))return 1;
             return 0;

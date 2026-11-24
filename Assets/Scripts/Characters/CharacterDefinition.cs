@@ -124,6 +124,7 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition ShadowMagic {get;}=new CharacterDefinition(ShadowMagicId,"术士·幽影魔法",SpecialLogicType.ShadowMagic,defenseBonus:-1,englishName:"Shadow Magic",description:"首次体力归0恢复至1；回合末双手和10可令距离1内角色失明2回合。免疫失明，攻击失明目标伤害+2并改为暗蚀。距离∞，近钝击远穿刺。付出的生命不会因治疗重新获得保命次数。");
         public const string StormSorceryId = "sorcerer_storm_sorcery";
         public const string SchoolOfIllusionId = "wizard_school_of_illusion";
+        public const string PurificationDomainId = "cleric_purification_domain";
         public const string LightDomainId = "cleric_light_domain";
         public const string WarDomainId = "cleric_war_domain";
         public const string BattleMasterId = "fighter_battle_master";
@@ -155,7 +156,7 @@ namespace FingerDiceDuel.Core
             LifeDomainId, "牧师·生命领域", SpecialLogicType.LifeDomain,
             attackBonus: -1, defenseBonus: -1,
             englishName: "Life Domain",
-            description: "4/6/8可转治疗，双9额外治疗。神佑医者先净化，治疗溢出时目标攻防+1两回合。");
+            description: "4/6/8可转治疗，双9额外治疗。生命赐福先净化，治疗溢出时目标攻防+1两回合。");
 
         /// <summary>兼容旧名。</summary>
         public static CharacterDefinition Priest => LifeDomain;
@@ -421,8 +422,8 @@ namespace FingerDiceDuel.Core
         /// 攻击为火焰伤害、最终伤害恒为5（无视攻防与数值增减益，防御机制照常），
         /// 命中附带 2 回合圣火。
         /// </summary>
-        public static CharacterDefinition LightDomain { get; } = new CharacterDefinition(
-            LightDomainId, "牧师·净化领域", SpecialLogicType.LightDomain,
+        public static CharacterDefinition PurificationDomain { get; } = new CharacterDefinition(
+            PurificationDomainId, "牧师·净化领域", SpecialLogicType.LightDomain,
             attackBonus: 0, defenseBonus: -1,
             englishName: "Purification Domain",
             description: "普通攻击固定5点火焰伤害，穿透火焰抗性与免疫；命中附圣火、灼伤各2回合。回复可选其他存活角色，并附2回合圣火。");
@@ -521,7 +522,12 @@ namespace FingerDiceDuel.Core
         public const string WayOfTheDrunkenMasterId="monk_way_of_the_drunken_master";
         public static CharacterDefinition WayOfTheDrunkenMaster {get;}=new CharacterDefinition(WayOfTheDrunkenMasterId,"武僧·醉拳宗",SpecialLogicType.WayOfTheDrunkenMaster,englishName:"Way of the Drunken Master",description:"气初始2、上限6。打出9先回复，再可入醉。醉拳中所有数字攻击，每段基础1d10；受到攻击每段改为1d5。回合开始消耗1气维持，气不足解除。");
 
+        public static CharacterDefinition LightDomain {get;}=new CharacterDefinition(LightDomainId,"牧师·光明领域",SpecialLogicType.RadiantLightDomain,defenseBonus:-1,englishName:"Light Domain",description:"光明修行：攻击为光耀并附目盲2回合。黎明曙光：每段命中可选择清除目标所有负面状态，每清除一种本段伤害+2。光明赐福：回复后受疗者获得光明祝福2回合，攻击改光耀附目盲，原本为光耀的攻击穿透光耀伤害抗性与免疫。");
         public const string KnowledgeDomainId="cleric_knowledge_domain";
+        public const string DeathDomainId="cleric_death_domain";
+        public const string NatureDomainId="cleric_nature_domain";
+        public static CharacterDefinition NatureDomain {get;}=new CharacterDefinition(NatureDomainId,"牧师·自然领域",SpecialLogicType.NatureDomain,defenseBonus:-1,englishName:"Nature Domain",description:"自然赐福：回复后受疗者获得自然祝福2回合，受到未取消攻击后使攻击者束缚2回合。抑制元素：受到强酸、寒冷、火焰、闪电、雷鸣攻击时，阻止该类型附加的基础负面状态及元素反应，并储存其基础负面状态供下次攻击附加；新储存覆盖旧储存，下次攻击发起即消耗。");
+        public static CharacterDefinition DeathDomain {get;}=new CharacterDefinition(DeathDomainId,"牧师·死亡领域",SpecialLogicType.DeathDomain,defenseBonus:-1,englishName:"Death Domain",description:"死亡之触：普通运算可借其他已死亡或假死角色的手作为加数，该次攻击改为暗蚀伤害。死亡赐福：回复后可令受疗者假死2回合。假死只能纯运算，永久获得全部13类抗性，体力最低为1；圣火清除并阻止假死。距离∞，近钝击远穿刺。");
         public static CharacterDefinition KnowledgeDomain {get;}=new CharacterDefinition(KnowledgeDomainId,"牧师·知识领域",SpecialLogicType.KnowledgeDomain,defenseBonus:-1,englishName:"Knowledge Domain",description:"运算进位获得1层知识祝福；回复给目标1层知识祝福，保留至攻击消耗。攻击消耗所有层数，命中后独立追加等层力场伤害，并附困惑2回合。");
 
         public static CharacterDefinition[] BuiltIn { get; } =
@@ -533,13 +539,13 @@ namespace FingerDiceDuel.Core
             WayOfTheTaiChi, PathOfTheGiant, Thief, GloomStalker, Magician, ArcaneTrickster, SchoolOfEvocation, WildMagic, TheGreatOldOne, CollegeOfValor,
             Oathbreaker, PathOfTheBerserker, Tactician,
             SchoolOfDivination, SchoolOfNecromancy, SchoolOfAbjuration,
-            LightDomain, WarDomain, BattleMaster,
+            PurificationDomain, LightDomain, WarDomain, BattleMaster,
             DraconicBloodline, RangerHunter, WayOfTheOpenHand, WayOfTheFourElements,
             CircleOfTheMoon, CircleOfTheStars,
             CircleOfTheLand, CircleOfSpores, OathOfTheAncients, TheFiend,
             CollegeOfLore, StormSorcery, ShadowMagic, SchoolOfIllusion,
             SchoolOfTransmutation, SchoolOfEnchantment, EldritchKnight, Bladesinging, TheHexblade,
-            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster, KnowledgeDomain
+            OathOfConquest, OathOfVengeance, TrickeryDomain, TempestDomain, WayOfTheDrunkenMaster, KnowledgeDomain, DeathDomain, NatureDomain
             // ⚠️ TheGreatOldOne / CollegeOfValor 已实现但「还没有 AI 策略」——
             //    在轮询赛里会因 AI 无手可下而停滞（实测 8 例「僵局」）。
             //    补齐 AI 后再接入可选列表。

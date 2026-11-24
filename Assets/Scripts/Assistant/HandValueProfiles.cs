@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -425,13 +425,17 @@ namespace FingerDiceDuel.Assistant
             // ---- 牧师·净化领域（攻 0 / 防 -1，射程无限，2026-10-23）----
             // 4/6/8 全是固定5点火焰，真正的价值在圣火（净化 + 暂停防护 + 灼伤），
             // 所以三个攻击数字**等值**；防 −1 让 5 高于基线，9 正常回血。
+            // Death touch expands legal addends; the base digit utility stays conservative.
+            Own[CharacterDefinition.NatureDomainId]=new HandValueProfile().Set(8,78).Set(6,72).Set(4,66).Set(5,72).Set(9,78);
+            OpponentAdjust[CharacterDefinition.NatureDomainId]=new List<ValueAdjust>{new ValueAdjust(9,-10),new ValueAdjust(8,-6)};
+            Own[CharacterDefinition.DeathDomainId]=new HandValueProfile().Set(8,80).Set(6,74).Set(4,68).Set(5,68).Set(9,70);
+            OpponentAdjust[CharacterDefinition.DeathDomainId]=new List<ValueAdjust>{new ValueAdjust(8,-8),new ValueAdjust(9,-6)};
             Own[CharacterDefinition.KnowledgeDomainId]=new HandValueProfile().Set(9,85).Set(8,82).Set(6,78).Set(4,73).Set(5,65).Set(7,63);
             OpponentAdjust[CharacterDefinition.KnowledgeDomainId]=new List<ValueAdjust>{new ValueAdjust(9,-10),new ValueAdjust(8,-8)};
+            Own[CharacterDefinition.PurificationDomainId] = new HandValueProfile()
+                .Set(4,76).Set(6,76).Set(8,76).Set(5,66).Set(9,60).Set(1,58).Set(2,58).Set(3,58).Set(7,50);
             Own[CharacterDefinition.LightDomainId] = new HandValueProfile()
-                .Set(4, 76).Set(6, 76).Set(8, 76)
-                .Set(5, 66).Set(9, 60)
-                .Set(1, 58).Set(2, 58).Set(3, 58)
-                .Set(7, 50);
+                .Set(8,82).Set(6,76).Set(4,70).Set(5,66).Set(9,76);
 
             // ---- 战争领域：攻击手为下回合提供战争祝福次数 ----
             // 保留攻击数字；9在战争祝福下也计为攻击数字。
@@ -638,10 +642,12 @@ namespace FingerDiceDuel.Assistant
             // ---- 面对牧师·净化领域（2026-10-23）----
             // 他打谁都是固定5点，攻击数字对他"不增值"；
             // 灼伤使回复后受到火焰伤害，降低9的优先级；盾能挡固定5点。
-            OpponentAdjust[CharacterDefinition.LightDomainId] = new List<ValueAdjust>
+            OpponentAdjust[CharacterDefinition.PurificationDomainId] = new List<ValueAdjust>
             {
                 new ValueAdjust(9, -10),
             };
+
+            OpponentAdjust[CharacterDefinition.LightDomainId]=new List<ValueAdjust>{new ValueAdjust(8,-10),new ValueAdjust(9,-10)};
 
             // ---- 面对牧师·战争领域（2026-10-23）----
             // 攻击数字决定下回合战争祝福次数，压低其施恩机会。

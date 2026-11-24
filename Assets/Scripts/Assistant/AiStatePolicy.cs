@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -69,6 +69,9 @@ namespace FingerDiceDuel.Assistant
             State(StatusEffect.WarBlessing,16,0,6,0,-6);
             State(StatusEffect.BlessedHealing,12,0,6,0,-6);
             State(StatusEffect.KnowledgeBlessing,18,0,4,0,-4);
+            State(StatusEffect.FeignedDeath,exposure:-120);
+            State(StatusEffect.NatureBlessing,shield:8,exposure:-16);
+            State(StatusEffect.LightBlessing,attack:18);
             Effect("crowd_gambling",(p,g)=>g?.HasCrowdGambling(p)==true);
             Effect("bladesong",(p,g)=>CharacterBehaviors.FirstImplementer<IBladesong>(p)?.Singing==true,12,8,10);
             Effect("drunken",(p,g)=>MonkRules.DrunkenOf(p)!=null,16,0,0,6);
@@ -93,6 +96,7 @@ namespace FingerDiceDuel.Assistant
             Effect("shield",(p,g)=>p.HasAnyShield,4,2,-8,4,-15);
             Effect("broken_shield",(p,g)=>p.LeftHand.State==ShieldState.Broken||p.RightHand.State==ShieldState.Broken,0,0,12,2,4);
             Effect("taichi",(p,g)=>p.LeftHand.State==ShieldState.Taichi||p.RightHand.State==ShieldState.Taichi,2,0,4,8,-10);
+            Effect("stored_nature_element",(p,g)=>CharacterBehaviors.FirstImplementer<NatureDomainLogic>(p)?.StoredElementStatus>StatusEffect.None,attack:12);
             Effect("grave_strength",(p,g)=>CharacterBehaviors.FirstImplementer<IGraveStrength>(p) is IGraveStrength grave&&!grave.GraveSpent,4,0,2,0,-8);
             Effect("training_protection",(p,g)=>p.TrainingProtected,6,-6,-4,0,-40);
             Effect("npc_circuit",(p,g)=>p.Character is INpcCircuitProgress circuit&&circuit.CircuitProgress>0,8,0,0,0,6);
@@ -128,6 +132,7 @@ namespace FingerDiceDuel.Assistant
         public static HandValueProfile ApplyHandWeights(HandValueProfile basis,PlayerState owner,GameManager game=null)
         {
             if(owner==null)return basis;
+            if(owner.HasStatus(StatusEffect.FeignedDeath))return basis.Clone();
             var copy=basis.Clone();
             foreach(var rule in Registry.Values)if(rule.Applies(owner,game)&&!(rule.Status==StatusEffect.Disabled&&CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(owner)!=null))
             for(int digit=1;digit<=9;digit++)
@@ -143,6 +148,7 @@ namespace FingerDiceDuel.Assistant
         {
             if(c.Actor==null)return 0;
             if(!StatusRules.CanAct(c.Actor))return -600;
+            if(c.Actor.HasStatus(StatusEffect.FeignedDeath))return 0;
             if(c.Actor.HasStatus(StatusEffect.Charm))return 0; // Forced random action is not rationalized.
             int score=0;
             foreach(var rule in Registry.Values)if(rule.Applies(c.Actor,c.Game))

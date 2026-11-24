@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 
@@ -95,6 +95,9 @@ namespace FingerDiceDuel.Core
             _registry[SpecialLogicType.OathOfConquest] = () => new OathOfConquestLogic();
             _registry[SpecialLogicType.TrickeryDomain] = () => new TrickeryDomainLogic();
             _registry[SpecialLogicType.TempestDomain] = () => new TempestDomainLogic();
+            _registry[SpecialLogicType.DeathDomain] = () => new DeathDomainLogic();
+            _registry[SpecialLogicType.NatureDomain] = () => new NatureDomainLogic();
+            _registry[SpecialLogicType.RadiantLightDomain] = () => new RadiantLightDomainLogic();
             _registry[SpecialLogicType.WayOfTheDrunkenMaster] = () => new WayOfTheDrunkenMasterLogic();
             _registry[SpecialLogicType.OathOfVengeance] = () => new OathOfVengeanceLogic();
             _registry[SpecialLogicType.BattleMaster] = () => new BattleMasterLogic();

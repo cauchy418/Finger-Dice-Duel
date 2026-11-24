@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Assistant;
@@ -12,7 +12,7 @@ namespace FingerDiceDuel.Tests
         private const StatusEffect Scorch = (StatusEffect)27;
         private static GameManager Match(out PlayerState a,out PlayerState b)
         {
-            a=CharacterFactory.CreatePlayer("A",CharacterDefinition.LightDomain);
+            a=CharacterFactory.CreatePlayer("A",CharacterDefinition.PurificationDomain);
             b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
             return new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
         }

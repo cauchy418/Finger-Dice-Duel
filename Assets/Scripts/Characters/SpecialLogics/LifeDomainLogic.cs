@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -348,7 +348,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if (status != StatusEffect.WarBlessing && status != StatusEffect.BlessedHealing) removed++;
             var cleanseFrame=removed>0?manager?.CaptureVisualFrame():null;
             target.ClearNegativeStatuses();
-            if (removed > 0) manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 清除 {removed} 种状态",target,
+            if (removed > 0) manager?.NoteSkill(owner, "生命赐福", $"{target.Name} 清除 {removed} 种状态",target,
                 new SkillVisualData(value:removed),cleanseFrame);
             bool overflow = amount > target.MaximumHealth - target.Health;
             var healFrame=manager?.CaptureVisualFrame();
@@ -358,7 +358,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             {
                 var blessingFrame=manager?.CaptureVisualFrame();
                 target.ApplyStatus(StatusEffect.BlessedHealing, 2, owner);
-                manager?.NoteSkill(owner, "神佑医者", $"{target.Name} 攻防+1，持续2回合", target,
+                manager?.NoteSkill(owner, "生命赐福", $"{target.Name} 攻防+1，持续2回合", target,
                     new SkillVisualData(value:2, status:StatusEffect.BlessedHealing, variant:"blessing"),blessingFrame);
             }
         }

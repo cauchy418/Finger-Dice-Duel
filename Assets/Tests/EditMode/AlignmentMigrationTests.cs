@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -46,7 +46,7 @@ namespace FingerDiceDuel.Tests
             "SchoolOfDivination|TrueNeutral",
             "SchoolOfNecromancy|NeutralEvil",
             "SchoolOfAbjuration|LawfulGood",
-            "LightDomain|NeutralGood",
+            "PurificationDomain|NeutralGood",
             "WarDomain|LawfulEvil",
             "BattleMaster|LawfulNeutral",
             "DraconicBloodline|ChaoticNeutral",
@@ -101,19 +101,19 @@ namespace FingerDiceDuel.Tests
             Assert.IsFalse(DualGeneralFactory.SameAxis(CharacterDefinition.PathOfTheBerserker,CharacterDefinition.PathOfTheGiant));
             Assert.IsFalse(DualGeneralFactory.SameAxis(CharacterDefinition.Champion,CharacterDefinition.Swashbuckler));
             // 2026-10-23 三名新角色的同阵营配对资格
-            Assert.IsTrue(DualGeneralFactory.SameAxis(CharacterDefinition.LightDomain,CharacterDefinition.WayOfTheTaiChi));
+            Assert.IsTrue(DualGeneralFactory.SameAxis(CharacterDefinition.PurificationDomain,CharacterDefinition.WayOfTheTaiChi));
             Assert.IsTrue(DualGeneralFactory.SameAxis(CharacterDefinition.WarDomain,CharacterDefinition.BattleMaster));
-            Assert.IsFalse(DualGeneralFactory.SameAxis(CharacterDefinition.LightDomain,CharacterDefinition.LifeDomain));
+            Assert.IsFalse(DualGeneralFactory.SameAxis(CharacterDefinition.PurificationDomain,CharacterDefinition.LifeDomain));
         }
 
         [Test]
-        public void Current_axis_populations_produce_551_pairs_and_both_orders_can_be_built()
+        public void Current_axis_populations_produce_611_pairs_and_both_orders_can_be_built()
         {
-            // 当前59子职：守序19、中立20、混乱20，共551对。
-            Assert.AreEqual(19,CharacterCodex.Filter("守序",null).Count);
-            Assert.AreEqual(20,CharacterCodex.Filter("中立",null).Count);
+            // 当前62子职：守序20、中立22、混乱20，共611对。
+            Assert.AreEqual(20,CharacterCodex.Filter("守序",null).Count);
+            Assert.AreEqual(22,CharacterCodex.Filter("中立",null).Count);
             Assert.AreEqual(20,CharacterCodex.Filter("混乱",null).Count);
-            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(551,all.Count);
+            var all=DualVersusDualHarness.AllDuals();Assert.AreEqual(611,all.Count);
             int built=0;
             foreach(var pair in all)foreach(bool reverse in new[]{false,true})
             {

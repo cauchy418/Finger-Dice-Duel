@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -46,17 +46,17 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Light_war_and_battle_master_have_the_confirmed_base_stats()
         {
-            Assert.AreEqual(0, CharacterDefinition.LightDomain.AttackBonus);
-            Assert.AreEqual(-1, CharacterDefinition.LightDomain.DefenseBonus);
+            Assert.AreEqual(0, CharacterDefinition.PurificationDomain.AttackBonus);
+            Assert.AreEqual(-1, CharacterDefinition.PurificationDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.WarDomain.AttackBonus);
             Assert.AreEqual(-1, CharacterDefinition.WarDomain.DefenseBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.AttackBonus);
             Assert.AreEqual(0, CharacterDefinition.BattleMaster.DefenseBonus);
-            Assert.AreEqual(CharacterProfession.Find("cleric"), CharacterDefinition.LightDomain.Profession);
+            Assert.AreEqual(CharacterProfession.Find("cleric"), CharacterDefinition.PurificationDomain.Profession);
             Assert.AreEqual(CharacterProfession.Find("cleric"), CharacterDefinition.WarDomain.Profession);
             Assert.AreEqual(CharacterProfession.Find("fighter"), CharacterDefinition.BattleMaster.Profession);
 
-            PlayerState light = CharacterFactory.CreatePlayer("P", CharacterDefinition.LightDomain);
+            PlayerState light = CharacterFactory.CreatePlayer("P", CharacterDefinition.PurificationDomain);
             PlayerState war = CharacterFactory.CreatePlayer("P", CharacterDefinition.WarDomain);
             PlayerState master = CharacterFactory.CreatePlayer("P", CharacterDefinition.BattleMaster);
             Assert.AreEqual(CharacterTemplate.InfiniteAttackRange,
@@ -69,7 +69,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Light_domain_attack_is_fixed_four_radiant_damage_with_holy_light()
         {
-            var game = Game(CharacterDefinition.LightDomain, CharacterDefinition.Champion,
+            var game = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.Champion,
                             out var light, out var foe, out _, out _);
             light.LeftHand.SetValue(1);
             light.RightHand.SetValue(8);
@@ -88,7 +88,7 @@ namespace FingerDiceDuel.Tests
             var foe = CharacterFactory.CreatePlayer("B",
                 new CharacterDefinition("test_holy_defense", "guard", SpecialLogicType.None, defenseBonus: 6));
             foe.ApplyStatus(StatusEffect.KnockedDown, 2);
-            var light = CharacterFactory.CreatePlayer("A", CharacterDefinition.LightDomain);
+            var light = CharacterFactory.CreatePlayer("A", CharacterDefinition.PurificationDomain);
             var game = new GameManager(light, foe, new SimpleChoiceProvider(), new SimpleChoiceProvider());
             light.LeftHand.SetValue(2);
             foe.LeftHand.SetValue(2);          // 2 + 2 = 4
@@ -103,7 +103,7 @@ namespace FingerDiceDuel.Tests
         public void Light_domain_blocked_hit_still_applies_holy_light_but_dodge_does_not()
         {
             // 盾挡 = 命中（与技能流血同一口径）
-            var game = Game(CharacterDefinition.LightDomain, CharacterDefinition.Champion,
+            var game = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.Champion,
                             out var light, out var shielded, out _, out _);
             shielded.LeftHand.SetValue(5);
             shielded.LeftHand.SetShieldState(ShieldState.Formed);
@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(shielded.HasStatus(StatusEffect.HolyLight), "盾挡也算命中，圣光照样附加。");
 
             // 闪避 = 不算命中
-            var game2 = Game(CharacterDefinition.LightDomain, CharacterDefinition.Swashbuckler,
+            var game2 = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.Swashbuckler,
                              out var light2, out var dodger, out _, out var cb2);
             dodger.LeftHand.SetValue(1);
             light2.LeftHand.SetValue(7);        // 7 + 1 = 8
@@ -129,7 +129,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Holy_light_cleanses_statuses_and_resistances_then_blocks_new_attachments()
         {
-            var game = Game(CharacterDefinition.LightDomain, CharacterDefinition.SchoolOfAbjuration,
+            var game = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.SchoolOfAbjuration,
                             out var light, out var foe, out _, out _);
             foe.ApplyStatus(StatusEffect.Poison, 2);
             foe.ApplyStatus(StatusEffect.Burn, 2);
@@ -161,7 +161,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Holy_light_halves_healing_rounding_up_and_deals_one_at_turn_start()
         {
-            var game = Game(CharacterDefinition.LightDomain, CharacterDefinition.Champion,
+            var game = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.Champion,
                             out _, out var foe, out _, out _);
             foe.TakeDamage(10);
             foe.ApplyStatus(StatusEffect.HolyLight, 2);
@@ -195,7 +195,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Taichi_halves_the_fixed_four_and_reflects_two()
         {
-            var game = Game(CharacterDefinition.LightDomain, CharacterDefinition.WayOfTheTaiChi,
+            var game = Game(CharacterDefinition.PurificationDomain, CharacterDefinition.WayOfTheTaiChi,
                             out var light, out var monk, out _, out var cb);
             monk.LeftHand.SetValue(5);
             monk.LeftHand.SetShieldState(ShieldState.Taichi);
@@ -213,8 +213,8 @@ namespace FingerDiceDuel.Tests
         {
             foreach(bool reverse in new[]{false,true})
             {
-                var a=MechanicsPair(reverse?CharacterDefinition.Champion:CharacterDefinition.LightDomain,
-                    reverse?CharacterDefinition.LightDomain:CharacterDefinition.Champion);
+                var a=MechanicsPair(reverse?CharacterDefinition.Champion:CharacterDefinition.PurificationDomain,
+                    reverse?CharacterDefinition.PurificationDomain:CharacterDefinition.Champion);
                 var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
                 a.LeftHand.SetValue(4);a.RightHand.SetValue(6);a.ApplyStatus(StatusEffect.Disabled,2);
                 var attack=new AttackContext(a,b,a.LeftHand,4);attack.Resolve(null,null);
@@ -223,7 +223,7 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Light_and_war_do_not_rewrite_status_damage_as_a_skill_attack()
         {
-            var g=Game(CharacterDefinition.LightDomain,CharacterDefinition.Champion,out var a,out var b,out _,out _);
+            var g=Game(CharacterDefinition.PurificationDomain,CharacterDefinition.Champion,out var a,out var b,out _,out _);
             a.ApplyStatus(StatusEffect.Burn,2);g.ResolveStatusTurnEnd(a);
             Assert.AreEqual(18,a.Health);Assert.IsFalse(a.HasStatus(StatusEffect.HolyLight));
             var war=CharacterFactory.CreatePlayer("W",CharacterDefinition.WarDomain);
@@ -521,8 +521,8 @@ namespace FingerDiceDuel.Tests
             {
                 // 光明领域 + 太极宗：双将的普通攻击仍是固定 4 光耀 + 圣光
                 var light = MechanicsPair(
-                    reverse ? CharacterDefinition.WayOfTheTaiChi : CharacterDefinition.LightDomain,
-                    reverse ? CharacterDefinition.LightDomain : CharacterDefinition.WayOfTheTaiChi);
+                    reverse ? CharacterDefinition.WayOfTheTaiChi : CharacterDefinition.PurificationDomain,
+                    reverse ? CharacterDefinition.PurificationDomain : CharacterDefinition.WayOfTheTaiChi);
                 var foe = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
                 light.LeftHand.SetValue(1);
                 foe.LeftHand.SetValue(7);      // 1 + 7 = 8
@@ -547,8 +547,8 @@ namespace FingerDiceDuel.Tests
 
                 // 光明领域 + 剑士：剑士追加攻击（特殊攻击）不被改写成 4、也不挂圣光
                 var pair = MechanicsPair(
-                    reverse ? CharacterDefinition.Swordsman : CharacterDefinition.LightDomain,
-                    reverse ? CharacterDefinition.LightDomain : CharacterDefinition.Swordsman);
+                    reverse ? CharacterDefinition.Swordsman : CharacterDefinition.PurificationDomain,
+                    reverse ? CharacterDefinition.PurificationDomain : CharacterDefinition.Swordsman);
                 var target = CharacterFactory.CreatePlayer("B", CharacterDefinition.Blank);
                 var sink = new SimpleChoiceProvider();
                 var dualGame = new GameManager(pair, target, sink, new SimpleChoiceProvider());

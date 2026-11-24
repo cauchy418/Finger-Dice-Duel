@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 using System.Collections.Generic;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -28,11 +28,33 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 if(p.HasStatus(StatusEffect.Scorch))score-=20;
                 if(CharacterBehaviors.FirstImplementer<KnowledgeDomainLogic>(owner)!=null&&!p.HasStatus(StatusEffect.HolyLight))
                 {score+=12;foreach(var hand in p.Hands)if(hand.Value==4||hand.Value==6||hand.Value==8)score+=5;}
+                if(!p.HasStatus(StatusEffect.HolyLight)&&((CharacterBehaviors.FirstImplementer<NatureDomainLogic>(owner)!=null&&p.StatusTurnsLeft(StatusEffect.NatureBlessing)<2)
+                    ||(CharacterBehaviors.FirstImplementer<RadiantLightDomainLogic>(owner)!=null&&p.StatusTurnsLeft(StatusEffect.LightBlessing)<2)))score+=15;
                 if(p.Health<=5)score+=25;
                 if(score>bestScore){best=p;bestScore=score;}
             }
             return best;
         }
+    }
+    public sealed class NatureDomainLogic:ClericTemplate
+    {
+        public override string DisplayName=>"牧师·自然领域";
+        public override int DefaultDefenseBonus=>-1;
+        public override int BaseAttackRange=>InfiniteAttackRange;
+        public override AttackDamageType AttackTypeOf(AttackContext c)=>ArcaneChoices.NearFar(c);
+        public StatusEffect StoredElementStatus {get;private set;}
+        public void StoreElement(AttackDamageType type){if(IsElement(type))StoredElementStatus=StatusNames.StatusOf(AttackDamageTypes.ToDamageType(type));}
+        public StatusEffect ConsumeStoredStatus(){var value=StoredElementStatus;StoredElementStatus=StatusEffect.None;return value;}
+        public override void OnMatchReset(PlayerState owner,GameManager game){StoredElementStatus=StatusEffect.None;}
+        public static bool IsElement(AttackDamageType type)=>type==AttackDamageType.Acid||type==AttackDamageType.Cold||type==AttackDamageType.Fire||type==AttackDamageType.Lightning||type==AttackDamageType.Thunder;
+    }
+    public sealed class DeathDomainLogic:ClericTemplate
+    {
+        public override string DisplayName=>"牧师·死亡领域";
+        public override int DefaultDefenseBonus=>-1;
+        public override int BaseAttackRange=>InfiniteAttackRange;
+        public override AttackDamageType AttackTypeOf(AttackContext c)
+            =>c.UsesDeathTouchAddend?AttackDamageType.Necrotic:ArcaneChoices.NearFar(c);
     }
     public sealed class KnowledgeDomainLogic:ClericTemplate
     {

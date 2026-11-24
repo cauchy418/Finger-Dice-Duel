@@ -127,7 +127,7 @@ namespace FingerDiceDuel.Tests
             Characters.SpecialLogics.LifeDomainLogic.CleanseAndHeal(g.PlayerA,g.PlayerB,9,g);
             var cues=g.DrainCombatVisuals();
             Assert.AreEqual(3,cues.Count);
-            Assert.AreEqual("神佑医者",cues[0].RedirectKind);
+            Assert.AreEqual("生命赐福",cues[0].RedirectKind);
             Assert.AreEqual("生命门徒",cues[1].RedirectKind);
             Assert.AreEqual(2,cues[1].SkillData.Value);
             Assert.AreEqual("blessing",cues[2].SkillData.Variant);

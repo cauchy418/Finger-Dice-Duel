@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
@@ -38,7 +38,7 @@ namespace FingerDiceDuel.Assistant
                 else if (sum != t.ResultValue)
                     head += t.FreezeHalvedFrom > 0 ? $"【冰冻】→{t.ResultValue}" : $" → {t.ResultValue}";
             }
-            if (t.ActionInvalidated) return head + " → 预言：仅改变数字，无其它效果";
+            if (t.ActionInvalidated) return head + (t.InvalidatedBy == "假死" ? " → 假死：仅改变数字，无其它效果" : " → 预言：仅改变数字，无其它效果");
             string target = t.Defender?.Name ?? "目标";
             if (t.StealUsed && !t.StealEffective) return head + " → 仅交换，不触发效果";
             if (t.HealTarget != null || t.Effect == HandEffectType.Heal)

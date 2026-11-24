@@ -72,14 +72,14 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Ordinary_cleric_does_not_value_cleansing_it_cannot_perform()
         {
-            foreach(var definition in new[]{CharacterDefinition.WarDomain,CharacterDefinition.TrickeryDomain,CharacterDefinition.TempestDomain,CharacterDefinition.KnowledgeDomain,CharacterDefinition.LightDomain})
+            foreach(var definition in new[]{CharacterDefinition.WarDomain,CharacterDefinition.TrickeryDomain,CharacterDefinition.TempestDomain,CharacterDefinition.KnowledgeDomain,CharacterDefinition.PurificationDomain})
             {
                 var a=CharacterFactory.CreatePlayer("A",definition);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
                 var c=CharacterFactory.CreatePlayer("C",CharacterDefinition.Blank);var d=CharacterFactory.CreatePlayer("D",CharacterDefinition.Blank);
                 var g=GameManager.Create2v2(new[]{a,b,c,d},new IChoiceProvider[]{new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider(),new SimpleChoiceProvider()});
                 a.ApplyStatus(StatusEffect.Frozen);a.ApplyStatus(StatusEffect.Disabled);d.SetHealthExact(18);
                 var advisor=(IHealTargetAdvisor)a.Character;
-                Assert.AreEqual(definition==CharacterDefinition.LightDomain?a:d,advisor.BestHealTarget(a,g));
+                Assert.AreEqual(definition==CharacterDefinition.PurificationDomain?a:d,advisor.BestHealTarget(a,g));
                 Assert.IsTrue(a.HasStatus(StatusEffect.Frozen));Assert.AreEqual(18,d.Health);
             }
         }
