@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 #if FDD_UNITY_TESTS
 using NUnit.Framework;
 #endif

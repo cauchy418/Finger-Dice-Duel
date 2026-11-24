@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Text;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;

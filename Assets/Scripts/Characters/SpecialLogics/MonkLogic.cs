@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     public abstract class MonkLogic : CharacterTemplate, IMonkResource

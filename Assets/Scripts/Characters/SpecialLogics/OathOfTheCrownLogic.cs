@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// **圣武士·王冠之誓**（攻 0 / 防 −1，攻击距离 1）。

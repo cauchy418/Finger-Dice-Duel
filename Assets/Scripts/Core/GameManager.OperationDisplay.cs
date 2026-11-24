@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Core

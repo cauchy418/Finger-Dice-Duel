@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 #if FDD_UNITY_TESTS

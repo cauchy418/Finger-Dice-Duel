@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     public partial class PlayerState
     {

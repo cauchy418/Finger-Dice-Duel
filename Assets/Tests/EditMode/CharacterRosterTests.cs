@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
 
 // 注意：每个测试文件都必须自己带这一段 —— C# 的 using 不会跨文件生效。

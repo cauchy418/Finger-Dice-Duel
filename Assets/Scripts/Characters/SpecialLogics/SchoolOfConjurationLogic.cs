@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 法师·咒法学派（SchoolOfConjuration）特殊逻辑：

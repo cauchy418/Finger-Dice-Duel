@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters.SpecialLogics;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;

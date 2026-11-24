@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using UnityEngine;
 
 namespace FingerDiceDuel.UI

@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     public interface IGraveStrength { bool GraveSpent {get;} void SurviveDeath(PlayerState owner); }
     public interface IShadowEyes { }

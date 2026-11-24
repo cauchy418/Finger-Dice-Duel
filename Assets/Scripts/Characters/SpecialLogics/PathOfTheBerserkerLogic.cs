@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     public sealed class PathOfTheBerserkerLogic:BarbarianTemplate,IHandEffectRewriter,ISelectiveHandEffectRewriter,IHandEffectDisplay,IResultTargetProvider,ICompletedDamageDealt

@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Characters.SpecialLogics;
+using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Core
 {
     public sealed class PathOfTheGiantLogic:BarbarianTemplate,IHandEffectRewriter,ISelectiveHandEffectRewriter,IMultiHitAttack,IHealOverride,IHealAmountProvider,IHandEffectDisplay,ILethalThresholdAdvisor,ITurnStartHook,IElementEnchantment,IStatusApplyingAttack

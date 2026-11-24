@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Characters;
+using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
 #if FDD_UNITY_TESTS

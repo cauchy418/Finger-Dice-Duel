@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
     /// <summary>净化圣焰：普通攻击固定5火焰，命中附圣火与灼伤。内部类名保留兼容。</summary>

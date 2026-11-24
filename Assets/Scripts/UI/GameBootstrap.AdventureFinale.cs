@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Assistant;
+using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 using UnityEngine;
 using UnityEngine.UI;

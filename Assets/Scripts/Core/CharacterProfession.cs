@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 namespace FingerDiceDuel.Core
 {
     /// <summary>职业大类的稳定标识、中英名称及徽记。德鲁伊预留，不新增可玩角色。</summary>

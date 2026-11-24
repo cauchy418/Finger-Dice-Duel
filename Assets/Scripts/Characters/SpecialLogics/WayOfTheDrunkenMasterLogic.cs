@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Characters.SpecialLogics
 {

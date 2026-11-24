@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>可主动跳过回合换位的角色能力；表现层与控制器不依赖具体角色类型。</summary>
     public interface ISeatSwapSkill

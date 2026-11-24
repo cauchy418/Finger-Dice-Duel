@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 一只手的护盾生命周期状态。

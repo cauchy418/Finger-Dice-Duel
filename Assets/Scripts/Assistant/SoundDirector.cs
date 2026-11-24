@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Assistant
 {

@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     public enum FinalSkillStyle { Portal, Number, Exchange, Ward, Sheep, Specter, Stealth, Clones, HiddenForce, BladeSong, Blessing, Curse, Hunt, Moon, Stars, Counter, Chain, Reaction, Status, Spore, Shadow, Reroll, Overflow, IllusionGuard }
     public sealed class SkillVisualData

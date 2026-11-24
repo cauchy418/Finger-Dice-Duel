@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>
     /// 战士·勇士：用运算前为1的手发起普通攻击，基础伤害×1.5，命中附物理易伤。
