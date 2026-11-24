@@ -1,6 +1,6 @@
 # 人物立绘
 
-战士7、术士4、法师9、圣武士6个子职，每个子职男女各一张，共52张透明PNG原画。人物延续人类、高精灵或半高精灵的青壮年形象与暗色奇幻绘画质感。
+战士7、术士4、法师9、圣武士6、牧师9个子职，每个子职男女各一张，共70张透明PNG原画。人物延续人类、高精灵或半高精灵的青壮年形象与暗色奇幻绘画质感。
 
 动作包含劈砍、格挡、反击、施法和法术释放后的收势，穿插朝左、朝右和正面。近战角色强调自然受力、合理的关节角度，以及头颈与肩甲的衔接；剑咏者以剑术为主。战士与圣武士按角色特点使用长剑、战斧、战锤、钉头锤、刺剑或弓，男女动作另作区分。
 
@@ -44,9 +44,25 @@
 | 圣武士·征服之誓 | [男性](paladin_oath_of_conquest_male_fullbody.png) | [女性](paladin_oath_of_conquest_female_fullbody.png) |
 | 圣武士·复仇之誓 | [男性](paladin_oath_of_vengeance_male_fullbody.png) | [女性](paladin_oath_of_vengeance_female_fullbody.png) |
 
+牧师以圣职披肩、圣物匣与局部护甲形成独立轮廓。生命使用圣杯与生机，净化使用火焰香炉，战争使用盾锤，诡术使用面具与镜面，风暴使用雷电，知识使用典籍，死亡使用骨白圣物，自然使用橡木与藤叶，光明使用太阳圣印。男女在武器、动作与朝向上分别设计。
+
+| 牧师子职 | 男性 | 女性 |
+|---|---|---|
+| 牧师·生命领域 | [男性](cleric_life_domain_male_fullbody.png) | [女性](cleric_life_domain_female_fullbody.png) |
+| 牧师·净化领域 | [男性](cleric_purification_domain_male_fullbody.png) | [女性](cleric_purification_domain_female_fullbody.png) |
+| 牧师·战争领域 | [男性](cleric_war_domain_male_fullbody.png) | [女性](cleric_war_domain_female_fullbody.png) |
+| 牧师·风暴领域 | [男性](cleric_tempest_domain_male_fullbody.png) | [女性](cleric_tempest_domain_female_fullbody.png) |
+| 牧师·诡术领域 | [男性](cleric_trickery_domain_male_fullbody.png) | [女性](cleric_trickery_domain_female_fullbody.png) |
+| 牧师·知识领域 | [男性](cleric_knowledge_domain_male_fullbody.png) | [女性](cleric_knowledge_domain_female_fullbody.png) |
+| 牧师·自然领域 | [男性](cleric_nature_domain_male_fullbody.png) | [女性](cleric_nature_domain_female_fullbody.png) |
+| 牧师·死亡领域 | [男性](cleric_death_domain_male_fullbody.png) | [女性](cleric_death_domain_female_fullbody.png) |
+| 牧师·光明领域 | [男性](cleric_light_domain_male_fullbody.png) | [女性](cleric_light_domain_female_fullbody.png) |
+
 ## 历史恢复
 
-当前仓库仅保留本目录52张有效立绘。被取代的三套旧版共92张已从工作树清理，清理前完整144张及制作文档保存在标签 [`art/portrait-collections-preserved`](https://github.com/cauchy418/Finger-Dice-Duel/tree/art/portrait-collections-preserved)，提交 `f82e72c`。已从该提交导出全部144张，并逐张核对SHA256。
+后续立绘绘制完成后，必须逐张复查胸腔、腰扣与骨盆、膝盖与脚尖的朝向和受力，再检查头颈、手指与装备完整性；衣袍遮挡不能代替结构核对。本批18张牧师的复查见[人体结构检查](anatomy-review.json)，死亡与诡术领域女性的反向扭转姿势已重绘。
+
+当前仓库仅保留本目录70张有效立绘。被取代的三套旧版共92张已从工作树清理，清理前完整144张及制作文档保存在标签 [`art/portrait-collections-preserved`](https://github.com/cauchy418/Finger-Dice-Duel/tree/art/portrait-collections-preserved)，提交 `f82e72c`。已从该提交导出全部144张，并逐张核对SHA256。
 
 需要恢复清理前完整立绘时，在仓库根目录运行：
 

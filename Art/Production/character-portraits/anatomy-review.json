@@ -1,0 +1,146 @@
+[
+  {
+    "file": "cleric_life_domain_male_fullbody.png",
+    "chest_pelvis": "胸口与腰扣近正面偏右；头转右，没有胸腰反向。",
+    "knees_toes": "前膝近正面，后膝与后脚略向右；张开站距承重。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_life_domain_female_fullbody.png",
+    "chest_pelvis": "胸口略向右，腰扣与骨盆近正面；轻度整体转向而非反拧。",
+    "knees_toes": "右侧承重膝、脚尖朝右；另一腿外展近正面，双膝与足分别相随。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_purification_domain_male_fullbody.png",
+    "chest_pelvis": "胸口、腰扣与骨盆同向右前方。",
+    "knees_toes": "前膝随朝右的前脚弯曲，后腿近正面支撑，没有反膝。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_purification_domain_female_fullbody.png",
+    "chest_pelvis": "胸骨与腰带中线连续，躯干近正面；头向左看施法目标。",
+    "knees_toes": "双腿为外展架势，左右膝分别顺各自脚尖；没有向后扭膝。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_war_domain_male_fullbody.png",
+    "chest_pelvis": "胸腰连贯前倾，略向左的斜劈只带动肩部，骨盆未反转。",
+    "knees_toes": "近侧腿弯曲跟随近正面脚尖，远侧腿外展支撑；是开放弓步。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_war_domain_female_fullbody.png",
+    "chest_pelvis": "胸口偏右前、腰扣近正面，盾侧肩略前压，未见胸骨盆对拧。",
+    "knees_toes": "右侧膝脚同向外展，另一膝脚近正面；低位护盾重心稳定。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_trickery_domain_male_fullbody.png",
+    "chest_pelvis": "胸骨、腰扣与骨盆近正面偏右，头转右与举镜方向一致。",
+    "knees_toes": "双腿外展，膝盖分别追随各自脚尖；不是背向骨盆的反膝。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_trickery_domain_female_fullbody.png",
+    "chest_pelvis": "已重画：胸骨与腰扣、骨盆整体右转，消除原走姿胸腰反向。",
+    "knees_toes": "前膝弯曲跟随右向前靴，后腿向左伸展但作为外展支撑；无原双靴朝左反转。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_tempest_domain_male_fullbody.png",
+    "chest_pelvis": "胸骨到腰扣近正面连续，头转左随法杖，没有腰部极端扭转。",
+    "knees_toes": "两腿自然外展，近侧膝脚正前，远侧膝脚右前，各关节相随。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_tempest_domain_female_fullbody.png",
+    "chest_pelvis": "胸与骨盆均朝右前，腰带收束方向一致。",
+    "knees_toes": "双膝微弯、脚分开；前足向右而后足近正面，为支撑开立。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_knowledge_domain_male_fullbody.png",
+    "chest_pelvis": "胸骨、腰扣、骨盆近正面同轴。",
+    "knees_toes": "前后脚均近正面，膝盖与靴正面方向一致；没有交叉反向走姿。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_knowledge_domain_female_fullbody.png",
+    "chest_pelvis": "胸口、腰带与骨盆同向右前，持书侧未把腰拧回左边。",
+    "knees_toes": "近腿膝足向右前，后腿斜向外支撑；膝足关系一致。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_death_domain_male_fullbody.png",
+    "chest_pelvis": "胸骨和骨盆同向右前，双手持镰没有造成腰部反拧。",
+    "knees_toes": "前膝与前靴同向右，后膝与后足近正面外展；重心在两足间。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_death_domain_female_fullbody.png",
+    "chest_pelvis": "已整身重画：胸口、腰扣和骨盆全正面，垂直中轴清晰。",
+    "knees_toes": "两膝及两只靴均正面且平行站稳；消除原胸朝右、下身朝左的S形走姿。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_nature_domain_male_fullbody.png",
+    "chest_pelvis": "胸腰近正面偏右，骨盆没有向相反方向翻转；施法主要由手臂完成。",
+    "knees_toes": "近膝近正面，后膝后足右前外展；双腿承重可信。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_nature_domain_female_fullbody.png",
+    "chest_pelvis": "胸与腰带、骨盆一起朝右前，持杖动作不牵出反向腰扭。",
+    "knees_toes": "前膝前足右向一致，后膝后足斜外支撑；没有反膝。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_light_domain_male_fullbody.png",
+    "chest_pelvis": "胸与腰带骨盆近正面，头和出锤臂偏右；腰轴连续。",
+    "knees_toes": "近侧膝足向前，另一腿向右外展，膝足各自同向。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  },
+  {
+    "file": "cleric_light_domain_female_fullbody.png",
+    "chest_pelvis": "胸偏右前但腰扣骨盆仍在连续中轴上，未反拧到相反朝向。",
+    "knees_toes": "深蹲护盾姿势双腿外展，膝盖跟随脚尖；前足近正面、远足斜右。",
+    "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+    "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+    "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+  }
+]

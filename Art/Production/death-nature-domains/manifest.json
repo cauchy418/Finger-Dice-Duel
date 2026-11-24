@@ -1,0 +1,88 @@
+{
+  "generator": "built-in image_gen",
+  "assets": [
+    {
+      "id": "life_blessing",
+      "target": "Status",
+      "prompt": "A single square dark fantasy RPG CHARACTER STATUS ICON Life Blessing. Match painterly aged gold ornate thin square frame and blackiron inset of the reference knowledge blessing icon, same complete slightly inset frame and transparent outside margin. Central painted subject: a warm ivory-gold sacred chalice supporting a small luminous green living heart-shaped crystal, two tender emerald leaves cradle it, soft golden blessing rays. Divine healing and protected vitality, distinct from books, warfare or poison, beautiful tangible handpainted materials. Clean readable central silhouette at48pixels, no words/numbers/watermark. Only one square badge, genuine transparent alpha outside frame. 1024square.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/knowledge_blessing.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3d1c7a67-6fee-481f-9d44-a3db521d15df.png",
+      "source": "Art/Production/death-nature-domains/life_blessing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/life_blessing.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "7ad7b1ca14a72394b40af004f04b65ef48fa04e483b52f89d39d3a33d0e6f7e0",
+      "mode": "RGBA",
+      "alpha_zero_pixels": 376388
+    },
+    {
+      "id": "feigned_death",
+      "target": "Status",
+      "prompt": "A single square dark fantasy RPG CHARACTER STATUS ICON Feigned Death, magical deathlike suspended life not actual death. Match reference antique agedgold ornate thin square frame, blackiron inset and rich painted texture. Center: serene closed-eyed ivory funeral half-mask beneath translucent smoky violet shroud, a tiny green-gold living ember glows at throat, faint protective silver-violet arc enclosing mask. Solemn quiet deathlike ward, not bloody horror, not skullpoison, no text/numbers/watermark. Complete square frame with corner ornaments safely inset, genuine alpha transparent outside margin, readable48px. 1024square.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/knowledge_blessing.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-46f0914d-ad55-44cd-8559-48d87825146d.png",
+      "source": "Art/Production/death-nature-domains/feigned_death.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/feigned_death.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "73a114cc69460b60dc7f8f5c2f321e2389f83751e46387a3a2804c5295345762",
+      "mode": "RGBA",
+      "alpha_zero_pixels": 372180
+    },
+    {
+      "id": "cleric_death_domain",
+      "target": "Subclasses",
+      "prompt": "One premium dark fantasy RPG cleric DEATH DOMAIN subclass emblem. Match reference cleric knowledge badge circular tarnished agedgold double rim, four cardinal diamond finials, blackiron recessed interior and realistic handpainted texture. Central subject: an ivory bone reliquary shaped like a small sacred funerary shrine, a solemn dark priestly censer below an ivory skull medallion, violet-black divine smoke and a single pale emerald soul flame within. Religious authority over death, distinguish from wizardspellbook or undead claws, no humanfigure. Elegant sinister sacred icon, readable64px. Whole circular badge fullyinside ample transparent margin. No text/watermark/letters. True transparent alpha outsidebadge. 1024square.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/cleric_knowledge_domain.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-21597840-426c-4ce8-86b2-518578e9cf22.png",
+      "source": "Art/Production/death-nature-domains/cleric_death_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_death_domain.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "9dc0d98de0eee3741b91c5c5654c73d059c88bec60d4f23bbc80149eb7432a52",
+      "mode": "RGBA",
+      "alpha_zero_pixels": 655364
+    },
+    {
+      "id": "light_blessing",
+      "target": "Status",
+      "prompt": "One square dark fantasy RPG positive CHARACTER STATUS ICON Light Blessing. Match ornate thin antique gold square frame with pointed corner ornaments and blackiron inset of supplied reference. Painted central sacred eight-point sun of polished pale gold and luminous ivory crystal, two small symmetrical featherlike rays beneath, a clean radiant halo and restrained warm white beams. Divine light blessing, not greenlifechalice, noflames, noeyes/books/skulls. Rich handpainted metal textures, oldgold shadow patina, readable48px central silhouette. Entire square frame safely inset, outside frame genuinely transparent alpha, no text/watermark/numbers. 1024square.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/knowledge_blessing.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a1586e-64f7-7d33-954d-9314aa85037d\\exec-3628c584-62c1-4c60-ba93-dc86677518f5.png",
+      "source": "Art/Production/death-nature-domains/light_blessing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/light_blessing.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "1acdc2a586022871ae7c843c55ee6ecb6dac2437741efebf439e6f2d1bcd5f0c",
+      "mode": "RGBA",
+      "alpha_zero_pixels": 374752
+    },
+    {
+      "id": "cleric_nature_domain",
+      "prompt": "Use case: stylized-concept. Create ONE new finished transparent PNG game subclass emblem: cleric_nature_domain, nature-domain CLERIC (divine priest). Reference image is STYLE AND FRAME reference only; do not copy the book or eye imagery. Match the reference's hand-painted detailed medieval fantasy icon aesthetic: richly textured brushed paint, worn antique gold, blackened forged iron, strong legible central sacred symbol, warm restrained glow. Center a CIRCULAR aged-gold double-rim badge with four small silver-inlaid diamond finials at top/bottom/left/right. Interior is a dark black-iron relief. Central subject: an upright sacred oak staff wrapped in living green vines, rising into a radiant oak-leaf-and-sun holy symbol in warm amber gold; oak leaves form a readable green crown around the amber sun. Emphasize holy divine nature, not druid animal totems. Palette deep leaf green, sacred amber light, weathered gold, dark iron. Frontal view, no perspective tilt. No antlers, wolves, animal skull, text, letters, watermark, mockup or other objects. Important composition: whole emblem including all four finials occupies ONLY central 76% of square canvas, fully inside image; preserve at least 12% truly transparent alpha margin at all four edges. Background outside the physical badge must be REAL alpha transparency, not a black rectangle, checkerboard, glow cloud or colored background. Clean alpha silhouette, keep aged-gold visual family of reference. Generate one emblem only.",
+      "source": "Art/Production/death-nature-domains/cleric_nature_domain.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_nature_domain.png",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a20d6b-11a2-7b41-b0fd-3659a31416dd/exec-804d65a4-a965-4f48-83ef-48715f68ef0e.png",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/cleric_knowledge_domain.png",
+      "sha256": "0a2d286c6e2522a6835bd3127a15b43a3042446d279fb2c7e07151e7ab64d281",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_zero_pixels": 837116
+    },
+    {
+      "id": "nature_blessing",
+      "prompt": "Use case: stylized-concept. Create ONE new finished transparent PNG game character-status icon named nature_blessing. The input image is STYLE AND FRAME reference only: match its hand-painted medieval fantasy icon, richly textured worn antique-gold square ornamental frame, blackened iron recessed interior, brush-painted high craft and sacred warm glints; replace all book, parchment and star imagery. Primary subject inside the frame: a thick LIVING deep green vine and gentle thorn guard coiled protectively in an open circular cradle around one luminous amber acorn seed with a fresh oak leaf sprout. The living vine must read as protective divine blessing, fertile green growth and warm amber sacred light. Fresh leaves, a few small gold-edged thorns pointing OUTWARD, vital green stems; NOT ominous dark chain bindings, NOT a restrained character, no shackles, no body or hands, no aggressive black thorn trap. Strong single central silhouette, readable at small game-icon scale. Square antique-gold ornate four-corner frame with dark iron panel, realistic brushed paint and aged metal. Palette deep vivid olive/leaf green, amber-gold light, black iron. Entire square frame should occupy ONLY 74% of the square canvas, centered; leave at least 13% truly transparent alpha padding around every outside edge, including corners. Every frame tip fully contained, no cropping. Exterior background is genuine transparent alpha, never a black rectangular background or checkerboard painting. Interior stays dark iron. No text, letters, numbers, logos, watermark, extra icons or mockup. One icon only.",
+      "source": "Art/Production/death-nature-domains/nature_blessing.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/nature_blessing.png",
+      "source_path": "C:/Users/29391/.codex/generated_images/01a20d6b-11a2-7b41-b0fd-3659a31416dd/exec-5b5bd5ba-f9b3-4e9a-a64d-914fdeda5ed2.png",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/knowledge-domain/knowledge_blessing.png",
+      "sha256": "3e187b8612b705e038af8ddb9edc4633dc18778967d740ae3e011f18ade04d07",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alpha_zero_pixels": 615784
+    }
+  ],
+  "reused_light_emblem": "Assets/Resources/Art/Battle/v1/Subclasses/cleric_light_domain.png"
+}

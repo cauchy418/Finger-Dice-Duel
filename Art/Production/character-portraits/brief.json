@@ -1,6 +1,6 @@
 {
   "generator": "built-in image_gen",
-  "revision": "coherent-anatomy-forceful-subclass-actions",
+  "revision": "cleric-nine-domains-dynamic-portraits",
   "constraints": "Youthful human/high elf/half-high elf; natural coherent head/chest/pelvis/knee/foot alignment; forceful martial weight transfer; distinctive BattleMaster tactical halfplate, Swordsman light dual blades, Breaker hammer/shockwave without giantshield, EldritchKnight runic sword/ward; all full figures transparent; remaining assets retained.",
   "jobs": [
     {
@@ -825,6 +825,402 @@
       "reference_revision": "dd39068",
       "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20354-dc96-7842-88cd-0c1240b721b4\\exec-8eb9246e-0e7a-4633-8033-133650b64926.png",
       "action": "front-right precision rapier thrust/free hand"
+    },
+    {
+      "id": "cleric_life_domain",
+      "name": "牧师·生命领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_life_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male human. Action and direction: three-quarter facing LEFT, stepping forward with left knee bent to project a healing wave from a raised ornate CHALICE in left hand; right hand carries a compact blessed MACE low behind the hip. Costume and silhouette: ivory ceremonial surplice over emerald brocade, segmented black iron shoulder and forearm armor, gold leaf embroidery, short dark tied hair. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-8a5c9f96-6ad5-4373-962b-9b0909e67c27.png",
+      "action": "three-quarter facing LEFT, stepping forward with left knee bent to project a healing wave from a raised ornate CHALICE in left hand; right hand carries a compact blessed MACE low behind the hip",
+      "visual_review": "胸口与腰扣近正面偏右；头转右，没有胸腰反向。 前膝近正面，后膝与后脚略向右；张开站距承重。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_life_domain_male_fullbody.png",
+        "chest_pelvis": "胸口与腰扣近正面偏右；头转右，没有胸腰反向。",
+        "knees_toes": "前膝近正面，后膝与后脚略向右；张开站距承重。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_life_domain",
+      "name": "牧师·生命领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_life_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female half high elf. Action and direction: nearly FRONTAL three-quarter, braced lateral step toward RIGHT, sweeping a sacred blessed MACE horizontally to release a compact golden-green healing ribbon; a small chalice hangs visibly at her belt. Costume and silhouette: emerald-and-ivory split priestly vestments, engraved gilded gorget, chain sleeves, long black braid, pearl circlet. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-d7e96781-9f5c-4107-9442-9be0295bf7c0.png",
+      "action": "nearly FRONTAL three-quarter, braced lateral step toward RIGHT, sweeping a sacred blessed MACE horizontally to release a compact golden-green healing ribbon; a small chalice hangs visibly at her belt",
+      "visual_review": "胸口略向右，腰扣与骨盆近正面；轻度整体转向而非反拧。 右侧承重膝、脚尖朝右；另一腿外展近正面，双膝与足分别相随。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_life_domain_female_fullbody.png",
+        "chest_pelvis": "胸口略向右，腰扣与骨盆近正面；轻度整体转向而非反拧。",
+        "knees_toes": "右侧承重膝、脚尖朝右；另一腿外展近正面，双膝与足分别相随。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_purification_domain",
+      "name": "牧师·净化领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_purification_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male high elf. Action and direction: three-quarter facing RIGHT, advancing on a bent front leg, driving a brass CENSER on a short chain forward; small cleansing flame curls around its bowl, free hand open in divine banishment. Costume and silhouette: crimson stole over cream pleated priest vestments, brass shoulder plates and mail cuffs, long silver-black hair half tied. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-b07ca2ec-69f2-463b-a05e-c75a950b29c7.png",
+      "action": "three-quarter facing RIGHT, advancing on a bent front leg, driving a brass CENSER on a short chain forward; small cleansing flame curls around its bowl, free hand open in divine banishment",
+      "visual_review": "胸口、腰扣与骨盆同向右前方。 前膝随朝右的前脚弯曲，后腿近正面支撑，没有反膝。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_purification_domain_male_fullbody.png",
+        "chest_pelvis": "胸口、腰扣与骨盆同向右前方。",
+        "knees_toes": "前膝随朝右的前脚弯曲，后腿近正面支撑，没有反膝。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_war_domain",
+      "name": "牧师·战争领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_war_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female half high elf. Action and direction: three-quarter facing RIGHT, knees bent in a compact SHIELD PARRY while counterthrusting a short heavy MACE from the rear hand at waist level. Costume and silhouette: ivory-and-crimson battle-priest dalmatic, dark mail skirt and fitted partial iron armor, gold reliquary belt, high dark ponytail. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-25bbb535-3417-4fc7-b65d-381ae0078d81.png",
+      "action": "three-quarter facing RIGHT, knees bent in a compact SHIELD PARRY while counterthrusting a short heavy MACE from the rear hand at waist level",
+      "visual_review": "胸口偏右前、腰扣近正面，盾侧肩略前压，未见胸骨盆对拧。 右侧膝脚同向外展，另一膝脚近正面；低位护盾重心稳定。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_war_domain_female_fullbody.png",
+        "chest_pelvis": "胸口偏右前、腰扣近正面，盾侧肩略前压，未见胸骨盆对拧。",
+        "knees_toes": "右侧膝脚同向外展，另一膝脚近正面；低位护盾重心稳定。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_war_domain",
+      "name": "牧师·战争领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_war_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male human. Action and direction: three-quarter facing LEFT, wide balanced forward lunge delivering a one-handed downward diagonal WAR HAMMER strike, other forearm carries a compact iron round SHIELD held near chest. Costume and silhouette: crimson tabard and priestly stole over dark mail, limited aged-gold shoulder and knee plates, bare handsome face and swept black hair. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-0097c33e-cb1e-4a48-ae98-9ee03e8b7b84.png",
+      "action": "three-quarter facing LEFT, wide balanced forward lunge delivering a one-handed downward diagonal WAR HAMMER strike, other forearm carries a compact iron round SHIELD held near chest",
+      "visual_review": "胸腰连贯前倾，略向左的斜劈只带动肩部，骨盆未反转。 近侧腿弯曲跟随近正面脚尖，远侧腿外展支撑；是开放弓步。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_war_domain_male_fullbody.png",
+        "chest_pelvis": "胸腰连贯前倾，略向左的斜劈只带动肩部，骨盆未反转。",
+        "knees_toes": "近侧腿弯曲跟随近正面脚尖，远侧腿外展支撑；是开放弓步。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_purification_domain",
+      "name": "牧师·净化领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_purification_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female human. Action and direction: three-quarter facing LEFT, firm parrying step with a short brass SACRED FLAME STAFF held diagonally in both hands, pushing a compact arc of white-hot cleansing flame away to the left. Costume and silhouette: asymmetrical ivory and deep crimson chasuble split for movement, etched black iron breastguard, brass gauntlets, dark braided bun. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-19166f89-79d6-4f4f-89d1-828671a8e334.png",
+      "action": "three-quarter facing LEFT, firm parrying step with a short brass SACRED FLAME STAFF held diagonally in both hands, pushing a compact arc of white-hot cleansing flame away to the left",
+      "visual_review": "胸骨与腰带中线连续，躯干近正面；头向左看施法目标。 双腿为外展架势，左右膝分别顺各自脚尖；没有向后扭膝。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_purification_domain_female_fullbody.png",
+        "chest_pelvis": "胸骨与腰带中线连续，躯干近正面；头向左看施法目标。",
+        "knees_toes": "双腿为外展架势，左右膝分别顺各自脚尖；没有向后扭膝。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_tempest_domain",
+      "name": "牧师·风暴领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_tempest_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male high elf. Action and direction: three-quarter facing LEFT, both hands firmly grip a long divine LIGHTNING STAFF and thrust it diagonally forward from a staggered stance, compact blue lightning coils at the staff head. Costume and silhouette: storm-blue and grey cleric vestments over partial black iron armor, brass thunder medallion, windblown silver-black hair, chainmail sleeves. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-bd87d33f-aece-4e97-8cf0-5f848af678ad.png",
+      "action": "three-quarter facing LEFT, both hands firmly grip a long divine LIGHTNING STAFF and thrust it diagonally forward from a staggered stance, compact blue lightning coils at the staff head",
+      "visual_review": "胸骨到腰扣近正面连续，头转左随法杖，没有腰部极端扭转。 两腿自然外展，近侧膝脚正前，远侧膝脚右前，各关节相随。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_tempest_domain_male_fullbody.png",
+        "chest_pelvis": "胸骨到腰扣近正面连续，头转左随法杖，没有腰部极端扭转。",
+        "knees_toes": "两腿自然外展，近侧膝脚正前，远侧膝脚右前，各关节相随。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_trickery_domain",
+      "name": "牧师·诡术领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_trickery_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male half high elf. Action and direction: three-quarter facing RIGHT, sliding into a low lateral step, left hand thrusts an ornate small MIRROR forward to split a compact violet spell, right hand reverse-grips a ceremonial DAGGER by his side; shoulders and hips turn together. Costume and silhouette: smoky violet embroidered priest vestments over leather and light iron bracers, half-mask hanging at belt, layered stole, loosely tied dark hair. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-53feb308-6e76-4cc8-b17d-8b326113e9da.png",
+      "action": "three-quarter facing RIGHT, sliding into a low lateral step, left hand thrusts an ornate small MIRROR forward to split a compact violet spell, right hand reverse-grips a ceremonial DAGGER by his side; shoulders and hips turn together",
+      "visual_review": "胸骨、腰扣与骨盆近正面偏右，头转右与举镜方向一致。 双腿外展，膝盖分别追随各自脚尖；不是背向骨盆的反膝。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_trickery_domain_male_fullbody.png",
+        "chest_pelvis": "胸骨、腰扣与骨盆近正面偏右，头转右与举镜方向一致。",
+        "knees_toes": "双腿外展，膝盖分别追随各自脚尖；不是背向骨盆的反膝。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_trickery_domain",
+      "name": "牧师·诡术领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_trickery_domain_female_fullbody.png",
+      "prompt": "REDRAW WHOLE BODY POSE from scratch, preserve ONLY this character's lovely young high elf face, hair, purple/ivory/gold priest vestments, limited black iron armor, curved ceremonial dagger, silver mirror at belt and magical mask. Existing s-shaped walking pose is WRONG: upper body faces right while hips and both feet face left. REMOVE old leg/body silhouette completely. NEW dynamic pose is an aligned RIGHTWARD DIVINE CASTING LUNGE viewed in three-quarter side profile: sternum, chest medallion, belt buckle, pelvis, both knee caps and BOTH BOOT TOES ALL face IMAGE-RIGHT, never image-left. Shoulders and pelvis oriented together to the right; spine is natural, no waist twist. Rightward front leg bent with kneecap directly above right-facing front foot, back leg extends back to left BUT its kneecap/boot toe also face right (rear heel can lift naturally). Weight grounded on clear feet, no crossed knees. Head follows rightward chest with natural short neck connection. Free left hand projects a floating violet sacred MASK just ahead to image-right; right hand grips curved ceremonial dagger close to waist pointing forward-right, ready counterattack. Purposeful active casting, NOT S-shaped fashion walk, NOT floating, no reversed pelvis. Whole body and entire mask, dagger, hair, robes, both boots fully visible with real empty alpha margin minimum 8% on all sides. Keep youthful attractive Chinese-aesthetic face, sacred stole, relics and distinct plum embroidered costume; painted dark fantasy gold/iron finish. Single character only, NO background, floor, scenery, vignette haze, frame, text or watermark. GENUINELY transparent RGBA exterior with compact contained violet spell.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/cleric_trickery_domain_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-60d51613-4bf5-44dd-be09-06fc3974329d.png",
+      "action": "Aligned rightward low casting lunge with mask projection and dagger counterattack; torso and pelvis turn together, bent front knee/foot face right, rear leg extended in supporting open stance.",
+      "visual_review": "已重画：胸骨与腰扣、骨盆整体右转，消除原走姿胸腰反向。 前膝弯曲跟随右向前靴，后腿向左伸展但作为外展支撑；无原双靴朝左反转。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "revision_history": [
+        {
+          "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-3a6f1444-545c-4369-9b26-6642f73592a5.png",
+          "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female high elf. Action and direction: three-quarter facing LEFT, stepping backward while casting a small luminous MASK mirage from one upturned hand; other hand points a curved ceremonial DAGGER downward, torso and knees aligned naturally. Costume and silhouette: plum violet priest tunic and gold-bordered split skirt, small black iron pauldrons, silver hand-mirror at sash, long dark hair pinned at one side. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+          "validation": {
+            "mode": "RGBA",
+            "width": 1024,
+            "height": 1536,
+            "transparent_ratio": 0.4045124053955078,
+            "alpha_min": 0,
+            "alpha_max": 254,
+            "sha256": "870c7ec350173e646b17307cacbc38a6b6bf3667d40f2702e8f00aa57774e35c",
+            "raw_source_sha256": "870c7ec350173e646b17307cacbc38a6b6bf3667d40f2702e8f00aa57774e35c",
+            "byte_identical": true
+          },
+          "reason": "Focused second audit found original chest/hip/feet opposition in S-walking pose; whole-body redraw"
+        }
+      ],
+      "anatomy_review": {
+        "file": "cleric_trickery_domain_female_fullbody.png",
+        "chest_pelvis": "已重画：胸骨与腰扣、骨盆整体右转，消除原走姿胸腰反向。",
+        "knees_toes": "前膝弯曲跟随右向前靴，后腿向左伸展但作为外展支撑；无原双靴朝左反转。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_tempest_domain",
+      "name": "牧师·风暴领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_tempest_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female human. Action and direction: three-quarter facing RIGHT, weight on rear leg, swinging a short-chain sacred FLAIL through a compact forward strike; off-hand held near torso as a small ward of rain-blue light, no impossible body twist. Costume and silhouette: deep blue embroidered priestly coat and ivory stole, dark mail at hips and arms, aged gold shoulder guards, black braided ponytail. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-afb01adc-b30b-4b87-941a-e988a629926b.png",
+      "action": "three-quarter facing RIGHT, weight on rear leg, swinging a short-chain sacred FLAIL through a compact forward strike; off-hand held near torso as a small ward of rain-blue light, no impossible body twist",
+      "visual_review": "胸与骨盆均朝右前，腰带收束方向一致。 双膝微弯、脚分开；前足向右而后足近正面，为支撑开立。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_tempest_domain_female_fullbody.png",
+        "chest_pelvis": "胸与骨盆均朝右前，腰带收束方向一致。",
+        "knees_toes": "双膝微弯、脚分开；前足向右而后足近正面，为支撑开立。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_knowledge_domain",
+      "name": "牧师·知识领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_knowledge_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female high elf. Action and direction: three-quarter facing RIGHT, quick diagonal casting step, right hand swings a compact golden CENSER through a low arc as left hand supports a strapped closed sapphire BOOK near her waist, pale-gold sacred script-like sparks without readable letters. Costume and silhouette: sapphire blue chasuble with ivory pleated panels, slim aged-gold gorget and mail cuffs, hair in an ornate dark bun with gold pins. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-84cc1322-0ec1-4af8-8099-f7a7ae322b53.png",
+      "action": "three-quarter facing RIGHT, quick diagonal casting step, right hand swings a compact golden CENSER through a low arc as left hand supports a strapped closed sapphire BOOK near her waist, pale-gold sacred script-like sparks without readable letters",
+      "visual_review": "胸口、腰带与骨盆同向右前，持书侧未把腰拧回左边。 近腿膝足向右前，后腿斜向外支撑；膝足关系一致。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_knowledge_domain_female_fullbody.png",
+        "chest_pelvis": "胸口、腰带与骨盆同向右前，持书侧未把腰拧回左边。",
+        "knees_toes": "近腿膝足向右前，后腿斜向外支撑；膝足关系一致。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_knowledge_domain",
+      "name": "牧师·知识领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_knowledge_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male human. Action and direction: nearly FRONTAL, one foot forward, holds an open sacred BOOK at chest height with left hand while right hand sharply casts a golden sapphire geometric prayer sigil to LEFT; no floating extra hands. Costume and silhouette: ivory long surplice, sapphire stole covered in non-letter gold ornament, limited iron shoulder guards and leather boots, scholarly dark hair half up, handsome youthful clean face. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-cd54dc3e-65b8-4180-8ca0-9b16663c9f53.png",
+      "action": "nearly FRONTAL, one foot forward, holds an open sacred BOOK at chest height with left hand while right hand sharply casts a golden sapphire geometric prayer sigil to LEFT; no floating extra hands",
+      "visual_review": "胸骨、腰扣、骨盆近正面同轴。 前后脚均近正面，膝盖与靴正面方向一致；没有交叉反向走姿。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_knowledge_domain_male_fullbody.png",
+        "chest_pelvis": "胸骨、腰扣、骨盆近正面同轴。",
+        "knees_toes": "前后脚均近正面，膝盖与靴正面方向一致；没有交叉反向走姿。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_nature_domain",
+      "name": "牧师·自然领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_nature_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male human. Action and direction: three-quarter facing LEFT, parrying with a leaf-carved wooden sacred MACE held across upper torso, opposite hand extends a small amber leaf-shaped blessing, staggered balanced feet. Costume and silhouette: deep green and gold divine vestments with oak embroidery, black iron shoulder plates, ivory stole and mail forearms, dark hair tied back; no antlers, animal skulls, fur or druid costume. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-a8eb68d4-faad-494d-b81d-9e47aba4b9d2.png",
+      "action": "three-quarter facing LEFT, parrying with a leaf-carved wooden sacred MACE held across upper torso, opposite hand extends a small amber leaf-shaped blessing, staggered balanced feet",
+      "visual_review": "胸腰近正面偏右，骨盆没有向相反方向翻转；施法主要由手臂完成。 近膝近正面，后膝后足右前外展；双腿承重可信。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_nature_domain_male_fullbody.png",
+        "chest_pelvis": "胸腰近正面偏右，骨盆没有向相反方向翻转；施法主要由手臂完成。",
+        "knees_toes": "近膝近正面，后膝后足右前外展；双腿承重可信。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_death_domain",
+      "name": "牧师·死亡领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_death_domain_female_fullbody.png",
+      "prompt": "REPAINT THE ENTIRE POSE from scratch. Use this image ONLY to preserve the beautiful youthful female human face, black braids, plum/ivory/gold cleric vestments, partial black-iron/mail armor, gold bone reliquary and short sacred mace, and painterly finish. The old pose is ANATOMICALLY WRONG: chest turns to image-right but hips/knees/feet turn away left. DO NOT preserve the old body's silhouette, s-shaped walking twist, garment flow, leg positions, chest orientation or belt angle. NEW POSE: grounded purposeful front-facing divine casting stance. FRONT VIEW chest, breastbone, central stole, belt buckle, navel, pelvis and BOTH knee caps all face the VIEWER directly, as one coherent untwisted body. Head faces only slightly image-right, naturally joined to neck. Feet shoulder width, knees softly flexed forward, soles grounded on same invisible horizontal plane. Both boots directed toward the viewer (very slight outward turnout only), NO crossed legs, NO stepping walk, NO twisting at waist, NO extreme contrapposto, NO rear knee facing opposite sternum. A straight central vertical axis aligns sternum, waist buckle and pelvis. Her left forearm raises the reliquary at shoulder height on image-right to project controlled pale green light; right hand holds the short mace slightly forward and down on image-left. The casting action is in arms and light, not a distorted body. Keep her priestly divine stole, mourning veil/braids, delicate attractive 22-32-year-old face and relic motifs. Natural anatomy two arms/two legs and coherent hands. Full-body PORTRAIT composition, ALL head decorations, both boots, reliquary and mace tips fully contained with at least 8% true transparent margin, slim contained green spell only. No ground, no background, no haze rectangle, no frame/text/watermark. MUST output genuinely transparent RGBA outside person and equipment; retain fine painterly worn antique gold, dark plum and bone ivory.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/cleric_death_domain_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-25c8555f-28f9-4cad-bb82-7357d583aa86.png",
+      "action": "Frontal grounded divine casting; sternum, belt buckle, pelvis, knees and toes all front, head slightly right; reliquary presented and mace ward held low.",
+      "visual_review": "已整身重画：胸口、腰扣和骨盆全正面，垂直中轴清晰。 两膝及两只靴均正面且平行站稳；消除原胸朝右、下身朝左的S形走姿。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "revision_history": [
+        {
+          "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-ed133873-ae07-413d-9b07-126dd79aba50.png",
+          "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female human. Action and direction: three-quarter facing LEFT, deep but natural forward step, presenting an ornate bone-gold RELIQUARY in left hand while right hand presses a short sacred MACE downward to release a compact green ward beneath it. Costume and silhouette: plum-and-ivory funeral priest split vestments, silver-black iron shoulder guard and mail boots, young beautiful face, black braids, no skull mask. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+          "validation": {
+            "mode": "RGBA",
+            "width": 1024,
+            "height": 1536,
+            "transparent_ratio": 0.4515679677327474,
+            "alpha_min": 0,
+            "alpha_max": 254,
+            "sha256": "9c4aa18ca7407ec6cceea64f3d3509344e541da9327700e6d01f5c69dcd5bf81",
+            "raw_source_sha256": "9c4aa18ca7407ec6cceea64f3d3509344e541da9327700e6d01f5c69dcd5bf81",
+            "byte_identical": true
+          },
+          "reason": "User rejected original chest/pelvis/knees/toes opposed direction; superseded by whole-body redraw"
+        }
+      ],
+      "anatomy_review": {
+        "file": "cleric_death_domain_female_fullbody.png",
+        "chest_pelvis": "已整身重画：胸口、腰扣和骨盆全正面，垂直中轴清晰。",
+        "knees_toes": "两膝及两只靴均正面且平行站稳；消除原胸朝右、下身朝左的S形走姿。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_death_domain",
+      "name": "牧师·死亡领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_death_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male half high elf. Action and direction: three-quarter facing RIGHT, balanced advancing diagonal sweep of a short ceremonial SCYTHE gripped with BOTH hands; controlled pale green soul-light clings to blade, no extreme twisting. Costume and silhouette: bone ivory and dark plum priestly mantle over black iron partial armor, small reliquary at chest, youthful handsome pale face, long dark hair tied low; no skull face. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-a636da30-0c21-461b-a217-b500aef97b80.png",
+      "action": "three-quarter facing RIGHT, balanced advancing diagonal sweep of a short ceremonial SCYTHE gripped with BOTH hands; controlled pale green soul-light clings to blade, no extreme twisting",
+      "visual_review": "胸骨和骨盆同向右前，双手持镰没有造成腰部反拧。 前膝与前靴同向右，后膝与后足近正面外展；重心在两足间。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_death_domain_male_fullbody.png",
+        "chest_pelvis": "胸骨和骨盆同向右前，双手持镰没有造成腰部反拧。",
+        "knees_toes": "前膝与前靴同向右，后膝与后足近正面外展；重心在两足间。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_light_domain",
+      "name": "牧师·光明领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_light_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female human. Action and direction: three-quarter facing LEFT, knees bent and weight low in a strong GOLD SHIELD parry, opposite hand held forward releasing three compact golden rays over the shield rim. Costume and silhouette: ivory ceremonial tunic with broad gold stole, gold-rimmed black iron shoulder and shin pieces, mail cuffs, dark high bun and sun hairpin, beautiful young face. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-d72f6a72-f1e4-4378-98ad-4f5bb19732c5.png",
+      "action": "three-quarter facing LEFT, knees bent and weight low in a strong GOLD SHIELD parry, opposite hand held forward releasing three compact golden rays over the shield rim",
+      "visual_review": "胸偏右前但腰扣骨盆仍在连续中轴上，未反拧到相反朝向。 深蹲护盾姿势双腿外展，膝盖跟随脚尖；前足近正面、远足斜右。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_light_domain_female_fullbody.png",
+        "chest_pelvis": "胸偏右前但腰扣骨盆仍在连续中轴上，未反拧到相反朝向。",
+        "knees_toes": "深蹲护盾姿势双腿外展，膝盖跟随脚尖；前足近正面、远足斜右。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_nature_domain",
+      "name": "牧师·自然领域",
+      "profession": "cleric",
+      "gender": "female",
+      "file": "cleric_nature_domain_female_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: beautiful feminine female high elf. Action and direction: three-quarter facing RIGHT, stepping into an attacking prayer with BOTH hands on a long OAK STAFF planted diagonally outward; a compact amber-green vine spiral circles staff tip. Costume and silhouette: white-and-gold cleric surplice over forest-green layered vestments, partial bronze iron armor and sacred oak sun medallion, long black braid; no antlers, fur or animal motifs. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/wizard_school_of_abjuration_female_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-602b6ec0-f8ae-40c4-a21f-591774371d00.png",
+      "action": "three-quarter facing RIGHT, stepping into an attacking prayer with BOTH hands on a long OAK STAFF planted diagonally outward; a compact amber-green vine spiral circles staff tip",
+      "visual_review": "胸与腰带、骨盆一起朝右前，持杖动作不牵出反向腰扭。 前膝前足右向一致，后膝后足斜外支撑；没有反膝。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_nature_domain_female_fullbody.png",
+        "chest_pelvis": "胸与腰带、骨盆一起朝右前，持杖动作不牵出反向腰扭。",
+        "knees_toes": "前膝前足右向一致，后膝后足斜外支撑；没有反膝。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
+    },
+    {
+      "id": "cleric_light_domain",
+      "name": "牧师·光明领域",
+      "profession": "cleric",
+      "gender": "male",
+      "file": "cleric_light_domain_male_fullbody.png",
+      "prompt": "Use case: stylized-concept. Create ONE full-body fantasy game character portrait on a GENUINELY TRANSPARENT RGBA background. Reference is only for painterly texture, finish and production style; do not copy its person, pose or equipment. Rich detailed hand-painted dark fantasy with painterly brushwork, aged gold, black iron, high-end RPG illustration. Young adult age 22–32, attractive facial proportions favored by contemporary Chinese aesthetics: handsome masculine male high elf. Action and direction: nearly FRONTAL three-quarter facing RIGHT, vigorous advancing SUN MACE strike extended diagonally outward, off-hand raises a small radiant prayer disc beside the shoulder, balanced bent knees. Costume and silhouette: white and warm gold priestly split chasuble over light black iron mail and gilded partial armor, golden sun reliquaries, short dark hair, calm youthful handsome face. Must clearly read as a divine CLERIC: liturgical stole, sacred reliquary and ceremonial vestments with PARTIAL practical armor; avoid a wizard in plain robes or a fighter in complete plate. Full body with both boots and all equipment completely visible, meaningful actual battle/casting moment, natural anatomy: continuous neck correctly attached between head and shoulders, natural aligned ribcage/pelvis, plausible knees/ankles and weight balance; no extreme waist twist, no backward knees, two arms, two legs, natural hands and weapon grip. Figure and all effects centered within canvas with generous empty transparent margin on every side, keep isolated contained effects, no terrain, no pedestal, no floor shadow, no rectangular background, no fog wash, no frame or border, no text or watermark. Preserve REAL alpha transparency around silhouette and between limbs. Portrait-oriented full-body composition, beautiful detailed youthful face clearly visible, painted material textures.",
+      "reference_path": "C:/Users/29391/Finger Dice Duel/Art/Production/character-portraits/paladin_oath_of_devotion_male_fullbody.png",
+      "source_path": "C:\\Users\\29391\\.codex\\generated_images\\01a20d6b-11a2-7b41-b0fd-3659a31416dd\\exec-9c4a6d82-efcd-42ef-a4fe-17002a91315e.png",
+      "action": "nearly FRONTAL three-quarter facing RIGHT, vigorous advancing SUN MACE strike extended diagonally outward, off-hand raises a small radiant prayer disc beside the shoulder, balanced bent knees",
+      "visual_review": "胸与腰带骨盆近正面，头和出锤臂偏右；腰轴连续。 近侧膝足向前，另一腿向右外展，膝足各自同向。 头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。 双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+      "anatomy_review": {
+        "file": "cleric_light_domain_male_fullbody.png",
+        "chest_pelvis": "胸与腰带骨盆近正面，头和出锤臂偏右；腰轴连续。",
+        "knees_toes": "近侧膝足向前，另一腿向右外展，膝足各自同向。",
+        "head_neck": "头颈在肩线间自然衔接；头部轻微转向，不存在断颈或反转。",
+        "equipment": "双足、武器与圣物完整可见；局部衣袍遮挡髋部，依据腰扣、布褶和腿轴核对。",
+        "result": "reviewed; no unresolved obvious opposing chest/pelvis direction"
+      }
     }
   ],
   "collection": "character-portraits",
