@@ -40,6 +40,56 @@ namespace FingerDiceDuel.Tests
             }
             Assert.IsTrue(errors.Count==0,string.Join("\n",errors));
         }
+        [Test] public void Banner_devotion_teaches_four_five_six_shields_with_one_damage_shocks()
+        {
+            var l=CampaignLesson.CreateV3(33);l.BeginTutorial();l.Board.BeginTurn();
+            int checkpoints=0;
+            for(int i=0;i<120&&!l.TrialConfirmationPending;i++)
+            {
+                int before=l.Cursor;
+                Assert.IsTrue(CampaignFlowTests.ClickGuide(l),CampaignFlowTests.Diagnostic(l));
+                if(l.Cursor==before)continue;
+                checkpoints++;
+                Assert.AreEqual(4+before,l.Player.LeftHand.Value);
+                Assert.IsTrue(l.Player.LeftHand.IsShield);
+                Assert.AreEqual(before==0?29:before==1?27:25,l.Seats[1].Health);
+            }
+            Assert.AreEqual(3,checkpoints);
+            Assert.AreEqual(3,((OathOfDevotionLogic)l.Player.Character).ShieldFormCount);
+            Assert.IsTrue(l.TrialConfirmationPending);
+            Assert.IsTrue(CampaignGuideText.For(33).Length<10);
+            var original=l.Game;Assert.IsTrue(l.ConfirmTrial());
+            Assert.IsTrue(ReferenceEquals(original,l.Game));
+            Assert.IsFalse(l.Guided);
+        }
+        [Test] public void Banner_conquest_teaches_optional_shieldbreak_panic_and_both_stack_decay()
+        {
+            var l=CampaignLesson.CreateV3(37);l.BeginTutorial();l.Board.BeginTurn();
+            bool sawAura=false,sawDecay=false;
+            for(int i=0;i<200&&!l.TrialConfirmationPending;i++)
+            {
+                int before=l.Cursor;
+                if(l.Board.PendingWizardChoice?.Prompt.Contains("征服灵光")==true)
+                {
+                    sawAura=true;Assert.IsTrue(l.Board.PendingWizardChoice.AllowDecline);
+                }
+                Assert.IsTrue(CampaignFlowTests.ClickGuide(l),CampaignFlowTests.Diagnostic(l));
+                if(l.Cursor==before)continue;
+                if(before==0)Assert.IsFalse(l.Seats[1].HasStatus(StatusEffect.Panic));
+                if(before==1)Assert.IsTrue(l.Seats[1].HasStatus(StatusEffect.Panic),"panic checkpoint "+CampaignFlowTests.Diagnostic(l));
+                if(before==6)
+                {
+                    Assert.AreEqual(5,l.Player.RightHand.Value);
+                    Assert.AreEqual(2,l.Player.Character.AttackBonus);
+                    Assert.AreEqual(0,l.Player.Character.DefenseBonus);sawDecay=true;
+                }
+            }
+            Assert.IsTrue(sawAura,"aura request was not offered "+CampaignFlowTests.Diagnostic(l));Assert.IsTrue(sawDecay,"decay checkpoint missing");
+            Assert.AreEqual(0,l.Player.Character.AttackBonus);
+            Assert.AreEqual(0,l.Player.Character.DefenseBonus);
+            Assert.IsTrue(l.TrialConfirmationPending);
+            for(int level=31;level<40;level++)Assert.IsTrue(CampaignGuideText.For(level).Length<10);
+        }
         [Test] public void Stable_ids_separate_gallery_from_legacy_tower()
         {
             Assert.AreEqual("gallery.01",CampaignLesson.CreateV3(11).StableId);

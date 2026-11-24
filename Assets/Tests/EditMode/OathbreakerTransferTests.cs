@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -107,6 +107,9 @@ namespace FingerDiceDuel.Tests
             Assert.True(board.CanDeclinePendingChoice);
             Assert.True(board.ClickHand(game.Players[2].RightHand));
             Assert.AreEqual(HandEffect.OathOfDevotionRedirect, board.PendingEffect);
+            Assert.True(board.DeclinePendingChoice());
+            Assert.AreEqual(HandEffect.OathOfDevotionRedirect, board.PendingEffect);
+            Assert.AreSame(game.PlayerB, board.Chooser);
             Assert.True(board.DeclinePendingChoice());
             Assert.AreEqual(20, game.PlayerB.Health);
             Assert.AreEqual(ShieldState.Broken, game.Players[2].LeftHand.State);

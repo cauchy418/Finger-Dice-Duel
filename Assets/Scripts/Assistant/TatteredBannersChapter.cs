@@ -66,26 +66,31 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Devotion(List<BannersSample> list)
         {
-            var s=Make("echoes","盾锋与回响",CharacterDefinition.OathOfDevotion,new[]{1,2,2,3,2,4,3,1},"4改为同数字的完整盾，6正常攻击，卫护斩冲击邻近角色固定2点。旧盾换新盾触发破盾与合盾两次冲击。");
-            s.Turn(0,0,3,0,-1,"左1＋同袍左3＝4合盾，只选卫护斩的目标教官甲；无需再确认普通攻击。").RestOthers()
-                .Turn(0,0,3,1,-1,"完整4盾＋同袍右1＝5，分别为旧盾破碎、新盾形成选择教官甲，两次冲击。");
-            s.Verify=l=>l.Player.LeftHand.Value==5&&l.Player.LeftHand.IsShield&&l.Seats[1].Health==14
-                &&((OathOfDevotionLogic)l.Player.Character).ShieldFormCount==2;list.Add(s);
+            var s=Make("echoes","盾锋与回响",CharacterDefinition.OathOfDevotion,new[]{1,2,2,3,2,4,3,1},"4、6改为同数字的完整盾，5照常合盾；护卫斩冲击邻近角色固定1点。旧盾换新盾触发破盾与合盾两次冲击。");
+            s.Turn(0,0,3,0,-1,"左1＋同袍左3＝4合盾，只选护卫斩的目标教官甲；无需再确认普通攻击。").RestOthers()
+                .Turn(0,0,3,1,-1,"完整4盾＋同袍右1＝5，分别为旧盾破碎、新盾形成选择教官甲，两次冲击。").RestOthers()
+                .Turn(0,0,3,1,-1,"完整5盾＋同袍右1＝6，旧盾破与新6盾成各触发1点护卫斩，不普通攻击。");
+            s.Verify=l=>l.Player.LeftHand.Value==6&&l.Player.LeftHand.IsShield&&l.Seats[1].Health==15
+                &&((OathOfDevotionLogic)l.Player.Character).ShieldFormCount==3;list.Add(s);
         }
         private static void Protection(List<BannersSample> list)
         {
-            var a=Make("bodyguard","替同袍承受",CharacterDefinition.OathOfDevotion,new[]{1,2,3,2,2,4,3,1},"你没有完整盾，不能发动守护之誓。同袍12生命，教官甲为距离2弩手，先攻击同袍；先观察无盾时无法援护。");
+            var a=Make("bodyguard","替同袍承受",CharacterDefinition.OathOfDevotion,new[]{1,2,3,2,2,4,3,1},"你没有4／5／6手值，不能发动守护灵光。同袍12生命，教官甲为距离2弩手，先攻击同袍；先观察无盾时无法援护。");
             a.First=1;a.Ranges=new[]{1,2,1,1};a.Prepare=g=>Hp(P(g,3),12);
-            a.Turn(1,0,0,0,3,"教官甲3＋你的左1＝4攻击同袍。你无完整盾，不能代挡；同袍12→8，你仍20。");
+            a.Turn(1,0,0,0,3,"教官甲3＋你的左1＝4攻击同袍。你没有合适手值，不能代挡；同袍12→8，你仍20。");
             a.Verify=l=>l.Player.Health==20&&l.Seats[3].Health==8;list.Add(a);
-            var b=Make("shieldguard","你的盾接住这一击",CharacterDefinition.OathOfDevotion,new[]{5,2,3,2,2,4,3,3},"重新布置：你的左5为完整盾，同袍12生命。你代挡后由自己的盾格挡，再选择自己的卫护斩目标。");
+            var b=Make("shieldguard","你的盾接住这一击",CharacterDefinition.OathOfDevotion,new[]{5,2,3,2,2,4,3,3},"重新布置：你的左5为完整盾，同袍12生命。你代挡后由自己的盾格挡，再选择自己的护卫斩目标。");
             b.First=1;b.Ranges=new[]{1,2,1,1};b.Prepare=g=>{Shield(P(g,0));Hp(P(g,3),12);};
             b.Turn(1,0,3,1,3,"教官甲3＋同袍右3＝6攻击同袍。代挡，以盾接住，再冲击距离1的教官甲。");
-            b.Verify=l=>l.Player.Health==20&&l.Seats[3].Health==12&&l.Seats[1].Health==18&&!l.Player.LeftHand.IsShield;list.Add(b);
+            b.Verify=l=>l.Player.Health==20&&l.Seats[3].Health==12&&l.Seats[1].Health==19&&!l.Player.LeftHand.IsShield;list.Add(b);
             var c=Make("ally_ai","同袍也会援护你",CharacterDefinition.OathOfDevotion,new[]{1,2,3,2,2,4,5,2},"重新布置：你6生命、无盾，同袍奉献之誓有完整5盾。让同袍AI援护你；同袍离教官甲2，冲击应选择邻近教官乙。");
             c.First=1;c.AllyRole=CharacterDefinition.OathOfDevotion;c.Prepare=g=>{Hp(P(g,0),6);Shield(P(g,3));};
-            c.Turn(1,0,0,0,0,"观察同袍的守护之誓与卫护斩，不替AI回答；你仍6生命，同袍仍20，教官乙受到2点冲击。");
-            c.Verify=l=>l.Player.Health==6&&l.Seats[3].Health==20&&l.Seats[2].Health==18&&!l.Seats[3].LeftHand.IsShield;list.Add(c);
+            c.Turn(1,0,0,0,0,"观察同袍的守护灵光与护卫斩，不替AI回答；你仍6生命，同袍仍20，教官乙受到1点冲击。");
+            c.Verify=l=>l.Player.Health==6&&l.Seats[3].Health==20&&l.Seats[2].Health==19&&!l.Seats[3].LeftHand.IsShield;list.Add(c);
+            var d=Make("numberguard","普通五也能守护",CharacterDefinition.OathOfDevotion,new[]{5,2,3,2,2,4,3,1},"左5只有数字，没有完整盾。守护灵光仍可替范围内同袍承受攻击，随后按自己的防御扣除生命。");
+            d.First=1;d.Ranges=new[]{1,2,1,1};d.Prepare=g=>Hp(P(g,3),12);
+            d.Turn(1,0,3,1,3,"教官甲3＋同袍1＝4，发动守护灵光。没有完整盾，自己20→16，同袍保持12。");
+            d.Verify=l=>l.Player.Health==16&&l.Seats[3].Health==12&&!l.Player.LeftHand.IsShield;list.Add(d);
         }
         private static void Ancients(List<BannersSample> list)
         {
@@ -117,19 +122,19 @@ namespace FingerDiceDuel.Assistant
         }
         private static void Conquest(List<BannersSample> list)
         {
-            var a=Make("attack","先交锋，后成长",CharacterDefinition.OathOfConquest,new[]{1,5,3,2,2,4,3,1},"右5为普通数字。征服成长在整次攻击之后；恐慌比较攻击开始时的双方对应加成。首击不回头享受新加成。");
-            a.Turn(0,0,1,0,1,"左1＋教官甲左3＝4，造成4伤害。开场攻0相同不恐慌，结算后攻击0→1。").RestOthers()
-                .Turn(0,0,1,1,1,"左4＋教官甲右2＝6，用已有攻1造成7伤害；按开场1＞0附恐慌，再成长至攻2。");
-            a.Verify=l=>l.Seats[1].Health==9&&l.Player.Character.AttackBonus==2&&l.Seats[1].HasStatus(StatusEffect.Panic);list.Add(a);
-            var b=Make("defense","守势成长与消退",CharacterDefinition.OathOfConquest,new[]{5,2,2,3,2,4,2,1},"左5普通数字。受击使用旧防御，攻击结束后成长；自己的回合末不持5，积累防御−1，最低0。");
+            var a=Make("attack","先交锋，后成长",CharacterDefinition.OathOfConquest,new[]{1,5,3,2,2,4,3,1},"右5为普通数字。征服成长在整次攻击之后；普通攻击不再自动施加恐慌。首击不回头享受新加成。");
+            a.Turn(0,0,1,0,1,"左1＋教官甲左3＝4，造成4伤害。此次普通攻击不自动恐慌，结算后攻击0→1。").RestOthers()
+                .Turn(0,0,1,1,1,"左4＋教官甲右2＝6，用已有攻1造成7伤害；不自动恐慌，再成长至攻2。");
+            a.Verify=l=>l.Seats[1].Health==9&&l.Player.Character.AttackBonus==2&&!l.Seats[1].HasStatus(StatusEffect.Panic);list.Add(a);
+            var b=Make("defense","守势成长与消退",CharacterDefinition.OathOfConquest,new[]{5,2,2,3,2,4,2,1},"左5普通数字。受击使用旧防御，攻击结束后成长；自己的回合未发起攻击，攻防积累各−1，最低0。");
             b.First=1;
             b.Turn(1,0,0,1,0,"教官甲2＋你的右2＝4，你20→16，防御0→1。").Rest(2).Rest(3)
-                .Turn(0,1,3,1,-1,"右2＋同袍右1＝3，保留左5，不攻击；已有防御1保持。")
-                .Turn(1,0,3,0,0,"教官甲左4＋同袍左2＝6，你16→11，防御1→2；按开场防御1＞0令甲恐慌。").Rest(2).Rest(3)
-                .Turn(0,0,3,0,-1,"左5＋同袍左2＝7，不再持5，回合末防御2→1。").RestOthers()
-                .Turn(0,0,3,0,-1,"左7＋同袍左2＝9，回复至20，回合末防御1→0。");
-            b.Verify=l=>l.Player.Health==20&&l.Player.Character.DefenseBonus==0;list.Add(b);
-            var c=Make("decay","威势也会衰减",CharacterDefinition.OathOfConquest,new[]{1,5,3,2,2,4,2,2},"重新布置已积累攻击2的示例，手1／5。回合内未发起攻击，积累攻击−1，最低0；合盾不算攻击。");
+                .Turn(0,1,3,1,-1,"右2＋同袍右1＝3，保留左5，不攻击；回合末防御1→0。")
+                .Turn(1,0,3,0,0,"教官甲左4＋同袍左2＝6，你16→10，防御0→1；不会自动令甲恐慌。").Rest(2).Rest(3)
+                .Turn(0,0,3,0,-1,"左5＋同袍左2＝7，没有攻击，回合末防御1→0。").RestOthers()
+                .Turn(0,0,3,0,-1,"左7＋同袍左2＝9，回复9至19，回合末防御保持0。");
+            b.Verify=l=>l.Player.Health==19&&l.Player.Character.DefenseBonus==0;list.Add(b);
+            var c=Make("decay","威势也会衰减",CharacterDefinition.OathOfConquest,new[]{1,5,3,2,2,4,2,2},"重新布置已积累攻击2的示例，手1／5。回合内未发起攻击，积累攻击与防御各−1，最低0；合盾不算攻击。");
             c.Prepare=g=>{
                 var p=P(g,0);var enemy=P(g,1);new AttackContext(p,enemy,p.LeftHand,1,g).Resolve(g.ChoiceProviderB,g);new AttackContext(p,enemy,p.LeftHand,1,g).Resolve(g.ChoiceProviderB,g);
                 enemy.SetHealthExact(20);enemy.ClearStatuses();};
@@ -141,9 +146,9 @@ namespace FingerDiceDuel.Assistant
         {
             for(int i=0;i<2;i++)
             {
-                bool marked=i==0;var s=Make(marked?"marked":"unmarked",marked?"攻击仇敌":"标记不延长射程",CharacterDefinition.OathOfVengeance,new[]{1,2,3,3,2,2,1,7},"首次自身回合选择仇敌。攻击仇敌每段+1，其他目标−1；远处标记不会扩大攻击范围。");
-                s.Turn(0,0,1,0,1,marked?"先标记教官甲，再用左1＋甲左3＝4攻击甲，造成5伤害。":"先标记远处教官乙，再用左1＋甲左3＝4攻击近处甲，仅造成3伤害。");
-                s.Verify=l=>l.Seats[1].Health==(marked?15:17);list.Add(s);
+                bool marked=i==0;var s=Make(marked?"marked":"unmarked",marked?"攻击仇敌":"标记不延长射程",CharacterDefinition.OathOfVengeance,new[]{1,2,3,3,2,2,1,7},"首次自身回合选择仇敌。攻击仇敌每段+2，其他目标−1；远处标记不会扩大攻击范围。");
+                s.Turn(0,0,1,0,1,marked?"先标记教官甲，再用左1＋甲左3＝4攻击甲，造成6伤害。":"先标记远处教官乙，再用左1＋甲左3＝4攻击近处甲，仅造成3伤害。");
+                s.Verify=l=>l.Seats[1].Health==(marked?14:17);list.Add(s);
             }
             var b=Make("retarget","仇敌破盾与纯运算",CharacterDefinition.OathOfVengeance,new[]{5,2,1,3,2,2,1,1},"完整左5盾，先标记教官乙。来袭时转标教官甲；仇敌碎盾后可选纯运算，只变数字，不攻击或推进回合。");
             b.Prepare=g=>Shield(P(g,0));
@@ -155,21 +160,21 @@ namespace FingerDiceDuel.Assistant
             c.Ranges=new[]{1,1,1,2};c.Prepare=g=>Hp(P(g,1),4);
             c.Turn(0,1,3,0,-1,"先标记甲，右1＋同袍左1＝2，无攻击，等待同袍。").Rest(1).Rest(2)
                 .Turn(3,0,2,0,1,"同袍左1＋教官乙左3＝4，跨距离击杀甲；你重新选择乙为仇敌。")
-                .Turn(0,0,3,1,2,"甲死亡后你与原三位乙距离1，左2＋同袍右2＝4攻击新仇敌，造成5。");
-            c.Verify=l=>!l.Seats[1].IsAlive&&l.Seats[2].Health==15&&l.Game.DistanceBetween(l.Player,l.Seats[2])==1;list.Add(c);
+                .Turn(0,0,3,1,2,"甲死亡后你与原三位乙距离1，左2＋同袍右2＝4攻击新仇敌，造成6。");
+            c.Verify=l=>!l.Seats[1].IsAlive&&l.Seats[2].Health==14&&l.Game.DistanceBetween(l.Player,l.Seats[2])==1;list.Add(c);
         }
         private static void Eight(List<BannersSample> list)
         {
             var a=Make("eight_borrow","八席中的同袍",CharacterDefinition.OathOfDevotion,new[]{2,1,1,2,1,2,2,2,1,2,1,2,1,2,1,2},"公开阵营3／3／2：你与原四、八位同队，队友2人、对手5人。借远处同袍的数，冲击仍只选邻近敌人。");
-            a.Turn(0,0,3,0,-1,"左2＋远处四位同袍左2＝4合盾，卫护斩选二位中立前锋。观察其他七席依次休整。").RestOthers();
-            a.Verify=l=>l.Seats[1].Health==18&&l.Seats[3].LeftHand.Value==2;list.Add(a);
+            a.Turn(0,0,3,0,-1,"左2＋远处四位同袍左2＝4合盾，护卫斩选二位中立前锋。观察其他七席依次休整。").RestOthers();
+            a.Verify=l=>l.Seats[1].Health==19&&l.Seats[3].LeftHand.Value==2;list.Add(a);
             var b=Make("eight_near","近处可以援护",CharacterDefinition.OathOfDevotion,new[]{5,2,2,2,1,2,1,2,1,2,1,2,1,2,4,2},"你的完整5盾；八位同袍12生命。二位前锋距2可攻击八位；你到八位距1，可以援护。");
             b.First=1;b.Ranges=new[]{1,2,1,1,1,1,1,1};b.Prepare=g=>{Shield(P(g,0));Hp(P(g,7),12);};
             b.Turn(1,0,7,0,7,"前锋左2＋八位同袍左4＝6，发动援护以自己的盾挡，再冲击二位前锋。");
-            b.Verify=l=>l.Player.Health==20&&l.Seats[7].Health==12&&l.Seats[1].Health==18;list.Add(b);
+            b.Verify=l=>l.Player.Health==20&&l.Seats[7].Health==12&&l.Seats[1].Health==19;list.Add(b);
             var c=Make("eight_far","远处无法援护",CharacterDefinition.OathOfDevotion,new[]{5,2,1,2,1,2,1,2,3,2,1,2,1,2,1,2},"四位同袍12生命，离你距离3。你的盾不能跨距离援护；本次观察实际损失，不算失败。");
             c.First=4;c.Prepare=g=>{Shield(P(g,0));Hp(P(g,3),12);};
-            c.Turn(4,0,3,0,3,"五位中立弩手3＋四位同袍1＝4，攻击同袍12→8；超出范围，不出现可发动的守护之誓。");
+            c.Turn(4,0,3,0,3,"五位中立弩手3＋四位同袍1＝4，攻击同袍12→8；超出范围，不出现可发动的守护灵光。");
             c.Verify=l=>l.Seats[3].Health==8&&l.Player.LeftHand.IsShield;list.Add(c);
             var d=Make("rewards","普通击杀的额外行动",CharacterDefinition.OathOfTheCrown,new[]{1,2,7,2,1,2,1,2,1,2,1,2,1,2,1,2},"独立改用王冠之誓。二位中立前锋9生命，无盾；普通攻击击杀后，中立仍有五／七位两人，奖励两次行动，不推进正常轮次。");
             d.Prepare=g=>Hp(P(g,1),9);

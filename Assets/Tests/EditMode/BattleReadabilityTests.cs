@@ -25,20 +25,20 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void OathOfDevotion_four_and_five_only_ask_for_shock_then_form_a_shield()
+        public void OathOfDevotion_four_five_and_six_only_ask_for_shock_then_form_a_shield()
         {
-            foreach (int value in new[] { 4, 5 })
+            foreach (int value in new[] { 4, 5, 6 })
             {
                 var actor = CharacterFactory.CreatePlayer("圣武士·奉献之誓", CharacterDefinition.OathOfDevotion);
                 var board = Board(actor, out var other, out _);
                 actor.LeftHand.SetValue(value - 1);
                 board.ClickHand(actor.LeftHand); board.ClickHand(other.LeftHand);
                 Assert.AreEqual(HandEffect.OathOfDevotionShockTarget, board.PendingEffect);
-                Assert.IsTrue(board.Hint.Contains("【冲击】"));
+                Assert.IsTrue(board.Hint.Contains("【护卫斩】"));
                 Assert.IsFalse(board.Phase == BoardPhase.ChoosingTargetPlayer);
                 board.ClickHand(other.LeftHand);
                 Assert.AreEqual(ShieldState.Formed, actor.LeftHand.State);
-                Assert.AreEqual(18, other.Health);
+                Assert.AreEqual(19, other.Health);
                 Assert.AreEqual(HandEffectType.Shield, board.LastTurn.Effect);
                 Assert.AreEqual(other, board.ActivePlayer);
             }
@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Tests
             board.ClickHand(other.LeftHand);
             Assert.AreEqual(0, board.PendingRequest.Value.Variant);
             board.ClickHand(other.LeftHand);
-            Assert.AreEqual(16, other.Health);
+            Assert.AreEqual(18, other.Health);
             Assert.AreEqual(ShieldState.Formed, actor.LeftHand.State);
         }
 

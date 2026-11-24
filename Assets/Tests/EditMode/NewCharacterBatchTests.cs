@@ -90,7 +90,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void OathOfDevotion_uses_six_as_an_ordinary_attack()
+        public void OathOfDevotion_uses_six_as_a_shield()
         {
             GameManager game = Match(CharacterDefinition.OathOfDevotion, CharacterDefinition.Blank,
                                      out _, out _);
@@ -104,9 +104,9 @@ namespace FingerDiceDuel.Tests
             TurnResult r = game.ExecuteTurn(oathOfDevotion, oathOfDevotion.LeftHand, foe.LeftHand);
 
             Assert.AreEqual(6, r.ResultValue);
-            Assert.AreEqual(HandEffectType.Attack6, r.Effect);
-            Assert.AreEqual(6, r.DamageDealt);
-            Assert.IsFalse(oathOfDevotion.LeftHand.IsShield);
+            Assert.AreEqual(HandEffectType.Shield, r.Effect);
+            Assert.AreEqual(0, r.DamageDealt);
+            Assert.IsTrue(oathOfDevotion.LeftHand.IsShield);
         }
 
         [Test]

@@ -84,8 +84,8 @@ namespace FingerDiceDuel.Tests
         {for(int level=21;level<30;level++)for(int i=0;i<TatteredBannersChapter.Samples(level).Count;i++)Drive(TatteredBannersLesson.Create(level,i));}
         [Test]public void Borrowing_changes_only_source_and_target_is_independent()
         {var l=TatteredBannersLesson.Create(21);Drive(l);Assert.AreEqual(6,l.Player.LeftHand.Value);Assert.AreEqual(4,l.Player.RightHand.Value);Assert.AreEqual(5,l.Seats[3].LeftHand.Value);Assert.AreEqual(2,l.Seats[2].LeftHand.Value);Assert.AreEqual(8,l.Seats[1].Health);}
-        [Test]public void Devotion_uses_two_distinct_shocks_and_ai_protects_real_teammate()
-        {var l=TatteredBannersLesson.Create(23);Drive(l);Assert.AreEqual(14,l.Seats[1].Health);var a=TatteredBannersLesson.Create(24,2);Drive(a);Assert.AreEqual(6,a.Player.Health);Assert.AreEqual(20,a.Seats[1].Health);Assert.AreEqual(18,a.Seats[2].Health);}
+        [Test]public void Devotion_forms_four_five_six_shields_and_ai_protects_real_teammate()
+        {var l=TatteredBannersLesson.Create(23);Drive(l);Assert.AreEqual(15,l.Seats[1].Health);var a=TatteredBannersLesson.Create(24,2);Drive(a);Assert.AreEqual(6,a.Player.Health);Assert.AreEqual(20,a.Seats[1].Health);Assert.AreEqual(19,a.Seats[2].Health);}
         [Test]public void Restraint_sample_works_with_either_random_hand()
         {for(int seed=0;seed<12;seed++){StatusRules.ResetInteractionRandomForTest(seed);Drive(TatteredBannersLesson.Create(25,0));}}
         [Test]public void Reward_actions_do_not_advance_normal_round_or_turn()

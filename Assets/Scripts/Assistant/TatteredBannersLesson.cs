@@ -166,7 +166,7 @@ namespace FingerDiceDuel.Assistant
                 if(q!=null)
                 {
                     if(q.Prompt.Contains("自然之怒"))return Seats[1].LeftHand;
-                    if(q.Prompt.Contains("不灭哨卫"))return Seats[3].LeftHand;
+                    if(q.Prompt.Contains("守御灵光"))return Seats[3].LeftHand;
                     if(q.Prompt.Contains("仇敌誓言"))
                         return Seats[Sample.Key=="unmarked"||Sample.Key=="retarget"?2:Sample.Key=="death"&&!Seats[1].IsAlive?2:1].LeftHand;
                     if(q.Prompt.Contains("复仇之魂"))return q.Prompt.Contains("加数")?Seats[3].LeftHand:_player.LeftHand;

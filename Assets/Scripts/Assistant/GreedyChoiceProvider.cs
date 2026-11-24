@@ -773,6 +773,7 @@ namespace FingerDiceDuel.Assistant
                 int projectedResult = result;
                 score += SpecialistMoveBonus(move, actor, projectedResult, other.Value, game);
                 score += AbjurationMoveBonus(actor, projectedResult, game);
+                score += PaladinMoveBonus(actor,move,projectedResult,game);
                 score += SpecialistCounterplayScore(move, actor, projectedResult, game) * DenyRatioPercent / 67;
             }
 

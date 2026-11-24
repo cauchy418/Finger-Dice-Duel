@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
+using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Assistant
 {
     public sealed partial class GreedyChoiceProvider
@@ -8,6 +9,12 @@ namespace FingerDiceDuel.Assistant
         private static double DivineTargetScore(string key,PlayerState owner,PlayerState target,GameManager game)
         {
             bool ally=game.IsKnownAlly(owner,target);
+            if(key==DivineChoices.ConquestAura)
+            {
+                if(ally||target.HasStatus(StatusEffect.HolyLight)||!OathOfConquestLogic.CanPanic(owner,target))return -100;
+                if(target.StatusTurnsLeft(StatusEffect.Panic)>=2&&ReferenceEquals(target.StatusSourceOf(StatusEffect.Panic),owner))return -5;
+                return 30+(game.CanReach(target,owner)?20:0)+Math.Max(0,StatusRules.EffectiveAttackBonus(target))*4;
+            }
             if(key==DivineChoices.Blessing)
             {
                 if(!ally||target.HasStatus(StatusEffect.HolyLight))return -100;
@@ -55,6 +62,41 @@ namespace FingerDiceDuel.Assistant
             if(game!=null&&value==9&&effect==HandEffectType.Heal&&actor.HasStatus(StatusEffect.WarBlessing)
                 &&DivineOptionScore(DivineChoices.Nine,1,actor,null,game)>DivineOptionScore(DivineChoices.Nine,0,actor,null,game))return HandEffectType.Attack8;
             return effect;
+        }
+        private int PaladinMoveBonus(PlayerState actor,LegalMove move,int result,GameManager game)
+        {
+            int other=actor.GetOtherHand(move.ActedHand).Value,score=0;
+            bool devotion=CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(actor)!=null;
+            bool paladin=PaladinGuardianAura.IsPaladin(actor);
+            if(paladin)
+            {
+                bool available=result==5||other==5||devotion&&(result==4||result==6||other==4||other==6);
+                if(available)foreach(var ally in game.Players)
+                    if(!ReferenceEquals(actor,ally)&&ally.IsAlive&&game.IsKnownAlly(actor,ally)&&game.CanReach(actor,ally))
+                    {score+=ally.Health<=8?24:10;break;}
+            }
+            var conquest=CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(actor);
+            if(conquest!=null)
+            {
+                bool attack=IsAttackEffect(DivineScoredEffect(actor,result,game));
+                if(!actor.BeganAttackThisTurn&&!attack)score-=(conquest.AttackStacks+conquest.DefenseStacks)*8;
+                if(move.ActedHand.IsShield)
+                    foreach(var target in OathOfConquestLogic.AuraCandidates(actor,game))
+                        if(DivineTargetScore(DivineChoices.ConquestAura,actor,target,game)>0){score+=20;break;}
+            }
+            if(IsAttackEffect(DivineScoredEffect(actor,result,game)))
+            {
+                var victim=ResolveIntendedVictim(move,actor,game,result);
+                if(victim!=null&&!game.IsKnownAlly(actor,victim))
+                {
+                    if(victim.HasAnyShield&&CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(victim)!=null
+                        &&OathOfConquestLogic.CanPanic(victim,actor)&&!actor.HasStatus(StatusEffect.HolyLight))score-=16;
+                    foreach(var guard in game.Players)
+                        if(game.IsKnownAlly(victim,guard)&&!game.IsKnownAlly(actor,guard)
+                            &&PaladinGuardianAura.Eligible(guard,actor,victim,game)&&guard.HasAnyShield){score-=12;break;}
+                }
+            }
+            return score;
         }
     }
 }

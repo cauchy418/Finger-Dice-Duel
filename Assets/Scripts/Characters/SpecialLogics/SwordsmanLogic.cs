@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -192,6 +192,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
 
             var ctx = new AttackContext(owner, defender, actedHand, (int)effect)
             {
+                GuardianChoiceVariant = 1,
                 IgnoreStatBonuses = true,
                 InflictsBleed = true,
                 AutoResolveDodge = true,

@@ -1,4 +1,4 @@
-﻿namespace FingerDiceDuel.Core
+namespace FingerDiceDuel.Core
 {
     /// <summary>技能战报与触发提示共用格式；只由实际结算处登记发动结果。</summary>
     public static class CombatText
@@ -35,9 +35,9 @@
                 case HandEffect.BreakerRangeChainBreak: skill = "破阵强袭"; action = "碎盾换射程触发：先破一面完整盾，再结算本次攻击。"; break;
                 case HandEffect.BreakerRangeBreak: skill = "无畏冲锋"; action = "可打碎另一只手的盾，使本次攻击距离∞。"; break;
                 case HandEffect.OathOfDevotionShockTarget:
-                    skill = "冲击"; action = (request.Variant == 1 ? "碎盾" : "合盾") + "触发：选择范围内一名角色，固定伤害 2，可格挡或闪避。"; break;
+                    skill = "护卫斩"; action = (request.Variant == 1 ? "碎盾" : "合盾") + "触发：选择范围内一名角色，固定伤害 1，可格挡或闪避。"; break;
                 case HandEffect.OathbreakerTransfer: skill = "转移攻击"; action = "持有5：选择一名持完整盾的非攻击者承受整次攻击，或不发动。"; break;
-                case HandEffect.OathOfDevotionRedirect: skill = "代挡"; action = "持有完整盾牌时，可替范围内的受击角色承受本次攻击。"; break;
+                case HandEffect.OathOfDevotionRedirect: skill = "守护灵光"; action = "持有5（奉献之誓也可持4/6）时，可替攻击范围内的角色承受整次攻击。"; break;
                 case HandEffect.WayOfTheTaiChiTaichi: skill = "太极八卦"; action = "可将一只太极手 5→0，减伤一半并反弹其余伤害。"; break;
                 case HandEffect.TheArchfeyCancel: skill = "妖精步伐·取消攻击"; action = "被攻击时可将同值手永久＋1，取消攻击并令攻击者魅惑2回合。"; break;
                 case HandEffect.LifeDomainAttackOrHeal: skill = "攻击／回复"; action = "选择照常攻击，或将本次数字用于治疗。"; break;

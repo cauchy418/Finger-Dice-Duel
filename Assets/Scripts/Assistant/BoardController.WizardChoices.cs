@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -161,7 +161,7 @@ namespace FingerDiceDuel.Assistant
             foreach(var p in _game.Players)
                 if(p.IsAlive && !ReferenceEquals(p,attack.Attacker) && p.Character is IPreTurnChoiceProvider provider)
                     provider.CollectPreTurnChoices(context,_pendingRequests);
-            CollectDevotionProtection(context);
+            CollectDevotionProtection(context, attack.GuardianChoiceVariant);
             _askedTheArchfeyCancel.Clear();
             CollectTheArchfeyCancelChoices(attack.Defender, attack.AttackValue, attack.Attacker);
             var shields=new List<Hand>();foreach(var hand in attack.Defender.Hands) if(hand.IsShield) shields.Add(hand);

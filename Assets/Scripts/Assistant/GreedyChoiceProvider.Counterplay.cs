@@ -89,6 +89,7 @@ namespace FingerDiceDuel.Assistant
                 || CharacterBehaviors.FirstImplementer<DraconicBloodlineLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<SchoolOfIllusionLogic>(foe) != null
                 || CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe) != null
+                || PaladinGuardianAura.IsPaladin(foe)
                 || ArcaneTricksterLogic.For(foe) != null;
 
         private static int AuditedOpportunityDelta(LegalMove move, PlayerState actor, int result, PlayerState foe, GameManager game)
@@ -126,6 +127,17 @@ namespace FingerDiceDuel.Assistant
                 if (combo.Matches(result, other)) setup += Math.Min(40, combo.Bonus / 4);
             int value = Math.Min(60, Math.Max(0, setup));
             var effect = DivineScoredEffect(foe, result, game);
+            if(PaladinGuardianAura.IsPaladin(foe))
+            {
+                bool devotion=CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(foe)!=null;
+                if(result==5||other==5||devotion&&(result==4||result==6||other==4||other==6))
+                    foreach(var ally in game.Players)
+                        if(ally.IsAlive&&!ReferenceEquals(ally,foe)&&game.IsKnownAlly(foe,ally)&&game.CanReach(foe,ally)){value+=12;break;}
+                if(devotion&&(effect==HandEffectType.Shield||source.IsShield)&&game.CanReach(foe,victim))
+                    value+=OathOfDevotionLogic.ShockDamage*8;
+                if(CharacterBehaviors.FirstImplementer<OathOfConquestLogic>(foe)!=null&&source.IsShield
+                    &&OathOfConquestLogic.CanPanic(foe,victim)&&!victim.HasStatus(StatusEffect.HolyLight))value+=16;
+            }
             if (effect == HandEffectType.Heal) value += HealingGain(foe, 9) * 3;
             if (effect == HandEffectType.Shield && !foe.HasStatus(StatusEffect.Tinnitus)) value += 16;
             if (!IsAttackEffect(effect) || !game.CanReach(foe, victim) || !StatusRules.CanAttackTarget(foe, victim, game)) return value;

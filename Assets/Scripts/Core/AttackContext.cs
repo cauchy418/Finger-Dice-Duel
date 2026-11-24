@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
@@ -987,9 +987,10 @@ namespace FingerDiceDuel.Core
         /// ⚠️ "代挡者自己不会代挡自己"由
         ///    <see cref="IAttackRedirector.TryRedirectToSelf"/> 内部判掉。
         /// </summary>
+        public int GuardianChoiceVariant { get; set; }
         private void TryRedirectDefender(GameManager manager)
         {
-            if(manager==null)return;var previous=manager.CurrentRedirectAttack;manager.CurrentRedirectAttack=this;
+            if(manager==null || IsKnowledgeForceDamage)return;var previous=manager.CurrentRedirectAttack;manager.CurrentRedirectAttack=this;
             try{TryRedirectDefenderCore(manager);}finally{manager.CurrentRedirectAttack=previous;}
         }
         private void TryRedirectDefenderCore(GameManager manager)
@@ -1010,23 +1011,14 @@ namespace FingerDiceDuel.Core
                 original = transferred;
             }
 
-            IReadOnlyList<PlayerState> all = manager.Players;
-            for (int i = 0; i < all.Count; i++)
+            foreach (var p in PaladinGuardianAura.Clockwise(manager, original))
             {
-                PlayerState p = all[i];
-                if (p == null || !p.IsAlive) continue;
-                if (ReferenceEquals(p, original)) continue;
-                if (ReferenceEquals(p, Attacker)) continue;
-
-                if (p.Character is IAttackRedirector redirector
-                    && redirector.TryRedirectToSelf(p, Attacker, original, manager))
-                {
-                    Defender = p;
-                    VisualRedirectKind="protection";
-                    WasRedirected = true;
-                    manager.NoteSkill(p, "守护之誓", $"代替 {original.Name} 承受攻击");
-                    return;
-                }
+                if (!PaladinGuardianAura.Accepts(p, Attacker, original, manager)) continue;
+                Defender = p;
+                VisualRedirectKind="protection";
+                WasRedirected = true;
+                manager.NoteSkill(p, "守护灵光", $"代替 {original.Name} 承受整次攻击");
+                return;
             }
         }
 

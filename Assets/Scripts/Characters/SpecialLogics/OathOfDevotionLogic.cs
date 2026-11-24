@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -6,9 +6,9 @@ namespace FingerDiceDuel.Core
     /// **圣武士·奉献之誓**（攻 0 / 防 0，攻击距离 1）。
     ///
     /// 玩家确认的规则：
-    ///   · **4 改为合出护盾**，6 正常攻击
+    ///   · **4 / 6 改为合出护盾**
     ///   · **合出盾、主动碎盾、被动被打碎盾**时，
-    ///     对**攻击范围内一名角色**（**含队友**）造成固定 **2 点伤害**
+    ///     对**攻击范围内一名角色**（**含队友**）造成固定 **1 点伤害**
     ///     —— **强制发动**（不能放弃），但**目标由玩家选**
     ///   · 攻击范围内的角色被攻击时，**可以把目标改成自己**
     ///
@@ -21,12 +21,12 @@ namespace FingerDiceDuel.Core
                                        FingerDiceDuel.Core.IAiMoveAdvisor,
                                        FingerDiceDuel.Core.ISkillUseCounter
     {
-        public bool HandlesResult(int value) => value == 4;
+        public bool HandlesResult(int value) => value == 4 || value == 6;
 
         public override string DisplayName => "圣武士·奉献之誓";
 
         /// <summary>
-        /// 本局**合出盾牌**几次（4/5）。
+        /// 本局**合出盾牌**几次（4/5/6）。
         ///
         /// ⚠️ 为什么需要它：<c>ShockLog</c> 只在**真正打出冲击**时才写，
         ///    而没有候选目标时会静默跳过（见 TriggerShock 的 early return）——
@@ -38,11 +38,11 @@ namespace FingerDiceDuel.Core
         /// <summary>本局发动招牌技能（合盾触发冲击）几次 —— <see cref="ISkillUseCounter"/>。</summary>
         public int SkillUseCount => ShieldFormCount;
 
-        /// <summary>一次运算同时破盾与合盾，可分别触发卫护斩。</summary>
+        /// <summary>一次运算同时破盾与合盾，可分别触发护卫斩。</summary>
         public override int ScoreMoveBonus(MoveValueContext context)
         {
             int after = context.ActedValueAfter;
-            if (after != 4 && after != 5) return 0;
+            if (after != 4 && after != 5 && after != 6) return 0;
             return context.ActedHand?.IsShield == true ? 400 : 30;
         }
 
@@ -53,26 +53,26 @@ namespace FingerDiceDuel.Core
         public override int BaseAttackRange => 1;
 
         public HandEffectType DisplayedEffectOf(int resultValue)
-            => resultValue == 4 ? HandEffectType.Shield : Hand.GetEffectType(resultValue);
+            => (resultValue == 4 || resultValue == 6) ? HandEffectType.Shield : Hand.GetEffectType(resultValue);
 
-        /// <summary>4 合盾只询问冲击目标，不再额外确认一次普通攻击目标。</summary>
+        /// <summary>4 / 6 合盾只询问冲击目标，不再额外确认一次普通攻击目标。</summary>
         public override bool ResultNeedsTarget(PreTurnChoiceContext context)
         {
             if (context == null) return false;
-            if (context.ResultValue == 4) return false;
+            if (context.ResultValue == 4 || context.ResultValue == 6) return false;
             return base.ResultNeedsTarget(context);
         }
 
         /// <summary>冲击造成的真实伤害。</summary>
-        public const int ShockDamage = 2;
+        public const int ShockDamage = 1;
 
-        /// <summary>把 4 改写成护盾。</summary>
+        /// <summary>把 4 / 6 改写成护盾。</summary>
         public HandEffectType RewriteEffect(PlayerState actor, Hand actedHand,
                                             int targetValue, GameManager manager)
         {
             int result = actedHand?.Value ?? 0;
 
-            if (result == 4) return HandEffectType.Shield;
+            if (result == 4 || result == 6) return HandEffectType.Shield;
 
             return Hand.GetEffectType(result);
         }
@@ -145,7 +145,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// 落实一次冲击：选一个范围内的人，以固定2点进入正常防守结算（不计攻防加成）。
+        /// 落实一次冲击：选一个范围内的人，以固定1点进入正常防守结算（不计攻防加成）。
         ///
         /// ⚠️ 只**回读已记录的答案**，不在结算里索取输入 ——
         ///    结算一旦开始就一次跑完（本项目反复踩过的坑）。
@@ -160,18 +160,15 @@ namespace FingerDiceDuel.Core
                                                  manager, variant);
             if (picked == null) picked = candidates[0];   // 强制发动 -> 兜底第一个
 
-            int before = picked.Health;
-            var attack = ResolveShockDamage(owner, sourceHand, picked, manager);
-            int dealt = attack?.ActualHealthDamage??System.Math.Max(0,before-picked.Health);
-
-            // 写进战报：这样"冲击到底有没有发生、扣了多少"一眼可见。
-            // 光看血条分不清"被盾挡了"还是"根本没触发"（玩家实测报告过疑惑）。
-            manager?.NoteShock(owner, picked, reason, dealt, attack?.WasBlocked == true ? "被护盾挡下"
-                : attack?.WasDodged == true ? "被闪避" : attack?.WasCancelled == true ? "被取消" : null);
+            ResolveShockDamage(owner, sourceHand, picked, manager, attack =>
+            {
+                manager?.NoteShock(owner, attack.Defender, reason, attack.ActualHealthDamage,
+                    attack.WasBlocked ? "被护盾挡下" : attack.WasDodged ? "被闪避" : attack.WasCancelled ? "被取消" : null);
+            });
         }
 
         /// <summary>
-        /// **落实一次冲击**：对范围内一个人造成 2 点伤害。
+        /// **落实一次冲击**：对范围内一个人造成 1 点伤害。
         ///
         /// ⚠️ 伤害**走 <see cref="AttackContext"/>**，所以：
         ///   · **可以被盾牌挡下**（消耗一面盾）
@@ -185,7 +182,7 @@ namespace FingerDiceDuel.Core
         /// 它的"攻击数字视为 0"，所以**邪术师·至高妖精无法取消它**（玩家此前确认过）。
         /// </summary>
         private AttackContext ResolveShockDamage(PlayerState owner, Hand sourceHand,
-                                        PlayerState target, GameManager manager)
+                                        PlayerState target, GameManager manager, System.Action<AttackContext> completed)
         {
             if (owner == null || target == null || !target.IsAlive) return null;
 
@@ -198,14 +195,20 @@ namespace FingerDiceDuel.Core
                 //（玩家要求的平衡性改动）。
                 IsSpecialAttack = true,
 
-                // ⚠️ 但伤害是**固定 2 点**，不叠加攻防加成（玩家确认）。
+                // ⚠️ 但伤害是**固定 1 点**，不叠加攻防加成（玩家确认）。
                 //
                 //    没有这一行的话，打游荡者·风流剑客（防 −2）会变成 2 + 2 = 4 点 ——
                 //    测试抓到过这个副作用。战士·剑士的追加攻击用的是同一个开关。
                 IgnoreStatBonuses = true,
             };
 
-            ctx.Resolve(manager?.GetChoiceProvider(target), manager);
+            System.Action resolve = () =>
+            {
+                ctx.Resolve(manager?.GetChoiceProvider(ctx.Defender), manager);
+                completed?.Invoke(ctx);
+                manager?.RefreshGameOver();
+            };
+            if (manager?.DeferWizardAttack?.Invoke(ctx, resolve) != true) resolve();
             return ctx;
         }
 
@@ -223,7 +226,7 @@ namespace FingerDiceDuel.Core
 
             var request = new ChoiceRequest(
                 HandEffect.OathOfDevotionShockTarget,
-                $"圣武士·奉献之誓【卫护斩】：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点冲击伤害。",
+                $"圣武士·奉献之誓【护卫斩】：{reason}，对攻击范围内一名角色造成 {ShockDamage} 点冲击伤害。",
                 handCandidates,
                 allowDecline: false,          // 强制发动 -> 不能放弃
                 declineResult: null,
@@ -254,11 +257,8 @@ namespace FingerDiceDuel.Core
         public void CollectRedirectChoice(PlayerState owner, PlayerState attacker, PlayerState target,
             GameManager manager, IList<ChoiceRequest> requests,int attackValue=0)
         {
-            if (owner == null || !owner.IsAlive || !HasFormedShield(owner) || ReferenceEquals(owner, attacker)
-                || ReferenceEquals(owner, target) || !manager.CanReach(owner, target)) return;
-            requests.Add(new ChoiceRequest(HandEffect.OathOfDevotionRedirect,
-                $"圣武士·奉献之誓【守护之誓】：攻击已转移至 {target.Name}，是否由自己承受？",
-                new List<Hand> { owner.LeftHand, owner.RightHand }, true, null, owner,resultValue:attackValue,relatedTarget:target,relatedActor:attacker));
+            if (PaladinGuardianAura.Eligible(owner, attacker, target, manager))
+                requests.Add(PaladinGuardianAura.Request(owner, attacker, target, manager, attackValue));
         }
 
         /// <summary>
@@ -275,32 +275,7 @@ namespace FingerDiceDuel.Core
         public bool TryRedirectToSelf(PlayerState owner, PlayerState attacker,
                                       PlayerState intendedTarget, GameManager manager)
         {
-            if (owner == null || attacker == null || intendedTarget == null) return false;
-            if (ReferenceEquals(owner, intendedTarget)) return false;   // 本来就是自己
-            if (!owner.IsAlive || !HasFormedShield(owner)) return false;
-
-            // **挨打的人**必须在自己攻击距离内（这才是"范围内的角色"）
-            if (!manager.CanReach(owner, intendedTarget)) return false;
-
-            var request = new ChoiceRequest(
-                HandEffect.OathOfDevotionRedirect,
-                $"队友 {intendedTarget.Name} 正被 {attacker.Name} 攻击：" +
-                $"要把目标改成自己吗？",
-                new List<Hand>(2) { owner.LeftHand, owner.RightHand },
-                allowDecline: true,
-                declineResult: null,             // 放弃 = 不改
-                decider: owner,relatedTarget:intendedTarget,relatedActor:attacker,resultValue:manager.CurrentRedirectAttack?.RawDamage??0);
-
-            // 控制器的答案仅本回合有效，不能读取第三方 sink 里上一回合留下的同意。
-            Hand chosen = manager.AutomaticChoicesFor?.Invoke(owner)==true
-                ? (manager.GetSkillPolicy(owner) as IChoiceProvider??manager.GetChoiceProvider(owner))?.ChooseHandFor(request,owner)
-                : manager.AnsweredLookupFor != null
-                ? manager.AnsweredLookupFor(owner, HandEffect.OathOfDevotionRedirect, 0)
-                : PreTurnChoiceReader.Read(
-                    manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
-                    manager.GetChoiceProvider(owner), request, owner);
-
-            return chosen != null;               // 选了任一只手 = 同意改成自己
+            return PaladinGuardianAura.Accepts(owner, attacker, intendedTarget, manager);
         }
 
         // ============================================================
@@ -407,7 +382,7 @@ namespace FingerDiceDuel.Core
             int result = Hand.ComputeSum(context.ActedHand.Value, context.TargetHand.Value);
 
             // 4 / 6：圣武士·奉献之誓的改写规则；5：手值本身就是护盾
-            return result == 4 || result == 5;
+            return result == 4 || result == 5 || result == 6;
         }
 
         /// <summary>
@@ -446,7 +421,7 @@ namespace FingerDiceDuel.Core
 
             requests.Add(new ChoiceRequest(
                 HandEffect.OathOfDevotionShockTarget,
-                $"圣武士·奉献之誓【卫护斩】（{reason}）：请选攻击范围内一名角色，" +
+                $"圣武士·奉献之誓【护卫斩】（{reason}）：请选攻击范围内一名角色，" +
                 $"造成 {ShockDamage} 点伤害（可被护盾挡下或闪避）。",
                 hands,
                 allowDecline: false,             // 强制发动（玩家只选目标）

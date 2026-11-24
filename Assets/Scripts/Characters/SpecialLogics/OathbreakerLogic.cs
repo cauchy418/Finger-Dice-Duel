@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                 && !ReferenceEquals(candidate, attacker)
                 && (candidate.LeftHand.State == ShieldState.Formed || candidate.RightHand.State == ShieldState.Formed);
 
-        private static ChoiceRequest TransferRequest(PlayerState owner, PlayerState attacker, GameManager manager)
+        public static ChoiceRequest TransferRequest(PlayerState owner, PlayerState attacker, GameManager manager, int variant = 0)
         {
             var hands = new List<Hand>();
             if (manager != null && HasFive(owner))
@@ -64,7 +64,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
                     }
             return new ChoiceRequest(HandEffect.OathbreakerTransfer,
                 "圣武士·破誓者【憎恨灵光】：选择一名持完整盾牌的角色承受整次攻击，或不发动。保留手中的5。",
-                hands, allowDecline: true, declineResult: null, decider: owner);
+                hands, allowDecline: true, declineResult: null, decider: owner, variant: variant);
         }
 
         public override void CollectPreTurnChoices(PreTurnChoiceContext context, IList<ChoiceRequest> requests)
@@ -94,19 +94,17 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             (target.Character as IPreTurnChoiceProvider)?.CollectPreTurnChoices(defense, defenses);
             foreach (var request in defenses)
                 if(answer!=null)if (request.Effect != HandEffect.OathbreakerTransfer) requests.Add(request);
-            foreach (var p in manager.Players)
-                CharacterBehaviors.FirstImplementer<OathOfDevotionLogic>(p)
-                    ?.CollectRedirectChoice(p, context.Actor, target, manager, requests,context.EffectiveResult);
+            PaladinGuardianAura.Collect(context.Actor, target, manager, requests, context.EffectiveResult, answered.Variant);
         }
 
         public PlayerState TransferAttack(AttackContext context, GameManager manager)
         {
             var owner = context?.Defender;
             if (!CharacterBehaviors.ActorHas(owner, this) || !HasFive(owner) || manager == null) return null;
-            var request = TransferRequest(owner, context.Attacker, manager);
+            var request = TransferRequest(owner, context.Attacker, manager, context.GuardianChoiceVariant);
             if (request.Candidates.Count == 0) return null;
             var lookup = context.AnsweredLookupFor ?? manager.AnsweredLookupFor;
-            Hand answer = lookup != null ? lookup(owner, HandEffect.OathbreakerTransfer, 0)
+            Hand answer = lookup != null ? lookup(owner, HandEffect.OathbreakerTransfer, context.GuardianChoiceVariant)
                 : PreTurnChoiceReader.Read(manager.GetChoiceProvider(owner) as IPreTurnChoiceSink,
                     manager.GetChoiceProvider(owner), request, owner);
             var target = manager.OwnerOfHand(answer);

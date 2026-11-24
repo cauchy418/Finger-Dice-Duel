@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -258,8 +258,9 @@ namespace FingerDiceDuel.Assistant
             // 带**玩家参数**的版本：邪术师·至高妖精是场上的第三方，
             // 取消攻击的抉择不属于行动方也不属于防守方（见 CollectTheArchfeyCancelChoices）。
             _game.AnsweredLookupFor = GetAnsweredChoiceFor;
-            _game.HasAnsweredChoiceFor = (player, effect, variant) => ReferenceEquals(player, ActivePlayer)
-                && _answeredThisTurn.ContainsKey(AnswerKey(effect, variant));
+            _game.HasAnsweredChoiceFor = (player, effect, variant) => effect == HandEffect.OathOfDevotionRedirect
+                ? player != null && _guardianAnswers.TryGetValue(player, out var answers) && answers.ContainsKey(variant)
+                : ReferenceEquals(player, ActivePlayer) && _answeredThisTurn.ContainsKey(AnswerKey(effect, variant));
             _game.DeferWizardChoice = QueueWizardChoice;
             _game.DeferWizardAttack = QueueWizardAttack;
             _game.WizardPolicyFor = p=> GetChoice(p) as IWizardChoicePolicy;
@@ -875,8 +876,11 @@ namespace FingerDiceDuel.Assistant
         /// ⚠️ 用 <c>_askedTheArchfeyCancel</c> 的**键是否存在**表达"问过"，
         ///    这样"问过但选了不发动"（值为 null）与"没问过"能区分开。
         /// </summary>
+        private readonly Dictionary<PlayerState, Dictionary<int, Hand>> _guardianAnswers = new Dictionary<PlayerState, Dictionary<int, Hand>>();
         private Hand GetAnsweredChoiceFor(PlayerState player, HandEffect effect, int variant)
         {
+            if (effect == HandEffect.OathOfDevotionRedirect)
+                return player != null && _guardianAnswers.TryGetValue(player, out var answers) && answers.TryGetValue(variant, out var guard) ? guard : null;
             if (player != null && effect == HandEffect.TheArchfeyCancel
                 && _askedTheArchfeyCancel.TryGetValue(player, out Hand answer))
             {
@@ -914,6 +918,12 @@ namespace FingerDiceDuel.Assistant
         /// <summary>登记一条"玩家/AI 已经答过"的抉择（本回合有效）。</summary>
         private void RecordAnswer(HandEffect effect, int variant, Hand choice)
         {
+            if (effect == HandEffect.OathOfDevotionRedirect && _pendingChoiceDecider != null)
+            {
+                if (!_guardianAnswers.TryGetValue(_pendingChoiceDecider, out var answers))
+                    _guardianAnswers[_pendingChoiceDecider] = answers = new Dictionary<int, Hand>();
+                answers[variant] = choice;
+            }
             string key = AnswerKey(effect, variant);
             if (choice == null) _answeredThisTurn.Remove(key);
             else _answeredThisTurn[key] = choice;
@@ -1152,6 +1162,7 @@ namespace FingerDiceDuel.Assistant
                 _sinkA?.ClearChoices();
                 _sinkB?.ClearChoices();
                 _answeredThisTurn.Clear();
+                _guardianAnswers.Clear();
                 MarkTurnBoundaryCrossed();
             }
 
@@ -2690,11 +2701,15 @@ namespace FingerDiceDuel.Assistant
             AdvanceCharacterChoice();
         }
 
-        private void CollectDevotionProtection(PreTurnChoiceContext context)
+        private PreTurnChoiceContext _protectionChoiceContext;
+        private void CollectDevotionProtection(PreTurnChoiceContext context, int variant = 0)
         {
-            if(!context.IsAttack||CharacterBehaviors.FirstImplementer<IAttackTransfer>(context.Defender)!=null)return;
-            foreach(var p in _game.Players)foreach(var protect in CharacterBehaviors.Implementers<IProtectionChoiceProvider>(p))
-                protect.CollectRedirectChoice(p,context.Actor,context.Defender,_game,_pendingRequests,context.EffectiveResult);
+            _protectionChoiceContext = context;
+            foreach (var answers in _guardianAnswers.Values) answers.Remove(variant);
+            if (!context.IsAttack) return;
+            foreach (var request in _pendingRequests)
+                if (request.Effect == HandEffect.OathbreakerTransfer) return;
+            PaladinGuardianAura.Collect(context.Actor, context.Defender, _game, _pendingRequests, context.EffectiveResult, variant);
         }
 
         private void CollectFrom(PlayerState player, PreTurnChoiceContext context)
@@ -3109,14 +3124,52 @@ namespace FingerDiceDuel.Assistant
             if (answered.Decider == null && ActivePlayer == null) return;
 
             var provider = (answered.Decider ?? ActivePlayer)?.Character as IPreTurnChoiceProvider;
-            if (provider == null) return;
-
             int before = _pendingRequests.Count;
-            provider.CollectFollowUpChoices(answered, answer, _pendingRequests);
-            // 代挡者并非原防守方；确认代挡后再收集其碎盾冲击目标。
+            provider?.CollectFollowUpChoices(answered, answer, _pendingRequests);
+            if (answered.Effect == HandEffect.OathbreakerTransfer && answered.Variant == 1 && _pendingRequests.Count > before)
+            {
+                var extraDefense = _pendingRequests.GetRange(before, _pendingRequests.Count - before);
+                _pendingRequests.RemoveRange(before, _pendingRequests.Count - before);
+                _pendingRequests.InsertRange(_pendingRequestIndex, extraDefense);
+            }
+            if (answered.Effect == HandEffect.SwordsmanFollowUp && answer != null && _protectionChoiceContext != null)
+            {
+                var context = _protectionChoiceContext;
+                var extra = new List<ChoiceRequest>();
+                var transfer = CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.OathbreakerLogic>(context.Defender);
+                if (transfer != null)
+                {
+                    var request = FingerDiceDuel.Characters.SpecialLogics.OathbreakerLogic.TransferRequest(context.Defender, context.Actor, _game, 1);
+                    if (request.Candidates.Count > 0) extra.Add(request);
+                }
+                if (extra.Count == 0) PaladinGuardianAura.Collect(context.Actor, context.Defender, _game, extra, context.EffectiveResult, 1);
+                _pendingRequests.InsertRange(_pendingRequestIndex, extra);
+            }
             if (answered.Effect == HandEffect.OathOfDevotionRedirect && answer != null)
-                foreach (var devotion in CharacterBehaviors.Implementers<OathOfDevotionLogic>(answered.Decider ?? ActivePlayer))
-                    devotion.CollectProtectionShock(answered.Decider ?? ActivePlayer, _game, _pendingRequests);
+            {
+                // Stop asking immediately, before either a human or an AI sees another prompt.
+                for (int i = _pendingRequests.Count - 1; i >= _pendingRequestIndex; i--)
+                    if (_pendingRequests[i].Effect == HandEffect.OathOfDevotionRedirect && _pendingRequests[i].Variant == answered.Variant) _pendingRequests.RemoveAt(i);
+            }
+            // Collect defenses for the actual guardian, while preventing a second transfer/aura chain.
+            if (answered.Effect == HandEffect.OathOfDevotionRedirect && answer != null)
+            {
+                var guardian = answered.Decider ?? ActivePlayer;
+                int defenseStart = _pendingRequests.Count;
+                var original = _protectionChoiceContext;
+                var defense = new PreTurnChoiceContext(answered.RelatedActor ?? ActivePlayer, guardian,
+                    original?.ActedHand ?? SelectedHand, original?.TargetHand ?? _selectedTarget)
+                {
+                    Manager = _game, ResultValue = original?.ResultValue ?? answered.ResultValue,
+                    IsResolvingAttack = original?.IsResolvingAttack == true,
+                    ActedHandValueBefore = original?.ActedHandValueBefore ?? 0,
+                    TargetHandValueBefore = original?.TargetHandValueBefore ?? 0,
+                };
+                CollectFrom(guardian, defense);
+                for (int i = _pendingRequests.Count - 1; i >= defenseStart; i--)
+                    if (_pendingRequests[i].Effect == HandEffect.OathbreakerTransfer
+                        || _pendingRequests[i].Effect == HandEffect.OathOfDevotionRedirect) _pendingRequests.RemoveAt(i);
+            }
 
             // 防御性：不要空候选
             for (int i = _pendingRequests.Count - 1; i >= before; i--)
@@ -3557,6 +3610,7 @@ namespace FingerDiceDuel.Assistant
             RecordAnswer(request.Effect, request.Variant, pick);
 
             _pendingRequestIndex++;
+            AppendFollowUpChoices(request, pick);
             AdvanceCharacterChoice();
         }
 
@@ -4452,6 +4506,7 @@ namespace FingerDiceDuel.Assistant
         private void FlushSkillLog()
         {
             foreach (string line in _game.TakeSkillLog()) _log.Add(line);
+            foreach (string line in _game.TakeShockLog()) _log.Add(line);
         }
 
         public static IReadOnlyList<string> DescribeTurnLines(TurnResult t) => BattleTurnText.Lines(t);

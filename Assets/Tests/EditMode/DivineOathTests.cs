@@ -59,11 +59,11 @@ namespace FingerDiceDuel.Tests
         }
         [Test] public void Life_heal_cleanses_negative_statuses_but_preserves_blessing()
         {var g=Match(CharacterDefinition.LifeDomain,CharacterDefinition.Blank);var b=g.PlayerB;b.ApplyStatus(StatusEffect.WarBlessing,2);b.ApplyStatus(StatusEffect.Poison,2);b.SetHealthExact(5);LifeDomainLogic.CleanseAndHeal(g.PlayerA,b,9,g);Assert.True(b.HasStatus(StatusEffect.WarBlessing));Assert.False(b.HasStatus(StatusEffect.Poison));Assert.AreEqual(14,b.Health);}
-        [Test] public void Conquest_grows_after_attack_and_fear_uses_starting_bonuses()
+        [Test] public void Conquest_grows_after_attack_without_automatic_fear()
         {
             var g=Match(CharacterDefinition.OathOfConquest,CharacterDefinition.Blank);var a=g.PlayerA;var b=g.PlayerB;a.LeftHand.SetValue(5);
             var first=Hit(g,a,b);Assert.AreEqual(4,first.AppliedDamage);Assert.AreEqual(1,((OathOfConquestLogic)a.Character).AttackStacks);Assert.False(b.HasStatus(StatusEffect.Panic));
-            var second=Hit(g,a,b);Assert.AreEqual(5,second.AppliedDamage);Assert.AreEqual(2,((OathOfConquestLogic)a.Character).AttackStacks);Assert.True(b.HasStatus(StatusEffect.Panic));Assert.AreEqual(a,b.StatusSourceOf(StatusEffect.Panic));
+            var second=Hit(g,a,b);Assert.AreEqual(5,second.AppliedDamage);Assert.AreEqual(2,((OathOfConquestLogic)a.Character).AttackStacks);Assert.False(b.HasStatus(StatusEffect.Panic));
         }
         [Test] public void Conquest_has_no_growth_without_five_and_broken_five_still_counts()
         {var g=Match(CharacterDefinition.OathOfConquest,CharacterDefinition.Blank);var a=g.PlayerA;Hit(g,a,g.PlayerB);Assert.AreEqual(0,((OathOfConquestLogic)a.Character).AttackStacks);a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Broken);Hit(g,a,g.PlayerB);Assert.AreEqual(1,((OathOfConquestLogic)a.Character).AttackStacks);}
@@ -73,18 +73,18 @@ namespace FingerDiceDuel.Tests
             var hit=Hit(g,g.PlayerA,b,8,2);Assert.AreEqual(1,hit.BlockedHits);Assert.AreEqual(1,((OathOfConquestLogic)b.Character).DefenseStacks);
             Assert.AreEqual(4,hit.AppliedDamage); // 新防御不提前减少第二段。
         }
-        [Test] public void Conquest_defensive_fear_compares_defense_not_attack()
-        {var g=Match(CharacterDefinition.OathOfConquest,CharacterDefinition.Blank);var a=g.PlayerA;a.LeftHand.SetValue(5);Hit(g,g.PlayerB,a);Assert.False(g.PlayerB.HasStatus(StatusEffect.Panic));Hit(g,g.PlayerB,a);Assert.True(g.PlayerB.HasStatus(StatusEffect.Panic));}
-        [Test] public void Conquest_decay_removes_only_one_owned_stack_and_never_negative()
+        [Test] public void Conquest_defensive_growth_without_shield_break_does_not_inflict_fear()
+        {var g=Match(CharacterDefinition.OathOfConquest,CharacterDefinition.Blank);var a=g.PlayerA;a.LeftHand.SetValue(5);Hit(g,g.PlayerB,a);Assert.False(g.PlayerB.HasStatus(StatusEffect.Panic));Hit(g,g.PlayerB,a);Assert.False(g.PlayerB.HasStatus(StatusEffect.Panic));}
+        [Test] public void Conquest_idle_decay_removes_one_stack_from_each_bonus_and_never_negative()
         {
             var g=Match(CharacterDefinition.OathOfConquest,CharacterDefinition.Blank);var a=g.PlayerA;a.LeftHand.SetValue(5);Hit(g,a,g.PlayerB);Hit(g,a,g.PlayerB);Hit(g,g.PlayerB,a);Hit(g,g.PlayerB,a);
-            g.ForceActivePlayerForTest(a);g.BeginTurn();g.ResolveStatusTurnEnd(a);var skill=(OathOfConquestLogic)a.Character;Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(2,skill.DefenseStacks);
-            a.LeftHand.SetValue(4);g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,skill.AttackStacks);Assert.AreEqual(1,skill.DefenseStacks);g.ResolveStatusTurnEnd(a);g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,skill.DefenseStacks);
+            g.ForceActivePlayerForTest(a);g.BeginTurn();g.ResolveStatusTurnEnd(a);var skill=(OathOfConquestLogic)a.Character;Assert.AreEqual(1,skill.AttackStacks);Assert.AreEqual(1,skill.DefenseStacks);
+            a.LeftHand.SetValue(4);g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,skill.AttackStacks);Assert.AreEqual(0,skill.DefenseStacks);g.ResolveStatusTurnEnd(a);g.ResolveStatusTurnEnd(a);Assert.AreEqual(0,skill.DefenseStacks);
         }
         [Test] public void Vengeance_initial_target_is_required_and_cannot_be_self()
         {var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();Assert.False(qs[0].AllowDecline);Assert.False(qs[0].Choose(null));Assert.False(qs[0].Candidates.Contains(g.PlayerA.LeftHand));qs[0].Choose(g.PlayerB.LeftHand);Assert.AreEqual(g.PlayerB,((IVowOfEnmity)g.PlayerA.Character).VowTarget);}
         [Test] public void Vengeance_bonus_applies_to_each_segment_and_outside_target_is_minus_one()
-        {var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();qs[0].Choose(g.PlayerB.LeftHand);var marked=Hit(g,g.PlayerA,g.PlayerB,8,2);Assert.AreEqual(10,marked.AppliedDamage);var other=Hit(g,g.PlayerA,g.PlayerC,8,2);Assert.AreEqual(6,other.AppliedDamage);}
+        {var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();qs[0].Choose(g.PlayerB.LeftHand);var marked=Hit(g,g.PlayerA,g.PlayerB,8,2);Assert.AreEqual(12,marked.AppliedDamage);var other=Hit(g,g.PlayerA,g.PlayerC,8,2);Assert.AreEqual(6,other.AppliedDamage);}
         [Test] public void Vengeance_human_can_transfer_before_incoming_attack()
         {
             var g=Four(CharacterDefinition.OathOfVengeance);var qs=Capture(g);g.BeginTurn();qs[0].Choose(g.PlayerC.LeftHand);

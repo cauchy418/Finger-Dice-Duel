@@ -48,6 +48,7 @@ namespace FingerDiceDuel.Assistant
                 case 27:map=new[]{0,1,2,3,4};break;
                 case 28:map=new[]{0,1,2,2,3,3,4,4,5};break;
                 case 29:map=new[]{0,3,3,4,4,5,5};break;
+                case 37:map=new[]{0,1,2,3,3,3,4,4,5};break;
             }
             for(int i=0;i<spec.Steps.Count;i++)
             {

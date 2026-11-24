@@ -1,4 +1,4 @@
-﻿using FingerDiceDuel.Core;
+using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters.SpecialLogics
 {
@@ -31,15 +31,15 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if (owner == null || !owner.IsAlive || damage <= 0 || manager == null) return;
             if (owner.Health >= 10)
             {
-                AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"不灭哨卫 · 选择射程内另一名角色回复2",owner,manager,
+                AncientRoleChoices.Offer(AncientRoleChoices.AncientHeal,"守御灵光 · 选择射程内另一名角色回复2",owner,manager,
                     AncientRoleChoices.OtherPlayers(owner,manager,true),false,true,hand=>{
                         var target=manager.OwnerOfHand(hand);if(!manager.CanReach(owner,target))return;
-                        var frame=manager.CaptureVisualFrame();target.Heal(2,onHealed:actual=>manager.NoteSkill(owner,"不灭哨卫",$"{target.Name} 回复{actual}",target,new SkillVisualData(value:actual),frame),visualManager:manager);});
+                        var frame=manager.CaptureVisualFrame();target.Heal(2,onHealed:actual=>manager.NoteSkill(owner,"守御灵光",$"{target.Name} 回复{actual}",target,new SkillVisualData(value:actual),frame),visualManager:manager);});
             }
             else
             {
                 var frame=manager.CaptureVisualFrame();owner.Heal(2,onHealed:actual=>
-                    manager.NoteSkill(owner,"不灭哨卫","回复 "+actual+" 点",owner,new SkillVisualData(value:actual),frame),visualManager:manager);
+                    manager.NoteSkill(owner,"守御灵光","回复 "+actual+" 点",owner,new SkillVisualData(value:actual),frame),visualManager:manager);
             }
         }
 

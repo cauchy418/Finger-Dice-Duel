@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -190,18 +190,11 @@ namespace FingerDiceDuel.Core
             description: "两只手均为 7 时进入潜行：不能被攻击；每次潜行可以跳过一回合；" +
                          "从潜行发起的攻击伤害 +7，命中附流血2回合。攻防 +2 / -1。");
 
-        /// <summary>
-        /// 圣武士·奉献之誓：4 改为合盾，6 正常攻击；合盾与碎盾时对范围内一名角色
-        /// 造成 2 点真实伤害（强制发动、玩家选目标）；
-        /// 范围内有人被攻击时可以把目标改成自己。
-        /// 攻防 0 / +1。
-        /// </summary>
+        /// <summary>奉献之誓：4/6合盾、扩展守护灵光、合盾或碎盾护卫斩。</summary>
         public static CharacterDefinition OathOfDevotion { get; } = new CharacterDefinition(
             OathOfDevotionId, "圣武士·奉献之誓", SpecialLogicType.OathOfDevotion,
             attackBonus: 0, defenseBonus: 0,
-            description: "4 改为合盾，6 正常攻击；合出盾、主动碎盾、被打碎盾时，" +
-                         "对攻击范围内一名角色造成固定 2 点冲击（强制发动，目标自选）；" +
-                         "自己持有完整盾牌时，攻击范围内的其他角色被攻击，可以把目标改成自己；代挡碎盾照常触发卫护斩。攻防 0 / 0。");
+            description: "4、6改为合盾；持4、5或6时可替范围内角色承受攻击，每次攻击仅代挡一次；合盾或碎盾时，对范围内一名其他角色造成固定1点冲击。攻防0/0。");
 
         /// <summary>
         /// 邪术师·至高妖精：成为攻击目标时，若攻击数字与自己某只手相同，
@@ -518,9 +511,9 @@ namespace FingerDiceDuel.Core
         public static CharacterDefinition TheHexblade {get;} = new CharacterDefinition(TheHexbladeId,"邪术师·咒剑",SpecialLogicType.TheHexblade,attackBonus:1,defenseBonus:-1,englishName:"The Hexblade",description:"无效果运算后可施加等于结果点数的诅咒，对其每段攻击+2；本人击杀诅咒目标召唤10生命咒缚幽灵，继承死者手值与座位，下一轮行动，占位计距但不计胜负人数。距离2，挥砍。");
 
         public const string OathOfConquestId="paladin_oath_of_conquest";
-        public static CharacterDefinition OathOfConquest {get;}=new CharacterDefinition(OathOfConquestId,"圣武士·征服之誓",SpecialLogicType.OathOfConquest,attackBonus:0,defenseBonus:0,englishName:"Oath of Conquest",description:"攻击开始持5则整次攻击后攻击+1；被攻击开始持5则结算后防御+1。回合结束未发起攻击则技能攻击加成−1，未持5则技能防御加成−1，最低0。按攻击开始时实际数值，攻击加成高于受击者或被防御加成低于自己的角色攻击，结算后令对方恐慌2回合。距离1，钝击，攻防0/0。");
+        public static CharacterDefinition OathOfConquest {get;}=new CharacterDefinition(OathOfConquestId,"圣武士·征服之誓",SpecialLogicType.OathOfConquest,attackBonus:0,defenseBonus:0,englishName:"Oath of Conquest",description:"攻击开始持5则整次攻击后攻击+1；被攻击开始持5则结算后防御+1。回合结束未发起攻击则技能攻防加成各−1，最低0。自己的盾牌破碎时，可选攻击或防御加成低于自己的另一名角色，使其恐慌2回合。距离1，钝击，攻防0/0。");
         public const string OathOfVengeanceId="paladin_oath_of_vengeance";
-        public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+1，对其他角色−1。仇敌每打碎自己一面盾（包括破阵强袭），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
+        public static CharacterDefinition OathOfVengeance {get;}=new CharacterDefinition(OathOfVengeanceId,"圣武士·复仇之誓",SpecialLogicType.OathOfVengeance,attackBonus:0,defenseBonus:0,englishName:"Oath of Vengeance",description:"开局必须为一名其他角色标记仇敌誓言；受到攻击时可转移至攻击者，仇敌死亡后可重新选择。对仇敌每段伤害+2，对其他角色−1。仇敌每打碎自己一面盾（包括破阵强袭），可进行一次只改手值的额外运算，也可放弃。距离1，钝击，攻防0/0。");
 
         public const string TrickeryDomainId="cleric_trickery_domain", TempestDomainId="cleric_tempest_domain";
         public static CharacterDefinition TrickeryDomain {get;}=new CharacterDefinition(TrickeryDomainId,"牧师·诡术领域",SpecialLogicType.TrickeryDomain,defenseBonus:-1,englishName:"Trickery Domain",description:"他人借你的手运算，若原运算手、原加数或结果为2，可交换你的原加数与对方结果；对方按换入数字打出，你仅改手值。交换后可令运算者魅惑2回合。距离∞，近钝击远穿刺。");

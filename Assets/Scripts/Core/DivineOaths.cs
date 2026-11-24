@@ -7,6 +7,7 @@ namespace FingerDiceDuel.Core
     public static class DivineChoices
     {
         public const string Blessing="war_blessing", Nine="war_blessing_nine", Vow="vow_of_enmity", Retarget="vow_retarget";
+        public const string ConquestAura="conquest_aura";
         public static bool IsAttack(HandEffectType effect)=>effect==HandEffectType.Attack4||effect==HandEffectType.Attack6||effect==HandEffectType.Attack8;
         public static bool AttackDigit(PlayerState owner,int value)
             =>IsAttack(CharacterBehaviors.DisplayedEffectOf(owner,value))

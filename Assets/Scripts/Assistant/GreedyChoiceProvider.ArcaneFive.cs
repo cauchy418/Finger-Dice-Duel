@@ -15,7 +15,7 @@ namespace FingerDiceDuel.Assistant
             foreach(var target in targets)
             {
                 bool ally=AncientAlly(game,owner,target);double score;
-                if(key==DivineChoices.Blessing||key==DivineChoices.Vow)
+                if(key==DivineChoices.Blessing||key==DivineChoices.Vow||key==DivineChoices.ConquestAura)
                     score=DivineTargetScore(key,owner,target,game);
                 else if(key==ArcaneChoices.Transmute)
                 {

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace FingerDiceDuel.Core
 {
@@ -56,13 +56,18 @@ namespace FingerDiceDuel.Core
             {
                 IsSpecialAttack = true, IgnoreStatBonuses = true, IsReflected = true,
                 ReflectDepth = ReflectDepth + 1,
+                GuardianChoiceVariant = 2,
                 AttackType = type == AttackDamageType.None ? AttackDamageType.Bludgeoning : type,
             };
-            reflected.Resolve(manager.GetChoiceProvider(Attacker), manager,()=>{
+            System.Action resolve = () => reflected.Resolve(manager.GetChoiceProvider(reflected.Defender), manager,()=>{
                 ReflectedDealt += reflected.AppliedDamage;
                 ReflectedAttackType = reflected.AttackType;
                 completed();
             });
+            foreach (var guardian in manager.Players)
+                if (PaladinGuardianAura.Eligible(guardian, reflected.Attacker, reflected.Defender, manager)
+                    && manager.DeferWizardAttack?.Invoke(reflected, resolve) == true) return;
+            resolve();
         }
     }
 }

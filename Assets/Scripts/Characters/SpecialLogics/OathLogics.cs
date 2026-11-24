@@ -23,17 +23,36 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         {
             bool five=_five.TryGetValue(attack,out bool value)&&value;_five.Remove(attack);
             if(!owner.IsAlive||attack.IsStatusDamage||attack.WasCancelled)return;
-            var target=initiated?attack.Defender:attack.Attacker;
-            bool panic=initiated?attack.AttackBonusAtStart(owner)>attack.AttackBonusAtStart(target)
-                :attack.DefenseBonusAtStart(owner)>attack.DefenseBonusAtStart(target);
             if(five){if(initiated)AttackStacks++;else DefenseStacks++;SkillUseCount++;
                 game?.NoteSkill(owner,"征服威压",initiated?"攻击+1":"防御+1",owner,new SkillVisualData(value:1,variant:initiated?"attack":"defense"));}
-            if(panic&&target?.IsAlive==true)attack.ApplyAttachedStatus(target,StatusEffect.Panic,2,owner,game,"恐惧光环");
+        }
+        public static bool CanPanic(PlayerState owner,PlayerState target)
+            =>owner?.IsAlive==true&&target?.IsAlive==true&&!ReferenceEquals(owner,target)
+                &&(StatusRules.EffectiveAttackBonus(target)<StatusRules.EffectiveAttackBonus(owner)
+                    ||StatusRules.EffectiveDefenseBonus(target)<StatusRules.EffectiveDefenseBonus(owner));
+        public static List<PlayerState> AuraCandidates(PlayerState owner,GameManager game)
+        {
+            var targets=new List<PlayerState>();
+            if(game!=null)foreach(var target in game.Players)if(CanPanic(owner,target))targets.Add(target);
+            return targets;
+        }
+        public override void OnOwnShieldBroken(PlayerState owner,Hand shield,GameManager game)
+        {if(game?.ResolvingPassiveShieldBreak!=true)OfferAura(owner,game);}
+        public override void OnOtherShieldBroken(PlayerState owner,Hand shield,GameManager game)=>OfferAura(owner,game);
+        private static void OfferAura(PlayerState owner,GameManager game)
+        {
+            if(owner?.IsAlive!=true||owner.IsPolymorphed||game==null)return;
+            DivineChoices.ChooseTarget(DivineChoices.ConquestAura,"征服灵光 · 选择攻击或防御加成低于自己的另一名角色，或不发动",owner,game,AuraCandidates(owner,game),true,target=>{
+                if(!CanPanic(owner,target))return;
+                target.ApplyStatus(StatusEffect.Panic,2,owner);
+                game.NoteSkill(owner,"征服灵光",target.Name+" 恐慌2回合",target,new SkillVisualData(value:2,status:StatusEffect.Panic));
+            });
         }
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {
+            if(owner.BeganAttackThisTurn)return;
             if(!owner.BeganAttackThisTurn&&AttackStacks>0){AttackStacks--;game?.NoteSkill(owner,"征服威压","未发起攻击，攻击加成-1",owner,new SkillVisualData(value:0,variant:"decay"));}
-            if(!HasFive(owner)&&DefenseStacks>0){DefenseStacks--;game?.NoteSkill(owner,"征服威压","未持有5，防御加成-1",owner,new SkillVisualData(value:0,variant:"decay"));}
+            if(DefenseStacks>0){DefenseStacks--;game?.NoteSkill(owner,"征服威压","未发起攻击，防御加成-1",owner,new SkillVisualData(value:0,variant:"decay"));}
         }
         public override int ScoreMoveBonus(MoveValueContext context)
             =>context.OtherHandValue==5||context.ActedValueAfter==5?30:0;
@@ -75,7 +94,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             }
             Retarget(attack.Attacker,game);
         }
-        public int BonusAgainst(PlayerState owner,PlayerState target)=>ReferenceEquals(target,VowTarget)?1:-1;
+        public int BonusAgainst(PlayerState owner,PlayerState target)=>ReferenceEquals(target,VowTarget)?2:-1;
         public void OnPlayerDied(PlayerState dead,GameManager game)
         {if(_owner?.IsAlive==true&&ReferenceEquals(dead,VowTarget))OfferTarget(_owner,game,true);}
         public override void OnOtherShieldBroken(PlayerState owner,Hand shield,GameManager game)

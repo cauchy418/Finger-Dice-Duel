@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Assistant;
@@ -10,7 +10,7 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class TeamSupportAiTests
     {
-        [Test] public void Human_protection_requires_intact_shield_and_collects_break_shock_after_acceptance()
+        [Test] public void Human_protection_uses_five_including_broken_shield_and_collects_shock_only_for_actual_break()
         {
             foreach (int mode in new[]{0,1,2})
             {
@@ -21,8 +21,9 @@ namespace FingerDiceDuel.Tests
                 a.RightHand.SetValue(5);a.RightHand.SetShieldState(mode==0?ShieldState.Broken:ShieldState.Formed);
                 g.ForceActivePlayerForTest(b);board.BeginTurn();
                 board.ClickHand(b.LeftHand);board.ClickHand(d.LeftHand);board.ClickHand(d.LeftHand);
-                if(mode==0){Assert.AreEqual(16,d.Health);Assert.AreEqual(20,a.Health);continue;}
+
                 Assert.AreEqual(HandEffect.OathOfDevotionRedirect,board.PendingEffect);
+                if(mode==0){board.ClickHand(a.LeftHand);Assert.AreEqual(20,d.Health);Assert.AreEqual(16,a.Health);Assert.AreEqual(20,b.Health);continue;}
                 if(mode==1){board.DeclinePendingChoice();Assert.AreEqual(16,d.Health);Assert.True(a.RightHand.IsShield);Assert.AreEqual(20,b.Health);continue;}
                 board.ClickHand(a.LeftHand);
                 Assert.AreEqual(HandEffect.OathOfDevotionShockTarget,board.PendingEffect);
@@ -30,7 +31,7 @@ namespace FingerDiceDuel.Tests
                 Assert.AreEqual(a,board.PendingRequest.Value.Decider);
                 board.ClickHand(b.LeftHand);
                 Assert.AreEqual(20,d.Health);Assert.AreEqual(20,a.Health);
-                Assert.AreEqual(18,b.Health);Assert.AreEqual(ShieldState.Broken,a.RightHand.State);
+                Assert.AreEqual(19,b.Health);Assert.AreEqual(ShieldState.Broken,a.RightHand.State);
             }
         }
         private sealed class RangedBlank:CharacterTemplate{public override int BaseAttackRange=>InfiniteAttackRange;}
@@ -43,15 +44,15 @@ namespace FingerDiceDuel.Tests
         [Test] public void Shock_prefers_enemy_even_when_human_teammate_is_first_candidate()
         {var g=Four(out var a,out var b,out var c,out var d,out var ai);ai.Game=g;var req=new ChoiceRequest(HandEffect.OathOfDevotionShockTarget,"",new[]{d.LeftHand,b.LeftHand},decider:a);Assert.AreEqual(b.LeftHand,ai.ChooseHandFor(req,a));}
         [Test] public void Shield_form_and_active_break_both_shock_enemy_instead_of_first_ally()
-        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var skill=(OathOfDevotionLogic)a.Character;skill.OnShieldFormed(a,a.LeftHand,g);Assert.AreEqual(18,b.Health);Assert.AreEqual(20,d.Health);skill.OnOwnShieldBroken(a,a.LeftHand,g);Assert.AreEqual(16,b.Health);Assert.AreEqual(20,d.Health);}
+        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var skill=(OathOfDevotionLogic)a.Character;skill.OnShieldFormed(a,a.LeftHand,g);Assert.AreEqual(19,b.Health);Assert.AreEqual(20,d.Health);skill.OnOwnShieldBroken(a,a.LeftHand,g);Assert.AreEqual(18,b.Health);Assert.AreEqual(20,d.Health);}
         [Test] public void Protect_accepts_when_ally_unshielded_and_ai_has_a_shield()
-        {var g=Four(out var a,out var b,out var c,out var d,out var ai);ai.Game=g;a.LeftHand.SetShieldState(ShieldState.Formed);var r=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",new[]{a.LeftHand},true,decider:a,resultValue:8,relatedTarget:d,relatedActor:b);Assert.AreEqual(a.LeftHand,ai.ChooseHandFor(r,a));}
+        {var g=Four(out var a,out var b,out var c,out var d,out var ai);ai.Game=g;a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);var r=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",new[]{a.LeftHand},true,decider:a,resultValue:8,relatedTarget:d,relatedActor:b);Assert.AreEqual(a.LeftHand,ai.ChooseHandFor(r,a));}
         [Test] public void Protect_declines_for_enemy_or_safe_shielded_ally_or_own_lethal_damage()
         {var g=Four(out var a,out var b,out var c,out var d,out var ai);ai.Game=g;var candidates=new[]{a.LeftHand};a.SetHealthExact(1);var r=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",candidates,true,decider:a,resultValue:8,relatedTarget:d,relatedActor:b);Assert.AreEqual(null,ai.ChooseHandFor(r,a));a.SetHealthExact(20);d.LeftHand.SetShieldState(ShieldState.Formed);Assert.AreEqual(null,ai.ChooseHandFor(r,a));r=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",candidates,true,decider:a,resultValue:8,relatedTarget:c,relatedActor:d);Assert.AreEqual(null,ai.ChooseHandFor(r,a));}
         [Test] public void Direct_attack_ai_paladin_redirects_and_preserves_human_health()
-        {var g=Four(out var a,out var b,out var c,out var d,out var ai);a.LeftHand.SetShieldState(ShieldState.Formed);var ctx=new AttackContext(b,d,b.LeftHand,4,g);ctx.Resolve(g.GetChoiceProvider(d),g);Assert.True(ctx.WasRedirected);Assert.AreEqual(a,ctx.Defender);Assert.AreEqual(20,d.Health);Assert.True(ctx.WasBlocked);}
+        {var g=Four(out var a,out var b,out var c,out var d,out var ai);a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);var ctx=new AttackContext(b,d,b.LeftHand,4,g);ctx.Resolve(g.GetChoiceProvider(d),g);Assert.True(ctx.WasRedirected);Assert.AreEqual(a,ctx.Defender);Assert.AreEqual(20,d.Health);Assert.True(ctx.WasBlocked);}
         [Test] public void Real_controller_collects_third_party_ai_protection_for_ordinary_attack()
-        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider(),ai);board.BindPlayer(c,null,new SimpleChoiceProvider());board.BindPlayer(d,null,new SimpleChoiceProvider());g.ForceActivePlayerForTest(b);b.BindCharacter(new RangedBlank());a.LeftHand.SetShieldState(ShieldState.Formed);b.LeftHand.SetValue(1);d.LeftHand.SetValue(3);board.BeginTurn();board.ClickHand(b.LeftHand);board.ClickHand(d.LeftHand);board.ClickHand(d.LeftHand);for(int i=0;i<12&&board.Phase!=BoardPhase.ChoosingAttackerHand;i++){if(board.IsHumanChooser){if(board.CanDeclinePendingChoice)board.DeclinePendingChoice();else if(board.ChoiceCandidates.Count>0)board.ClickHand(board.ChoiceCandidates[0]);}else board.ResolvePendingAiChoice();}Assert.AreEqual(20,d.Health);Assert.True(a.LeftHand.State!=ShieldState.Formed);}
+        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider(),ai);board.BindPlayer(c,null,new SimpleChoiceProvider());board.BindPlayer(d,null,new SimpleChoiceProvider());g.ForceActivePlayerForTest(b);b.BindCharacter(new RangedBlank());a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);b.LeftHand.SetValue(1);d.LeftHand.SetValue(3);board.BeginTurn();board.ClickHand(b.LeftHand);board.ClickHand(d.LeftHand);board.ClickHand(d.LeftHand);for(int i=0;i<12&&board.Phase!=BoardPhase.ChoosingAttackerHand;i++){if(board.IsHumanChooser){if(board.CanDeclinePendingChoice)board.DeclinePendingChoice();else if(board.ChoiceCandidates.Count>0)board.ClickHand(board.ChoiceCandidates[0]);}else board.ResolvePendingAiChoice();}Assert.AreEqual(20,d.Health);Assert.True(a.LeftHand.State!=ShieldState.Formed);}
         [Test] public void Chain_break_never_selects_allied_shield_while_enemy_shield_available()
         {var g=Four(out var a,out var b,out var c,out var d,out var ai);ai.Game=g;ai.UseChainBreak=true;d.LeftHand.SetShieldState(ShieldState.Formed);b.RightHand.SetShieldState(ShieldState.Formed);var r=new ChoiceRequest(HandEffect.BreakerChainBreak,"",new[]{d.LeftHand,b.RightHand},true,decider:a);Assert.AreEqual(b.RightHand,ai.ChooseHandFor(r,a));}
         [Test] public void Abjuration_and_chalice_choose_injured_human_ally_not_wounded_enemy()
@@ -64,7 +65,7 @@ namespace FingerDiceDuel.Tests
             for(int i=0;i<8;i++){p[i]=CharacterFactory.CreatePlayer("P"+i,i==0?CharacterDefinition.OathOfDevotion:CharacterDefinition.Blank);providers[i]=i==0?ai:new SimpleChoiceProvider();}
             var g=GameManager.CreateEight(p,providers,teams);ai.Game=g;p[7].SetHealthExact(3);Assert.AreEqual(p[7],ai.ResistanceTarget(p[0],g));
             var req=new ChoiceRequest(HandEffect.OathOfDevotionShockTarget,"",new[]{p[7].LeftHand,p[1].LeftHand},decider:p[0]);Assert.AreEqual(p[1].LeftHand,ai.ChooseHandFor(req,p[0]));
-            p[0].LeftHand.SetShieldState(ShieldState.Formed);req=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",new[]{p[0].LeftHand},true,decider:p[0],relatedTarget:p[7],relatedActor:p[1],resultValue:8);Assert.AreEqual(p[0].LeftHand,ai.ChooseHandFor(req,p[0]));
+            p[0].LeftHand.SetValue(5);p[0].LeftHand.SetShieldState(ShieldState.Formed);req=new ChoiceRequest(HandEffect.OathOfDevotionRedirect,"",new[]{p[0].LeftHand},true,decider:p[0],relatedTarget:p[7],relatedActor:p[1],resultValue:8);Assert.AreEqual(p[0].LeftHand,ai.ChooseHandFor(req,p[0]));
         }
         [Test] public void Identity_support_uses_public_lord_allegiance_and_does_not_read_hidden_roles()
         {
@@ -76,7 +77,7 @@ namespace FingerDiceDuel.Tests
         [Test] public void Healthy_life_cleric_selects_healing_to_rescue_or_cleanse_human_ally()
         {var g=Four(out var a,out var b,out var c,out var d,out var ai);CharacterFactory.Configure(a,CharacterDefinition.LifeDomain);ai.Game=g;d.SetHealthExact(2);var r=new ChoiceRequest(HandEffect.LifeDomainAttackOrHeal,"",new[]{a.LeftHand},true,decider:a);Assert.AreEqual(a.LeftHand,ai.ChooseHandFor(r,a));Assert.AreEqual(d,LifeDomainLogic.BestHealTargetFor(a,g));d.SetHealthExact(20);d.ApplyStatus(StatusEffect.Frozen);Assert.AreEqual(a.LeftHand,ai.ChooseHandFor(r,a));Assert.AreEqual(d,LifeDomainLogic.BestHealTargetFor(a,g));}
         [Test] public void Ai_protection_also_handles_reactive_special_attacks_without_precollected_answers()
-        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider(),ai);a.LeftHand.SetShieldState(ShieldState.Formed);var ctx=new AttackContext(b,d,b.LeftHand,2,g){IsSpecialAttack=true,IgnoreStatBonuses=true};ctx.Resolve(g.GetChoiceProvider(d),g);Assert.AreEqual(a,ctx.Defender);Assert.True(ctx.WasBlocked);Assert.AreEqual(20,d.Health);}
+        {var g=Four(out var a,out var b,out var c,out var d,out var ai);var board=new BoardController(g,new SimpleChoiceProvider(),new SimpleChoiceProvider(),ai);a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);var ctx=new AttackContext(b,d,b.LeftHand,2,g){IsSpecialAttack=true,IgnoreStatBonuses=true};ctx.Resolve(g.GetChoiceProvider(d),g);Assert.AreEqual(a,ctx.Defender);Assert.True(ctx.WasBlocked);Assert.AreEqual(20,d.Health);}
         [Test] public void Dual_valor_ai_can_activate_its_bard_part_in_both_primary_orders()
         {foreach(bool reverse in new[]{false,true}){var a=FingerDiceDuel.Characters.DualGeneralFactory.Create("A",reverse?CharacterDefinition.EldritchKnight:CharacterDefinition.CollegeOfValor,reverse?CharacterDefinition.CollegeOfValor:CharacterDefinition.EldritchKnight);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);var g=new GameManager(a,b,new GreedyChoiceProvider(),new GreedyChoiceProvider());a.TookDamageThisTurn=true;Assert.True(CollegeOfValorAi.TryActivate(a,g));Assert.True(b.CollegeOfValorDefenseOffset<0||a.CollegeOfValorAttackOffset>0);}}
     }

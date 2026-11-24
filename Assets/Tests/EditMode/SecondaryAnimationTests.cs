@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using FingerDiceDuel.Assistant;
 using System.Linq;
 using FingerDiceDuel.Core;
@@ -47,7 +47,7 @@ namespace FingerDiceDuel.Tests
         {
             // These names are prose companions of already-recorded non-Skill events or snapshots.
             var alternatives=new System.Collections.Generic.HashSet<string>(new[]{
-                "仇敌誓言","守护之誓","憎恨灵光","妖精步伐·取消攻击","梦幻舞步", // VowTransfer / Attack redirect / Attack dodge
+                "仇敌誓言","守护灵光","憎恨灵光","妖精步伐·取消攻击","梦幻舞步", // VowTransfer / Attack redirect / Attack dodge
                 "恐惧打击","惧怖收割","次级咒术","潇洒无畏","灭族者", // real Attack, including free/extra attacks
                 "双九回复", // CleanseAndHeal records 维持生命 with the actual recipient and healing
                 "伤害免疫","伤害易伤","施加状态","附加抵挡","耳鸣","油腻","附魔", // Attack/frame/status icons, not extra successes
@@ -76,9 +76,9 @@ namespace FingerDiceDuel.Tests
         private static void HealBeforeScorch(System.Collections.Generic.IReadOnlyList<CombatVisualEvent> cues,string skill)
         {int heal=-1,scorch=-1;for(int i=0;i<cues.Count;i++){if(cues[i].RedirectKind==skill)heal=i;if(cues[i].RedirectKind=="灼伤")scorch=i;}Assert.IsTrue(heal>=0&&scorch>heal,skill+" must precede Scorch");}
         [Test] public void Scorched_ancient_self_heal_keeps_existing_reaction_count_and_records_order()
-        {var g=Match(CharacterDefinition.OathOfTheAncients);g.PlayerA.SetHealthExact(10);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2,g.PlayerB);new AttackContext(g.PlayerB,g.PlayerA,g.PlayerB.LeftHand,4,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(g.PlayerA),g);var cues=g.DrainCombatVisuals();Assert.AreEqual(7,g.PlayerA.Health);Assert.AreEqual(1,cues.Count(e=>e.RedirectKind=="不灭哨卫"));Assert.AreEqual(2,cues.Single(e=>e.RedirectKind=="不灭哨卫").SkillData.Value);Assert.AreEqual(1,cues.Single(e=>e.RedirectKind=="灼伤").SkillData.Value);HealBeforeScorch(cues,"不灭哨卫");}
+        {var g=Match(CharacterDefinition.OathOfTheAncients);g.PlayerA.SetHealthExact(10);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2,g.PlayerB);new AttackContext(g.PlayerB,g.PlayerA,g.PlayerB.LeftHand,4,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(g.PlayerA),g);var cues=g.DrainCombatVisuals();Assert.AreEqual(7,g.PlayerA.Health);Assert.AreEqual(1,cues.Count(e=>e.RedirectKind=="守御灵光"));Assert.AreEqual(2,cues.Single(e=>e.RedirectKind=="守御灵光").SkillData.Value);Assert.AreEqual(1,cues.Single(e=>e.RedirectKind=="灼伤").SkillData.Value);HealBeforeScorch(cues,"守御灵光");}
         [Test] public void Scorched_ancient_ally_heal_does_not_enable_reciprocal_gameplay_hooks()
-        {foreach(bool visuals in new[]{false,true}){var g=Match(CharacterDefinition.OathOfTheAncients,CharacterDefinition.OathOfTheAncients,visuals);g.PlayerA.SetHealthExact(19);g.PlayerB.SetHealthExact(19);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2);g.PlayerB.ApplyStatus(StatusEffect.Scorch,2);int choices=0;g.DeferWizardChoice=r=>{choices++;r.Choose(g.PlayerB.LeftHand);return true;};new AttackContext(g.PlayerB,g.PlayerA,g.PlayerB.LeftHand,1,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(g.PlayerA),g);Assert.AreEqual(18,g.PlayerA.Health);Assert.AreEqual(19,g.PlayerB.Health);Assert.AreEqual(1,choices);var cues=g.DrainCombatVisuals();if(visuals){Assert.AreEqual(1,cues.Single(e=>e.RedirectKind=="不灭哨卫").SkillData.Value);HealBeforeScorch(cues,"不灭哨卫");}else Assert.AreEqual(0,cues.Count);}}
+        {foreach(bool visuals in new[]{false,true}){var g=Match(CharacterDefinition.OathOfTheAncients,CharacterDefinition.OathOfTheAncients,visuals);g.PlayerA.SetHealthExact(19);g.PlayerB.SetHealthExact(19);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2);g.PlayerB.ApplyStatus(StatusEffect.Scorch,2);int choices=0;g.DeferWizardChoice=r=>{choices++;r.Choose(g.PlayerB.LeftHand);return true;};new AttackContext(g.PlayerB,g.PlayerA,g.PlayerB.LeftHand,1,g){IgnoreStatBonuses=true}.Resolve(g.GetChoiceProvider(g.PlayerA),g);Assert.AreEqual(18,g.PlayerA.Health);Assert.AreEqual(19,g.PlayerB.Health);Assert.AreEqual(1,choices);var cues=g.DrainCombatVisuals();if(visuals){Assert.AreEqual(1,cues.Single(e=>e.RedirectKind=="守御灵光").SkillData.Value);HealBeforeScorch(cues,"守御灵光");}else Assert.AreEqual(0,cues.Count);}}
         [Test] public void Heal_visual_callback_reports_zero_when_blocked_or_full()
         {var g=Match();int actual=-1;g.PlayerA.Heal(3,onHealed:n=>actual=n,visualManager:g);Assert.AreEqual(0,actual);g.PlayerA.SetHealthExact(5);g.PlayerA.ApplyStatus(StatusEffect.Decay,2);g.PlayerA.ApplyStatus(StatusEffect.Scorch,2);actual=-1;g.PlayerA.Heal(3,onHealed:n=>actual=n,visualManager:g);Assert.AreEqual(0,actual);Assert.AreEqual(5,g.PlayerA.Health);Assert.AreEqual(0,g.DrainCombatVisuals().Count);}
         private sealed class CountRandom:Random

@@ -188,9 +188,9 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.DoublesOf(200, "双 7：一运算即可进入潜行", 7));
 
             // ---- 圣武士·奉献之誓（防 +1）----
-            // 4／5 合盾触发卫护斩，6／8 保留普通攻击。
+            // 4／5／6 合盾触发1点卫护斩；持4／5／6可援护，无需完整盾。
             Own[CharacterDefinition.OathOfDevotionId] = new HandValueProfile()
-                .Set(4, 80).Set(5, 80).Set(6, 64)
+                .Set(4, 80).Set(5, 80).Set(6, 80)
                 .Set(7, 45).Set(8, 68).Set(9, 64)
                 .Set(1, 52).Set(2, 50).Set(3, 50)
                 .AddCombo(ComboRule.ContainsAll(35, "双手持4与5，保留换盾与代挡", 4, 5));
@@ -540,11 +540,11 @@ namespace FingerDiceDuel.Assistant
             };
 
             // ---- 面对圣武士·奉献之誓 ----
-            // 4／5 合盾触发卫护斩，6仍按普通攻击评分。
+            // 4／5／6 均合盾触发卫护斩，并保留守护灵光。
             // 我留这些数字能挡他，但对"分配手值给他"来说要压低。
             OpponentAdjust[CharacterDefinition.OathOfDevotionId] = new List<ValueAdjust>
             {
-                new ValueAdjust(4, -20), new ValueAdjust(5, -20), new ValueAdjust(6, -8),
+                new ValueAdjust(4, -20), new ValueAdjust(5, -20), new ValueAdjust(6, -20),
             };
 
             // ---- 面对武僧·太极宗 ----

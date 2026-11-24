@@ -36,12 +36,12 @@ namespace FingerDiceDuel.Tests
                 var g = Match(seat, identity, out var p, out var b); var owner = p[seat]; var far = p[(seat + 4) % 8];
                 var selected = LaterNeighbor(p, seat); int before = selected.Health; var initial = new List<int>(); foreach(var player in p) initial.Add(player.Health);
                 owner.LeftHand.SetValue(3); far.LeftHand.SetValue(1); b.SetFirstPlayer(owner); b.BeginTurn();
-                Assert.IsTrue(b.ClickHand(owner.LeftHand)); Assert.IsTrue(b.ClickHand(far.LeftHand));
+                Assert.IsTrue(b.ClickHand(owner.LeftHand),"选择运算手 seat="+seat+" identity="+identity); Assert.IsTrue(b.ClickHand(far.LeftHand),"选择加数 seat="+seat+" identity="+identity);
                 Assert.AreEqual(HandEffect.OathOfDevotionShockTarget, b.PendingEffect, "seat=" + seat + " identity=" + identity);
                 foreach (var hand in b.PendingRequest.Value.Candidates) Assert.IsTrue(g.CanReach(owner, g.OwnerOfHand(hand)), "候选不得含远处加数提供者");
-                Assert.IsTrue(b.ClickHand(selected.RightHand)); Assert.AreEqual(before - 2, selected.Health, "必须命中明确选择的人");
+                Assert.IsTrue(b.ClickHand(selected.RightHand),"选择护卫斩目标 seat="+seat+" identity="+identity); Assert.AreEqual(before - 1, selected.Health, "必须命中明确选择的人");
                 for(int i=0;i<8;i++) if(!ReferenceEquals(p[i],selected)) Assert.AreEqual(initial[i],p[i].Health,"不能改打兜底目标");
-                Assert.IsTrue(string.Join(" | ", b.Log).Contains("冲击"));
+                Assert.IsTrue(string.Join(" | ", b.Log).Contains("冲击"),string.Join(" | ", b.Log));
             }
         }
         [Test] public void Active_break_and_reforming_shocks_keep_distinct_selected_targets()
@@ -51,7 +51,7 @@ namespace FingerDiceDuel.Tests
             b.BeginTurn(); Assert.IsTrue(b.ClickHand(owner.LeftHand)); Assert.IsTrue(b.ClickHand(p[4].LeftHand));
             Assert.AreEqual(HandEffect.OathOfDevotionShockTarget,b.PendingEffect); Assert.AreEqual(1,b.PendingRequest.Value.Variant);
             Assert.IsTrue(b.ClickHand(p[7].LeftHand)); Assert.AreEqual(0,b.PendingRequest.Value.Variant);
-            Assert.IsTrue(b.ClickHand(p[1].LeftHand)); Assert.AreEqual(18,p[7].Health); Assert.AreEqual(18,p[1].Health);
+            Assert.IsTrue(b.ClickHand(p[1].LeftHand)); Assert.AreEqual(19,p[7].Health); Assert.AreEqual(19,p[1].Health);
             Assert.AreEqual(20,p[4].Health);
         }
         [Test] public void Passive_shield_break_shock_hits_the_defending_humans_selected_target_once()
@@ -63,7 +63,7 @@ namespace FingerDiceDuel.Tests
             if(b.Phase==BoardPhase.ChoosingTargetPlayer) b.ClickHand(owner.LeftHand);
             Assert.AreEqual(HandEffect.OathOfDevotionShockTarget,b.PendingEffect);
             Assert.AreEqual(owner,b.Chooser);Assert.IsTrue(b.ClickHand(p[6].LeftHand));
-            Assert.AreEqual(18,p[6].Health);Assert.AreEqual(20,owner.Health);
+            Assert.AreEqual(19,p[6].Health);Assert.AreEqual(20,owner.Health);
         }
         [Test] public void No_shock_target_is_offered_when_all_real_players_are_out_of_range()
         {

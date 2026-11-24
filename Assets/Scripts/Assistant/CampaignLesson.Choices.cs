@@ -21,7 +21,8 @@ namespace FingerDiceDuel.Assistant
                 {
                     if(q.Prompt.Contains("仇敌誓言"))return Seats[s.VowSeat].LeftHand;
                     if(q.Prompt.Contains("自然之怒"))return s.TargetSeat>=0?Seats[s.TargetSeat].LeftHand:null;
-                    if(q.Prompt.Contains("不灭哨卫"))return Seats[s.TargetSeat>=0?s.TargetSeat:3].LeftHand;
+                    if(q.Prompt.Contains("征服灵光"))return s.TargetSeat>=0?Seats[s.TargetSeat].LeftHand:null;
+                    if(q.Prompt.Contains("守御灵光"))return Seats[s.TargetSeat>=0?s.TargetSeat:3].LeftHand;
                     if(q.Prompt.Contains("免费")||q.Prompt.Contains("惧怖收割"))return s.DeclineNecromancy?null:Seats[s.TargetSeat>=0?s.TargetSeat:GuardianSeat].LeftHand;
                     return s.TargetSeat>=0?Seats[s.TargetSeat].LeftHand:null;
                 }
