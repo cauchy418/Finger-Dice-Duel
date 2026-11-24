@@ -1,0 +1,15 @@
+{
+  "original_baseline": "baseline-results.json",
+  "original_sha256": "39c1873a6ba90591ae64a7bf70dac610e1c44ceb1e46dfcc750f8eb1a80b4853",
+  "comparison_baseline": "baseline-comparison-results.json",
+  "comparison_sha256": "f25a09ebcb158e25490af05844ca4febc1bd19cf3a6ec8828122c823f360a675",
+  "mapping": {
+    "cleric_light_domain": "cleric_purification_domain"
+  },
+  "reason": "旧轮 cleric_light_domain 实为保留的净化领域；本轮 cleric_light_domain 为新增光明领域。仅规范化对比副本的角色id和名称，不修改旧轮胜负、分母或来源。",
+  "new_roles": [
+    "cleric_death_domain",
+    "cleric_nature_domain",
+    "cleric_light_domain"
+  ]
+}

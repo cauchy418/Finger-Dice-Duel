@@ -1,6 +1,6 @@
 # 开发与测试
 
-最近完整胜率仍为[2026-11-21采样](../Tools/Statistics/2026-11-21-class-balance/README.md)，包含吟游结果±1移除前的规则和旧诡术师AI；本次调整尚未重新采样。
+当前62子职76,164局采样见[2026-11-25报告](../Tools/Statistics/2026-11-25-cleric-domains/README.md)；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留历史59子职、551种双将的冻结结果。
 
 [返回索引](README.md)
 
@@ -27,11 +27,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1
 ```
 
-当前59子职，本轮功能回归、表现层编译与Unity/NUnit条件编译结果见[本轮报告](../Tools/Statistics/2026-11-21-class-balance/README.md)。编译检查不等同于Unity实机验证。
+当前62子职、牧师9领域；功能回归、表现层与Unity/NUnit条件编译须分别验证，历史统计报告不能替代本次验收。编译检查不等同于Unity实机验证。
 
-当前功能回归1810项通过、0失败，独立统计工具9项通过；表现层及Unity/NUnit程序集边界编译通过。当前覆盖诡术师起止交换、真实盾状态、受限制状态及储值反制，切割语困惑，以及燃烧反应的多段、格挡、抗性和免疫；已删除吟游结果修正的专属实现与测试。最近完整采样仍对应移除前版本。宿主一次UI编译发生.NET原生访问异常，使用单处理器且关闭分层编译后完整重跑通过。
+当前功能回归1876项通过、0失败，独立统计工具9项通过；表现层及Unity/NUnit程序集边界编译通过。本次新增死亡加数、假死纯运算与生命下限、自然储存快照和独立反施、黎明逐段暂停／净化／附目盲及光明祝福伤害穿透专项；原有覆盖包括诡术师起止交换、真实盾状态、受限制状态及储值反制，切割语困惑，以及燃烧反应的多段、格挡、抗性和免疫；已删除吟游结果修正的专属实现与测试。2026-11-21历史采样仍对应移除前版本。宿主一次UI编译发生.NET原生访问异常，使用单处理器且关闭分层编译后完整重跑通过。
 
-本轮功能回归跳过8项独立统计，另行完成10,443次选点审计；59子职汇总69,204局，覆盖551种合法双将，六组使用同一冻结程序集完整重采，见[本轮胜率](../Tools/Statistics/2026-11-21-class-balance/README.md)，包含诡术师。以下引擎接入记录保留历史验收口径。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。这些历史引擎记录不代表诡术师完成了实机验收。
+功能回归跳过8项独立统计。历史2026-11-21验证另完成10,443次选点审计，59子职汇总69,204局，覆盖当时551种合法双将，六组使用同一冻结程序集完整重采，见[历史胜率](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)，包含诡术师。以下引擎接入记录保留历史验收口径。德鲁伊重构与孢子结社通过专项回归及21项引擎检查，UI与Unity/NUnit条件编译通过，见[形态与孢子验收](../Art/Integration/druid-rework-v2/README.md)。四章40关的指引、实战和重试已用控制器验证，Unity原生界面覆盖旧进度迁移、章节、技能选择、中央确认与直接重试；见[四章接入验收](../Art/Integration/campaign-v3/README.md)。这些历史引擎记录不代表诡术师完成了实机验收。
 
 ## 精简后的完整性核查（历史快照）
 
@@ -48,10 +48,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | [RULES](../RULES.md) | 权威规则、完整技能数值、状态与特殊交互 |
 | [CODELY](../CODELY.md) | 工程结构、实现细节、开发约定与技术债 |
 | [模式与战斗](modes-and-combat.md) | 回合流程、模式细则、伤害类型、状态与元素反应 |
-| [角色图鉴](roster.md) | 59 名子职数值、阵营分类与本轮59子职完整采样胜率 |
+| [角色图鉴](roster.md) | 62 名子职数值、阵营分类及逐版本采样来源 |
 | [图鉴写法](../CODE-STYLE.md) | 文案长度、关键交互与排版约定 |
 | [测试工具](../Tools/HeadlessTests/README.md) | 环境、参数与专项运行方法 |
-| [全角色AI策略与权重](ai-strategy-reference.md) | 59 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
+| [全角色AI策略与权重](ai-strategy-reference.md) | 62 名子职的自身策略、针对策略、手值／组合／技能分及 1v1／2v2 配置 |
 | [AI策略检查](../Tools/ai-strategy-audit.md) | 专属策略、覆盖范围与统计说明 |
 | [美术制作](../Art/Production/)／[接入验收](../Art/Integration/) | 原图、提示词、导入清单与实际界面截图 |
 

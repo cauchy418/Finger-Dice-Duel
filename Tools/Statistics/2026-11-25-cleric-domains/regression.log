@@ -81,7 +81,7 @@
    PASS  Gambler_thief_sampling_seed_761708_completes_without_stalling
    PASS  Human_dual_evocation_can_accept_and_choose_damage_type
    PASS  Human_dual_thief_can_enter_steal_selection
-58-role actual attacking/defending request audit: 257 legal answers.
+58-role actual attacking/defending request audit: 293 legal answers.
    PASS  Roster_pre_attack_requests_receive_legal_policy_answers_for_attacking_and_defending
 
 ── AiStatePolicyTests  (12 项)
@@ -102,7 +102,7 @@
    PASS  All_50_alignments_match_the_latest_assignment_and_cancelled_berserker_move
    PASS  Attack_target_prompt_and_effect_display_agree_for_two_five_and_dead_numbers
    PASS  Audit_all_same_axis_pairs_for_competing_number_handlers_and_real_operation_failures
-   PASS  Current_axis_populations_produce_551_pairs_and_both_orders_can_be_built
+   PASS  Current_axis_populations_produce_611_pairs_and_both_orders_can_be_built
    PASS  Every_selective_rewriter_declares_only_the_results_it_actually_handles
    PASS  Historical_castling_and_archfey_skip_remain_independent_choices
    PASS  Magician_and_giant_keep_dead_numbers_and_double_healing_in_both_orders
@@ -199,12 +199,14 @@
    PASS  Transmutation_repeats_after_an_extra_operation_breaks_the_sheep
    PASS  Validated_tuning_is_mode_specific_and_never_leaks_into_multiplayer
 
-── ArcaneTricksterTests  (25 项)
+── ArcaneTricksterTests  (29 项)
+   PASS  Ai_end_exchange_does_not_trade_safe_digits_for_an_attack_it_cannot_take
    PASS  Ai_exchange_scoring_is_readonly_and_can_select_a_useful_exchange
    PASS  Campaign_graph_clone_retains_independent_stored_digit_and_body_hands
    PASS  Close_slashing_and_distant_piercing_use_real_attack_distance
    PASS  Dual_general_in_either_slot_retains_store_across_sheep_and_wild_shape
    PASS  Exchange_changes_only_digits_and_does_not_trigger_healing_attack_or_shield
+   PASS  Exchange_projection_suppresses_phantom_effects_for_dizzy_and_invalidated_actions
    PASS  Frozen_last_turn_does_not_offer_exchange_after_status_expires
    PASS  Human_can_decline_without_changing_digits
    PASS  Human_start_and_end_exchange_are_independent_single_choices_before_action_and_handoff
@@ -216,6 +218,8 @@
    PASS  Mage_hand_visual_hides_while_dead_polymorphed_or_wild_shaped_and_returns_with_store
    PASS  Multiplayer_modes_keep_exchange_on_owner_even_when_current_player_has_advanced
    PASS  Pending_choice_checks_death_freeze_and_polymorph_again
+   PASS  Projected_counterplay_includes_reserve_source_without_mutating_the_board
+   PASS  Projected_exchange_to_stored_five_matches_actual_broken_shield_without_live_mutation
    PASS  Real_board_ai_resolves_start_and_end_exchange_without_human_prompt_and_full_match_finishes
    PASS  Real_board_double_shield_skip_offers_exchange_and_breaks_chosen_shield
    PASS  Registered_chaotic_neutral_rogue_has_explicit_profile_and_two_body_hands
@@ -291,20 +295,6 @@
    PASS  Warden_oath_clears_attached_statuses_but_keeps_independent_knowledge_damage
    PASS  Warden_reflection_waits_for_human_oath_before_damage_and_turn_end
 
-── BardInspirationTests  (12 项)
-   PASS  Adjusted_attack_number_is_used_by_defensive_lore_records
-   PASS  Ai_scores_bard_adjusted_lethal_result_without_mutation_and_uses_it_in_real_turn
-   PASS  Counterplay_accounts_for_both_bards_adjusting_three_into_an_attack
-   PASS  Cutting_words_inflicts_two_turn_confusion_directly_with_defender_as_source
-   PASS  Effectless_operations_do_not_offer_bard_choice_or_trigger_effects
-   PASS  Headless_choice_is_once_per_operation_and_uses_existing_decimal_boundaries
-   PASS  Human_both_bards_choose_adjustment_before_target_and_commit_final_digit
-   PASS  Keep_result_is_explicit_and_repeated_choice_cannot_adjust_twice
-   PASS  Only_final_adjusted_digit_triggers_attack_shield_or_healing
-   PASS  Portent_replacement_follows_bard_adjustment_and_wins_in_preview_and_commit
-   PASS  Prepared_bard_choice_is_cleared_on_cancel_and_revalidates_polymorph
-   PASS  Suppressed_and_dizzy_operations_do_not_offer_bard_skills
-
 ── BattleReadabilityTests  (9 项)
    PASS  Declining_power_shot_does_not_log_it_as_activated
    PASS  Dual_paladin_does_not_restore_the_redundant_attack_question
@@ -312,7 +302,7 @@
    PASS  Healing_another_player_reports_actual_capped_health_gain
    PASS  OathOfDevotion_breaking_and_forming_a_shield_keeps_both_shock_choices
    PASS  OathOfDevotion_eight_still_requires_an_attack_target
-   PASS  OathOfDevotion_four_and_five_only_ask_for_shock_then_form_a_shield
+   PASS  OathOfDevotion_four_five_and_six_only_ask_for_shock_then_form_a_shield
    PASS  Pending_steal_attack_never_claims_an_electrified_status
    PASS  Rules_describe_current_opening_modes_and_health_tiebreak
 
@@ -473,7 +463,7 @@ COMBAT PASS L11 rounds=16 win=True
 COMBAT PASS L12 rounds=27 win=False
 COMBAT PASS L13 rounds=8 win=False
 COMBAT PASS L14 rounds=20 win=True
-COMBAT PASS L15 rounds=13 win=False
+COMBAT PASS L15 rounds=15 win=True
 COMBAT PASS L16 rounds=12 win=True
 COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
@@ -481,20 +471,20 @@ COMBAT PASS L19 rounds=20 win=True
 COMBAT PASS L20 rounds=7 win=False
 COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
-COMBAT PASS L23 rounds=14 win=True
-COMBAT PASS L24 rounds=13 win=False
+COMBAT PASS L23 rounds=11 win=False
+COMBAT PASS L24 rounds=16 win=True
 COMBAT PASS L25 rounds=8 win=False
-COMBAT PASS L26 rounds=20 win=True
-COMBAT PASS L27 rounds=15 win=False
-COMBAT PASS L28 rounds=8 win=True
-COMBAT PASS L29 rounds=12 win=True
-COMBAT PASS L30 rounds=7 win=False
+COMBAT PASS L26 rounds=9 win=True
+COMBAT PASS L27 rounds=10 win=False
+COMBAT PASS L28 rounds=9 win=True
+COMBAT PASS L29 rounds=17 win=True
+COMBAT PASS L30 rounds=15 win=True
    PASS  Every_lesson_can_finish_real_combat_without_resetting
    PASS  Finale_values_and_roles_match_the_new_design
    PASS  Protection_and_obstacle_actions_are_scoped_and_cost_an_action
    PASS  Random_status_branches_keep_all_guides_finishable
 
-── CampaignV3Tests  (8 项)
+── CampaignV3Tests  (10 项)
    PASS  All_finale_subclasses_have_a_playable_retry_and_correct_npc_identity
 V3 GUIDE PASS L1 round=3
 V3 GUIDE PASS L2 round=3
@@ -528,10 +518,12 @@ V3 GUIDE PASS L33 round=2
 V3 GUIDE PASS L34 round=2
 V3 GUIDE PASS L35 round=3
 V3 GUIDE PASS L36 round=1
-V3 GUIDE PASS L37 round=4
+V3 GUIDE PASS L37 round=5
 V3 GUIDE PASS L38 round=3
 V3 GUIDE PASS L39 round=2
    PASS  All_four_chapters_finish_guidance_before_confirming_trial
+   PASS  Banner_conquest_teaches_optional_shieldbreak_panic_and_both_stack_decay
+   PASS  Banner_devotion_teaches_four_five_six_shields_with_one_damage_shocks
 V3 COMBAT PASS L1 rounds=12
 V3 COMBAT PASS L2 rounds=19
 V3 COMBAT PASS L3 rounds=9
@@ -543,35 +535,35 @@ V3 COMBAT PASS L8 rounds=3
 V3 COMBAT PASS L9 rounds=8
 V3 COMBAT PASS L10 rounds=13
 V3 COMBAT PASS L11 rounds=51
-V3 COMBAT PASS L12 rounds=7
+V3 COMBAT PASS L12 rounds=5
 V3 COMBAT PASS L13 rounds=6
 V3 COMBAT PASS L14 rounds=11
 V3 COMBAT PASS L15 rounds=6
 V3 COMBAT PASS L16 rounds=11
 V3 COMBAT PASS L17 rounds=11
-V3 COMBAT PASS L18 rounds=42
+V3 COMBAT PASS L18 rounds=46
 V3 COMBAT PASS L19 rounds=25
-V3 COMBAT PASS L20 rounds=2
+V3 COMBAT PASS L20 rounds=23
 V3 COMBAT PASS L21 rounds=12
 V3 COMBAT PASS L22 rounds=8
 V3 COMBAT PASS L23 rounds=18
-V3 COMBAT PASS L24 rounds=20
+V3 COMBAT PASS L24 rounds=13
 V3 COMBAT PASS L25 rounds=8
 V3 COMBAT PASS L26 rounds=16
 V3 COMBAT PASS L27 rounds=11
 V3 COMBAT PASS L28 rounds=16
 V3 COMBAT PASS L29 rounds=22
 V3 COMBAT PASS L30 rounds=7
-V3 COMBAT PASS L31 rounds=7
+V3 COMBAT PASS L31 rounds=6
 V3 COMBAT PASS L32 rounds=16
-V3 COMBAT PASS L33 rounds=20
-V3 COMBAT PASS L34 rounds=8
+V3 COMBAT PASS L33 rounds=19
+V3 COMBAT PASS L34 rounds=14
 V3 COMBAT PASS L35 rounds=8
-V3 COMBAT PASS L36 rounds=7
+V3 COMBAT PASS L36 rounds=12
 V3 COMBAT PASS L37 rounds=11
-V3 COMBAT PASS L38 rounds=8
-V3 COMBAT PASS L39 rounds=11
-V3 COMBAT PASS L40 rounds=7
+V3 COMBAT PASS L38 rounds=9
+V3 COMBAT PASS L39 rounds=19
+V3 COMBAT PASS L40 rounds=13
    PASS  Every_trial_and_retry_can_resolve_a_complete_battle
 REACTION 1 Thunder damage=4 applied=None
 REACTION 2 Lightning damage=6 applied=None
@@ -849,6 +841,21 @@ REACTION 14 Fire damage=6 applied=None
    PASS  There_are_exactly_ten_damage_types
    PASS  Type_list_covers_every_enum_value_exactly_once
 
+── DeathDomainAiTests  (5 项)
+   PASS  Death_blessing_declines_healthy_or_protected_allies_but_preserves_an_endangered_patient
+   PASS  Death_blessing_preserves_a_teammate_only_when_its_actions_cannot_safely_continue
+   PASS  Death_touch_projects_necrotic_instead_of_physical_affinity
+   PASS  Feigned_actor_scores_only_hand_setup_without_heal_or_attack_bonuses
+   PASS  Feigned_enemy_never_receives_a_lethal_score_and_damage_respects_one_health_floor
+
+── DeathDomainTests  (6 项)
+   PASS  Board_can_cancel_dead_addend_selection_without_consuming_turn
+   PASS  Board_dead_addend_preserves_values_and_hands_off_necrotic_attack_to_live_target
+   PASS  Board_feigned_teammate_addend_converts_attack_but_living_addend_keeps_physical_type
+   PASS  Board_healing_blessing_is_optional_player_choice_and_can_be_declined
+   PASS  Death_domain_is_selectable_in_cleric_and_neutral_evil_filters
+   PASS  Other_roles_cannot_select_dead_or_feigned_addends_but_death_can_select_feigned
+
 ── DiceRollSetupTests  (39 项)
    PASS  A_simultaneous_decision_still_shows_the_first_choice
    PASS  An_illegal_split_is_rejected
@@ -931,11 +938,11 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Blessing_nine_can_keep_healing_and_does_not_ask_for_an_attack_target
    PASS  Blessing_nine_effective_theft_asks_human_and_defers_attack_normally
    PASS  Blessing_nine_gamble_asks_human_before_selecting_attack_target
-   PASS  Conquest_decay_removes_only_one_owned_stack_and_never_negative
    PASS  Conquest_defense_grows_once_after_whole_multi_hit_even_when_shield_blocks
-   PASS  Conquest_defensive_fear_compares_defense_not_attack
-   PASS  Conquest_grows_after_attack_and_fear_uses_starting_bonuses
+   PASS  Conquest_defensive_growth_without_shield_break_does_not_inflict_fear
+   PASS  Conquest_grows_after_attack_without_automatic_fear
    PASS  Conquest_has_no_growth_without_five_and_broken_five_still_counts
+   PASS  Conquest_idle_decay_removes_one_stack_from_each_bonus_and_never_negative
    PASS  Conquest_zero_damage_counts_but_cancel_follows_the_common_rule
    PASS  Holy_light_clears_and_prevents_both_song_and_blessing
    PASS  Life_heal_cleanses_negative_statuses_but_preserves_blessing
@@ -990,7 +997,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Dual_gambler_human_can_open_the_reroll_prompt_and_pay_for_a_new_roll
    PASS  Dual_gambler_is_eligible_for_core_gambling_in_both_component_orders
    PASS  Dual_gambler_normal_operation_requires_next_gamble_and_gambling_clears_it
-武僧·四象宗+术士·幽影魔法 vs 游荡者·赌徒+游荡者·诡术师
+牧师·战争领域+战士·战斗大师 vs 战士·魔射手+德鲁伊·星辰结社
    PASS  Dual_sampling_seed_4048400_completes_without_a_gambling_stall
    PASS  Transmutation_extra_operation_uses_arithmetic_for_human_and_ai_gamblers
 
@@ -1074,6 +1081,19 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Taichi_partial_mitigation_is_guarded
    PASS  Zero_damage_without_guard_keeps_full_status_duration
    PASS  Zero_duration_does_not_remove_or_refresh_existing_state
+
+── FeignedDeathTests  (11 项)
+   PASS  Attack_true_damage_and_status_damage_leave_one_health_and_never_end_match
+   PASS  Board_pure_operation_finishes_without_attack_or_character_choices
+   PASS  Direct_damage_and_health_costs_cannot_kill_until_status_expires
+   PASS  Healing_cleanse_preserves_character_status_and_persistent_resistance_help
+   PASS  Holy_fire_clears_and_blocks_feigned_death
+   PASS  Operation_does_not_trigger_character_hooks_even_when_spending_a_shield
+   PASS  Other_roles_cannot_choose_feigned_hands_and_cleanse_keeps_same_source
+   PASS  Pure_operation_does_not_trigger_gamblers_next_turn_obligation
+   PASS  Pure_operation_never_attacks_heals_or_forms_shield
+   PASS  Resistance_to_all_thirteen_types_persists_after_repeated_hits
+   PASS  Status_metadata_classifies_character_status_and_uses_dedicated_icons
 
 ── FeyStarsAlignmentTests  (4 项)
    PASS  Fey_assassin_can_rewrite_health_and_advance_once_in_both_orders
@@ -1313,10 +1333,11 @@ REACTION 14 Fire damage=6 applied=None
    PASS  War_domain_reset_clears_blessing_and_use_counter
    PASS  War_domain_two_attack_hands_offer_two_different_blessing_targets
 
-── LoreStormIllusionTests  (31 项)
+── LoreStormIllusionTests  (32 项)
    PASS  Ai_damage_preview_accounts_for_new_defenses_without_consuming_records_or_changing_hands
    PASS  Ai_extra_operation_chooses_only_beneficial_preparation_and_preserves_shields
    PASS  Ai_preserves_a_record_when_a_single_hit_will_be_shielded
+   PASS  Cutting_words_inflicts_two_turn_confusion_directly_with_defender_as_source
    PASS  Extra_operation_never_calls_lore_recording_or_numeric_effects_in_a_raw_container
    PASS  Illusion_ai_actor_waits_for_the_human_addend_owner
    PASS  Illusion_ai_prefers_weaker_enemy_result_and_stronger_allied_result
@@ -1462,6 +1483,29 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Music_reads_do_not_change_the_game_or_consume_actions
    PASS  Odd_maximum_health_uses_the_actual_half_threshold
 
+── NatureLightAiTests  (6 项)
+   PASS  All_current_roles_and_new_blessings_have_explicit_policy_registration
+   PASS  Dawn_cleanse_compares_damage_with_losing_enemy_control
+   PASS  Full_health_healing_values_new_blessings_only_when_sacred_fire_allows_them
+   PASS  Light_blessing_converts_damage_but_only_innate_radiant_pierces_immunity
+   PASS  Nature_blessing_retaliation_reduces_attack_value_even_with_target_shield
+   PASS  Nature_stored_element_changes_attack_opportunity_without_spending_it
+
+── NatureLightDomainTests  (13 项)
+   PASS  Blessings_refresh_are_role_states_and_holy_fire_clears_and_blocks
+   PASS  Dawn_can_cleanse_on_shield_hit_but_not_dodge_or_cancel
+   PASS  Dawn_decline_preserves_negative_statuses
+   PASS  Dawn_human_choice_pauses_before_damage_cleans_then_applies_blind
+   PASS  Dawn_multihit_pauses_each_hit_and_cleans_before_each_new_blind
+   PASS  Light_blessing_converts_noncleric_and_blinds
+   PASS  Light_blessing_only_original_radiant_pierces_damage_immunity_and_resistance
+   PASS  Nature_and_light_heal_automatically_bless_other_recipient
+   PASS  Nature_and_light_registered_separately_from_purification
+   PASS  Nature_blessing_works_on_noncleric_after_zero_damage_and_shield_whole_attack
+   PASS  Nature_storage_replaces_and_consumes_on_attack_without_changing_type
+   PASS  Nature_storage_snapshot_survives_multihit_and_cancel_consumes
+   PASS  Nature_suppresses_five_baselines_and_reactions_but_not_skill_bleed
+
 ── NewAncientRolesTests  (4 项)
    PASS  Fiend_attack_spends_false_life_for_disabled
    PASS  Fiend_healing_overflow_becomes_false_life_and_absorbs_damage
@@ -1492,7 +1536,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  OathOfDevotion_shock_uses_a_different_variant_for_forming_and_breaking
    PASS  OathOfDevotion_stats_and_range
    PASS  OathOfDevotion_turns_four_and_six_into_shields
-   PASS  OathOfDevotion_uses_six_as_an_ordinary_attack
+   PASS  OathOfDevotion_uses_six_as_a_shield
    PASS  TheArchfey_can_skip_only_when_hurt_and_health_differs
    PASS  TheArchfey_cancel_is_permanent_and_updates_the_shield_state
    PASS  TheArchfey_cancels_a_multi_hit_attack_entirely_not_per_hit
@@ -1647,6 +1691,33 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Trickery_can_remove_an_attack_before_asking_for_a_target
    PASS  Trickery_projects_both_exchanged_digits_before_target
    PASS  Wet_can_create_an_attack_that_waits_for_target_confirmation
+
+── PaladinConquestRevisionTests  (10 项)
+   PASS  Ai_conquest_aura_declines_allies_and_prefers_enemy_without_existing_panic
+   PASS  Ai_devotion_guardian_accepts_plain_four_and_six
+   PASS  Ai_guardian_can_accept_with_plain_five_and_no_formed_shield
+   PASS  Conquest_attack_preserves_both_stacks_even_without_five_at_turn_end
+   PASS  Conquest_attacks_only_grow_without_automatically_inflicting_panic
+   PASS  Conquest_aura_requires_strict_corresponding_effective_bonus_and_has_no_range_limit
+   PASS  Conquest_idle_decay_reduces_both_stacks_even_while_holding_five
+   PASS  Conquest_panic_from_blocked_attack_keeps_two_turn_skill_duration
+   PASS  Conquest_passive_break_prompts_once_per_shield_and_can_decline
+   PASS  Vengeance_bonus_and_ai_lethal_estimate_use_two_on_marked_target
+
+── PaladinGuardianAuraTests  (13 项)
+   PASS  Attached_knowledge_force_does_not_offer_a_second_guardian_for_the_same_attack
+   PASS  Board_ai_first_acceptance_prevents_later_ai_questions_and_is_not_asked_again_during_resolution
+   PASS  Board_stops_guard_prompts_after_first_acceptance
+   PASS  Clockwise_first_acceptance_stops_all_later_questions_even_for_multiple_hits
+   PASS  Decline_continues_clockwise_to_other_paladin_with_unformed_five
+   PASS  Devotion_four_and_six_can_guard_without_an_intact_shield
+   PASS  Devotion_six_is_shield_and_its_shock_is_one
+   PASS  Human_guardian_can_redirect_a_nested_Devotion_shock_in_real_board_flow
+   PASS  Human_guardian_can_redirect_the_independent_Taichi_reflection
+   PASS  Secondary_paladin_identity_is_active_until_transformed
+   PASS  Shield_formation_shock_deals_exactly_one_to_an_unshielded_target
+   PASS  Swordsman_extra_and_main_attacks_offer_independent_human_guardian_choices
+   PASS  Swordsman_extra_transfer_and_guardian_are_independent_from_main_transfer
 
 ── PathOfTheWardenLockTests  (8 项)
    PASS  Board_collection_fills_the_alive_count_from_the_game
@@ -1880,25 +1951,25 @@ REACTION 14 Fire damage=6 applied=None
 ── SkillActivationTests  (2 项)
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
-战士·勇士        17 / 30          57%
+战士·勇士        19 / 30          63%
 战士·破阵者       29 / 30          97%
 法师·咒法学派      30 / 30          100%
 野蛮人·守望者道途     29 / 30          97%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     20 / 30          67%
-战士·剑士        11 / 30          37%
-武僧·忍宗        26 / 30          87%
-游荡者·刺客        8 / 30          27%
+野蛮人·野兽道途     21 / 30          70%
+战士·剑士        14 / 30          47%
+武僧·忍宗        25 / 30          83%
+游荡者·刺客        9 / 30          30%
 圣武士·奉献之誓     30 / 30          100%
-邪术师·至高妖精      2 / 30          7%
+邪术师·至高妖精      1 / 30          3%
 战士·魔射手       30 / 30          100%
 游荡者·赌徒       30 / 30          100%
 圣武士·王冠之誓     28 / 30          93%
 武僧·太极宗       29 / 30          97%
-野蛮人·巨人道途     11 / 30          37%
-游荡者·盗贼       10 / 30          33%
-游侠·幽域追踪者     10 / 30          33%
+野蛮人·巨人道途     10 / 30          33%
+游荡者·盗贼       12 / 30          40%
+游侠·幽域追踪者      9 / 30          30%
 游荡者·魔术师      30 / 30          100%
 游荡者·诡术师       0 / 30          0%
 法师·塑能学派       0 / 30          0%
@@ -1912,6 +1983,7 @@ REACTION 14 Fire damage=6 applied=None
 法师·死灵学派       0 / 30          0%
 法师·防护学派       0 / 30          0%
 牧师·净化领域       0 / 30          0%
+牧师·光明领域       0 / 30          0%
 牧师·战争领域       0 / 30          0%
 战士·战斗大师       0 / 30          0%
 术士·龙族血脉       0 / 30          0%
@@ -1939,8 +2011,10 @@ REACTION 14 Fire damage=6 applied=None
 牧师·风暴领域       0 / 30          0%
 武僧·醉拳宗        0 / 30          0%
 牧师·知识领域       0 / 30          0%
+牧师·死亡领域       0 / 30          0%
+牧师·自然领域       0 / 30          0%
 
-尚未发动过招牌技能的角色（待补专属策略）：游荡者·诡术师、法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·净化领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗、牧师·知识领域
+尚未发动过招牌技能的角色（待补专属策略）：游荡者·诡术师、法师·塑能学派、术士·狂野魔法、邪术师·旧日支配者、吟游诗人·勇气学院、圣武士·破誓者、野蛮人·狂战士道途、战士·战术家、法师·预言学派、法师·死灵学派、法师·防护学派、牧师·净化领域、牧师·光明领域、牧师·战争领域、战士·战斗大师、术士·龙族血脉、游侠·猎人、武僧·散打宗、武僧·四象宗、德鲁伊·月光结社、德鲁伊·星辰结社、德鲁伊·大地结社、德鲁伊·孢子结社、圣武士·古贤之誓、邪术师·妖魔、吟游诗人·逸闻学院、术士·风暴术法、术士·幽影魔法、法师·幻术学派、法师·变化学派、法师·惑控学派、战士·奥法骑士、法师·剑咏者、邪术师·咒剑、圣武士·征服之誓、圣武士·复仇之誓、牧师·诡术领域、牧师·风暴领域、武僧·醉拳宗、牧师·知识领域、牧师·死亡领域、牧师·自然领域
    PASS  Ai_activates_signature_skills
 对 战士·破阵者：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1][1+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
 对 法师·咒法学派：双 7 最多 1 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+7->7/1]
@@ -1950,13 +2024,13 @@ REACTION 14 Fire damage=6 applied=None
 对 野蛮人·野兽道途：双 7 最多 2 只  [1+2->2/1][1+4->2/4][2+7->7/4][4+9->7/9][9+7->7/7][7+2->2/7][2+6->6/7][6+4->4/7]
 对 战士·剑士：双 7 最多 2 只  [1+2->2/1][1+4->2/4][2+7->7/4][4+9->7/9][9+7->7/7][7+2->2/7][2+7->7/7][7+9->9/7][9+8->8/7]
 对 武僧·忍宗：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][6+8->8/1][8+4->4/1]
-对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+5->5/5][5+1->1/5][1+7->7/5][5+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
-对 圣武士·奉献之誓：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+5->5/5][5+1->1/5][1+7->7/5][5+6->7/6][6+4->7/4][4+9->7/9][9+4->7/4]
+对 圣武士·奉献之誓：双 7 最多 2 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+6->6/7][6+4->4/7][4+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+9->9/7][9+5->5/7]
+对 圣武士·奉献之誓：双 7 最多 2 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+1->1/7][1+7->7/7][7+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+6->6/7][6+4->4/7][4+9->9/7][9+4->4/7][4+9->9/7][9+4->4/7][4+9->9/7][9+5->5/7]
 对 邪术师·至高妖精：双 7 最多 1 只  [1+2->2/1][2+5->5/1][1+7->5/7][5+3->3/7][3+8->8/7][8+4->4/7][4+5->5/7][5+3->3/7][3+8->8/7][8+4->4/7][7+8->4/8]
 对 战士·魔射手：双 7 最多 0 只  [1+2->2/1][2+5->5/1][5+6->6/1][1+8->6/8]
 
 出现过至少一只 7 的对局：10/12
-出现过双 7 的对局：4/12
+出现过双 7 的对局：6/12
 
    PASS  Diagnose_assassin_double_seven
 
@@ -2092,7 +2166,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  All_samples_use_real_multiplayer_board_and_finish
    PASS  Borrowing_changes_only_source_and_target_is_independent
    PASS  Classic_seating_preserves_human_teammate_and_first_seat
-   PASS  Devotion_uses_two_distinct_shocks_and_ai_protects_real_teammate
+   PASS  Devotion_forms_four_five_six_shields_and_ai_protects_real_teammate
    PASS  Finale_accepts_only_paladins_and_wins_as_a_team
    PASS  Restraint_sample_works_with_either_random_hand
    PASS  Reward_actions_do_not_advance_normal_round_or_turn
@@ -2106,7 +2180,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Dual_valor_ai_can_activate_its_bard_part_in_both_primary_orders
    PASS  Eight_faction_ai_support_and_shock_respect_all_actual_teammates
    PASS  Healthy_life_cleric_selects_healing_to_rescue_or_cleanse_human_ally
-   PASS  Human_protection_requires_intact_shield_and_collects_break_shock_after_acceptance
+   PASS  Human_protection_uses_five_including_broken_shield_and_collects_shock_only_for_actual_break
    PASS  Identity_support_uses_public_lord_allegiance_and_does_not_read_hidden_roles
    PASS  Ordinary_attack_selection_does_not_choose_human_ally_as_damage_target
    PASS  Protect_accepts_when_ally_unshielded_and_ai_has_a_shield
@@ -2344,5 +2418,5 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1817 / 失败 0
+通过 1876 / 失败 0
 独立统计测试已跳过 8 项。

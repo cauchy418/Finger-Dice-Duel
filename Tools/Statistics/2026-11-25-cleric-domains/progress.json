@@ -1,0 +1,23 @@
+{
+  "status": "complete",
+  "code_frozen": true,
+  "started_utc": "2026-11-24T16:12:22.5378668Z",
+  "roster_count": 62,
+  "legal_duals": 611,
+  "expected_games": 76164,
+  "modes": {
+    "1v1": "passed: 37820 games, zero errors / forced aborts",
+    "2v2": "passed: 30256 games, zero errors / forced aborts",
+    "dual": "passed: 4888 games, zero errors / forced aborts",
+    "eight": "passed: 600 games, zero errors / forced aborts",
+    "identity": "passed: 2000 games, zero errors / forced aborts",
+    "identity-preferred": "passed: 600 games, zero errors / forced aborts",
+    "audit": "passed: 62 roles /11532 legal openings"
+  },
+  "baseline": "2026-11-21-class-balance/results.json",
+  "note": "Full six-mode actual BoardController pipeline; previous round retained. cleric_light_domain baseline identity requires comparison-only normalization to cleric_purification_domain.",
+  "completed_utc": "2026-11-24T16:31:07.059593+00:00",
+  "total_games": 76164,
+  "summary_validated": true,
+  "functional_tests_passed": 1876
+}

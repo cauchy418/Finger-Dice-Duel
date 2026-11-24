@@ -1,0 +1,15 @@
+{
+  "captured_utc": "2026-11-25T00:11:26.840638+08:00",
+  "source_commit": "91e9a2b2d19961b1670e714617167a4a72f5b2b7",
+  "source_dirty": true,
+  "source_sha256": "2aae00d5910427434b2463cd52d91936d240137e747b8b855d0e93500b936f0d",
+  "test_source_sha256": "ab65764fcd63b04f1b8f52e43cb2b46845bce96e3bcb6db7b8373f66855eb93d",
+  "headless_source_sha256": "35cf95b8f4a5a72236f3255c328aa447e44c272c5e99e64946ee4202248ba3bc",
+  "headless_runner_sha256": "6c589cb7ec68da2cb4d5e03fb697160808ca405d72d0b85993050c92a931871b",
+  "statistics_tool_sha256": "18b0cebd537569cece1e432e36b16103c48333dfeaadfa85c75c6ee27a5a84e5",
+  "statistics_runner_sha256": "9763c724fbb4c3a68a0dfa872123bc1c9d27e33dd1f599433a3fe9321dee4e82",
+  "identity_runner_sha256": "4d55b2457608c69dfecf0e0988338896e8cf66aaff46b3614505fa76d3ca5cf1",
+  "sampler_assembly_sha256": "5F57E4FD6ED07671AAAE87E08A7390DC4A96D39141C331477D4987EC273D54E6",
+  "sampler_runtime_version": "8.0.15",
+  "sampler_processor_affinity": 0
+}

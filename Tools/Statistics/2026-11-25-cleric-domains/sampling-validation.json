@@ -1,0 +1,36 @@
+{
+  "status": "complete",
+  "completed_utc": "2026-11-24T16:31:07.059593+00:00",
+  "roster_count": 62,
+  "legal_duals": 611,
+  "total_games": 76164,
+  "games_by_mode": {
+    "1v1": 37820,
+    "2v2": 30256,
+    "dual": 4888,
+    "eight": 600,
+    "identity": 2000,
+    "identity-preferred": 600
+  },
+  "draws_by_mode": {
+    "1v1": 267,
+    "2v2": 87,
+    "dual": 27,
+    "eight": 2,
+    "identity": 38,
+    "identity-preferred": 10
+  },
+  "errors": 0,
+  "forced_aborts": 0,
+  "functional_tests_passed": 1876,
+  "legal_opening_checks": 11532,
+  "source_provenance_verified": true,
+  "original_baseline_preserved": true,
+  "new_roles_without_old_rates": [
+    "cleric_death_domain",
+    "cleric_nature_domain",
+    "cleric_light_domain"
+  ],
+  "runtime_identity_rates_equal_random_sample": true,
+  "roster_document_updated": true
+}

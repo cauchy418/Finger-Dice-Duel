@@ -82,4 +82,4 @@
 
 真菌感染｜被动技能：距离1的其他非召唤角色真正死亡时，恢复1点荒野充能，最多恢复至本局初始总量；形态解除不算死亡。
 
-新增与重构角色曾于2026-11-06纳入57子职64,768局历史采样；当前已完整重采59子职69,204局，完整分母见[最新胜率](../Tools/Statistics/2026-11-21-class-balance/README.md)。专属决策、对策和权重对照见[AI 审计表](../Tools/Statistics/2026-11-21-class-balance/ai-audit.tsv)。
+新增与重构角色曾于2026-11-06纳入57子职64,768局历史采样；2026-11-21曾完整重采59子职69,204局（历史数据），完整分母见[最新胜率](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)。专属决策、对策和权重对照见[AI 审计表](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/ai-audit.tsv)。

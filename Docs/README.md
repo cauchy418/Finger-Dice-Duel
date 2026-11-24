@@ -7,7 +7,7 @@
 | 文档 | 内容 |
 |---|---|
 | [模式与战斗](modes-and-combat.md) | 一回合怎么走、距离与护盾怎么算、六种模式细则、13 类伤害与 25 种负面状态 |
-| [角色图鉴](roster.md) | 59 名子职的数值与关键机制、阵营分类、本轮59子职完整采样胜率 |
+| [角色图鉴](roster.md) | 62 名子职的数值与关键机制、阵营分类及逐版本采样来源 |
 | [德鲁伊重构与孢子结社](druid-rework-2026-11-05.md) | 独立荒野体力、四结社、充能与双武僧初始气 |
 | [音乐与音频](music-and-audio.md) | 配乐切换逻辑与设置持久化 |
 | [剧情教学](Adventure/four-chapter-v3/README.md) | 四章 40 关，万象回廊与高塔重排 |
@@ -22,7 +22,8 @@
 | [开发与测试](development.md) | 技术栈、测试命令、验证流程 |
 | [状态与特殊效果AI入口](ai-state-policy.md) | 全职业状态权重、注册接口、优先级与无副作用验证 |
 | [AI技能启用检查](ai-activation-audit.md) | 生产AI入口、双将能力转发、全角色抉择与采样一致性 |
-| [AI 策略与权重](ai-strategy-reference.md) | 59名子职的自身／针对策略与配置；含野蛮人低体力估值和诡术师储值交换 |
+| [AI 策略与权重](ai-strategy-reference.md) | 62名子职的自身／针对策略与配置；含野蛮人低体力估值和诡术师储值交换 |
+| [死亡／自然／光明领域](cleric-death-nature-light.md) | 借死者手、假死、五元素抑制、自然反施、黎明逐段选择与祝福穿透 |
 | [知识领域](knowledge-domain.md) | 知识层数、独立力场伤害与困惑 |
 | [牧师与净化领域](purification-domain.md) | 共同回复、领域赐福、圣火与灼伤实现及验证 |
 | [身份规则与动画更新](identity-and-animation-update.md) | 忠臣扩展接口、动画核对及身份采样验收 |
@@ -56,13 +57,15 @@
 | [诡术师美术](../Art/Production/arcane-trickster/README.md) | 子职徽记、法师之手原图、生成提示词与运行时资源 |
 | [战斗动画设计](combat-animation-design.md) | 挥击、飞行、格挡与闪避的时间轴 |
 | [武僧改造](monk-rework-design.md) · [奥法五式](arcane-five-implementation.md) | 专项改造记录 |
-| [人物立绘](../Art/Production/character-portraits/README.md) | 当前唯一立绘集：26子职、男女52张透明原画；命名、提示词、校验及历史恢复说明 |
+| [人物立绘](../Art/Production/character-portraits/README.md) | 当前唯一立绘集：35子职、男女70张透明原画；命名、提示词、校验及历史恢复说明 |
+| [牧师徽记与祝福标记](../Art/Production/death-nature-domains/README.md) | 死亡／自然徽记、生命／假死／自然／光明方形标记、原图与提示词 |
 | [美术制作](../Art/Production/) | 原图、内置 imagegen 提示词、导入清单 |
 
 ## 统计
 
 | 文档 | 内容 |
 |---|---|
-| [胜率采样](../Tools/Statistics/2026-11-21-class-balance/README.md) | 本轮59子职69,204局，含551种合法双将、八人阵营与两组身份；诡术师已纳入 |
-| [机器数据](../Tools/Statistics/2026-11-21-class-balance/results.json) | 可复核的原始结果 |
+| [当前胜率采样](../Tools/Statistics/2026-11-25-cleric-domains/README.md) | 62子职76,164局、611种合法双将，各模式分母与源码指纹 |
+| [历史胜率采样](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md) | 2026-11-21历史59子职69,204局、当时551种双将，不代表当前角色池 |
+| [机器数据](../Tools/Statistics/2026-11-25-cleric-domains/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |

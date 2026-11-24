@@ -13,4 +13,4 @@
 
 ## 对局采样
 
-[现行报告](Statistics/2026-11-21-class-balance/README.md)中双将采用551种组合的固定偏移配桌，共4,408局，保留原始种子、局数与源码指纹；本轮六组全部使用同一冻结程序集完整重采，没有沿用上一轮模式数据。[AI检查](ai-strategy-audit.md)与[状态策略](../Docs/ai-state-policy.md)说明实际策略与限制。
+[现行报告](Statistics/2026-11-25-cleric-domains/README.md)中双将采用551种组合的固定偏移配桌，共4,408局，保留原始种子、局数与源码指纹；本轮六组全部使用同一冻结程序集完整重采，没有沿用上一轮模式数据。[AI检查](ai-strategy-audit.md)与[状态策略](../Docs/ai-state-policy.md)说明实际策略与限制。
