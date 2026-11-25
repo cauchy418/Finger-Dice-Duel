@@ -1,6 +1,6 @@
 # Finger Dice Duel — 规则规格
 
-当前62子职、611种合法双将的完整采样见[2026-11-25报告](Tools/Statistics/2026-11-25-cleric-domains/README.md)，共76,164局；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留当时59子职、551种双将及旧规则，两个版本的分母不混用。
+当前62子职、611种合法双将的完整采样见[2026-11-25报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)，共76,164局；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留当时59子职、551种双将及旧规则，两个版本的分母不混用。
 
 > 本文件是**唯一权威规则来源**。代码、测试、UI 必须与本文件一致；
 > 若发现不一致，以本文件为准并修正代码。
@@ -679,7 +679,7 @@ AI走子评分叠加效果、角色技能、实时手值、组合、下一手、
 - 集火分加在 `ScoreMove` 的**攻击分支**，不能加进 `TargetPriorityScoreFor`
   （那个函数也被合盾 / 回血调用）。
 
-**集火策略实验**：全部角色×600局×2段种子×3策略。三组共享阵容、起手与随机源，只改变受试角色的None／Self／Mate；现行胜负见[胜率采样](Tools/Statistics/2026-11-25-cleric-domains/README.md)，口径与限制见[采样说明](Tools/Statistics/README.md)。
+**集火策略实验**：全部角色×600局×2段种子×3策略。三组共享阵容、起手与随机源，只改变受试角色的None／Self／Mate；现行胜负见[胜率采样](Tools/Statistics/2026-11-25-low-team-ai/README.md)，口径与限制见[采样说明](Tools/Statistics/README.md)。
 
 生产仍默认Self，旧日支配者、幽域追踪者、野兽道途、魔术师四个例外保持None。本轮对照只提供下一次独立验证的候选，未直接把同批最高项当作最优策略部署；不沿用早期角色池的百分点结论。
 
@@ -1659,7 +1659,7 @@ UI  →  Assistant  →  Core
   - 无反贼、无忠臣 -> 内奸胜；
   - 内奸已死 -> 反贼胜。
 
-以上是AI抽样结果，主忠共同获胜，按身份出场计分，不把不同身份比例相加；完整口径与未分胜负、异常／强停数量见[身份对局采样](Tools/Statistics/2026-11-25-cleric-domains/README.md)（正文含随机 2,000 局与偏好 600 局两套）。
+以上是AI抽样结果，主忠共同获胜，按身份出场计分，不把不同身份比例相加；完整口径与未分胜负、异常／强停数量见[身份对局采样](Tools/Statistics/2026-11-25-low-team-ai/README.md)（正文含随机 2,000 局与偏好 600 局两套）。
 
 ## 20. 8 人阵营混战
 

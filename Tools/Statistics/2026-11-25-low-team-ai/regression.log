@@ -1,4 +1,4 @@
-── AdventureChapterFinaleTests  (10 项)
+﻿── AdventureChapterFinaleTests  (10 项)
    PASS  Eighth_follow_up_hits_first_bleed_increases_main_and_total_is_eleven
    PASS  Finale_all_seven_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded
    PASS  Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster
@@ -463,12 +463,12 @@ COMBAT PASS L11 rounds=16 win=True
 COMBAT PASS L12 rounds=27 win=False
 COMBAT PASS L13 rounds=8 win=False
 COMBAT PASS L14 rounds=20 win=True
-COMBAT PASS L15 rounds=15 win=True
+COMBAT PASS L15 rounds=11 win=True
 COMBAT PASS L16 rounds=12 win=True
 COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
 COMBAT PASS L19 rounds=20 win=True
-COMBAT PASS L20 rounds=7 win=False
+COMBAT PASS L20 rounds=32 win=False
 COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
 COMBAT PASS L23 rounds=11 win=False
@@ -478,7 +478,7 @@ COMBAT PASS L26 rounds=9 win=True
 COMBAT PASS L27 rounds=10 win=False
 COMBAT PASS L28 rounds=9 win=True
 COMBAT PASS L29 rounds=17 win=True
-COMBAT PASS L30 rounds=15 win=True
+COMBAT PASS L30 rounds=13 win=False
    PASS  Every_lesson_can_finish_real_combat_without_resetting
    PASS  Finale_values_and_roles_match_the_new_design
    PASS  Protection_and_obstacle_actions_are_scoped_and_cost_an_action
@@ -541,19 +541,19 @@ V3 COMBAT PASS L14 rounds=11
 V3 COMBAT PASS L15 rounds=6
 V3 COMBAT PASS L16 rounds=11
 V3 COMBAT PASS L17 rounds=11
-V3 COMBAT PASS L18 rounds=46
+V3 COMBAT PASS L18 rounds=35
 V3 COMBAT PASS L19 rounds=25
-V3 COMBAT PASS L20 rounds=23
+V3 COMBAT PASS L20 rounds=22
 V3 COMBAT PASS L21 rounds=12
 V3 COMBAT PASS L22 rounds=8
 V3 COMBAT PASS L23 rounds=18
-V3 COMBAT PASS L24 rounds=13
+V3 COMBAT PASS L24 rounds=14
 V3 COMBAT PASS L25 rounds=8
 V3 COMBAT PASS L26 rounds=16
 V3 COMBAT PASS L27 rounds=11
 V3 COMBAT PASS L28 rounds=16
 V3 COMBAT PASS L29 rounds=22
-V3 COMBAT PASS L30 rounds=7
+V3 COMBAT PASS L30 rounds=32
 V3 COMBAT PASS L31 rounds=6
 V3 COMBAT PASS L32 rounds=16
 V3 COMBAT PASS L33 rounds=19
@@ -563,7 +563,7 @@ V3 COMBAT PASS L36 rounds=12
 V3 COMBAT PASS L37 rounds=11
 V3 COMBAT PASS L38 rounds=9
 V3 COMBAT PASS L39 rounds=19
-V3 COMBAT PASS L40 rounds=13
+V3 COMBAT PASS L40 rounds=15
    PASS  Every_trial_and_retry_can_resolve_a_complete_battle
 REACTION 1 Thunder damage=4 applied=None
 REACTION 2 Lightning damage=6 applied=None
@@ -841,12 +841,19 @@ REACTION 14 Fire damage=6 applied=None
    PASS  There_are_exactly_ten_damage_types
    PASS  Type_list_covers_every_enum_value_exactly_once
 
-── DeathDomainAiTests  (5 项)
+── DeathDomainAiTests  (12 项)
+   PASS  Death_actor_recovers_instead_of_attacking_a_feigned_enemy_at_one_health
+   PASS  Death_blessing_can_control_a_healthy_enemy_to_save_a_wounded_healer
+   PASS  Death_blessing_can_disable_a_dangerous_enemy_while_another_enemy_remains
    PASS  Death_blessing_declines_healthy_or_protected_allies_but_preserves_an_endangered_patient
+   PASS  Death_blessing_does_not_heal_and_protect_a_wounded_last_enemy
+   PASS  Death_blessing_does_not_sacrifice_actions_when_healing_already_removes_lethal_danger
    PASS  Death_blessing_preserves_a_teammate_only_when_its_actions_cannot_safely_continue
+   PASS  Death_recovery_control_competes_with_an_attack_that_cannot_finish_the_enemy
    PASS  Death_touch_projects_necrotic_instead_of_physical_affinity
    PASS  Feigned_actor_scores_only_hand_setup_without_heal_or_attack_bonuses
    PASS  Feigned_enemy_never_receives_a_lethal_score_and_damage_respects_one_health_floor
+   PASS  Final_feigned_turn_values_setup_for_the_first_active_turn
 
 ── DeathDomainTests  (6 项)
    PASS  Board_can_cancel_dead_addend_selection_without_consuming_turn
@@ -1081,6 +1088,16 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Taichi_partial_mitigation_is_guarded
    PASS  Zero_damage_without_guard_keeps_full_status_duration
    PASS  Zero_duration_does_not_remove_or_refresh_existing_state
+
+── FeignedDeathSkipTests  (8 项)
+   PASS  A_single_usable_addend_including_a_locked_hand_prevents_forced_skip
+   PASS  All_other_players_feigned_offer_skip_before_and_after_source_selection
+   PASS  Death_domain_can_borrow_feigned_hands_without_forced_skip
+   PASS  Death_domain_dead_addend_counts_when_live_hands_are_concealed
+   PASS  Feigned_actor_with_available_addends_can_operate_and_expiry_restores_others
+   PASS  Local_human_on_another_seat_can_skip_and_ticks_own_feign_once
+   PASS  Locks_frozen_concealment_and_private_addends_still_allow_no_operation_skip
+   PASS  Self_addend_is_a_real_operation_when_all_other_players_feign
 
 ── FeignedDeathTests  (11 项)
    PASS  Attack_true_damage_and_status_damage_leave_one_health_and_never_end_match
@@ -1483,11 +1500,13 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Music_reads_do_not_change_the_game_or_consume_actions
    PASS  Odd_maximum_health_uses_the_actual_half_threshold
 
-── NatureLightAiTests  (6 项)
+── NatureLightAiTests  (8 项)
    PASS  All_current_roles_and_new_blessings_have_explicit_policy_registration
    PASS  Dawn_cleanse_compares_damage_with_losing_enemy_control
+   PASS  Dawn_cleanses_control_when_the_extra_damage_alone_finishes_an_unprotected_enemy
    PASS  Full_health_healing_values_new_blessings_only_when_sacred_fire_allows_them
    PASS  Light_blessing_converts_damage_but_only_innate_radiant_pierces_immunity
+   PASS  Light_prepares_a_missing_blessing_instead_of_firing_into_radiant_immunity
    PASS  Nature_blessing_retaliation_reduces_attack_value_even_with_target_shield
    PASS  Nature_stored_element_changes_attack_opportunity_without_spending_it
 
@@ -1777,14 +1796,16 @@ REACTION 14 Fire damage=6 applied=None
    PASS  The_other_two_seats_match_the_walk_rule
    PASS  There_are_exactly_two_opponents_and_one_teammate
 
-── RoleRefreshAiTests  (7 项)
+── RoleRefreshAiTests  (9 项)
    PASS  Blessed_nine_does_not_trade_healing_for_cancelled_attack
    PASS  Blessed_nine_keeps_healing_against_immune_target
    PASS  Diviner_keeps_portent_when_enemy_attack_is_disabled
+   PASS  Diviner_spends_a_growth_threshold_record_for_an_immediate_winning_attack
    PASS  Element_preview_does_not_advance_psychic_status_random
    PASS  Giant_buys_element_to_bypass_physical_immunity
    PASS  Giant_preserves_five_health_without_elemental_upgrade
    PASS  Ordinary_cleric_does_not_value_cleansing_it_cannot_perform
+   PASS  Wounded_life_cleric_finishes_the_last_enemy_instead_of_converting_the_win_to_healing
 
 ── RoundCountingTests  (5 项)
    PASS  One_versus_one_round_is_two_turns
@@ -1952,24 +1973,24 @@ REACTION 14 Fire damage=6 applied=None
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
 战士·勇士        19 / 30          63%
-战士·破阵者       29 / 30          97%
+战士·破阵者       28 / 30          93%
 法师·咒法学派      30 / 30          100%
-野蛮人·守望者道途     29 / 30          97%
+野蛮人·守望者道途     28 / 30          93%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     21 / 30          70%
-战士·剑士        14 / 30          47%
-武僧·忍宗        25 / 30          83%
-游荡者·刺客        9 / 30          30%
+野蛮人·野兽道途     20 / 30          67%
+战士·剑士        16 / 30          53%
+武僧·忍宗        26 / 30          87%
+游荡者·刺客       10 / 30          33%
 圣武士·奉献之誓     30 / 30          100%
 邪术师·至高妖精      1 / 30          3%
 战士·魔射手       30 / 30          100%
 游荡者·赌徒       30 / 30          100%
 圣武士·王冠之誓     28 / 30          93%
 武僧·太极宗       29 / 30          97%
-野蛮人·巨人道途     10 / 30          33%
+野蛮人·巨人道途     12 / 30          40%
 游荡者·盗贼       12 / 30          40%
-游侠·幽域追踪者      9 / 30          30%
+游侠·幽域追踪者     10 / 30          33%
 游荡者·魔术师      30 / 30          100%
 游荡者·诡术师       0 / 30          0%
 法师·塑能学派       0 / 30          0%
@@ -2171,6 +2192,18 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Restraint_sample_works_with_either_random_hand
    PASS  Reward_actions_do_not_advance_normal_round_or_turn
    PASS  Samples_are_isolated_and_keys_are_stable
+
+── TeamClericTimingTests  (10 项)
+   PASS  Actual_board_healing_resolves_selected_teammate_once_and_advances
+   PASS  All_nine_clerics_rescue_ally_before_lower_health_enemy
+   PASS  Ancients_forced_heal_prefers_ally_then_minimizes_enemy_recovery_when_only_enemies_remain
+   PASS  Conquest_panic_prefers_enemy_whose_attack_penalty_also_protects_teammate
+   PASS  Devotion_shock_finishes_unprotected_enemy_before_false_life_enemy
+   PASS  Forced_devotion_shock_uses_false_life_before_harming_an_ally
+   PASS  Healthy_cleric_values_urgent_teammate_healing_in_move_score
+   PASS  Nature_and_light_blessings_do_not_refresh_covered_or_blocked_allies
+   PASS  Purification_avoids_removing_allied_blessings_and_prefers_disabling_cleanse
+   PASS  War_blessed_nine_keeps_heal_for_critical_ally_then_attacks_when_team_recovers
 
 ── TeamSupportAiTests  (15 项)
    PASS  Abjuration_and_chalice_choose_injured_human_ally_not_wounded_enemy
@@ -2390,10 +2423,11 @@ REACTION 14 Fire damage=6 applied=None
    PASS  The_last_twenty_percent_stays_a_plain_attack
    PASS  WildMagic_stats_and_infinite_range
 
-── WizardAiPolicyTests  (8 项)
+── WizardAiPolicyTests  (9 项)
    PASS  Ai_forced_skip_resolves_archfey_health_target
    PASS  All_roles_three_difficulties_and_three_board_sizes_progress_without_human_prompts
    PASS  Every_current_role_has_an_explicit_value_profile
+   PASS  Evocation_does_not_spend_preparation_on_a_type_the_enemy_is_immune_to
    PASS  Headless_abjuration_uses_policy_and_does_not_store_a_lethal_attack
    PASS  Lethal_estimate_accounts_for_resistance_barrier_and_current_stat_offsets_without_consumption
    PASS  Magician_uses_own_locked_other_hand_as_addend
@@ -2418,5 +2452,5 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1876 / 失败 0
+通过 1906 / 失败 0
 独立统计测试已跳过 8 项。

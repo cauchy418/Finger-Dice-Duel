@@ -6,8 +6,8 @@
 
 | 内容 | 位置 |
 |---|---|
-| 现行完整采样（59子职69,204局） | [2026-11-21-class-balance/README.md](2026-11-25-cleric-domains/README.md) |
-| 机器可读汇总 | [results.json](2026-11-25-cleric-domains/results.json) |
+| 现行完整采样（59子职69,204局） | [2026-11-21-class-balance/README.md](2026-11-25-low-team-ai/README.md) |
+| 机器可读汇总 | [results.json](2026-11-25-low-team-ai/results.json) |
 | 逐局记录 | 同目录 `1v1.csv`、`2v2.csv`、`dual.csv`、`eight.csv`、`identity.csv`、`identity-preferred.csv` |
 | 角色名单与阵营 | `roster.tsv` |
 | AI 逐角色审计 | `ai-audit.tsv` |
@@ -30,7 +30,7 @@
 
 ## 复现与补表
 
-完整重采按[现行报告的复现命令](2026-11-25-cleric-domains/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
+完整重采按[现行报告的复现命令](2026-11-25-low-team-ai/README.md#复现与证据)逐一运行六组样本，保存对应日志。身份随机组必须先完成，再将身份分表同步为运行时偏好输入，最后采偏好验证组。
 
 只从现有数据补全表格时：
 

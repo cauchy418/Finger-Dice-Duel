@@ -1,4 +1,4 @@
-﻿# Built-in image_gen prompts
+# Built-in image_gen prompts
 
 transparent_background=true for both assets.
 

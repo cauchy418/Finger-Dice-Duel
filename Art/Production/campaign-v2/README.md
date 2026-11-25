@@ -1,4 +1,4 @@
-﻿# 哨站教官徽记
+# 哨站教官徽记
 
 内置image_gen生成，主体为黑铁头盔、钝刃训练剑与旧盾，暗色绘画质感及旧金圆框；透明外部。原图保存为npc_outpost_drillmaster-source.png，按已授权的程序缩放居中至512×512，最终文件位于Assets/Resources/Art/Battle/v1/Adventure/npc_outpost_drillmaster.png。
 

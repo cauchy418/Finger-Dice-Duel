@@ -1,6 +1,6 @@
 # 开发与测试
 
-当前62子职76,164局采样见[2026-11-25报告](../Tools/Statistics/2026-11-25-cleric-domains/README.md)；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留历史59子职、551种双将的冻结结果。
+当前62子职76,164局采样见[2026-11-25报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留历史59子职、551种双将的冻结结果。
 
 [返回索引](README.md)
 

@@ -1,4 +1,4 @@
-﻿# 万象回廊提示词（内置image_gen）
+# 万象回廊提示词（内置image_gen）
 
 ## 背景，transparent_background=false
 Game battle background, wide 16:9 landscape, dark fantasy hand-painted richly textured environment, no UI, no text, no people. The Gallery of Myriad Forms: an ancient long stone arcade on the approach to a wizard tower, carved black basalt pillars and tarnished gold inlays, open vaults showing a distant stormy violet sky. Along the FAR LEFT and FAR RIGHT edges stand subtle elemental relics: a dim blue storm prism, amber flame brazier, frosted crystal, deep green alchemical vessels. Faint prismatic light through high fractured windows. Vast quiet dark charcoal flagstone arena filling center 65%, low contrast and no bright focal ornament in the center, suitable behind readable card-based game UI. Props cluster outside the central arena; balanced depth and restrained cinematic lighting, original dark fantasy tabletop aesthetic, somber antique-gold accents, no logos, no figures, no cards or panels, no baked labels.

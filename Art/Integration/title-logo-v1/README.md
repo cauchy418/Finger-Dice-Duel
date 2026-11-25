@@ -1,4 +1,4 @@
-﻿# 指骰对决标题接入验证
+# 指骰对决标题接入验证
 
 - UI编译通过。
 - Unity实际MainTitle读取UI/title_logo_zh，等比显示，raycastTarget=false。

@@ -1,4 +1,4 @@
-﻿# P1专属动画与持续状态表现
+# P1专属动画与持续状态表现
 
 2026-10-31。对应[完整制作清单](skill-and-status-animation-list.md)。本批为既有P1程序表现加入专属轨迹、主体与语义数据，完成53种播放变体；它们不是53名角色。每种保存起势与高峰两张Unity原生渲染截图，见[定稿索引](../Art/Integration/skill-animation-finals/README.md)。
 

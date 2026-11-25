@@ -4,7 +4,7 @@
 
 # 指骰对决 · Finger Dice Duel
 
-当前62子职、611种合法双将的完整采样见[2026-11-25报告](Tools/Statistics/2026-11-25-cleric-domains/README.md)，共76,164局；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留当时59子职、551种双将及旧规则，两个版本的分母不混用。
+当前62子职、611种合法双将的完整采样见[2026-11-25报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)，共76,164局；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留当时59子职、551种双将及旧规则，两个版本的分母不混用。
 
 **两只手的数字，就是你的骰子。**
 
@@ -105,7 +105,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 本轮62子职完整采样76,164局，包含1v1、2v2、611种双将、八人阵营和身份随机／偏好选角。[胜率、逐模式分母与历史比较](Tools/Statistics/2026-11-25-cleric-domains/README.md)
+- 本轮62子职完整采样76,164局，包含1v1、2v2、611种双将、八人阵营和身份随机／偏好选角。[胜率、逐模式分母与历史比较](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 

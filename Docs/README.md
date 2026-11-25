@@ -65,7 +65,9 @@
 
 | 文档 | 内容 |
 |---|---|
-| [当前胜率采样](../Tools/Statistics/2026-11-25-cleric-domains/README.md) | 62子职76,164局、611种合法双将，各模式分母与源码指纹 |
+| [当前胜率采样](../Tools/Statistics/2026-11-25-low-team-ai/README.md) | 62子职76,164局、611种合法双将，各模式分母与源码指纹 |
 | [历史胜率采样](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md) | 2026-11-21历史59子职69,204局、当时551种双将，不代表当前角色池 |
-| [机器数据](../Tools/Statistics/2026-11-25-cleric-domains/results.json) | 可复核的原始结果 |
+| [机器数据](../Tools/Statistics/2026-11-25-low-team-ai/results.json) | 可复核的原始结果 |
 | [统计目录约定](../Tools/Statistics/README.md) | 一轮采样一个目录，旧目录在新一轮提交里删除 |
+
+[低胜率角色与团队策略复查](low-winrate-team-ai-review.md)：七名1v1低胜率角色、六圣武士／九牧师团队抉择及假死无合法操作时的跳过。
