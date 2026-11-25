@@ -18,9 +18,12 @@ namespace FingerDiceDuel.Assistant
             if(effect==HandEffectType.Heal)
             {
                 int healAmount=lifeHealing?result:9;
-                var planned=CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor)!=null?LifeDomainLogic.BestHealTargetFor(actor,game,healAmount)
+                var planned=CharacterBehaviors.FirstImplementer<DeathDomainLogic>(actor)!=null?BestDeathHealTarget(actor,game)
+                    :CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor)!=null?LifeDomainLogic.BestHealTargetFor(actor,game,healAmount)
+                    :IsTeamClericAi(actor,game)?BestTeamClericHealTarget(actor,game,healAmount)
                     :CharacterBehaviors.FirstImplementer<IHealTargetAdvisor>(actor)?.BestHealTarget(actor,game)??actor;
                 victim=planned;
+                if(!game.IsKnownAlly(actor,planned)&&DeathEnemyControlValue(actor,planned,game)>0)heal=1;
                 foreach(var patient in game.Players)
                 {
                     if(!patient.IsAlive||!ReferenceEquals(patient,planned)||!game.IsKnownAlly(actor,patient))continue;
@@ -40,6 +43,20 @@ namespace FingerDiceDuel.Assistant
         private bool WantsLifeHealing(PlayerState actor,PlayerState target,int result,GameManager game)
         {
             if(actor==null||game==null||CharacterBehaviors.FirstImplementer<LifeDomainLogic>(actor)==null)return false;
+            if(target?.IsAlive==true&&!game.IsKnownAlly(actor,target)&&!target.HasAnyShield
+                &&!target.HasStatus(StatusEffect.FeignedDeath)&&game.CanReach(actor,target)
+                &&StatusRules.CanAttackTarget(actor,target,game)&&!FeyCanCancel(target,result)
+                &&(target.Character as IAttackTargetRule)?.IsImmuneToAttack(target)!=true)
+            {
+                int remaining=0;bool grave=false;
+                foreach(var enemy in game.Players)if(enemy.IsAlive&&!game.IsKnownAlly(actor,enemy))remaining++;
+                foreach(var part in DruidWildShape.Parts(target.PersistentCharacter))
+                    if(part is IGraveStrength strength&&!strength.GraveSpent)grave=true;
+                // A winning attack ends the danger; the deferred heal choice must
+                // agree with the move scorer's immediate-win preference.
+                if(remaining==1&&!grave&&EstimateAttackDamage(actor,target,result,game)
+                    >=target.HealthAcrossForms+target.SporeLife+target.FalseLife)return false;
+            }
             bool danger=actor.Health*100<=actor.MaximumHealth*LifeDomainHealHealthPercent;
             foreach(var ally in game.Players)
                 if(ally.IsAlive&&game.IsKnownAlly(actor,ally)&&(ally.Health*100<=ally.MaximumHealth*LifeDomainHealHealthPercent

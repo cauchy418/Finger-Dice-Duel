@@ -8,6 +8,27 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class NatureLightAiTests
     {
+        [Test] public void Light_prepares_a_missing_blessing_instead_of_firing_into_radiant_immunity()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.LightDomain);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var game=new GameManager(a,b,ai,new SimpleChoiceProvider());ai.Game=game;
+            a.LeftHand.SetValue(1);a.RightHand.SetValue(2);b.LeftHand.SetValue(7);b.RightHand.SetValue(8);
+            b.AddPermanentImmunity(AttackDamageType.Radiant);
+            var heal=new LegalMove(a,a.LeftHand,b.RightHand);var blocked=new LegalMove(a,a.LeftHand,b.LeftHand);
+            Assert.True(ai.ScoreMoveForTest(heal,a,game)>ai.ScoreMoveForTest(blocked,a,game));
+        }
+        [Test] public void Dawn_cleanses_control_when_the_extra_damage_alone_finishes_an_unprotected_enemy()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.LightDomain);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var game=new GameManager(a,b,ai,new SimpleChoiceProvider());
+            b.ApplyStatus(StatusEffect.Frozen,2);b.SetHealthExact(2);
+            Assert.True(ai.CleanseLightAttack(a,b,game));
+            b.ApplyStatus(StatusEffect.FeignedDeath,2);Assert.False(ai.CleanseLightAttack(a,b,game));
+            b.RemoveStatus(StatusEffect.FeignedDeath);b.RightHand.SetValue(1);b.RightHand.PerformOperation(4);
+            Assert.False(ai.CleanseLightAttack(a,b,game));
+        }
         [Test] public void All_current_roles_and_new_blessings_have_explicit_policy_registration()
         {
             foreach(var role in CharacterDefinition.BuiltIn)Assert.True(HandValueProfiles.HasExplicitProfile(role),role.Id);

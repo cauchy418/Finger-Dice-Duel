@@ -17,9 +17,9 @@ namespace FingerDiceDuel.Assistant
                 bool ally=AncientAlly(game,owner,target);double score;
                 if(key==AncientRoleChoices.AncientHeal)
                 {
-                    int need=!StatusRules.CanHeal(target)?0:target.MaximumHealth-target.Health;
+                    int need=NetClericHealingGain(target,2);
                     // 回复为强制效果；无受伤队友时优先满血敌人，避免替敌人有效治疗。
-                    score=ally?100+Math.Min(2,need)*30-target.Health:50-Math.Min(2,need)*30;
+                    score=ally?100+need*30-(need>0?target.Health:0):50-need*30;
                 }
                 else if(key==AncientRoleChoices.LandSeal)
                 {

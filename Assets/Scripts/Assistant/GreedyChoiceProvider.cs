@@ -312,6 +312,23 @@ namespace FingerDiceDuel.Assistant
         /// </summary>
         private DamageType SchoolOfEvocationPickDamageType(PlayerState self)
         {
+            DamageType preferred=SchoolOfEvocationPreferredDamageType(self);
+            if(self==null||Game==null)return preferred;
+            PlayerState foe=FocusTargetForScoring(Game,self);
+            if(foe==null)
+                foreach(var enemy in Game.OpponentsOf(self))if(enemy.IsAlive){foe=enemy;break;}
+            if(foe==null||!foe.HasImmunity(AttackDamageTypes.FromDamageType(preferred)))return preferred;
+            // Keep the established control/damage preference until public immunity
+            // makes its preparation useless; then select a type that can land.
+            foreach(var type in new[]{DamageType.Psychic,DamageType.Cold,DamageType.Necrotic,
+                DamageType.Poison,DamageType.Fire,DamageType.Lightning,DamageType.Radiant,
+                DamageType.Thunder,DamageType.Acid,DamageType.Force})
+                if(!foe.HasImmunity(AttackDamageTypes.FromDamageType(type)))return type;
+            return DamageType.Force;
+        }
+
+        private DamageType SchoolOfEvocationPreferredDamageType(PlayerState self)
+        {
             if (self == null || Game == null) return DamageType.Fire;
             IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
             PlayerState foe = foes.Count > 0 ? foes[0] : null;
@@ -700,7 +717,12 @@ namespace FingerDiceDuel.Assistant
             if (actor.HasStatus(StatusEffect.FeignedDeath))
             {
                 int pureResult = operationResult ?? (game != null ? game.PreviewOperationResult(actor, move.ActedHand, move.TargetHand) : AiStatePolicy.PreviewResult(actor, acted, target));
-                return HandValueScore(actor, pureResult, actor.GetOtherHand(move.ActedHand).Value);
+                int pureOther=actor.GetOtherHand(move.ActedHand).Value;
+                // The operation itself is still effectless. On the final disabled turn,
+                // prepare arithmetic that becomes useful once feigned death expires.
+                int recoverySetup=actor.StatusTurnsLeft(StatusEffect.FeignedDeath)==1
+                    ? DenyScore(actor,game,pureResult,pureOther):0;
+                return HandValueScore(actor,pureResult,pureOther)+recoverySetup;
             }
             if (game != null && (game.WillSuppressOperationEffects(actor)||actor.HasStatus(StatusEffect.Dizzy)))
             {
@@ -797,6 +819,9 @@ namespace FingerDiceDuel.Assistant
             //
             // 运算后：被操作的手变成**结果值**，另一只手不变。
             score += HandValueScore(actor, result, other.Value);
+            score += DeathHealingMoveBonus(actor,result,game);
+            score += LightBlessingPreparationValue(actor,result,game);
+            score += TeamClericHealingMoveBonus(actor,result,game);
             score += StateMoveAdjustment(move,actor,result,game);
             score += ClericDomainMoveValue(actor,ResolveIntendedVictim(move,actor,game,result),result,game);
             if(game!=null&&DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand))
@@ -1812,8 +1837,11 @@ namespace FingerDiceDuel.Assistant
                         // 依赖方向：AI（Assistant 层）不能引用 Characters 层，
                         // 所以由角色通过 IHealTargetAdvisor 自报该给谁。
                         var advisor = CharacterBehaviors.FirstImplementer<IHealTargetAdvisor>(decider);
-                        PlayerState want = advisor is LifeDomainLogic
+                        PlayerState want = CharacterBehaviors.FirstImplementer<DeathDomainLogic>(decider)!=null
+                            ? BestDeathHealTarget(decider,Game)
+                            : advisor is LifeDomainLogic
                             ? LifeDomainLogic.BestHealTargetFor(decider, Game, request.ResultValue > 0 ? request.ResultValue : 9)
+                            : IsTeamClericAi(decider,Game)?BestTeamClericHealTarget(decider,Game,request.ResultValue > 0 ? request.ResultValue : 9)
                             : advisor?.BestHealTarget(decider, Game);
 
                         if (want != null)

@@ -9,12 +9,13 @@ namespace FingerDiceDuel.Assistant
         {
             if(value<0)return 1;
             if(actor==null||game==null)return -100;
-            double difference=PortentOutcomeValue(actor,value,game)-PortentOutcomeValue(actor,game.CurrentPortentResult,game);
             var book=CharacterBehaviors.FirstImplementer<IPortentBook>(owner);
             int growthCost=book?.Portents.Count>0&&book.Portents.Count%3==0?2:0;
+            int attackLoss=ReferenceEquals(owner,actor)&&growthCost>0?1:0;
+            double difference=PortentOutcomeValue(actor,value,game,attackLoss)-PortentOutcomeValue(actor,game.CurrentPortentResult,game);
             return (ReferenceEquals(owner,actor)||game.IsKnownAlly(owner,actor)?difference:-difference)-1-growthCost;
         }
-        private static double PortentOutcomeValue(PlayerState actor,int value,GameManager game)
+        private static double PortentOutcomeValue(PlayerState actor,int value,GameManager game,int attackLoss=0)
         {
             var effect=DivineScoredEffect(actor,value,game);
             if(effect==HandEffectType.Heal)
@@ -30,7 +31,13 @@ namespace FingerDiceDuel.Assistant
                 int damage=EstimateAttackDamage(actor,enemy,value,game);
                 // Portent is scarce: a fully blocked normal hit only breaks a shield.
                 bool shield=enemy.LeftHand.IsShield||enemy.RightHand.IsShield;
-                best=Math.Max(best,shield?Math.Min(2,damage):damage);
+                double outcome=shield?Math.Min(2,damage):Math.Max(0,damage-attackLoss);
+                bool grave=false;
+                foreach(var part in DruidWildShape.Parts(enemy.PersistentCharacter))
+                    if(part is IGraveStrength strength&&!strength.GraveSpent)grave=true;
+                if(!shield&&!grave&&!enemy.HasStatus(StatusEffect.FeignedDeath)
+                    &&damage-attackLoss>=enemy.HealthAcrossForms+enemy.SporeLife+enemy.FalseLife)outcome+=25;
+                best=Math.Max(best,outcome);
             }
             return best;
         }

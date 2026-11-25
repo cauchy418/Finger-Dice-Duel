@@ -15,9 +15,13 @@ namespace FingerDiceDuel.Assistant
                 bool ally=Game.IsKnownAlly(owner,target);
                 bool shield=target.LeftHand.IsShield||target.RightHand.IsShield;
                 int loss=shield?0:StatusRules.ApplyDamageAffinities(target,StatusRules.ApplyIncomingDamage(target,OathOfDevotionLogic.ShockDamage),AttackDamageType.Bludgeoning);
-                double value=ally?-10000-loss*100-target.FalseLife:(loss>=target.Health?1000:loss*20)+30-target.Health;
+                double value=ally?-10000-Math.Max(0,loss-target.FalseLife)*100:(loss>=target.HealthAcrossForms+target.FalseLife?1000:loss*20)+30-target.HealthAcrossForms;
                 // If the compulsory skill has only allies in range, minimize harm.
-                if(ally)value+=shield?500:target.Health*2;
+                if(ally)
+                {
+                    value+=shield?500:target.HealthAcrossForms*2;
+                    if(Math.Max(0,loss-target.FalseLife)>=target.HealthAcrossForms)value-=5000;
+                }
                 if(value>score){best=hand;score=value;}
             }
             return best??(request.Candidates.Count>0?request.Candidates[0]:request.DeclineResult);

@@ -3584,10 +3584,6 @@ namespace FingerDiceDuel.UI
         }
 
         /// <summary>
-        /// 跳过回合按钮依当前人类行动者与控制器规则显示，不依赖座位编号。
-        /// 按钮挂在 A 的右手牌右侧，所以 B 的回合不应该显示它。
-        /// </summary>
-        /// <summary>
         /// 当前是否该显示"跳过回合"按钮。
         ///
         /// ⚠️ 曾经写死 `ActivePlayer == _game.PlayerA` ——
@@ -3595,16 +3591,15 @@ namespace FingerDiceDuel.UI
         ///    人类可能是 2/3/4 号位，于是按钮永远不显示
         ///    （玩家实测："2v2 中邪术师·至高妖精没有跳过回合按钮"）。
         ///
-        /// 正确的判据是"**当前行动方是不是人类**"，与座位无关。
+        /// 正确的判据是"**当前行动方是不是人类**"，与座位无关；本地多人同样适用。
         /// </summary>
         private bool ShowSkipButton()
         {
             bool show = _controller != null
                         && _controller.IsHumanTurn
-                        && ReferenceEquals(_controller.ActivePlayer, HumanPlayer())
                         && _controller.CanSkipTurn;
 
-            // 诊断：按钮该显示却没显示时，把四个判据逐个打出来。
+            // 诊断：按钮该显示却没显示时，记录行动者、视角与阶段。
             // 这类"界面没画"的问题光看截图分不清是规则判错还是漏传参数。
             if (VerboseLogging && !show && _controller != null
                 && _controller.ActivePlayer != null

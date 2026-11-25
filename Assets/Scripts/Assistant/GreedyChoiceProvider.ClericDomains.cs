@@ -9,26 +9,12 @@ namespace FingerDiceDuel.Assistant
         public bool DeathBlessing(PlayerState healer,PlayerState patient,GameManager game)=>WantsDeathBlessing(healer,patient,game);
         private static bool WantsDeathBlessing(PlayerState healer,PlayerState patient,GameManager game)
         {
-            if(game==null||patient?.IsAlive!=true||!game.IsKnownAlly(healer,patient)
-                ||patient.HasStatus(StatusEffect.HolyLight)||patient.HasStatus(StatusEffect.FeignedDeath))return false;
+            if(game==null||patient?.IsAlive!=true||patient.HasStatus(StatusEffect.HolyLight)
+                ||patient.HasStatus(StatusEffect.FeignedDeath))return false;
+            if(!game.IsKnownAlly(healer,patient))return DeathEnemyControlValue(healer,patient,game,0)>0;
             int threat=0;
             foreach(var enemy in game.Players)
-            {
-                if(!enemy.IsAlive||game.IsKnownAlly(patient,enemy)||!StatusRules.CanAct(enemy)
-                    ||game.WillSuppressOperationEffects(enemy)||!game.CanReach(enemy,patient)
-                    ||!StatusRules.CanAttackTarget(enemy,patient,game))continue;
-                int strongest=0;
-                foreach(var move in game.GetLegalMoves(enemy))
-                {
-                    int result=game.PreviewOperationResult(enemy,move.ActedHand,move.TargetHand);
-                    if(!IsAttackEffect(DivineScoredEffect(enemy,result,game)))continue;
-                    if(FeyCanCancel(patient,result))continue;
-                    if(patient.HasAnyShield&&CharacterFactory.MaxAttackHits(enemy)==1
-                        &&CharacterBehaviors.FirstImplementer<IPiercesMitigation>(enemy)==null)continue;
-                    strongest=System.Math.Max(strongest,EstimateAttackDamage(enemy,patient,result,game,move.ActedHand.Value,move.TargetHand)*CharacterFactory.MaxAttackHits(enemy));
-                }
-                threat+=strongest;
-            }
+                if(enemy.IsAlive&&!game.IsKnownAlly(patient,enemy))threat+=DeathAttackThreat(enemy,patient,game);
             return threat>=patient.HealthAcrossForms;
         }
         public bool SwapTrickery(TrickeryTouch t,GameManager game)

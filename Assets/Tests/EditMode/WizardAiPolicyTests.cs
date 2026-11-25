@@ -10,6 +10,16 @@ namespace FingerDiceDuel.Tests
     [TestFixture]
     public class WizardAiPolicyTests
     {
+        [Test] public void Evocation_does_not_spend_preparation_on_a_type_the_enemy_is_immune_to()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.SchoolOfEvocation);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var game=new GameManager(a,b,ai,new SimpleChoiceProvider());ai.Game=game;
+            a.SetHealthExact(4);b.AddPermanentImmunity(AttackDamageType.Cold);
+            var request=new ChoiceRequest(HandEffect.SchoolOfEvocationDamageType,"type",new[]{a.LeftHand},allowDecline:false,decider:a);
+            ai.ChooseHandFor(request,a);
+            Assert.False(b.HasImmunity(AttackDamageTypes.FromDamageType(ai.ChosenDamageType)));
+        }
         [Test] public void Every_current_role_has_an_explicit_value_profile()
         {
             foreach(var def in CharacterDefinition.BuiltIn) Assert.IsTrue(HandValueProfiles.HasExplicitProfile(def),def.Id);

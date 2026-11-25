@@ -3357,36 +3357,9 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public bool HasAnyLegalOperation(PlayerState actor)
         {
-            if (actor == null || !actor.IsAlive) return false;
-            PrepareRestraint(actor);
-            if (!StatusRules.CanAct(actor)) return false;
-
-            Hand[] mine = { actor.LeftHand, actor.RightHand };
-
-            for (int i = 0; i < mine.Length; i++)
-            {
-                Hand own = mine[i];
-                if (own == null || !own.CanBeOperated) continue;
-
-                for (int j = 0; j < _players.Count; j++)
-                {
-                    PlayerState other = _players[j];
-                    if (other == null || ReferenceEquals(other, actor)) continue;
-                    if (!other.IsAlive) continue;
-
-                    Hand[] theirs = { other.LeftHand, other.RightHand };
-                    for (int k = 0; k < theirs.Length; k++)
-                    {
-                        Hand h = theirs[k];
-                        if (h == null || h.IsConcealed) continue;
-                        if (!StatusRules.CanUseHandAsAddend(actor, h, this)) continue;
-
-                        return true;      // 找到一步就够
-                    }
-                }
-            }
-
-            return false;
+            // Share the actual move enumeration: self-addends and Death-domain borrowing
+            // must count exactly as they do when selecting an operation on the board.
+            return actor != null && actor.IsAlive && BuildLegalMoves(actor).Count > 0;
         }
 
         /// <summary>

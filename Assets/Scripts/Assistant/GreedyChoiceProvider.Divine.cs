@@ -13,7 +13,11 @@ namespace FingerDiceDuel.Assistant
             {
                 if(ally||target.HasStatus(StatusEffect.HolyLight)||!OathOfConquestLogic.CanPanic(owner,target))return -100;
                 if(target.StatusTurnsLeft(StatusEffect.Panic)>=2&&ReferenceEquals(target.StatusSourceOf(StatusEffect.Panic),owner))return -5;
-                return 30+(game.CanReach(target,owner)?20:0)+Math.Max(0,StatusRules.EffectiveAttackBonus(target))*4;
+                bool threatensAlly=false;
+                foreach(var friend in game.Players)
+                    if(friend.IsAlive&&!ReferenceEquals(friend,owner)&&game.IsKnownAlly(owner,friend)&&game.CanReach(target,friend)
+                        &&StatusRules.CanAttackTarget(target,friend,game)){threatensAlly=true;break;}
+                return 30+(game.CanReach(target,owner)?20:0)+(threatensAlly?10:0)+Math.Max(0,StatusRules.EffectiveAttackBonus(target))*4;
             }
             if(key==DivineChoices.Blessing)
             {
@@ -40,9 +44,13 @@ namespace FingerDiceDuel.Assistant
             }
             if(value==0)
             {
-                int heal=!StatusRules.CanHeal(owner)?0:Math.Min(9,owner.MaximumHealth-owner.Health);
-
-                return heal*8+(heal>0&&owner.Health<=8?40:0);
+                var patient=owner;
+                if(IsTeamClericAi(owner,game))patient=BestTeamClericHealTarget(owner,game);
+                else if(game.Players.Count>2&&CharacterBehaviors.FirstImplementer<LifeDomainLogic>(owner)!=null)
+                    patient=LifeDomainLogic.BestHealTargetFor(owner,game);
+                int heal=NetClericHealingGain(patient,9);
+                int utility=IsTeamClericAi(owner,game)?TeamClericHealValue(owner,patient,game,9)-heal*8-(heal>0&&patient.Health<=5?40:0):0;
+                return heal*8+(heal>0&&patient.Health<=8?40:0)+utility;
             }
             double best=-100;
             foreach(var enemy in game.Players)

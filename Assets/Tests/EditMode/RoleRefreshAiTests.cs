@@ -8,6 +8,28 @@ namespace FingerDiceDuel.Tests
 {
     [TestFixture] public class RoleRefreshAiTests
     {
+        [Test] public void Wounded_life_cleric_finishes_the_last_enemy_instead_of_converting_the_win_to_healing()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.LifeDomain);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,new SimpleChoiceProvider());ai.Game=g;
+            a.SetHealthExact(2);b.SetHealthExact(1);
+            var request=new ChoiceRequest(HandEffect.LifeDomainAttackOrHeal,"heal",new[]{a.LeftHand},true,decider:a,relatedTarget:b,resultValue:8);
+            Assert.AreEqual(null,ai.ChooseHandFor(request,a));
+            b.ApplyStatus(StatusEffect.FeignedDeath,2);
+            Assert.AreEqual(a.LeftHand,ai.ChooseHandFor(request,a));
+        }
+        [Test] public void Diviner_spends_a_growth_threshold_record_for_an_immediate_winning_attack()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.SchoolOfDivination);
+            var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,new SimpleChoiceProvider());g.SkillPolicyFor=p=>ai;
+            var book=(FingerDiceDuel.Characters.SpecialLogics.SchoolOfDivinationLogic)a.Character;
+            book.RecordPortent(0);book.RecordPortent(2);book.RecordPortent(6);
+            a.LeftHand.SetValue(1);a.RightHand.SetValue(7);b.LeftHand.SetValue(3);b.SetHealthExact(6);
+            g.ExecuteTurn(a,a.LeftHand,b.LeftHand);
+            Assert.False(b.IsAlive);Assert.AreEqual(2,book.Portents.Count);
+        }
         [Test] public void Blessed_nine_keeps_healing_against_immune_target()
         {
             var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.WarDomain);
