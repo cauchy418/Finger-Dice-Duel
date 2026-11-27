@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
@@ -66,6 +66,7 @@ namespace FingerDiceDuel.Assistant
             {
                 if(!Guided||Step==null||_board.PendingSkillOptions.Count==0)return null;
                 var prompt=_board.PendingWizardChoice?.Prompt??"";
+                if(prompt.Contains("法术塑形"))return (int)(Step.Element??DamageType.None);
                 if(prompt.Contains("幻术默发"))return Step.IllusionTouch??0;
                 if(prompt.Contains("幻影实体"))return Step.IllusionDefense??0;
                 if(prompt.Contains("预知未来"))return Step.Portent??-1;

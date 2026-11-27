@@ -11,6 +11,7 @@ namespace FingerDiceDuel.Assistant
             var effect=effectless?HandEffectType.None:DivineScoredEffect(actor,result,game);
             var victim=ResolveIntendedVictim(move,actor,game,result);
             bool canAttack=victim!=null&&victim.IsAlive&&!game.IsKnownAlly(actor,victim)&&game.CanReach(actor,victim)&&StatusRules.CanAttackTarget(actor,victim,game)&&(victim.Character as IAttackTargetRule)?.IsImmuneToAttack(victim)!=true;
+            bool operationAttack=IsAttackEffect(effect);
             bool lifeHealing=!effectless&&IsAttackEffect(effect)&&WantsLifeHealing(actor,victim,result,game);
             if(lifeHealing)effect=HandEffectType.Heal;
             int damage=canAttack&&IsAttackEffect(effect)?EstimateAttackDamage(actor,victim,result,game,move.ActedHand.Value,move.TargetHand):0;
@@ -38,7 +39,7 @@ namespace FingerDiceDuel.Assistant
                     if(support>0)heal=Math.Max(heal,1);
                 }
             }
-            return AiStatePolicy.ScoreMove(new AiStateContext(actor,victim,game,move,result,effect,damage,heal,canAttack));
+            return AiStatePolicy.ScoreMove(new AiStateContext(actor,victim,game,move,result,effect,damage,heal,canAttack,effectless,operationAttack));
         }
         private bool WantsLifeHealing(PlayerState actor,PlayerState target,int result,GameManager game)
         {

@@ -168,7 +168,7 @@ namespace FingerDiceDuel.Tests
                     Assert.AreEqual(HandEffectType.None,((IHandEffectDisplay)a.Character).DisplayedEffectOf(v));
                 }
                 var healer=Pair(reverse,CharacterDefinition.Magician,CharacterDefinition.PathOfTheGiant);
-                var healGame=Arrange(healer,9,3,out var foe);healer.TakeDamage(12);int before=healer.Health;
+                var healGame=Arrange(healer,9,3,out var foe);healer.SetHealthExact(3);int before=healer.Health;
                 var heal=healGame.ExecuteTurn(healer,healer.LeftHand,foe.LeftHand);
                 Assert.AreEqual(6,heal.HealAmount);Assert.AreEqual(before+6,healer.Health);
             }

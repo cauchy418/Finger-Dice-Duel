@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Tests
         [Test]
         public void Status_list_contains_all_twenty_one_statuses()
         {
-            Assert.AreEqual(32, StatusNames.AllStatuses.Length,
+            Assert.AreEqual(34, StatusNames.AllStatuses.Length,
                 "计时状态包含物理易伤；剑歌按独立技能维持。");
         }
 
@@ -266,11 +266,11 @@ namespace FingerDiceDuel.Tests
                 "冰冻 = 结果减半");
             Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Poison).Contains("不可被抵挡"),
                 "毒素不可被抵挡");
-            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Decay).Contains("不能回复"),
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Decay).Contains("暗蚀伤害"),
                 "暗蚀 = 不能回血");
-            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Resonance).Contains("距离 1"),
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Resonance).Contains("雷鸣伤害"),
                 "雷鸣 / 残响 = 只能打距离 1");
-            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Blind).Contains("距离 1"),
+            Assert.IsTrue(StatusNames.StatusLine(StatusEffect.Blind).Contains("魔法攻击"),
                 "光耀 / 目盲 = 只能选距离 1 的手");
         }
     }

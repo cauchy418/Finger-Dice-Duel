@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual("B",board.WizardHandLabel(game.PlayerB.LeftHand));
             Assert.AreEqual("放弃攻击",board.PendingWizardChoice.DeclineLabel);
             Assert.IsTrue(board.ChooseWizardHand(game.PlayerB.LeftHand));
-            Assert.AreEqual(19,game.PlayerB.Health);Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.Decay));
+            Assert.AreEqual(19,game.PlayerB.Health);Assert.IsTrue(game.PlayerB.HasStatus(StatusEffect.DarknessBlind));
             Assert.AreEqual(1,game.PlayerA.RightHand.Value);Assert.AreEqual(0,game.TurnCount);
             Assert.AreEqual(BoardPhase.ChoosingAttackerHand,board.Phase);
         }
@@ -204,7 +204,7 @@ namespace FingerDiceDuel.Tests
                 var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Champion);
                 var game=new GameManager(a,b,new SimpleChoiceProvider(),new SimpleChoiceProvider());
                 game.ResetMatch();game.BeginTurn();Assert.AreEqual(19,b.Health);
-                Assert.IsTrue(b.HasStatus(StatusEffect.Decay),"双将免费暗蚀保留腐朽");
+                Assert.IsTrue(b.HasStatus(StatusEffect.DarknessBlind),"双将免费暗蚀保留腐朽");
                 Assert.IsTrue(CharacterBehaviors.FirstImplementer<IAttackBlocker>(a)!=null);
                 int hooks=0;foreach(var h in CharacterBehaviors.Implementers<ITurnStartHook>(a)) hooks++;
                 Assert.AreEqual(1,hooks);

@@ -68,42 +68,42 @@ namespace FingerDiceDuel.Assistant
             a.Conclusion="完整盾作运算源，也会先触发附魔。本击6火焰＋燃烧2，共8伤；普通物理伤害不会自动附燃烧。";list.Add(a);
             var b=new MageTowerSample("echo","法术回响",new[]{1,2,3,5},"受到实际魔法伤害后，可记录其类型；记录覆盖旧附魔，下次发起攻击消耗。")
                 .Turn(1,0,0,0,"护卫左3＋己左1＝4，光耀使你20→16并致盲。点【记忆·光耀】，保留下一击的类型。")
-                .Turn(0,1,1,0,"己右2＋护卫左4＝6。确认攻击：6光耀，护卫20→14并致盲。光耀不是圣火状态。");
+                .Turn(0,1,1,0,"己右2＋护卫左4＝6。自己目盲使本击魔法减半：3光耀，护卫20→17并目盲。光耀不是圣火状态。");
             b.FirstSeat=1;b.GuardType=AttackDamageType.Radiant;
-            b.Verify=l=>l.Board.LastTurn?.AttackType==AttackDamageType.Radiant&&l.Soldier.Health==14;list.Add(b);
+            b.Verify=l=>l.Board.LastTurn?.AttackType==AttackDamageType.Radiant&&l.Soldier.Health==17;list.Add(b);
         }
         private static void Evocation(List<MageTowerSample> list)
         {
             var types=new[]{DamageType.Fire,DamageType.Cold,DamageType.Lightning,DamageType.Thunder,DamageType.Acid,
                 DamageType.Poison,DamageType.Radiant,DamageType.Necrotic,DamageType.Psychic,DamageType.Force};
             var explains=new[]{"燃烧：目标回合结束受2点火焰伤害；再被火焰命中附2回合灼伤。","寒冷先附覆霜；其运算结果减半取整，至少为1，不直接冻结。",
-                "感电：目标回合开始，自身受2点闪电，相邻角色各受1点。","残响：限制攻击距离，不限制借用加数。",
+                "感电：目标回合开始，自身受2点闪电，相邻角色各受1点。","残响：距离1内任意角色（含自身）回合结束时，持有者受到1点雷鸣；不限制攻击距离。",
                 "强酸命中后防−2，首次命中不提前享受这次降防。","中毒：目标回合开始失去2生命。",
-                "光耀附目盲，只能借用距离1的角色手牌；与圣火不同。","腐朽：无法回复生命。",
+                "光耀附目盲，对未目盲目标的魔法攻击伤害减半；不限制借数。","暗蚀先附失明，物理攻击非失明者减半；再次暗蚀命中失明目标附腐朽，非攻击数字效果前先受等数字暗蚀伤害。",
                 "心灵随机附恐慌或震慑。恐慌降攻且不能攻击来源；震慑不能发起攻击。","力场无附加负面状态；下一课展示其穿盾能力。"};
             for(int i=0;i<types.Length;i++)
             {
                 var type=types[i];string name=type.ToString();
                 var s=new MageTowerSample(name,"塑能 · "+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type)),new[]{1,2,3,2},explains[i])
-                    .Turn(0,0,1,0,"己左1＋护卫左3＝4。选择【放弃本次攻击】，再选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。此步只存类型，不伤人。")
+                    .Turn(0,0,1,0,"己左1＋护卫左3＝4。先正常攻击，再为下一次攻击选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。本次伤害已结算，下次攻击使用此类型。")
                     .Turn(1,0,0,0,"护卫左3＋己左4＝7，无效果；下一击使用刚选择的类型。")
-                    .Turn(0,0,1,1,"己左4＋护卫右2＝6。选择继续攻击，确认护卫。"+explains[i]);
+                    .Turn(0,0,1,1,"己左4＋护卫右2＝6。确认护卫，释放已准备类型；攻击结束后再次择型。"+explains[i]);
                 s.CastingType=type;
-                if(type==DamageType.Fire)s.Turn(1,0,0,0,"护卫左7＋己左6＝3。回合结束燃烧2，护卫14→12。");
+                if(type==DamageType.Fire)s.Turn(1,0,0,0,"护卫左7＋己左6＝3。回合结束燃烧2，护卫10→8。");
                 if(type==DamageType.Cold)s.Turn(1,1,0,0,"护卫右2＋己左6＝8→覆霜减半4；实际攻击造成5伤，你20→15。");
-                if(type==DamageType.Necrotic)s.Turn(1,0,0,1,"护卫左7＋己右2＝9，本应回复；腐朽使实际回复0，仍为14生命。");
+                if(type==DamageType.Necrotic)s.Turn(1,0,0,1,"护卫左7＋己右2＝9，照常回复9；本次只有失明，尚无腐朽，不禁止治疗。");
                 if(type!=DamageType.Fire&&type!=DamageType.Cold&&type!=DamageType.Necrotic)
                     s.Turn(1,0,0,0,"护卫再行动一次：左7＋己左6＝3，无攻击／回复／合盾。"+
-                        (type==DamageType.Radiant?"目盲只允许借距离1的角色手牌；本样本双方相邻，仍可借左6。":
-                         type==DamageType.Lightning?"回合开始已感电：护卫和相邻的你各失去1生命。":
-                         type==DamageType.Poison?"回合开始中毒失去2生命，护卫14→12。":
-                         type==DamageType.Thunder?"残响仍限制攻击距离为1，状态剩余回合递减。":
+                        (type==DamageType.Radiant?"目盲只削弱对未目盲目标的魔法攻击；仍可正常借数。":
+                         type==DamageType.Lightning?"回合开始已感电：护卫失去2生命，相邻的你失去1生命。":
+                         type==DamageType.Poison?"回合开始中毒失去2生命，护卫10→8。":
+                         type==DamageType.Thunder?"残响不限制攻击距离，持有者在自身及相邻角色回合结束受到1点雷鸣。":
                          type==DamageType.Acid?"强酸使防御−2；查看名字旁的状态与防御值。":
                          type==DamageType.Psychic?"恐慌会降攻且不能攻击来源，震慑会禁止攻击；均可进行这次无效果运算。":"力场没有附加负面状态；与前面的元素对照。"));
                 s.Verify=l=>HasTypeInLog(l,type);list.Add(s);
             }
             var reserve=new MageTowerSample("reserve_ward","待用类型与持续抗性",new[]{1,2,3,2},"塑能距离∞。存储的法术类型在消耗前赋予对应抗性；受击不会消耗待用类型。")
-                .Turn(0,0,1,0,"己左1＋护卫左3＝4，放弃攻击并选择火焰；获得待用火焰类型和火焰抗性。")
+                .Turn(0,0,1,0,"己左1＋护卫左3＝4，正常攻击后选择火焰；获得待用火焰类型和火焰抗性。")
                 .Turn(1,1,0,0,"护卫右2＋己左4＝6火焰：原伤7减半为4，并附1回合燃烧。")
                 .Turn(0,0,1,0,"己左4＋护卫左3＝7，无攻击；回合结束燃烧2经火焰抗性减为1。待用类型和抗性仍在。")
                 .Turn(1,1,0,1,"护卫右6＋己右2＝8火焰：原伤9减半为5。第二次受击后抗性仍在；之后发起待用类型的攻击才消耗它。");
@@ -112,7 +112,7 @@ namespace FingerDiceDuel.Assistant
             Reaction(list,"freeze",DamageType.Cold,StatusEffect.Frost,"寒冷＋覆霜","清除覆霜／潮湿，附冻结2回合。冻结使双手无法行动；点击跳过回合继续，不会判为败北。",
                 l=>l.Soldier.HasStatus(StatusEffect.Frozen));
             Reaction(list,"steam",DamageType.Fire,StatusEffect.Wet,"火焰＋潮湿","本击6×1.5＝9；清除潮湿与覆霜，不附燃烧。",
-                l=>l.Soldier.Health==11&&!l.Soldier.HasStatus(StatusEffect.Burn));
+                l=>l.Soldier.Health==7&&!l.Soldier.HasStatus(StatusEffect.Burn));
             Reaction(list,"conduct",DamageType.Lightning,StatusEffect.Wet,"闪电＋潮湿","本击6×1.5＝9；保留潮湿并附感电。感电在护卫回合开始立即跳电。",
                 l=>l.Soldier.HasStatus(StatusEffect.Shock));
         }
@@ -124,7 +124,7 @@ namespace FingerDiceDuel.Assistant
         private static void Reaction(List<MageTowerSample> list,string key,DamageType type,StatusEffect initial,string title,string text,Func<MageTowerLesson,bool> verify)
         {
             var s=new MageTowerSample(key,title,new[]{1,2,3,2},"训练配置：护卫预置"+StatusNames.Of(initial)+"2回合。"+text)
-                .Turn(0,0,1,0,"己左1＋护卫左3＝4，放弃攻击，选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。")
+                .Turn(0,0,1,0,"己左1＋护卫左3＝4，正常攻击后为下一击选【"+AttackDamageTypes.NameOf(AttackDamageTypes.FromDamageType(type))+"】。")
                 .Rest(1,"本试验护卫休整一次，保留预置状态；不会在覆霜或潮湿下强行演算错误的7。")
                 .Turn(0,0,1,1,"己左4＋护卫右2＝6，继续攻击护卫。"+text);
             s.CastingType=type;
@@ -200,11 +200,11 @@ namespace FingerDiceDuel.Assistant
         private static void Necromancy(List<MageTowerSample> list)
         {
             var a=new MageTowerSample("block","不死适应与免费暗蚀",new[]{2,3,3,8},"你预置14/20生命，护卫先攻。2可变1挡一次非力场；回合开始有1自动询问攻击目标。")
-                .Turn(1,0,0,1,"护卫左3＋己右3＝6。直接点自己的左2，变1挡住攻击。你仍14生命。随后免费暗蚀选护卫，使其20→19并腐朽。")
+                .Turn(1,0,0,1,"护卫左3＋己右3＝6。直接点自己的左2，变1挡住攻击。你仍14生命。随后免费暗蚀选护卫，使其20→19并失明。")
                 .Turn(0,1,1,0,"己右3＋护卫左6＝9，回复6，你14→20。免费暗蚀没有消耗正常行动。")
-                .Turn(1,1,0,0,"护卫右8＋己左1＝9，腐朽阻止回复，仍19生命。下一次免费暗蚀可以选【放弃攻击】。");
+                .Turn(1,1,0,0,"护卫右8＋己左1＝9，失明不阻止回复，生命19→20。下一次免费暗蚀可以选【放弃攻击】。");
             a.FirstSeat=1;a.Prepare=g=>g.PlayerA.SetHealthExact(14);
-            a.Verify=l=>l.Player.Health==20&&l.Soldier.Health==19;list.Add(a);
+            a.Verify=l=>l.Player.Health==20&&l.Soldier.Health==20;list.Add(a);
             var b=new MageTowerSample("exchange","不死奴仆",new[]{1,3,6,8,8,2,1,1},"公开2v2。护卫甲仅1生命，乙仍存活，所以死亡后不结束比赛；两次交换均可放弃。")
                 .Turn(0,1,2,0,"回合开始免费暗蚀选1生命的护卫甲。不死奴仆：点己右3，再点死者右8，交换为1/8；结束选择。随后己右8＋护卫乙左8＝6，确认攻击乙。正常行动仍可用。");
             b.Prepare=g=>g.PlayerB.SetHealthExact(1);

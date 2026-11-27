@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -1306,6 +1306,7 @@ namespace FingerDiceDuel.Core
             _pendingSpecters.Clear();
             foreach(var p in _players)p.RestoreDeadSeat();
             ClearPreparedOperationAddend();
+            ClearPreparedOperationStatusDamage();
             DruidSecondAddend=null;
             _suppressedOperationActors.Clear();
             WarBlessingNineAttack=null;ShieldBreaker=null;
@@ -1518,7 +1519,7 @@ namespace FingerDiceDuel.Core
             if(terminalCleanup)foreach(var player in Players)if(player.IsAlive&&!ReferenceEquals(player,actor)&&!IsTeammate(actor,player)){terminalCleanup=false;break;}
             if (!terminalCleanup && !StatusRules.CanUseHandAsAddend(actor, targetHand, this))
             {
-                reason = "目盲：只能选择与自己距离 1 的手。";
+                reason = "被加数不可用。";
                 return false;
             }
 
@@ -1575,6 +1576,20 @@ namespace FingerDiceDuel.Core
         public TurnResult ExecuteTurn(PlayerState actor, Hand actedHand, Hand targetHand,
                                       bool extraAction = false)
         {
+            if (actor!=null && (!actor.IsAlive || IsGameOver) && ReferenceEquals(_operationStatusActor,actor)
+                && ReferenceEquals(_operationStatusSource,actedHand) && ReferenceEquals(_operationStatusAddend,targetHand))
+            {
+                var completed = new TurnResult { Actor=actor, ActedHand=actedHand, TargetHand=targetHand,
+                    ActedHandValueBefore=_operationStatusOriginal, TargetHandValue=targetHand?.Value??0,
+                    ResultValue=_operationStatusValue, ActedHandValueAfter=_operationStatusValue, Effect=_operationStatusEffect,
+                    IsExtraAction=extraAction, Defender=DamageTargetPlayer??OwnerOfHand(targetHand),
+                    ShieldBrokenBeforeOp=MatchesPreparedSourceBreak(actor,actedHand,targetHand) };
+                actedHand.SetValue(_operationStatusValue); ClearPreparedOperationStatusDamage(); ClearPreparedOperationAddend();
+                CheckGameOver();
+                if (!IsGameOver && !extraAction)
+                { TurnCount++; CurrentPlayer=NextPlayerAfter(actor); AdvanceRoundAfter(actor); CheckTurnLimit(); }
+                completed.GameOver=IsGameOver; completed.Winner=Winner; return completed;
+            }
             if (!IsLegalMove(actor, actedHand, targetHand, out string reason))
                 throw new InvalidOperationException($"非法运算：{reason}");
 
@@ -1602,144 +1617,25 @@ namespace FingerDiceDuel.Core
             finally{DruidSecondAddend=null;ClearPreparedOperationAddend();WarBlessingNineAttack=null;TacticianSubtraction=null;}
         }
 
-        /// <summary>
-        /// **法师·塑能学派：铺伤害类型的统一入口（界面与无头两条路都走它）。**
-        ///
-        /// 界面路径由 <c>BoardController</c> 在"收集完抉择"之后调用
-        /// <c>SchoolOfEvocationLogic.ReadFromSink</c>；而无头路径（<c>MatchRunner</c> / 测试）
-        /// 直接驱动 GameManager，**从不收集抉择** ——
-        /// 于是 AI 法师·塑能学派的"选伤害类型"永远落不到自己身上，
-        /// 表现为"AI 法师·塑能学派从不挂状态"（与之前游荡者·魔术师计数那次同一类坑）。
-        ///
-        /// 这里兜底：若法师·塑能学派还没回读过选择，就从它的抉择器**当场问一次**。
-        /// 已经回读过的不再问（避免覆盖界面玩家的明确选择）。
-        /// </summary>
-        private void ResolveMageStatusIntent(PlayerState actor, Hand actedHand,
-                                               Hand targetHand)
+        /// <summary>整次攻击结束后提出下一击的塑形选择；人类排队暂停，AI 与无头路径使用同一策略。</summary>
+        public void OfferEvocationPreparation(PlayerState owner, AttackContext attack, SchoolOfEvocationLogic mage)
         {
-            if (actor?.Character == null) return;
-
-            var mage = CharacterBehaviors.FirstImplementer<IMageState>(actor);
-            if (mage == null) return;
-
-            // ⚠️⚠️ **"放弃攻击"的伤害抑制必须在所有提前 return 之前判。**
-            //
-            //    玩家实测报的 bug："放弃攻击仍然造成了伤害，且是不用选择就造成了伤害"。
-            //    根因就是下面那句 `if (mage.HasPendingType) return;`：
-            //    **法师·塑能学派身上已经有待用类型**时（前几轮铺下的）直接返回，
-            //    于是后面那句 `if (mage.WantsToAbandonThisTurn) Suppress...`
-            //    **永远执行不到** —— 抑制开关恒为 false，伤害照打。
-            //
-            //    抑制与"要不要问类型"是**两件事**：前者只取决于标记，
-            //    所以必须放在最前面、不受任何提前返回影响。
-            //
-            //    ⚠️⚠️ 这个标记**不能在这里清零**：
-            //       界面路径是"玩家点完之后写标记 -> 结算时读"，
-            //       在这里清零会把玩家刚做的选择抹掉。
-            //       清零由**回合开始**负责（界面在 `BoardController.SetupFirstStep`、
-            //       无头在 `MatchRunner`），这样"每回合重置一次"与"玩家选择"不冲突。
-            if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
-
-            // 已经有待用类型 -> 不用再问
-            if (mage.HasPendingType) return;
-
-            // The controller has already applied both acceptance and decline. Do not
-            // roll the AI policy again while resolving the same operation.
-            if (HasAnsweredChoiceFor?.Invoke(actor, HandEffect.SchoolOfEvocationAbandonAttack, 0) == true) return;
-
-            if (!(GetChoiceProvider(actor) is IDamageTypeChoiceSink sink)) return;
-
-            // 让 AI 就"这一次是不是放弃攻击"表态
-            sink.WantsToAbandonAttack = false;
-            sink.ChosenDamageType = DamageType.None;
-
-            // ⚠️⚠️ **把当前对局注入抉择器** —— 这是"AI 法师·塑能学派从不在无头对局里
-            //    铺状态"的**根因**：
-            //    `GreedyChoiceProvider.Game` 原本只在 `BoardController` 里被赋值
-            //    （`if (provider is GreedyChoiceProvider g) g.Game = _game;`），
-            //    而 `MatchRunner` 与各测试 harness **从不设置它**；
-            //    于是 AI 的法师·塑能学派分支第一句 `if (Game == null) return null;`
-            //    直接放弃，永远不问、永远不铺。
-            //
-            //    放在这个调用点：界面 / 无头 / 测试三条路径都会经过这里。
-            sink.SetGameForChoices(this);
-
-            // ⚠️ 用 **IChoiceProvider 接口**而不是 AbstractChoiceProvider ——
-            //    后者在 Assistant 层，Core 看不到（分层铁律）。
-            IChoiceProvider provider = GetChoiceProvider(actor);
-            if (provider == null) return;
-
-            // 问一次"要不要放弃攻击"（AI 会在这里设 WantsToAbandonAttack）
-            var context = new PreTurnChoiceContext(actor, actor, actedHand,
-                                                   targetHand ?? actor.RightHand)
+            var options=new List<SkillChoiceOption>();
+            foreach(DamageType type in System.Enum.GetValues(typeof(DamageType)))
+                if(type!=DamageType.None) options.Add(new SkillChoiceOption((int)type,StatusNames.Of(type),
+                    "Damage/"+AttackDamageTypes.IconKeyOf(AttackDamageTypes.FromDamageType(type)),
+                    "下次攻击改为此类型；连续选择同类型时，下次攻击每段伤害−2。"));
+            options.Add(new SkillChoiceOption(0,"暂不选择","Effects/ki","保留上一次选择记录。"));
+            void Apply(int value)
             {
-                Manager = this,
-                AlivePlayerCount = AlivePlayerCount,
-
-                // ⚠️ **必须显式填结果值** —— 界面路径由 BoardController 填，
-                //    而无头路径没人填。`SchoolOfEvocationLogic.CollectPreTurnChoices`
-                //    正是用 `ResultValue` 判断"结果是不是 4/6/8"，
-                //    不填就永远问不出东西（AI 法师·塑能学派从不挂状态 —— 测试抓到过）。
-                //    此刻发起运算的那只手**已经是结果值**
-                //    （PerformOperation 已执行、效果尚未分派）。
-                ResultValue = actedHand?.Value ?? 0,
-            };
-
-            var requests = new List<ChoiceRequest>();
-            (actor.Character as IPreTurnChoiceProvider)
-                ?.CollectPreTurnChoices(context, requests);
-
-            // (临时诊断已移除)
-
-            for (int i = 0; i < requests.Count; i++)
-            {
-                // ⚠️⚠️ **先问"要不要放弃攻击"，再决定要不要问"选哪种类型"。**
-                //
-                //    原来第二步的条件是 `sink.WantsToAbandonAttack` ——
-                //    但那个属性**只有在 `ChooseHandFor(SchoolOfEvocationAbandonAttack)`
-                //    被调用之后才会被设置**（AI 与界面都是在那一刻写它的），
-                //    而循环的第一轮**正是**在问"要不要放弃"。
-                //
-                //    于是时序变成"先读答案、再问问题"：
-                //    第一步真的执行了、`WantsToAbandonAttack` 也置真了，
-                //    但请求列表里没有第二轮，`SchoolOfEvocationDamageType` **从来没被问过** ——
-                //    表现就是"AI 问了 2000 多次要不要放弃，却一次类型都没选上"。
-                //
-                //    修法：按**请求的顺序**推进，每一步之后再让后续步骤的判断生效。
-                if (requests[i].Effect == HandEffect.SchoolOfEvocationAbandonAttack)
-                {
-                    provider.ChooseHandFor(requests[i], actor);
-                }
-                else if (requests[i].Effect == HandEffect.SchoolOfEvocationDamageType)
-                {
-                    // 到这里"要不要放弃"已经有答案了（它在 requests 里排在前面）
-                    if (sink.WantsToAbandonAttack
-                        || mage.WantsToAbandonThisTurn)
-                    {
-                        provider.ChooseHandFor(requests[i], actor);
-                    }
-                }
+                if(value==0) return;
+                var type=(DamageType)value;mage.SetPendingDamageType(type);
+                RecordSkillVisual(owner,"法术塑形",owner,new SkillVisualData(source:attack.SourceHand,element:AttackDamageTypes.FromDamageType(type),variant:"prepare"));
+                NoteSkill(owner,"法术塑形","下一次攻击："+StatusNames.Of(type)+(mage.PendingDamagePenalty<0?"；连续同类型，每段伤害−2":""));
             }
-
-
-
-            // ⚠️ **统一把选择落到法师·塑能学派身上**（界面路径也会调同一个方法，
-            //    但那是"收集完就落"，这里是"结算时才落" —— 两条路径都幂等）。
-            //
-            //    漏了这一步的表现：`WantsToAbandonAttack` 已经置真、
-            //    但法师·塑能学派自己身上没有类型，于是命中时 `StatusToApplyOnHit`
-            //    返回 None，状态挂不上（AI 法师·塑能学派铺了等于没铺）。
-            mage.ReadFromSink(sink);
-
-            // ⚠️⚠️ **"放弃攻击"的伤害抑制开关必须在这里设。**
-            //
-            //    不能放在 `BoardController.ResolveTurn` 的入口：
-            //    那里读 `WantsToAbandonThisTurn` 时，结果还没算出来、
-            //    `ResolveMageStatusIntent` 还没跑 —— 标记必然是 false，
-            //    于是 suppress 永远不成立（实测 24961 次法师·塑能学派回合里一次都没有）。
-            //
-            //    放在这里（结果已算完、效果尚未分派）时序才对。
-            if (mage.WantsToAbandonThisTurn) SuppressAttackDamage = true;
+            var choice=new WizardChoice(owner,"法术塑形 · 本次攻击已结算，选择下一次攻击的类型",options,Apply);
+            if(DeferWizardChoice?.Invoke(choice)==true) return;
+            Apply(GetSkillPolicy(owner)==null?0:SkillChoicePolicy.Choose("evocation",options,owner,attack.Defender,this));
         }
 
         /// <summary>
@@ -2229,6 +2125,81 @@ namespace FingerDiceDuel.Core
         /// ⚠️ 递减放在这里（"他自己的回合结束"）而不是"每个回合都减" ——
         ///    玩家确认的持续时间是**目标自己的 2 个回合**，与别人的回合无关。
         /// </summary>
+        private PlayerState _operationStatusActor;
+        private Hand _operationStatusSource, _operationStatusAddend;
+        private int _operationStatusValue, _operationStatusOriginal;
+        private HandEffectType _operationStatusEffect;
+        private int? _operationStatusHealAmount;
+        private bool _operationStatusGiantLow;
+        public bool TryGetPreparedOperationStatus(PlayerState actor, Hand source, Hand addend, out int finalValue, out HandEffectType effect)
+        {
+            finalValue=_operationStatusValue; effect=_operationStatusEffect;
+            return actor!=null && ReferenceEquals(_operationStatusActor,actor) && ReferenceEquals(_operationStatusSource,source)
+                && ReferenceEquals(_operationStatusAddend,addend);
+        }
+        private PlayerState _operationSourceBreakActor;
+        private Hand _operationSourceBreakHand, _operationSourceBreakAddend;
+        private bool MatchesPreparedSourceBreak(PlayerState actor, Hand source, Hand addend)
+            => actor!=null && ReferenceEquals(actor,_operationSourceBreakActor) && ReferenceEquals(source,_operationSourceBreakHand)
+                && ReferenceEquals(addend,_operationSourceBreakAddend);
+        private void ClearPreparedSourceBreak()
+        { _operationSourceBreakActor=null; _operationSourceBreakHand=null; _operationSourceBreakAddend=null; }
+        public bool PrepareOperationStatusSourceBreak(PlayerState actor, Hand source, Hand addend, HandEffectType effect)
+        {
+            if(actor?.IsAlive!=true || source==null || !source.IsShield || MatchesPreparedSourceBreak(actor,source,addend)
+                || !(actor.HasStatus(StatusEffect.Annihilation) || isAttackEffect(effect)&&actor.HasStatus(StatusEffect.DivinePunishment)
+                    || !isAttackEffect(effect)&&actor.HasStatus(StatusEffect.Decay))) return false;
+            if(!source.BreakShieldBeforeOperation())return false;
+            _operationSourceBreakActor=actor; _operationSourceBreakHand=source; _operationSourceBreakAddend=addend;
+            NotifyOwnShieldBroken(actor,source);
+            return true;
+        }
+        public void ClearPreparedOperationStatusDamage(bool clearSourceBreak=true)
+        { _operationStatusActor=null; _operationStatusSource=null; _operationStatusAddend=null; if(clearSourceBreak)ClearPreparedSourceBreak(); }
+        public void PrepareOperationStatusDamage(PlayerState actor, Hand source, Hand addend, int finalValue, HandEffectType effect, bool suppressed=false)
+        {
+            if (ReferenceEquals(_operationStatusActor,actor) && ReferenceEquals(_operationStatusSource,source)
+                && ReferenceEquals(_operationStatusAddend,addend)) return;
+            ClearPreparedOperationStatusDamage(false);
+            _operationStatusActor=actor; _operationStatusSource=source; _operationStatusAddend=addend;
+            _operationStatusValue=finalValue; _operationStatusOriginal=source.Value; _operationStatusEffect=effect;
+            _operationStatusGiantLow=actor.Health<=15;
+            _operationStatusHealAmount=effect==HandEffectType.Heal && CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(actor)!=null
+                ? (_operationStatusGiantLow?(actor.GetOtherHand(source)?.Value??0)*2:9) : (int?)null;
+            var state=source.State; source.SetShieldState(ShieldState.None);
+            ResolveOperationStatusDamage(actor,finalValue,effect,suppressed);
+            source.SetShieldState(state);
+        }
+        private void ResolvePreparedOperationStatusDamage(PlayerState actor, Hand source, Hand addend, int finalValue, HandEffectType effect)
+        {
+            bool prepared=ReferenceEquals(_operationStatusActor,actor) && ReferenceEquals(_operationStatusSource,source)
+                && ReferenceEquals(_operationStatusAddend,addend);
+            ClearPreparedOperationStatusDamage();
+            if (!prepared) ResolveOperationStatusDamage(actor,finalValue,effect);
+        }
+
+        public void ResolveOperationStatusDamage(PlayerState actor, int finalValue, HandEffectType effect, bool suppressed=false)
+        {
+            if (actor?.IsAlive != true || finalValue <= 0 || suppressed) return;
+            StatusEffect status = actor.HasStatus(StatusEffect.Annihilation) ? StatusEffect.Annihilation
+                : isAttackEffect(effect) && actor.HasStatus(StatusEffect.DivinePunishment) ? StatusEffect.DivinePunishment
+                : !isAttackEffect(effect) && actor.HasStatus(StatusEffect.Decay) ? StatusEffect.Decay : StatusEffect.None;
+            if (status == StatusEffect.None) return;
+            ResolveTypedStatusDamage(actor, finalValue, status == StatusEffect.Annihilation ? AttackDamageType.Force
+                : status == StatusEffect.DivinePunishment ? AttackDamageType.Radiant : AttackDamageType.Necrotic, status);
+        }
+
+        private void ResolveTypedStatusDamage(PlayerState holder, int amount, AttackDamageType type, StatusEffect status)
+        {
+            var context = new AttackContext(holder, holder, holder.LeftHand, amount, this)
+            { IsStatusDamage = true, IgnoreStatBonuses = true, AttackType = type, DamageOrigin = holder.StatusSourceOf(status) };
+            context.Resolve(GetChoiceProvider(holder), this);
+            string statusName=StatusNames.Of(status);
+            string damageNote="实际伤害 " + context.AppliedDamage;
+            NoteSkill(holder, statusName, damageNote);
+            CheckGameOver();
+        }
+
         public void ResolveStatusTurnEnd(PlayerState actor)
         {
             if (actor == null) return;
@@ -2254,6 +2225,12 @@ namespace FingerDiceDuel.Core
                     CheckGameOver();
                 }
             }
+
+            // 残响在任何邻近存活者（含自身）的回合结束时触发，先结算再递减。
+            if (actor.IsAlive)
+                foreach (var holder in new List<PlayerState>(Players))
+                    if (holder.IsAlive && holder.HasStatus(StatusEffect.Resonance) && DistanceBetween(holder, actor) <= 1)
+                        ResolveTypedStatusDamage(holder, 1, AttackDamageType.Thunder, StatusEffect.Resonance);
 
             // ---- 状态计数递减（归零即移除）----
             actor.TickStatuses(this);
@@ -2598,8 +2575,10 @@ namespace FingerDiceDuel.Core
             bool startedFromStealth = CharacterBehaviors.FirstImplementer<AssassinLogic>(actor)?.IsStealthActive(actor) == true;
 
             // 1. 运算前破盾（自己用一面已成型的盾发起运算时，该盾先碎）
-            result.ShieldBrokenBeforeOp = actedHand.BreakShieldBeforeOperation();
-            if (result.ShieldBrokenBeforeOp)
+            bool sourceBreakPrepared=MatchesPreparedSourceBreak(actor,actedHand,targetHand);
+            result.ShieldBrokenBeforeOp = sourceBreakPrepared || actedHand.BreakShieldBeforeOperation();
+            ClearPreparedSourceBreak();
+            if (result.ShieldBrokenBeforeOp && !sourceBreakPrepared)
                 NotifyOwnShieldBroken(actor, actedHand);
 
             // 2. 执行运算：只有行动方的手会改变
@@ -2700,37 +2679,6 @@ namespace FingerDiceDuel.Core
             {actedHand.SetShieldState(ShieldState.Broken);effect=HandEffectType.None;NoteSkill(actor,"耳鸣","本次不能合盾");}
             effect = ResolveWarBlessingNine(actor, actedHand, effect);
 
-            // 2d. **法师·塑能学派：运算出攻击数字时，问"要不要放弃攻击 / 选哪种伤害类型"。**
-            //
-            //     ⚠️ 必须放在**这里**（结果已经算出来）：
-            //        `SchoolOfEvocationLogic.CollectPreTurnChoices` 用 `context.ResultValue`
-            //        判断"结果是不是 4/6/8"，而在 ExecuteTurn 入口处结果还没算出来。
-            //        我第一版放在入口，于是**永远问不出东西**、
-            //        AI 法师·塑能学派从不挂状态（新测试立刻抓到）。
-            //
-            //     与冰冻同一位置，也都在"效果分派之前" —— 因为这一步会决定
-            //     本次要不要真的打伤害（放弃 = 不造成伤害）。
-            ResolveMageStatusIntent(actor, actedHand, targetHand);
-
-            // ⚠️⚠️ **被放弃的那一击不能吃掉"为下一次准备"的伤害类型。**
-            //
-            //    玩家确认的机制是"放弃这次攻击，为**下一次**攻击指定伤害类型"。
-            //    但这一回合的结算会在攻击分派处走到
-            //    `AttackContext.ApplyAttackerStatus`（它无条件
-            //    `ConsumeDamageType()`，因为玩家确认"没命中就作废"）——
-            //    于是**刚选好的类型会被自己的放弃动作清掉**，
-            //    永远轮不到下一次攻击（界面流程测试抓到）。
-            //
-            //    修法：放弃的那一回合**先把类型取下来**，
-            //    结算完再放回去（类型本来就是跨回合的，这样做语义一致）。
-            DamageType unspent = DamageType.None;
-
-            if (CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor) is SchoolOfEvocationLogic mageForStash
-                && mageForStash.WantsToAbandonThisTurn)
-            {
-                unspent = mageForStash.ConsumeDamageType();
-            }
-
             // 3. 运算前碎掉的盾：只有**结果仍然是 5** 时才保留 Broken 标记。
             //
             //    Broken 的语义是"这面盾碎了，但它仍然是一面（值为 5 的）盾，可以被修复"。
@@ -2746,9 +2694,37 @@ namespace FingerDiceDuel.Core
                 actedHand.SetShieldState(ShieldState.Broken);
             }
 
+            bool operationGiantLow=actor.Health<=15;
+            int? operationHealAmount=effect==HandEffectType.Heal && CharacterBehaviors.FirstImplementer<PathOfTheGiantLogic>(actor)!=null
+                ? (operationGiantLow?(actor.GetOtherHand(actedHand)?.Value??0)*2:9) : (int?)null;
+            if (ReferenceEquals(_operationStatusActor,actor) && ReferenceEquals(_operationStatusSource,actedHand)
+                && ReferenceEquals(_operationStatusAddend,targetHand))
+            {
+                // The role effect was determined before status damage changed health or other defenses.
+                if(actedHand.Value!=_operationStatusValue)actedHand.SetValue(_operationStatusValue);
+                if(effect!=_operationStatusEffect)actedHand.SetShieldState(_operationStatusEffect==HandEffectType.Shield?ShieldState.Formed:ShieldState.None);
+                effect=_operationStatusEffect;
+                operationHealAmount=_operationStatusHealAmount; operationGiantLow=_operationStatusGiantLow;
+            }
             result.ResultValue = actedHand.Value;
             result.ActedHandValueAfter = actedHand.Value;
             result.Effect = effect;
+
+            if (gambleResult == 0)
+            {
+                // The result shield is an operation effect, so it cannot block the preceding status damage.
+                var resultShield = actedHand.State;
+                actedHand.SetShieldState(ShieldState.None);
+                ResolvePreparedOperationStatusDamage(actor, actedHand, targetHand, actedHand.Value, effect);
+                if (actor.IsAlive) actedHand.SetShieldState(resultShield);
+            }
+            if (!actor.IsAlive)
+            {
+                CheckGameOver(); result.GameOver = IsGameOver; result.Winner = Winner;
+                if (!IsGameOver && !extraAction)
+                { TurnCount++; CurrentPlayer = NextPlayerAfter(actor); AdvanceRoundAfter(actor); CheckTurnLimit(); }
+                return result;
+            }
 
             // 3. 效果分派前的"**双 9 抢跑**"阶段。
             //
@@ -2969,12 +2945,12 @@ namespace FingerDiceDuel.Core
                             //
                             // ⚠️ 必须让角色能接管这一处 —— 野蛮人·巨人道途的 9 是"两段回复"，
                             //    总量不是固定的 9（玩家规则），写死会让它的回复量永远错。
-                            int amount = CharacterBehaviors.FirstImplementer<IHealAmountProvider>(actor) is IHealAmountProvider amountProvider
+                            int amount = operationHealAmount ?? (CharacterBehaviors.FirstImplementer<IHealAmountProvider>(actor) is IHealAmountProvider amountProvider
                                 ? amountProvider.HealAmountOf(actor, this)
-                                : LifeDomainLogic.HealAmountFor(effect);
+                                : LifeDomainLogic.HealAmountFor(effect));
                             int before = target?.Health ?? 0;
                             if (healer is LifeDomainLogic) LifeDomainLogic.CleanseAndHeal(actor, target, amount, this);
-                            else {if(healer is PathOfTheGiantLogic && actor.Health<=15){target?.Heal(amount/2,this);int first=target?.LastActualHealing??0;target?.Heal(amount/2,this);target?.CombineEarlierHealing(first);}else target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:target?.LastActualHealing??0));}
+                            else {if(healer is PathOfTheGiantLogic && operationGiantLow){target?.Heal(amount/2,this);int first=target?.LastActualHealing??0;target?.Heal(amount/2,this);target?.CombineEarlierHealing(first);}else target?.Heal(amount,this);if(healer is PathOfTheGiantLogic)RecordSkillVisual(actor,"巨人恢复",target,new SkillVisualData(value:target?.LastActualHealing??0));}
 
                             result.Healed = ReferenceEquals(target, actor)
                                 ? actor.Health - before
@@ -3047,18 +3023,6 @@ namespace FingerDiceDuel.Core
                 result.Winner = Winner;
             }
 
-            // ⚠️ **把"放弃攻击"暂存的伤害类型放回去**（见上面取下的地方）。
-            //
-            //    玩家确认："放弃这次攻击，为下一次攻击指定伤害类型" ——
-            //    所以类型必须跨过这次结算、留在法师·塑能学派身上等下一次攻击。
-            if (unspent != DamageType.None
-                && CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor) is SchoolOfEvocationLogic mageRestore)
-            {
-                mageRestore.SetPendingDamageType(unspent);
-                RecordSkillVisual(actor,"法术塑形",actor,new SkillVisualData(source:actedHand,element:AttackDamageTypes.FromDamageType(unspent),variant:"prepare"));
-                NoteSkill(actor, "附魔", $"下一次攻击：{StatusNames.Of(unspent)}");
-                result.ChosenDamageType = unspent;
-            }
 
             }
             return result;
@@ -3444,6 +3408,7 @@ namespace FingerDiceDuel.Core
         /// </summary>
         public void BeginTurn()
         {
+            ClearPreparedOperationStatusDamage();
             _suppressedOperationActors.Remove(CurrentPlayer);
             WarBlessingNineAttack=null;
             RefreshDynamicStats();

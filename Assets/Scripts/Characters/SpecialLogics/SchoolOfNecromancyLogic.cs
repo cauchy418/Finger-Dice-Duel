@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             return true;
         }
         public StatusEffect StatusToApplyOnHit(AttackContext context)
-            => context?.IsNecromancyFreeAttack==true?StatusEffect.Decay:StatusEffect.None;
+            => context?.IsNecromancyFreeAttack==true?StatusEffect.DarknessBlind:StatusEffect.None;
 
         public void OnTurnStarted(PlayerState owner, GameManager manager)
         {

@@ -98,7 +98,7 @@ namespace FingerDiceDuel.Assistant
             {
                 if(!enemy.IsAlive || !StatusRules.CanAttackTarget(owner,enemy,game)
                     || ((enemy.Character as IAttackTargetRule)?.IsImmuneToAttack(enemy)??false)) continue;
-                int score=100-enemy.Health+(enemy.HasStatus(StatusEffect.Decay)?0:20);
+                int score=100-enemy.Health+(enemy.HasStatus(StatusEffect.Decay)?0:enemy.HasStatus(StatusEffect.DarknessBlind)?35:20);
                 bool shield=enemy.LeftHand.IsShield||enemy.RightHand.IsShield;
                 bool block=CharacterBehaviors.FirstImplementer<IAttackBlocker>(enemy)!=null
                     && (enemy.LeftHand.Value==2&&!enemy.LeftHand.IsLocked || enemy.RightHand.Value==2&&!enemy.RightHand.IsLocked);

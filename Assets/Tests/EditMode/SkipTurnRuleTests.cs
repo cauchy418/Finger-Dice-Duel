@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Core;
 
@@ -137,6 +137,8 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(game.PlayerA, game.PlayerA.LeftHand, game.PlayerB.LeftHand);
             Assert.True(game.PlayerB.HasStatus(StatusEffect.Frozen), "真实寒冷命中覆霜应转为冻结。");
             board.BeginTurn();
+            Assert.AreEqual(BoardPhase.ChoosingWizardChoice,board.Phase);
+            Assert.True(board.ChooseSkillOption(0));
             Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase);
             Assert.True(board.MakeAutomaticMove());
             Assert.AreSame(game.PlayerA, board.ActivePlayer);

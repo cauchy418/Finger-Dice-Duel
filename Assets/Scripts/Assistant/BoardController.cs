@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
@@ -2518,6 +2518,7 @@ namespace FingerDiceDuel.Assistant
         {
             if (Phase != BoardPhase.ChoosingTargetHand) return;
             _operationDisplay.Clear();
+            _game.ClearPreparedOperationStatusDamage();
             _game.ClearPreparedOperationAddend();_game.DruidSecondAddend=null;
 
             SelectedHand = null;
@@ -2995,6 +2996,8 @@ namespace FingerDiceDuel.Assistant
                     return;
                 }
 
+                if(CompleteFatalOperationStatusDamage(AdvanceCharacterChoice))return;
+
                 // ①-0 游荡者·风流剑客强化 / 战士·破阵者换射程：回答完先回到"确认目标玩家"。
                 if (_returnToTargetAfterChoice)
                 {
@@ -3401,6 +3404,7 @@ namespace FingerDiceDuel.Assistant
         public bool ChooseDamageType(DamageType type)
         {
             if(IsHumanChooser && TutorialInput!=null && !TutorialInput.AllowsDamageType(type))return false;
+            if(PendingWizardChoice?.Prompt.Contains("法术塑形")==true) return ChooseSkillOption((int)type);
             if (type == DamageType.None) return false;
             if (PendingEffect != HandEffect.SchoolOfEvocationDamageType) return false;
 

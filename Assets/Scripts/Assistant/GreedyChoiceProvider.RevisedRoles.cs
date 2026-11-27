@@ -45,7 +45,7 @@ namespace FingerDiceDuel.Assistant
         {
             if(value==0)return 1;
             if(owner.MonkKi==0)return -100;
-            if(key==MonkRules.Harmony)return owner.Health<owner.MaximumHealth&&!owner.HasStatus(StatusEffect.Decay)?30:-10;
+            if(key==MonkRules.Harmony)return owner.Health<owner.MaximumHealth&&StatusRules.CanHeal(owner)?30:-10;
             if(key==MonkRules.Drunken)return owner.MonkKi>=2&&!owner.HasStatus(StatusEffect.HolyLight)?15:-10;
             if(key==MonkRules.Defense)return 8+(owner.Health<=10?8:0);
             if(key==MonkRules.Ninja)

@@ -53,6 +53,7 @@ namespace FingerDiceDuel.Core
         internal int PreviewOperationResult(PlayerState actor, Hand source, Hand addend, int sourceValue,
                                             int addendValue, List<KeyValuePair<Hand, int>> shown = null)
         {
+            if(TryGetPreparedOperationStatus(actor,source,addend,out int preparedValue,out _))return preparedValue;
             bool suppressed = WillSuppressOperationEffects(actor);
             int value = ModifiedOperationValue(actor,
                 OperationSum(actor, addend, sourceValue, addendValue, !suppressed, !suppressed, !suppressed && ShouldSubtract(actor)));

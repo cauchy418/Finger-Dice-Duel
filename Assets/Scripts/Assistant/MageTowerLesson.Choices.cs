@@ -12,6 +12,7 @@ namespace FingerDiceDuel.Assistant
             get
             {
                 if(!Guided||_board.PendingSkillOptions.Count==0)return null;
+                if(_level==12&&_board.PendingWizardChoice?.Prompt.Contains("法术塑形")==true)return (int)Sample.CastingType;
                 if(_level==11)return SampleIndex==0?(int)AttackDamageType.Fire:1;
                 if(_level==15)return _game.TurnCount==1?(int)StatusEffect.Disabled:_game.TurnCount==4?(int)StatusEffect.Charm:0;
                 if(_level==19 && _board.PendingWizardChoice?.Prompt.Contains("变化莫测")==true)return 0;
@@ -66,7 +67,7 @@ namespace FingerDiceDuel.Assistant
             {
                 if(!Guided)return true;
                 if(RequiredHand(out var hand,out _))return hand!=null;
-                if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return _game.TurnCount==0;
+                if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return false;
                 return true;
             }
         }
@@ -78,7 +79,7 @@ namespace FingerDiceDuel.Assistant
                 if(_board.Phase==BoardPhase.ChoosingSeatSwapTarget)return true; // 取消预览不消耗回合。
                 if(RequiredHand(out var hand,out _))return hand==null;
                 if(_board.PendingEffect==HandEffect.SchoolOfAbjurationBarrier)return false;
-                if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return _game.TurnCount!=0;
+                if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return true;
                 return true;
             }
         }
@@ -107,7 +108,7 @@ namespace FingerDiceDuel.Assistant
                     return "本步选择【"+(AttackDamageTypes.IsMagic(RequiredResistance)?ResistanceNames.Name(RequiredResistance):"物理整组")+"】。";
                 if(RequiredHand(out var h,out bool target))return h==null?"本步选择【"+(_board.PendingWizardChoice?.DeclineLabel??"不发动")+"】。"
                     :"本步选择【"+_game.OwnerOfHand(h).Name+(target?"":"·"+CombatText.HandName(_game.OwnerOfHand(h),h)+h.Value)+"】。";
-                if(_board.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack)return _game.TurnCount==0?"本步点击【放弃本次攻击】，随后指定类型。":"本步点击【继续攻击】，使用已存储的元素。";
+
                 if(_board.PendingEffect==HandEffect.SchoolOfAbjurationBarrier)return "本步点击【存储奥术守御】。";
                 return "";
             }

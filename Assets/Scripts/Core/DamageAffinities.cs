@@ -34,7 +34,7 @@ namespace FingerDiceDuel.Core
         public bool HasVulnerability(AttackDamageType type) => !HasStatus(StatusEffect.HolyLight) && (_vulnerabilities.Contains(type)
             || AttackDamageTypes.IsPhysical(type) && HasStatus(StatusEffect.PhysicalVulnerability));
         public bool HasTemporaryVulnerability(AttackDamageType type) => _vulnerabilities.Contains(type);
-        public bool HasImmunity(AttackDamageType type) => !HasStatus(StatusEffect.HolyLight) && (_immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus)));
+        public bool HasImmunity(AttackDamageType type) => HasStatus(StatusEffect.Annihilation) && (type == AttackDamageType.Radiant || type == AttackDamageType.Necrotic) || !HasStatus(StatusEffect.HolyLight) && (_immunities.Contains(type)||_permanentImmunities.Contains(type)||(type==AttackDamageType.Thunder&&HasStatus(StatusEffect.Tinnitus)));
         public void AddVulnerability(AttackDamageType type)
         {
             if (System.Array.IndexOf(ResistanceNames.All, type) >= 0)

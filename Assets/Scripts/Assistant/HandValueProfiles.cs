@@ -312,11 +312,11 @@ namespace FingerDiceDuel.Assistant
                 .AddCombo(ComboRule.ContainsAll(50, "自己的两只手都能当原料，组合面更宽",
                                                 2, 4, 6));
 
-            // ---- 法师·塑能学派（攻 0 / 防 −1，距离 1）----
-            // 4/6/8 既是攻击，也是"放弃攻击换伤害类型"的原料；
+            // ---- 法师·塑能学派（攻 0 / 防 −1，距离无限）----
+            // 4/6/8 完成攻击后选择下次类型，连续选择相同类型使下次伤害-2；
             // 防 −1 让 5（合盾）比基线更重要；9 只回血，不推进铺类型。
             Own[CharacterDefinition.SchoolOfEvocationId] = new HandValueProfile()
-                .Set(8, 80).Set(6, 76).Set(4, 72)     // 攻击 / 铺类型双用途
+                .Set(8, 80).Set(6, 76).Set(4, 72)     // 攻击后准备下次类型
                 .Set(5, 72)                            // 防 −1，合盾重要
                 .Set(9, 58)                            // 回血，不铺类型
                 .Set(1, 58).Set(2, 58).Set(3, 58)     // 保留覆盖能力

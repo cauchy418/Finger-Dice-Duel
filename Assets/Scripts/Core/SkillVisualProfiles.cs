@@ -27,7 +27,7 @@ namespace FingerDiceDuel.Core
                 case "破阵强袭":return "Overlay/shield_broken";
                 case "风暴之怒":return "fx_lightning";
                 case "元素反应":return "fx_impact";
-                case "黑暗术":return "Status/darkness_blind";
+                case "黑暗术":case "幽影涌动":return "Status/darkness_blind";
                 case "坟冢之力":return "fx_necrotic";
                 case "幽暗之瞳":return "fx_necrotic";
                 case "孢子环绕":return "Status/decay";

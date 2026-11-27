@@ -123,7 +123,7 @@ namespace FingerDiceDuel.Core
         // ============================================================
 
         /// <summary>
-        /// **残响**：自己只能攻击与**自己距离 1** 的角色。
+        /// 攻击目标限制：震慑、恐慌与跛脚。残响不再限制攻击距离。
         /// 没有该状态时不做限制（返回 true）。
         /// </summary>
         public static bool CanAttackTarget(PlayerState actor, PlayerState target, GameManager game)
@@ -138,7 +138,7 @@ namespace FingerDiceDuel.Core
             }
 
             int distance = game.DistanceBetween(actor, target);
-            if (actor.HasStatus(StatusEffect.Resonance) && distance != 1) return false;
+
 
             int range = StatusRules.EffectiveAttackRange(actor, game);
             if (range >= 0 && distance > range) return false;
@@ -173,7 +173,7 @@ namespace FingerDiceDuel.Core
         }
 
         /// <summary>
-        /// **目盲**：计算时只能选择与**自己距离 1** 的手当被加数。
+        /// 加数合法性：手牌限制与死亡借数；目盲不限制加数距离。
         ///
         /// 自己两只手的距离是 0（<see cref="GameManager.DistanceBetween"/> 对自己返回 0），
         /// 所以游荡者·魔术师那种"自加"**不受目盲限制**。
@@ -184,20 +184,14 @@ namespace FingerDiceDuel.Core
             var addendOwner=game?.OwnerOfHand(hand);
             if(addendOwner!=null&&!ReferenceEquals(actor,addendOwner)&&(!addendOwner.IsAlive||addendOwner.HasStatus(StatusEffect.FeignedDeath))&&!DeathDomainRules.CanBorrow(actor,addendOwner))return false;
             if (actor == null || hand == null || game == null) return true;
-            if (!actor.HasStatus(StatusEffect.Blind)) return true;
-
-            PlayerState owner = game.OwnerOfHand(hand);
-            if (owner == null) return true;
-            if (ReferenceEquals(owner, actor)) return true;      // 自己的手 = 距离 0，允许
-
-            return game.DistanceBetween(actor, owner) == 1;
+            return true;
         }
 
         /// <summary>
-        /// **腐朽**：不能回复生命值。
+        /// 耳鸣阻止回复；腐朽的运算后伤害不在此处阻止治疗。
         /// </summary>
         public static bool CanHeal(PlayerState p)
-            => p == null || !p.HasStatus(StatusEffect.Decay)&&!p.HasStatus(StatusEffect.Tinnitus);
+            => p == null || !p.HasStatus(StatusEffect.Tinnitus);
 
         /// <summary>
         /// 该玩家**两回合掉血类**状态在"回合开始"要结算的伤害。
@@ -237,6 +231,15 @@ namespace FingerDiceDuel.Core
         public static int TurnEndDamage(PlayerState p)
             => p != null && p.HasStatus(StatusEffect.Burn) ? BurnDamagePerTurn : 0;
 
+        public static int ApplyOutgoingAttackDamage(PlayerState attacker, PlayerState target, int damage, AttackDamageType type)
+        {
+            if (damage <= 0 || attacker == null || target == null) return damage;
+            if (attacker.HasStatus(StatusEffect.Annihilation)) damage = (damage + 1) / 2;
+            if (AttackDamageTypes.IsMagic(type) && attacker.HasStatus(StatusEffect.Blind) && !target.HasStatus(StatusEffect.Blind)
+                || AttackDamageTypes.IsPhysical(type) && attacker.HasStatus(StatusEffect.DarknessBlind) && !target.HasStatus(StatusEffect.DarknessBlind)) damage = (damage + 1) / 2;
+            return damage;
+        }
+
         private static System.Random _interactionRng = new System.Random();
         /// <summary>仅供可复现的单线程模拟重置随机源；正常对战不调用。</summary>
         public static void ResetInteractionRandomForTest(int seed) => _interactionRng = new System.Random(seed);
@@ -255,6 +258,14 @@ namespace FingerDiceDuel.Core
 
             switch (type)
             {
+                case DamageType.Radiant:
+                    statusToApply = target.HasStatus(StatusEffect.DarknessBlind) ? StatusEffect.Annihilation
+                        : target.HasStatus(StatusEffect.Blind) ? StatusEffect.DivinePunishment : StatusEffect.Blind;
+                    break;
+                case DamageType.Necrotic:
+                    statusToApply = target.HasStatus(StatusEffect.Blind) ? StatusEffect.Annihilation
+                        : target.HasStatus(StatusEffect.DarknessBlind) ? StatusEffect.Decay : StatusEffect.DarknessBlind;
+                    break;
                 case DamageType.Thunder:
                     if (target.HasStatus(StatusEffect.Resonance))
                     {

@@ -52,7 +52,7 @@ namespace FingerDiceDuel.Core
   }
   private void ApplyLightBlind(ElementHit hit)
   {
-   if((!_lightBlessing&&CharacterBehaviors.FirstImplementer<RadiantLightDomainLogic>(Attacker)==null)||WasCancelled||SuppressAttackStatuses||!Defender.IsAlive)return;
+   if(IsStatusDamage||(!_lightBlessing&&CharacterBehaviors.FirstImplementer<RadiantLightDomainLogic>(Attacker)==null)||WasCancelled||SuppressAttackStatuses||!Defender.IsAlive)return;
    int turns=hit.StatusDuration(StatusEffect.Blind,2);if(turns>0)Defender.ApplyStatus(StatusEffect.Blind,turns,Attacker);
   }
  }

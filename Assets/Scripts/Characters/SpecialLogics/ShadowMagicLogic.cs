@@ -5,6 +5,9 @@ namespace FingerDiceDuel.Characters.SpecialLogics
     public sealed class ShadowMagicLogic:CharacterTemplate,ITurnEndHook,IGraveStrength,IShadowEyes,IAttackTypeProvider,ITargetDamageBonus,IStatusApplyingAttack
     {
         private GameManager _game;
+        public const int NecroticChance=80;
+        public System.Random Rng {get;set;}=new System.Random(20240816);
+        public int ForcedRoll {get;set;}=-1;
         public bool GraveSpent{get;private set;}
         public override string DisplayName=>"术士·幽影魔法";
         public override int DefaultDefenseBonus=>-1;
@@ -20,7 +23,16 @@ namespace FingerDiceDuel.Characters.SpecialLogics
         public override AttackDamageType AttackTypeOf(AttackContext ctx)=>ctx?.Defender?.HasStatus(StatusEffect.DarknessBlind)==true?AttackDamageType.Necrotic:ArcaneChoices.NearFar(ctx);
         public int BonusAgainst(PlayerState owner,PlayerState target)=>target?.HasStatus(StatusEffect.DarknessBlind)==true?2:0;
         public override void OnResolveAttack(AttackContext ctx)
-        {if(!ctx.IsStatusDamage&&!ctx.IsReflected&&ctx.Defender.HasStatus(StatusEffect.DarknessBlind)){ctx.AttackType=AttackDamageType.Necrotic;ctx.Manager?.NoteSkill(ctx.Attacker,"幽暗之瞳","暗蚀，伤害+2",ctx.Defender,new SkillVisualData(source:ctx.SourceHand,value:2));}}
+        {
+            if(ctx.IsStatusDamage||ctx.IsReflected)return;
+            if(ctx.Defender.HasStatus(StatusEffect.DarknessBlind))
+            {ctx.AttackType=AttackDamageType.Necrotic;ctx.Manager?.NoteSkill(ctx.Attacker,"幽暗之瞳","暗蚀，伤害+2",ctx.Defender,new SkillVisualData(source:ctx.SourceHand,value:2));return;}
+            if(ctx.AttackType!=AttackDamageType.None)return;
+            int roll=ForcedRoll>=0?ForcedRoll%100:Rng.Next(100);
+            ctx.AttackType=roll<NecroticChance?AttackDamageType.Necrotic:ArcaneChoices.NearFar(ctx);
+            ctx.Manager?.NoteSkill(ctx.Attacker,"幽影涌动",AttackDamageTypes.NameOf(ctx.AttackType),ctx.Defender,
+                new SkillVisualData(source:ctx.SourceHand,element:ctx.AttackType));
+        }
         public StatusEffect StatusToApplyOnHit(AttackContext ctx)=>ArcaneChoices.ElementStatus(ctx.AttackType);
         public void OnTurnEnded(PlayerState owner,GameManager game)
         {

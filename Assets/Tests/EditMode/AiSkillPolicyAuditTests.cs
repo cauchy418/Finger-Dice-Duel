@@ -152,107 +152,55 @@ namespace FingerDiceDuel.Tests
             reverse ? CharacterDefinition.Champion : CharacterDefinition.SchoolOfEvocation,
             reverse ? CharacterDefinition.SchoolOfEvocation : CharacterDefinition.Champion);
 
-        [Test] public void AI_evocation_preparation_answer_is_applied_once_before_the_type_choice()
+        [Test] public void AI_evocation_attacks_before_preparing_the_next_type()
         {
-            foreach (bool dual in new[] { false, true })
+            foreach(bool dual in new[]{false,true})
             {
-                var mage = dual ? Mage(false) : CharacterFactory.CreatePlayer("mage", CharacterDefinition.SchoolOfEvocation);
-                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
-                var a = new SimpleChoiceProvider(); var b = new SimpleChoiceProvider();
-                var game = new GameManager(mage, foe, a, b);
-                var board = new BoardController(game, a, b, aiForA: new GreedyChoiceProvider());
-                mage.LeftHand.SetValue(3); mage.RightHand.SetValue(3);
-                foe.LeftHand.SetValue(1); foe.RightHand.SetValue(1);
-                board.BeginTurn();
-                Assert.True(board.MakeAutomaticMove());
-                // The first deterministic preparation roll is 52 (<60), the next is 93.
-                // Asking the same question twice silently discards the first accepted answer.
-                Assert.True(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).HasPendingType,
-                    "An accepted preparation answer must reach the damage-type policy.");
-                Assert.AreEqual(20, foe.Health);
+                var mage=dual?Mage(false):CharacterFactory.CreatePlayer("mage",CharacterDefinition.SchoolOfEvocation);
+                var foe=CharacterFactory.CreatePlayer("foe",CharacterDefinition.Blank);
+                var ai=new GreedyChoiceProvider();var game=new GameManager(mage,foe,ai,new SimpleChoiceProvider());ai.SetGameForChoices(game);
+                mage.LeftHand.SetValue(3);foe.LeftHand.SetValue(1);
+                game.ExecuteTurn(mage,mage.LeftHand,foe.LeftHand);
+                Assert.True(foe.Health<20);Assert.True(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).HasPendingType);
             }
         }
-
-        [Test] public void AI_evocation_explicit_decline_is_not_rerolled_during_resolution()
+        [Test] public void Old_evocation_abandon_choice_is_always_declined_without_randomness()
         {
-            foreach (bool dual in new[] { false, true })
+            var mage=Mage(false);var foe=CharacterFactory.CreatePlayer("foe",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var game=new GameManager(mage,foe,ai,new SimpleChoiceProvider());ai.SetGameForChoices(game);
+            var request=new ChoiceRequest(HandEffect.SchoolOfEvocationAbandonAttack,"old",new List<Hand>(mage.Hands),true,decider:mage,resultValue:4);
+            for(int i=0;i<16;i++)Assert.True(ai.ChooseHandFor(request,mage)==null);
+        }
+        [Test] public void Dual_evocation_prepares_after_attack_in_both_component_orders()
+        {
+            foreach(bool reverse in new[]{false,true})
             {
-                var mage = dual ? Mage(true) : CharacterFactory.CreatePlayer("mage", CharacterDefinition.SchoolOfEvocation);
-                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
-                var a = new SimpleChoiceProvider(); var b = new SimpleChoiceProvider();
-                var game = new GameManager(mage, foe, a, b); var ai = new GreedyChoiceProvider();
-                ai.SetGameForChoices(game);
-                var request = new ChoiceRequest(HandEffect.SchoolOfEvocationAbandonAttack, "prepare",
-                    new List<Hand>(mage.Hands), true, decider: mage, resultValue: 4);
-                ai.ChooseHandFor(request, mage); // Advance past 52; actual move declines on 93.
-                var board = new BoardController(game, a, b, aiForA: ai);
-                mage.LeftHand.SetValue(3); mage.RightHand.SetValue(3);
-                foe.LeftHand.SetValue(1); foe.RightHand.SetValue(1);
-                board.BeginTurn(); Assert.True(board.MakeAutomaticMove());
-                Assert.False(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).HasPendingType);
-                Assert.True(foe.Health < 20, "The declined preparation must attack, rather than ask again on roll 15.");
+                var mage=Mage(reverse);var foe=CharacterFactory.CreatePlayer("foe",CharacterDefinition.Blank);
+                var ai=new GreedyChoiceProvider();var game=new GameManager(mage,foe,ai,new SimpleChoiceProvider());ai.SetGameForChoices(game);
+                mage.LeftHand.SetValue(3);foe.LeftHand.SetValue(1);game.ExecuteTurn(mage,mage.LeftHand,foe.LeftHand);
+                Assert.True(foe.Health<20);Assert.True(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).HasPendingType);
             }
         }
-
-        [Test] public void Dual_evocation_AI_can_choose_to_prepare_in_both_component_orders()
+        [Test] public void Dual_evocation_repeat_cost_is_prepared_for_the_next_attack()
         {
-            foreach (bool reverse in new[] { false, true })
+            foreach(bool reverse in new[]{false,true})
             {
-                var mage = Mage(reverse);
-                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
-                var ai = new GreedyChoiceProvider();
-                var game = new GameManager(mage, foe, ai, new SimpleChoiceProvider());
-                ai.SetGameForChoices(game);
-                var request = new ChoiceRequest(HandEffect.SchoolOfEvocationAbandonAttack, "prepare",
-                    new List<Hand>(mage.Hands), true, decider: mage, resultValue: 4);
-                bool prepared = false;
-                for (int i = 0; i < 16; i++) prepared |= ai.ChooseHandFor(request, mage) != null;
-                Assert.True(prepared, "Dual container must expose the same preparation choice as a single mage.");
+                var mage=Mage(reverse);var state=CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage);
+                state.SetPendingDamageType(DamageType.Fire);Assert.AreEqual(0,state.PendingDamagePenalty);
+                state.ConsumeDamageType();state.SetPendingDamageType(DamageType.Fire);Assert.AreEqual(-2,state.PendingDamagePenalty);
+                state.ConsumeDamageType();state.SetPendingDamageType(DamageType.Cold);Assert.AreEqual(0,state.PendingDamagePenalty);
             }
         }
-
-        [Test] public void Dual_evocation_preparation_suppresses_this_hit_and_survives_until_next_attack()
+        [Test] public void Human_dual_evocation_choice_is_deferred_until_after_damage()
         {
-            foreach (bool reverse in new[] { false, true })
+            foreach(bool reverse in new[]{false,true})
             {
-                var mage = Mage(reverse);
-                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
-                var game = new GameManager(mage, foe, new SimpleChoiceProvider(), new SimpleChoiceProvider());
-                var state = CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage);
-                mage.LeftHand.SetValue(3); foe.LeftHand.SetValue(1);
-                state.SetPendingDamageType(DamageType.Fire);
-                state.WantsToAbandonThisTurn = true;
-                game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
-                Assert.AreEqual(20, foe.Health, "Preparing must suppress damage through the dual container.");
-                Assert.AreEqual(DamageType.Fire, state.PendingDamageType);
-                game.ExecuteTurn(foe, foe.RightHand, mage.RightHand);
-                game.BeginTurn();
-                Assert.False(state.WantsToAbandonThisTurn, "Preparation flag belongs to one action.");
-                mage.LeftHand.SetValue(3);
-                game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
-                Assert.True(foe.Health < 20);
-                Assert.True(foe.HasStatus(StatusEffect.Burn));
-                Assert.False(state.HasPendingType);
-            }
-        }
-
-        [Test] public void Human_dual_evocation_can_accept_and_choose_damage_type()
-        {
-            foreach (bool reverse in new[] { false, true })
-            {
-                var mage = Mage(reverse);
-                var foe = CharacterFactory.CreatePlayer("foe", CharacterDefinition.Blank);
-                var a = new SimpleChoiceProvider(); var b = new SimpleChoiceProvider();
-                var game = new GameManager(mage, foe, a, b);
-                var board = new BoardController(game, a, b);
-                board.BeginTurn();
-                mage.LeftHand.SetValue(3); foe.LeftHand.SetValue(1);
-                board.ClickHand(mage.LeftHand); board.ClickHand(foe.LeftHand);
-                Assert.AreEqual(HandEffect.SchoolOfEvocationAbandonAttack, board.PendingEffect);
-                Assert.True(board.AcceptPendingChoice());
-                Assert.AreEqual(HandEffect.SchoolOfEvocationDamageType, board.PendingEffect);
-                Assert.True(board.ChooseDamageType(DamageType.Fire));
-                Assert.AreEqual(DamageType.Fire, CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).PendingDamageType);
+                var mage=Mage(reverse);var foe=CharacterFactory.CreatePlayer("foe",CharacterDefinition.Blank);
+                var game=new GameManager(mage,foe,new SimpleChoiceProvider(),new SimpleChoiceProvider());WizardChoice choice=null;
+                game.DeferWizardChoice=c=>{choice=c;return true;};mage.LeftHand.SetValue(3);foe.LeftHand.SetValue(1);
+                game.ExecuteTurn(mage,mage.LeftHand,foe.LeftHand);Assert.True(foe.Health<20);Assert.True(choice!=null);
+                choice.ChooseOption((int)DamageType.Fire);
+                Assert.AreEqual(DamageType.Fire,CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(mage).PendingDamageType);
             }
         }
     }

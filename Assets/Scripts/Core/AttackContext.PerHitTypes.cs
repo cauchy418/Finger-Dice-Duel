@@ -13,8 +13,11 @@ namespace FingerDiceDuel.Core
 
         private string _reactionVariant;
         private bool _burnReaction;
+        private StatusEffect _lightDarkReaction;
         private int ConfigureHitInteraction(int damage)
         {
+            _lightDarkReaction=StatusEffect.None;
+            if(IsStatusDamage){WasTypeImmune=Defender.HasImmunity(AttackType);InteractionStatus=StatusEffect.None;InteractionDamageType=DamageType.None;return damage;}
             if(SuppressesNatureElement()){WasTypeImmune=Defender.HasImmunity(AttackType);InteractionStatus=StatusEffect.None;InteractionDamageType=DamageType.None;_visualReaction=_burnReaction=_sonicCrossReaction=_greaseReaction=_acidPoisonReaction=false;return damage;}
             _visualReaction = AttackType==AttackDamageType.Cold&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Frozen)||Defender.HasStatus(StatusEffect.Burn))
                 ||AttackType==AttackDamageType.Fire&&(Defender.HasStatus(StatusEffect.Frost)||Defender.HasStatus(StatusEffect.Wet)||Defender.HasStatus(StatusEffect.Greased))
@@ -40,7 +43,8 @@ namespace FingerDiceDuel.Core
             InteractionDamageType = AttackDamageTypes.ToDamageType(AttackType);
             StatusEffect status, clear;
             damage = StatusRules.ApplyDamageTypeInteraction(Defender, InteractionDamageType, damage, out status, out clear);
-            InteractionStatus = status;
+            _lightDarkReaction = status == StatusEffect.DivinePunishment || status == StatusEffect.Decay || status == StatusEffect.Annihilation ? status : StatusEffect.None;
+            InteractionStatus = _lightDarkReaction != StatusEffect.None ? StatusNames.StatusOf(InteractionDamageType) : status;
             return damage;
         }
 

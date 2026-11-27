@@ -322,7 +322,7 @@ namespace FingerDiceDuel.Core
         public static GuideSheet Statuses()
         {
             var lines=new List<string>();var negative=new List<GuideEntry>();var character=new List<GuideEntry>();
-            foreach(var status in StatusNames.AllStatuses)
+            foreach(var status in StatusNames.OrderedStatuses)
             {
                 if(status==StatusEffect.PhysicalVulnerability)continue;
                 string text=StatusNames.Of(status)+"："+StatusNames.Describe(status);lines.Add(text);
@@ -336,7 +336,7 @@ namespace FingerDiceDuel.Core
             character.Add(new GuideEntry("drunken_fist",0xD7A052,drunk,resourceKey:"Effects/drunken_fist"));lines.Add(drunk);
             return new GuideSheet("状态一览","Status Effects",lines,false,
                 new List<GuideGroup>{new GuideGroup("负面状态",negative),new GuideGroup("角色状态",character)},
-                "24种负面状态（物理易伤另列伤害修正页）。圣火、剑歌、战争祝福、醉拳、生命祝福、知识祝福、假死、自然祝福、光明祝福为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣火保留燃烧、灼伤、目盲，清除并阻止其他状态；物理易伤见抗性、易伤与免疫页。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
+                "26种负面状态（物理易伤另列伤害修正页）。圣火、剑歌、战争祝福、醉拳、生命祝福、知识祝福、假死、自然祝福、光明祝福为角色状态。\n攻击附加的负面效果逐段结算，格挡和对应抗性各减1回合，最低0。\n计时状态通常持续目标自己的2个回合，重复施加刷新。\n圣火保留燃烧、灼伤、目盲、神罚、湮灭，清除并阻止其他状态；物理易伤见抗性、易伤与免疫页。覆霜到期附潮湿，油腻触发的倒伏保留两个后续自身回合。");
         }
 
         /// <summary>
@@ -363,6 +363,10 @@ namespace FingerDiceDuel.Core
         {
             return new List<string>
             {
+                "光耀＋目盲：附加2回合神罚，保留目盲",
+                "暗蚀＋失明：附加2回合腐朽，保留失明",
+                "光耀＋失明：附加2回合湮灭，清除目盲、失明、神罚、腐朽",
+                "暗蚀＋目盲：附加2回合湮灭，清除目盲、失明、神罚、腐朽",
                 "雷鸣＋残响：清除残响，附加 2 回合眩晕",
                 "寒冷＋覆霜／潮湿：清除这两种状态，附加 2 回合冻结",
                 "寒冷＋冻结：伤害 ×1.5，保留冻结，不附加覆霜",
@@ -381,7 +385,7 @@ namespace FingerDiceDuel.Core
         public static GuideGroup InteractionGroup()
         {
             var lines = InteractionLines();
-            var types = new[] { DamageType.Thunder, DamageType.Cold, DamageType.Cold,
+            var types = new[] { DamageType.Radiant, DamageType.Necrotic, DamageType.Radiant, DamageType.Necrotic, DamageType.Thunder, DamageType.Cold, DamageType.Cold,
                 DamageType.Cold, DamageType.Fire, DamageType.Fire, DamageType.Lightning, DamageType.Acid, DamageType.Poison, DamageType.Lightning, DamageType.Thunder, DamageType.Fire };
             var entries = new List<GuideEntry>();
             for (int i = 0; i < lines.Count; i++)

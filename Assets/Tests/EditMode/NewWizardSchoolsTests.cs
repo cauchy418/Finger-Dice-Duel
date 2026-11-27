@@ -76,7 +76,7 @@ namespace FingerDiceDuel.Tests
             int before = target.Health;
             game.BeginTurn();
             Assert.AreEqual(before - 1, target.Health);
-            Assert.IsTrue(target.HasStatus(StatusEffect.Decay));
+            Assert.IsTrue(target.HasStatus(StatusEffect.DarknessBlind));
             Assert.AreEqual(1, necro.LeftHand.Value, "免费暗蚀不消耗 1。");
         }
 

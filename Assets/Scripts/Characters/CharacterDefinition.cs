@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace FingerDiceDuel.Core
 {
@@ -321,16 +321,16 @@ namespace FingerDiceDuel.Core
                          "攻 0 / 防 −1，攻击距离 2。");
 
         /// <summary>
-        /// 法师·塑能学派（SchoolOfEvocation）：攻 0 / 防 −1，距离 1，中立善良。
+        /// 法师·塑能学派（SchoolOfEvocation）：攻 0 / 防 −1，距离∞，绝对中立。
         ///
-        /// 运算出攻击数字（4/6/8）时可放弃这次攻击，
+        /// 发起的攻击整次结算后选择魔法类型，
         /// 给下一次攻击指定一种伤害类型（10 选 1）；
         /// 命中后给目标挂上对应负面状态，持续目标自己的 2 个回合。
         /// </summary>
         public static CharacterDefinition SchoolOfEvocation { get; } = new CharacterDefinition(
             SchoolOfEvocationId, "法师·塑能学派", SpecialLogicType.SchoolOfEvocation,
             attackBonus: 0, defenseBonus: -1,
-            description: "距离∞。法术塑形：打出攻击数字可放弃攻击，为下次攻击选择一种魔法伤害类型；消耗该类型前获得对应抗性，受击不消耗。下一击命中附对应效果，闪避／取消也消耗所选类型。");
+            description: "距离∞。法术塑形：攻击整次结算后，可为下次攻击选择一种魔法类型；本击正常结算。待用类型提供对应抗性，下一次攻击消耗，闪避／取消也消耗。连续选择同类型使下次攻击每段伤害−2；改选恢复，跳过不清除历史。");
 
         /// <summary>
         /// 术士·狂野魔法（WildMagic）：攻 0 / 防 −1，攻击距离无限，混乱善良。

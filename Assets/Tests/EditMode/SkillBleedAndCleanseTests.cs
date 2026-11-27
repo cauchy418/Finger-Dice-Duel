@@ -245,7 +245,7 @@ namespace FingerDiceDuel.Tests
             game.PlayerB.TakeDamage(10); AllStatuses(game.PlayerB, game.PlayerA);
             sink.SetChoice(HandEffect.LifeDomainExtraHealTarget, game.PlayerB.LeftHand);
             sink.SetChoice(HandEffect.LifeDomainHealTarget, game.PlayerA.LeftHand); Attack(game);
-            Assert.AreEqual(19, game.PlayerA.Health); Assert.AreEqual(19, game.PlayerB.Health);
+            Assert.AreEqual(10, game.PlayerA.Health); Assert.AreEqual(19, game.PlayerB.Health);
             Assert.AreEqual(0, game.PlayerA.Statuses.Count); Assert.AreEqual(0, game.PlayerB.Statuses.Count);
         }
 

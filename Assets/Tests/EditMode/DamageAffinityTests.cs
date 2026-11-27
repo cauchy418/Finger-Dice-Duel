@@ -82,6 +82,7 @@ namespace FingerDiceDuel.Tests
         {
             var g = Game(); g.PlayerB.AddVulnerability(AttackDamageType.Fire);
             Assert.AreEqual(10, Hit(g, AttackDamageType.Fire, 6, 2).AppliedDamage, "两段各ceil(3×1.5)=5");
+            g.PlayerB.RemoveStatus(StatusEffect.Burn); g.PlayerB.RemoveStatus(StatusEffect.Scorch);
             g.PlayerB.AddImmunity(AttackDamageType.Fire);
             var hit = Hit(g, AttackDamageType.Fire, 6, 2, StatusEffect.Burn);
             Assert.AreEqual(0, hit.AppliedDamage); Assert.AreEqual(2, hit.LandedHits); Assert.IsFalse(g.PlayerB.HasStatus(StatusEffect.Burn));

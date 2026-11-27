@@ -12,10 +12,10 @@ namespace FingerDiceDuel.Characters.SpecialLogics
             if(!ReferenceEquals(game.CurrentPlayer,owner)||!owner.IsAlive)return;
             foreach(var p in game.Players)if(owner.SporeLife>0&&p.IsAlive&&!ReferenceEquals(p,owner)&&game.DistanceBetween(owner,p)==1)
             {
-                var frame=game.CaptureVisualFrame();p.ApplyStatus(StatusEffect.Decay,2,owner);
-                bool applied=p.HasStatus(StatusEffect.Decay);
-                game.NoteSkill(owner,"孢子环绕",p.Name+(applied?" 腐朽2回合":" 未附加腐朽"),p,
-                    new SkillVisualData(variant:applied?"apply":"blocked",status:StatusEffect.Decay),frame);
+                var frame=game.CaptureVisualFrame();p.ApplyStatus(StatusEffect.Acid,2,owner);
+                bool applied=p.HasStatus(StatusEffect.Acid);
+                game.NoteSkill(owner,"孢子环绕",p.Name+(applied?" 强酸2回合":" 未附加强酸"),p,
+                    new SkillVisualData(variant:applied?"apply":"blocked",status:StatusEffect.Acid),frame);
             }
             if(owner.LeftHand.Value!=owner.RightHand.Value||owner.SporeLife>0||owner.WildCharges<=0||!StatusRules.CanAct(owner))return;
             MonkRules.Offer(owner,game,"druid_symbiosis","一体共生 · 消耗1荒野充能获得10孢子生命？",MonkRules.YesNo("一体共生","Effects/spore_life"),value=>{

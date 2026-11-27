@@ -38,12 +38,12 @@ namespace FingerDiceDuel.Assistant
                         int addend=ReferenceEquals(addendHand,move.ActedHand)?next:other;
                         int result=AiStatePolicy.PreviewResult(foe,hand.Value,addend,op!=0);
                         int remaining=foe.GetOtherHand(hand).Value;
-                        best=Math.Max(best,ProjectedOpportunityValue(foe,actor,hand.Value,result,remaining,game));
+                        best=Math.Max(best,ProjectedOpportunityValue(foe,actor,hand.Value,result,remaining,game,hand,addendHand));
                         var reserve=ArcaneTricksterLogic.For(foe);
                         if(reserve!=null&&reserve.CanExchange(foe,hand,game))
                         {
                             int storedResult=AiStatePolicy.PreviewResult(foe,reserve.MageHandValue,addend,op!=0);
-                            best=Math.Max(best,ProjectedOpportunityValue(foe,actor,reserve.MageHandValue,storedResult,remaining,game));
+                            best=Math.Max(best,ProjectedOpportunityValue(foe,actor,reserve.MageHandValue,storedResult,remaining,game,hand,addendHand));
                         }
                     }
                 }
@@ -52,12 +52,12 @@ namespace FingerDiceDuel.Assistant
             return -worst*DenyRatioPercent/100;
         }
         private int ProjectedOpportunityValue(PlayerState foe, PlayerState actor, int sourceValue,
-            int result, int remaining, GameManager game)
+            int result, int remaining, GameManager game, Hand source, Hand addend)
         {
             var profile=ActiveHandValueProfile(foe,game);
             int value=profile.WeightOf(result)/4;
-            var effect=game.WillSuppressOperationEffects(foe)||foe.HasStatus(StatusEffect.Dizzy)
-                ? HandEffectType.None : DivineScoredEffect(foe,result,game);
+            bool suppressed=game.OperationEffectsSuppressed(foe,source,addend);
+            var effect=suppressed?HandEffectType.None:DivineScoredEffect(foe,result,game);
             switch(effect)
             {
                 case HandEffectType.Attack4:case HandEffectType.Attack6:case HandEffectType.Attack8:
@@ -73,6 +73,12 @@ namespace FingerDiceDuel.Assistant
                     break;
             }
             foreach(var combo in profile.Combos)if(combo.Matches(result,remaining))value+=Math.Min(40,combo.Bonus/4);
+            if(!suppressed)
+            {
+                int selfDamage=AiStatePolicy.OperationSelfDamage(foe,result,IsAttackEffect(effect));
+                value-=Math.Max(0,selfDamage-foe.SporeLife-foe.FalseLife)*6;
+                if(selfDamage>=foe.HealthAcrossForms+foe.SporeLife+foe.FalseLife)value-=100;
+            }
             return value;
         }
         public int ProjectedCounterplayScoreForTest(LegalMove move,PlayerState actor,GameManager game)

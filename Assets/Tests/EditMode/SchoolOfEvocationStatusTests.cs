@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -43,7 +43,7 @@ namespace FingerDiceDuel.Tests
             Assert.AreEqual(StatusEffect.Acid, StatusNames.StatusOf(DamageType.Acid));
             Assert.AreEqual(StatusEffect.Poison, StatusNames.StatusOf(DamageType.Poison));
             Assert.AreEqual(StatusEffect.Blind, StatusNames.StatusOf(DamageType.Radiant));
-            Assert.AreEqual(StatusEffect.Decay, StatusNames.StatusOf(DamageType.Necrotic));
+            Assert.AreEqual(StatusEffect.DarknessBlind, StatusNames.StatusOf(DamageType.Necrotic));
             Assert.AreEqual(StatusEffect.Burn, StatusNames.StatusOf(DamageType.Fire));
             Assert.AreEqual(StatusEffect.Freeze, StatusNames.StatusOf(DamageType.Cold));
             Assert.AreEqual(StatusEffect.Shock, StatusNames.StatusOf(DamageType.Lightning));
@@ -160,7 +160,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Decay_blocks_healing_entirely()
+        public void Decay_allows_healing()
         {
             PlayerState p = Make("甲", CharacterDefinition.Champion);
             p.TakeDamage(10);
@@ -171,8 +171,7 @@ namespace FingerDiceDuel.Tests
 
             p.ApplyStatus(StatusEffect.Decay);
             p.Heal(9);
-            Assert.AreEqual(hurt + 9, p.Health,
-                "腐朽期间完全不能回血（玩家确认：不能回复生命值）。");
+            Assert.AreEqual(PlayerState.MaxHealth, p.Health, "腐朽现在降低攻击伤害，允许回复。");
         }
 
         // ============================================================
@@ -180,7 +179,7 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Resonance_restricts_attacks_to_distance_one()
+        public void Resonance_does_not_restrict_target_distance()
         {
             // 4 人环：座位 1 与座位 3 距离 2
             PlayerState a = Make("甲", CharacterDefinition.Champion);
@@ -201,7 +200,7 @@ namespace FingerDiceDuel.Tests
             Assert.IsTrue(StatusRules.CanAttackTarget(a, c, game), "没有残响时可以打。");
 
             a.ApplyStatus(StatusEffect.Resonance);
-            Assert.IsFalse(StatusRules.CanAttackTarget(a, c, game),
+            Assert.IsTrue(StatusRules.CanAttackTarget(a, c, game),
                 "残响：只能攻击与自己距离 1 的角色（距离 2 打不到）。");
             Assert.IsTrue(StatusRules.CanAttackTarget(a, b, game),
                 "残响：距离 1 的仍然能打。");
@@ -362,7 +361,7 @@ namespace FingerDiceDuel.Tests
 
             mage.ReadFromSink(new HumanLikeSink());
 
-            Assert.IsFalse(mage.WantsToAbandonThisTurn,
+            Assert.IsTrue(mage.WantsToAbandonThisTurn,
                 "没有待用类型时，残留的放弃标记应当被清掉。");
         }
     }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Core;
 
 namespace FingerDiceDuel.Characters
@@ -208,14 +208,10 @@ namespace FingerDiceDuel.Characters
 
             // ---- 塑能学派（绝对中立）----
             Add(CharacterDefinition.SchoolOfEvocationId, "School of Evocation", Alignment.TrueNeutral,
-                shortSkill: "算出 4/6/8 时可放弃攻击，换一种伤害类型（10 选 1）；"
-                          + "下次命中挂负面状态。",
-                playGuide: "算出 4/6/8 时问是否放弃。选放弃就挑伤害类型，这次白扔，"
-                         + "下次打中挂状态 2 回合。被盾挡或太极也算命中，"
-                         + "闪避或取消则作废；连续放弃只留最后选的。",
-                counter: "他得先白扔一回合才挂得上状态，趁那回合压血。"
-                       + "攻 0 防 −1，很软，抢在他铺垫完前解决。",
-                interactions: new[] { "与太极宗：减免仍算命中，状态照常附加；闪避和取消不算。" });
+                shortSkill: "攻击后选下次类型；连续同类型，下次每段伤害−2。",
+                playGuide: "攻击后选下次类型并获对应抗性。连续同类型使下次每段−2；改选恢复。跳过保留历史。多段整次只选一次。",
+                counter: "观察其待用类型与抗性。闪避或取消使附魔作废；连续同类型的下一击每段减伤2。",
+                interactions: new[] { "盾挡使负面时长−1；取消攻击不触发新的塑形选择。" });
 
             // ---- 狂野魔法（混乱中立）----
             Add(CharacterDefinition.WildMagicId, "Wild Magic", Alignment.ChaoticNeutral,
@@ -334,7 +330,7 @@ namespace FingerDiceDuel.Characters
                 interactions: new string[0]);
 
             Add(CharacterDefinition.CircleOfSporesId,"Circle of Spores",Alignment.TrueNeutral,
-                shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；自己回合开始仍有孢子生命时，对距离1的其他角色附腐朽2回合。",counter:"避开相邻腐朽，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
+                shortSkill:"孢子生命护身并转毒；相邻死亡回复荒野充能。",playGuide:"双手相同时可用充能获得孢子生命；自己回合开始仍有孢子生命时，对距离1的其他角色附强酸2回合。",counter:"避开相邻强酸，先消耗孢子生命；别让附近伤员轻易死亡。",interactions:new[]{"形态解除不算死亡；孢子生命先于虚假生命吸收。"});
             Add(CharacterDefinition.CircleOfTheMoonId,"Circle of the Moon",Alignment.ChaoticGood,
                 shortSkill:"3点充能；荒野独立体力，枭熊与黑豹耗2点。",playGuide:"回合开始双手和10可变形并跳过；熊4合盾，回合末可解除。",counter:"留意充能，破形态后的溢伤会扣原体力。",interactions:new[]{"荒野暂停原技能；治疗作用于当前形态，解除恢复原体力。"});
 
@@ -347,10 +343,10 @@ namespace FingerDiceDuel.Characters
                 counter:"留意其已有记录；换数字攻击，逼其消耗成长进度，发动切割语后注意困惑。",
                 interactions:new[]{"风暴导向只改手值，不触发记录。"});
             Add(CharacterDefinition.ShadowMagicId,"Shadow Magic",Alignment.NeutralEvil,
-                shortSkill:"首次归0恢复至1；双手和10可施黑暗术，免疫失明，对失明目标暗蚀伤害+2。",
+                shortSkill:"首次归0恢复至1；80%暗蚀攻击，双手和10可施黑暗术，免疫失明。",
                 playGuide:"回合末双手和10时选择发动黑暗术或不发动；靠近敌人再施放，留意附近同袍也会失明。",
                 counter:"拉开距离避免失明；首次致命伤只能迫使其恢复至1，继续追击。",
-                interactions:new[]{"暗蚀攻击命中按普通规则附加腐朽。"});
+                interactions:new[]{"攻击失明目标伤害+2并保证暗蚀；重复暗蚀可触发腐朽。"});
             Add(CharacterDefinition.StormSorceryId,"Storm Sorcery",Alignment.ChaoticNeutral,
                 shortSkill: "闪电、雷鸣各40%，伤害穿透对应抗性和免疫。行动后可纯运算。",
                 playGuide: "开局选永久抗性。纯运算可调整下一回合的手值。",

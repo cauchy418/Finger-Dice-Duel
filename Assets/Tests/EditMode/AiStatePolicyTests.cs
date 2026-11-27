@@ -14,15 +14,17 @@ namespace FingerDiceDuel.Tests
             var g=Match(out var a,out var b,out var ai);a.ApplyStatus(StatusEffect.Wet);a.LeftHand.SetValue(1);a.RightHand.SetValue(3);b.LeftHand.SetValue(6);b.RightHand.SetValue(7);
             Assert.IsTrue(ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.LeftHand),a,g)>ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.RightHand),a,g));
         }
-        [Test] public void Decay_does_not_prefer_a_zero_heal_over_a_new_shield()
+        [Test] public void Decay_keeps_real_healing_available_and_accounts_for_self_damage()
         {
             var g=Match(out var a,out var b,out var ai);a.SetHealthExact(2);a.ApplyStatus(StatusEffect.Decay);a.LeftHand.SetValue(1);b.LeftHand.SetValue(8);b.RightHand.SetValue(4);
-            Assert.IsTrue(ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.RightHand),a,g)>ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.LeftHand),a,g));
+            Assert.IsTrue(StatusRules.CanHeal(a));
+            Assert.AreEqual(9,AiStatePolicy.OperationSelfDamage(a,9,false));
+            Assert.AreEqual(0,AiStatePolicy.OperationSelfDamage(a,4,true));
         }
         [Test] public void Every_current_status_has_an_explicit_rule_and_effect_extension_keys_exist()
         {
             int negatives=0;foreach(var status in StatusNames.AllStatuses){Assert.IsTrue(AiStatePolicy.Rules.ContainsKey(AiStatePolicy.KeyOf(status)),status.ToString());if(StatusNames.IsNegativeStatus(status))negatives++;}
-            Assert.AreEqual(25,negatives);
+            Assert.AreEqual(27,negatives);
             foreach(var key in new[]{"bladesong","drunken","polymorph","wild_shape","star:1","star:2","star:3","ki","wild_charge","beast_soul","lore_records","portents","element_enchantment","arcane_barrier","false_life","spore_life","hidden_force","stealth","ambush","locked_hand","protected_addend","low_barbarian","summon","hunter_mark","hexblade_curse","vow","resistance","vulnerability","immunity"})
                 Assert.IsTrue(AiStatePolicy.Rules.ContainsKey("effect:"+key),key);
         }
@@ -97,11 +99,90 @@ namespace FingerDiceDuel.Tests
             a.ApplyStatus(StatusEffect.HolyLight);a.LeftHand.SetValue(1);b.LeftHand.SetValue(8);b.RightHand.SetValue(2);
             Assert.IsTrue(ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.LeftHand),a,g)>ai.ScoreMoveForTest(new LegalMove(a,a.LeftHand,b.RightHand),a,g));Assert.IsTrue(a.HasStatus(StatusEffect.HolyLight));
         }
-        [Test] public void Evocation_abandon_generator_reaches_the_full_hundred_point_range()
+        [Test] public void Pre_effect_status_survival_cannot_use_future_healing_or_the_operating_shield()
         {
-            var ai=new GreedyChoiceProvider();var roll=typeof(GreedyChoiceProvider).GetMethod("SchoolOfEvocationRoll",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);var values=new System.Collections.Generic.HashSet<int>();
-            for(int i=0;i<2000;i++){int n=(int)roll.Invoke(ai,null);Assert.IsTrue(n>=0&&n<100);values.Add(n);}
-            Assert.IsTrue(values.Count>90);
+            var g=Match(out var a,out var b,out var ai);a.SetHealthExact(2);a.ApplyStatus(StatusEffect.Decay);
+            var move=new LegalMove(a,a.LeftHand,b.LeftHand);
+            Assert.IsTrue(AiStatePolicy.ScoreMove(new AiStateContext(a,a,g,move,9,HandEffectType.Heal,0,9,true))<-400);
+            Assert.IsTrue(AiStatePolicy.ScoreMove(new AiStateContext(a,a,g,move,5,HandEffectType.Shield,0,0,true))<-400);
+            a.RemoveStatus(StatusEffect.Decay);a.ApplyStatus(StatusEffect.DivinePunishment);
+            a.LeftHand.SetValue(5);a.LeftHand.SetShieldState(ShieldState.Formed);
+            Assert.IsTrue(AiStatePolicy.ScoreMove(new AiStateContext(a,b,g,move,4,HandEffectType.Attack4,4,0,true))<-400);
+            a.RightHand.SetValue(5);a.RightHand.SetShieldState(ShieldState.Formed);
+            Assert.IsTrue(AiStatePolicy.ScoreMove(new AiStateContext(a,b,g,move,4,HandEffectType.Attack4,4,0,true))>-400);
+        }
+        [Test] public void Normal_no_effect_digits_trigger_decay_but_suppressed_operations_do_not()
+        {
+            var g=Match(out var a,out var b,out var ai);a.SetHealthExact(2);a.ApplyStatus(StatusEffect.Decay);
+            var move=new LegalMove(a,a.LeftHand,b.LeftHand);
+            int normal=AiStatePolicy.ScoreMove(new AiStateContext(a,b,g,move,3,HandEffectType.None,0,0,true));
+            int pure=AiStatePolicy.ScoreMove(new AiStateContext(a,b,g,move,3,HandEffectType.None,0,0,true,effectsSuppressed:true));
+            Assert.IsTrue(normal<-400);Assert.IsTrue(pure>-400);
+        }
+        [Test] public void Status_damage_consumes_the_last_shield_before_the_resonance_tick()
+        {
+            var g=Match(out var a,out var b,out var ai);a.SetHealthExact(1);a.ApplyStatus(StatusEffect.Decay);a.ApplyStatus(StatusEffect.Resonance);
+            a.RightHand.SetValue(5);a.RightHand.SetShieldState(ShieldState.Formed);
+            var move=new LegalMove(a,a.LeftHand,b.LeftHand);
+            int spent=AiStatePolicy.ScoreMove(new AiStateContext(a,b,g,move,3,HandEffectType.None,0,0,true));
+            Assert.IsTrue(spent<-400,"The only remaining shield blocks decay, then resonance is lethal.");
+            int renewed=AiStatePolicy.ScoreMove(new AiStateContext(a,a,g,move,5,HandEffectType.Shield,0,0,true));
+            Assert.IsTrue(renewed>-400,"After surviving decay, the newly formed shield can block resonance.");
+            Assert.IsTrue(a.RightHand.IsShield);Assert.AreEqual(1,a.Health);
+        }
+        [Test] public void Counterplay_suppresses_dizzy_status_damage_until_a_prepared_portent_restores_effects()
+        {
+            var actor=CharacterFactory.CreatePlayer("A",CharacterDefinition.SchoolOfDivination);
+            var foe=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);var ai=new GreedyChoiceProvider{DenyRatioPercent=100};
+            var g=new GameManager(actor,foe,ai,new SimpleChoiceProvider());ai.Game=g;
+            actor.LeftHand.SetValue(7);actor.RightHand.SetValue(1);foe.LeftHand.SetValue(2);foe.RightHand.SetValue(2);
+            foe.SetHealthExact(1);foe.ApplyStatus(StatusEffect.Dizzy);foe.ApplyStatus(StatusEffect.Decay);
+            Assert.IsTrue(ai.ProjectedCounterplayScoreForTest(new LegalMove(actor,actor.LeftHand,foe.LeftHand),actor,g)<0);
+            var method=typeof(GreedyChoiceProvider).GetMethod("ProjectedOpportunityValue",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);
+            object[] args={foe,actor,2,3,2,g,foe.LeftHand,actor.LeftHand};
+            int suppressed=(int)method.Invoke(ai,args);Assert.IsTrue(suppressed>=0);
+            CharacterBehaviors.FirstImplementer<FingerDiceDuel.Characters.SpecialLogics.SchoolOfDivinationLogic>(actor).RecordPortent(3);
+            WizardChoice choice=null;g.DeferWizardChoice=c=>{choice=c;return true;};
+            g.RequestPortentOperation(foe,foe.LeftHand,actor.LeftHand,()=>{});Assert.IsTrue(choice!=null);choice.ChooseOption(3);
+            int prepared=(int)method.Invoke(ai,args);Assert.IsTrue(prepared<suppressed-100);
+            Assert.AreEqual(1,foe.Health);Assert.AreEqual(2,foe.LeftHand.Value);
+        }
+        private sealed class TypedAttacker:CharacterTemplate,IAttackTypeProvider
+        {
+            private readonly AttackDamageType _type;
+            public TypedAttacker(AttackDamageType type){_type=type;}
+            public override AttackDamageType AttackTypeOf(AttackContext ctx)=>_type;
+        }
+        [Test] public void Lethal_forecast_applies_blindness_to_the_matching_damage_type_only()
+        {
+            foreach(var type in new[]{AttackDamageType.Slashing,AttackDamageType.Fire})
+            {
+                var a=new PlayerState("A",new TypedAttacker(type));var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+                var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,new SimpleChoiceProvider());ai.Game=g;
+                var move=new LegalMove(a,a.LeftHand,b.LeftHand);a.ApplyStatus(StatusEffect.Blind);
+                Assert.AreEqual(type==AttackDamageType.Fire?3:6,ai.TotalLethalDamage(move,a,b,6,g));
+                a.RemoveStatus(StatusEffect.Blind);a.ApplyStatus(StatusEffect.DarknessBlind);
+                Assert.AreEqual(type==AttackDamageType.Slashing?3:6,ai.TotalLethalDamage(move,a,b,6,g));
+                a.RemoveStatus(StatusEffect.DarknessBlind);a.ApplyStatus(StatusEffect.Annihilation);
+                Assert.AreEqual(3,ai.TotalLethalDamage(move,a,b,6,g));
+            }
+        }
+        [Test] public void New_light_dark_states_forecast_operation_damage_without_mutation()
+        {
+            var g=Match(out var a,out var b,out var ai);a.ApplyStatus(StatusEffect.DivinePunishment);
+            Assert.AreEqual(6,AiStatePolicy.OperationSelfDamage(a,6,true));
+            Assert.AreEqual(0,AiStatePolicy.OperationSelfDamage(a,9,false));
+            a.RemoveStatus(StatusEffect.DivinePunishment);a.ApplyStatus(StatusEffect.Annihilation);
+            Assert.AreEqual(9,AiStatePolicy.OperationSelfDamage(a,9,false));
+            Assert.AreEqual(4,AiStatePolicy.OperationSelfDamage(a,4,true));Assert.AreEqual(20,a.Health);
+        }
+        [Test] public void Evocation_prefers_reaction_and_changes_type_when_repeat_cost_is_worse()
+        {
+            var a=CharacterFactory.CreatePlayer("A",CharacterDefinition.SchoolOfEvocation);var b=CharacterFactory.CreatePlayer("B",CharacterDefinition.Blank);
+            var ai=new GreedyChoiceProvider();var g=new GameManager(a,b,ai,new SimpleChoiceProvider());ai.Game=g;
+            var options=new System.Collections.Generic.List<SkillChoiceOption>{new SkillChoiceOption((int)DamageType.Fire,"火",""),new SkillChoiceOption((int)DamageType.Cold,"冷","")};
+            b.ApplyStatus(StatusEffect.Wet);
+            Assert.AreEqual((int)DamageType.Cold,ai.ChooseSkillOption("evocation",options,a,b,g));
         }
     }
 }

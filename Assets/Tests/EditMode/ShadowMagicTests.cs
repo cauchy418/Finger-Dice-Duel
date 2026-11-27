@@ -27,9 +27,28 @@ namespace FingerDiceDuel.Tests
         [Test] public void Blinded_attack_halves_after_stats_only_against_non_blinded_target()
         {var g=Match();g.PlayerB.ApplyStatus(StatusEffect.DarknessBlind);new AttackContext(g.PlayerB,g.PlayerA,g.PlayerB.LeftHand,4,g).Resolve(new SimpleChoiceProvider(),g);Assert.AreEqual(17,g.PlayerA.Health);}
         [Test] public void Shadow_eyes_adds_two_and_changes_damage_to_necrotic()
-        {var g=Match();g.PlayerB.ApplyStatus(StatusEffect.DarknessBlind);var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);attack.Resolve(new SimpleChoiceProvider(),g);Assert.AreEqual(14,g.PlayerB.Health);Assert.AreEqual(AttackDamageType.Necrotic,attack.AttackType);Assert.IsTrue(g.PlayerB.HasStatus(StatusEffect.Decay));}
+        {var g=Match();((ShadowMagicLogic)g.PlayerA.Character).ForcedRoll=99;g.PlayerB.ApplyStatus(StatusEffect.DarknessBlind);var attack=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);attack.Resolve(new SimpleChoiceProvider(),g);Assert.AreEqual(14,g.PlayerB.Health);Assert.AreEqual(AttackDamageType.Necrotic,attack.AttackType);Assert.IsTrue(g.PlayerB.HasStatus(StatusEffect.Decay));}
         [Test] public void Darkness_has_a_real_human_end_turn_choice_and_can_be_declined()
         {foreach(int use in new[]{0,1}){var g=Match();g.PlayerA.LeftHand.SetValue(4);g.PlayerA.RightHand.SetValue(6);WizardChoice choice=null;g.DeferWizardChoice=c=>{choice=c;return true;};((ShadowMagicLogic)g.PlayerA.Character).OnTurnEnded(g.PlayerA,g);Assert.IsTrue(choice!=null);choice.ChooseOption(use);Assert.AreEqual(use==1,g.PlayerB.HasStatus(StatusEffect.DarknessBlind));Assert.IsFalse(g.PlayerA.HasStatus(StatusEffect.DarknessBlind));}}
+        private sealed class CountingRandom:System.Random
+        {public int Draws;public override int Next(int maxValue){Draws++;return 0;}}
+        [Test] public void Shadow_roll_is_per_attack_and_ai_preview_never_consumes_it()
+        {
+            var g=Match();var shadow=(ShadowMagicLogic)g.PlayerA.Character;var rng=new CountingRandom();shadow.Rng=rng;
+            var ai=new GreedyChoiceProvider{Game=g};var move=new LegalMove(g.PlayerA,g.PlayerA.LeftHand,g.PlayerB.LeftHand);
+            ai.TotalLethalDamage(move,g.PlayerA,g.PlayerB,4,g);ai.TotalLethalDamage(move,g.PlayerA,g.PlayerB,4,g);Assert.AreEqual(0,rng.Draws);
+            var ctx=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g){HitCount=2};ctx.Resolve(new SimpleChoiceProvider(),g);
+            Assert.AreEqual(1,rng.Draws);Assert.AreEqual(AttackDamageType.Necrotic,ctx.AttackType);
+        }
+        [Test] public void Shadow_eighty_percent_boundary_retains_base_type_and_dark_targets_are_forced()
+        {
+            foreach(int roll in new[]{79,80})
+            {
+                var g=Match();var shadow=(ShadowMagicLogic)g.PlayerA.Character;shadow.ForcedRoll=roll;
+                var ctx=new AttackContext(g.PlayerA,g.PlayerB,g.PlayerA.LeftHand,4,g);ctx.Resolve(new SimpleChoiceProvider(),g);
+                Assert.AreEqual(roll==79?AttackDamageType.Necrotic:AttackDamageType.Bludgeoning,ctx.AttackType);
+            }
+        }
         [Test] public void Catalog_and_profile_are_registered()
         {var g=Match();Assert.AreEqual(Alignment.NeutralEvil,CharacterCodex.For(CharacterDefinition.ShadowMagic).Alignment);Assert.AreEqual(0,g.PlayerA.Character.AttackBonus);Assert.AreEqual(-1,g.PlayerA.Character.DefenseBonus);Assert.AreEqual(int.MaxValue,GameManager.BaseRangeOf(g.PlayerA));Assert.IsTrue(HandValueProfiles.HasExplicitProfile(CharacterDefinition.ShadowMagic));}
         [Test] public void Human_board_exposes_darkness_after_the_normal_operation()

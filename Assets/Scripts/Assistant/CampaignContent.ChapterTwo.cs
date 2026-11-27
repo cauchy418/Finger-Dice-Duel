@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using FingerDiceDuel.Core;
 namespace FingerDiceDuel.Assistant
 {
@@ -62,7 +62,7 @@ namespace FingerDiceDuel.Assistant
             for(int i=0;i<types.Length;i++)
             {
                 int index=i;var type=types[i];
-                Cast(s,0,4,"存储"+StatusNames.Of(type)+"：按当前数字算4，选择放弃攻击和本步类型；",true,type);
+                Cast(s,0,4,"攻击后准备"+StatusNames.Of(type)+"：先正常算4攻击，再选择本步类型；",false,type);
                 var prep=s.Op(1,1,0,1,i==0?"护卫6火焰攻击，待用火抗先减伤；负面时长也减1。":"护卫准备一回合，保留你的手值与待用类型。",0,i==0?6:1);
                 prep.Prepare=(l,p)=>{
                     if(index==3||index==6||index==8||index==11)l.Refit(p);

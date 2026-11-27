@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Characters.SpecialLogics;
@@ -196,7 +196,7 @@ namespace FingerDiceDuel.Tests
         // ============================================================
 
         [Test]
-        public void Decay_blocks_healing_during_a_turn()
+        public void Decay_allows_healing_during_a_turn()
         {
             PlayerState lifeDomain = Make("牧", CharacterDefinition.LifeDomain);
             PlayerState foe = Make("敌", CharacterDefinition.Champion);
@@ -208,7 +208,7 @@ namespace FingerDiceDuel.Tests
             lifeDomain.ApplyStatus(StatusEffect.Decay);
             lifeDomain.Heal(9);
 
-            Assert.AreEqual(hurt, lifeDomain.Health, "腐朽期间回血完全无效。");
+            Assert.AreEqual(hurt+9, lifeDomain.Health, "腐朽允许回复。");
         }
 
         [Test]
@@ -282,7 +282,7 @@ namespace FingerDiceDuel.Tests
         }
 
         [Test]
-        public void Abandon_attack_suppresses_damage_even_when_a_type_is_pending()
+        public void Legacy_abandon_flag_does_not_suppress_damage()
         {
             // ⚠️⚠️ 玩家实测报的 bug："放弃攻击仍然造成了伤害，
             //    且是不用选择就造成了伤害"。
@@ -321,10 +321,10 @@ namespace FingerDiceDuel.Tests
             int hpBefore = foe.Health;
             TurnResult r = game.ExecuteTurn(mage, mage.LeftHand, foe.LeftHand);
 
-            Assert.AreEqual(0, r.DamageDealt,
+            Assert.IsTrue(r.DamageDealt>0,
                 "放弃攻击必须抑制伤害 —— 即使身上已有待用类型。"
                 + $"\n[诊断] suppress={game.SuppressAttackDamage} effect={r.Effect}");
-            Assert.AreEqual(hpBefore, foe.Health, "放弃攻击这一击不造成伤害。");
+            Assert.IsTrue(foe.Health<hpBefore, "旧放弃标志不再抑制攻击。");
         }
 
         [Test]
@@ -529,7 +529,7 @@ namespace FingerDiceDuel.Tests
         /// 我曾在这里写过 `if (HasPendingType) return;`，那是把策略写进了规则。
         /// </summary>
         [Test]
-        public void A_pending_type_still_offers_the_abandon_choice()
+        public void A_pending_type_does_not_offer_pre_attack_preparation()
         {
             PlayerState mage = Make("法", CharacterDefinition.SchoolOfEvocation);
             PlayerState foe = Make("敌", CharacterDefinition.Champion);
@@ -560,7 +560,7 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < requests.Count; i++)
                 if (requests[i].Effect == HandEffect.SchoolOfEvocationAbandonAttack) asked = true;
 
-            Assert.IsTrue(asked,
+            Assert.IsFalse(asked,
                 "身上已有待用类型时，**仍然**要问「要不要放弃」—— "
                 + "玩家可以选择重复放弃（只保留最新的类型）。"
                 + "「AI 不要重复放弃」是 AI 的策略，不该写进规则。");
@@ -600,7 +600,7 @@ namespace FingerDiceDuel.Tests
         /// 而不是"整局只许放弃一次"）。
         /// </summary>
         [Test]
-        public void After_the_type_is_consumed_the_wizard_may_abandon_again()
+        public void Consumption_does_not_restore_the_removed_abandon_prompt()
         {
             PlayerState mage = Make("法", CharacterDefinition.SchoolOfEvocation);
             PlayerState foe = Make("敌", CharacterDefinition.Champion);
@@ -627,7 +627,7 @@ namespace FingerDiceDuel.Tests
             for (int i = 0; i < requests.Count; i++)
                 if (requests[i].Effect == HandEffect.SchoolOfEvocationAbandonAttack) asked = true;
 
-            Assert.IsTrue(asked,
+            Assert.IsFalse(asked,
                 "类型已经用掉了，就该能重新放弃一次（否则法师·塑能学派一辈子只能铺一次）。");
         }
 

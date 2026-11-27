@@ -59,7 +59,7 @@ namespace FingerDiceDuel.Core
             get
             {
                 var list = new System.Collections.Generic.List<StatusEffect>();
-                foreach (var status in StatusNames.AllStatuses)
+                foreach (var status in StatusNames.OrderedStatuses)
                     if (HasStatus(status)) list.Add(status);
                 return list;
             }
@@ -88,6 +88,8 @@ namespace FingerDiceDuel.Core
             if (status == StatusEffect.None || turns <= 0) return;
             if(status==StatusEffect.DarknessBlind&&!IsPolymorphed&&CharacterBehaviors.FirstImplementer<IShadowEyes>(this)!=null)return;
 
+            if (HasStatus(StatusEffect.Annihilation) && IsLightDarkStatus(status)) return;
+
             // 圣火保留火焰／光耀状态及计时易伤；其他状态移除，防护数据保留并暂停作用。
             if (status == StatusEffect.HolyLight)
             {
@@ -102,14 +104,19 @@ namespace FingerDiceDuel.Core
                 return;
             }
 
+            if(status==StatusEffect.Annihilation)
+                foreach(var old in new[] { StatusEffect.Blind, StatusEffect.DarknessBlind, StatusEffect.DivinePunishment, StatusEffect.Decay }) RemoveStatus(old);
             if(status==StatusEffect.KnowledgeBlessing){KnowledgeStacks=Math.Max(1,KnowledgeStacks);turns=int.MaxValue;}
             _statuses[status] = turns;
             if (source != null) _statusSources[status] = source;
         }
 
+        private static bool IsLightDarkStatus(StatusEffect status) => status == StatusEffect.Blind || status == StatusEffect.DarknessBlind
+            || status == StatusEffect.DivinePunishment || status == StatusEffect.Decay;
+
         public static bool HolyFireAllows(StatusEffect status) => status == StatusEffect.HolyLight
             || status == StatusEffect.Burn || status == StatusEffect.Scorch || status == StatusEffect.Blind
-            || status == StatusEffect.PhysicalVulnerability;
+            || status == StatusEffect.PhysicalVulnerability || status == StatusEffect.DivinePunishment || status == StatusEffect.Annihilation;
 
         private readonly System.Collections.Generic.Dictionary<StatusEffect, PlayerState>
             _statusSources = new System.Collections.Generic.Dictionary<StatusEffect, PlayerState>();
@@ -391,7 +398,7 @@ namespace FingerDiceDuel.Core
         /// <summary>
         /// 回复生命值。
         ///
-        /// ⚠️ **腐朽**（法师·塑能学派的暗蚀状态）在这里拦截：带着腐朽的人**完全不能回血**。
+        /// 耳鸣在这里阻止回复；腐朽仅在运算后造成暗蚀伤害。
         ///
         /// 为什么放在这个最底层的方法里、而不是逐个回复技能去判断：
         /// 回血的入口不止一处（牧师·生命领域、野蛮人·巨人道途、野蛮人·野兽道途的成长回血…），

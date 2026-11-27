@@ -115,7 +115,7 @@ namespace FingerDiceDuel.Tests
             //    所以这一页也走**分组渲染**（每条带图标键），不再用字符符号。
             Assert.IsTrue(s.HasGroups, "状态一览也应当是分组（带 PNG 图标）。");
             Assert.AreEqual(2, s.Groups.Count);
-            Assert.AreEqual(24, s.Groups[0].Entries.Count, "23种负面状态。");
+            Assert.AreEqual(26, s.Groups[0].Entries.Count, "23种负面状态。");
             Assert.AreEqual(9, s.Groups[1].Entries.Count, "生命赐福列为角色状态。");
             var uniqueKeys = new HashSet<string>();
 
@@ -163,8 +163,8 @@ namespace FingerDiceDuel.Tests
             foreach (string phrase in new[] { "眩晕", "冻结", "不附加燃烧", "保留潮湿", "×1.5" })
                 Assert.IsTrue(text.Contains(phrase), phrase);
             GuideSheet page = GuideSheets.ElementReactions();
-            Assert.AreEqual(12, page.Lines.Count);
-            Assert.AreEqual(12, page.Groups[0].Entries.Count);
+            Assert.AreEqual(16, page.Lines.Count);
+            Assert.AreEqual(16, page.Groups[0].Entries.Count);
             Assert.IsFalse(text.Contains("心灵"));
             Assert.IsFalse(text.Contains("50%"));
             Assert.IsTrue(page.Note.Contains("向上取整"));

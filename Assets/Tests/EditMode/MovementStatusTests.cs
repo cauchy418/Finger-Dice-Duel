@@ -145,11 +145,11 @@ namespace FingerDiceDuel.Tests
         [Test] public void Manual_and_combat_icons_include_both_new_statuses_and_ninth_reaction()
         {
             var p = Game().PlayerA; p.ApplyStatus(StatusEffect.Restrained); p.ApplyStatus(StatusEffect.Greased);
-            Assert.AreEqual(32, StatusNames.AllStatuses.Length); Assert.AreEqual(2, CombatStatusIcons.For(p).Count);
+            Assert.AreEqual(34, StatusNames.AllStatuses.Length); Assert.AreEqual(2, CombatStatusIcons.For(p).Count);
             Assert.AreEqual("restrained", StatusNames.IconKeyOf(StatusEffect.Restrained));
             Assert.AreEqual("greased", StatusNames.IconKeyOf(StatusEffect.Greased));
-            Assert.AreEqual(12, GuideSheets.ElementReactions().Lines.Count);
-            Assert.True(GuideSheets.ElementReactions().Lines[11].Contains("油腻"));
+            Assert.AreEqual(16, GuideSheets.ElementReactions().Lines.Count);
+            Assert.True(GuideSheets.ElementReactions().Lines[15].Contains("油腻"));
         }
     }
 }

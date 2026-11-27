@@ -218,7 +218,7 @@ namespace FingerDiceDuel.Assistant
         /// <summary>AI 选定的伤害类型（供 <see cref="SchoolOfEvocationLogic"/> 回读）。</summary>
         public DamageType ChosenDamageType { get; set; } = DamageType.None;
 
-        /// <summary>本次是否会放弃攻击去铺状态。</summary>
+        /// <summary>保留旧控制器接口；现行策略不放弃攻击。</summary>
         public bool WantsToAbandonAttack { get; set; }
 
         /// <summary>
@@ -229,75 +229,9 @@ namespace FingerDiceDuel.Assistant
         public void SetGameForChoices(GameManager game) => Game = game;
 
         /// <summary>
-        /// 由调用方注入："**这一击能不能直接斩杀**"。
-        ///
-        /// 能斩杀时就不该放弃攻击去挂状态 —— 立刻赢下比赛胜过铺一个状态。
-        /// 未注入时按"不能斩杀"处理（保守：允许铺状态）。
+        /// 旧控制器兼容入口。现行塑能在攻击完成后准备类型，不再读取此回调。
         /// </summary>
         public System.Func<bool> SchoolOfEvocationAbandonLethalGuard { get; set; }
-
-        /// <summary>
-        /// **法师·塑能学派要不要放弃这一次攻击**（玩家本轮给的策略）。
-        ///
-        /// 玩家原话：
-        ///   "法师·塑能学派在对方未进斩杀线前，若自己没有放弃过攻击，
-        ///     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
-        ///
-        /// 落到实现：
-        ///   · 结果 4 -> 倾向放弃（**高概率**）
-        ///   · 结果 6 -> 不一定（**一半左右**；局面好就不放弃）
-        ///   · 结果 8 -> 基本不放弃（**低概率**）
-        ///
-        /// ⚠️ 为什么用**概率**而不是硬规则：
-        ///    玩家说的是"倾向于 / 不一定 / 基本不"，这本来就不是确定性策略。
-        ///    而且纯确定性会让 21 人平衡测试的胜率变成一个"点"，
-        ///    无法反映"这套策略到底好不好"。
-        ///    这里的概率是**固定的种子随机**，所以胜率可复现。
-        /// </summary>
-        private bool SchoolOfEvocationShouldAbandon(int result, PlayerState self)
-        {
-            // 只有 4 / 6 / 8 是"攻击数字"，其余（9 回复等）根本不进这个抉择
-            if (result != 4 && result != 6 && result != 8) return false;
-
-            // ⚠️⚠️ **"能不能斩杀"只认调用方注入的判据**
-            //    （<see cref="SchoolOfEvocationAbandonLethalGuard"/>，由 BoardController
-            //     用真实的这一击去算），**没有注入就按"不能斩杀"处理**。
-            //
-            //    我先前自己写了一个"看手值估斩杀"的启发式 —— 结果是**灾难**：
-            //    `myMax + foeMax >= foe.Health` 在开局就几乎恒真，
-            //    于是 4 次抉择里 3 次被它挡掉，法师·塑能学派**永远不铺状态**。
-            //    教训：**不要用粗估去替代真实判据**；
-            //    宁可"没判据时允许铺"（玩家策略本来就是"未进斩杀线前就该铺"）。
-            if (SchoolOfEvocationAbandonLethalGuard?.Invoke() == true) return false;
-
-            int roll = SchoolOfEvocationRoll();          // 0..99
-
-            switch (result)
-            {
-                // ⚠️ 玩家原话是"4 会倾向于放弃、6 不一定、8 基本不放弃"。
-                //    但**放弃太多会让法师·塑能学派永远在铺垫、永远不出手** ——
-                //    单局轨迹显示：一旦铺上类型，后面几回合 dmg 常常是 0
-                //    （打不中），类型反而被"消耗它的那一次"白白吃掉。
-                //    所以把概率收敛一些，让它真的打得出去。
-                case 4: return roll < 60;     // 倾向于放弃
-                case 6: return roll < 30;     // 不一定会放弃
-                default: return roll < 10;    // 8：基本不放弃
-            }
-        }
-
-        /// <summary>
-        /// 法师·塑能学派当前的掷点数（供"倾向 / 不一定 / 基本不"用）。
-        ///
-        /// ⚠️ 用一个**独立的确定性序列**而不是 <c>UnityEngine.Random</c>：
-        ///    无头平衡测试要可复现，两个 `Random` 混用会让胜率每次不同。
-        /// </summary>
-        private int SchoolOfEvocationRoll()
-        {
-            _wizardSeed = _wizardSeed * 1103515245 + 12345;
-            return ((_wizardSeed >> 16) & 0x7FFF) % 100;
-        }
-
-        private int _wizardSeed = 20240816;
 
         /// <summary>
         /// **法师·塑能学派选哪一种伤害类型**（玩家本轮给的策略）。
@@ -329,101 +263,13 @@ namespace FingerDiceDuel.Assistant
 
         private DamageType SchoolOfEvocationPreferredDamageType(PlayerState self)
         {
-            if (self == null || Game == null) return DamageType.Fire;
-            IReadOnlyList<PlayerState> foes = Game.OpponentsOf(self);
-            PlayerState foe = foes.Count > 0 ? foes[0] : null;
-
-            bool multi = foes.Count > 1;
-            bool meInDanger = self.Health * 100 <= self.MaximumHealth * 45;
-
-            // ⚠️⚠️ **"准备斩杀"必须是真条件，不能当兜底。**
-            //
-            //    我第一版把力场写成了兜底默认值（对手没盾没回复就返回力场），
-            //    结果 AI 几乎每次都选力场 —— 而**力场按设计不挂任何状态**
-            //    （玩家原话："力场 同法师·咒法学派方法，无法被任何方式抵挡/闪避"，
-            //      它的价值是穿透 + 必中，不是状态）。
-            //
-            //    表现（探针轨迹）：40 局里法师·塑能学派铺了 80 次类型、全部是力场，
-            //    对手**一次状态都没挂上**，`Ai_mage_applies_a_status` 一直红。
-            //    而且这个"铺了等于没铺"还白扔了一回合，反而拉低胜率。
-            //
-            //    现在只在"真的够得着斩杀"时才用力场。
-            bool canFinish = CanFinishWithOneHit(self, foe);
-
-            // ① 准备斩杀 -> 力场（穿盾且不可闪避，必中）/ 暗蚀（封回复）/ 强酸（削防）
-            //
-            //    ⚠️⚠️ **力场要克制地选**（玩家要求：
-            //       "提高其他属性被选择的比例，略微降低选力场的情况"）。
-            //
-            //    原因：**力场不挂任何状态**（设计如此）——
-            //    选了它就等于"白扔一回合、什么也没铺上"。
-            //    原来它在"能斩杀"这一档里是**默认值**，结果 AI 选了 120 次力场、
-            //    其他属性 0 次，对手**一次状态都没中过**。
-            //
-            //    现在只在"对手有盾"时才用它（那时穿透才真的值钱）；
-            //    其余斩杀场景改用有毒/有状态的类型 —— 既压血又铺状态。
-            if (canFinish)
-            {
-                if (foe != null && (foe.LeftHand.IsShield || foe.RightHand.IsShield))
-                    return DamageType.Force;          // 有盾 -> 穿透最稳
-
-                if (foe != null && SchoolOfEvocationCanHeal(foe)) return DamageType.Necrotic;
-
-                // 没盾、也不能回血 -> 用**带状态**的类型收尾（不强求必中，但铺得上状态）
-                return DamageType.Poison;
-            }
-
-            // ② 自己危险 -> 控制对手：寒冷（结果减半）/ 心灵（降攻且打不到自己）
-            if (meInDanger) return DamageType.Cold;
-
-            // ③ 多人 -> 打伤害用闪电（感电会波及相邻），控制用光耀 / 雷鸣
-            if (multi)
-            {
-                if (!meInDanger) return DamageType.Lightning;
-
-                return DamageType.Radiant;    // 目盲：对手只能选距离 1 的手
-            }
-
-            // ④ 常规打伤害 -> 毒素（不可被抵挡）/ 火焰（每回合 3 点）
-            //    对手能回血时优先封回复
-            if (foe != null && SchoolOfEvocationCanHeal(foe)) return DamageType.Necrotic;
-
-            return DamageType.Poison;
-        }
-
-        /// <summary>
-        /// 自己**这一击真的够得着斩杀**吗（对手剩余血量在自己最大手之内）。
-        ///
-        /// ⚠️ 刻意保守：只有"自己最大的手已经 ≥ 对手血量"才算。
-        ///    判错了也不会太糟 —— 判成"不能斩"就只是多铺一个状态，
-        ///    而判成"能斩"却打不死，就白扔了一回合。
-        /// </summary>
-        private static bool CanFinishWithOneHit(PlayerState self, PlayerState foe)
-        {
-            if (self == null || foe == null || !foe.IsAlive) return false;
-
-            int myMax = 0;
-            if (self.LeftHand != null) myMax = System.Math.Max(myMax, self.LeftHand.Value);
-            if (self.RightHand != null) myMax = System.Math.Max(myMax, self.RightHand.Value);
-
-            return myMax > 0 && myMax >= foe.Health;
-        }
-
-        /// <summary>
-        /// 对手是否**有可能回血**（法师·塑能学派选"腐朽"的判据）。
-        ///
-        /// 用"角色自带回复能力"判断，而不是猜他的手牌 ——
-        /// 牧师·生命领域 / 野蛮人·巨人道途 / 野蛮人·野兽道途都有明确的回复机制。
-        /// </summary>
-        private static bool SchoolOfEvocationCanHeal(PlayerState foe)
-        {
-            if (foe?.Character == null) return false;
-
-            // 有回复能力的角色都实现 IHealAmountProvider 或 IHealOverride
-            if (foe.Character is IHealAmountProvider) return true;
-            if (foe.Character is IHealOverride) return true;
-
-            return false;
+            if(self==null||Game==null)return DamageType.Poison;
+            var target=FocusTargetForScoring(Game,self);
+            if(target==null)return DamageType.Poison;
+            var options=new List<SkillChoiceOption>();
+            foreach(DamageType type in Enum.GetValues(typeof(DamageType)))
+                if(type!=DamageType.None)options.Add(new SkillChoiceOption((int)type,type.ToString(),""));
+            return (DamageType)EvocationChoice(options,self,target,Game);
         }
 
         /// <summary>
@@ -1064,6 +910,7 @@ namespace FingerDiceDuel.Assistant
             }
             total+=ArcaneChoices.BonusAgainst(actor,victim)*CharacterFactory.MaxAttackHits(actor);
             total+=LightCleanseDamage(actor,victim,game);
+            total=Math.Max(0,total+(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(actor)?.PendingDamagePenalty??0)*CharacterFactory.MaxAttackHits(actor));
             var preview=new AttackContext(actor,victim,move.ActedHand,result,game);
             var type=(actor.Character as IAttackTypeProvider)?.AttackTypeOf(preview)??AttackDamageType.Slashing;
             if(game!=null&&DeathDomainRules.CanBorrow(actor,game.OwnerOfHand(move.TargetHand)))type=AttackDamageType.Necrotic;
@@ -1073,7 +920,6 @@ namespace FingerDiceDuel.Assistant
             {
                 foreach(var defense in CharacterBehaviors.Implementers<IWholeAttackDefense>(victim))
                     if(defense.CanReduceAttack(victim,result))total=(total+1)/2;
-                total=ShadowRules.Outgoing(actor,victim,total);
                 total=StatusRules.ApplyIncomingDamage(victim,total);
             }
             total = fixedRule != null ? ProjectedAffinityDamage(actor, victim, total, type)
@@ -1104,7 +950,7 @@ namespace FingerDiceDuel.Assistant
                 StatusRules.EffectiveAttackBonus(attacker), StatusRules.EffectiveDefenseBonus(victim), ignorePositiveDefense: marked);
             damage+=ArcaneChoices.BonusAgainst(attacker,victim);
             damage+=LightCleanseDamage(attacker,victim,game);
-            if(CharacterBehaviors.FirstImplementer<IFixedNormalAttackDamage>(attacker)==null)damage=ShadowRules.Outgoing(attacker,victim,damage);
+            damage=Math.Max(0,damage+(CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(attacker)?.PendingDamagePenalty??0));
             var context = new AttackContext(attacker, victim, attacker.LeftHand, result, game);
             var type = (attacker.Character as IAttackTypeProvider)?.AttackTypeOf(context) ?? AttackDamageType.Slashing;
             if(addend!=null&&game!=null&&DeathDomainRules.CanBorrow(attacker,game.OwnerOfHand(addend)))type=AttackDamageType.Necrotic;
@@ -1132,6 +978,7 @@ namespace FingerDiceDuel.Assistant
             bool originallyRadiant=type==AttackDamageType.Radiant;
             bool lightBlessed=attacker.HasStatus(StatusEffect.LightBlessing);
             if(lightBlessed)type=AttackDamageType.Radiant;
+            damage=StatusRules.ApplyOutgoingAttackDamage(attacker,target,damage,type);
             bool pierces = DamageAffinityNames.AttackPiercesAffinities(attacker, type)||lightBlessed&&originallyRadiant;
             return StatusRules.ApplyDamageAffinities(target, damage, type, !pierces, pierces);
         }
@@ -1144,6 +991,12 @@ namespace FingerDiceDuel.Assistant
                 int lightning = ProjectedAffinityDamage(attacker, target, damage, AttackDamageType.Lightning);
                 int thunder = ProjectedAffinityDamage(attacker, target, damage, AttackDamageType.Thunder);
                 return conservative ? Math.Min(normal, Math.Min(lightning, thunder)) : (normal + 2 * lightning + 2 * thunder + 2) / 5;
+            }
+            var shadow=CharacterBehaviors.FirstImplementer<ShadowMagicLogic>(attacker);
+            if(shadow!=null&&!target.HasStatus(StatusEffect.DarknessBlind))
+            {
+                int necrotic=ProjectedAffinityDamage(attacker,target,damage,AttackDamageType.Necrotic);
+                return conservative?Math.Min(normal,necrotic):(normal+4*necrotic+2)/5;
             }
             var dragon = CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.DraconicBloodlineLogic>(attacker);
             if (dragon == null) return normal;
@@ -1896,42 +1749,7 @@ namespace FingerDiceDuel.Assistant
 
                 // ---------- 法师·塑能学派 ----------
                 case HandEffect.SchoolOfEvocationAbandonAttack:
-                    {
-                        // 玩家给的方向（本轮）：
-                        //   "法师·塑能学派在对方未进斩杀线前，若自己没有放弃过攻击，
-                        //     合出 4 会倾向于放弃攻击，6 不一定会放弃，8 基本不放弃"
-                        //
-                        // 什么时候**一定不**放弃：
-                        //   · 已经有一个待用的类型了 —— 再放弃只是白扔一回合；
-                        //   · 这一击能**直接斩杀** —— 立刻结束比赛胜过挂状态。
-                        if (decider == null || Game == null) return null;
-
-                        // ⚠️ 用 Core 的 IMageState 而不是 SchoolOfEvocationLogic ——
-                        //    Assistant 层不能引用 Characters 层（架构铁律）。
-                        var mage = CharacterBehaviors.FirstImplementer<IMageState>(decider);
-                        if (mage == null) return null;
-
-                        // ⚠️⚠️ **"不重复放弃"是 AI 的策略，不是规则。**
-                        //
-                        //    玩家澄清："在消耗前应该要是可以弹是否放弃的，
-                        //    只是让 AI 算法不要重复选，
-                        //    玩家实操可以自己决定是否要重复放弃。"
-                        //
-                        //    所以引擎（`SchoolOfEvocationLogic.CollectPreTurnChoices`）
-                        //    **永远都问**；克制放在这里 —— 已经铺好了就不要再铺，
-                        //    否则只是白发一回合（AI 自己算得清这笔账）。
-                        if (mage.HasPendingType) return null;      // 已经铺好了
-
-                        if (SchoolOfEvocationAbandonLethalGuard?.Invoke() == true) return null;   // 能斩杀
-
-                        // 本次合出的结果（4/6/8）—— 决定放弃的倾向
-                        int result = request.ResultValue;
-
-                        if (!SchoolOfEvocationShouldAbandon(result, decider)) return null;
-
-                        WantsToAbandonAttack = true;
-                        return c[0];
-                    }
+                    return null; // Compatibility only; preparation happens after attacking.
 
                 case HandEffect.SchoolOfEvocationDamageType:
                     {

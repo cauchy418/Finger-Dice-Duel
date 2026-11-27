@@ -9,6 +9,7 @@ namespace FingerDiceDuel.Assistant
     {
         public override int ChooseSkillOption(string key,IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
         {
+            if(key=="evocation")return EvocationChoice(options,owner,target,game);
             if(key=="warden_oath")return owner.HasImmunity(AttackDamageType.Force)||!owner.HasAnyShield?1:0;
             if(key=="giant_element_blade")
             {
@@ -63,6 +64,36 @@ namespace FingerDiceDuel.Assistant
             return best;
         }
 
+        private static int EvocationChoice(IReadOnlyList<SkillChoiceOption> options,PlayerState owner,PlayerState target,GameManager game)
+        {
+            var mage=CharacterBehaviors.FirstImplementer<SchoolOfEvocationLogic>(owner);
+            int best=0;double bestScore=double.NegativeInfinity;
+            foreach(var option in options)
+            {
+                var type=(DamageType)option.Value;
+                double score=type==DamageType.None?0:2;
+                var attackType=AttackDamageTypes.FromDamageType(type);
+                foreach(var enemy in game.OpponentsOf(owner))
+                {
+                    if(!enemy.IsAlive||game.IsKnownAlly(owner,enemy))continue;
+                    if(type!=DamageType.None&&game.CanReach(owner,enemy))
+                    {
+                        double gain=ElementScore((int)attackType,owner,enemy,game);
+                        if(mage?.LastChosenDamageType==type)gain-=2;
+                        score+=gain;
+                        if(type==DamageType.Force&&(enemy.HasAnyShield||CharacterBehaviors.FirstImplementer<IAttackBlocker>(enemy)!=null))score+=8;
+                    }
+                    if(type!=DamageType.None&&game.CanReach(enemy,owner))
+                    {
+                        var incoming=(enemy.Character as IAttackTypeProvider)?.AttackTypeOf(new AttackContext(enemy,owner,enemy.LeftHand,6,game))??AttackDamageType.Slashing;
+                        if(incoming==attackType&&!owner.HasResistance(attackType))score+=owner.Health<=8?8:3;
+                    }
+                }
+                if(score>bestScore){bestScore=score;best=option.Value;}
+            }
+            return best;
+        }
+
         private static double OpenHandScore(int value,PlayerState owner,PlayerState target)
         {
             if(target==null) return value==0?1:0;
@@ -97,6 +128,9 @@ namespace FingerDiceDuel.Assistant
             if(type==AttackDamageType.Lightning && target.HasStatus(StatusEffect.Wet)) score+=15;
             if(type==AttackDamageType.Cold && (target.HasStatus(StatusEffect.Frost)||target.HasStatus(StatusEffect.Wet))) score+=22;
             if(type==AttackDamageType.Thunder && target.HasStatus(StatusEffect.Resonance)) score+=20;
+            if(type==AttackDamageType.Radiant&&target.HasStatus(StatusEffect.Blind)&&!target.HasStatus(StatusEffect.DivinePunishment))score+=10;
+            if(type==AttackDamageType.Necrotic&&target.HasStatus(StatusEffect.DarknessBlind)&&!target.HasStatus(StatusEffect.Decay))score+=10;
+            if(type==AttackDamageType.Radiant&&target.HasStatus(StatusEffect.DarknessBlind)||type==AttackDamageType.Necrotic&&target.HasStatus(StatusEffect.Blind))score+=14;
             if(type==AttackDamageType.Fire && target.HasStatus(StatusEffect.Greased) && !target.HasImmunity(type)) score+=8;
             return score;
         }
@@ -173,6 +207,7 @@ namespace FingerDiceDuel.Assistant
             bool suppressed=CharacterBehaviors.FirstImplementer<NatureDomainLogic>(target)!=null&&NatureDomainLogic.IsElement(type);
             if (!immune && !suppressed && magic != DamageType.Psychic) damage=StatusRules.ApplyDamageTypeInteraction(target,magic,damage,out _,out _);
             ignoreAffinity |= DamageAffinityNames.AttackPiercesAffinities(owner, type);
+            damage=StatusRules.ApplyOutgoingAttackDamage(owner,target,damage,type);
             damage=StatusRules.ApplyDamageAffinities(target,damage,type,!ignoreAffinity,ignoreAffinity);
             if(immune) return damage;
             if(suppressed)return damage-4;

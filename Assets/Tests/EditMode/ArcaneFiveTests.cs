@@ -39,11 +39,11 @@ namespace FingerDiceDuel.Tests
             board.BeginTurn();Assert.True(board.ClickHand(game.PlayerA.LeftHand));Assert.True(board.ClickHand(game.PlayerB.LeftHand));
             Assert.AreEqual(19,game.PlayerA.Health);Assert.True(song.Singing);Assert.AreEqual(1,game.TurnCount);
         }
-        [Test] public void Real_board_full_health_or_decay_prevented_heal_does_not_keep_bladesong()
+        [Test] public void Real_board_full_health_or_tinnitus_prevented_heal_does_not_keep_bladesong()
         {
             foreach(bool decay in new[]{false,true})
             {
-                var board=SongBoard(out var game,out var song);if(decay)game.PlayerA.ApplyStatus(StatusEffect.Decay,3);else game.PlayerA.SetHealthExact(20);
+                var board=SongBoard(out var game,out var song);if(decay)game.PlayerA.ApplyStatus(StatusEffect.Tinnitus,3);else game.PlayerA.SetHealthExact(20);
                 game.PlayerA.LeftHand.SetValue(8);game.PlayerB.LeftHand.SetValue(1);board.BeginTurn();board.ClickHand(game.PlayerA.LeftHand);board.ClickHand(game.PlayerB.LeftHand);
                 Assert.AreEqual(decay?10:20,game.PlayerA.Health);Assert.False(song.Singing);
             }

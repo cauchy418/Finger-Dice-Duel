@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using FingerDiceDuel.Core;
 using FingerDiceDuel.Characters.SpecialLogics;
 namespace FingerDiceDuel.Assistant
@@ -30,7 +30,7 @@ namespace FingerDiceDuel.Assistant
                 if(n==11){s.Npcs[1].Range=3;s.Opening=l=>l.Game.ConfigureSeatObstacles(1,1);}
                 var hit=s.Op(0,0,1,0,"暴风狂怒");hit.Option=(int)(n==11?AttackDamageType.Thunder:AttackDamageType.Lightning);hit.ForcedRoll=roll;
                 if(n==11){hit.PureSource=0;hit.PureOwner=1;hit.PureAddend=1;}
-                s.Op(1,1,0,0,"观察元素限制",0,8).ForcedRoll=roll;
+                s.Op(1,1,0,0,n==11?"观察残响：远处回合结束不触发；自身回合结束受到1雷鸣。":"观察元素限制",0,8).ForcedRoll=roll;
                 s.Wait(0,"观察状态").ForcedRoll=roll;
                 return s;
             }
@@ -55,7 +55,7 @@ namespace FingerDiceDuel.Assistant
             var dark=s.Op(0,0,1,1,"黑暗术");dark.Option=1;
             s.Op(1,0,0,0,"安魂与失明",0).Prepare=(l,p)=>{l.Player.TrainingProtected=true;CampaignNpcLogic.Heal(l.Game,p,l.Player,8,"安魂");l.Tune(p,p.RightHand,2);};
             s.Op(0,0,1,1,"幽暗之瞳");
-            s.Op(1,0,0,0,"腐朽阻止回复",0,9).Prepare=(l,p)=>l.Tune(p,p.RightHand,3);
+            s.Op(1,0,0,0,"腐朽先伤后回复",0,9).Prepare=(l,p)=>l.Tune(p,p.RightHand,3);
             s.Op(0,1,1,1,"正常回复");return s;
         }
         private static CampaignSpec ReactionCourse()
@@ -93,21 +93,21 @@ namespace FingerDiceDuel.Assistant
         private static CampaignSpec ThreeAspectsCourse()
         {
             var s=GalleryBase(19,CharacterDefinition.SchoolOfEvocation,30);
-            var types=new[]{DamageType.Radiant,DamageType.Force,DamageType.Psychic};
+            var types=new[]{DamageType.Radiant,DamageType.Radiant,DamageType.Force,DamageType.Psychic};
             for(int i=0;i<types.Length;i++)
             {
                 int index=i;
-                Cast(s,0,4,"法术塑形",true,types[i]);
-                var prep=s.Op(1,1,0,1,"换相",0,index==0?4:1);
-                prep.Prepare=(l,p)=>{
-                    l.Equip(p,index==0?AttackDamageType.Radiant:AttackDamageType.Bludgeoning);
-                    if(index==1){((CampaignNpcLogic)p.Character).Defense=3;l.Game.NoteSkill(p,"架盾试验","防+3",p);}
-                    if(index==2)l.Refit(p);
+                var cast=Cast(s,0,new[]{4,6,8,4}[i],i==0?"先正常攻击，再选择光耀供下一次攻击使用。":i==1?"释放光耀后再次选择光耀：下次攻击每段伤害减2。":i==2?"重复光耀攻击减2，随后改选力场，恢复正常伤害。":"力场穿盾与正防御，结算后改选心灵。",false,types[i]);
+                cast.Prepare=(l,p)=>{
+                    if(index>0)l.Refit(l.Seats[1]);
+                    if(index==3){((CampaignNpcLogic)l.Seats[1].Character).Defense=3;l.Seats[1].LeftHand.SetValue(5);l.Seats[1].LeftHand.SetShieldState(ShieldState.Formed);}
                 };
-                if(index==1)prep.Kind=CampaignActionKind.RaiseShield;
-                Cast(s,0,6,"释放类型");
-                s.Wait(1,"观察命中状态");
+                var prep=s.Op(1,1,0,1,"等待期间保留待用类型与对应抗性。",0,1);
+                prep.Prepare=(l,p)=>l.Equip(p,index<2?AttackDamageType.Radiant:AttackDamageType.Bludgeoning);
             }
+            var release=Cast(s,0,6,"释放心灵后暂不选择；选择历史仍保留，下一次再选心灵仍会减2。");
+            release.Prepare=(l,p)=>l.Refit(l.Seats[1]);
+            s.Wait(1,"观察命中状态，再进入自主检验。");
             s.TrialHands=new[]{1,2,3,5};s.Npcs[1].Type=AttackDamageType.Radiant;s.Npcs[1].Shield=true;
             s.TrialSetup=l=>((CampaignNpcLogic)l.Seats[1].Character).Defense=1;
             return s;

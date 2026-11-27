@@ -83,8 +83,7 @@ namespace FingerDiceDuel.Tests
                 }
                 if(b.PendingEffect==HandEffect.SchoolOfNecromancyBlock)return b.ClickHand(l.Player.LeftHand);
                 if(b.PendingEffect==HandEffect.SchoolOfAbjurationResistanceTarget)return b.ClickHand(l.Seats[l.Sample.Key=="sustained"&&g.TurnCount==2?1:l.Sample.ResistanceTargetSeat].LeftHand);
-                bool accept=b.PendingEffect==HandEffect.SchoolOfAbjurationBarrier
-                    ||b.PendingEffect==HandEffect.SchoolOfEvocationAbandonAttack&&g.TurnCount==0;
+                bool accept=b.PendingEffect==HandEffect.SchoolOfAbjurationBarrier;
                 return accept?b.AcceptPendingChoice():b.DeclinePendingChoice();
             }
             if(b.Phase==BoardPhase.ChoosingTargetPlayer)return b.ConfirmTargetPlayer();
@@ -171,10 +170,10 @@ namespace FingerDiceDuel.Tests
                 var lesson=MageTowerLesson.Create(12,i);Assert.AreEqual(4,lesson.Sample.Turns.Count);
                 Assert.AreEqual(1,lesson.Sample.Turns[3].Actor);Drive(lesson);
                 Assert.IsTrue(ReferenceEquals(lesson.Board.ActivePlayer,lesson.Player));
-                if(i==0)Assert.AreEqual(12,lesson.Soldier.Health);
-                if(i==2)Assert.AreEqual(12,lesson.Soldier.Health);
-                if(i==5)Assert.AreEqual(12,lesson.Soldier.Health);
-                if(i==7)Assert.AreEqual(14,lesson.Soldier.Health);
+                if(i==0)Assert.AreEqual(8,lesson.Soldier.Health);
+                if(i==2)Assert.AreEqual(8,lesson.Soldier.Health);
+                if(i==5)Assert.AreEqual(8,lesson.Soldier.Health);
+                if(i==7)Assert.AreEqual(19,lesson.Soldier.Health);
                 if(lesson.Sample.Key=="freeze")Assert.AreEqual(1,lesson.Soldier.StatusTurnsLeft(StatusEffect.Frozen));
             }
         }
@@ -195,17 +194,17 @@ namespace FingerDiceDuel.Tests
             bool rejected=false;try{MageTowerLesson.Create(20,0,CharacterDefinition.EldritchKnight);}catch(ArgumentException){rejected=true;}
             Assert.IsTrue(rejected);
         }
-        [Test] public void Phantom_circuit_counts_whole_normal_health_hits_and_decay_blocks_heal()
+        [Test] public void Phantom_circuit_counts_whole_normal_health_hits_and_tinnitus_blocks_heal()
         {
             var l=MageTowerLesson.Create(20);var g=l.Game;var boss=l.Soldier;
             boss.SetHealthExact(20);l.Player.SetMaxHealth(100);l.Player.SetHealthExact(100);
             var skill=(MagePhantomLogic)boss.Character;
             for(int i=0;i<2;i++)new AttackContext(boss,l.Player,boss.LeftHand,4,g).Resolve(g.ChoiceProviderA,g);
             Assert.AreEqual(2,skill.CircuitProgress);Assert.AreEqual(20,boss.Health);
-            boss.ApplyStatus(StatusEffect.Decay,2);
+            boss.ApplyStatus(StatusEffect.Tinnitus,2);
             new AttackContext(boss,l.Player,boss.LeftHand,4,g).Resolve(g.ChoiceProviderA,g);
             Assert.AreEqual(0,skill.CircuitProgress);Assert.AreEqual(20,boss.Health);
-            boss.RemoveStatus(StatusEffect.Decay);
+            boss.RemoveStatus(StatusEffect.Tinnitus);
             for(int i=0;i<3;i++)new AttackContext(boss,l.Player,boss.LeftHand,4,g).Resolve(g.ChoiceProviderA,g);
             Assert.AreEqual(23,boss.Health);
             boss.ApplyStatus(StatusEffect.Disabled,2);

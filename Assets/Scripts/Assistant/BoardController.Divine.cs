@@ -43,6 +43,7 @@ namespace FingerDiceDuel.Assistant
             }
             _pendingIsAttack=DruidChoiceContext(ActivePlayer,TargetPlayer??Defender,SelectedHand,_selectedTarget).IsAttack;
             if(BeginPreTargetChoicesIfAny())return;
+            if(CompleteFatalOperationStatusDamage())return;
             if(TryEnterHealTargetChoice())return;
             if(!NeedsTargetAfterOperation()){CommitMove(_selectedTarget);return;}
             Phase=BoardPhase.ChoosingTargetPlayer;

@@ -11,9 +11,10 @@ namespace FingerDiceDuel.Assistant
         public PlayerState Actor {get;} public PlayerState Target {get;} public GameManager Game {get;}
         public LegalMove Move {get;} public int Result {get;} public HandEffectType Effect {get;}
         public int ExpectedDamage {get;} public int ExpectedHealing {get;} public bool CanAttack {get;}
+        public bool EffectsSuppressed {get;} public bool OperationIsAttack {get;}
         public AiStateContext(PlayerState actor,PlayerState target,GameManager game,LegalMove move,int result,
-            HandEffectType effect,int damage,int healing,bool canAttack)
-        {Actor=actor;Target=target;Game=game;Move=move;Result=result;Effect=effect;ExpectedDamage=damage;ExpectedHealing=healing;CanAttack=canAttack;}
+            HandEffectType effect,int damage,int healing,bool canAttack,bool effectsSuppressed=false,bool? operationAttack=null)
+        {Actor=actor;Target=target;Game=game;Move=move;Result=result;Effect=effect;ExpectedDamage=damage;ExpectedHealing=healing;CanAttack=canAttack;EffectsSuppressed=effectsSuppressed;OperationIsAttack=operationAttack??IsAttack;}
         public bool IsAttack=>Effect==HandEffectType.Attack4||Effect==HandEffectType.Attack6||Effect==HandEffectType.Attack8;
     }
     /// <summary>One named rule: live predicates plus additive preferences, with an optional move-specific extension.</summary>
@@ -44,7 +45,9 @@ namespace FingerDiceDuel.Assistant
             State(StatusEffect.Acid,0,16,20,0,18);
             State(StatusEffect.Poison,12,18,0,0,8);
             State(StatusEffect.Blind,2,6,8,12);
-            State(StatusEffect.Decay,18,-120,18,4);
+            State(StatusEffect.Decay,18,12,8,-12,8);
+            State(StatusEffect.DivinePunishment,-16,12,12,8,12);
+            State(StatusEffect.Annihilation,-8,12,8,-8,16);
             State(StatusEffect.Burn,8,10,28,0,8);
             State(StatusEffect.Frost,4,4,12,12);
             State(StatusEffect.Shock,8,14,18,0,8);
@@ -61,7 +64,7 @@ namespace FingerDiceDuel.Assistant
             State(StatusEffect.Restrained,4,6,10,12,12);
             State(StatusEffect.Greased,8,10,20,0,12);
             State(StatusEffect.Tinnitus,18,-160,-160,8,30);
-            State(StatusEffect.DarknessBlind,-12,12,16,10,12);
+            State(StatusEffect.DarknessBlind,0,12,16,10,12);
             State(StatusEffect.PhysicalVulnerability,4,16,28,0,26);
             State(StatusEffect.Scorch,10,-12,14,0,8);
             State(StatusEffect.Confusion,4,4,8,12);
@@ -156,7 +159,7 @@ namespace FingerDiceDuel.Assistant
                 if(rule.Status==StatusEffect.Disabled&&c.IsAttack&&c.ExpectedDamage>0)continue;
                 int healWeight=rule.Heal;
                 bool selfCleanse=c.Effect==HandEffectType.Heal&&ReferenceEquals(c.Target,c.Actor)&&CharacterBehaviors.FirstImplementer<LifeDomainLogic>(c.Actor)!=null;
-                if(c.Effect==HandEffectType.Heal&&healWeight<0&&(selfCleanse||!ReferenceEquals(c.Target,c.Actor)||rule.Status==StatusEffect.Decay&&c.ExpectedHealing>0))healWeight=0;
+                if(c.Effect==HandEffectType.Heal&&healWeight<0&&(selfCleanse||!ReferenceEquals(c.Target,c.Actor)))healWeight=0;
                 score+=c.IsAttack?rule.Attack:c.Effect==HandEffectType.Shield?rule.Shield:c.Effect==HandEffectType.Heal?healWeight:rule.Setup;
                 score+=rule.MoveAdjustment(c);
             }
@@ -166,13 +169,43 @@ namespace FingerDiceDuel.Assistant
             if(c.IsAttack&&c.Actor.HasStatus(StatusEffect.Disabled)&&c.ExpectedDamage==0)score-=140;
             if(c.Effect==HandEffectType.Heal&&ReferenceEquals(c.Target,c.Actor)&&CharacterBehaviors.FirstImplementer<LifeDomainLogic>(c.Actor)==null&&c.Actor.HasStatus(StatusEffect.Scorch)&&c.ExpectedHealing>0)
                 score-=(c.ExpectedHealing+1)/2*6;
+            {
+                int selfDamage=c.EffectsSuppressed?0:OperationSelfDamage(c.Actor,c.Result,c.OperationIsAttack);
+                bool force=c.Actor.HasStatus(StatusEffect.Annihilation);
+                int shields=0;
+                // The operating shield has already been spent before this damage.
+                foreach(var hand in c.Actor.Hands)
+                    if(hand.IsShield&&!ReferenceEquals(hand,c.Move.ActedHand))shields++;
+                if(selfDamage>0&&!force&&shields>0){selfDamage=0;shields--;}
+                int buffer=c.Actor.SporeLife+c.Actor.FalseLife;
+                int operationHealthLoss=Math.Max(0,selfDamage-buffer);
+                bool survives=operationHealthLoss<c.Actor.HealthAcrossForms;
+                // Only a surviving operation can create a shield for the end-turn tick.
+                if(survives&&!c.EffectsSuppressed&&c.Effect==HandEffectType.Shield&&!c.Actor.HasStatus(StatusEffect.Tinnitus))shields++;
+                int resonanceDamage=survives&&c.Actor.HasStatus(StatusEffect.Resonance)
+                    ?StatusRules.ApplyDamageAffinities(c.Actor,StatusRules.ApplyIncomingDamage(c.Actor,1),AttackDamageType.Thunder):0;
+                if(resonanceDamage>0&&shields>0){resonanceDamage=0;shields--;}
+                int healthLoss=Math.Max(0,selfDamage+resonanceDamage-buffer);
+                score-=healthLoss*8;
+                int healing=ReferenceEquals(c.Target,c.Actor)?c.ExpectedHealing:0;
+                if(!survives||healthLoss>=c.Actor.HealthAcrossForms+healing)score-=500;
+            }
             return Math.Max(-600,Math.Min(300,score));
+        }
+        public static int OperationSelfDamage(PlayerState owner,int result,bool attack)
+        {
+            var type=owner.HasStatus(StatusEffect.Annihilation)?AttackDamageType.Force
+                :attack&&owner.HasStatus(StatusEffect.DivinePunishment)?AttackDamageType.Radiant
+                :!attack&&owner.HasStatus(StatusEffect.Decay)?AttackDamageType.Necrotic:AttackDamageType.None;
+            return type==AttackDamageType.None?0:StatusRules.ApplyDamageAffinities(owner,StatusRules.ApplyIncomingDamage(owner,result),type);
         }
         public static int ScoreTarget(PlayerState owner,PlayerState target,GameManager game)
         {
             if(owner==null||target==null||ReferenceEquals(owner,target)||game?.IsKnownAlly(owner,target)==true)return 0;
             int score=0;foreach(var rule in Registry.Values)if(rule.Applies(target,game))score+=rule.Exposure;
-            if(owner.HasStatus(StatusEffect.DarknessBlind)&&!target.HasStatus(StatusEffect.DarknessBlind))score-=35;
+            var type=(owner.Character as IAttackTypeProvider)?.AttackTypeOf(new AttackContext(owner,target,owner.LeftHand,6,game))??AttackDamageType.Slashing;
+            if(AttackDamageTypes.IsPhysical(type)&&owner.HasStatus(StatusEffect.DarknessBlind)&&!target.HasStatus(StatusEffect.DarknessBlind)
+                ||AttackDamageTypes.IsMagic(type)&&owner.HasStatus(StatusEffect.Blind)&&!target.HasStatus(StatusEffect.Blind))score-=35;
             if(ReferenceEquals(target.HiddenForceSource,owner))score+=30;
             return Math.Max(-160,Math.Min(160,score));
         }

@@ -71,7 +71,7 @@ namespace FingerDiceDuel.Tests
             b.SetHealthExact(8);c.SetHealthExact(8);d.SetHealthExact(8);b.ApplyStatus(StatusEffect.Scorch,2);
             Assert.AreEqual(d.LeftHand,ai.ChooseAncientTarget(AncientRoleChoices.AncientHeal,a,new[]{b.LeftHand,c.LeftHand,d.LeftHand},g));
             Assert.AreEqual(b.LeftHand,ai.ChooseAncientTarget(AncientRoleChoices.AncientHeal,a,new[]{c.LeftHand,b.LeftHand},g));
-            c.ApplyStatus(StatusEffect.Decay,2);
+            c.ApplyStatus(StatusEffect.Tinnitus,2);
             Assert.AreEqual(c.LeftHand,ai.ChooseAncientTarget(AncientRoleChoices.AncientHeal,a,new[]{b.LeftHand,c.LeftHand},g));
         }
         private sealed class RangedBlank:CharacterTemplate { public override int BaseAttackRange=>InfiniteAttackRange; }

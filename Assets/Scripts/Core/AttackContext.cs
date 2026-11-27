@@ -93,6 +93,7 @@ namespace FingerDiceDuel.Core
         /// 为 true 时最终伤害就等于 RawDamage（经倍率与分段），不叠加任何攻防修正。
         /// </summary>
         public bool IgnoreStatBonuses { get; set; }
+        public int AdditionalDamageBonus { get; set; }
 
         /// <summary>本次攻击是否被护盾抵挡。</summary>
         public bool WasBlocked { get; private set; }
@@ -290,6 +291,7 @@ namespace FingerDiceDuel.Core
             }
             if (TryCancelAttack(manager))
             {
+                if(!IsStatusDamage&&!IsReflected)CharacterBehaviors.FirstImplementer<Characters.SpecialLogics.SchoolOfEvocationLogic>(Attacker)?.ConsumeDamageType();
                 // 取消 = 完全无效：不扣血、不碎盾、不触发后续效果。
                 // 段数设为 0 让后面的循环一次都不跑（比 early-return 更省事，
                 // 且保留"这次攻击发生过"的记录供战报使用）。
@@ -306,7 +308,7 @@ namespace FingerDiceDuel.Core
 
             // 1. 攻击方钩子介入（如法师·咒法学派设置 IgnoreShield / 修改 FinalDamage / 游荡者·风流剑客设置倍率）
             if(!IsStatusDamage&&!IsReflected)Attacker.BeganAttackThisTurn=true;
-            if(!IsKnowledgeForceDamage)Attacker.Character?.OnResolveAttack(this);
+            if(!IsStatusDamage&&!IsKnowledgeForceDamage)Attacker.Character?.OnResolveAttack(this);
 
             // 1a. **本次攻击的伤害类型**（玩家要求：所有攻击都要标记类型）。
             //
@@ -337,7 +339,7 @@ namespace FingerDiceDuel.Core
             //     与 OnResolveAttack 分开是因为它需要**攻击数字**，
             //     而那个数字要用"运算前的快照"算（SourceHandValueBefore + TargetHandValueBefore），
             //     写成独立接口可以让规则更清晰地声明"我只按数字办事"。
-            if (Attacker.Character is IAttackDamageRule rule)
+            if (!IsStatusDamage && Attacker.Character is IAttackDamageRule rule)
                 rule.ApplyAttackRule(this, AttackValue, manager);
 
             var fixedRule=!IsSpecialAttack&&!IsReflected&&!IsNecromancyFreeAttack&&!IsStatusDamage
@@ -359,7 +361,7 @@ namespace FingerDiceDuel.Core
             //   本来想放在最前面，但攻击方钩子可能改写 IgnoreShield 之类的标记，
             //   而代挡者应当承受**最终确定下来**的那一击。
             PlayerState intendedDefender = Defender;
-            TryRedirectDefender(manager);
+            if(!IsStatusDamage)TryRedirectDefender(manager);
             if (!ReferenceEquals(intendedDefender, Defender))
             {
                 defenderChoice = manager.GetChoiceProvider(Defender);
@@ -485,7 +487,11 @@ namespace FingerDiceDuel.Core
                 if(RequestDawn(i,manager,()=>ResolveRemainingHits(dawnIndex)))return;
                 perHit=damageDisabled?0:IgnoreStatBonuses?currentBase:ApplyStatBonuses(currentBase);
                 if(!damageDisabled&&!IsStatusDamage){perHit+=ArcaneChoices.BonusAgainst(Attacker,Defender);if(_dawnBonuses.TryGetValue(i,out int dawnBonus))perHit+=dawnBonus;}
-                if(!IsStatusDamage&&!IsReflected&&!IgnoreIncomingModifiers)perHit=ShadowRules.Outgoing(Attacker,Defender,perHit);
+                if(!IsStatusDamage)
+                {
+                    if(!damageDisabled)perHit=System.Math.Max(0,perHit+AdditionalDamageBonus);
+                    perHit=StatusRules.ApplyOutgoingAttackDamage(Attacker,Defender,perHit,AttackType);
+                }
                 for(int half=0;half<_wholeAttackHalvings;half++)perHit=(perHit+1)/2;
                 if(detonateHidden)hiddenExpected+=System.Math.Max(0,perHit);
                 var drunkenDefense=!IsStatusDamage&&!IgnoreIncomingModifiers?MonkRules.DrunkenOf(Defender):null;
@@ -716,12 +722,12 @@ namespace FingerDiceDuel.Core
                 knowledge.Resolve(manager?.GetChoiceProvider(Defender),manager);
                 manager?.NoteSkill(Attacker,"知识祝福",Defender.Name+" 力场伤害"+knowledge.AppliedDamage,Defender,new SkillVisualData(value:knowledge.AppliedDamage,element:AttackDamageType.Force));
             }
-            if(!IsKnowledgeForceDamage)ApplyAttackerHitEffect(manager);
+            if(!IsStatusDamage&&!IsKnowledgeForceDamage)ApplyAttackerHitEffect(manager);
 
             // 6. **实际造成伤害后**的通知（战士·战斗大师的招式附加）。
             //    口径比"命中"更严：只有 AppliedDamage > 0 才触发。
-            if(!IsKnowledgeForceDamage)ApplyDamageLandedEffects(manager);
-            if(AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
+            if(!IsStatusDamage&&!IsKnowledgeForceDamage)ApplyDamageLandedEffects(manager);
+            if(!IsStatusDamage&&AppliedDamage>0&&!WasCancelled&&Attacker!=null&&Defender!=null)
                 foreach(var hook in CharacterBehaviors.Implementers<IOnDamageDealt>(Attacker))hook.OnDamageDealt(this,manager);
             NotifyCompletedHealthDamage(manager);
             FinishClericBlessings(manager);
@@ -810,9 +816,9 @@ namespace FingerDiceDuel.Core
             if(_visualReaction&&!_visualReactionShown&&!WasTypeImmune&&(LandedHits>0||BlockedHits>0))
             {_visualReactionShown=true;manager?.RecordSkillVisual(Attacker,"元素反应",Defender,new SkillVisualData(variant:_reactionVariant));}
             var applier=CharacterBehaviors.FirstImplementer<IStatusApplyingAttack>(Attacker);
-            if(applier==null && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction && !_burnReaction) return;
+            if(applier==null && InteractionDamageType==DamageType.None && AttackerStatusOverride==StatusEffect.None && !IsNecromancyFreeAttack && !_acidPoisonReaction && !_greaseReaction && !_sonicCrossReaction && !_burnReaction) return;
 
-            StatusEffect status = IsNecromancyFreeAttack ? StatusEffect.Decay
+            StatusEffect status = IsNecromancyFreeAttack ? InteractionStatus
                 : AttackerStatusOverride != StatusEffect.None ? AttackerStatusOverride
                 : InteractionStatus;
             if (status == StatusEffect.None && InteractionDamageType == DamageType.None)
@@ -844,9 +850,22 @@ namespace FingerDiceDuel.Core
             PlayerState victim = Defender;
             if (victim == null || !victim.IsAlive) return;
 
+            bool firstLightDarkHit=true;
             foreach(var hit in onlyHit == null ? (IEnumerable<ElementHit>)_elementHits : new[] { onlyHit })
             {
                 int turns=hit.StatusDuration(status,StatusDuration);int reactionTurns=hit.Duration(PlayerState.StatusDurationTurns);
+                var lightDarkReaction=_lightDarkReaction;
+                if(!firstLightDarkHit && (AttackType==AttackDamageType.Radiant||AttackType==AttackDamageType.Necrotic))
+                {
+                    StatusRules.ApplyDamageTypeInteraction(victim,InteractionDamageType,0,out var nextReaction,out _);
+                    lightDarkReaction=nextReaction==StatusEffect.DivinePunishment||nextReaction==StatusEffect.Decay||nextReaction==StatusEffect.Annihilation?nextReaction:StatusEffect.None;
+                }
+                firstLightDarkHit=false;
+                if(lightDarkReaction!=StatusEffect.None && reactionTurns>0)
+                {
+                    victim.ApplyStatus(lightDarkReaction,reactionTurns,Attacker);
+                    if(victim.HasStatus(lightDarkReaction))manager?.NoteSkill(Attacker,"元素反应",$"{victim.Name}：{StatusNames.Of(lightDarkReaction)} {reactionTurns}回合");
+                }
                 if(_acidPoisonReaction&&reactionTurns>0)
                 {
                     var refreshed=StatusRules.RefreshAcidPoisonInteraction(victim,InteractionDamageType,reactionTurns);

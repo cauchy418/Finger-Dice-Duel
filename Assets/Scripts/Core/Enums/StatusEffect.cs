@@ -23,9 +23,9 @@ namespace FingerDiceDuel.Core
     /// | <see cref="Acid"/> 强酸 | 防御加成 **−2** |
     /// | <see cref="Stun"/> 震慑 | 攻击加成 **−2**，且施加者不能成为其合法攻击目标 |
     /// | <see cref="Freeze"/> 冰冻 | 运算结果**减半（向下取整）** |
-    /// | <see cref="Blind"/> 目盲 | 只能选**距离 1** 的手当被加数 |
-    /// | <see cref="Resonance"/> 残响 | 只能攻击**距离 1** 的角色 |
-    /// | <see cref="Decay"/> 腐朽 | 不能回复生命 |
+    /// | <see cref="Blind"/> 目盲 | 对未目盲目标的魔法攻击伤害减半 |
+    /// | <see cref="Resonance"/> 残响 | 距离≤1的存活角色（含自身）回合结束时受1雷鸣 |
+    /// | <see cref="Decay"/> 腐朽 | 非攻击效果运算后受结果值暗蚀伤害 |
     ///
     /// ## 每回合结算
     ///
@@ -44,7 +44,7 @@ namespace FingerDiceDuel.Core
     {
         None = 0,
 
-        /// <summary>雷鸣：只能攻击与自己**距离 1** 的角色。</summary>
+        /// <summary>雷鸣：附近存活角色回合结束时受1雷鸣伤害。</summary>
         Resonance = 1,
 
         /// <summary>强酸：防御加成 **−2**。</summary>
@@ -53,10 +53,10 @@ namespace FingerDiceDuel.Core
         /// <summary>毒素：回合开始时受 **2** 点毒素伤害，**不可被抵挡**。</summary>
         Poison = 3,
 
-        /// <summary>光耀：计算时只能选择与自己**距离 1** 的手。</summary>
+        /// <summary>光耀：对未目盲目标的魔法攻击伤害减半。</summary>
         Blind = 4,
 
-        /// <summary>暗蚀：**不能回复生命值**。</summary>
+        /// <summary>暗蚀反应：非攻击效果运算后受结果值暗蚀伤害。</summary>
         Decay = 5,
 
         /// <summary>火焰：回合结束时受 **2** 点火焰伤害（可被盾 / 闪避 / 太极抵挡）；火焰再次命中附灼伤。</summary>
@@ -123,6 +123,8 @@ namespace FingerDiceDuel.Core
         FeignedDeath = 30,
         NatureBlessing = 31,
         LightBlessing = 32,
+        DivinePunishment = 33,
+        Annihilation = 34,
     }
 
     /// <summary>
@@ -150,7 +152,7 @@ namespace FingerDiceDuel.Core
         /// <summary>光耀 -&gt; 目盲</summary>
         Radiant = 4,
 
-        /// <summary>暗蚀 -&gt; 腐朽</summary>
+        /// <summary>暗蚀 -&gt; 失明</summary>
         Necrotic = 5,
 
         /// <summary>火焰 -&gt; 燃烧</summary>
@@ -177,6 +179,8 @@ namespace FingerDiceDuel.Core
         {
             switch (status)
             {
+                case StatusEffect.DivinePunishment: return "divine_punishment";
+                case StatusEffect.Annihilation: return "annihilation";
                 case StatusEffect.KnowledgeBlessing: return "knowledge_blessing";
                 case StatusEffect.Confusion: return "confusion";
                 case StatusEffect.Scorch: return "scorch";
@@ -237,6 +241,8 @@ namespace FingerDiceDuel.Core
         {
             switch (status)
             {
+                case StatusEffect.DivinePunishment: return "神罚";
+                case StatusEffect.Annihilation: return "湮灭";
                 case StatusEffect.KnowledgeBlessing: return "知识祝福";
                 case StatusEffect.Confusion: return "困惑";
                 case StatusEffect.Scorch: return "灼伤";
@@ -281,17 +287,19 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.KnowledgeBlessing: return "层数保留到攻击；消耗全部层数，命中后追加等层力场伤害，并附困惑2回合。";
                 case StatusEffect.Confusion: return "加法运算的和达到10或以上时，结果改为1。";
                 case StatusEffect.Scorch: return "回复后立即受到实际回复量一半的火焰伤害，向上取整；无实际回复不触发。";
-                case StatusEffect.DarknessBlind: return "攻击未失明的角色时，伤害减半（向上取整）。";
+                case StatusEffect.DivinePunishment: return "正常运算最终结果为自身攻击数字时，立即受到等于结果值的光耀伤害；纯运算不触发。";
+                case StatusEffect.Annihilation: return "清除并阻止目盲、失明、神罚、腐朽；期间免疫光耀和暗蚀，所有攻击伤害减半；正常运算后受到等于最终结果的力场伤害，纯运算不触发。";
+                case StatusEffect.DarknessBlind: return "以物理攻击攻击未失明的角色时，伤害减半（向上取整）。";
                 case StatusEffect.Resonance:
-                    return "只能攻击与自己距离 1 的角色";
+                    return "任意存活角色在距离自己≤1处结束回合时，自己受到1点雷鸣伤害（含自身回合）";
                 case StatusEffect.Acid:
                     return "防御加成 −2";
                 case StatusEffect.Poison:
                     return "回合开始时受 2 点毒素伤害，不可被抵挡";
                 case StatusEffect.Blind:
-                    return "计算时只能选择与自己距离 1 的手";
+                    return "以魔法攻击攻击未目盲的角色时，伤害减半（向上取整）";
                 case StatusEffect.Decay:
-                    return "不能回复生命值";
+                    return "正常运算最终结果为非攻击数字时，立即受到等于结果值的暗蚀伤害；纯运算不触发";
                 case StatusEffect.Burn:
                     return "回合结束时受 2 点火焰伤害（可被盾 / 闪避 / 太极抵挡）；再被火焰命中附加2回合灼伤，格挡与火焰抗性各减1回合，免疫阻止附加";
                 case StatusEffect.Frost:
@@ -319,7 +327,7 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Dizzy:
                     return "本次运算结果无效，不触发任何技能";
                 case StatusEffect.HolyLight:
-                    return "回合开始失去1生命（不可抵挡）；保留燃烧、灼伤、目盲，清除并阻止其他状态；抗性／易伤／免疫暂停作用、继续计时，结束后恢复未到期者";
+                    return "回合开始失去1生命（不可抵挡）；保留燃烧、灼伤、目盲、神罚、湮灭，清除并阻止其他状态；抗性／易伤／免疫暂停作用、继续计时，结束后恢复未到期者";
                 case StatusEffect.Tinnitus:
                     return "受到攻击与持续状态伤害×1.5，不能合盾或回复；免疫雷鸣伤害，持续2个自身回合";
                 case StatusEffect.Restrained:
@@ -350,7 +358,7 @@ namespace FingerDiceDuel.Core
                 case DamageType.Acid: return StatusEffect.Acid;
                 case DamageType.Poison: return StatusEffect.Poison;
                 case DamageType.Radiant: return StatusEffect.Blind;
-                case DamageType.Necrotic: return StatusEffect.Decay;
+                case DamageType.Necrotic: return StatusEffect.DarknessBlind;
                 case DamageType.Fire: return StatusEffect.Burn;
                 case DamageType.Cold: return StatusEffect.Frost;
                 case DamageType.Lightning: return StatusEffect.Shock;
@@ -384,19 +392,23 @@ namespace FingerDiceDuel.Core
                 : "Status/" + IconKeyOf(status);
 
         /// <summary>计时状态（排除兼容别名，顺序固定）。</summary>
-        public static readonly StatusEffect[] AllStatuses =
+        public static readonly StatusEffect[] OrderedStatuses =
         {
-            StatusEffect.Resonance, StatusEffect.Acid, StatusEffect.Poison,
-            StatusEffect.Blind, StatusEffect.Decay, StatusEffect.Burn,
-            StatusEffect.Frost, StatusEffect.Shock, StatusEffect.Panic,
-            StatusEffect.Bleed, StatusEffect.Wet, StatusEffect.Frozen,
-            StatusEffect.Stunned, StatusEffect.Limp, StatusEffect.KnockedDown,
-            StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Dizzy,
-            StatusEffect.HolyLight,
-            StatusEffect.Restrained, StatusEffect.Greased, StatusEffect.WarBlessing, StatusEffect.Tinnitus, StatusEffect.DarknessBlind,
-            StatusEffect.BlessedHealing, StatusEffect.PhysicalVulnerability, StatusEffect.Scorch, StatusEffect.KnowledgeBlessing, StatusEffect.Confusion,
-            StatusEffect.FeignedDeath, StatusEffect.NatureBlessing, StatusEffect.LightBlessing,
+            StatusEffect.Resonance, StatusEffect.Dizzy, StatusEffect.Tinnitus,
+            StatusEffect.Acid, StatusEffect.Poison,
+            StatusEffect.Blind, StatusEffect.DivinePunishment,
+            StatusEffect.DarknessBlind, StatusEffect.Decay, StatusEffect.Annihilation,
+            StatusEffect.Burn, StatusEffect.Scorch,
+            StatusEffect.Frost, StatusEffect.Wet, StatusEffect.Frozen,
+            StatusEffect.Shock, StatusEffect.Panic, StatusEffect.Stunned,
+            StatusEffect.Bleed, StatusEffect.Limp, StatusEffect.KnockedDown,
+            StatusEffect.Charm, StatusEffect.Disabled, StatusEffect.Restrained, StatusEffect.Greased,
+            StatusEffect.PhysicalVulnerability, StatusEffect.Confusion,
+            StatusEffect.HolyLight, StatusEffect.WarBlessing, StatusEffect.BlessedHealing,
+            StatusEffect.KnowledgeBlessing, StatusEffect.FeignedDeath, StatusEffect.NatureBlessing, StatusEffect.LightBlessing,
         };
+
+        public static readonly StatusEffect[] AllStatuses = OrderedStatuses;
 
         /// <summary>
         /// 状态对应的**主色**（0xRRGGBB）。
@@ -441,6 +453,8 @@ namespace FingerDiceDuel.Core
                 case StatusEffect.Resonance: return 0x9B4FD0;   // 紫（雷鸣 / 残响）
                 case StatusEffect.Acid: return 0xB6CC2E;        // 黄绿
                 case StatusEffect.Poison: return 0x3FA34D;      // 绿
+                case StatusEffect.DivinePunishment: return 0xEDDC75;
+                case StatusEffect.Annihilation: return 0x94748D;
                 case StatusEffect.Blind: return 0xF2C72E;       // 亮金
                 case StatusEffect.Decay: return 0x1E5B2E;       // 深绿（暗蚀 / 腐朽）
                 case StatusEffect.Burn: return 0xE8701A;        // 橙红（火焰）
@@ -490,11 +504,13 @@ namespace FingerDiceDuel.Core
         {
             switch (s)
             {
+                case StatusEffect.DivinePunishment: return "✧";
+                case StatusEffect.Annihilation: return "◐";
                 case StatusEffect.Resonance: return "\u25ce";   // ◎ 同心圆（声波）
                 case StatusEffect.Acid: return "\u25bc";        // ▼ 倒三角（滴落）
                 case StatusEffect.Poison: return "\u2620";      // ☠ 骷髅
                 case StatusEffect.Blind: return "\u25c9";       // ◉ 鱼眼（眼睛）
-                case StatusEffect.Decay: return "\u2716";       // ✖ 重叉（斩断治疗）
+                case StatusEffect.Decay: return "\u2716";       // ✖ 重叉（暗蚀反噬）
                 case StatusEffect.Burn: return "\u25c6";        // ◆ 实心菱形（热源）
                 case StatusEffect.Frost: return "❄";       // ❄ 雪花
                 case StatusEffect.Shock: return "⚠";        // ⚠ 警告（电压危险）
@@ -544,7 +560,7 @@ namespace FingerDiceDuel.Core
 
         /// <summary>
         /// 图鉴「状态一览」里那一行的文字（带图标）：
-        /// `◎ 残响：只能攻击与自己距离 1 的角色`。
+        /// `◎ 残响：附近存活角色回合结束时受1雷鸣伤害`。
         /// </summary>
         public static string StatusLine(StatusEffect st)
             => Colorize(GlyphOf(st), st) + " " + Of(st) + "：" + Describe(st);

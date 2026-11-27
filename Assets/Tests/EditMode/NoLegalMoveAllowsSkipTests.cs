@@ -1,4 +1,4 @@
-using FingerDiceDuel.Assistant;
+﻿using FingerDiceDuel.Assistant;
 using FingerDiceDuel.Characters;
 using FingerDiceDuel.Core;
 
@@ -11,9 +11,8 @@ namespace FingerDiceDuel.Tests
     /// <summary>
     /// **玩家确认的规则**：一手合法运算都走不出来时，**允许跳过回合**。
     ///
-    /// 触发场景：目盲（只能用距离正好 1 的人的手当被加数）
-    /// + 邪术师·旧日支配者的距离修正（把这一对推到 3）
-    /// -> 对方**没有任何可用的被加数**（自己的手不许自己加）-> 无合法步。
+    /// 目盲仅削弱魔法攻击，不限制加数。
+    /// 距离修正后仍应有合法运算，不能因此开放跳过。
     /// </summary>
     [TestFixture]
     public class NoLegalMoveAllowsSkipTests
@@ -22,7 +21,7 @@ namespace FingerDiceDuel.Tests
             => CharacterFactory.CreatePlayer(n, d);
 
         [Test]
-        public void Blind_plus_warlock_distance_leaves_no_legal_operation()
+        public void Blind_no_longer_blocks_distant_addends()
         {
             PlayerState w = Make("邪", CharacterDefinition.TheGreatOldOne);
             PlayerState foe = Make("战", CharacterDefinition.Champion);
@@ -35,21 +34,21 @@ namespace FingerDiceDuel.Tests
             game.ExecuteTurn(w, w.LeftHand, foe.LeftHand);
             Assert.AreEqual(3, game.DistanceBetween(w, foe));
 
-            // 给对手挂目盲：只能用"距离正好 1"的人的手当被加数
+            // 给对手挂目盲，远处的手仍然可以使用
             foe.ApplyStatus(StatusEffect.Blind, PlayerState.StatusDurationTurns, w);
 
-            Assert.IsFalse(game.HasAnyLegalOperation(foe),
-                "距离 3 + 目盲 -> 一手都走不出来。");
+            Assert.IsTrue(game.HasAnyLegalOperation(foe),
+                "距离3与目盲不会阻止使用加数。");
 
-            Assert.IsTrue(game.CanSkipTurnFor(foe),
-                "玩家确认：无合法步时**可以跳过回合**。");
+            Assert.IsFalse(game.CanSkipTurnFor(foe),
+                "仍有合法运算时不可跳过。");
             var board = new BoardController(game, (SimpleChoiceProvider)game.ChoiceProviderA,
                 (SimpleChoiceProvider)game.ChoiceProviderB);
             board.BeginTurn();
             Assert.AreEqual(BoardPhase.ChoosingAttackerHand, board.Phase, "控制器不能把无加数误判为结束。");
-            Assert.True(board.CanSkipTurn);
-            Assert.True(board.SkipTurn());
-            Assert.AreEqual(1, foe.StatusTurnsLeft(StatusEffect.Blind));
+            Assert.False(board.CanSkipTurn);
+            Assert.True(board.ClickHand(foe.LeftHand));
+            Assert.True(StatusRules.CanUseHandAsAddend(foe,w.RightHand,game));
         }
 
         [Test]
@@ -82,3 +81,4 @@ namespace FingerDiceDuel.Tests
         }
     }
 }
+
