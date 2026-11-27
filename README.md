@@ -4,7 +4,7 @@
 
 # 指骰对决 · Finger Dice Duel
 
-当前62子职、611种合法双将的完整采样见[2026-11-25报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)，共76,164局；[2026-11-21报告](https://github.com/cauchy418/Finger-Dice-Duel/blob/91e9a2b/Tools/Statistics/2026-11-21-class-balance/README.md)保留当时59子职、551种双将及旧规则，两个版本的分母不混用。
+当前62子职、611种合法双将，六组完整采样共76,164局，见[最新胜率报告](Tools/Statistics/2026-11-27-light-dark-evocation/README.md)。逐模式分母、固定AI的适用范围与上一轮对比均在报告中说明。
 
 **两只手的数字，就是你的骰子。**
 
@@ -14,7 +14,7 @@
 
 ![engine](https://img.shields.io/badge/engine-Tuanjie_2022.3.62t15-blue)
 ![language](https://img.shields.io/badge/C%23-.NET_6-512bd4)
-![tests](https://img.shields.io/badge/regression-1876_passed-success)
+![tests](https://img.shields.io/badge/regression-1948_passed-success)
 ![status](https://img.shields.io/badge/status-solo_dev-orange)
 ![license](https://img.shields.io/badge/license-MIT-green)
 
@@ -78,7 +78,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-ui.ps1       # 表现层编译检查
 ```
 
-规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归共 1876 项。
+规则内核、角色与 AI 不依赖 Unity，可以脱离引擎在 .NET 下无头运行，当前功能回归1948项通过、0失败，跳过8项独立统计；251个UI脚本及Unity/NUnit程序集边界编译通过。编译检查不等同于Unity实机验收。
 
 野蛮人职业拥有25点体力，职业基础攻防−2/−2；狂战士子职攻击+1，守望者子职防御+1，巨人子职攻防各+1，野兽无额外初始加成；每损失10点体力获得+2/+2，回复后随之重算。双野蛮人的这项负伤加成仍只计算一次。四个子职的数字变化、兽魂成长与元素战刃见[完整图鉴](Docs/roster.md#野蛮人-barbarian4)。
 
@@ -89,23 +89,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 | 职业 / 子职 | 12 / 62（战士 7、圣武士 6、牧师 9、野蛮人 4、游侠 2、游荡者 6、吟游诗人 2、法师 9、术士 4、邪术师 4、德鲁伊 4、武僧 5） |
 | 对局模式 | 6（剧情、1v1、2v2、双将、8 人阵营、8 人身份） |
 | 伤害类型 | 13 |
-| 负面状态 | 25 |
+| 负面状态 | 27 |
 | 角色状态 | 9（圣火 / 剑歌 / 战争祝福 / 醉拳 / 生命祝福 / 知识祝福 / 假死 / 自然祝福 / 光明祝福） |
-| 非空状态枚举 | 32（剑歌、醉拳另由技能状态维护） |
-| 元素反应 | 12 条 |
+| 非空状态枚举 | 34（剑歌、醉拳另由技能状态维护） |
+| 元素反应 | 16 条 |
 | 双将组合 | 611 种无序组合 |
-| 回归测试 | 1876 项通过、0 失败 |
+| 回归测试 | 1948 项通过、0 失败；8项独立统计跳过 |
 
 新增**游荡者·诡术师（Arcane Trickster）**：混乱中立，攻0／防−1、距离∞，近挥砍、远穿刺。额外法师手初始储值1，可在自己回合开始、结束各与一只可用本体手互换一次点数；不参与普通运算，也不能被指定为手部技能目标。详见[角色图鉴](Docs/roster.md#游荡者-rogue6)。
 
-新增**死亡／自然／光明领域**：死亡领域借死者或假死者的手作加数，自然领域阻止五元素状态并储存反施，光明领域以光耀攻击与逐段净化增伤作战。净化领域独立保留固定火焰与圣火。生命领域技能现名“生命赐福”，对应状态为“生命祝福”。完整时序见[牧师新领域](Docs/cleric-death-nature-light.md)。
+新增**死亡／自然／光明领域**：死亡领域借死者或假死者的手作加数，自然领域阻止五元素状态并储存反施，光明领域以光耀攻击与逐段净化增伤作战。净化领域独立保留固定火焰与圣火。光耀附目盲、暗蚀附失明，分别削弱对未有同状态目标的魔法／物理攻击；重复命中或光暗交错可触发神罚、腐朽与湮灭。完整状态和反应见[模式与战斗](Docs/modes-and-combat.md)。生命领域技能现名“生命赐福”，对应状态为“生命祝福”。完整时序见[牧师新领域](Docs/cleric-death-nature-light.md)。
 
 ## 现在的样子
 
 说清楚比较好：
 
 - **只有本地对 AI**，联网对战没做。
-- 本轮62子职完整采样76,164局，包含1v1、2v2、611种双将、八人阵营和身份随机／偏好选角。[胜率、逐模式分母与历史比较](https://github.com/cauchy418/Finger-Dice-Duel/blob/6f0518a/Tools/Statistics/2026-11-25-cleric-domains/README.md)
+- 本轮62子职完整采样76,164局，包含1v1、2v2、611种双将、八人阵营和身份随机／偏好选角。[胜率、逐模式分母与历史比较](Tools/Statistics/2026-11-27-light-dark-evocation/README.md)
 - **剧情难度待校准。** 四章40关先教学，再确认进入实战；敌方恢复最佳状态，实战可失败并直接重试，具体难度仍待真人试玩。
 - 仓库体积约 2.3 GB，大头是 `Art/` 下的原图与验收截图。
 
@@ -113,7 +113,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/UiCompileCheck/check-u
 
 | 文档 | 内容 |
 |---|---|
-| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、25 种负面状态、12 条元素反应 |
+| [模式与战斗](./Docs/modes-and-combat.md) | 一回合完整流程、距离与护盾、六种模式细则、13 类伤害、27 种负面状态、16 条元素反应 |
 | [角色图鉴](./Docs/roster.md) | 62 名子职的数值与关键机制、阵营分类及逐版本胜率来源 |
 | [RULES](./RULES.md) | 权威规则、完整技能数值与特殊交互 |
 | [CODELY](./CODELY.md) | 工程结构、实现细节、开发约定与技术债 |

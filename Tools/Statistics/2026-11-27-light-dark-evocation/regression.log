@@ -1,4 +1,4 @@
-﻿── AdventureChapterFinaleTests  (10 项)
+── AdventureChapterFinaleTests  (10 项)
    PASS  Eighth_follow_up_hits_first_bleed_increases_main_and_total_is_eleven
    PASS  Finale_all_seven_fighter_subclasses_keep_their_skill_and_other_professions_are_excluded
    PASS  Finale_fixed_knight_is_plus_one_plus_one_without_crown_skills_and_not_in_roster
@@ -71,30 +71,36 @@
    PASS  Ai_defender_uses_its_own_choice_provider_to_dodge
 
 ── AiSkillPolicyAuditTests  (11 项)
-   PASS  AI_evocation_explicit_decline_is_not_rerolled_during_resolution
-   PASS  AI_evocation_preparation_answer_is_applied_once_before_the_type_choice
-   PASS  Dual_evocation_AI_can_choose_to_prepare_in_both_component_orders
-   PASS  Dual_evocation_preparation_suppresses_this_hit_and_survives_until_next_attack
+   PASS  AI_evocation_attacks_before_preparing_the_next_type
+   PASS  Dual_evocation_prepares_after_attack_in_both_component_orders
+   PASS  Dual_evocation_repeat_cost_is_prepared_for_the_next_attack
    PASS  Dual_taichi_zero_is_previewed_and_touched_as_one
    PASS  Dual_thief_AI_performs_a_profitable_steal_in_both_orders
    PASS  Forced_gambling_takes_precedence_over_a_profitable_AI_steal
    PASS  Gambler_thief_sampling_seed_761708_completes_without_stalling
-   PASS  Human_dual_evocation_can_accept_and_choose_damage_type
+   PASS  Human_dual_evocation_choice_is_deferred_until_after_damage
    PASS  Human_dual_thief_can_enter_steal_selection
-58-role actual attacking/defending request audit: 293 legal answers.
+   PASS  Old_evocation_abandon_choice_is_always_declined_without_randomness
+58-role actual attacking/defending request audit: 266 legal answers.
    PASS  Roster_pre_attack_requests_receive_legal_policy_answers_for_attacking_and_defending
 
-── AiStatePolicyTests  (12 项)
+── AiStatePolicyTests  (18 项)
    PASS  All_roles_accept_every_negative_modifier_without_changing_the_board
    PASS  Combined_effects_stack_and_holy_fire_pauses_affinity_policy
    PASS  Confusion_and_frost_are_applied_once_to_previewed_results
-   PASS  Decay_does_not_prefer_a_zero_heal_over_a_new_shield
+   PASS  Counterplay_suppresses_dizzy_status_damage_until_a_prepared_portent_restores_effects
+   PASS  Decay_keeps_real_healing_available_and_accounts_for_self_damage
    PASS  Every_current_status_has_an_explicit_rule_and_effect_extension_keys_exist
-   PASS  Evocation_abandon_generator_reaches_the_full_hundred_point_range
+   PASS  Evocation_prefers_reaction_and_changes_type_when_repeat_cost_is_worse
+   PASS  Lethal_forecast_applies_blindness_to_the_matching_damage_type_only
    PASS  Life_attack_digits_remain_valuable_cleansing_actions_while_disabled_or_stunned
    PASS  Life_cleric_can_still_cleanse_decay_before_its_heal
    PASS  Life_full_health_holy_fire_still_has_a_real_cleanse_and_overflow_blessing
+   PASS  New_light_dark_states_forecast_operation_damage_without_mutation
+   PASS  Normal_no_effect_digits_trigger_decay_but_suppressed_operations_do_not
+   PASS  Pre_effect_status_survival_cannot_use_future_healing_or_the_operating_shield
    PASS  State_hand_weights_are_copies_and_expire_without_leaking_to_other_roles
+   PASS  Status_damage_consumes_the_last_shield_before_the_resonance_tick
    PASS  Tinnitus_discards_heal_and_shield_preferences_and_blindness_changes_target_value
    PASS  Wet_scores_the_real_six_above_the_raw_eight_that_becomes_seven
 
@@ -181,7 +187,7 @@
    PASS  Projected_counterplay_is_readonly_and_uses_future_results
    PASS  Real_board_actual_heal_keeps_bladesong
    PASS  Real_board_attack_and_shield_each_keep_bladesong
-   PASS  Real_board_full_health_or_decay_prevented_heal_does_not_keep_bladesong
+   PASS  Real_board_full_health_or_tinnitus_prevented_heal_does_not_keep_bladesong
    PASS  Real_board_knight_active_shield_enchants_this_attack_and_prompts_once
    PASS  Real_board_knight_nonattack_shield_operation_keeps_enchantment_for_later
    PASS  Real_board_offers_curse_after_effectless_operation
@@ -460,15 +466,15 @@ COMBAT PASS L8 rounds=4 win=True
 COMBAT PASS L9 rounds=7 win=False
 COMBAT PASS L10 rounds=13 win=False
 COMBAT PASS L11 rounds=16 win=True
-COMBAT PASS L12 rounds=27 win=False
+COMBAT PASS L12 rounds=34 win=False
 COMBAT PASS L13 rounds=8 win=False
 COMBAT PASS L14 rounds=20 win=True
-COMBAT PASS L15 rounds=11 win=True
-COMBAT PASS L16 rounds=12 win=True
+COMBAT PASS L15 rounds=18 win=True
+COMBAT PASS L16 rounds=10 win=True
 COMBAT PASS L17 rounds=19 win=False
 COMBAT PASS L18 rounds=13 win=True
 COMBAT PASS L19 rounds=20 win=True
-COMBAT PASS L20 rounds=32 win=False
+COMBAT PASS L20 rounds=16 win=True
 COMBAT PASS L21 rounds=10 win=True
 COMBAT PASS L22 rounds=10 win=False
 COMBAT PASS L23 rounds=11 win=False
@@ -502,7 +508,7 @@ V3 GUIDE PASS L15 round=2
 V3 GUIDE PASS L16 round=2
 V3 GUIDE PASS L17 round=3
 V3 GUIDE PASS L18 round=32
-V3 GUIDE PASS L19 round=6
+V3 GUIDE PASS L19 round=5
 V3 GUIDE PASS L21 round=3
 V3 GUIDE PASS L22 round=3
 V3 GUIDE PASS L23 round=4
@@ -534,26 +540,26 @@ V3 COMBAT PASS L7 rounds=22
 V3 COMBAT PASS L8 rounds=3
 V3 COMBAT PASS L9 rounds=8
 V3 COMBAT PASS L10 rounds=13
-V3 COMBAT PASS L11 rounds=51
+V3 COMBAT PASS L11 rounds=41
 V3 COMBAT PASS L12 rounds=5
 V3 COMBAT PASS L13 rounds=6
 V3 COMBAT PASS L14 rounds=11
 V3 COMBAT PASS L15 rounds=6
 V3 COMBAT PASS L16 rounds=11
-V3 COMBAT PASS L17 rounds=11
-V3 COMBAT PASS L18 rounds=35
-V3 COMBAT PASS L19 rounds=25
-V3 COMBAT PASS L20 rounds=22
+V3 COMBAT PASS L17 rounds=10
+V3 COMBAT PASS L18 rounds=50
+V3 COMBAT PASS L19 rounds=22
+V3 COMBAT PASS L20 rounds=2
 V3 COMBAT PASS L21 rounds=12
 V3 COMBAT PASS L22 rounds=8
 V3 COMBAT PASS L23 rounds=18
-V3 COMBAT PASS L24 rounds=14
-V3 COMBAT PASS L25 rounds=8
+V3 COMBAT PASS L24 rounds=6
+V3 COMBAT PASS L25 rounds=11
 V3 COMBAT PASS L26 rounds=16
 V3 COMBAT PASS L27 rounds=11
 V3 COMBAT PASS L28 rounds=16
 V3 COMBAT PASS L29 rounds=22
-V3 COMBAT PASS L30 rounds=32
+V3 COMBAT PASS L30 rounds=16
 V3 COMBAT PASS L31 rounds=6
 V3 COMBAT PASS L32 rounds=16
 V3 COMBAT PASS L33 rounds=19
@@ -1323,6 +1329,32 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Swashbuckler_lethal_threshold_rises_when_holding_a_two
    PASS  Swordsman_lethal_includes_the_follow_up_attack
 
+── LightDarkStatusRevisionTests  (24 项)
+   PASS  Annihilation_halves_all_attack_types_but_not_status_damage
+   PASS  Blind_only_halves_magic_against_unblinded_defenders
+   PASS  Cross_reactions_clear_all_four_states_and_persist_until_expiry
+   PASS  Darkness_only_halves_physical_against_non_dark_defenders
+   PASS  Decay_no_longer_blocks_healing_and_self_damage_precedes_heal
+   PASS  Divine_punishment_uses_final_frost_modified_attack_number
+   PASS  Element_statuses_and_same_element_reactions_use_guard_and_resistance_duration
+   PASS  Fatal_self_damage_stops_attack_and_heal_effects
+   PASS  Fresh_necrotic_adds_darkness_not_decay
+   PASS  Giant_heal_amount_and_segment_mode_are_frozen_before_decay_changes_threshold
+   PASS  Holy_fire_keeps_punishment_and_annihilation_but_clears_decay_and_darkness
+   PASS  Normal_effectless_numbers_still_trigger_decay_and_annihilation
+   PASS  Ordered_statuses_group_elements_without_duplicates_and_include_new_icons
+   PASS  Prepared_role_effect_is_frozen_before_status_damage_changes_health_threshold
+   PASS  Prepared_self_damage_is_applied_once_and_fatal_result_still_finalizes
+   PASS  Pure_effectless_operations_do_not_trigger_any_self_damage
+   PASS  Real_gallery_storm_and_shadow_lessons_demonstrate_current_status_rules
+   PASS  Resonance_ticks_near_remote_and_self_turns_before_expiring
+   PASS  Role_effect_rewrite_changes_whether_attack_number_triggers_self_damage
+   PASS  Same_type_multihit_reacts_to_the_previous_segments_base_status
+   PASS  Self_damage_obeys_resistance_immunity_shield_and_barrier
+   PASS  Status_damage_is_not_reduced_by_outgoing_debuffs_or_given_new_states
+   PASS  Temporary_immunity_blocks_reaction_then_is_consumed
+   PASS  Zero_duration_cross_reaction_preserves_existing_states
+
 ── LightWarBattleMasterTests  (25 项)
    PASS  Battle_master_ai_skips_teammates
    PASS  Battle_master_applies_the_chosen_maneuver_by_other_hand_branch
@@ -1389,7 +1421,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Every_evocation_sample_includes_a_guard_observation_turn
    PASS  Finale_only_accepts_wizards_and_permanent_affinities_survive_hits
    PASS  Phantom_barrier_false_life_and_sheep_do_not_advance_circuit
-   PASS  Phantom_circuit_counts_whole_normal_health_hits_and_decay_blocks_heal
+   PASS  Phantom_circuit_counts_whole_normal_health_hits_and_tinnitus_blocks_heal
    PASS  Reaction_with_no_new_status_does_not_restore_the_base_status
    PASS  Samples_have_separate_state_and_stable_completion_keys
 
@@ -1676,7 +1708,7 @@ REACTION 14 Fire damage=6 applied=None
 ── NoLegalMoveAllowsSkipTests  (3 项)
    PASS  A_normal_position_still_has_legal_operations
    PASS  Blind_alone_does_not_block_the_operation_in_one_versus_one
-   PASS  Blind_plus_warlock_distance_leaves_no_legal_operation
+   PASS  Blind_no_longer_blocks_distant_addends
 
 ── OathOfDevotionShockRangeTests  (2 项)
    PASS  A_diagonal_target_survives_a_shock
@@ -1710,6 +1742,17 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Trickery_can_remove_an_attack_before_asking_for_a_target
    PASS  Trickery_projects_both_exchanged_digits_before_target
    PASS  Wet_can_create_an_attack_that_waits_for_target_confirmation
+
+── OperationStatusDisplayTests  (9 项)
+   PASS  Decay_kills_before_nine_can_heal
+   PASS  Fatal_punishment_commits_digit_without_prompt_or_attack
+   PASS  Fatal_punishment_preserves_source_break_shock_before_death_in_core_and_board
+   PASS  Normal_nonattack_digit_still_triggers_decay
+   PASS  Punishment_happens_before_target_prompt_and_only_once
+   PASS  Source_break_knight_choice_finishes_before_fatal_status_damage
+   PASS  Source_break_shock_collects_human_dodge_before_lethal_punishment
+   PASS  Source_shield_cannot_block_pre_effect_punishment
+   PASS  Surviving_operation_source_break_shock_does_not_repeat_at_commit
 
 ── PaladinConquestRevisionTests  (10 项)
    PASS  Ai_conquest_aura_declines_allies_and_prefers_enemy_without_existing_panic
@@ -1831,24 +1874,26 @@ REACTION 14 Fire damage=6 applied=None
    PASS  The_ten_becomes_one_claim_in_the_rules_is_true
    PASS  The_turn_limit_in_the_rules_matches_the_engine
 
-── SchoolOfEvocationDeclineKeepsTargetStepTests  (3 项)
-   PASS  Confirming_the_target_does_not_ask_the_abandon_again
-   PASS  Declining_at_the_target_step_does_not_loop_back
-   PASS  Declining_the_abandon_still_asks_for_the_attack_target
+── SchoolOfEvocationDeclineKeepsTargetStepTests  (5 项)
+   PASS  Blocked_and_zero_damage_attacks_still_prepare_once
+   PASS  Cancelled_attack_consumes_type_without_preparing_another
+   PASS  Dodged_attack_consumes_old_type_then_offers_one_new_choice
+   PASS  Preparation_is_not_collected_before_an_attack
+   PASS  Repeated_choices_reduce_each_segment_once_and_different_choice_resets
 
 ── SchoolOfEvocationStatusFlowTests  (21 项)
    PASS  A_headless_match_with_poison_reduces_health
-   PASS  A_pending_type_still_offers_the_abandon_choice
-   PASS  Abandon_attack_suppresses_damage_even_when_a_type_is_pending
-   PASS  After_the_type_is_consumed_the_wizard_may_abandon_again
+   PASS  A_pending_type_does_not_offer_pre_attack_preparation
    PASS  Ai_mage_applies_a_status_in_a_headless_match
    PASS  Burn_deals_three_at_turn_end_and_a_shield_can_block_it
    PASS  Burn_deals_two_when_undefended
-   PASS  Decay_blocks_healing_during_a_turn
+   PASS  Consumption_does_not_restore_the_removed_abandon_prompt
+   PASS  Decay_allows_healing_during_a_turn
    PASS  Freeze_halves_a_real_operation_result
    PASS  Freeze_halves_but_the_mage_has_no_odd_result_to_worry_about
    PASS  Freeze_never_drops_the_result_below_one
    PASS  Freeze_on_one_still_leaves_a_usable_hand
+   PASS  Legacy_abandon_flag_does_not_suppress_damage
    PASS  Poison_can_kill_and_then_the_turn_is_skipped
    PASS  Poison_deals_two_unblockable_damage_at_turn_start
    PASS  Poison_does_not_reapply_itself
@@ -1864,7 +1909,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Acid_reduces_defense_by_two
    PASS  Applying_the_same_status_again_refreshes_instead_of_stacking
    PASS  Consuming_the_type_clears_it
-   PASS  Decay_blocks_healing_entirely
+   PASS  Decay_allows_healing
    PASS  Different_statuses_coexist
    PASS  Every_damage_type_maps_to_its_status
    PASS  Force_attack_pierces_shield_and_cannot_be_dodged
@@ -1874,18 +1919,17 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Match_reset_clears_the_pending_type
    PASS  Only_force_makes_the_mage_undodgeable
    PASS  Reset_match_clears_all_statuses
-   PASS  Resonance_restricts_attacks_to_distance_one
+   PASS  Resonance_does_not_restrict_target_distance
    PASS  SchoolOfEvocation_is_registered_as_a_built_in_character
    PASS  SchoolOfEvocation_keeps_only_the_latest_damage_type
    PASS  Status_lasts_exactly_two_of_the_targets_own_turns
    PASS  Stun_blocks_attacking_the_source_only
    PASS  Stun_reduces_attack_by_two
 
-── SchoolOfEvocationUiFlowTests  (4 项)
-   PASS  Abandon_attack_button_is_accepted_even_with_multiple_candidates
-   PASS  Choosing_a_damage_type_completes_the_turn
-   PASS  Choosing_a_damage_type_records_it_before_resolving
-   PASS  Declining_the_abandon_keeps_the_normal_attack
+── SchoolOfEvocationUiFlowTests  (3 项)
+   PASS  Current_attack_lands_before_human_next_type_choice
+   PASS  Declining_post_attack_does_not_erase_last_choice
+   PASS  Multiplayer_dual_mages_keep_the_human_post_attack_choice
 
 ── ScreenFlowTests  (9 项)
    PASS  All_menu_screens_are_reachable_after_a_match
@@ -1941,7 +1985,7 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Wild_magic_visuals_do_not_roll_again_or_change_per_hit_results
    PASS  Wolf_lifesteal_reports_actual_healing
 
-── ShadowMagicTests  (11 项)
+── ShadowMagicTests  (13 项)
    PASS  Ai_counts_unspent_grave_strength_before_marking_a_finish
    PASS  Blinded_attack_halves_after_stats_only_against_non_blinded_target
    PASS  Blindness_on_both_sides_does_not_reduce_damage_and_holy_light_cleanses_it
@@ -1951,7 +1995,9 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Grave_strength_survives_once_even_with_decay_and_resets_each_match
    PASS  Human_board_exposes_darkness_after_the_normal_operation
    PASS  Immunity_is_only_darkness_blind_and_status_is_negative_and_expires
+   PASS  Shadow_eighty_percent_boundary_retains_base_type_and_dark_targets_are_forced
    PASS  Shadow_eyes_adds_two_and_changes_damage_to_necrotic
+   PASS  Shadow_roll_is_per_attack_and_ai_preview_never_consumes_it
    PASS  Two_hit_attack_can_kill_after_grave_strength_and_dual_order_does_not_hide_it
 
 ── ShieldTests  (13 项)
@@ -1972,14 +2018,14 @@ REACTION 14 Fire damage=6 applied=None
 ── SkillActivationTests  (2 项)
 === 技能发动率（每位角色 30 局）===
 角色        发动局数 / 总局数   发动率
-战士·勇士        19 / 30          63%
-战士·破阵者       28 / 30          93%
+战士·勇士        18 / 30          60%
+战士·破阵者       29 / 30          97%
 法师·咒法学派      30 / 30          100%
 野蛮人·守望者道途     28 / 30          93%
 牧师·生命领域      30 / 30          100%
 游荡者·风流剑客     30 / 30          100%
-野蛮人·野兽道途     20 / 30          67%
-战士·剑士        16 / 30          53%
+野蛮人·野兽道途     21 / 30          70%
+战士·剑士        14 / 30          47%
 武僧·忍宗        26 / 30          87%
 游荡者·刺客       10 / 30          33%
 圣武士·奉献之誓     30 / 30          100%
@@ -1987,10 +2033,10 @@ REACTION 14 Fire damage=6 applied=None
 战士·魔射手       30 / 30          100%
 游荡者·赌徒       30 / 30          100%
 圣武士·王冠之誓     28 / 30          93%
-武僧·太极宗       29 / 30          97%
-野蛮人·巨人道途     12 / 30          40%
+武僧·太极宗       28 / 30          93%
+野蛮人·巨人道途     11 / 30          37%
 游荡者·盗贼       12 / 30          40%
-游侠·幽域追踪者     10 / 30          33%
+游侠·幽域追踪者     12 / 30          40%
 游荡者·魔术师      30 / 30          100%
 游荡者·诡术师       0 / 30          0%
 法师·塑能学派       0 / 30          0%
@@ -2452,5 +2498,5 @@ REACTION 14 Fire damage=6 applied=None
    PASS  Stolen_attack_without_legal_target_is_abandoned_without_reoperation
 
 ────────────────────────────────────────────────────────────
-通过 1906 / 失败 0
+通过 1948 / 失败 0
 独立统计测试已跳过 8 项。

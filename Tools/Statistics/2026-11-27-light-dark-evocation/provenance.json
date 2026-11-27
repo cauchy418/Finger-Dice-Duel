@@ -1,15 +1,15 @@
 {
-    "captured_utc":  "2026-11-25T07:49:25.783262+00:00",
-    "source_commit":  "6f0518ad4ec4aacd21bc6fbbedd8aae17a33e527",
+    "captured_utc":  "2026-11-27T06:09:01.511815+00:00",
+    "source_commit":  "0d766123e633bdc2719e4282fb5cd855dcae20e2",
     "source_dirty":  true,
-    "source_sha256":  "b5ddeeb26f1638941eb741656df48b0f12f7b092686ec37273f822377bd4ebaf",
-    "test_source_sha256":  "faf90e40c35c2be0d4f8df20ddf9a5d5c339c545864ae320bb04f0682e5c3807",
+    "source_sha256":  "78614bfec869da0710a64f68f27dad8302cc9ccef85bedd8fb8ff8fdedf46300",
+    "test_source_sha256":  "11bc9666a0827b14fec882cd1e40d4756f6232d1e3885b6eb2cbc100de888f39",
     "headless_source_sha256":  "35cf95b8f4a5a72236f3255c328aa447e44c272c5e99e64946ee4202248ba3bc",
     "headless_runner_sha256":  "6c589cb7ec68da2cb4d5e03fb697160808ca405d72d0b85993050c92a931871b",
     "statistics_tool_sha256":  "18b0cebd537569cece1e432e36b16103c48333dfeaadfa85c75c6ee27a5a84e5",
     "statistics_runner_sha256":  "9763c724fbb4c3a68a0dfa872123bc1c9d27e33dd1f599433a3fe9321dee4e82",
     "identity_runner_sha256":  "4d55b2457608c69dfecf0e0988338896e8cf66aaff46b3614505fa76d3ca5cf1",
-    "sampler_assembly_sha256":  "FD89373B7F3B2A180CF87741AD91C1403F08308ADAF14C857CFCD1A8A607A409",
+    "sampler_assembly_sha256":  "00CDFF1373F249CEA923D83FA298076EF68A1693A10230DD537BB811FC609234",
     "sampler_runtime_version":  "8.0.15",
-    "sampler_processor_affinity":  0
+    "sampler_processor_affinity":  1
 }

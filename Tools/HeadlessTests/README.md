@@ -6,7 +6,7 @@
 
 为什么需要它：本工程是团结引擎（Unity 衍生物）项目，但游戏逻辑（`Core` / `Characters` /
 `Assistant`）刻意**不依赖任何 Unity 类型**。因此可以脱离编辑器，用 Roslyn 直接编译成
-一个普通.NET可执行文件跑测试。当前功能回归与编译结果见[本轮报告](../Statistics/2026-11-25-low-team-ai/README.md)，另有8项独立统计入口；62子职现行汇总包含76,164局与611种合法无序双将，六组使用同一冻结程序集完整重采，原始种子与来源指纹随报告保存。采样统一走实际BoardController；
+一个普通.NET可执行文件跑测试。当前功能回归与编译结果见[本轮报告](../Statistics/2026-11-27-light-dark-evocation/README.md)，另有8项独立统计入口；62子职现行汇总包含76,164局与611种合法无序双将，六组使用同一冻结程序集完整重采，原始种子与来源指纹随报告保存。采样统一走实际BoardController；
 专项可按测试类过滤，不必每次重跑全部统计。
 
 ```powershell
@@ -43,7 +43,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File Tools/HeadlessTests/run-test
 | `-RuntimeVersion <version>` | 为编译器和测试程序固定同一个已安装运行时，本机使用8.0.15 |
 | `-Quiet` | 只输出测试结果，不输出编译信息 |
 
-五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-25-low-team-ai/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
+五模式的当前抽样入口为`-Only RevisionBalanceTests`，通过环境变量`FDD_REVISION_MODE`指定`1v1`／`2v2`／`dual`／`eight`／`identity`，`FDD_REVISION_ROOT`指定本次报告目录。完整运行与汇总命令见[当前报告](../Statistics/2026-11-27-light-dark-evocation/README.md)，未指定报告目录时，输出落入忽略的bin目录。全角色配置复查用`audit`。权重试验另有`tune-1v1`和`tune-2v2`入口。
 
 运行器还支持两个命令行参数（直接传给 `dotnet bin/HeadlessTests.dll`）：
 
