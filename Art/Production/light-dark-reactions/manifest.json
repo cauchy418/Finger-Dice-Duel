@@ -1,0 +1,32 @@
+{
+  "generator": "built-in image_gen",
+  "reference": "Art/Production/death-nature-domains/light_blessing.png",
+  "assets": [
+    {
+      "id": "divine_punishment",
+      "name": "神罚",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-33df956a-0422-4ec9-b21a-fc9cae38204f.png",
+      "prompt": "Use case: stylized-concept. Production game status icon: DIVINE PUNISHMENT. Reference image is STYLE/FRAME reference only, not subject. Match its dark painterly fantasy, aged gold ornamental square border and near-black iron inset. Replace the central blessing star with a threatening downward ivory-gold spear of divine judgment striking a fractured black stone seal, an intense compact radiant impact, dramatic sacred rays, no blood, no people, no letters or numbers. Clear strong silhouette readable at 32 pixels. Single centered square icon, entire gold border visible with generous transparent exterior margin. Interior opaque dark charcoal, exterior genuinely transparent alpha. Same scale and framing as reference. Highly polished hand-painted material, subtle brushwork, no flat vector art.",
+      "size": [
+        1254,
+        1254
+      ],
+      "production": "Art/Production/light-dark-reactions/divine_punishment.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/divine_punishment.png",
+      "sha256": "720fa145b8ba2dc7b1c87662d84c2408bbc4d92e9ec9d4b404dba7bbd24a26c9"
+    },
+    {
+      "id": "annihilation",
+      "name": "湮灭",
+      "source": "C:/Users/29391/.codex/generated_images/01a1586e-64f7-7d33-954d-9314aa85037d/exec-74c428ee-b312-4ee7-9669-a0e04a81d2f2.png",
+      "prompt": "Use case: stylized-concept. Production game negative status icon ANNIHILATION. Reference image is STYLE/FRAME reference only. Match its aged gold ornate square frame, black iron inset and detailed painterly dark fantasy style. Centerpiece: two opposing curved streams, pale radiant ivory-gold on left and deep necrotic violet on right, collapsing into a brilliant WHITE force core and a jagged dark rift. Visible fractured arcane ring and small suspended fragments emphasize destructive cancellation. Distinct from a sun blessing: ominous violent collision with strong simple swirling silhouette. No people, no skulls, no text, no numerals. Entire frame visible, same scale as reference, transparent exterior margin, opaque nearly black interior. Real painted metal texture and luminous brushwork, game UI readable at small size.",
+      "size": [
+        1254,
+        1254
+      ],
+      "production": "Art/Production/light-dark-reactions/annihilation.png",
+      "runtime": "Assets/Resources/Art/Battle/v1/Status/annihilation.png",
+      "sha256": "874b488b2acf7ca9a6578e43564f2e66bdb832449d2cb23f28a8fc792d363b80"
+    }
+  ]
+}
